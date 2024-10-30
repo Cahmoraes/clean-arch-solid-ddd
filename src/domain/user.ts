@@ -9,12 +9,16 @@ export interface UserProps {
   createdAt: Date
 }
 
-export type CreateUserProps = Optional<UserProps, 'createdAt'> &
-  Omit<UserProps, 'password'> & {
-    password: string
-  }
+type UserPropsWithoutPassword = Omit<UserProps, 'password'>
 
-export type RestoreUserProps = Omit<UserProps, 'password'> & {
+export type CreateUserProps = Optional<
+  UserPropsWithoutPassword,
+  'createdAt'
+> & {
+  password: string
+}
+
+export type RestoreUserProps = Omit<UserPropsWithoutPassword, 'password'> & {
   password: string
   updatedAt?: Date
 }
