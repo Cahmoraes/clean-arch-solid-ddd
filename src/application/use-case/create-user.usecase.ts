@@ -3,8 +3,8 @@ import { inject, injectable } from 'inversify'
 import { User } from '@/domain/user'
 import { TYPES } from '@/infra/ioc/types'
 
+import { UserAlreadyExistsError } from '../error/user-already-exists-error'
 import type { UserRepository } from '../repository/user-repository'
-import { UserAlreadyExistsError } from './user-already-exists-error'
 
 export interface CreateUserInput {
   name: string

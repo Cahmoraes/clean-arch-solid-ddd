@@ -2,8 +2,9 @@
   "name": "03-api-solid",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx vitest",
     "start": "node ./build/main.js",
     "start:dev": "npx tsx --watch src/main.ts",
     "build": "npx tsup src --out-dir build",
@@ -34,7 +35,7 @@
     "vitest-tsconfig-paths": "^3.4.1"
   },
   "dependencies": {
-    "@cahmoraes93/extended-set": "1.1.3",
+    "@cahmoraes93/extended-set": "1.2.0",
     "@prisma/client": "5.21.1",
     "bcryptjs": "2.4.3",
     "dotenv": "^16.4.5",
@@ -42,6 +43,6 @@
     "inversify": "6.0.3",
     "reflect-metadata": "0.2.2",
     "zod": "^3.23.8",
-    "zod-validation-error": "^3.4.0"
+    "zod-validation-error": "3.4.0"
   }
 }

@@ -1,11 +1,11 @@
-import { genSalt, hash } from 'bcryptjs'
+import bycript from 'bcryptjs'
 
 export class Password {
   private constructor(private readonly _value: string) {}
 
   public static async create(rawPassword: string) {
-    const salt = await genSalt(10)
-    const hashedPassword = await hash(rawPassword, salt)
+    const salt = await bycript.genSalt(10)
+    const hashedPassword = await bycript.hash(rawPassword, salt)
     return new Password(hashedPassword)
   }
 

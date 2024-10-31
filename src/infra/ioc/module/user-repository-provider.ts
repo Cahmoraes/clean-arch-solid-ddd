@@ -1,6 +1,6 @@
 import type { interfaces } from 'inversify'
 
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository'
+import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository.js'
 import { PrismaUserRepository } from '@/infra/database/repository/prisma-user-repository'
 import { env } from '@/infra/env'
 
