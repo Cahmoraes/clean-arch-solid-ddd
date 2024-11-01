@@ -33,6 +33,7 @@ export class CreateUserUseCase {
     input: CreateUserUseCaseInput,
   ): Promise<CreateUserUseCaseOutput> {
     const userOrNull = await this.findUserByEmail(input.email)
+    console.log({ userOrNull })
     if (userOrNull) return left(new UserAlreadyExistsError())
     const user = await this.createUser(input)
     await this.userRepository.create(user)

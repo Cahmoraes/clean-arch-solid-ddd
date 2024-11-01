@@ -31,12 +31,26 @@ export class CreateUserController {
   async handle(server: HttpServer) {
     server.register('post', UserRoutes.CREATE_USER, async (req) => {
       const { name, email, password } = this.parseBodyOrThrow(req.body)
-      await this.createUser.execute({
+      const result = await this.createUser.execute({
         name,
         email,
         rawPassword: password,
       })
-      return { name, email }
+      if (result.isLeft()) {
+        return {
+          status: 409,
+          body: {
+            message: 'User already exists',
+          },
+        }
+      }
+      return {
+        status: 201,
+        body: {
+          message: 'User created',
+          email: result.value.email,
+        },
+      }
     })
   }
 

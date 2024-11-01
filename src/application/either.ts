@@ -1,4 +1,4 @@
-export class Left<L> {
+export class Left<L, R> {
   constructor(readonly value: L) {}
 
   get force() {
@@ -34,16 +34,16 @@ export class Left<L> {
     }
   }
 
-  public isLeft(): this is L {
+  public isLeft(): this is Left<L, R> {
     return true
   }
 
-  public isRight(): this is never {
+  public isRight(): this is Right<L, R> {
     return false
   }
 }
 
-export class Right<R> {
+export class Right<L, R> {
   constructor(readonly value: R) {}
 
   get force() {
@@ -79,16 +79,16 @@ export class Right<R> {
     }
   }
 
-  public isLeft(): this is never {
+  public isLeft(): this is Left<L, R> {
     return false
   }
 
-  public isRight(): this is R {
+  public isRight(): this is Right<L, R> {
     return true
   }
 }
 
-export type Either<L, R> = Left<L> | Right<R>
+export type Either<L, R> = Left<L, R> | Right<L, R>
 
-export const left = <L, R>(value: L): Either<L, R> => new Left<L>(value)
-export const right = <L, R>(value: R): Either<L, R> => new Right<R>(value)
+export const left = <L, R>(value: L): Either<L, R> => new Left<L, R>(value)
+export const right = <L, R>(value: R): Either<L, R> => new Right<L, R>(value)
