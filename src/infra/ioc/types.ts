@@ -3,4 +3,6 @@ export const TYPES = {
   UserRepository: Symbol.for('UserRepository'),
   CreateUserController: Symbol.for('UserController'),
   CreateUserUseCase: Symbol.for('CreateUserUserCase'),
+  AuthenticateUseCase: Symbol.for('AuthenticateUseCase'),
+  AuthToken: Symbol.for('AuthToken'),
 }

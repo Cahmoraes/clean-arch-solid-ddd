@@ -12,6 +12,7 @@ const envSchema = z.object({
   HOST: z.string().default('0.0.0.0'),
   USE_PRISMA: z.string().transform((v) => v === 'true'),
   PASSWORD_SALT: z.coerce.number().default(2),
+  PRIVATE_KEY: z.string(),
 })
 
 const _env = envSchema.safeParse(envObject)
