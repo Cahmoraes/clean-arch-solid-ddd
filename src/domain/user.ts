@@ -36,8 +36,8 @@ export class User {
     this._createdAt = userDto.createdAt
   }
 
-  public static async create(createUser: CreateUserProps) {
-    const password = await Password.create(createUser.password)
+  public static create(createUser: CreateUserProps) {
+    const password = Password.create(createUser.password)
     const createdAt = new Date()
     return new User({ ...createUser, createdAt, password: password })
   }

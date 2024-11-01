@@ -1,11 +1,13 @@
-import bycript from 'bcryptjs'
+import bcrypt from 'bcryptjs'
+
+import { env } from '@/infra/env'
 
 export class Password {
   private constructor(private readonly _value: string) {}
 
-  public static async create(rawPassword: string) {
-    const salt = await bycript.genSalt(10)
-    const hashedPassword = await bycript.hash(rawPassword, salt)
+  public static create(rawPassword: string) {
+    const salt = bcrypt.genSaltSync(env.PASSWORD_SALT)
+    const hashedPassword = bcrypt.hashSync(rawPassword, salt)
     return new Password(hashedPassword)
   }
 
@@ -15,5 +17,9 @@ export class Password {
 
   get value() {
     return this._value
+  }
+
+  public compare(aString: string): boolean {
+    return bcrypt.compareSync(aString, this._value)
   }
 }
