@@ -40,8 +40,8 @@ export class FastifyAdapter implements HttpServer {
     this.server[method](
       path,
       async (request: FastifyRequest, reply: FastifyReply) => {
-        await callback(request, reply)
-        reply.status(201).send()
+        const result = await callback(request, reply)
+        reply.status(201).send(result)
       },
     )
   }

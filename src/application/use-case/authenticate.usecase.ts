@@ -29,10 +29,12 @@ export class AuthenticateUseCase {
   public async execute(
     input: AuthenticateUseCaseInput,
   ): Promise<AuthenticateUseCaseOutput> {
-    const existingUser = await this.userRepository.findByEmail(input.email)
-    if (!existingUser) throw new InvalidCredentialsError()
+    const userOrNull = await this.userRepository.findByEmail(input.email)
+    if (!userOrNull) throw new InvalidCredentialsError()
+    if (!userOrNull.checkPassword(input.password))
+      throw new InvalidCredentialsError()
     return {
-      token: this.token(existingUser),
+      token: this.token(userOrNull),
     }
   }
 

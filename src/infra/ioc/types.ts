@@ -5,4 +5,5 @@ export const TYPES = {
   CreateUserUseCase: Symbol.for('CreateUserUserCase'),
   AuthenticateUseCase: Symbol.for('AuthenticateUseCase'),
   AuthToken: Symbol.for('AuthToken'),
+  AuthenticateController: Symbol.for('AuthenticateController'),
 }

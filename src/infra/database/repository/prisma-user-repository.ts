@@ -21,13 +21,13 @@ export class PrismaUserRepository implements UserRepository {
   ) {}
 
   public async findByEmail(email: string): Promise<User | null> {
-    const userData = await this.prisma.user.findUnique({
+    const userDataOrNull = await this.prisma.user.findUnique({
       where: {
         email,
       },
     })
-    if (!userData) return null
-    return this.createUser(userData)
+    if (!userDataOrNull) return null
+    return this.createUser(userDataOrNull)
   }
 
   private async createUser(userData: UserData) {
@@ -40,7 +40,7 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   public async create(user: User): Promise<void> {
-    this.prisma.user.create({
+    await this.prisma.user.create({
       data: {
         email: user.email,
         name: user.name,

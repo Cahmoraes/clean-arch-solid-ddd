@@ -66,4 +66,8 @@ export class User {
   get createdAt() {
     return this._createdAt
   }
+
+  public checkPassword(raPassword: string): boolean {
+    return this._password.compare(raPassword)
+  }
 }
