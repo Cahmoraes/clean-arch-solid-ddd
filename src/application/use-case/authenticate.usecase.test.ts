@@ -39,8 +39,8 @@ describe('AuthenticateUseCase', () => {
     })
 
     const result = await sut.execute(input)
-    expect(result.token).toBeDefined()
-    expect(result.token).toEqual(expect.any(String))
+    expect(result.forceRight().value).toBeDefined()
+    expect(result.forceRight().value.token).toEqual(expect.any(String))
   })
 
   test('Não deve autenticar um usuário inexistente', async () => {
@@ -48,9 +48,8 @@ describe('AuthenticateUseCase', () => {
       email: 'john@doe.com',
       password: 'any_password',
     }
-    await expect(() => sut.execute(input)).rejects.toThrow(
-      InvalidCredentialsError,
-    )
+    const result = await sut.execute(input)
+    expect(result.forceLeft().value).toBeInstanceOf(InvalidCredentialsError)
   })
 
   test('Não deve autenticar um usuário com senha inválida', async () => {

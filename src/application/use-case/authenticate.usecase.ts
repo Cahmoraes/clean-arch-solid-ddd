@@ -5,6 +5,7 @@ import type { AuthToken } from '@/infra/auth/auth-token'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 
+import { type Either, left, right } from '../either'
 import { InvalidCredentialsError } from '../error/invalid-credentials-error'
 import type { UserRepository } from '../repository/user-repository'
 
@@ -13,9 +14,12 @@ export interface AuthenticateUseCaseInput {
   password: string
 }
 
-export type AuthenticateUseCaseOutput = {
-  token: string
-}
+export type AuthenticateUseCaseOutput = Either<
+  InvalidCredentialsError,
+  {
+    token: string
+  }
+>
 
 @injectable()
 export class AuthenticateUseCase {
@@ -30,12 +34,10 @@ export class AuthenticateUseCase {
     input: AuthenticateUseCaseInput,
   ): Promise<AuthenticateUseCaseOutput> {
     const userOrNull = await this.userRepository.findByEmail(input.email)
-    if (!userOrNull) throw new InvalidCredentialsError()
+    if (!userOrNull) return left(new InvalidCredentialsError())
     if (!userOrNull.checkPassword(input.password))
       throw new InvalidCredentialsError()
-    return {
-      token: this.token(userOrNull),
-    }
+    return right({ token: this.token(userOrNull) })
   }
 
   private token(anUser: User) {
