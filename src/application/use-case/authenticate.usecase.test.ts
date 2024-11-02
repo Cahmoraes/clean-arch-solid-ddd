@@ -64,12 +64,12 @@ describe('AuthenticateUseCase', () => {
       password: input.password,
     })
 
-    await expect(() =>
-      sut.execute({
-        ...input,
-        password: 'invalid_password',
-      }),
-    ).rejects.toThrow(InvalidCredentialsError)
+    const result = await sut.execute({
+      ...input,
+      password: 'invalid_password',
+    })
+
+    expect(result.forceLeft().value).toBeInstanceOf(InvalidCredentialsError)
   })
 
   async function createAndSaveUser(userProps: CreateUserProps): Promise<User> {

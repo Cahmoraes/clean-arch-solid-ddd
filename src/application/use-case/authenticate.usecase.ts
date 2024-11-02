@@ -34,9 +34,12 @@ export class AuthenticateUseCase {
     input: AuthenticateUseCaseInput,
   ): Promise<AuthenticateUseCaseOutput> {
     const userOrNull = await this.userRepository.findByEmail(input.email)
-    if (!userOrNull) return left(new InvalidCredentialsError())
-    if (!userOrNull.checkPassword(input.password))
-      throw new InvalidCredentialsError()
+    if (!userOrNull) {
+      return left(new InvalidCredentialsError())
+    }
+    if (!userOrNull.checkPassword(input.password)) {
+      return left(new InvalidCredentialsError())
+    }
     return right({ token: this.token(userOrNull) })
   }
 
