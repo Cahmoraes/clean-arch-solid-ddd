@@ -1,7 +1,7 @@
 import request from 'supertest'
-import { serverBuild } from 'tests/server-build'
 
 import type { UserRepository } from '@/application/repository/user-repository'
+import { serverBuild } from '@/bootstrap/server-build'
 import { User } from '@/domain/user'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository'
 import { container } from '@/infra/ioc/container'
