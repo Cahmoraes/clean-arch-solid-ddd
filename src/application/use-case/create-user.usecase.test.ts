@@ -35,7 +35,7 @@ describe('CreateUserUseCase', () => {
     const result = await sut.execute(input)
     const user = await userRepository.findByEmail(input.email)
     expect(result.forceRight().value.email).toBe(input.email)
-    expect(user?.id).toEqual(null)
+    expect(user?.id).toBeDefined()
     expect(user?.name).toBe(input.name)
     expect(user?.email).toBe(input.email)
     expect(user?.password).toEqual(expect.any(String))

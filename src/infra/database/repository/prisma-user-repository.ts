@@ -20,6 +20,16 @@ export class PrismaUserRepository implements UserRepository {
     private readonly prisma: PrismaClient,
   ) {}
 
+  public async findById(id: string): Promise<User | null> {
+    const userDataOrNull = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    })
+    if (!userDataOrNull) return null
+    return this.restoreUser(userDataOrNull)
+  }
+
   public async findByEmail(email: string): Promise<User | null> {
     const userDataOrNull = await this.prisma.user.findUnique({
       where: {
@@ -27,10 +37,10 @@ export class PrismaUserRepository implements UserRepository {
       },
     })
     if (!userDataOrNull) return null
-    return this.createUser(userDataOrNull)
+    return this.restoreUser(userDataOrNull)
   }
 
-  private async createUser(userData: UserData) {
+  private async restoreUser(userData: UserData) {
     return User.restore({
       id: userData.id,
       email: userData.email,
@@ -40,7 +50,7 @@ export class PrismaUserRepository implements UserRepository {
     })
   }
 
-  public async create(user: User): Promise<void> {
+  public async save(user: User): Promise<void> {
     await this.prisma.user.create({
       data: {
         email: user.email,

@@ -37,7 +37,7 @@ export class CreateUserUseCase {
     if (userOrNull) return left(new UserAlreadyExistsError())
     const userOrError = await this.createUser(input)
     if (userOrError.isLeft()) return left(userOrError.value)
-    await this.userRepository.create(userOrError.value)
+    await this.userRepository.save(userOrError.value)
     return right({
       email: userOrError.value.email,
     })

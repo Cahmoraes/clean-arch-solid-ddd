@@ -1,4 +1,4 @@
-import { type CreateUserProps, User } from '@/domain/user'
+import { type UserCreateProps, User } from '@/domain/user'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository'
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
@@ -72,17 +72,17 @@ describe('AuthenticateUseCase', () => {
     expect(result.forceLeft().value).toBeInstanceOf(InvalidCredentialsError)
   })
 
-  async function createAndSaveUser(userProps: CreateUserProps): Promise<User> {
+  async function createAndSaveUser(userProps: UserCreateProps): Promise<User> {
     const user = makeUser(userProps)
     await saveUser(user.force.right().value)
     return user.force.right().value
 
-    function makeUser(userProps: CreateUserProps) {
+    function makeUser(userProps: UserCreateProps) {
       return User.create(userProps)
     }
 
     async function saveUser(anUser: User) {
-      userRepository.create(anUser)
+      userRepository.save(anUser)
     }
   }
 })

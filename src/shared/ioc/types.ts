@@ -12,6 +12,7 @@ export const TYPES = {
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),
     Authenticate: Symbol.for('AuthenticateUseCase'),
+    UserProfile: Symbol.for('UserProfileUseCase'),
   },
   Tokens: {
     Auth: Symbol.for('AuthToken'),

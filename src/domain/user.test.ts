@@ -1,10 +1,10 @@
 import { ValidationError } from 'zod-validation-error'
 
-import { type CreateUserProps, type RestoreUserProps, User } from './user'
+import { type UserCreateProps, type RestoreUserProps, User } from './user'
 
 describe('User', () => {
   test('Deve criar um usuário', () => {
-    const input: CreateUserProps = {
+    const input: UserCreateProps = {
       name: 'John Doe',
       email: 'john.doe@example.com',
       password: 'securepassword123',
@@ -36,7 +36,7 @@ describe('User', () => {
   })
 
   test('Não deve criar um usuário com nome inválido', () => {
-    const input: CreateUserProps = {
+    const input: UserCreateProps = {
       name: '',
       email: 'john.doe@example.com',
       password: 'securepassword123',
@@ -49,7 +49,7 @@ describe('User', () => {
   })
 
   test('Não deve criar um usuário com email inválido', () => {
-    const input: CreateUserProps = {
+    const input: UserCreateProps = {
       name: 'John Doe',
       email: '',
       password: 'securepassword123',

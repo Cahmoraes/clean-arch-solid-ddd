@@ -17,7 +17,7 @@ export interface UserProps {
 
 type UserPropsWithoutIdAndPassword = Omit<UserProps, 'id' | 'password'>
 
-export type CreateUserProps = Optional<
+export type UserCreateProps = Optional<
   UserPropsWithoutIdAndPassword,
   'createdAt'
 > & {
@@ -56,13 +56,13 @@ export class User {
   }
 
   public static create(
-    createUserProps: CreateUserProps,
+    UserCreateProps: UserCreateProps,
   ): Either<ValidationError, User> {
-    const userOrError = this.validate(createUserProps)
+    const userOrError = this.validate(UserCreateProps)
     if (userOrError.isLeft()) return left(fromError(userOrError.value))
-    const passwordOrError = Password.create(createUserProps.password)
+    const passwordOrError = Password.create(UserCreateProps.password)
     if (passwordOrError.isLeft()) return left(passwordOrError.value)
-    const id = Id.create(createUserProps.id)
+    const id = Id.create(UserCreateProps.id)
     const createdAt = new Date()
     return right(
       new User({
@@ -75,7 +75,7 @@ export class User {
   }
 
   private static validate(
-    createUserProps: CreateUserProps,
+    createUserProps: UserCreateProps,
   ): Either<ValidationError, CreateUserData> {
     const userOrError = createUserSchema.safeParse(createUserProps)
     if (!userOrError.success) return left(fromError(userOrError.error))

@@ -2,6 +2,7 @@ import { ContainerModule, type interfaces } from 'inversify'
 
 import { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
 import { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
+import { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
 import { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import { prismaClient } from '@/infra/database/connection/prisma-client'
@@ -20,4 +21,5 @@ export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.UseCases.CreateUser).to(CreateUserUseCase)
   bind(TYPES.Controllers.Authenticate).to(AuthenticateController)
   bind(TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
+  bind(TYPES.UseCases.UserProfile).to(UserProfileUseCase)
 })
