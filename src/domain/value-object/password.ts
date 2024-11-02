@@ -12,11 +12,19 @@ export class Password {
   private constructor(private readonly _value: string) {}
 
   public static create(rawPassword: string): Either<ValidationError, Password> {
+    const passwordOrError = this.validate(rawPassword)
+    if (passwordOrError.isLeft()) return left(fromError(passwordOrError.value))
+    const salt = bcrypt.genSaltSync(env.PASSWORD_SALT)
+    const hashedPassword = bcrypt.hashSync(passwordOrError.value, salt)
+    return right(new Password(hashedPassword))
+  }
+
+  private static validate(
+    rawPassword: string,
+  ): Either<ValidationError, string> {
     const passwordParsed = PasswordSchema.safeParse(rawPassword)
     if (!passwordParsed.success) return left(fromError(passwordParsed.error))
-    const salt = bcrypt.genSaltSync(env.PASSWORD_SALT)
-    const hashedPassword = bcrypt.hashSync(rawPassword, salt)
-    return right(new Password(hashedPassword))
+    return right(passwordParsed.data)
   }
 
   public static restore(hashedPassword: string): Password {
