@@ -1,6 +1,6 @@
 import type { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import type { CreateUserController } from '@/infra/controllers/user/create-user.controller'
-import type { UserProfileController } from '@/infra/controllers/user/user-profiler.controller'
+import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
 import { FastifyAdapter } from '@/infra/server/fastify-adapter'
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
