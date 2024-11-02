@@ -27,7 +27,7 @@ describe('Create User', () => {
 
   afterEach(async () => {
     container.restore()
-    await new FastifyAdapter().close()
+    await fastifyServer.close()
   })
 
   test('Deve criar um usuário', async () => {
@@ -58,12 +58,12 @@ describe('Create User', () => {
     const user = User.create(input)
     await userRepository.create(user.forceRight().value)
 
-    const result = await request(fastifyServer.server)
+    const response = await request(fastifyServer.server)
       .post(UserRoutes.CREATE_USER)
       .send(input)
 
-    expect(result.status).toBe(HTTP_STATUS.CONFLICT)
-    expect(result.body).toEqual({
+    expect(response.status).toBe(HTTP_STATUS.CONFLICT)
+    expect(response.body).toEqual({
       message: 'User already exists',
     })
   })
