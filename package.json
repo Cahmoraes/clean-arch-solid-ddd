@@ -12,7 +12,8 @@
     "build": "npx tsup src --out-dir build",
     "prisma:studio": "npx prisma studio",
     "prisma:generate": "npx prisma generate",
-    "prisma:migrate:dev": "npx prisma migrate dev"
+    "prisma:migrate:dev": "npx prisma migrate dev",
+    "tsc:check": "npx tsc --noEmit"
   },
   "keywords": [],
   "author": "",

@@ -2,9 +2,9 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 
 import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
-import { StatusCode } from '@/infra/controllers/status-code'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
+import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import { ResponseFactory } from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'
@@ -38,12 +38,12 @@ export class AuthenticateController {
       })
       if (result.isLeft()) {
         return ResponseFactory.create({
-          status: StatusCode.UNAUTHORIZED(),
+          status: HTTP_STATUS.UNAUTHORIZED,
           message: 'Invalid credentials',
         })
       }
       return ResponseFactory.create({
-        status: StatusCode.OK(),
+        status: HTTP_STATUS.OK,
         body: result.value,
       })
     })

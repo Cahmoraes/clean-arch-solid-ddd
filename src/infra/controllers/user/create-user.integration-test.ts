@@ -3,11 +3,11 @@ import { serverBuild } from 'tests/server-build'
 
 import type { UserRepository } from '@/application/repository/user-repository'
 import { User } from '@/domain/user'
-import { StatusCode } from '@/infra/controllers/status-code'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 import { FastifyAdapter } from '@/infra/server/fastify-adapter'
+import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import { UserRoutes } from '../routes/user-routes'
 
@@ -41,7 +41,7 @@ describe('Create User', () => {
       .post(UserRoutes.CREATE_USER)
       .send(input)
 
-    expect(result.status).toBe(StatusCode.CREATED())
+    expect(result.status).toBe(HTTP_STATUS.CREATED)
     expect(result.body).toEqual({
       message: 'User created',
       email: input.email,
@@ -62,9 +62,29 @@ describe('Create User', () => {
       .post(UserRoutes.CREATE_USER)
       .send(input)
 
-    expect(result.status).toBe(StatusCode.CONFLICT())
+    expect(result.status).toBe(HTTP_STATUS.CONFLICT)
     expect(result.body).toEqual({
       message: 'User already exists',
+    })
+  })
+
+  test('Não deve criar um usuário com dados inválidos', async () => {
+    const input = {
+      name: 'any_name',
+      email: 'invalid_email',
+      password: 'any_password',
+    }
+
+    const user = User.create(input)
+    await userRepository.create(user)
+
+    const result = await request(fastifyServer.server)
+      .post(UserRoutes.CREATE_USER)
+      .send(input)
+
+    expect(result.status).toBe(HTTP_STATUS.BAD_REQUEST)
+    expect(result.body).toEqual({
+      message: 'Validation error: Invalid email at "email"',
     })
   })
 })

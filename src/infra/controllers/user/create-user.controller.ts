@@ -1,10 +1,13 @@
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
+import type { ValidationError } from 'zod-validation-error'
+import { fromError } from 'zod-validation-error'
 
+import { type Either, left, right } from '@/application/either'
 import type { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
-import { StatusCode } from '@/infra/controllers/status-code'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
+import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import { ResponseFactory } from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'
@@ -32,7 +35,14 @@ export class CreateUserController {
 
   async handle(server: HttpServer) {
     server.register('post', UserRoutes.CREATE_USER, async (req) => {
-      const { name, email, password } = this.parseBodyOrThrow(req.body)
+      const parsedBodyOrError = this.parseBody(req.body)
+      if (parsedBodyOrError.isLeft()) {
+        return ResponseFactory.create({
+          status: HTTP_STATUS.BAD_REQUEST,
+          message: parsedBodyOrError.value.message,
+        })
+      }
+      const { name, email, password } = parsedBodyOrError.value
       const result = await this.createUser.execute({
         name,
         email,
@@ -40,12 +50,12 @@ export class CreateUserController {
       })
       if (result.isLeft()) {
         return ResponseFactory.create({
-          status: StatusCode.CONFLICT(),
+          status: HTTP_STATUS.CONFLICT,
           message: result.value.message,
         })
       }
       return ResponseFactory.create({
-        status: StatusCode.CREATED(),
+        status: HTTP_STATUS.CREATED,
         body: {
           message: 'User created',
           email: result.value.email,
@@ -54,7 +64,9 @@ export class CreateUserController {
     })
   }
 
-  private parseBodyOrThrow(body: unknown): CreateUserPayload {
-    return createUserRequestSchema.parse(body)
+  private parseBody(body: unknown): Either<ValidationError, CreateUserPayload> {
+    const parsedBody = createUserRequestSchema.safeParse(body)
+    if (!parsedBody.success) return left(fromError(parsedBody.error))
+    return right(parsedBody.data)
   }
 }
