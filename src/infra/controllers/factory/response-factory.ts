@@ -8,7 +8,11 @@ export class ResponseFactory {
     const { status, ...rest } = input
     return {
       status: status,
-      body: { ...(rest.body ? { ...rest.body } : rest) },
+      body: this.extractBody(rest),
     }
+  }
+
+  private static extractBody(rest: any) {
+    return rest.body ? { ...rest.body } : rest
   }
 }
