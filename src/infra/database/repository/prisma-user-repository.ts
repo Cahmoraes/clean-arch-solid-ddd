@@ -32,6 +32,7 @@ export class PrismaUserRepository implements UserRepository {
 
   private async createUser(userData: UserData) {
     return User.restore({
+      id: userData.id,
       email: userData.email,
       name: userData.name,
       password: userData.password_hash,

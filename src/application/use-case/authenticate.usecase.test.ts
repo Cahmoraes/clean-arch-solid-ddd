@@ -74,8 +74,8 @@ describe('AuthenticateUseCase', () => {
 
   async function createAndSaveUser(userProps: CreateUserProps): Promise<User> {
     const user = makeUser(userProps)
-    await saveUser(user)
-    return user
+    await saveUser(user.force.right().value)
+    return user.force.right().value
 
     function makeUser(userProps: CreateUserProps) {
       return User.create(userProps)

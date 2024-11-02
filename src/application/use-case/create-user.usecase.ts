@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify'
+import type { ValidationError } from 'zod-validation-error'
 
 import { User } from '@/domain/user'
 import { TYPES } from '@/infra/ioc/types'
@@ -18,7 +19,7 @@ export interface CreateUserProps {
 }
 
 export type CreateUserUseCaseOutput = Either<
-  UserAlreadyExistsError,
+  UserAlreadyExistsError | ValidationError,
   CreateUserProps
 >
 
@@ -34,10 +35,11 @@ export class CreateUserUseCase {
   ): Promise<CreateUserUseCaseOutput> {
     const userOrNull = await this.findUserByEmail(input.email)
     if (userOrNull) return left(new UserAlreadyExistsError())
-    const user = await this.createUser(input)
-    await this.userRepository.create(user)
+    const userOrError = await this.createUser(input)
+    if (userOrError.isLeft()) return left(userOrError.value)
+    await this.userRepository.create(userOrError.value)
     return right({
-      email: user.email,
+      email: userOrError.value.email,
     })
   }
 

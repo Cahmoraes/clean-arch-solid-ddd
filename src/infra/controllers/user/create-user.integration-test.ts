@@ -56,7 +56,7 @@ describe('Create User', () => {
     }
 
     const user = User.create(input)
-    await userRepository.create(user)
+    await userRepository.create(user.forceRight().value)
 
     const result = await request(fastifyServer.server)
       .post(UserRoutes.CREATE_USER)
@@ -76,7 +76,7 @@ describe('Create User', () => {
     }
 
     const user = User.create(input)
-    await userRepository.create(user)
+    await userRepository.create(user.forceRight().value)
 
     const result = await request(fastifyServer.server)
       .post(UserRoutes.CREATE_USER)

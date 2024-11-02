@@ -18,6 +18,7 @@ describe('CreateUserUseCase', () => {
     container.unbind(TYPES.Repositories.User)
     userRepository = new InMemoryUserRepository()
     container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
+    userRepository = container.get(TYPES.Repositories.User)
     sut = container.get(TYPES.UseCases.CreateUser)
   })
 
@@ -34,6 +35,7 @@ describe('CreateUserUseCase', () => {
     const result = await sut.execute(input)
     const user = await userRepository.findByEmail(input.email)
     expect(result.forceRight().value.email).toBe(input.email)
+    expect(user?.id).toEqual(null)
     expect(user?.name).toBe(input.name)
     expect(user?.email).toBe(input.email)
     expect(user?.password).toEqual(expect.any(String))
