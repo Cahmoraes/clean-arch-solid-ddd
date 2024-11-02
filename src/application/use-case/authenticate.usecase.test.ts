@@ -1,5 +1,5 @@
 import { User, type UserCreateProps } from '@/domain/user'
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository'
+import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-user-repository'
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 

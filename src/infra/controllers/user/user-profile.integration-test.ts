@@ -3,7 +3,7 @@ import request from 'supertest'
 import type { UserRepository } from '@/application/repository/user-repository'
 import { serverBuild } from '@/bootstrap/server-build'
 import { User } from '@/domain/user'
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository'
+import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-user-repository'
 import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 import { container } from '@/shared/ioc/container'
@@ -40,7 +40,6 @@ describe('User Profile', () => {
     const user = User.create(input)
     await userRepository.save(user.forceRight().value)
     const savedUser = await userRepository.findByEmail(input.email)
-    console.log({ savedUser })
     const userId = savedUser!.id!
     const response = await request(fastifyServer.server)
       .get(toPath(userId))
@@ -55,7 +54,6 @@ describe('User Profile', () => {
       name: input.name,
       email: input.email,
     })
-    console.log(response.body)
   })
 
   test('Não deve obter o perfil de um usuário inexistente', async () => {

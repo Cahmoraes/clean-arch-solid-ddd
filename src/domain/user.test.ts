@@ -1,8 +1,8 @@
 import { ValidationError } from 'zod-validation-error'
 
-import { type UserCreateProps, type RestoreUserProps, User } from './user'
+import { type RestoreUserProps, User, type UserCreateProps } from './user'
 
-describe('User', () => {
+describe('User Entity', () => {
   test('Deve criar um usuário', () => {
     const input: UserCreateProps = {
       name: 'John Doe',
