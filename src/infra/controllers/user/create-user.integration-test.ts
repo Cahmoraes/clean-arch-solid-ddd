@@ -75,9 +75,6 @@ describe('Create User', () => {
       password: 'any_password',
     }
 
-    const user = User.create(input)
-    await userRepository.create(user.forceRight().value)
-
     const result = await request(fastifyServer.server)
       .post(UserRoutes.CREATE_USER)
       .send(input)
