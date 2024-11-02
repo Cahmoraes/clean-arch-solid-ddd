@@ -17,9 +17,9 @@ describe('AuthenticateUseCase', () => {
   beforeEach(() => {
     container.snapshot()
     userRepository = new InMemoryUserRepository()
-    container.unbind(TYPES.UserRepository)
-    container.bind(TYPES.UserRepository).toConstantValue(userRepository)
-    sut = container.get(TYPES.AuthenticateUseCase)
+    container.unbind(TYPES.Repositories.User)
+    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
+    sut = container.get(TYPES.UseCases.Authenticate)
   })
 
   afterEach(() => {

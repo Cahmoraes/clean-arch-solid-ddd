@@ -16,7 +16,7 @@ interface UserData {
 @injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(
-    @inject(TYPES.PrismaClient)
+    @inject(TYPES.Prisma.Client)
     private readonly prisma: PrismaClient,
   ) {}
 

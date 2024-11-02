@@ -15,10 +15,10 @@ describe('CreateUserUseCase', () => {
 
   beforeEach(() => {
     container.snapshot()
-    container.unbind(TYPES.UserRepository)
+    container.unbind(TYPES.Repositories.User)
     userRepository = new InMemoryUserRepository()
-    container.bind(TYPES.UserRepository).toConstantValue(userRepository)
-    sut = container.get(TYPES.CreateUserUseCase)
+    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
+    sut = container.get(TYPES.UseCases.CreateUser)
   })
 
   afterEach(() => {

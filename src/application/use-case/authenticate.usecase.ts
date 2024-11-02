@@ -24,9 +24,9 @@ export type AuthenticateUseCaseOutput = Either<
 @injectable()
 export class AuthenticateUseCase {
   constructor(
-    @inject(TYPES.UserRepository)
+    @inject(TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
-    @inject(TYPES.AuthToken)
+    @inject(TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
   ) {}
 

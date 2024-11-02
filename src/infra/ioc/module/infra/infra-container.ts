@@ -5,5 +5,5 @@ import { JsonWebTokenAdapter } from '@/infra/auth/json-web-token-adapter'
 import { TYPES } from '../../types'
 
 export const infraContainer = new ContainerModule((bind: interfaces.Bind) => {
-  bind(TYPES.AuthToken).to(JsonWebTokenAdapter)
+  bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
 })

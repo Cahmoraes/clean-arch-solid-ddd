@@ -7,10 +7,10 @@ import { FastifyAdapter } from '@/infra/server/fastify-adapter'
 export function serverBuild() {
   const fastifyServer = new FastifyAdapter()
   const userController = container.get<CreateUserController>(
-    TYPES.CreateUserController,
+    TYPES.Controllers.User,
   )
   const authenticateController = container.get<AuthenticateController>(
-    TYPES.AuthenticateController,
+    TYPES.Controllers.Authenticate,
   )
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)

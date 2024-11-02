@@ -23,7 +23,7 @@ type CreateUserPayload = z.infer<typeof createUserRequestSchema>
 @injectable()
 export class CreateUserController {
   constructor(
-    @inject(TYPES.CreateUserUseCase)
+    @inject(TYPES.UseCases.CreateUser)
     private readonly createUser: CreateUserUseCase,
   ) {
     this.bindMethods()

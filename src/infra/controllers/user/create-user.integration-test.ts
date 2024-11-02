@@ -18,9 +18,9 @@ describe('Create User', () => {
   beforeEach(async () => {
     const inMemoryRepository = new InMemoryUserRepository()
     container.snapshot()
-    container.unbind(TYPES.UserRepository)
-    container.bind(TYPES.UserRepository).toConstantValue(inMemoryRepository)
-    userRepository = container.get<UserRepository>(TYPES.UserRepository)
+    container.unbind(TYPES.Repositories.User)
+    container.bind(TYPES.Repositories.User).toConstantValue(inMemoryRepository)
+    userRepository = container.get<UserRepository>(TYPES.Repositories.User)
     fastifyServer = serverBuild()
     await fastifyServer.ready()
   })

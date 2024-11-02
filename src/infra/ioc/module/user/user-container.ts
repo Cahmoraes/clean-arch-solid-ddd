@@ -12,12 +12,12 @@ import { TYPES } from '../../types'
 import { UserRepositoryProvider } from './user-repository-provider'
 
 export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
-  bind(TYPES.PrismaClient).toConstantValue(prismaClient)
+  bind(TYPES.Prisma.Client).toConstantValue(prismaClient)
   bind<PrismaUserRepository>(PrismaUserRepository).toSelf()
   bind<InMemoryUserRepository>(InMemoryUserRepository).toSelf()
-  bind(TYPES.UserRepository).toDynamicValue(UserRepositoryProvider.provide)
-  bind(TYPES.CreateUserController).to(CreateUserController)
-  bind(TYPES.CreateUserUseCase).to(CreateUserUseCase)
-  bind(TYPES.AuthenticateController).to(AuthenticateController)
-  bind(TYPES.AuthenticateUseCase).to(AuthenticateUseCase)
+  bind(TYPES.Repositories.User).toDynamicValue(UserRepositoryProvider.provide)
+  bind(TYPES.Controllers.User).to(CreateUserController)
+  bind(TYPES.UseCases.CreateUser).to(CreateUserUseCase)
+  bind(TYPES.Controllers.Authenticate).to(AuthenticateController)
+  bind(TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
 })

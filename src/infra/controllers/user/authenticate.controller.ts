@@ -19,7 +19,7 @@ type AuthenticatePayload = z.infer<typeof authenticateRequestSchema>
 @injectable()
 export class AuthenticateController {
   constructor(
-    @inject(TYPES.AuthenticateUseCase)
+    @inject(TYPES.UseCases.Authenticate)
     private readonly authenticate: AuthenticateUseCase,
   ) {
     this.bindMethods()

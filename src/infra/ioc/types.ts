@@ -1,9 +1,19 @@
 export const TYPES = {
-  PrismaClient: Symbol.for('PrismaClient'),
-  UserRepository: Symbol.for('UserRepository'),
-  CreateUserController: Symbol.for('UserController'),
-  CreateUserUseCase: Symbol.for('CreateUserUserCase'),
-  AuthenticateUseCase: Symbol.for('AuthenticateUseCase'),
-  AuthToken: Symbol.for('AuthToken'),
-  AuthenticateController: Symbol.for('AuthenticateController'),
+  Prisma: {
+    Client: Symbol.for('PrismaClient'),
+  },
+  Repositories: {
+    User: Symbol.for('UserRepository'),
+  },
+  Controllers: {
+    User: Symbol.for('UserController'),
+    Authenticate: Symbol.for('AuthenticateController'),
+  },
+  UseCases: {
+    CreateUser: Symbol.for('CreateUserUserCase'),
+    Authenticate: Symbol.for('AuthenticateUseCase'),
+  },
+  Tokens: {
+    Auth: Symbol.for('AuthToken'),
+  },
 }

@@ -25,7 +25,7 @@ export type CreateUserUseCaseOutput = Either<
 @injectable()
 export class CreateUserUseCase {
   constructor(
-    @inject(TYPES.UserRepository)
+    @inject(TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
   ) {}
 
