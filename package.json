@@ -6,9 +6,10 @@
   "scripts": {
     "start": "node ./build/main.js",
     "dev": "npx tsx --watch src/main.ts",
-    "test": "npx vitest",
-    "test:cov": "npx vitest --coverage",
-    "test:integration": "vitest --config vite.config.integration.ts",
+    "test": "npx vitest --config ./test/vite.config.unit.ts",
+    "test:cov": "npx vitest --coverage --config ./test/vite.config.unit.ts",
+    "test:integration": "vitest --config ./test/vite.config.integration.ts",
+    "test:fitness": "vitest --config ./test/vite.config.fitness.ts",
     "build": "npx tsup src --out-dir build",
     "prisma:studio": "npx prisma studio",
     "prisma:generate": "npx prisma generate",
