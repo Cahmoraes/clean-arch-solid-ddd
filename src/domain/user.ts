@@ -112,7 +112,7 @@ export class User {
     return this._createdAt
   }
 
-  public checkPassword(raPassword: string): boolean {
-    return this._password.compare(raPassword)
+  public checkPassword(rawPassword: string): boolean {
+    return this._password.compare(rawPassword)
   }
 }
