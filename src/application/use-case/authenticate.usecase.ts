@@ -14,13 +14,13 @@ export interface AuthenticateUseCaseInput {
   password: string
 }
 
-export interface AuthTokenOutput {
+export interface AuthTokenOutputDTO {
   token: string
 }
 
 export type AuthenticateUseCaseOutput = Either<
   InvalidCredentialsError,
-  AuthTokenOutput
+  AuthTokenOutputDTO
 >
 
 @injectable()

@@ -34,18 +34,18 @@ describe('UserProfile', () => {
     await userRepository.save(user.forceRight().value)
     const savedUser = userRepository.users.toArray()[0]
     const input: UserProfileUseCaseInput = {
-      id: savedUser.id!,
+      userId: savedUser.id!,
     }
     const leftOrRight = await sut.execute(input)
     const result = leftOrRight.force.right().value
-    expect(result.id).toBe(input.id)
+    expect(result.id).toBe(input.userId)
     expect(result.name).toBe(userCreateProps.name)
     expect(result.email).toBe(userCreateProps.email)
   })
 
   test('Deve retornar erro se o usuário não for encontrado', async () => {
     const input: UserProfileUseCaseInput = {
-      id: 'invalid_id',
+      userId: 'invalid_id',
     }
     const leftOrRight = await sut.execute(input)
     const result = leftOrRight.force.left().value

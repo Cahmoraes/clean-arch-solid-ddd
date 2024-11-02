@@ -7,17 +7,16 @@ import { UserNotFoundError } from '../error/user-not-found-error'
 import type { UserRepository } from '../repository/user-repository'
 
 export interface UserProfileUseCaseInput {
-  id: string
+  userId: string
 }
 
-export type UserProfileUseCaseOutput = Either<
-  Error,
-  {
-    id: string | null
-    name: string
-    email: string
-  }
->
+interface UserProfileOutputDTO {
+  id: string | null
+  name: string
+  email: string
+}
+
+export type UserProfileUseCaseOutput = Either<Error, UserProfileOutputDTO>
 
 @injectable()
 export class UserProfileUseCase {
@@ -29,7 +28,7 @@ export class UserProfileUseCase {
   public async execute(
     input: UserProfileUseCaseInput,
   ): Promise<UserProfileUseCaseOutput> {
-    const userOrNull = await this.userRepository.findById(input.id)
+    const userOrNull = await this.userRepository.findById(input.userId)
     if (!userOrNull) return left(new UserNotFoundError())
     return right({
       email: userOrNull.email,
