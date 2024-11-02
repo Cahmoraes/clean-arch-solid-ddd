@@ -2,7 +2,7 @@ import type { interfaces } from 'inversify'
 
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository.js'
 import { PrismaUserRepository } from '@/infra/database/repository/prisma-user-repository'
-import { env } from '@/infra/env'
+import { env } from '@/shared/env'
 
 export class UserRepositoryProvider {
   static provide(context: interfaces.Context) {

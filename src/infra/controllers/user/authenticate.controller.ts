@@ -2,9 +2,9 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 
 import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
-import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
+import { TYPES } from '@/shared/ioc/types'
 
 import { ResponseFactory } from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'

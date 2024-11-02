@@ -4,7 +4,7 @@ import fastify, {
   type FastifyRequest,
 } from 'fastify'
 
-import { env } from '../env'
+import { env } from '../../shared/env'
 import { GlobalErrorHandler } from './global-error-handler'
 import type { HandleCallback, HttpServer, METHOD } from './http-server'
 

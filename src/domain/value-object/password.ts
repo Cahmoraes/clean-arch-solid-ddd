@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
 import { type Either, left, right } from '@/domain/value-object/either'
-import { env } from '@/infra/env'
+import { env } from '@/shared/env'
 
 const PasswordSchema = z.string().min(6)
 export type PasswordValue = z.infer<typeof PasswordSchema>

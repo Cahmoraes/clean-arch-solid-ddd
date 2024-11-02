@@ -1,7 +1,7 @@
 import { type CreateUserProps, User } from '@/domain/user'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-repository'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
+import { container } from '@/shared/ioc/container'
+import { TYPES } from '@/shared/ioc/types'
 
 import { InvalidCredentialsError } from '../error/invalid-credentials-error'
 import type { UserRepository } from '../repository/user-repository'

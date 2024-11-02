@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import type { ValidationError } from 'zod-validation-error'
 
 import { User } from '@/domain/user'
-import { TYPES } from '@/infra/ioc/types'
+import { TYPES } from '@/shared/ioc/types'
 
 import { type Either, left, right } from '../../domain/value-object/either'
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'

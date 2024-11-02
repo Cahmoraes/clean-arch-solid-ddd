@@ -1,7 +1,7 @@
 import { injectable } from 'inversify'
 import jwt from 'jsonwebtoken'
 
-import type { AuthToken, Payload } from './auth-token'
+import type { AuthToken, Payload } from '../../application/use-case/auth-token'
 
 @injectable()
 export class JsonWebTokenAdapter implements AuthToken {
