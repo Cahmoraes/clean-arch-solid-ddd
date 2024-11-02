@@ -14,11 +14,13 @@ export interface AuthenticateUseCaseInput {
   password: string
 }
 
+export interface AuthTokenOutput {
+  token: string
+}
+
 export type AuthenticateUseCaseOutput = Either<
   InvalidCredentialsError,
-  {
-    token: string
-  }
+  AuthTokenOutput
 >
 
 @injectable()
@@ -43,7 +45,7 @@ export class AuthenticateUseCase {
     return right({ token: this.token(userOrNull) })
   }
 
-  private token(anUser: User) {
+  private token(anUser: User): string {
     return this.authToken.sign(
       {
         sub: {
