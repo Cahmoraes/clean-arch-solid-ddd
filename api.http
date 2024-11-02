@@ -9,3 +9,13 @@ Content-Type: application/json
   "email": "joao.silva@example.com",
   "password": "senha123"
 }
+
+### Atenticar usuário
+POST {{baseUrl}}/authenticate
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao.silva@example.com",
+  "password": "senha123"
+}

@@ -1,7 +1,12 @@
 export type METHOD = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options'
 
+export interface HandleCallbackResponse {
+  body: unknown
+  status: number
+}
+
 export interface HandleCallback {
-  (request: any, response: any): Promise<any>
+  (request: any, response: any): Promise<HandleCallbackResponse>
 }
 
 export interface Handler {

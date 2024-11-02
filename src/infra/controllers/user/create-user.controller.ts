@@ -2,9 +2,11 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 
 import type { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
+import { StatusCode } from '@/infra/controllers/status-code'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 
+import { ResponseFactory } from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'
 
 const createUserRequestSchema = z.object({
@@ -37,20 +39,18 @@ export class CreateUserController {
         rawPassword: password,
       })
       if (result.isLeft()) {
-        return {
-          status: 409,
-          body: {
-            message: 'User already exists',
-          },
-        }
+        return ResponseFactory.create({
+          status: StatusCode.CONFLICT(),
+          message: result.value.message,
+        })
       }
-      return {
-        status: 201,
+      return ResponseFactory.create({
+        status: StatusCode.CREATED(),
         body: {
           message: 'User created',
           email: result.value.email,
         },
-      }
+      })
     })
   }
 
