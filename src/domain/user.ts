@@ -4,26 +4,31 @@ import { fromError, type ValidationError } from 'zod-validation-error'
 import type { Optional } from '@/@types/optional'
 import { type Either, left, right } from '@/domain/value-object/either'
 
+import { Id } from './value-object/id'
 import { Password } from './value-object/password'
 
 export interface UserProps {
-  id?: string
+  id: Id
   name: string
   email: string
   password: Password
   createdAt: Date
 }
 
-type UserPropsWithoutPassword = Omit<UserProps, 'password'>
+type UserPropsWithoutIdAndPassword = Omit<UserProps, 'id' | 'password'>
 
 export type CreateUserProps = Optional<
-  UserPropsWithoutPassword,
+  UserPropsWithoutIdAndPassword,
   'createdAt'
 > & {
+  id?: string
   password: string
 }
 
-export type RestoreUserProps = Omit<UserPropsWithoutPassword, 'password'> & {
+export type RestoreUserProps = Omit<
+  UserPropsWithoutIdAndPassword,
+  'password'
+> & {
   id: string
   password: string
 }
@@ -36,14 +41,14 @@ const createUserSchema = z.object({
 type CreateUserData = z.infer<typeof createUserSchema>
 
 export class User {
-  private readonly _id: string | null
+  private readonly _id: Id
   private readonly _name: string
   private readonly _email: string
   private readonly _password: Password
   private readonly _createdAt: Date
 
   private constructor(userDto: UserProps) {
-    this._id = userDto.id ?? null
+    this._id = userDto.id
     this._name = userDto.name
     this._email = userDto.email
     this._password = userDto.password
@@ -57,10 +62,12 @@ export class User {
     if (userOrError.isLeft()) return left(fromError(userOrError.value))
     const passwordOrError = Password.create(createUserProps.password)
     if (passwordOrError.isLeft()) return left(passwordOrError.value)
+    const id = Id.create(createUserProps.id)
     const createdAt = new Date()
     return right(
       new User({
         ...userOrError.value,
+        id,
         createdAt,
         password: passwordOrError.value,
       }),
@@ -77,7 +84,7 @@ export class User {
 
   public static restore(restoreUserProps: RestoreUserProps) {
     return new User({
-      id: restoreUserProps.id,
+      id: Id.restore(restoreUserProps.id),
       email: restoreUserProps.email,
       name: restoreUserProps.name,
       password: Password.restore(restoreUserProps.password),
@@ -86,7 +93,7 @@ export class User {
   }
 
   get id(): string | null {
-    return this._id
+    return this._id.value
   }
 
   get name() {
