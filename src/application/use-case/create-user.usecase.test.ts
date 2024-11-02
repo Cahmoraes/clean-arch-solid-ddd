@@ -28,8 +28,8 @@ describe('CreateUserUseCase', () => {
 
   test('Deve criar um usuário', async () => {
     const input: CreateUserUseCaseInput = {
-      name: 'any_name',
-      email: 'any_email',
+      name: 'John Doe',
+      email: 'john@doe.com',
       rawPassword: 'any_password',
     }
     const result = await sut.execute(input)
@@ -44,8 +44,8 @@ describe('CreateUserUseCase', () => {
 
   test('Não deve criar um usuário com email já existente', async () => {
     const input: CreateUserUseCaseInput = {
-      name: 'any_name',
-      email: 'any_email',
+      name: 'John Doe',
+      email: 'john@doe.com',
       rawPassword: 'any_password',
     }
     await sut.execute(input)

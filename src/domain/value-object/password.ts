@@ -6,7 +6,7 @@ import { type Either, left, right } from '@/domain/value-object/either'
 import { env } from '@/shared/env'
 
 const PasswordSchema = z.string().min(6)
-export type PasswordValue = z.infer<typeof PasswordSchema>
+export type PasswordData = z.infer<typeof PasswordSchema>
 
 export class Password {
   private constructor(private readonly _value: string) {}

@@ -1,4 +1,5 @@
-import type { ValidationError } from 'zod-validation-error'
+import { z } from 'zod'
+import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { Optional } from '@/@types/optional'
 import { type Either, left, right } from '@/domain/value-object/either'
@@ -25,8 +26,14 @@ export type CreateUserProps = Optional<
 export type RestoreUserProps = Omit<UserPropsWithoutPassword, 'password'> & {
   id: string
   password: string
-  updatedAt?: Date
 }
+
+const createUserSchema = z.object({
+  name: z.string().min(3),
+  email: z.string().email(),
+})
+
+type CreateUserData = z.infer<typeof createUserSchema>
 
 export class User {
   private readonly _id: string | null
@@ -44,27 +51,37 @@ export class User {
   }
 
   public static create(
-    createUser: CreateUserProps,
+    createUserProps: CreateUserProps,
   ): Either<ValidationError, User> {
-    const passwordOrError = Password.create(createUser.password)
+    const userOrError = this.validate(createUserProps)
+    if (userOrError.isLeft()) return left(fromError(userOrError.value))
+    const passwordOrError = Password.create(createUserProps.password)
     if (passwordOrError.isLeft()) return left(passwordOrError.value)
     const createdAt = new Date()
     return right(
       new User({
-        ...createUser,
+        ...userOrError.value,
         createdAt,
         password: passwordOrError.value,
       }),
     )
   }
 
-  public static restore(restoreUser: RestoreUserProps) {
+  private static validate(
+    createUserProps: CreateUserProps,
+  ): Either<ValidationError, CreateUserData> {
+    const userOrError = createUserSchema.safeParse(createUserProps)
+    if (!userOrError.success) return left(fromError(userOrError.error))
+    return right(userOrError.data)
+  }
+
+  public static restore(restoreUserProps: RestoreUserProps) {
     return new User({
-      id: restoreUser.id,
-      email: restoreUser.email,
-      name: restoreUser.name,
-      password: Password.restore(restoreUser.password),
-      createdAt: restoreUser.createdAt,
+      id: restoreUserProps.id,
+      email: restoreUserProps.email,
+      name: restoreUserProps.name,
+      password: Password.restore(restoreUserProps.password),
+      createdAt: restoreUserProps.createdAt,
     })
   }
 
