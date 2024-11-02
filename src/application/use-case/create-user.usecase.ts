@@ -4,7 +4,7 @@ import type { ValidationError } from 'zod-validation-error'
 import { User } from '@/domain/user'
 import { TYPES } from '@/infra/ioc/types'
 
-import { type Either, left, right } from '../either'
+import { type Either, left, right } from '../../domain/value-object/either'
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
 import type { UserRepository } from '../repository/user-repository'
 

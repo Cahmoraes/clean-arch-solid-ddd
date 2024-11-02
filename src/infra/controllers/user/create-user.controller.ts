@@ -3,7 +3,7 @@ import { z } from 'zod'
 import type { ValidationError } from 'zod-validation-error'
 import { fromError } from 'zod-validation-error'
 
-import { type Either, left, right } from '@/application/either'
+import { type Either, left, right } from '@/domain/value-object/either'
 import type { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'

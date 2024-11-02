@@ -1,7 +1,7 @@
 import type { ValidationError } from 'zod-validation-error'
 
 import type { Optional } from '@/@types/optional'
-import { type Either, left, right } from '@/application/either'
+import { type Either, left, right } from '@/domain/value-object/either'
 
 import { Password } from './value-object/password'
 

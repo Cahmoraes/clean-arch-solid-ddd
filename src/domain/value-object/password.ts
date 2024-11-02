@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import { type Either, left, right } from '@/application/either'
+import { type Either, left, right } from '@/domain/value-object/either'
 import { env } from '@/infra/env'
 
 const PasswordSchema = z.string().min(6)
@@ -19,11 +19,11 @@ export class Password {
     return right(new Password(hashedPassword))
   }
 
-  public static restore(hashedPassword: string) {
+  public static restore(hashedPassword: string): Password {
     return new Password(hashedPassword)
   }
 
-  get value() {
+  get value(): string {
     return this._value
   }
 

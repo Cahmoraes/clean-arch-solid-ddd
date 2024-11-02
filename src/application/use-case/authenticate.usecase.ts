@@ -5,7 +5,7 @@ import type { AuthToken } from '@/infra/auth/auth-token'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 
-import { type Either, left, right } from '../either'
+import { type Either, left, right } from '../../domain/value-object/either'
 import { InvalidCredentialsError } from '../error/invalid-credentials-error'
 import type { UserRepository } from '../repository/user-repository'
 
