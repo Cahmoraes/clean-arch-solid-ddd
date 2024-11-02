@@ -34,7 +34,7 @@ export class CreateUserController {
   }
 
   async handle(server: HttpServer) {
-    server.register('post', UserRoutes.CREATE_USER, async (req) => {
+    server.register('post', UserRoutes.CREATE, async (req) => {
       const parsedBodyOrError = this.parseBody(req.body)
       if (parsedBodyOrError.isLeft()) {
         return ResponseFactory.create({

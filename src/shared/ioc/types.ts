@@ -6,8 +6,9 @@ export const TYPES = {
     User: Symbol.for('UserRepository'),
   },
   Controllers: {
-    User: Symbol.for('UserController'),
+    CreateUser: Symbol.for('UserController'),
     Authenticate: Symbol.for('AuthenticateController'),
+    UserProfile: Symbol.for('UserProfileController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),

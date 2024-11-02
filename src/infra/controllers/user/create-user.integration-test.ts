@@ -38,7 +38,7 @@ describe('Create User', () => {
     }
 
     const result = await request(fastifyServer.server)
-      .post(UserRoutes.CREATE_USER)
+      .post(UserRoutes.CREATE)
       .send(input)
 
     expect(result.status).toBe(HTTP_STATUS.CREATED)
@@ -59,7 +59,7 @@ describe('Create User', () => {
     await userRepository.save(user.forceRight().value)
 
     const response = await request(fastifyServer.server)
-      .post(UserRoutes.CREATE_USER)
+      .post(UserRoutes.CREATE)
       .send(input)
 
     expect(response.status).toBe(HTTP_STATUS.CONFLICT)
@@ -76,7 +76,7 @@ describe('Create User', () => {
     }
 
     const result = await request(fastifyServer.server)
-      .post(UserRoutes.CREATE_USER)
+      .post(UserRoutes.CREATE)
       .send(input)
 
     expect(result.status).toBe(HTTP_STATUS.BAD_REQUEST)
