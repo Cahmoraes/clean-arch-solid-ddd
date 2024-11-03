@@ -8,19 +8,19 @@ import { type Either, left, right } from '../../domain/value-object/either'
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
 import type { UserRepository } from '../repository/user-repository'
 
-export interface CreateUserUseCaseInput {
+export interface CreateUserInput {
   name: string
   email: string
   rawPassword: string
 }
 
-export interface CreateUserProps {
+export interface CreateUserResponse {
   email: string
 }
 
-export type CreateUserUseCaseOutput = Either<
+export type CreateUserOutput = Either<
   UserAlreadyExistsError | ValidationError,
-  CreateUserProps
+  CreateUserResponse
 >
 
 @injectable()
@@ -30,9 +30,7 @@ export class CreateUserUseCase {
     private readonly userRepository: UserRepository,
   ) {}
 
-  public async execute(
-    input: CreateUserUseCaseInput,
-  ): Promise<CreateUserUseCaseOutput> {
+  public async execute(input: CreateUserInput): Promise<CreateUserOutput> {
     const userOrNull = await this.findUserByEmail(input.email)
     if (userOrNull) return left(new UserAlreadyExistsError())
     const userOrError = await this.createUser(input)
@@ -48,7 +46,7 @@ export class CreateUserUseCase {
     return user ? user : null
   }
 
-  private async createUser(input: CreateUserUseCaseInput) {
+  private async createUser(input: CreateUserInput) {
     return User.create({
       name: input.name,
       email: input.email,

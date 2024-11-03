@@ -27,6 +27,6 @@ describe('CreateGymUseCase', () => {
       phone: '11971457899',
     }
     const result = await sut.execute(input)
-    expect(result).toEqual(expect.any(String))
+    expect(result.forceRight().value.gymId).toEqual(expect.any(String))
   })
 })
