@@ -1,7 +1,7 @@
 import { ContainerModule, type interfaces } from 'inversify'
 
 import { CheckInUseCase } from '@/application/use-case/checkin.usecase'
-import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory-check-in-repository'
+import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 
 import { TYPES } from '../../types'
 

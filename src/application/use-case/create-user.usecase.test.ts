@@ -1,4 +1,4 @@
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory-user-repository'
+import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 

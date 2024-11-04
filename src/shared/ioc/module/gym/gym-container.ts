@@ -2,7 +2,7 @@ import { ContainerModule, type interfaces } from 'inversify'
 
 import type { GymRepository } from '@/application/repository/gym-repository'
 import { CreateGymUseCase } from '@/application/use-case/create-gym.usecase'
-import { InMemoryGymRepository } from '@/infra/database/repository/in-memory-gym-repository'
+import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 
 import { TYPES } from '../../types'
 
