@@ -1,4 +1,4 @@
-import { Gym, type GymCreateProps } from './gym'
+import { Gym, type GymCreateProps, type GymRestoreProps } from './gym'
 
 describe('Gym Entity', () => {
   test('Deve criar uma academia', () => {
@@ -18,12 +18,14 @@ describe('Gym Entity', () => {
   })
 
   test('Deve restaurar uma academia', () => {
-    const input: GymCreateProps = {
+    const input: GymRestoreProps = {
       title: 'fake gym',
       description: 'fake description',
       latitude: -23.55052,
       longitude: -46.633308,
       phone: '11971457899',
+      createdAt: new Date(),
+      id: 'fake_id',
     }
     const gym = Gym.restore(input)
     expect(gym.title).toBe(input.title)
