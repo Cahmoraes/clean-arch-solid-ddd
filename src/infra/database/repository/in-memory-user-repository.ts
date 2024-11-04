@@ -11,7 +11,7 @@ export class InMemoryUserRepository implements UserRepository {
   public users = new ExtendedSet<User>()
 
   public async save(user: User): Promise<void> {
-    const id = randomUUID()
+    const id = user.id ?? randomUUID()
     const userWithId = User.restore({
       id,
       email: user.email,

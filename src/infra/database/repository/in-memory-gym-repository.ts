@@ -14,7 +14,7 @@ export class InMemoryGymRepository implements GymRepository {
   public gyms = new ExtendedSet<Gym>()
 
   public async save(gym: Gym): Promise<SaveGymResult> {
-    const id = randomUUID()
+    const id = gym.id ?? randomUUID()
     const gymWithId = Gym.restore({
       id,
       title: gym.title,
@@ -26,6 +26,10 @@ export class InMemoryGymRepository implements GymRepository {
     })
     this.gyms.add(gymWithId)
     return { id }
+  }
+
+  public async findById(id: string): Promise<Gym | null> {
+    return this.gyms.find((gym) => gym.id === id)
   }
 
   public async findByTitle(title: string): Promise<Gym | null> {

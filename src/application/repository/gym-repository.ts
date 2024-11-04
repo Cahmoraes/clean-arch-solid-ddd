@@ -7,4 +7,5 @@ export interface SaveGymResult {
 export interface GymRepository {
   save(gym: Gym): Promise<SaveGymResult>
   findByTitle(title: string): Promise<Gym | null>
+  findById(id: string): Promise<Gym | null>
 }
