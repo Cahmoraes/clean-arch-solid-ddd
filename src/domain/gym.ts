@@ -1,5 +1,3 @@
-import type { Optional } from '@/@types/optional'
-
 import { Id } from './value-object/id'
 
 interface GymConstructor {
@@ -9,14 +7,9 @@ interface GymConstructor {
   phone?: string
   latitude: number
   longitude: number
-  createdAt: Date
-  validatedAt?: Date
 }
 
-export type GymCreateProps = Optional<
-  Omit<GymConstructor, 'id' | 'validatedAt'>,
-  'createdAt'
-> & {
+export type GymCreateProps = Omit<GymConstructor, 'id'> & {
   id?: string
 }
 
@@ -31,8 +24,6 @@ export class Gym {
   private readonly _phone?: string
   private readonly _latitude: number
   private readonly _longitude: number
-  private readonly _createdAt: Date
-  private readonly _validatedAt?: Date
 
   private constructor(gymProps: GymConstructor) {
     this._id = gymProps.id
@@ -41,14 +32,11 @@ export class Gym {
     this._phone = gymProps.phone
     this._latitude = gymProps.latitude
     this._longitude = gymProps.longitude
-    this._createdAt = gymProps.createdAt
-    this._validatedAt = gymProps.validatedAt
   }
 
   public static create(gymProps: GymCreateProps): Gym {
-    const createdAt = new Date()
     const id = Id.create(gymProps.id)
-    return new Gym({ ...gymProps, createdAt, id })
+    return new Gym({ ...gymProps, id })
   }
 
   public static restore(gymProps: GymRestoreProps): Gym {
@@ -78,13 +66,5 @@ export class Gym {
 
   get longitude(): number {
     return this._longitude
-  }
-
-  get createdAt(): Date {
-    return this._createdAt
-  }
-
-  get validatedAt(): Date | undefined {
-    return this._validatedAt
   }
 }

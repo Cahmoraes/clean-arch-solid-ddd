@@ -24,7 +24,6 @@ describe('Gym Entity', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       phone: '11971457899',
-      createdAt: new Date(),
       id: 'fake_id',
     }
     const gym = Gym.restore(input)
