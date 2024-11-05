@@ -58,4 +58,20 @@ export class PrismaCheckInRepository implements CheckInRepository {
       validatedAt: props.validated_at ?? undefined,
     })
   }
+
+  public async onSameDate(date: Date): Promise<boolean> {
+    const startOfDay = new Date(date)
+    startOfDay.setHours(0, 0, 0, 0)
+    const endOfDay = new Date(date)
+    endOfDay.setHours(23, 59, 59, 999)
+    const checkInOnSameDate = await this.prismaClient.checkIn.count({
+      where: {
+        created_at: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+    })
+    return checkInOnSameDate > 0
+  }
 }

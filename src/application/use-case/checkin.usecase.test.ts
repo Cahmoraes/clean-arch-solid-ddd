@@ -6,6 +6,7 @@ import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 
+import { UserHasAlreadyCheckedInToday } from '../error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '../error/user-not-found-error'
 import { GymNotFoundError } from '../error/user-not-found-error copy'
 import { CheckInUseCase, type CheckInUseCaseInput } from './check-in.usecase'
@@ -32,24 +33,12 @@ describe('CheckInUseCase', () => {
 
   test('Deve criar um check-in', async () => {
     const userId = 'any_user_id'
-    const user = User.create({
-      id: userId,
-      name: 'any_name',
-      email: 'john@doe.com.br',
-      password: 'any_password',
-    }).force.right().value
-    await userRepository.save(user)
+    await createAndSaveUser(userId)
     const gymId = 'any_gym_id'
-    const gym = Gym.create({
-      id: gymId,
-      title: 'any_name',
-      latitude: 0,
-      longitude: 0,
-    })
-    await gymRepository.save(gym)
+    await createAndSaveGym(gymId)
     const input: CheckInUseCaseInput = {
-      userId: 'any_user_id',
-      gymId: 'any_gym_id',
+      userId,
+      gymId,
     }
     const result = await sut.execute(input)
     expect(result.forceRight().value.checkInId).toEqual(expect.any(String))
@@ -69,13 +58,7 @@ describe('CheckInUseCase', () => {
 
   test('Não deve criar um check-in se a academia não existir', async () => {
     const userId = 'any_user_id'
-    const user = User.create({
-      id: userId,
-      name: 'any_name',
-      email: 'john@doe.com.br',
-      password: 'any_password',
-    }).force.right().value
-    await userRepository.save(user)
+    await createAndSaveUser(userId)
     const input: CheckInUseCaseInput = {
       userId,
       gymId: 'any_gym_id',
@@ -83,4 +66,43 @@ describe('CheckInUseCase', () => {
     const result = await sut.execute(input)
     expect(result.forceLeft().value).toBeInstanceOf(GymNotFoundError)
   })
+
+  test('Não deve criar um check-in no mesmo dia', async () => {
+    const userId = 'any_user_id'
+    await createAndSaveUser()
+    await createAndSaveGym()
+    const input: CheckInUseCaseInput = {
+      userId,
+      gymId: 'any_gym_id',
+    }
+    await sut.execute(input)
+    const result = await sut.execute(input)
+    expect(result.forceLeft().value).toBeInstanceOf(
+      UserHasAlreadyCheckedInToday,
+    )
+  })
+
+  async function createAndSaveUser(id?: string) {
+    const userId = id ?? 'any_user_id'
+    const user = User.create({
+      id: userId,
+      name: 'any_name',
+      email: 'john@doe.com.br',
+      password: 'any_password',
+    }).force.right().value
+    await userRepository.save(user)
+    return userRepository.users.toArray()[0]
+  }
+
+  async function createAndSaveGym(id?: string) {
+    const gymId = id ?? 'any_gym_id'
+    const gym = Gym.create({
+      id: gymId,
+      title: 'any_name',
+      latitude: 0,
+      longitude: 0,
+    })
+    await gymRepository.save(gym)
+    return gymRepository.gyms.toArray()[0]
+  }
 })

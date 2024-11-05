@@ -4,6 +4,7 @@ import { CheckIn } from '@/domain/check-in'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/shared/ioc/types'
 
+import { UserHasAlreadyCheckedInToday } from '../error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '../error/user-not-found-error'
 import { GymNotFoundError } from '../error/user-not-found-error copy'
 import type { CheckInRepository } from '../repository/check-in-repository'
@@ -36,6 +37,8 @@ export class CheckInUseCase {
   ): Promise<CheckInUseCaseOutput> {
     const userOrNull = await this.userRepository.findById(input.userId)
     if (!userOrNull) return left(new UserNotFoundError())
+    const checkInOnSameDate = await this.hasCheckInOnSameDate()
+    if (checkInOnSameDate) return left(new UserHasAlreadyCheckedInToday())
     const gymOrNull = await this.gymRepository.findById(input.gymId)
     if (!gymOrNull) return left(new GymNotFoundError())
     const checkIn = CheckIn.create(input)
@@ -44,5 +47,11 @@ export class CheckInUseCase {
       checkInId: id,
       date: checkIn.createdAt,
     })
+  }
+
+  private async hasCheckInOnSameDate(): Promise<boolean> {
+    const today = new Date()
+    const checkInOnSameDate = await this.checkInRepository.onSameDate(today)
+    return checkInOnSameDate
   }
 }
