@@ -2,6 +2,7 @@ import { ContainerModule, type interfaces } from 'inversify'
 
 import type { GymRepository } from '@/application/repository/gym-repository'
 import { CreateGymUseCase } from '@/application/use-case/create-gym.usecase'
+import { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { PrismaGymRepository } from '@/infra/database/repository/prisma/prisma-gym-repository'
 
@@ -15,4 +16,5 @@ export const gymContainer = new ContainerModule((bind: interfaces.Bind) => {
     GymRepositoryProvider.provide,
   )
   bind(TYPES.UseCases.CreateGym).to(CreateGymUseCase)
+  bind(TYPES.Controllers.CreateGym).to(CreateGymController)
 })

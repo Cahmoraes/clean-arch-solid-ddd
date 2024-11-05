@@ -6,16 +6,18 @@ import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 import { TYPES } from '@/shared/ioc/types'
 
+import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'
 
 const userProfileRequestSchema = z.object({
   userId: z.string(),
 })
+
 export type UserProfilePayload = z.infer<typeof userProfileRequestSchema>
 
 @injectable()
-export class UserProfileController {
+export class UserProfileController implements Controller {
   constructor(
     @inject(TYPES.UseCases.UserProfile)
     private readonly userProfile: UserProfileUseCase,

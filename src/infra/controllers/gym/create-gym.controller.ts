@@ -1,9 +1,8 @@
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
-import type { ValidationError } from 'zod-validation-error'
-import { fromError } from 'zod-validation-error'
+import { fromError, type ValidationError } from 'zod-validation-error'
 
-import type { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
+import type { CreateGymUseCase } from '@/application/use-case/create-gym.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -11,21 +10,31 @@ import { TYPES } from '@/shared/ioc/types'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
-import { UserRoutes } from '../routes/user-routes'
+import { GymRoutes } from '../routes/gym-routes'
 
-const createUserRequestSchema = z.object({
-  name: z.string(),
-  email: z.string().email(),
-  password: z.string().min(6),
+export interface CreateGymUseCaseInput {
+  title: string
+  description?: string
+  phone?: string
+  latitude: number
+  longitude: number
+}
+
+const createGymSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+  phone: z.string().optional(),
+  latitude: z.number(),
+  longitude: z.number(),
 })
 
-type CreateUserPayload = z.infer<typeof createUserRequestSchema>
+type CreateGymPayload = z.infer<typeof createGymSchema>
 
 @injectable()
-export class CreateUserController implements Controller {
+export class CreateGymController implements Controller {
   constructor(
-    @inject(TYPES.UseCases.CreateUser)
-    private readonly createUser: CreateUserUseCase,
+    @inject(TYPES.UseCases.CreateGym)
+    private readonly createGymUseCase: CreateGymUseCase,
   ) {
     this.bindMethods()
   }
@@ -34,8 +43,8 @@ export class CreateUserController implements Controller {
     this.handle = this.handle.bind(this)
   }
 
-  async handle(server: HttpServer) {
-    server.register('post', UserRoutes.CREATE, async (req) => {
+  public async handle(server: HttpServer): Promise<void> {
+    server.register('post', GymRoutes.CREATE, async (req) => {
       const parsedBodyOrError = this.parseBody(req.body)
       if (parsedBodyOrError.isLeft()) {
         return ResponseFactory.create({
@@ -43,12 +52,9 @@ export class CreateUserController implements Controller {
           message: parsedBodyOrError.value.message,
         })
       }
-      const { name, email, password } = parsedBodyOrError.value
-      const result = await this.createUser.execute({
-        name,
-        email,
-        rawPassword: password,
-      })
+      const result = await this.createGymUseCase.execute(
+        parsedBodyOrError.value,
+      )
       if (result.isLeft()) {
         return ResponseFactory.create({
           status: HTTP_STATUS.CONFLICT,
@@ -58,15 +64,15 @@ export class CreateUserController implements Controller {
       return ResponseFactory.create({
         status: HTTP_STATUS.CREATED,
         body: {
-          message: 'User created',
-          email: result.value.email,
+          message: 'Gym created',
+          id: result.value.gymId,
         },
       })
     })
   }
 
-  private parseBody(body: unknown): Either<ValidationError, CreateUserPayload> {
-    const parsedBody = createUserRequestSchema.safeParse(body)
+  private parseBody(body: unknown): Either<ValidationError, CreateGymPayload> {
+    const parsedBody = createGymSchema.safeParse(body)
     if (!parsedBody.success) return left(fromError(parsedBody.error))
     return right(parsedBody.data)
   }
