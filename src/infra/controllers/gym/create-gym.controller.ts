@@ -12,14 +12,6 @@ import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
 import { GymRoutes } from '../routes/gym-routes'
 
-export interface CreateGymUseCaseInput {
-  title: string
-  description?: string
-  phone?: string
-  latitude: number
-  longitude: number
-}
-
 const createGymSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
@@ -28,7 +20,7 @@ const createGymSchema = z.object({
   longitude: z.number(),
 })
 
-type CreateGymPayload = z.infer<typeof createGymSchema>
+export type CreateGymPayload = z.infer<typeof createGymSchema>
 
 @injectable()
 export class CreateGymController implements Controller {

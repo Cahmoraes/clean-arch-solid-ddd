@@ -38,8 +38,6 @@ describe('CheckIn', () => {
   })
 
   test('Deve realizar um check-in', async () => {
-    console.log(gymRepository)
-    console.log(userRepository)
     const user = await createAndSaveUser()
     const gym = await createAndSaveGym()
 
