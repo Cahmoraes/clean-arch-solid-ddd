@@ -5,17 +5,9 @@ import { PrismaUserRepository } from '@/infra/database/repository/prisma/prisma-
 import { env } from '@/shared/env'
 
 export class UserRepositoryProvider {
-  static provide(context: interfaces.Context) {
-    this.bind(context)
+  public static provide(context: interfaces.Context) {
     return env.USE_PRISMA
       ? context.container.get(PrismaUserRepository)
       : context.container.get(InMemoryUserRepository)
-  }
-
-  private static bind(context: interfaces.Context) {
-    context.container.bind<PrismaUserRepository>(PrismaUserRepository).toSelf()
-    context.container
-      .bind<InMemoryUserRepository>(InMemoryUserRepository)
-      .toSelf()
   }
 }

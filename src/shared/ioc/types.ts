@@ -11,13 +11,14 @@ export const TYPES = {
     CreateUser: Symbol.for('UserController'),
     Authenticate: Symbol.for('AuthenticateController'),
     UserProfile: Symbol.for('UserProfileController'),
+    CheckIn: Symbol.for('CheckInController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),
     Authenticate: Symbol.for('AuthenticateUseCase'),
     UserProfile: Symbol.for('UserProfileUseCase'),
     CreateGym: Symbol.for('CreateGymUseCase'),
-    CreateCheckIn: Symbol.for('CheckInUseCase'),
+    CheckIn: Symbol.for('CheckInUseCase'),
   },
   Tokens: {
     Auth: Symbol.for('AuthToken'),

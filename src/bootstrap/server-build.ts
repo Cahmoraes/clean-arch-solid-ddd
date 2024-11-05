@@ -1,3 +1,4 @@
+import type { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
 import type { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import type { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
@@ -16,8 +17,12 @@ export function serverBuild() {
   const userProfileController = container.get<UserProfileController>(
     TYPES.Controllers.UserProfile,
   )
+  const checkInController = container.get<CheckInController>(
+    TYPES.Controllers.CheckIn,
+  )
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
   userProfileController.handle(fastifyServer)
+  checkInController.handle(fastifyServer)
   return fastifyServer
 }

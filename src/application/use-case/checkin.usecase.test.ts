@@ -8,7 +8,7 @@ import { TYPES } from '@/shared/ioc/types'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
 import { GymNotFoundError } from '../error/user-not-found-error copy'
-import { CheckInUseCase, type CheckInUseCaseInput } from './checkin.usecase'
+import { CheckInUseCase, type CheckInUseCaseInput } from './check-in.usecase'
 
 describe('CheckInUseCase', () => {
   let gymRepository: InMemoryGymRepository
@@ -22,7 +22,7 @@ describe('CheckInUseCase', () => {
     userRepository = new InMemoryUserRepository()
     container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
     container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
-    sut = container.get<CheckInUseCase>(TYPES.UseCases.CreateCheckIn)
+    sut = container.get<CheckInUseCase>(TYPES.UseCases.CheckIn)
     checkInRepository = sut['checkInRepository'] as InMemoryCheckInRepository
   })
 
