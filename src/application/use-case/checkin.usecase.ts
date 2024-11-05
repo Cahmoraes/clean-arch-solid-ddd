@@ -6,7 +6,7 @@ import { TYPES } from '@/shared/ioc/types'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
 import { GymNotFoundError } from '../error/user-not-found-error copy'
-import type { CheckInRepository } from '../repository/checkin-repository'
+import type { CheckInRepository } from '../repository/check-in-repository'
 import type { GymRepository } from '../repository/gym-repository'
 import type { UserRepository } from '../repository/user-repository'
 

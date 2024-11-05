@@ -14,11 +14,12 @@
 import type { Optional } from '@/@types/optional'
 
 import { Id } from './value-object/id'
+import { ValidId } from './value-object/valid-id'
 
 interface CheckInProps {
   id: Id
-  userId: Id
-  gymId: Id
+  userId: ValidId
+  gymId: ValidId
   createdAt: Date
   validatedAt?: Date
 }
@@ -42,8 +43,8 @@ export type CheckInRestoreProps = {
 
 export class CheckIn {
   private readonly _id: Id
-  private readonly _userId: Id
-  private readonly _gymId: Id
+  private readonly _userId: ValidId
+  private readonly _gymId: ValidId
   private readonly _createdAt: Date
   private readonly _validatedAt?: Date
 
@@ -57,8 +58,8 @@ export class CheckIn {
 
   public static create(props: CheckInCreateProps) {
     const id = Id.create(props.id)
-    const userId = Id.create(props.userId)
-    const gymId = Id.create(props.gymId)
+    const userId = ValidId.create(props.userId)
+    const gymId = ValidId.create(props.gymId)
     const createdAt = new Date()
     return new CheckIn({
       id,
@@ -71,8 +72,8 @@ export class CheckIn {
   public static restore(props: CheckInRestoreProps) {
     return new CheckIn({
       id: Id.create(props.id),
-      userId: Id.create(props.userId),
-      gymId: Id.create(props.gymId),
+      userId: ValidId.create(props.userId),
+      gymId: ValidId.create(props.gymId),
       createdAt: props.createdAt,
       validatedAt: props.validatedAt,
     })
@@ -82,11 +83,11 @@ export class CheckIn {
     return this._id.value
   }
 
-  get userId(): string | null {
+  get userId(): string {
     return this._userId.value
   }
 
-  get gymId(): string | null {
+  get gymId(): string {
     return this._gymId.value
   }
 

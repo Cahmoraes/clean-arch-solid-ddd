@@ -6,7 +6,7 @@ import { injectable } from 'inversify'
 import type {
   CheckInRepository,
   SaveResponse,
-} from '@/application/repository/checkin-repository'
+} from '@/application/repository/check-in-repository'
 import { CheckIn } from '@/domain/check-in'
 
 @injectable()
