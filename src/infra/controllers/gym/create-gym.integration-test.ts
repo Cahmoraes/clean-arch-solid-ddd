@@ -7,11 +7,7 @@ import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 
 import { GymRoutes } from '../routes/gym-routes'
-import type {
-  CreateGymController,
-  CreateGymPayload,
-  CreateGymUseCaseInput,
-} from './create-gym.controller'
+import type { CreateGymPayload } from './create-gym.controller'
 
 describe('Create Gym', () => {
   let fastifyServer: FastifyAdapter
