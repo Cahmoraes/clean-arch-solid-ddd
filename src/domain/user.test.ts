@@ -60,4 +60,15 @@ describe('User Entity', () => {
       'Validation error: Invalid email at "email"',
     )
   })
+
+  test('Deve criar um usuário com uma data de criação pré-definida', () => {
+    const input: UserCreateProps = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'securepassword123',
+      createdAt: new Date(),
+    }
+    const userOrError = User.create(input)
+    expect(userOrError.forceRight().value.createdAt).toBe(input.createdAt)
+  })
 })

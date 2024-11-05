@@ -56,14 +56,14 @@ export class User {
   }
 
   public static create(
-    UserCreateProps: UserCreateProps,
+    userCreateProps: UserCreateProps,
   ): Either<ValidationError, User> {
-    const userOrError = this.validate(UserCreateProps)
+    const userOrError = this.validate(userCreateProps)
     if (userOrError.isLeft()) return left(fromError(userOrError.value))
-    const passwordOrError = Password.create(UserCreateProps.password)
+    const passwordOrError = Password.create(userCreateProps.password)
     if (passwordOrError.isLeft()) return left(passwordOrError.value)
-    const id = Id.create(UserCreateProps.id)
-    const createdAt = new Date()
+    const id = Id.create(userCreateProps.id)
+    const createdAt = userCreateProps.createdAt ?? new Date()
     return right(
       new User({
         ...userOrError.value,
