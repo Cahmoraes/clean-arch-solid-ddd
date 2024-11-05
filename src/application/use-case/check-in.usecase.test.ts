@@ -35,10 +35,12 @@ describe('CheckInUseCase', () => {
     const userId = 'any_user_id'
     await createAndSaveUser(userId)
     const gymId = 'any_gym_id'
-    await createAndSaveGym(gymId)
+    await createAndSaveGym(gymId, -27.0747279, -49.4889672)
     const input: CheckInUseCaseInput = {
       userId,
       gymId,
+      userLatitude: -27.0747279,
+      userLongitude: -49.4889672,
     }
     const result = await sut.execute(input)
     expect(result.forceRight().value.checkInId).toEqual(expect.any(String))
@@ -51,6 +53,8 @@ describe('CheckInUseCase', () => {
     const input: CheckInUseCaseInput = {
       userId: 'any_user_id',
       gymId: 'any_gym_id',
+      userLatitude: -27.0747279,
+      userLongitude: -49.4889672,
     }
     const result = await sut.execute(input)
     expect(result.forceLeft().value).toBeInstanceOf(UserNotFoundError)
@@ -62,6 +66,8 @@ describe('CheckInUseCase', () => {
     const input: CheckInUseCaseInput = {
       userId,
       gymId: 'any_gym_id',
+      userLatitude: -27.0747279,
+      userLongitude: -49.4889672,
     }
     const result = await sut.execute(input)
     expect(result.forceLeft().value).toBeInstanceOf(GymNotFoundError)
@@ -70,16 +76,32 @@ describe('CheckInUseCase', () => {
   test('Não deve criar um check-in no mesmo dia', async () => {
     const userId = 'any_user_id'
     await createAndSaveUser()
-    await createAndSaveGym()
+    await createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
     const input: CheckInUseCaseInput = {
       userId,
       gymId: 'any_gym_id',
+      userLatitude: -27.0747279,
+      userLongitude: -49.4889672,
     }
     await sut.execute(input)
     const result = await sut.execute(input)
     expect(result.forceLeft().value).toBeInstanceOf(
       UserHasAlreadyCheckedInToday,
     )
+  })
+
+  test('Não deve ser possível criar um check-in distante de 100 metros', async () => {
+    const userId = 'any_user_id'
+    await createAndSaveUser(userId)
+    await createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
+    const input: CheckInUseCaseInput = {
+      userId,
+      gymId: 'any_gym_id',
+      userLatitude: -27.0747279,
+      userLongitude: -48.4889672,
+    }
+    const result = await sut.execute(input)
+    expect(result.forceLeft().value).toBeInstanceOf(Error)
   })
 
   async function createAndSaveUser(id?: string) {
@@ -94,13 +116,13 @@ describe('CheckInUseCase', () => {
     return userRepository.users.toArray()[0]
   }
 
-  async function createAndSaveGym(id?: string) {
+  async function createAndSaveGym(id?: string, latitude = 0, longitude = 0) {
     const gymId = id ?? 'any_gym_id'
     const gym = Gym.create({
       id: gymId,
       title: 'any_name',
-      latitude: 0,
-      longitude: 0,
+      latitude,
+      longitude,
     })
     await gymRepository.save(gym)
     return gymRepository.gyms.toArray()[0]

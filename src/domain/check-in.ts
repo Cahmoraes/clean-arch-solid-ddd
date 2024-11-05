@@ -1,16 +1,3 @@
-/*
-  id           String   @id @default(uuid())
-  created_at   DateTime @default(now())
-  validated_at DateTime
-
-  user    User   @relation(fields: [user_id], references: [id])
-  user_id String
-
-  gym    Gym    @relation(fields: [gym_id], references: [id])
-  gym_id String
-
-*/
-
 import type { Optional } from '@/@types/optional'
 
 import { Id } from './value-object/id'
@@ -22,6 +9,8 @@ interface CheckInProps {
   gymId: ValidId
   createdAt: Date
   validatedAt?: Date
+  userLatitude: number
+  userLongitude: number
 }
 
 export type CheckInCreateProps = Omit<
@@ -39,6 +28,8 @@ export type CheckInRestoreProps = {
   gymId: string
   createdAt: Date
   validatedAt?: Date
+  userLatitude: number
+  userLongitude: number
 }
 
 export class CheckIn {
@@ -47,6 +38,8 @@ export class CheckIn {
   private readonly _gymId: ValidId
   private readonly _createdAt: Date
   private readonly _validatedAt?: Date
+  private readonly _latitude: number
+  private readonly _longitude: number
 
   private constructor(props: CheckInProps) {
     this._id = props.id
@@ -54,6 +47,8 @@ export class CheckIn {
     this._gymId = props.gymId
     this._createdAt = props.createdAt
     this._validatedAt = props.validatedAt
+    this._latitude = props.userLatitude
+    this._longitude = props.userLongitude
   }
 
   public static create(props: CheckInCreateProps) {
@@ -66,6 +61,8 @@ export class CheckIn {
       userId,
       gymId,
       createdAt,
+      userLatitude: props.userLatitude,
+      userLongitude: props.userLongitude,
     })
   }
 
@@ -76,6 +73,8 @@ export class CheckIn {
       gymId: ValidId.create(props.gymId),
       createdAt: props.createdAt,
       validatedAt: props.validatedAt,
+      userLatitude: props.userLatitude,
+      userLongitude: props.userLongitude,
     })
   }
 
@@ -97,5 +96,13 @@ export class CheckIn {
 
   get validatedAt(): Date | undefined {
     return this._validatedAt
+  }
+
+  get latitude(): number {
+    return this._latitude
+  }
+
+  get longitude(): number {
+    return this._longitude
   }
 }

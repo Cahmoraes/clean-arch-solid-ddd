@@ -1,6 +1,10 @@
 import { inject, injectable } from 'inversify'
 
 import { CheckIn } from '@/domain/check-in'
+import {
+  CalculateDistance,
+  type Coordinate,
+} from '@/domain/service/calculate-distance'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/shared/ioc/types'
 
@@ -14,6 +18,8 @@ import type { UserRepository } from '../repository/user-repository'
 export interface CheckInUseCaseInput {
   userId: string
   gymId: string
+  userLatitude: number
+  userLongitude: number
 }
 export interface CheckInUseCaseResponse {
   checkInId: string
@@ -24,6 +30,8 @@ export type CheckInUseCaseOutput = Either<Error, CheckInUseCaseResponse>
 
 @injectable()
 export class CheckInUseCase {
+  private readonly MAX_DISTANCE_IN_KM = 0.1
+
   constructor(
     @inject(TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
@@ -41,6 +49,19 @@ export class CheckInUseCase {
     if (checkInOnSameDate) return left(new UserHasAlreadyCheckedInToday())
     const gymOrNull = await this.gymRepository.findById(input.gymId)
     if (!gymOrNull) return left(new GymNotFoundError())
+    const differenceInDistance = this.distanceBetweenUserAndGym(
+      {
+        latitude: input.userLatitude,
+        longitude: input.userLongitude,
+      },
+      {
+        latitude: gymOrNull.latitude,
+        longitude: gymOrNull.longitude,
+      },
+    )
+    if (differenceInDistance > this.MAX_DISTANCE_IN_KM) {
+      return left(new Error('Distance too far'))
+    }
     const checkIn = CheckIn.create(input)
     const { id } = await this.checkInRepository.save(checkIn)
     return right({
@@ -53,5 +74,12 @@ export class CheckInUseCase {
     const today = new Date()
     const checkInOnSameDate = await this.checkInRepository.onSameDate(today)
     return checkInOnSameDate
+  }
+
+  private distanceBetweenUserAndGym(
+    userCoord: Coordinate,
+    gymCoord: Coordinate,
+  ): number {
+    return CalculateDistance.distanceBetweenCoordinates(userCoord, gymCoord)
   }
 }

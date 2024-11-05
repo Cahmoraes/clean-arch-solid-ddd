@@ -10,12 +10,18 @@ describe('CheckIn', () => {
       id: 'any_id',
       userId: 'any_user_id',
       gymId: 'any_gym_id',
+      userLatitude: 0,
+      userLongitude: 10,
     }
     const checkIn = CheckIn.create(input)
     expect(checkIn).toBeInstanceOf(CheckIn)
     expect(checkIn.id).toEqual('any_id')
     expect(checkIn.userId).toEqual('any_user_id')
     expect(checkIn.gymId).toEqual('any_gym_id')
+    expect(checkIn.createdAt).toEqual(expect.any(Date))
+    expect(checkIn.validatedAt).toBeUndefined()
+    expect(checkIn.latitude).toEqual(0)
+    expect(checkIn.longitude).toEqual(10)
   })
 
   test('Deve restaurar um CheckIn', () => {
@@ -25,6 +31,8 @@ describe('CheckIn', () => {
       gymId: 'any_gym_id',
       createdAt: new Date(),
       validatedAt: new Date(),
+      userLatitude: 0,
+      userLongitude: 0,
     }
     const checkIn = CheckIn.restore(input)
     expect(checkIn).toBeInstanceOf(CheckIn)
@@ -33,5 +41,7 @@ describe('CheckIn', () => {
     expect(checkIn.gymId).toEqual('any_gym_id')
     expect(checkIn.createdAt).toEqual(input.createdAt)
     expect(checkIn.validatedAt).toEqual(input.validatedAt)
+    expect(checkIn.latitude).toEqual(0)
+    expect(checkIn.longitude).toEqual(0)
   })
 })

@@ -46,6 +46,8 @@ describe('CheckIn', () => {
       .send({
         userId: user.id,
         gymId: gym.id,
+        userLatitude: -27.0747279,
+        userLongitude: -49.4889672,
       })
 
     expect(response.body.message).toBe('Check-in created')
