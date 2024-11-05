@@ -40,6 +40,7 @@ export class CheckInUseCase {
     @inject(TYPES.Repositories.CheckIn)
     private readonly checkInRepository: CheckInRepository,
   ) {}
+
   public async execute(
     input: CheckInUseCaseInput,
   ): Promise<CheckInUseCaseOutput> {
