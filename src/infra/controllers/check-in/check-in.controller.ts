@@ -55,8 +55,9 @@ export class CheckInController {
       return ResponseFactory.create({
         status: HTTP_STATUS.CREATED,
         body: {
-          message: 'User created',
-          email: result.value.checkInId,
+          message: 'Check-in created',
+          id: result.value.checkInId,
+          date: result.value.date,
         },
       })
     })
