@@ -1,7 +1,9 @@
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
+import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
+import { type Either, left, right } from '@/domain/value-object/either'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 import { TYPES } from '@/shared/ioc/types'
@@ -32,10 +34,15 @@ export class AuthenticateController implements Controller {
 
   async handle(server: HttpServer) {
     server.register('post', UserRoutes.AUTHENTICATE, async (req) => {
-      const { email, password } = this.parseBodyOrThrow(req.body)
+      const parsedBodyResult = this.parseBodyResult(req.body)
+      if (parsedBodyResult.isLeft())
+        return ResponseFactory.create({
+          status: HTTP_STATUS.BAD_REQUEST,
+          message: parsedBodyResult.value.message,
+        })
       const result = await this.authenticate.execute({
-        email,
-        password,
+        email: parsedBodyResult.value.email,
+        password: parsedBodyResult.value.password,
       })
       if (result.isLeft()) {
         return ResponseFactory.create({
@@ -50,7 +57,11 @@ export class AuthenticateController implements Controller {
     })
   }
 
-  private parseBodyOrThrow(body: unknown): AuthenticatePayload {
-    return authenticateRequestSchema.parse(body)
+  private parseBodyResult(
+    body: unknown,
+  ): Either<ValidationError, AuthenticatePayload> {
+    const parsedBody = authenticateRequestSchema.safeParse(body)
+    if (!parsedBody.success) return left(fromError(parsedBody.error))
+    return right(parsedBody.data)
   }
 }

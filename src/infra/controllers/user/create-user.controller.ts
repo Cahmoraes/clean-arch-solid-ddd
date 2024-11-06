@@ -36,7 +36,7 @@ export class CreateUserController implements Controller {
 
   async handle(server: HttpServer) {
     server.register('post', UserRoutes.CREATE, async (req) => {
-      const parsedBodyOrError = this.parseBody(req.body)
+      const parsedBodyOrError = this.parseBodyOrError(req.body)
       if (parsedBodyOrError.isLeft()) {
         return ResponseFactory.create({
           status: HTTP_STATUS.BAD_REQUEST,
@@ -65,7 +65,9 @@ export class CreateUserController implements Controller {
     })
   }
 
-  private parseBody(body: unknown): Either<ValidationError, CreateUserPayload> {
+  private parseBodyOrError(
+    body: unknown,
+  ): Either<ValidationError, CreateUserPayload> {
     const parsedBody = createUserRequestSchema.safeParse(body)
     if (!parsedBody.success) return left(fromError(parsedBody.error))
     return right(parsedBody.data)
