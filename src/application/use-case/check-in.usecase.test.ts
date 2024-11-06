@@ -6,6 +6,7 @@ import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 
+import { MaxDistanceError } from '../error/max-distance-error'
 import { UserHasAlreadyCheckedInToday } from '../error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '../error/user-not-found-error'
 import { GymNotFoundError } from '../error/user-not-found-error copy'
@@ -101,7 +102,7 @@ describe('CheckInUseCase', () => {
       userLongitude: -48.4889672,
     }
     const result = await sut.execute(input)
-    expect(result.forceLeft().value).toBeInstanceOf(Error)
+    expect(result.forceLeft().value).toBeInstanceOf(MaxDistanceError)
   })
 
   async function createAndSaveUser(id?: string) {

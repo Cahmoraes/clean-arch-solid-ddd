@@ -7,16 +7,18 @@ interface GymConstructor {
   description?: string
   phone?: string
   coordinate: Coordinate
+}
+
+export type GymCreateProps = Omit<GymConstructor, 'id' | 'coordinate'> & {
+  id?: string
   latitude: number
   longitude: number
 }
 
-export type GymCreateProps = Omit<GymConstructor, 'id'> & {
-  id?: string
-}
-
-export type GymRestoreProps = Omit<GymConstructor, 'id'> & {
+export type GymRestoreProps = Omit<GymConstructor, 'id' | 'coordinate'> & {
   id: string
+  latitude: number
+  longitude: number
 }
 
 export class Gym {
@@ -25,8 +27,6 @@ export class Gym {
   private readonly _description?: string
   private readonly _phone?: string
   private readonly _coordinate: Coordinate
-  private readonly _latitude: number
-  private readonly _longitude: number
 
   private constructor(gymProps: GymConstructor) {
     this._id = gymProps.id
@@ -34,8 +34,6 @@ export class Gym {
     this._description = gymProps.description
     this._phone = gymProps.phone
     this._coordinate = gymProps.coordinate
-    this._latitude = gymProps.latitude
-    this._longitude = gymProps.longitude
   }
 
   public static create(gymProps: GymCreateProps): Gym {
