@@ -1,10 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import { CheckIn } from '@/domain/check-in'
-import {
-  CalculateDistance,
-  type Coordinate,
-} from '@/domain/service/calculate-distance'
+import { CalculateDistance } from '@/domain/service/calculate-distance'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/shared/ioc/types'
 
@@ -24,6 +21,11 @@ export interface CheckInUseCaseInput {
 export interface CheckInUseCaseResponse {
   checkInId: string
   date: Date
+}
+
+interface Coordinate {
+  latitude: number
+  longitude: number
 }
 
 export type CheckInUseCaseOutput = Either<Error, CheckInUseCaseResponse>
@@ -50,7 +52,7 @@ export class CheckInUseCase {
     if (checkInOnSameDate) return left(new UserHasAlreadyCheckedInToday())
     const gymOrNull = await this.gymRepository.findById(input.gymId)
     if (!gymOrNull) return left(new GymNotFoundError())
-    const differenceInDistance = this.distanceBetweenUserAndGym(
+    const differenceInDistance = this.distanceBetweenCoords(
       {
         latitude: input.userLatitude,
         longitude: input.userLongitude,
@@ -77,7 +79,7 @@ export class CheckInUseCase {
     return checkInOnSameDate
   }
 
-  private distanceBetweenUserAndGym(
+  private distanceBetweenCoords(
     userCoord: Coordinate,
     gymCoord: Coordinate,
   ): number {

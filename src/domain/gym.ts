@@ -1,3 +1,4 @@
+import { Coordinate } from './value-object/coordinate'
 import { Id } from './value-object/id'
 
 interface GymConstructor {
@@ -5,6 +6,7 @@ interface GymConstructor {
   title: string
   description?: string
   phone?: string
+  coordinate: Coordinate
   latitude: number
   longitude: number
 }
@@ -22,6 +24,7 @@ export class Gym {
   private readonly _title: string
   private readonly _description?: string
   private readonly _phone?: string
+  private readonly _coordinate: Coordinate
   private readonly _latitude: number
   private readonly _longitude: number
 
@@ -30,18 +33,27 @@ export class Gym {
     this._title = gymProps.title
     this._description = gymProps.description
     this._phone = gymProps.phone
+    this._coordinate = gymProps.coordinate
     this._latitude = gymProps.latitude
     this._longitude = gymProps.longitude
   }
 
   public static create(gymProps: GymCreateProps): Gym {
     const id = Id.create(gymProps.id)
-    return new Gym({ ...gymProps, id })
+    const coordinate = Coordinate.create({
+      latitude: gymProps.latitude,
+      longitude: gymProps.longitude,
+    })
+    return new Gym({ ...gymProps, id, coordinate })
   }
 
   public static restore(gymProps: GymRestoreProps): Gym {
     const id = Id.restore(gymProps.id)
-    return new Gym({ ...gymProps, id })
+    const coordinate = Coordinate.restore({
+      latitude: gymProps.latitude,
+      longitude: gymProps.longitude,
+    })
+    return new Gym({ ...gymProps, id, coordinate })
   }
 
   get id(): string | null {
@@ -61,10 +73,10 @@ export class Gym {
   }
 
   get latitude(): number {
-    return this._latitude
+    return this._coordinate.latitude
   }
 
   get longitude(): number {
-    return this._longitude
+    return this._coordinate.longitude
   }
 }

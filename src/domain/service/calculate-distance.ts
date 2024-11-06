@@ -22,7 +22,6 @@ export class CalculateDistance {
     dist = (dist * 180) / Math.PI
     dist = dist * 60 * 1.1515
     dist = dist * 1.609344
-
     return dist
   }
 }
