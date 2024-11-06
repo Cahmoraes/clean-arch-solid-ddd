@@ -5,6 +5,7 @@ import { CalculateDistance } from '@/domain/service/calculate-distance'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/shared/ioc/types'
 
+import { MaxDistanceError } from '../error/max-distance-error'
 import { UserHasAlreadyCheckedInToday } from '../error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '../error/user-not-found-error'
 import { GymNotFoundError } from '../error/user-not-found-error copy'
@@ -63,7 +64,7 @@ export class CheckInUseCase {
       },
     )
     if (differenceInDistance > this.MAX_DISTANCE_IN_KM) {
-      return left(new Error('Distance too far'))
+      return left(new MaxDistanceError())
     }
     const checkIn = CheckIn.create(input)
     const { id } = await this.checkInRepository.save(checkIn)
