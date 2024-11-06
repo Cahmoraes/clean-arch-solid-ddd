@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 
-import type { AuthToken } from '@/application/use-case/auth-token'
+import type { AuthToken } from '@/application/interfaces/auth-token'
 import type { User } from '@/domain/user'
 import { env } from '@/shared/env'
 import { TYPES } from '@/shared/ioc/types'

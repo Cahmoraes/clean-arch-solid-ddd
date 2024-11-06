@@ -23,6 +23,8 @@ export class InMemoryCheckInRepository implements CheckInRepository {
       gymId,
       createdAt: new Date(),
       validatedAt: checkIn.validatedAt,
+      userLatitude: checkIn.latitude,
+      userLongitude: checkIn.longitude,
     })
     this.checkIns.add(checkInWithId)
     return {
@@ -43,5 +45,11 @@ export class InMemoryCheckInRepository implements CheckInRepository {
       const checkInDate = checkIn.createdAt
       return checkInDate >= startOfDay && checkInDate <= endOfDay
     })
+  }
+
+  public async findByUserId(userId: string): Promise<CheckIn[]> {
+    return this.checkIns
+      .filter((checkIn) => checkIn.userId === userId)
+      .toArray()
   }
 }
