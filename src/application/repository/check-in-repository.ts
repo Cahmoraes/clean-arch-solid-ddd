@@ -8,5 +8,5 @@ export interface CheckInRepository {
   save(checkIn: CheckIn): Promise<SaveResponse>
   findById(id: string): Promise<CheckIn | null>
   onSameDate(date: Date): Promise<boolean>
-  findByUserId(userId: string): Promise<CheckIn[]>
+  findManyByUserId(userId: string): Promise<CheckIn[]>
 }

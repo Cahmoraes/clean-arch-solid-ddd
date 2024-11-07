@@ -42,7 +42,7 @@ export class CheckInHistoryUseCase {
         checkIns: [],
       }
     }
-    const checkIns = await this.checkInRepository.findByUserId(input.userId)
+    const checkIns = await this.checkInRepository.findManyByUserId(input.userId)
     const checkInsDTO: CheckInsDTO[] = checkIns.map((checkIn) => ({
       id: checkIn.id!,
       checkInAt: checkIn.createdAt,
