@@ -1,5 +1,6 @@
+import { createAndSaveUser } from 'test/factory/create-and-save-user'
+
 import { Gym } from '@/domain/gym'
-import { User } from '@/domain/user'
 import type { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
@@ -34,9 +35,12 @@ describe('CheckInUseCase', () => {
 
   test('Deve criar um check-in', async () => {
     const userId = 'any_user_id'
-    await createAndSaveUser(userId)
+    await createAndSaveUser({
+      userRepository,
+      id: userId,
+    })
     const gymId = 'any_gym_id'
-    await createAndSaveGym(gymId, -27.0747279, -49.4889672)
+    await _createAndSaveGym(gymId, -27.0747279, -49.4889672)
     const input: CheckInUseCaseInput = {
       userId,
       gymId,
@@ -63,7 +67,10 @@ describe('CheckInUseCase', () => {
 
   test('Não deve criar um check-in se a academia não existir', async () => {
     const userId = 'any_user_id'
-    await createAndSaveUser(userId)
+    await createAndSaveUser({
+      userRepository,
+      id: userId,
+    })
     const input: CheckInUseCaseInput = {
       userId,
       gymId: 'any_gym_id',
@@ -76,8 +83,11 @@ describe('CheckInUseCase', () => {
 
   test('Não deve criar um check-in no mesmo dia', async () => {
     const userId = 'any_user_id'
-    await createAndSaveUser()
-    await createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
+    await createAndSaveUser({
+      userRepository,
+      id: userId,
+    })
+    await _createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
     const input: CheckInUseCaseInput = {
       userId,
       gymId: 'any_gym_id',
@@ -93,8 +103,12 @@ describe('CheckInUseCase', () => {
 
   test('Não deve ser possível criar um check-in distante de 100 metros', async () => {
     const userId = 'any_user_id'
-    await createAndSaveUser(userId)
-    await createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
+    await createAndSaveUser({
+      userRepository,
+      id: userId,
+    })
+    await _createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
+    await _createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
     const input: CheckInUseCaseInput = {
       userId,
       gymId: 'any_gym_id',
@@ -105,19 +119,7 @@ describe('CheckInUseCase', () => {
     expect(result.forceLeft().value).toBeInstanceOf(MaxDistanceError)
   })
 
-  async function createAndSaveUser(id?: string) {
-    const userId = id ?? 'any_user_id'
-    const user = User.create({
-      id: userId,
-      name: 'any_name',
-      email: 'john@doe.com.br',
-      password: 'any_password',
-    }).force.right().value
-    await userRepository.save(user)
-    return userRepository.users.toArray()[0]
-  }
-
-  async function createAndSaveGym(id?: string, latitude = 0, longitude = 0) {
+  async function _createAndSaveGym(id?: string, latitude = 0, longitude = 0) {
     const gymId = id ?? 'any_gym_id'
     const gym = Gym.create({
       id: gymId,

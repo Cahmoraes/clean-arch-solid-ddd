@@ -1,5 +1,6 @@
-import { CheckIn, type CheckInCreateProps } from '@/domain/check-in'
-import { User } from '@/domain/user'
+import { createAndSaveCheckIn } from 'test/factory/create-and-save-check-in'
+import { createAndSaveUser } from 'test/factory/create-and-save-user'
+
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/ioc/container'
@@ -34,11 +35,21 @@ describe('CheckInHistoryUseCase', () => {
 
   test('Deve listar o histórico de check-ins', async () => {
     const userId = 'userId'
-    await createAndSaveUser(userId)
-    await createAndSaveCheckIn('1', userId, 'gymId', 0, 0)
+    await createAndSaveUser({
+      userRepository,
+      id: userId,
+    })
     const input: CheckInHistoryUseCaseInput = {
       userId,
     }
+    await createAndSaveCheckIn({
+      checkInRepository,
+      id: '1',
+      userId,
+      gymId: 'gymId1',
+      userLatitude: 0,
+      userLongitude: 0,
+    })
     const result = await sut.execute(input)
     expect(Array.isArray(result.checkIns)).toBe(true)
     const checkIn = result.checkIns[0]
@@ -59,9 +70,26 @@ describe('CheckInHistoryUseCase', () => {
 
   test('Deve listar múltiplos check-ins para um usuário', async () => {
     const userId = 'userId'
-    await createAndSaveUser(userId)
-    await createAndSaveCheckIn('1', userId, 'gymId1', 0, 0)
-    await createAndSaveCheckIn('2', userId, 'gymId2', 1, 1)
+    await createAndSaveUser({
+      userRepository,
+      id: userId,
+    })
+    await createAndSaveCheckIn({
+      checkInRepository,
+      id: '1',
+      userId,
+      gymId: 'gymId1',
+      userLatitude: 0,
+      userLongitude: 0,
+    })
+    await createAndSaveCheckIn({
+      checkInRepository,
+      id: '2',
+      userId,
+      gymId: 'gymId2',
+      userLatitude: 0,
+      userLongitude: 0,
+    })
     const input: CheckInHistoryUseCaseInput = {
       userId,
     }
@@ -73,42 +101,14 @@ describe('CheckInHistoryUseCase', () => {
 
   test('Deve retornar check-ins vazios se o usuário não tiver check-ins', async () => {
     const userId = 'userId'
-    await createAndSaveUser(userId)
+    await createAndSaveUser({
+      userRepository,
+      id: userId,
+    })
     const input: CheckInHistoryUseCaseInput = {
       userId,
     }
     const result = await sut.execute(input)
     expect(result.checkIns).toHaveLength(0)
   })
-
-  async function createAndSaveUser(id?: string) {
-    const userId = id ?? 'any_user_id'
-    const user = User.create({
-      id: userId,
-      name: 'any_name',
-      email: 'john@doe.com.br',
-      password: 'any_password',
-    }).force.right().value
-    await userRepository.save(user)
-    return userRepository.users.toArray()[0]
-  }
-
-  async function createAndSaveCheckIn(
-    id?: string,
-    userId?: string,
-    gymId?: string,
-    userLatitude = 0,
-    userLongitude = 0,
-  ) {
-    const input: CheckInCreateProps = {
-      id: id ?? 'any_id',
-      userId: userId ?? 'any_user_id',
-      gymId: gymId ?? 'any_gym_id',
-      userLatitude: userLatitude ?? 0,
-      userLongitude: userLongitude ?? 10,
-    }
-    const checkIn = CheckIn.create(input)
-    await checkInRepository.save(checkIn)
-    return checkInRepository.checkIns.toArray()[0]
-  }
 })
