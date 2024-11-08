@@ -49,7 +49,7 @@ export class MetricsController implements Controller {
         )
         return ResponseFactory.create({
           status: HTTP_STATUS.OK,
-          data: metrics,
+          body: metrics,
         })
       },
     )
