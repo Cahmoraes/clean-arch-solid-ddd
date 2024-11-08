@@ -1,3 +1,4 @@
+import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 
@@ -8,9 +9,12 @@ import {
 
 describe('CreateGymUseCase', () => {
   let sut: CreateGymUseCase
+  let gymRepository: InMemoryGymRepository
 
   beforeEach(() => {
     container.snapshot()
+    gymRepository = new InMemoryGymRepository()
+    container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
     sut = container.get(TYPES.UseCases.CreateGym)
   })
 

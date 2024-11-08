@@ -23,6 +23,7 @@ export const TYPES = {
     CheckIn: Symbol.for('CheckInUseCase'),
     CheckInHistory: Symbol.for('CheckInHistoryUseCase'),
     GetMetrics: Symbol.for('GetMetricsUseCase'),
+    SearchGym: Symbol.for('SearchGymUseCase'),
   },
   Tokens: {
     Auth: Symbol.for('AuthToken'),

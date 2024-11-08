@@ -6,6 +6,9 @@ export interface CreateAndSaveGym {
   id?: string
   latitude?: number
   longitude?: number
+  title?: string
+  description?: string
+  phone?: string
 }
 
 export async function createAndSaveGym(props: CreateAndSaveGym) {
@@ -15,6 +18,7 @@ export async function createAndSaveGym(props: CreateAndSaveGym) {
     title: 'any_name',
     latitude: props.latitude ?? 0,
     longitude: props.longitude ?? 0,
+    ...props,
   })
   await props.gymRepository.save(gym)
   return props.gymRepository.gyms.toArray()[0]
