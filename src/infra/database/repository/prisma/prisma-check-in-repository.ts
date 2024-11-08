@@ -14,10 +14,14 @@ interface CreateCheckInProps {
   validated_at: Date | null
   user_id: string
   gym_id: string
+  latitude: number
+  longitude: number
 }
 
 @injectable()
 export class PrismaCheckInRepository implements CheckInRepository {
+  private readonly ITEMS_PER_PAGE = 20
+
   constructor(
     @inject(TYPES.Prisma.Client)
     private readonly prismaClient: PrismaClient,
@@ -29,6 +33,8 @@ export class PrismaCheckInRepository implements CheckInRepository {
         gym_id: checkIn.gymId,
         user_id: checkIn.userId,
         validated_at: checkIn.validatedAt,
+        latitude: checkIn.latitude,
+        longitude: checkIn.longitude,
       },
       select: {
         gym_id: true,
@@ -46,7 +52,11 @@ export class PrismaCheckInRepository implements CheckInRepository {
       },
     })
     if (!checkInData) return null
-    return this.createCheckIn(checkInData)
+    return this.createCheckIn({
+      ...checkInData,
+      latitude: checkInData.latitude.toNumber(),
+      longitude: checkInData.longitude.toNumber(),
+    })
   }
 
   private createCheckIn(props: CreateCheckInProps) {
@@ -56,6 +66,8 @@ export class PrismaCheckInRepository implements CheckInRepository {
       userId: props.user_id,
       createdAt: props.created_at,
       validatedAt: props.validated_at ?? undefined,
+      userLatitude: props.latitude,
+      userLongitude: props.longitude,
     })
   }
 
@@ -73,5 +85,33 @@ export class PrismaCheckInRepository implements CheckInRepository {
       },
     })
     return checkInOnSameDate > 0
+  }
+
+  public async findManyByUserId(
+    userId: string,
+    page: number,
+  ): Promise<CheckIn[]> {
+    const checkInData = await this.prismaClient.checkIn.findMany({
+      where: {
+        user_id: userId,
+      },
+      skip: page * this.ITEMS_PER_PAGE,
+      take: this.ITEMS_PER_PAGE,
+    })
+    return checkInData.map((data) =>
+      this.createCheckIn({
+        ...data,
+        latitude: data.latitude.toNumber(),
+        longitude: data.longitude.toNumber(),
+      }),
+    )
+  }
+
+  public async countByUserId(userId: string): Promise<number> {
+    return await this.prismaClient.checkIn.count({
+      where: {
+        user_id: userId,
+      },
+    })
   }
 }
