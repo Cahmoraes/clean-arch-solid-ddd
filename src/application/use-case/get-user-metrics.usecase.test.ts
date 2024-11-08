@@ -23,7 +23,13 @@ describe('GetUserMetricsUseCase', () => {
     container.restore()
   })
 
-  test('Deve retornar a quantidade de check-ins do usuário', async () => {
+  test('Deve retornar a quantidade de 0 check-ins do usuário', async () => {
+    const userId = '1'
+    const output = await sut.execute({ userId })
+    expect(output.checkInsCount).toBe(0)
+  })
+
+  test('Deve retornar a quantidade de 1 check-ins do usuário', async () => {
     const userId = '1'
     await createAndSaveCheckIn({
       checkInRepository,
@@ -33,9 +39,23 @@ describe('GetUserMetricsUseCase', () => {
       userLatitude: 0,
       userLongitude: 0,
     })
-
     const output = await sut.execute({ userId })
-
     expect(output.checkInsCount).toBe(1)
+  })
+
+  test('Deve retornar a quantidade de 10 check-ins do usuário', async () => {
+    const userId = '1'
+    for (let i = 0; i < 10; i++) {
+      await createAndSaveCheckIn({
+        checkInRepository,
+        id: i.toString(),
+        userId,
+        gymId: 'gymId1',
+        userLatitude: 0,
+        userLongitude: 0,
+      })
+    }
+    const output = await sut.execute({ userId })
+    expect(output.checkInsCount).toBe(10)
   })
 })
