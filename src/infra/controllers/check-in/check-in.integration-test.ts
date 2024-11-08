@@ -71,8 +71,8 @@ describe('CheckIn', () => {
     const input: GymRestoreProps = {
       title: 'fake gym',
       description: 'fake description',
-      latitude: -23.55052,
-      longitude: -46.633308,
+      latitude: -27.0747279,
+      longitude: -49.4889672,
       phone: '11971457899',
       id: 'fake_id',
     }

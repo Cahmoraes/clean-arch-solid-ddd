@@ -13,6 +13,7 @@ export const TYPES = {
     UserProfile: Symbol.for('UserProfileController'),
     CheckIn: Symbol.for('CheckInController'),
     CreateGym: Symbol.for('CreateGymController'),
+    Metrics: Symbol.for('MetricsController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),

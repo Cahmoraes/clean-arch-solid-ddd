@@ -15,6 +15,8 @@ import { CheckInRoutes } from '../routes/check-in-routes'
 const checkInRequestSchema = z.object({
   userId: z.string(),
   gymId: z.string(),
+  userLatitude: z.number(),
+  userLongitude: z.number(),
 })
 
 type CheckInPayload = z.infer<typeof checkInRequestSchema>
@@ -41,10 +43,13 @@ export class CheckInController {
           message: parsedBodyOrError.value.message,
         })
       }
-      const { userId, gymId } = parsedBodyOrError.value
+      const { userId, gymId, userLatitude, userLongitude } =
+        parsedBodyOrError.value
       const result = await this.checkIn.execute({
         userId,
         gymId,
+        userLatitude,
+        userLongitude,
       })
       if (result.isLeft()) {
         return ResponseFactory.create({
