@@ -11,6 +11,8 @@ import { CheckIn } from '@/domain/check-in'
 
 @injectable()
 export class InMemoryCheckInRepository implements CheckInRepository {
+  public ITEMS_PER_PAGE = 20
+
   public checkIns = new ExtendedSet<CheckIn>()
 
   public async save(checkIn: CheckIn): Promise<SaveResponse> {
@@ -47,9 +49,14 @@ export class InMemoryCheckInRepository implements CheckInRepository {
     })
   }
 
-  public async findManyByUserId(userId: string): Promise<CheckIn[]> {
+  public async findManyByUserId(userId: string, page = 0): Promise<CheckIn[]> {
     return this.checkIns
       .filter((checkIn) => checkIn.userId === userId)
       .toArray()
+      .slice((page - 1) * this.ITEMS_PER_PAGE, page * this.ITEMS_PER_PAGE)
+  }
+
+  public async countByUserId(userId: string): Promise<number> {
+    return this.checkIns.filter((checkIn) => checkIn.userId === userId).size
   }
 }

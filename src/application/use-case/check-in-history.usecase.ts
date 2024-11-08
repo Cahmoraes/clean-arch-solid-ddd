@@ -7,6 +7,7 @@ import type { UserRepository } from '../repository/user-repository'
 
 export interface CheckInHistoryUseCaseInput {
   userId: string
+  page?: number
 }
 
 export interface CheckInsDTO {
@@ -42,7 +43,10 @@ export class CheckInHistoryUseCase {
         checkIns: [],
       }
     }
-    const checkIns = await this.checkInRepository.findManyByUserId(input.userId)
+    const checkIns = await this.checkInRepository.findManyByUserId(
+      input.userId,
+      this.pageNumberOrDefault(input.page),
+    )
     const checkInsDTO: CheckInsDTO[] = checkIns.map((checkIn) => ({
       id: checkIn.id!,
       checkInAt: checkIn.createdAt,
@@ -55,5 +59,9 @@ export class CheckInHistoryUseCase {
       userId: input.userId,
       checkIns: checkInsDTO,
     }
+  }
+
+  private pageNumberOrDefault(page?: number) {
+    return page ?? 1
   }
 }

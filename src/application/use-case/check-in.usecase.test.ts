@@ -1,7 +1,7 @@
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 
 import { Gym } from '@/domain/gym'
-import type { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
+import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/ioc/container'
@@ -23,10 +23,13 @@ describe('CheckInUseCase', () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
     userRepository = new InMemoryUserRepository()
+    checkInRepository = new InMemoryCheckInRepository()
     container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
     container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
+    container
+      .rebind(TYPES.Repositories.CheckIn)
+      .toConstantValue(checkInRepository)
     sut = container.get<CheckInUseCase>(TYPES.UseCases.CheckIn)
-    checkInRepository = sut['checkInRepository'] as InMemoryCheckInRepository
   })
 
   afterEach(() => {

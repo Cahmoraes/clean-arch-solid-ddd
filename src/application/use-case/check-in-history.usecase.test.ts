@@ -74,29 +74,25 @@ describe('CheckInHistoryUseCase', () => {
       userRepository,
       id: userId,
     })
-    await createAndSaveCheckIn({
-      checkInRepository,
-      id: '1',
-      userId,
-      gymId: 'gymId1',
-      userLatitude: 0,
-      userLongitude: 0,
-    })
-    await createAndSaveCheckIn({
-      checkInRepository,
-      id: '2',
-      userId,
-      gymId: 'gymId2',
-      userLatitude: 0,
-      userLongitude: 0,
-    })
+    for (let i = 0; i <= 22; i++) {
+      await createAndSaveCheckIn({
+        checkInRepository,
+        id: i.toString(),
+        userId,
+        gymId: 'gymId1',
+        userLatitude: 0,
+        userLongitude: 0,
+      })
+    }
     const input: CheckInHistoryUseCaseInput = {
       userId,
+      page: 2,
     }
     const result = await sut.execute(input)
-    expect(result.checkIns).toHaveLength(2)
-    expect(result.checkIns[0].id).toBe('1')
-    expect(result.checkIns[1].id).toBe('2')
+    expect(result.checkIns).toHaveLength(3)
+    expect(result.checkIns[0].id).toBe('20')
+    expect(result.checkIns[1].id).toBe('21')
+    expect(result.checkIns[2].id).toBe('22')
   })
 
   test('Deve retornar check-ins vazios se o usuário não tiver check-ins', async () => {

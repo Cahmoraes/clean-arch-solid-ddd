@@ -21,6 +21,7 @@ export const TYPES = {
     CreateGym: Symbol.for('CreateGymUseCase'),
     CheckIn: Symbol.for('CheckInUseCase'),
     CheckInHistory: Symbol.for('CheckInHistoryUseCase'),
+    GetMetrics: Symbol.for('GetMetricsUseCase'),
   },
   Tokens: {
     Auth: Symbol.for('AuthToken'),
