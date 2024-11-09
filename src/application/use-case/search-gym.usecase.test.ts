@@ -1,4 +1,5 @@
 import { createAndSaveGym } from 'test/factory/create-and-save-gym'
+import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { container } from '@/shared/ioc/container'
@@ -16,8 +17,7 @@ describe('SearchGymUseCase', () => {
 
   beforeEach(() => {
     container.snapshot()
-    gymRepository = new InMemoryGymRepository()
-    container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    gymRepository = setupInMemoryRepositories().gymRepository
     sut = container.get(TYPES.UseCases.SearchGym)
   })
 

@@ -1,4 +1,5 @@
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
+import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
 import { Gym } from '@/domain/gym'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
@@ -21,14 +22,10 @@ describe('CheckInUseCase', () => {
 
   beforeEach(() => {
     container.snapshot()
-    gymRepository = new InMemoryGymRepository()
-    userRepository = new InMemoryUserRepository()
-    checkInRepository = new InMemoryCheckInRepository()
-    container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
-    container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
-    container
-      .rebind(TYPES.Repositories.CheckIn)
-      .toConstantValue(checkInRepository)
+    const repositories = setupInMemoryRepositories()
+    gymRepository = repositories.gymRepository
+    userRepository = repositories.userRepository
+    checkInRepository = repositories.checkInRepository
     sut = container.get<CheckInUseCase>(TYPES.UseCases.CheckIn)
   })
 

@@ -1,4 +1,5 @@
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
+import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
+
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 
@@ -15,10 +16,7 @@ describe('CreateUserUseCase', () => {
 
   beforeEach(() => {
     container.snapshot()
-    container.unbind(TYPES.Repositories.User)
-    userRepository = new InMemoryUserRepository()
-    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
-    userRepository = container.get(TYPES.Repositories.User)
+    userRepository = setupInMemoryRepositories().userRepository
     sut = container.get(TYPES.UseCases.CreateUser)
   })
 

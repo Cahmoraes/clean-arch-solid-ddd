@@ -1,4 +1,5 @@
 import { createAndSaveCheckIn } from 'test/factory/create-and-save-check-in'
+import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { container } from '@/shared/ioc/container'
@@ -12,10 +13,7 @@ describe('GetUserMetricsUseCase', () => {
 
   beforeEach(() => {
     container.snapshot()
-    checkInRepository = new InMemoryCheckInRepository()
-    container
-      .rebind(TYPES.Repositories.CheckIn)
-      .toConstantValue(checkInRepository)
+    checkInRepository = setupInMemoryRepositories().checkInRepository
     sut = container.get<GetMetricsUseCase>(TYPES.UseCases.GetMetrics)
   })
 
