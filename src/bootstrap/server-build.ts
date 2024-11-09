@@ -1,6 +1,7 @@
 import type { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
 import type { MetricsController } from '@/infra/controllers/check-in/metrics.controller'
 import type { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
+import type { SearchGymController } from '@/infra/controllers/gym/search-gym.controller'
 import type { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import type { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
@@ -28,11 +29,15 @@ export function serverBuild() {
   const metricsController = container.get<MetricsController>(
     TYPES.Controllers.Metrics,
   )
+  const searchGymController = container.get<SearchGymController>(
+    TYPES.Controllers.SearchGym,
+  )
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
   userProfileController.handle(fastifyServer)
   checkInController.handle(fastifyServer)
   gymController.handle(fastifyServer)
   metricsController.handle(fastifyServer)
+  searchGymController.handle(fastifyServer)
   return fastifyServer
 }

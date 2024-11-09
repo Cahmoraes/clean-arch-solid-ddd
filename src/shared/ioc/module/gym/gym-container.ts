@@ -4,6 +4,7 @@ import type { GymRepository } from '@/application/repository/gym-repository'
 import { CreateGymUseCase } from '@/application/use-case/create-gym.usecase'
 import { SearchGymUseCase } from '@/application/use-case/search-gym.usecase'
 import { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
+import { SearchGymController } from '@/infra/controllers/gym/search-gym.controller'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { PrismaGymRepository } from '@/infra/database/repository/prisma/prisma-gym-repository'
 
@@ -19,4 +20,5 @@ export const gymContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.UseCases.CreateGym).to(CreateGymUseCase)
   bind(TYPES.Controllers.CreateGym).to(CreateGymController)
   bind(TYPES.UseCases.SearchGym).to(SearchGymUseCase)
+  bind(TYPES.Controllers.SearchGym).to(SearchGymController)
 })
