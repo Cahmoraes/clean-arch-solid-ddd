@@ -1,29 +1,40 @@
+import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { Coordinate } from './value-object/coordinate'
+import { type Either, left, right } from './value-object/either'
 import { Id } from './value-object/id'
+import { Name } from './value-object/name'
 
 interface GymConstructor {
   id: Id
-  title: string
+  title: Name
   description?: string
   phone?: string
   coordinate: Coordinate
 }
 
-export type GymCreateProps = Omit<GymConstructor, 'id' | 'coordinate'> & {
+export type GymCreateProps = Omit<
+  GymConstructor,
+  'id' | 'coordinate' | 'title'
+> & {
   id?: string
+  title: string
   latitude: number
   longitude: number
 }
 
-export type GymRestoreProps = Omit<GymConstructor, 'id' | 'coordinate'> & {
+export type GymRestoreProps = Omit<
+  GymConstructor,
+  'id' | 'coordinate' | 'title'
+> & {
   id: string
+  title: string
   latitude: number
   longitude: number
 }
 
 export class Gym {
   private readonly _id: Id
-  private readonly _title: string
+  private readonly _title: Name
   private readonly _description?: string
   private readonly _phone?: string
   private readonly _coordinate: Coordinate
@@ -36,22 +47,34 @@ export class Gym {
     this._coordinate = gymProps.coordinate
   }
 
-  public static create(gymProps: GymCreateProps): Gym {
+  public static create(
+    gymProps: GymCreateProps,
+  ): Either<InvalidNameLengthError, Gym> {
     const id = Id.create(gymProps.id)
-    const coordinate = Coordinate.create({
+    const nameOrError = Name.create(gymProps.title)
+    if (nameOrError.isLeft()) return left(nameOrError.value)
+    const coordinateOrError = Coordinate.create({
       latitude: gymProps.latitude,
       longitude: gymProps.longitude,
     })
-    return new Gym({ ...gymProps, id, coordinate })
+    if (coordinateOrError.isLeft()) return left(coordinateOrError.value)
+    const gym = new Gym({
+      ...gymProps,
+      id,
+      coordinate: coordinateOrError.value,
+      title: nameOrError.value,
+    })
+    return right(gym)
   }
 
   public static restore(gymProps: GymRestoreProps): Gym {
     const id = Id.restore(gymProps.id)
+    const title = Name.restore(gymProps.title)
     const coordinate = Coordinate.restore({
       latitude: gymProps.latitude,
       longitude: gymProps.longitude,
     })
-    return new Gym({ ...gymProps, id, coordinate })
+    return new Gym({ ...gymProps, id, coordinate, title })
   }
 
   get id(): string | null {
@@ -59,7 +82,7 @@ export class Gym {
   }
 
   get title(): string {
-    return this._title
+    return this._title.value
   }
 
   get description(): string | undefined {

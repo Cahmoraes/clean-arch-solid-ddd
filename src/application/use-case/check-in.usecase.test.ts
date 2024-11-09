@@ -126,7 +126,7 @@ describe('CheckInUseCase', () => {
       title: 'any_name',
       latitude,
       longitude,
-    })
+    }).forceRight().value
     await gymRepository.save(gym)
     return gymRepository.gyms.toArray()[0]
   }

@@ -9,7 +9,7 @@ describe('Gym Entity', () => {
       longitude: -46.633308,
       phone: '11971457899',
     }
-    const gym = Gym.create(input)
+    const gym = Gym.create(input).forceRight().value
     expect(gym.title).toBe(input.title)
     expect(gym.description).toBe(input.description)
     expect(gym.latitude).toBe(input.latitude)

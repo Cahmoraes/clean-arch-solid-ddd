@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify'
 
+import type { InvalidNameLengthError } from '@/domain/error/invalid-name-length-error'
 import { Gym } from '@/domain/gym'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/shared/ioc/types'
@@ -20,7 +21,7 @@ export interface CreateGymResponse {
 }
 
 export type CreateGymUseCaseOutput = Either<
-  GymAlreadyExistsError,
+  InvalidNameLengthError | GymAlreadyExistsError,
   CreateGymResponse
 >
 
@@ -37,7 +38,8 @@ export class CreateGymUseCase {
     const gymOrNull = await this.gymRepository.findByTitle(input.title)
     if (gymOrNull) left(new GymAlreadyExistsError())
     const gym = Gym.create(input)
-    const { id } = await this.gymRepository.save(gym)
+    if (gym.isLeft()) return left(gym.value)
+    const { id } = await this.gymRepository.save(gym.value)
     return right({ gymId: id })
   }
 }

@@ -1,3 +1,5 @@
+import { InvalidLatitudeError } from '@/domain/error/invalid-latitude-error'
+import { InvalidLongitudeError } from '@/domain/error/invalid-longitude-error'
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 
@@ -64,6 +66,20 @@ describe('CreateGymUseCase', () => {
     }
     const result = await sut.execute(input)
     expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(InvalidLongitudeError)
+  })
+
+  test('Deve falhar ao criar uma Academia com longitude inválida', async () => {
+    const input: CreateGymUseCaseInput = {
+      title: 'fake gym',
+      description: 'fake description',
+      latitude: 999,
+      longitude: -23.55052,
+      phone: '11971457899',
+    }
+    const result = await sut.execute(input)
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(InvalidLatitudeError)
   })
 
   test('Deve falhar ao criar uma Academia com telefone inválido', async () => {

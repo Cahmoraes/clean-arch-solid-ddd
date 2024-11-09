@@ -39,6 +39,7 @@ describe('SearchGymUseCase', () => {
       longitude: -46.656571,
     })
     const result = await sut.execute(input)
+    console.log(result)
     const gym = result.forceRight().value
     expect(gym.id).toBeDefined()
     expect(gym.title).toBe('Academia Teste')
