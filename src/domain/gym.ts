@@ -3,12 +3,13 @@ import { Coordinate } from './value-object/coordinate'
 import { type Either, left, right } from './value-object/either'
 import { Id } from './value-object/id'
 import { Name } from './value-object/name'
+import type { Phone } from './value-object/phone'
 
 interface GymConstructor {
   id: Id
   title: Name
   description?: string
-  phone?: string
+  phone?: Phone
   coordinate: Coordinate
 }
 
@@ -36,7 +37,7 @@ export class Gym {
   private readonly _id: Id
   private readonly _title: Name
   private readonly _description?: string
-  private readonly _phone?: string
+  private readonly _phone?: Phone
   private readonly _coordinate: Coordinate
 
   private constructor(gymProps: GymConstructor) {
@@ -89,8 +90,8 @@ export class Gym {
     return this._description
   }
 
-  get phone(): string | undefined {
-    return this._phone
+  get phone(): number | undefined {
+    return this._phone?.value
   }
 
   get latitude(): number {
