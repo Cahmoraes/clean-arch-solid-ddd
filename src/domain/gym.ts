@@ -3,7 +3,7 @@ import { Coordinate } from './value-object/coordinate'
 import { type Either, left, right } from './value-object/either'
 import { Id } from './value-object/id'
 import { Name } from './value-object/name'
-import type { Phone } from './value-object/phone'
+import { Phone } from './value-object/phone'
 
 interface GymConstructor {
   id: Id
@@ -15,9 +15,10 @@ interface GymConstructor {
 
 export type GymCreateProps = Omit<
   GymConstructor,
-  'id' | 'coordinate' | 'title'
+  'id' | 'coordinate' | 'title' | 'phone'
 > & {
   id?: string
+  phone?: string
   title: string
   latitude: number
   longitude: number
@@ -25,9 +26,10 @@ export type GymCreateProps = Omit<
 
 export type GymRestoreProps = Omit<
   GymConstructor,
-  'id' | 'coordinate' | 'title'
+  'id' | 'coordinate' | 'title' | 'phone'
 > & {
   id: string
+  phone?: number
   title: string
   latitude: number
   longitude: number
@@ -59,11 +61,16 @@ export class Gym {
       longitude: gymProps.longitude,
     })
     if (coordinateOrError.isLeft()) return left(coordinateOrError.value)
+    const phoneOrError = gymProps.phone
+      ? Phone.create(gymProps.phone)
+      : undefined
+    if (phoneOrError && phoneOrError.isLeft()) return left(phoneOrError.value)
     const gym = new Gym({
       ...gymProps,
       id,
       coordinate: coordinateOrError.value,
       title: nameOrError.value,
+      phone: phoneOrError ? phoneOrError.value : undefined,
     })
     return right(gym)
   }
@@ -71,11 +78,12 @@ export class Gym {
   public static restore(gymProps: GymRestoreProps): Gym {
     const id = Id.restore(gymProps.id)
     const title = Name.restore(gymProps.title)
+    const phone = gymProps.phone ? Phone.restore(gymProps.phone) : undefined
     const coordinate = Coordinate.restore({
       latitude: gymProps.latitude,
       longitude: gymProps.longitude,
     })
-    return new Gym({ ...gymProps, id, coordinate, title })
+    return new Gym({ ...gymProps, id, coordinate, title, phone })
   }
 
   get id(): string | null {
