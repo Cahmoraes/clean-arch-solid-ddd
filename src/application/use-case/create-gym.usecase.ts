@@ -37,9 +37,9 @@ export class CreateGymUseCase {
   ): Promise<CreateGymUseCaseOutput> {
     const gymOrNull = await this.gymRepository.findByTitle(input.title)
     if (gymOrNull) left(new GymAlreadyExistsError())
-    const gym = Gym.create(input)
-    if (gym.isLeft()) return left(gym.value)
-    const { id } = await this.gymRepository.save(gym.value)
+    const gymOrError = Gym.create(input)
+    if (gymOrError.isLeft()) return left(gymOrError.value)
+    const { id } = await this.gymRepository.save(gymOrError.value)
     return right({ gymId: id })
   }
 }
