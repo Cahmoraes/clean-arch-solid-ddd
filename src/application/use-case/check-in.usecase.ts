@@ -63,7 +63,7 @@ export class CheckInUseCase {
         longitude: gymOrNull.longitude,
       },
     )
-    if (differenceInDistance > this.MAX_DISTANCE_IN_KM) {
+    if (this.isDistanceExceeded(differenceInDistance)) {
       return left(new MaxDistanceError())
     }
     const checkIn = CheckIn.create(input)
@@ -85,5 +85,9 @@ export class CheckInUseCase {
     gymCoord: Coordinate,
   ): number {
     return CalculateDistance.distanceBetweenCoordinates(userCoord, gymCoord)
+  }
+
+  private isDistanceExceeded(differenceInDistance: number): boolean {
+    return differenceInDistance > this.MAX_DISTANCE_IN_KM
   }
 }
