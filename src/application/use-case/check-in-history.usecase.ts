@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify'
 
+import type { CheckIn } from '@/domain/check-in'
 import { TYPES } from '@/shared/ioc/types'
 
 import type { CheckInRepository } from '../repository/check-in-repository'
@@ -47,7 +48,14 @@ export class CheckInHistoryUseCase {
       input.userId,
       this.pageNumberOrDefault(input.page),
     )
-    const checkInsDTO: CheckInsDTO[] = checkIns.map((checkIn) => ({
+    return {
+      userId: input.userId,
+      checkIns: this.createCheckInsDTO(checkIns),
+    }
+  }
+
+  private createCheckInsDTO(checkIns: CheckIn[]): CheckInsDTO[] {
+    return checkIns.map((checkIn) => ({
       id: checkIn.id!,
       checkInAt: checkIn.createdAt,
       location: {
@@ -55,13 +63,9 @@ export class CheckInHistoryUseCase {
         longitude: checkIn.longitude,
       },
     }))
-    return {
-      userId: input.userId,
-      checkIns: checkInsDTO,
-    }
   }
 
-  private pageNumberOrDefault(page?: number) {
+  private pageNumberOrDefault(page?: number): number {
     return page ?? 1
   }
 }
