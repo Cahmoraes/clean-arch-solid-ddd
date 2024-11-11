@@ -42,10 +42,10 @@ export class AuthenticateUseCase {
     if (!userOrNull.checkPassword(input.password)) {
       return left(new InvalidCredentialsError())
     }
-    return right({ token: this.token(userOrNull) })
+    return right({ token: this.signUserToken(userOrNull) })
   }
 
-  private token(anUser: User): string {
+  private signUserToken(anUser: User): string {
     return this.authToken.sign(
       {
         sub: {
