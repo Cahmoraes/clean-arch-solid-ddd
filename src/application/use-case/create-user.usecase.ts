@@ -43,9 +43,8 @@ export class CreateUserUseCase {
     })
   }
 
-  private async findUserByEmail(email: string) {
-    const user = await this.userRepository.findByEmail(email)
-    return user ? user : null
+  private async findUserByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findByEmail(email)
   }
 
   private async createUser(input: CreateUserUseCaseInput) {
