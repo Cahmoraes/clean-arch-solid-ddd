@@ -6,14 +6,14 @@ import { type Either, left, right } from './either'
 export type PhoneCreate = string | number
 
 const createPhoneSchema = z
-  .union([z.string(), z.number()])
-  .transform(Number)
-  .refine((value) => !isNaN(value))
+  .union([z.string(), z.number(), z.undefined()])
+  .transform((value) => (value === undefined ? undefined : Number(value)))
+  .refine((value) => value === undefined || !isNaN(value))
 
 type CreatePhoneData = z.infer<typeof createPhoneSchema>
 
 export class Phone {
-  private constructor(private readonly _value: number) {}
+  private constructor(private readonly _value?: number) {}
 
   public static create(
     aStringOrNumber: PhoneCreate,
@@ -35,11 +35,11 @@ export class Phone {
     return new Phone(phone)
   }
 
-  public toString(): string {
-    return this._value.toString()
+  public toString(): string | undefined {
+    return this._value?.toString()
   }
 
-  get value(): number {
+  get value(): number | undefined {
     return this._value
   }
 }

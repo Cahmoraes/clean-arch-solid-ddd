@@ -32,11 +32,11 @@ describe('Phone', () => {
     expect(phone.value).toBeInstanceOf(InvalidPhoneNumberError)
   })
 
-  test('Deve falhar ao criar um telefone a partir de um valor undefined', () => {
-    const invalidPhoneNumber = undefined
-    const phone = Phone.create(invalidPhoneNumber as any)
-    expect(phone.isLeft()).toBeTruthy()
-    expect(phone.value).toBeInstanceOf(InvalidPhoneNumberError)
+  test('Deve criar um telefone a partir de um valor undefined', () => {
+    const undefinedNumber = undefined
+    const phone = Phone.create(undefinedNumber as any)
+    expect(phone.isRight()).toBeTruthy()
+    expect(phone.forceRight().value.value).toBeUndefined()
   })
 
   test('Deve falhar ao criar um telefone a partir de um valor null', () => {
