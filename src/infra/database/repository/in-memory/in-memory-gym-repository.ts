@@ -12,6 +12,7 @@ import { Gym } from '@/domain/gym'
 @injectable()
 export class InMemoryGymRepository implements GymRepository {
   public gyms = new ExtendedSet<Gym>()
+  public ITEMS_PER_PAGE = 20
 
   public async save(gym: Gym): Promise<SaveGymResult> {
     const id = gym.id ?? randomUUID()
@@ -31,7 +32,12 @@ export class InMemoryGymRepository implements GymRepository {
     return this.gyms.find((gym) => gym.id === id)
   }
 
-  public async findByTitle(title: string): Promise<Gym | null> {
-    return this.gyms.find((gym) => gym.title === title)
+  public async findByTitle(title: string, page: number): Promise<Gym[]> {
+    return this.gyms
+      .filter((gym) =>
+        gym.title.toLocaleLowerCase().includes(title.toLocaleLowerCase()),
+      )
+      .toArray()
+      .slice((page - 1) * this.ITEMS_PER_PAGE, page * this.ITEMS_PER_PAGE)
   }
 }

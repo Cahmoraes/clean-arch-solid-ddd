@@ -6,6 +6,6 @@ export interface SaveGymResult {
 
 export interface GymRepository {
   save(gym: Gym): Promise<SaveGymResult>
-  findByTitle(title: string): Promise<Gym | null>
+  findByTitle(title: string, page: number): Promise<Gym[]>
   findById(id: string): Promise<Gym | null>
 }

@@ -1,3 +1,4 @@
+import { InvalidIdError } from '../error/invalid-id-error'
 import { ValidId } from './valid-id'
 
 describe('ValidId', () => {
@@ -45,5 +46,9 @@ describe('ValidId', () => {
     } as unknown as ValidId
     const result = idOne.equals(idTwo)
     expect(result).toBeFalsy()
+  })
+
+  test('Deve lançar um erro ao tentar criar um ID inválido', () => {
+    expect(() => ValidId.create('')).toThrow(InvalidIdError)
   })
 })

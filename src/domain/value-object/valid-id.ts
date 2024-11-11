@@ -1,3 +1,5 @@
+import { InvalidIdError } from '../error/invalid-id-error'
+
 export class ValidId {
   private constructor(private readonly _value: string) {}
 
@@ -6,9 +8,7 @@ export class ValidId {
   }
 
   public static create(aString: string) {
-    if (!aString) {
-      throw new Error('Invalid ID: ID cannot be empty')
-    }
+    if (!aString) throw new InvalidIdError()
     return new ValidId(aString)
   }
 

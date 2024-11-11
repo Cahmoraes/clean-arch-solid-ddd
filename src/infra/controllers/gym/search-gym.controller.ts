@@ -2,7 +2,10 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import type { SearchGymUseCase } from '@/application/use-case/search-gym.usecase'
+import type {
+  SearchGymUseCase,
+  SearchGymUseCaseOutput,
+} from '@/application/use-case/search-gym.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -43,15 +46,15 @@ export class SearchGymController implements Controller {
       const result = await this.searchGymUseCase.execute(
         parsedBodyOrError.value,
       )
-      if (result.isLeft()) {
+      if (this.isGymNotFound(result)) {
         return ResponseFactory.create({
           status: HTTP_STATUS.NOT_FOUND,
-          message: result.value.message,
+          message: 'Gym not found',
         })
       }
       return ResponseFactory.create({
         status: HTTP_STATUS.OK,
-        body: result.value,
+        body: result,
       })
     })
   }
@@ -62,5 +65,9 @@ export class SearchGymController implements Controller {
     const parsedBody = searchGymRequestSchema.safeParse(params)
     if (!parsedBody.success) return left(fromError(parsedBody.error))
     return right(parsedBody.data)
+  }
+
+  private isGymNotFound(result: SearchGymUseCaseOutput[]): boolean {
+    return !result.length
   }
 }

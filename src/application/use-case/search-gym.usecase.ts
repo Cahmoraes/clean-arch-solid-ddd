@@ -1,13 +1,13 @@
 import { inject, injectable } from 'inversify'
 
-import { type Either, left, right } from '@/domain/value-object/either'
+import type { Gym } from '@/domain/gym'
 import { TYPES } from '@/shared/ioc/types'
 
-import { GymNotFoundError } from '../error/user-not-found-error copy'
 import type { GymRepository } from '../repository/gym-repository'
 
 export interface SearchGymUseCaseInput {
   name: string
+  page?: number
 }
 
 interface CoordinateDTO {
@@ -15,18 +15,13 @@ interface CoordinateDTO {
   longitude: number
 }
 
-export interface SearchGymUseCaseResponse {
+export interface SearchGymUseCaseOutput {
   id: string
   title: string
   description?: string
   phone?: number
   coordinate: CoordinateDTO
 }
-
-export type SearchGymUseCaseOutput = Either<
-  GymNotFoundError,
-  SearchGymUseCaseResponse
->
 
 @injectable()
 export class SearchGymUseCase {
@@ -37,18 +32,28 @@ export class SearchGymUseCase {
 
   public async execute(
     input: SearchGymUseCaseInput,
-  ): Promise<SearchGymUseCaseOutput> {
-    const gymOrNull = await this.gymRepository.findByTitle(input.name)
-    if (!gymOrNull) return left(new GymNotFoundError())
-    return right({
-      id: gymOrNull.id!,
-      title: gymOrNull.title,
-      description: gymOrNull.description,
-      phone: gymOrNull.phone,
+  ): Promise<SearchGymUseCaseOutput[]> {
+    const gyms = await this.gymRepository.findByTitle(
+      input.name,
+      this.pageNumberOrDefault(input.page),
+    )
+    return this.createGymDTO(gyms)
+  }
+
+  private pageNumberOrDefault(page?: number): number {
+    return page ?? 1
+  }
+
+  private createGymDTO(gym: Gym[]): SearchGymUseCaseOutput[] {
+    return gym.map((g) => ({
+      id: g.id!,
+      title: g.title,
+      description: g.description,
+      phone: g.phone,
       coordinate: {
-        latitude: gymOrNull.latitude,
-        longitude: gymOrNull.longitude,
+        latitude: g.latitude,
+        longitude: g.longitude,
       },
-    })
+    }))
   }
 }

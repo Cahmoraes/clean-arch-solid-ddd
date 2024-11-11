@@ -47,16 +47,18 @@ describe('Search Gym', () => {
       .send(input)
 
     expect(response.status).toBe(HTTP_STATUS.OK)
-    expect(response.body).toEqual({
-      id: gym.id,
-      title: gym.title,
-      description: gym.description,
-      phone: gym.phone,
-      coordinate: {
-        latitude: gym.latitude,
-        longitude: gym.longitude,
+    expect(response.body).toEqual([
+      {
+        id: gym.id,
+        title: gym.title,
+        description: gym.description,
+        phone: gym.phone,
+        coordinate: {
+          latitude: gym.latitude,
+          longitude: gym.longitude,
+        },
       },
-    })
+    ])
   })
 
   test('Deve retornar 404 se a academia não for encontrada', async () => {
