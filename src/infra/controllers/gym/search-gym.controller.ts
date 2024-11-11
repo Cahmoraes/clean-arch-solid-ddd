@@ -1,3 +1,4 @@
+import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
@@ -21,6 +22,12 @@ const searchGymRequestSchema = z.object({
 
 export type SearchGymPayload = z.infer<typeof searchGymRequestSchema>
 
+const searchGymParamsSchema = z.object({
+  page: z.coerce.number().optional(),
+})
+
+export type SearchGymParams = z.infer<typeof searchGymParamsSchema>
+
 @injectable()
 export class SearchGymController implements Controller {
   constructor(
@@ -35,7 +42,7 @@ export class SearchGymController implements Controller {
   }
 
   async handle(server: HttpServer) {
-    server.register('get', GymRoutes.SEARCH, async (req) => {
+    server.register('get', GymRoutes.SEARCH, async (req: FastifyRequest) => {
       const parsedBodyOrError = this.parseParams(req.params)
       if (parsedBodyOrError.isLeft()) {
         return ResponseFactory.create({
@@ -43,9 +50,10 @@ export class SearchGymController implements Controller {
           message: parsedBodyOrError.value.message,
         })
       }
-      const result = await this.searchGymUseCase.execute(
-        parsedBodyOrError.value,
-      )
+      const result = await this.searchGymUseCase.execute({
+        name: parsedBodyOrError.value.name,
+        page: this.parseQuery(req.query),
+      })
       if (this.isGymNotFound(result)) {
         return ResponseFactory.create({
           status: HTTP_STATUS.NOT_FOUND,
@@ -65,6 +73,10 @@ export class SearchGymController implements Controller {
     const parsedBody = searchGymRequestSchema.safeParse(params)
     if (!parsedBody.success) return left(fromError(parsedBody.error))
     return right(parsedBody.data)
+  }
+
+  private parseQuery(query?: unknown): number | undefined {
+    return searchGymParamsSchema.parse(query).page
   }
 
   private isGymNotFound(result: SearchGymUseCaseOutput[]): boolean {

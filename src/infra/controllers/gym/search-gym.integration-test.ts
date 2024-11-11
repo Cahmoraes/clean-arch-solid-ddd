@@ -76,6 +76,39 @@ describe('Search Gym', () => {
     })
   })
 
+  test('Deve retornar uma lista de academias', async () => {
+    const input = {
+      id: '1',
+      title: 'Academia Teste',
+      description: 'Academia Teste descrição',
+      phone: '999999999',
+      latitude: -23.563099,
+      longitude: -46.656571,
+    }
+    for (let i = 0; i <= 22; i++) {
+      await createAndSaveGym({
+        id: `gym-${i}`,
+        gymRepository,
+        title: `Academia Teste ${i}`,
+        description: 'Academia Teste descrição',
+        phone: '999999999',
+        latitude: -23.563099,
+        longitude: -46.656571,
+      })
+    }
+
+    const response = await request(fastifyServer.server)
+      .get(toPath(input.title))
+      .query({
+        page: 2,
+      })
+      .send(input)
+
+    console.log(response.body)
+    expect(response.status).toBe(HTTP_STATUS.OK)
+    expect(response.body).toHaveLength(3)
+  })
+
   function toPath(path: string) {
     return GymRoutes.SEARCH.replace(':name', path)
   }
