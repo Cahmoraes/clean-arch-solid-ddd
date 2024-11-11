@@ -16,7 +16,7 @@ export class Phone {
   private constructor(private readonly _value?: number) {}
 
   public static create(
-    aStringOrNumber: PhoneCreate,
+    aStringOrNumber?: PhoneCreate,
   ): Either<InvalidPhoneNumberError, Phone> {
     const numberOrError = this.validate(aStringOrNumber)
     if (numberOrError.isLeft()) return left(numberOrError.value)
@@ -24,14 +24,14 @@ export class Phone {
   }
 
   private static validate(
-    aStringOrNumber: PhoneCreate,
+    aStringOrNumber?: PhoneCreate,
   ): Either<InvalidPhoneNumberError, CreatePhoneData> {
     const numberOrError = createPhoneSchema.safeParse(aStringOrNumber)
     if (!numberOrError.success) return left(new InvalidPhoneNumberError())
     return right(numberOrError.data)
   }
 
-  public static restore(phone: number): Phone {
+  public static restore(phone?: number): Phone {
     return new Phone(phone)
   }
 

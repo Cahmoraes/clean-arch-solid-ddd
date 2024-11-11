@@ -19,7 +19,7 @@ export interface SearchGymUseCaseResponse {
   id: string
   title: string
   description?: string
-  phone?: string
+  phone?: number
   coordinate: CoordinateDTO
 }
 

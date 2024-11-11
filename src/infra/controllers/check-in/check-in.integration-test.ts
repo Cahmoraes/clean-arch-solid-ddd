@@ -1,7 +1,7 @@
 import request from 'supertest'
 
 import { serverBuild } from '@/bootstrap/server-build'
-import { Gym, type GymRestoreProps } from '@/domain/gym'
+import { Gym, type GymCreateProps } from '@/domain/gym'
 import { User, type UserCreateProps } from '@/domain/user'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
@@ -68,7 +68,7 @@ describe('CheckIn', () => {
   }
 
   async function createAndSaveGym() {
-    const input: GymRestoreProps = {
+    const input: GymCreateProps = {
       title: 'fake gym',
       description: 'fake description',
       latitude: -27.0747279,
@@ -76,7 +76,7 @@ describe('CheckIn', () => {
       phone: '11971457899',
       id: 'fake_id',
     }
-    const gym = Gym.create(input)
+    const gym = Gym.create(input).forceRight().value
     await gymRepository.save(gym)
     return gymRepository.gyms.toArray()[0]
   }

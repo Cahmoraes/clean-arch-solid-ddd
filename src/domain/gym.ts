@@ -9,7 +9,7 @@ interface GymConstructor {
   id: Id
   title: Name
   description?: string
-  phone?: Phone
+  phone: Phone
   coordinate: Coordinate
 }
 
@@ -61,16 +61,14 @@ export class Gym {
       longitude: gymProps.longitude,
     })
     if (coordinateOrError.isLeft()) return left(coordinateOrError.value)
-    const phoneOrError = gymProps.phone
-      ? Phone.create(gymProps.phone)
-      : undefined
+    const phoneOrError = Phone.create(gymProps.phone)
     if (phoneOrError && phoneOrError.isLeft()) return left(phoneOrError.value)
     const gym = new Gym({
       ...gymProps,
       id,
       coordinate: coordinateOrError.value,
       title: nameOrError.value,
-      phone: phoneOrError ? phoneOrError.value : undefined,
+      phone: phoneOrError.value,
     })
     return right(gym)
   }
@@ -78,7 +76,7 @@ export class Gym {
   public static restore(gymProps: GymRestoreProps): Gym {
     const id = Id.restore(gymProps.id)
     const title = Name.restore(gymProps.title)
-    const phone = gymProps.phone ? Phone.restore(gymProps.phone) : undefined
+    const phone = Phone.restore(gymProps.phone)
     const coordinate = Coordinate.restore({
       latitude: gymProps.latitude,
       longitude: gymProps.longitude,
