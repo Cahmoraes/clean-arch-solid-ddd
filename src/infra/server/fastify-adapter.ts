@@ -3,11 +3,13 @@ import fastify, {
   type FastifyReply,
   type FastifyRequest,
 } from 'fastify'
+import { injectable } from 'inversify'
 
 import { env } from '../../shared/env'
 import { GlobalErrorHandler } from './global-error-handler'
 import type { HandleCallback, HttpServer, METHOD } from './http-server'
 
+@injectable()
 export class FastifyAdapter implements HttpServer {
   private readonly _server: FastifyInstance
 

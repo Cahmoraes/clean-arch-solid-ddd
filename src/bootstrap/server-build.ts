@@ -10,7 +10,7 @@ import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 
 export function serverBuild() {
-  const fastifyServer = new FastifyAdapter()
+  const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)
   const userController = container.get<CreateUserController>(
     TYPES.Controllers.CreateUser,
   )

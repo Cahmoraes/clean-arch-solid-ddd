@@ -1,4 +1,7 @@
 export const TYPES = {
+  Server: {
+    Fastify: Symbol.for('FastifyServer'),
+  },
   Prisma: {
     Client: Symbol.for('PrismaClient'),
   },
