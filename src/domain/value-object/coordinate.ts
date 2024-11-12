@@ -7,6 +7,11 @@ export interface CoordinateCreate {
   longitude: number
 }
 
+const MAX_LATITUDE = 90
+const MIN_LATITUDE = -90
+const MAX_LONGITUDE = 180
+const MIN_LONGITUDE = -180
+
 export class Coordinate {
   private _latitude: number
   private _longitude: number
@@ -25,13 +30,13 @@ export class Coordinate {
     return right(coordinate)
   }
 
-  private static validate(
+  public static validate(
     props: CoordinateCreate,
   ): Either<Error, CoordinateCreate> {
-    if (props.latitude < -90 || props.latitude > 90) {
+    if (props.latitude < MIN_LATITUDE || props.latitude > MAX_LATITUDE) {
       return left(new InvalidLatitudeError())
     }
-    if (props.longitude < -180 || props.longitude > 180) {
+    if (props.longitude < MIN_LONGITUDE || props.longitude > MAX_LONGITUDE) {
       return left(new InvalidLongitudeError())
     }
     return right(props)
