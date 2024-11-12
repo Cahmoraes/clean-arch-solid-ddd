@@ -13,7 +13,7 @@ export const TYPES = {
     UserProfile: Symbol.for('UserProfileController'),
     CheckIn: Symbol.for('CheckInController'),
     CreateGym: Symbol.for('CreateGymController'),
-    Metrics: Symbol.for('MetricsController'),
+    UserMetrics: Symbol.for('UserMetricsController'),
     SearchGym: Symbol.for('SearchGymController'),
   },
   UseCases: {
@@ -23,7 +23,7 @@ export const TYPES = {
     CreateGym: Symbol.for('CreateGymUseCase'),
     CheckIn: Symbol.for('CheckInUseCase'),
     CheckInHistory: Symbol.for('CheckInHistoryUseCase'),
-    GetMetrics: Symbol.for('GetMetricsUseCase'),
+    UserMetrics: Symbol.for('UserMetricsUseCase'),
     SearchGym: Symbol.for('SearchGymUseCase'),
   },
   Tokens: {

@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import type { GetMetricsUseCase } from '@/application/use-case/get-user-metrics.usecase'
+import type { UserMetricsUseCase } from '@/application/use-case/user-metrics.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -22,8 +22,8 @@ type MetricsRequestPayload = z.infer<typeof metricsRequestSchema>
 @injectable()
 export class MetricsController implements Controller {
   constructor(
-    @inject(TYPES.UseCases.GetMetrics)
-    private readonly getMetricsUseCase: GetMetricsUseCase,
+    @inject(TYPES.UseCases.UserMetrics)
+    private readonly getMetricsUseCase: UserMetricsUseCase,
   ) {
     this.bindMethods()
   }

@@ -5,16 +5,16 @@ import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory
 import { container } from '@/shared/ioc/container'
 import { TYPES } from '@/shared/ioc/types'
 
-import type { GetMetricsUseCase } from './get-user-metrics.usecase'
+import type { UserMetricsUseCase } from './user-metrics.usecase'
 
-describe('GetUserMetricsUseCase', () => {
-  let sut: GetMetricsUseCase
+describe('UserMetricsUseCase', () => {
+  let sut: UserMetricsUseCase
   let checkInRepository: InMemoryCheckInRepository
 
   beforeEach(() => {
     container.snapshot()
     checkInRepository = setupInMemoryRepositories().checkInRepository
-    sut = container.get<GetMetricsUseCase>(TYPES.UseCases.GetMetrics)
+    sut = container.get<UserMetricsUseCase>(TYPES.UseCases.UserMetrics)
   })
 
   afterEach(() => {

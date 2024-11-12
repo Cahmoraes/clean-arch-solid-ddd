@@ -104,7 +104,6 @@ describe('Search Gym', () => {
       })
       .send(input)
 
-    console.log(response.body)
     expect(response.status).toBe(HTTP_STATUS.OK)
     expect(response.body).toHaveLength(3)
   })

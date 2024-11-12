@@ -4,24 +4,24 @@ import { TYPES } from '@/shared/ioc/types'
 
 import type { CheckInRepository } from '../repository/check-in-repository'
 
-export interface GetMetricsUseCaseInput {
+export interface UserMetricsUseCaseInput {
   userId: string
 }
 
-export interface GetMetricsUseCaseOutput {
+export interface UserMetricsUseCaseOutput {
   checkInsCount: number
 }
 
 @injectable()
-export class GetMetricsUseCase {
+export class UserMetricsUseCase {
   constructor(
     @inject(TYPES.Repositories.CheckIn)
     private readonly checkInRepository: CheckInRepository,
   ) {}
 
   public async execute(
-    input: GetMetricsUseCaseInput,
-  ): Promise<GetMetricsUseCaseOutput> {
+    input: UserMetricsUseCaseInput,
+  ): Promise<UserMetricsUseCaseOutput> {
     const checkInsCount = await this.checkInRepository.countByUserId(
       input.userId,
     )

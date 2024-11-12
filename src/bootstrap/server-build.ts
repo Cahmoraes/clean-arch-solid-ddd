@@ -27,7 +27,7 @@ export function serverBuild() {
     TYPES.Controllers.CreateGym,
   )
   const metricsController = container.get<MetricsController>(
-    TYPES.Controllers.Metrics,
+    TYPES.Controllers.UserMetrics,
   )
   const searchGymController = container.get<SearchGymController>(
     TYPES.Controllers.SearchGym,
