@@ -35,8 +35,6 @@ export class CreateGymUseCase {
   public async execute(
     input: CreateGymUseCaseInput,
   ): Promise<CreateGymUseCaseOutput> {
-    const gymOrNull = await this.gymRepository.findByTitle(input.title)
-    if (gymOrNull) left(new GymAlreadyExistsError())
     const gymOrError = Gym.create(input)
     if (gymOrError.isLeft()) return left(gymOrError.value)
     const { id } = await this.gymRepository.save(gymOrError.value)

@@ -20,6 +20,8 @@ export interface GymCreateProps {
 
 @injectable()
 export class PrismaGymRepository implements GymRepository {
+  public ITEMS_PER_PAGE = 20
+
   constructor(
     @inject(TYPES.Prisma.Client)
     private readonly prismaClient: PrismaClient,
@@ -40,12 +42,13 @@ export class PrismaGymRepository implements GymRepository {
     return { id: result.id }
   }
 
-  public async findByTitle(title: string): Promise<Gym | null> {
-    const gymData = await this.prismaClient.gym.findFirst({
+  public async findByTitle(title: string, page: number): Promise<Gym[]> {
+    const gymData = await this.prismaClient.gym.findMany({
       where: { title },
+      skip: page * this.ITEMS_PER_PAGE,
+      take: this.ITEMS_PER_PAGE,
     })
-    if (!gymData) return null
-    return this.createGym(gymData)
+    return gymData.map(this.createGym)
   }
 
   private createGym(props: GymCreateProps) {

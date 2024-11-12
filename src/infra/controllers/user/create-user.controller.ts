@@ -1,3 +1,4 @@
+import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import type { ValidationError } from 'zod-validation-error'
@@ -35,7 +36,7 @@ export class CreateUserController implements Controller {
   }
 
   async handle(server: HttpServer) {
-    server.register('post', UserRoutes.CREATE, async (req) => {
+    server.register('post', UserRoutes.CREATE, async (req: FastifyRequest) => {
       const parsedBodyOrError = this.parseBodyOrError(req.body)
       if (parsedBodyOrError.isLeft()) {
         return ResponseFactory.create({

@@ -69,7 +69,7 @@ describe('CreateGymUseCase', () => {
     expect(result.value).toBeInstanceOf(InvalidLongitudeError)
   })
 
-  test('Deve falhar ao criar uma Academia com longitude inválida', async () => {
+  test('Deve falhar ao tentar criar uma Academia com longitude inválida', async () => {
     const input: CreateGymUseCaseInput = {
       title: 'fake gym',
       description: 'fake description',
@@ -82,7 +82,19 @@ describe('CreateGymUseCase', () => {
     expect(result.value).toBeInstanceOf(InvalidLatitudeError)
   })
 
-  test('Deve falhar ao criar uma Academia com telefone inválido', async () => {
+  test('Deve falhar ao tentar criar uma Academia com telefone inválido', async () => {
+    const input: CreateGymUseCaseInput = {
+      title: 'fake gym',
+      description: 'fake description',
+      latitude: -23.55052,
+      longitude: -46.633308,
+      phone: 'invalid-phone',
+    }
+    const result = await sut.execute(input)
+    expect(result.isLeft()).toBe(true)
+  })
+
+  test('Deve falhar ao tentar criar uma Academia com telefone inválido', async () => {
     const input: CreateGymUseCaseInput = {
       title: 'fake gym',
       description: 'fake description',
