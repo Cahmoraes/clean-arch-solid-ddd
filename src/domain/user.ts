@@ -1,40 +1,38 @@
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import type { Optional } from '@/@types/optional'
 import { type Either, left, right } from '@/domain/value-object/either'
 
+import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { Id } from './value-object/id'
+import { Name } from './value-object/name'
 import { Password } from './value-object/password'
 
 export interface UserProps {
   id: Id
-  name: string
+  name: Name
   email: string
   password: Password
   createdAt: Date
 }
 
-type UserPropsWithoutIdAndPassword = Omit<UserProps, 'id' | 'password'>
-
-export type UserCreateProps = Optional<
-  UserPropsWithoutIdAndPassword,
-  'createdAt'
-> & {
+export interface UserCreateProps {
   id?: string
+  name: string
+  email: string
   password: string
+  createdAt?: Date
 }
 
-export type RestoreUserProps = Omit<
-  UserPropsWithoutIdAndPassword,
-  'password'
-> & {
+export interface RestoreUserProps {
   id: string
+  name: string
+  email: string
   password: string
+  createdAt: Date
 }
 
 const createUserSchema = z.object({
-  name: z.string().min(3),
   email: z.string().email(),
 })
 
@@ -42,7 +40,7 @@ type CreateUserData = z.infer<typeof createUserSchema>
 
 export class User {
   private readonly _id: Id
-  private readonly _name: string
+  private readonly _name: Name
   private readonly _email: string
   private readonly _password: Password
   private readonly _createdAt: Date
@@ -57,9 +55,11 @@ export class User {
 
   public static create(
     userCreateProps: UserCreateProps,
-  ): Either<ValidationError, User> {
+  ): Either<ValidationError | InvalidNameLengthError, User> {
     const userOrError = this.validate(userCreateProps)
     if (userOrError.isLeft()) return left(fromError(userOrError.value))
+    const nameOrError = Name.create(userCreateProps.name)
+    if (nameOrError.isLeft()) return left(nameOrError.value)
     const passwordOrError = Password.create(userCreateProps.password)
     if (passwordOrError.isLeft()) return left(passwordOrError.value)
     const id = Id.create(userCreateProps.id)
@@ -67,6 +67,7 @@ export class User {
     return right(
       new User({
         ...userOrError.value,
+        name: nameOrError.value,
         id,
         createdAt,
         password: passwordOrError.value,
@@ -86,7 +87,7 @@ export class User {
     return new User({
       id: Id.restore(restoreUserProps.id),
       email: restoreUserProps.email,
-      name: restoreUserProps.name,
+      name: Name.restore(restoreUserProps.name),
       password: Password.restore(restoreUserProps.password),
       createdAt: restoreUserProps.createdAt,
     })
@@ -97,7 +98,7 @@ export class User {
   }
 
   get name() {
-    return this._name
+    return this._name.value
   }
 
   get email() {

@@ -1,5 +1,6 @@
 import { ValidationError } from 'zod-validation-error'
 
+import { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { type RestoreUserProps, User, type UserCreateProps } from './user'
 
 describe('User Entity', () => {
@@ -42,10 +43,7 @@ describe('User Entity', () => {
       password: 'securepassword123',
     }
     const userOrError = User.create(input)
-    expect(userOrError.forceLeft().value).toBeInstanceOf(ValidationError)
-    expect(userOrError.forceLeft().value.message).toEqual(
-      'Validation error: String must contain at least 3 character(s) at "name"',
-    )
+    expect(userOrError.forceLeft().value).toBeInstanceOf(InvalidNameLengthError)
   })
 
   test('Não deve criar um usuário com email inválido', () => {
