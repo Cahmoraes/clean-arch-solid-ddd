@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import { CheckIn } from '@/domain/check-in'
-import { CalculateDistance } from '@/domain/service/calculate-distance'
+import { DistanceCalculator } from '@/domain/service/distance-calculator'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/shared/ioc/types'
 
@@ -84,7 +84,7 @@ export class CheckInUseCase {
     userCoord: Coordinate,
     gymCoord: Coordinate,
   ): number {
-    return CalculateDistance.distanceBetweenCoordinates(userCoord, gymCoord)
+    return DistanceCalculator.distanceBetweenCoordinates(userCoord, gymCoord)
   }
 
   private isDistanceExceeded(differenceInDistance: number): boolean {

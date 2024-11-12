@@ -7,6 +7,7 @@ import type {
   SaveGymResult,
 } from '@/application/repository/gym-repository'
 import { Gym } from '@/domain/gym'
+import type { Coordinate } from '@/domain/value-object/coordinate'
 import { TYPES } from '@/shared/ioc/types'
 
 export interface GymCreateProps {
@@ -68,5 +69,16 @@ export class PrismaGymRepository implements GymRepository {
     })
     if (!gymData) return null
     return this.createGym(gymData)
+  }
+
+  public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {
+    const gyms = await this.prismaClient.$queryRaw<GymCreateProps[]>`
+      SELECT * FROM "gyms"
+      WHERE ST_DistanceSphere(
+        ST_MakePoint("longitude", "latitude"),
+        ST_MakePoint(${coordinate.longitude}, ${coordinate.latitude})
+      ) <= 10000
+    `
+    return gyms.map(this.createGym)
   }
 }

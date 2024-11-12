@@ -3,7 +3,7 @@ export interface Coordinate {
   longitude: number
 }
 
-export class CalculateDistance {
+export class DistanceCalculator {
   static distanceBetweenCoordinates(from: Coordinate, to: Coordinate): number {
     if (from.latitude === to.latitude && from.longitude === to.longitude) {
       return 0
