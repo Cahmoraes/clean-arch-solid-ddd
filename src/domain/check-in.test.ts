@@ -4,7 +4,7 @@ import {
   type CheckInRestoreProps,
 } from './check-in'
 
-describe('CheckIn', () => {
+describe('CheckIn Entity', () => {
   test('Deve criar um check-in', () => {
     const input: CheckInCreateProps = {
       id: 'any_id',
