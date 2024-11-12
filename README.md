@@ -1,22 +1,32 @@
-# Princípios de desenvolvimento de Software
+# App
 
+GymPass style app.
 
-Tudo se resume em:
+## RFs (Requisitos funcionais)
 
-### Coesão
-Conceito que mede o quão bem as responsabilidades de um Módulo estão relacionadas entre si.
+- [x] Deve ser possível se cadastrar;
+- [x] Deve ser possível se autenticar;
+- [x] Deve ser possível obter o perfil de um usuário logado;
+- [x] Deve ser possível obter o número de check-ins realizados pelo usuário logado;
+- [x] Deve ser possível o usuário obter o seu histórico de check-ins;
+- [ ] Deve ser possível o usuário buscar academias próximas;
+- [x] Deve ser possível o usuário buscar academias pelo nome;
+- [x] Deve ser possível o usuário realizar check-in em uma academia;
+- [ ] Deve ser possível validar o check-in de um usuário;
+- [x] Deve ser possível cadastrar uma academia;
 
-### Acoplamento
-Conceito mede o grau de dependência entre dois ou mais objetos. A depende de B, se B muda, A quebra.
+## RNs (Regras de negócio)
 
----
+- [x] O usuário não deve poder se cadastrar com um e-mail duplicado;
+- [x] O usuário não pode fazer 2 check-ins no mesmo dia;
+- [x] O usuário não pode fazer check-in se não estiver perto (100m) da academia;
+- [ ] O check-in só pode ser validado até 20 minutos após ser criado;
+- [ ] O check-in só pode ser validado por administradores;
+- [ ] A academia só pode ser cadastrada por administradores;
 
-Todos os princípios contribuem para um código com essas três principais características:
-- Tolerância a Mudança
-- Legibilidade
-- reúso
+## RNFs (Requisitos não-funcionais)
 
-Todos os princípios combatem principalmente esses três conceitos:
-- Fragilidade
-- Rigidez
-- Imobilidade
+- [x] A senha do usuário precisa estar criptografada;
+- [x] Os dados da aplicação precisam estar persistidos em um banco PostgreSQL;
+- [x] Todas listas de dados precisam estar paginadas com 20 itens por página;
+- [ ] O usuário deve ser identificado por um JWT (JSON Web Token);
