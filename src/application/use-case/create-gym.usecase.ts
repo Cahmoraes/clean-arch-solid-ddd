@@ -5,7 +5,7 @@ import { Gym } from '@/domain/gym'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/shared/ioc/types'
 
-import { GymAlreadyExistsError } from '../error/gym-alread-exists-error'
+import { GymAlreadyExistsError } from '../error/gym-already-exists-error'
 import type { GymRepository } from '../repository/gym-repository'
 
 export interface CreateGymUseCaseInput {
