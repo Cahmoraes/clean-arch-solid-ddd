@@ -1,9 +1,9 @@
-import { z } from 'zod'
-import { fromError, type ValidationError } from 'zod-validation-error'
+import { type ValidationError } from 'zod-validation-error'
 
 import { type Either, left, right } from '@/domain/value-object/either'
 
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
+import { Email } from './value-object/email'
 import { Id } from './value-object/id'
 import { Name } from './value-object/name'
 import { Password } from './value-object/password'
@@ -11,7 +11,7 @@ import { Password } from './value-object/password'
 export interface UserProps {
   id: Id
   name: Name
-  email: string
+  email: Email
   password: Password
   createdAt: Date
 }
@@ -32,16 +32,12 @@ export interface RestoreUserProps {
   createdAt: Date
 }
 
-const createUserSchema = z.object({
-  email: z.string().email(),
-})
-
-type CreateUserData = z.infer<typeof createUserSchema>
+export type ValidatedUserProps = Omit<UserProps, 'id' | 'createdAt'>
 
 export class User {
   private readonly _id: Id
   private readonly _name: Name
-  private readonly _email: string
+  private readonly _email: Email
   private readonly _password: Password
   private readonly _createdAt: Date
 
@@ -56,37 +52,41 @@ export class User {
   public static create(
     userCreateProps: UserCreateProps,
   ): Either<ValidationError | InvalidNameLengthError, User> {
-    const userOrError = this.validate(userCreateProps)
-    if (userOrError.isLeft()) return left(fromError(userOrError.value))
-    const nameOrError = Name.create(userCreateProps.name)
-    if (nameOrError.isLeft()) return left(nameOrError.value)
-    const passwordOrError = Password.create(userCreateProps.password)
-    if (passwordOrError.isLeft()) return left(passwordOrError.value)
+    const validatedPropsOrError = this.validate(userCreateProps)
+    if (validatedPropsOrError.isLeft()) return left(validatedPropsOrError.value)
     const id = Id.create(userCreateProps.id)
     const createdAt = userCreateProps.createdAt ?? new Date()
     return right(
       new User({
-        ...userOrError.value,
-        name: nameOrError.value,
         id,
         createdAt,
-        password: passwordOrError.value,
+        name: validatedPropsOrError.value.name,
+        email: validatedPropsOrError.value.email,
+        password: validatedPropsOrError.value.password,
       }),
     )
   }
 
   private static validate(
-    createUserProps: UserCreateProps,
-  ): Either<ValidationError, CreateUserData> {
-    const userOrError = createUserSchema.safeParse(createUserProps)
-    if (!userOrError.success) return left(fromError(userOrError.error))
-    return right(userOrError.data)
+    userCreateProps: UserCreateProps,
+  ): Either<ValidationError | InvalidNameLengthError, ValidatedUserProps> {
+    const nameOrError = Name.create(userCreateProps.name)
+    if (nameOrError.isLeft()) return left(nameOrError.value)
+    const emailOrError = Email.create(userCreateProps.email)
+    if (emailOrError.isLeft()) return left(emailOrError.value)
+    const passwordOrError = Password.create(userCreateProps.password)
+    if (passwordOrError.isLeft()) return left(passwordOrError.value)
+    return right({
+      name: nameOrError.value,
+      email: emailOrError.value,
+      password: passwordOrError.value,
+    })
   }
 
   public static restore(restoreUserProps: RestoreUserProps) {
     return new User({
       id: Id.restore(restoreUserProps.id),
-      email: restoreUserProps.email,
+      email: Email.restore(restoreUserProps.email),
       name: Name.restore(restoreUserProps.name),
       password: Password.restore(restoreUserProps.password),
       createdAt: restoreUserProps.createdAt,
@@ -97,19 +97,19 @@ export class User {
     return this._id.value
   }
 
-  get name() {
+  get name(): string {
     return this._name.value
   }
 
-  get email() {
-    return this._email
+  get email(): string {
+    return this._email.value
   }
 
-  get password() {
+  get password(): string {
     return this._password.value
   }
 
-  get createdAt() {
+  get createdAt(): Date {
     return this._createdAt
   }
 
