@@ -1,5 +1,8 @@
 import type { Optional } from '@/@types/optional'
+import { CheckInTimeExceededError } from '@/application/error/check-in-time-exceeded-error'
+import { env } from '@/infra/env'
 
+import { type Either, left, right } from './value-object/either'
 import { Id } from './value-object/id'
 import { ValidId } from './value-object/valid-id'
 
@@ -120,8 +123,15 @@ export class CheckIn {
     return this._isValidated
   }
 
-  public validate() {
+  public validate(): Either<CheckInTimeExceededError, true> {
+    const now = new Date()
+    const diff = now.getTime() - this._createdAt.getTime()
+    const diffInMinutes = diff / 1000 / 60
+    if (diffInMinutes > env.CHECK_IN_EXPIRATION_TIME) {
+      return left(new CheckInTimeExceededError())
+    }
     this._validatedAt = new Date()
     this._isValidated = true
+    return right(true)
   }
 }

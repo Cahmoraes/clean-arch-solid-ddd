@@ -4,8 +4,8 @@ import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
 import { CheckInNotFoundError } from '../error/check-in-not-found-error'
+import type { CheckInTimeExceededError } from '../error/check-in-time-exceeded-error'
 import type { CheckInRepository } from '../repository/check-in-repository'
-import type { UserRepository } from '../repository/user-repository'
 
 export interface ValidateCheckInUseCaseInput {
   checkInId: string
@@ -16,15 +16,13 @@ export interface ValidateCheckInUseCaseOutput {
 }
 
 export type ValidateCheckInUseCaseResponse = Either<
-  Error,
+  CheckInNotFoundError | CheckInTimeExceededError,
   ValidateCheckInUseCaseOutput
 >
 
 @injectable()
 export class ValidateCheckInUseCase {
   constructor(
-    @inject(TYPES.Repositories.CheckIn)
-    private readonly userRepository: UserRepository,
     @inject(TYPES.Repositories.CheckIn)
     private readonly checkInRepository: CheckInRepository,
   ) {}
@@ -34,7 +32,8 @@ export class ValidateCheckInUseCase {
   ): Promise<ValidateCheckInUseCaseResponse> {
     const checkInOrNull = await this.checkInRepository.findById(input.checkInId)
     if (!checkInOrNull) return left(new CheckInNotFoundError())
-    checkInOrNull.validate()
+    const validatedOrError = checkInOrNull.validate()
+    if (validatedOrError.isLeft()) return left(validatedOrError.value)
     await this.checkInRepository.save(checkInOrNull)
     return right({
       validatedAt: new Date(),

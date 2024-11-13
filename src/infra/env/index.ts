@@ -17,6 +17,7 @@ const envSchema = z.object({
   PASSWORD_SALT: z.coerce.number().default(2),
   PRIVATE_KEY: z.string(),
   ITEMS_PER_PAGE: z.coerce.number().default(20),
+  CHECK_IN_EXPIRATION_TIME: z.coerce.number().default(20),
 })
 
 const _env = envSchema.safeParse(envObject)

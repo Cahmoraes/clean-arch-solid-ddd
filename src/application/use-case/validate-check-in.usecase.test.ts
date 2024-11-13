@@ -8,6 +8,8 @@ import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 
+import { CheckInNotFoundError } from '../error/check-in-not-found-error'
+import { CheckInTimeExceededError } from '../error/check-in-time-exceeded-error'
 import {
   ValidateCheckInUseCase,
   type ValidateCheckInUseCaseInput,
@@ -49,5 +51,34 @@ describe('ValidateCheckIn', () => {
     expect(right.validatedAt).toBeInstanceOf(Date)
     expect(right.validatedAt).toBeInstanceOf(Date)
     expect(checkIn.isValidated).toBe(true)
+  })
+
+  test('Não deve validar um check-in após o tempo limite', async () => {
+    vi.useFakeTimers()
+    const createCheckInProps: CreateAndSaveCheckInProps = {
+      checkInRepository,
+      gymId: 'any_gym_id',
+      id: 'check-in-id',
+      userId: 'any_user_id',
+    }
+    const checkIn = await createAndSaveCheckIn(createCheckInProps)
+    const input: ValidateCheckInUseCaseInput = {
+      checkInId: checkIn.id!,
+    }
+    const TWENTY_ON_MINUTES = 1000 * 60 * 21
+    vi.advanceTimersByTime(TWENTY_ON_MINUTES)
+    const result = await sut.execute(input)
+    const right = result.force.left().value
+    expect(right).toBeInstanceOf(CheckInTimeExceededError)
+    vi.useRealTimers()
+  })
+
+  test('Não deve validar um check-in inexistente', async () => {
+    const input: ValidateCheckInUseCaseInput = {
+      checkInId: 'non-existent-id',
+    }
+    const result = await sut.execute(input)
+    const left = result.force.left().value
+    expect(left).toBeInstanceOf(CheckInNotFoundError)
   })
 })

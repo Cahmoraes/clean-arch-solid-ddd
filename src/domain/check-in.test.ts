@@ -1,3 +1,5 @@
+import { CheckInTimeExceededError } from '@/application/error/check-in-time-exceeded-error'
+
 import {
   CheckIn,
   type CheckInCreateProps,
@@ -61,6 +63,24 @@ describe('CheckIn Entity', () => {
     expect(checkIn.isValidated).toBe(true)
     expect(checkIn.validatedAt).toBeInstanceOf(Date)
     expect(checkIn.validatedAt).toEqual(new Date('2021-01-01'))
+    vi.useRealTimers()
+  })
+
+  test('Não deve validar um check-in após o tempo limite', async () => {
+    vi.useFakeTimers()
+    const input: CheckInCreateProps = {
+      id: 'any_id',
+      userId: 'any_user_id',
+      gymId: 'any_gym_id',
+      userLatitude: 0,
+      userLongitude: 10,
+    }
+    const checkIn = CheckIn.create(input)
+    const TWENTY_ON_MINUTES = 1000 * 60 * 21
+    vi.advanceTimersByTime(TWENTY_ON_MINUTES)
+    const result = checkIn.validate()
+    expect(checkIn.isValidated).toBe(false)
+    expect(result.forceLeft().value).toBeInstanceOf(CheckInTimeExceededError)
     vi.useRealTimers()
   })
 })
