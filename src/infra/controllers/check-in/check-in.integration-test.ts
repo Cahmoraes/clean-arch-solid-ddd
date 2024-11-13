@@ -1,4 +1,5 @@
 import request from 'supertest'
+import { isValidDate } from 'test/is-valid-date'
 
 import { serverBuild } from '@/bootstrap/server-build'
 import { Gym, type GymCreateProps } from '@/domain/gym'
@@ -79,9 +80,5 @@ describe('CheckIn', () => {
     const gym = Gym.create(input).forceRight().value
     await gymRepository.save(gym)
     return gymRepository.gyms.toArray()[0]
-  }
-
-  function isValidDate(aString: string) {
-    return !isNaN(new Date(aString).getTime())
   }
 })

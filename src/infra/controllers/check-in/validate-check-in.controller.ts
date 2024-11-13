@@ -34,10 +34,10 @@ export class ValidateCheckInController implements Controller {
 
   public async handle(server: HttpServer): Promise<void> {
     server.register(
-      'get',
+      'post',
       CheckInRoutes.VALIDATE,
       async (req: FastifyRequest) => {
-        const parsedRequest = this.parseBodyPayload(req.params)
+        const parsedRequest = this.parseBodyPayload(req.body)
         if (parsedRequest.isLeft()) {
           return ResponseFactory.create({
             status: HTTP_STATUS.BAD_REQUEST,
