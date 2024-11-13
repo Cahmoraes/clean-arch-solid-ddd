@@ -124,14 +124,18 @@ export class CheckIn {
   }
 
   public validate(): Either<CheckInTimeExceededError, true> {
-    const now = new Date()
-    const diff = now.getTime() - this._createdAt.getTime()
-    const diffInMinutes = diff / 1000 / 60
-    if (diffInMinutes > env.CHECK_IN_EXPIRATION_TIME) {
+    if (this.isNotEligibleToValidate()) {
       return left(new CheckInTimeExceededError())
     }
     this._validatedAt = new Date()
     this._isValidated = true
     return right(true)
+  }
+
+  private isNotEligibleToValidate(): boolean {
+    const now = new Date()
+    const differenceInMilliseconds = now.getTime() - this._createdAt.getTime()
+    const differenceInMinutes = differenceInMilliseconds / 1000 / 60
+    return differenceInMinutes > env.CHECK_IN_EXPIRATION_TIME
   }
 }
