@@ -11,11 +11,12 @@ interface CheckInProps {
   validatedAt?: Date
   userLatitude: number
   userLongitude: number
+  isValidated: boolean
 }
 
 export type CheckInCreateProps = Omit<
   Optional<CheckInProps, 'id' | 'createdAt'>,
-  'id' | 'userId' | 'gymId'
+  'id' | 'userId' | 'gymId' | 'isValidated'
 > & {
   id?: string
   userId: string
@@ -30,6 +31,7 @@ export type CheckInRestoreProps = {
   validatedAt?: Date
   userLatitude: number
   userLongitude: number
+  isValidated: boolean
 }
 
 export class CheckIn {
@@ -37,9 +39,10 @@ export class CheckIn {
   private readonly _userId: ValidId
   private readonly _gymId: ValidId
   private readonly _createdAt: Date
-  private readonly _validatedAt?: Date
   private readonly _latitude: number
   private readonly _longitude: number
+  private _isValidated: boolean
+  private _validatedAt?: Date
 
   private constructor(props: CheckInProps) {
     this._id = props.id
@@ -49,6 +52,7 @@ export class CheckIn {
     this._validatedAt = props.validatedAt
     this._latitude = props.userLatitude
     this._longitude = props.userLongitude
+    this._isValidated = props.isValidated
   }
 
   public static create(props: CheckInCreateProps) {
@@ -61,6 +65,7 @@ export class CheckIn {
       userId,
       gymId,
       createdAt,
+      isValidated: false,
       userLatitude: props.userLatitude,
       userLongitude: props.userLongitude,
     })
@@ -75,6 +80,7 @@ export class CheckIn {
       validatedAt: props.validatedAt,
       userLatitude: props.userLatitude,
       userLongitude: props.userLongitude,
+      isValidated: props.isValidated,
     })
   }
 
@@ -98,11 +104,24 @@ export class CheckIn {
     return this._validatedAt
   }
 
+  set validatedAt(date: Date) {
+    this._validatedAt = date
+  }
+
   get latitude(): number {
     return this._latitude
   }
 
   get longitude(): number {
     return this._longitude
+  }
+
+  get isValidated(): boolean {
+    return this._isValidated
+  }
+
+  public validate() {
+    this._validatedAt = new Date()
+    this._isValidated = true
   }
 }

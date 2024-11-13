@@ -26,6 +26,7 @@ describe('CheckIn Entity', () => {
 
   test('Deve restaurar um CheckIn', () => {
     const input: CheckInRestoreProps = {
+      isValidated: true,
       id: 'any_id',
       userId: 'any_user_id',
       gymId: 'any_gym_id',
@@ -43,5 +44,23 @@ describe('CheckIn Entity', () => {
     expect(checkIn.validatedAt).toEqual(input.validatedAt)
     expect(checkIn.latitude).toEqual(0)
     expect(checkIn.longitude).toEqual(0)
+  })
+
+  test('Deve validar um check-in', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2021-01-01'))
+    const input: CheckInCreateProps = {
+      id: 'any_id',
+      userId: 'any_user_id',
+      gymId: 'any_gym_id',
+      userLatitude: 0,
+      userLongitude: 10,
+    }
+    const checkIn = CheckIn.create(input)
+    checkIn.validate()
+    expect(checkIn.isValidated).toBe(true)
+    expect(checkIn.validatedAt).toBeInstanceOf(Date)
+    expect(checkIn.validatedAt).toEqual(new Date('2021-01-01'))
+    vi.useRealTimers()
   })
 })
