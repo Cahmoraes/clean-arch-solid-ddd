@@ -6,7 +6,8 @@ import type {
   SaveResponse,
 } from '@/application/repository/check-in-repository'
 import { CheckIn } from '@/domain/check-in'
-import { TYPES } from '@/shared/ioc/types'
+import { env } from '@/infra/env'
+import { TYPES } from '@/infra/ioc/types'
 
 interface CreateCheckInProps {
   id: string
@@ -20,8 +21,6 @@ interface CreateCheckInProps {
 
 @injectable()
 export class PrismaCheckInRepository implements CheckInRepository {
-  private readonly ITEMS_PER_PAGE = 20
-
   constructor(
     @inject(TYPES.Prisma.Client)
     private readonly prismaClient: PrismaClient,
@@ -95,8 +94,8 @@ export class PrismaCheckInRepository implements CheckInRepository {
       where: {
         user_id: userId,
       },
-      skip: page * this.ITEMS_PER_PAGE,
-      take: this.ITEMS_PER_PAGE,
+      skip: page * env.ITEMS_PER_PAGE,
+      take: env.ITEMS_PER_PAGE,
     })
     return checkInData.map((data) =>
       this.createCheckIn({

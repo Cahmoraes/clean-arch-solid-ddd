@@ -10,11 +10,11 @@ import type {
 import { Gym } from '@/domain/gym'
 import { DistanceCalculator } from '@/domain/service/distance-calculator'
 import type { Coordinate } from '@/domain/value-object/coordinate'
+import { env } from '@/infra/env'
 
 @injectable()
 export class InMemoryGymRepository implements GymRepository {
   public gyms = new ExtendedSet<Gym>()
-  public ITEMS_PER_PAGE = 20
   public KILOMETER = 1
 
   public async save(gym: Gym): Promise<SaveGymResult> {
@@ -41,7 +41,7 @@ export class InMemoryGymRepository implements GymRepository {
         gym.title.toLocaleLowerCase().includes(title.toLocaleLowerCase()),
       )
       .toArray()
-      .slice((page - 1) * this.ITEMS_PER_PAGE, page * this.ITEMS_PER_PAGE)
+      .slice((page - 1) * env.ITEMS_PER_PAGE, page * env.ITEMS_PER_PAGE)
   }
 
   public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {

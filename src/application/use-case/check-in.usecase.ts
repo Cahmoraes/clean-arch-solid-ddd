@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import { CheckIn } from '@/domain/check-in'
 import { DistanceCalculator } from '@/domain/service/distance-calculator'
 import { type Either, left, right } from '@/domain/value-object/either'
-import { TYPES } from '@/shared/ioc/types'
+import { TYPES } from '@/infra/ioc/types'
 
 import { MaxDistanceError } from '../error/max-distance-error'
 import { UserHasAlreadyCheckedInToday } from '../error/user-has-already-checked-in-today'

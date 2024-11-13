@@ -5,9 +5,9 @@ import type { SearchGymController } from '@/infra/controllers/gym/search-gym.con
 import type { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import type { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
+import { container } from '@/infra/ioc/container'
+import { TYPES } from '@/infra/ioc/types'
 import { FastifyAdapter } from '@/infra/server/fastify-adapter'
-import { container } from '@/shared/ioc/container'
-import { TYPES } from '@/shared/ioc/types'
 
 export function serverBuild() {
   const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)

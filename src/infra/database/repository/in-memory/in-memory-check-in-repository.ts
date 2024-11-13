@@ -8,6 +8,7 @@ import type {
   SaveResponse,
 } from '@/application/repository/check-in-repository'
 import { CheckIn } from '@/domain/check-in'
+import { env } from '@/infra/env'
 
 @injectable()
 export class InMemoryCheckInRepository implements CheckInRepository {
@@ -53,7 +54,7 @@ export class InMemoryCheckInRepository implements CheckInRepository {
     return this.checkIns
       .filter((checkIn) => checkIn.userId === userId)
       .toArray()
-      .slice((page - 1) * this.ITEMS_PER_PAGE, page * this.ITEMS_PER_PAGE)
+      .slice((page - 1) * env.ITEMS_PER_PAGE, page * env.ITEMS_PER_PAGE)
   }
 
   public async countByUserId(userId: string): Promise<number> {

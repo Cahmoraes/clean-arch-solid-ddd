@@ -2,6 +2,9 @@ import { config } from 'dotenv'
 import { z } from 'zod'
 import { fromError } from 'zod-validation-error'
 
+// Registry + Singleton
+// ES Módulo
+
 const envObject = config({
   path: '.env',
 }).parsed
@@ -13,6 +16,7 @@ const envSchema = z.object({
   USE_PRISMA: z.string().transform((v) => v === 'true'),
   PASSWORD_SALT: z.coerce.number().default(2),
   PRIVATE_KEY: z.string(),
+  ITEMS_PER_PAGE: z.coerce.number().default(20),
 })
 
 const _env = envSchema.safeParse(envObject)

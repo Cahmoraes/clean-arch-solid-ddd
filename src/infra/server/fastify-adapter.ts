@@ -5,7 +5,7 @@ import fastify, {
 } from 'fastify'
 import { injectable } from 'inversify'
 
-import { env } from '../../shared/env'
+import { env } from '../env'
 import { GlobalErrorHandler } from './global-error-handler'
 import type { HandleCallback, HttpServer, METHOD } from './http-server'
 

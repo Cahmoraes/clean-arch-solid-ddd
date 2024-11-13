@@ -5,7 +5,7 @@ import type { InvalidLongitudeError } from '@/domain/error/invalid-longitude-err
 import type { Gym } from '@/domain/gym'
 import { Coordinate } from '@/domain/value-object/coordinate'
 import { type Either, left, right } from '@/domain/value-object/either'
-import { TYPES } from '@/shared/ioc/types'
+import { TYPES } from '@/infra/ioc/types'
 
 import type { GymRepository } from '../repository/gym-repository'
 

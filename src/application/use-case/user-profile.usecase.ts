@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import { type Either, left, right } from '@/domain/value-object/either'
-import { TYPES } from '@/shared/ioc/types'
+import { TYPES } from '@/infra/ioc/types'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
 import type { UserRepository } from '../repository/user-repository'

@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import type { Gym } from '@/domain/gym'
-import { TYPES } from '@/shared/ioc/types'
+import { TYPES } from '@/infra/ioc/types'
 
 import type { GymRepository } from '../repository/gym-repository'
 

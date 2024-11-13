@@ -1,7 +1,7 @@
 import { InvalidLatitudeError } from '@/domain/error/invalid-latitude-error'
 import { InvalidLongitudeError } from '@/domain/error/invalid-longitude-error'
-import { container } from '@/shared/ioc/container'
-import { TYPES } from '@/shared/ioc/types'
+import { container } from '@/infra/ioc/container'
+import { TYPES } from '@/infra/ioc/types'
 
 import {
   CreateGymUseCase,

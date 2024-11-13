@@ -4,8 +4,8 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
-import { container } from '@/shared/ioc/container'
-import { TYPES } from '@/shared/ioc/types'
+import { container } from '@/infra/ioc/container'
+import { TYPES } from '@/infra/ioc/types'
 
 import type {
   CheckInHistoryUseCase,

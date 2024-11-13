@@ -8,7 +8,8 @@ import type {
 } from '@/application/repository/gym-repository'
 import { Gym } from '@/domain/gym'
 import type { Coordinate } from '@/domain/value-object/coordinate'
-import { TYPES } from '@/shared/ioc/types'
+import { env } from '@/infra/env'
+import { TYPES } from '@/infra/ioc/types'
 
 export interface GymCreateProps {
   id: string
@@ -21,8 +22,6 @@ export interface GymCreateProps {
 
 @injectable()
 export class PrismaGymRepository implements GymRepository {
-  public ITEMS_PER_PAGE = 20
-
   constructor(
     @inject(TYPES.Prisma.Client)
     private readonly prismaClient: PrismaClient,
@@ -46,8 +45,8 @@ export class PrismaGymRepository implements GymRepository {
   public async findByTitle(title: string, page: number): Promise<Gym[]> {
     const gymData = await this.prismaClient.gym.findMany({
       where: { title },
-      skip: page * this.ITEMS_PER_PAGE,
-      take: this.ITEMS_PER_PAGE,
+      skip: page * env.ITEMS_PER_PAGE,
+      take: env.ITEMS_PER_PAGE,
     })
     return gymData.map(this.createGym)
   }

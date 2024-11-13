@@ -6,8 +6,8 @@ import { User } from '@/domain/user'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { FastifyAdapter } from '@/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/infra/server/http-status'
-import { container } from '@/shared/ioc/container'
-import { TYPES } from '@/shared/ioc/types'
+import { container } from '@/infra/ioc/container'
+import { TYPES } from '@/infra/ioc/types'
 
 import { UserRoutes } from '../routes/user-routes'
 

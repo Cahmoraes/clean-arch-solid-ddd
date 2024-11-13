@@ -6,7 +6,7 @@ import type { CreateGymUseCase } from '@/application/use-case/create-gym.usecase
 import { type Either, left, right } from '@/domain/value-object/either'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
-import { TYPES } from '@/shared/ioc/types'
+import { TYPES } from '@/infra/ioc/types'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'

@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 
 import type { UserRepository } from '@/application/repository/user-repository'
 import { User } from '@/domain/user'
-import { TYPES } from '@/shared/ioc/types'
+import { TYPES } from '@/infra/ioc/types'
 
 interface UserData {
   id: string
