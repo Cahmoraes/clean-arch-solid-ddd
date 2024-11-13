@@ -7,7 +7,7 @@ import { TYPES } from '@/infra/ioc/types'
 import {
   FetchNearbyGym,
   type FetchNearbyGymInput,
-} from './fetch-neaby-gym.usecase'
+} from './fetch-nearby-gym.usecase'
 
 describe('FetchNearbyGymUsecase', () => {
   let sut: FetchNearbyGym
