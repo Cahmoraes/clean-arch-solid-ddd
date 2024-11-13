@@ -5,9 +5,9 @@ import { fromError } from 'zod-validation-error'
 
 import type { CheckInUseCase } from '@/application/use-case/check-in.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
+import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
-import { TYPES } from '@/infra/ioc/types'
 
 import { ResponseFactory } from '../factory/response-factory'
 import { CheckInRoutes } from '../routes/check-in-routes'

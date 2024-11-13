@@ -6,9 +6,9 @@ import { User, type UserCreateProps } from '@/domain/user'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
-import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
+import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
 import { CheckInRoutes } from '../routes/check-in-routes'
 

@@ -18,6 +18,7 @@ export const TYPES = {
     CreateGym: Symbol.for('CreateGymController'),
     UserMetrics: Symbol.for('UserMetricsController'),
     SearchGym: Symbol.for('SearchGymController'),
+    ValidateCheckIn: Symbol.for('ValidateCheckInController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),

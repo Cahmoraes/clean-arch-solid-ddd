@@ -1,9 +1,9 @@
 import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
-import { fromError, type ValidationError } from 'zod-validation-error'
+import { fromError } from 'zod-validation-error'
 
-import type { UserMetricsUseCase } from '@/application/use-case/user-metrics.usecase'
+import type { ValidateCheckInUseCase } from '@/application/use-case/validate-check-in.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
@@ -13,17 +13,17 @@ import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
 import { CheckInRoutes } from '../routes/check-in-routes'
 
-const metricsRequestSchema = z.object({
-  userId: z.string(),
+const validateCheckInRequestSchema = z.object({
+  checkInId: z.string(),
 })
 
-type MetricsRequestPayload = z.infer<typeof metricsRequestSchema>
+type ValidateCheckInPayload = z.infer<typeof validateCheckInRequestSchema>
 
 @injectable()
-export class MetricsController implements Controller {
+export class ValidateCheckInController implements Controller {
   constructor(
-    @inject(TYPES.UseCases.UserMetrics)
-    private readonly userMetricsUseCase: UserMetricsUseCase,
+    @inject(TYPES.UseCases.ValidateCheckIn)
+    private readonly validateCheckInUseCase: ValidateCheckInUseCase,
   ) {
     this.bindMethods()
   }
@@ -35,31 +35,37 @@ export class MetricsController implements Controller {
   public async handle(server: HttpServer): Promise<void> {
     server.register(
       'get',
-      CheckInRoutes.METRICS,
+      CheckInRoutes.VALIDATE,
       async (req: FastifyRequest) => {
-        const parsedRequest = this.parseParamsPayload(req.params)
+        const parsedRequest = this.parseBodyPayload(req.params)
         if (parsedRequest.isLeft()) {
           return ResponseFactory.create({
             status: HTTP_STATUS.BAD_REQUEST,
             message: parsedRequest.value.message,
           })
         }
-        const metrics = await this.userMetricsUseCase.execute(
+        const result = await this.validateCheckInUseCase.execute(
           parsedRequest.value,
         )
+        if (result.isLeft()) {
+          return ResponseFactory.create({
+            status: HTTP_STATUS.CONFLICT,
+            message: result.value.message,
+          })
+        }
         return ResponseFactory.create({
           status: HTTP_STATUS.OK,
-          body: metrics,
+          body: result.value,
         })
       },
     )
   }
 
-  private parseParamsPayload(
-    params: unknown,
-  ): Either<ValidationError, MetricsRequestPayload> {
-    const result = metricsRequestSchema.safeParse(params)
-    if (!result.success) return left(fromError(result.error))
-    return right(result.data)
+  private parseBodyPayload(
+    body: unknown,
+  ): Either<Error, ValidateCheckInPayload> {
+    const parsedBody = validateCheckInRequestSchema.safeParse(body)
+    if (!parsedBody.success) return left(fromError(parsedBody.error))
+    return right(parsedBody.data)
   }
 }
