@@ -6,7 +6,9 @@ import type {
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 
+import type { AuthToken } from '@/application/interfaces/auth-token'
 import type { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
+import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -26,6 +28,8 @@ export class UserProfileController implements Controller {
   constructor(
     @inject(TYPES.UseCases.UserProfile)
     private readonly userProfile: UserProfileUseCase,
+    @inject(TYPES.Tokens.Auth)
+    private readonly authToken: AuthToken,
   ) {
     this.bindMethods()
   }
@@ -58,16 +62,29 @@ export class UserProfileController implements Controller {
     })
   }
 
+  private parseParamsOrThrow(params: unknown): UserProfilePayload {
+    return userProfileRequestSchema.parse(params)
+  }
+
   private async preHandler(
-    request: FastifyRequest,
+    request: any,
     reply: FastifyReply,
     done: HookHandlerDoneFunction,
   ) {
     console.log(request.params)
+    const verifiedOrError = this.authToken.verify(
+      request.params.userId,
+      env.JWT_SECRET,
+    )
+    if (verifiedOrError.isLeft()) {
+      console.log(verifiedOrError.value.message)
+    }
+    // if (verifiedOrError.isLeft()) {
+    //   reply.code(HTTP_STATUS.UNAUTHORIZED).send({
+    //     message: 'Unauthorized',
+    //   })
+    //   return done()
+    // }
     done()
-  }
-
-  private parseParamsOrThrow(params: unknown): UserProfilePayload {
-    return userProfileRequestSchema.parse(params)
   }
 }
