@@ -6,5 +6,8 @@ export const setupShareConfig = defineConfig({
   test: {
     setupFiles: '/test/setup-test.ts',
     globals: true,
+    sequence: {
+      concurrent: false,
+    },
   },
 })
