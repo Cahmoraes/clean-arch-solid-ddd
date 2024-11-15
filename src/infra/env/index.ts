@@ -16,6 +16,7 @@ const envSchema = z.object({
   ITEMS_PER_PAGE: z.coerce.number().default(20),
   CHECK_IN_EXPIRATION_TIME: z.coerce.number().default(20),
   DATABASE_URL: z.string().url(),
+  JWT_SECRET: z.string().default('jwt-secret-example'),
 })
 
 const _env = envSchema.safeParse(envObject)

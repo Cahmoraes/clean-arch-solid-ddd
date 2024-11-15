@@ -33,10 +33,8 @@ export class MetricsController implements Controller {
   }
 
   public async handle(server: HttpServer): Promise<void> {
-    server.register(
-      'get',
-      CheckInRoutes.METRICS,
-      async (req: FastifyRequest) => {
+    server.register('get', CheckInRoutes.METRICS, {
+      callback: async (req: FastifyRequest) => {
         const parsedRequest = this.parseParamsPayload(req.params)
         if (parsedRequest.isLeft()) {
           return ResponseFactory.create({
@@ -52,7 +50,7 @@ export class MetricsController implements Controller {
           body: metrics,
         })
       },
-    )
+    })
   }
 
   private parseParamsPayload(

@@ -6,9 +6,9 @@ import { fromError } from 'zod-validation-error'
 
 import type { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
+import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
-import { TYPES } from '@/infra/ioc/types'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
@@ -36,33 +36,35 @@ export class CreateUserController implements Controller {
   }
 
   async handle(server: HttpServer) {
-    server.register('post', UserRoutes.CREATE, async (req: FastifyRequest) => {
-      const parsedBodyOrError = this.parseBodyOrError(req.body)
-      if (parsedBodyOrError.isLeft()) {
-        return ResponseFactory.create({
-          status: HTTP_STATUS.BAD_REQUEST,
-          message: parsedBodyOrError.value.message,
+    server.register('post', UserRoutes.CREATE, {
+      callback: async (req: FastifyRequest) => {
+        const parsedBodyOrError = this.parseBodyOrError(req.body)
+        if (parsedBodyOrError.isLeft()) {
+          return ResponseFactory.create({
+            status: HTTP_STATUS.BAD_REQUEST,
+            message: parsedBodyOrError.value.message,
+          })
+        }
+        const { name, email, password } = parsedBodyOrError.value
+        const result = await this.createUser.execute({
+          name,
+          email,
+          rawPassword: password,
         })
-      }
-      const { name, email, password } = parsedBodyOrError.value
-      const result = await this.createUser.execute({
-        name,
-        email,
-        rawPassword: password,
-      })
-      if (result.isLeft()) {
+        if (result.isLeft()) {
+          return ResponseFactory.create({
+            status: HTTP_STATUS.CONFLICT,
+            message: result.value.message,
+          })
+        }
         return ResponseFactory.create({
-          status: HTTP_STATUS.CONFLICT,
-          message: result.value.message,
+          status: HTTP_STATUS.CREATED,
+          body: {
+            message: 'User created',
+            email: result.value.email,
+          },
         })
-      }
-      return ResponseFactory.create({
-        status: HTTP_STATUS.CREATED,
-        body: {
-          message: 'User created',
-          email: result.value.email,
-        },
-      })
+      },
     })
   }
 

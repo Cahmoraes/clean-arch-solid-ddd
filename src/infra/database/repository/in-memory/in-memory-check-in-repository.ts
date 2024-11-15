@@ -28,6 +28,7 @@ export class InMemoryCheckInRepository implements CheckInRepository {
       validatedAt: checkIn.validatedAt,
       userLatitude: checkIn.latitude,
       userLongitude: checkIn.longitude,
+      isValidated: false,
     })
     this.checkIns.add(checkInWithId)
     return {

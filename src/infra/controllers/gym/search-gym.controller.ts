@@ -8,9 +8,9 @@ import type {
   SearchGymUseCaseOutput,
 } from '@/application/use-case/search-gym.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
+import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
-import { TYPES } from '@/infra/ioc/types'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
@@ -42,28 +42,30 @@ export class SearchGymController implements Controller {
   }
 
   async handle(server: HttpServer) {
-    server.register('get', GymRoutes.SEARCH, async (req: FastifyRequest) => {
-      const parsedBodyOrError = this.parseParams(req.params)
-      if (parsedBodyOrError.isLeft()) {
-        return ResponseFactory.create({
-          status: HTTP_STATUS.BAD_REQUEST,
-          message: parsedBodyOrError.value.message,
+    server.register('get', GymRoutes.SEARCH, {
+      callback: async (req: FastifyRequest) => {
+        const parsedBodyOrError = this.parseParams(req.params)
+        if (parsedBodyOrError.isLeft()) {
+          return ResponseFactory.create({
+            status: HTTP_STATUS.BAD_REQUEST,
+            message: parsedBodyOrError.value.message,
+          })
+        }
+        const result = await this.searchGymUseCase.execute({
+          name: parsedBodyOrError.value.name,
+          page: this.parseQuery(req.query),
         })
-      }
-      const result = await this.searchGymUseCase.execute({
-        name: parsedBodyOrError.value.name,
-        page: this.parseQuery(req.query),
-      })
-      if (this.isGymNotFound(result)) {
+        if (this.isGymNotFound(result)) {
+          return ResponseFactory.create({
+            status: HTTP_STATUS.NOT_FOUND,
+            message: 'Gym not found',
+          })
+        }
         return ResponseFactory.create({
-          status: HTTP_STATUS.NOT_FOUND,
-          message: 'Gym not found',
+          status: HTTP_STATUS.OK,
+          body: result,
         })
-      }
-      return ResponseFactory.create({
-        status: HTTP_STATUS.OK,
-        body: result,
-      })
+      },
     })
   }
 

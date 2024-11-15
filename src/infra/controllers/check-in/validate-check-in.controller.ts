@@ -33,10 +33,8 @@ export class ValidateCheckInController implements Controller {
   }
 
   public async handle(server: HttpServer): Promise<void> {
-    server.register(
-      'post',
-      CheckInRoutes.VALIDATE,
-      async (req: FastifyRequest) => {
+    server.register('post', CheckInRoutes.VALIDATE, {
+      callback: async (req: FastifyRequest) => {
         const parsedRequest = this.parseBodyPayload(req.body)
         if (parsedRequest.isLeft()) {
           return ResponseFactory.create({
@@ -58,7 +56,7 @@ export class ValidateCheckInController implements Controller {
           body: result.value,
         })
       },
-    )
+    })
   }
 
   private parseBodyPayload(
