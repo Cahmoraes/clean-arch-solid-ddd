@@ -1,3 +1,4 @@
+import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
@@ -33,34 +34,35 @@ export class CreateGymController implements Controller {
 
   private bindMethods() {
     this.handle = this.handle.bind(this)
+    this.callback = this.callback.bind(this)
   }
 
   public async handle(server: HttpServer): Promise<void> {
     server.register('post', GymRoutes.CREATE, {
-      callback: async (req) => {
-        const parsedBodyOrError = this.parseBody(req.body)
-        if (parsedBodyOrError.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.BAD_REQUEST,
-            message: parsedBodyOrError.value.message,
-          })
-        }
-        const result = await this.createGymUseCase.execute(
-          parsedBodyOrError.value,
-        )
-        if (result.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.CONFLICT,
-            message: result.value.message,
-          })
-        }
-        return ResponseFactory.create({
-          status: HTTP_STATUS.CREATED,
-          body: {
-            message: 'Gym created',
-            id: result.value.gymId,
-          },
-        })
+      callback: this.callback,
+    })
+  }
+
+  private async callback(req: FastifyRequest) {
+    const parsedBodyOrError = this.parseBody(req.body)
+    if (parsedBodyOrError.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.BAD_REQUEST,
+        message: parsedBodyOrError.value.message,
+      })
+    }
+    const result = await this.createGymUseCase.execute(parsedBodyOrError.value)
+    if (result.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.CONFLICT,
+        message: result.value.message,
+      })
+    }
+    return ResponseFactory.create({
+      status: HTTP_STATUS.CREATED,
+      body: {
+        message: 'Gym created',
+        id: result.value.gymId,
       },
     })
   }

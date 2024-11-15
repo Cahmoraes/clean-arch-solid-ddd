@@ -30,32 +30,35 @@ export class ValidateCheckInController implements Controller {
 
   private bindMethods() {
     this.handle = this.handle.bind(this)
+    this.callback = this.callback.bind(this)
   }
 
   public async handle(server: HttpServer): Promise<void> {
     server.register('post', CheckInRoutes.VALIDATE, {
-      callback: async (req: FastifyRequest) => {
-        const parsedRequest = this.parseBodyPayload(req.body)
-        if (parsedRequest.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.BAD_REQUEST,
-            message: parsedRequest.value.message,
-          })
-        }
-        const result = await this.validateCheckInUseCase.execute(
-          parsedRequest.value,
-        )
-        if (result.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.CONFLICT,
-            message: result.value.message,
-          })
-        }
-        return ResponseFactory.create({
-          status: HTTP_STATUS.OK,
-          body: result.value,
-        })
-      },
+      callback: this.callback,
+    })
+  }
+
+  private async callback(req: FastifyRequest) {
+    const parsedRequest = this.parseBodyPayload(req.body)
+    if (parsedRequest.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.BAD_REQUEST,
+        message: parsedRequest.value.message,
+      })
+    }
+    const result = await this.validateCheckInUseCase.execute(
+      parsedRequest.value,
+    )
+    if (result.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.CONFLICT,
+        message: result.value.message,
+      })
+    }
+    return ResponseFactory.create({
+      status: HTTP_STATUS.OK,
+      body: result.value,
     })
   }
 

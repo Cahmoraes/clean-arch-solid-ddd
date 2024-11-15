@@ -30,26 +30,27 @@ export class MetricsController implements Controller {
 
   private bindMethods() {
     this.handle = this.handle.bind(this)
+    this.callback = this.callback.bind(this)
   }
 
   public async handle(server: HttpServer): Promise<void> {
     server.register('get', CheckInRoutes.METRICS, {
-      callback: async (req: FastifyRequest) => {
-        const parsedRequest = this.parseParamsPayload(req.params)
-        if (parsedRequest.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.BAD_REQUEST,
-            message: parsedRequest.value.message,
-          })
-        }
-        const metrics = await this.userMetricsUseCase.execute(
-          parsedRequest.value,
-        )
-        return ResponseFactory.create({
-          status: HTTP_STATUS.OK,
-          body: metrics,
-        })
-      },
+      callback: this.callback,
+    })
+  }
+
+  private async callback(req: FastifyRequest) {
+    const parsedRequest = this.parseParamsPayload(req.params)
+    if (parsedRequest.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.BAD_REQUEST,
+        message: parsedRequest.value.message,
+      })
+    }
+    const metrics = await this.userMetricsUseCase.execute(parsedRequest.value)
+    return ResponseFactory.create({
+      status: HTTP_STATUS.OK,
+      body: metrics,
     })
   }
 

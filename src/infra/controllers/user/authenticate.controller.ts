@@ -1,3 +1,4 @@
+import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
@@ -30,32 +31,35 @@ export class AuthenticateController implements Controller {
 
   private bindMethods() {
     this.handle = this.handle.bind(this)
+    this.callback = this.callback.bind(this)
   }
 
   async handle(server: HttpServer) {
     server.register('post', UserRoutes.AUTHENTICATE, {
-      callback: async (req) => {
-        const parsedBodyResult = this.parseBodyResult(req.body)
-        if (parsedBodyResult.isLeft())
-          return ResponseFactory.create({
-            status: HTTP_STATUS.BAD_REQUEST,
-            message: parsedBodyResult.value.message,
-          })
-        const result = await this.authenticate.execute({
-          email: parsedBodyResult.value.email,
-          password: parsedBodyResult.value.password,
-        })
-        if (result.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.UNAUTHORIZED,
-            message: 'Invalid credentials',
-          })
-        }
-        return ResponseFactory.create({
-          status: HTTP_STATUS.OK,
-          body: result.value,
-        })
-      },
+      callback: this.callback,
+    })
+  }
+
+  private async callback(req: FastifyRequest) {
+    const parsedBodyResult = this.parseBodyResult(req.body)
+    if (parsedBodyResult.isLeft())
+      return ResponseFactory.create({
+        status: HTTP_STATUS.BAD_REQUEST,
+        message: parsedBodyResult.value.message,
+      })
+    const result = await this.authenticate.execute({
+      email: parsedBodyResult.value.email,
+      password: parsedBodyResult.value.password,
+    })
+    if (result.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.UNAUTHORIZED,
+        message: 'Invalid credentials',
+      })
+    }
+    return ResponseFactory.create({
+      status: HTTP_STATUS.OK,
+      body: result.value,
     })
   }
 
