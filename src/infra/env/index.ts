@@ -15,7 +15,12 @@ const envSchema = z.object({
   PRIVATE_KEY: z.string(),
   ITEMS_PER_PAGE: z.coerce.number().default(20),
   CHECK_IN_EXPIRATION_TIME: z.coerce.number().default(20),
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z
+    .string()
+    .url()
+    .default(
+      'postgresql://docker_test:docker_test@localhost:5432/apisolid_test?schema=public',
+    ),
 })
 
 const _env = envSchema.safeParse(envObject)
