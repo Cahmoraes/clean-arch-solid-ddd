@@ -39,33 +39,36 @@ export class SearchGymController implements Controller {
 
   private bindMethods() {
     this.handle = this.handle.bind(this)
+    this.callback = this.callback.bind(this)
   }
 
   async handle(server: HttpServer) {
     server.register('get', GymRoutes.SEARCH, {
-      callback: async (req: FastifyRequest) => {
-        const parsedBodyOrError = this.parseParams(req.params)
-        if (parsedBodyOrError.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.BAD_REQUEST,
-            message: parsedBodyOrError.value.message,
-          })
-        }
-        const result = await this.searchGymUseCase.execute({
-          name: parsedBodyOrError.value.name,
-          page: this.parseQuery(req.query),
-        })
-        if (this.isGymNotFound(result)) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.NOT_FOUND,
-            message: 'Gym not found',
-          })
-        }
-        return ResponseFactory.create({
-          status: HTTP_STATUS.OK,
-          body: result,
-        })
-      },
+      callback: this.callback,
+    })
+  }
+
+  private async callback(req: FastifyRequest) {
+    const parsedBodyOrError = this.parseParams(req.params)
+    if (parsedBodyOrError.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.BAD_REQUEST,
+        message: parsedBodyOrError.value.message,
+      })
+    }
+    const result = await this.searchGymUseCase.execute({
+      name: parsedBodyOrError.value.name,
+      page: this.parseQuery(req.query),
+    })
+    if (this.isGymNotFound(result)) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: 'Gym not found',
+      })
+    }
+    return ResponseFactory.create({
+      status: HTTP_STATUS.OK,
+      body: result,
     })
   }
 

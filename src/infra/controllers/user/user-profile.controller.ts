@@ -32,34 +32,41 @@ export class UserProfileController implements Controller {
 
   private bindMethods() {
     this.handle = this.handle.bind(this)
+    this.callback = this.callback.bind(this)
+    this.preHandler = this.preHandler.bind(this)
   }
 
   async handle(server: HttpServer) {
     server.register('get', UserRoutes.PROFILE, {
-      callback: async (req: FastifyRequest) => {
-        const { userId } = this.parseParamsOrThrow(req.params)
-        const result = await this.userProfile.execute({ userId })
-        if (result.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.NOT_FOUND,
-            message: 'User not found',
-          })
-        }
-        return ResponseFactory.create({
-          status: HTTP_STATUS.OK,
-          body: result.value,
-        })
-      },
-      preHandler: async (
-        request: FastifyRequest,
-        reply: FastifyReply,
-        done: HookHandlerDoneFunction,
-      ) => {
-        console.log(request.params)
-        done()
-      },
+      callback: this.callback,
+      preHandler: this.preHandler,
     })
   }
+
+  private async callback(req: FastifyRequest) {
+    const { userId } = this.parseParamsOrThrow(req.params)
+    const result = await this.userProfile.execute({ userId })
+    if (result.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: 'User not found',
+      })
+    }
+    return ResponseFactory.create({
+      status: HTTP_STATUS.OK,
+      body: result.value,
+    })
+  }
+
+  private async preHandler(
+    request: FastifyRequest,
+    reply: FastifyReply,
+    done: HookHandlerDoneFunction,
+  ) {
+    console.log(request.params)
+    done()
+  }
+
   private parseParamsOrThrow(params: unknown): UserProfilePayload {
     return userProfileRequestSchema.parse(params)
   }

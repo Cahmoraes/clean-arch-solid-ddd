@@ -49,13 +49,11 @@ export class CheckInController {
         message: parsedBodyOrError.value.message,
       })
     }
-    const { userId, gymId, userLatitude, userLongitude } =
-      parsedBodyOrError.value
     const result = await this.checkIn.execute({
-      userId,
-      gymId,
-      userLatitude,
-      userLongitude,
+      userId: parsedBodyOrError.value.userId,
+      gymId: parsedBodyOrError.value.gymId,
+      userLatitude: parsedBodyOrError.value.userLatitude,
+      userLongitude: parsedBodyOrError.value.userLongitude,
     })
     if (result.isLeft()) {
       return ResponseFactory.create({

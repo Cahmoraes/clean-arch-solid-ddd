@@ -33,37 +33,40 @@ export class CreateUserController implements Controller {
 
   private bindMethods() {
     this.handle = this.handle.bind(this)
+    this.callback = this.callback.bind(this)
   }
 
   async handle(server: HttpServer) {
     server.register('post', UserRoutes.CREATE, {
-      callback: async (req: FastifyRequest) => {
-        const parsedBodyOrError = this.parseBodyOrError(req.body)
-        if (parsedBodyOrError.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.BAD_REQUEST,
-            message: parsedBodyOrError.value.message,
-          })
-        }
-        const { name, email, password } = parsedBodyOrError.value
-        const result = await this.createUser.execute({
-          name,
-          email,
-          rawPassword: password,
-        })
-        if (result.isLeft()) {
-          return ResponseFactory.create({
-            status: HTTP_STATUS.CONFLICT,
-            message: result.value.message,
-          })
-        }
-        return ResponseFactory.create({
-          status: HTTP_STATUS.CREATED,
-          body: {
-            message: 'User created',
-            email: result.value.email,
-          },
-        })
+      callback: this.callback,
+    })
+  }
+
+  private async callback(req: FastifyRequest) {
+    const parsedBodyOrError = this.parseBodyOrError(req.body)
+    if (parsedBodyOrError.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.BAD_REQUEST,
+        message: parsedBodyOrError.value.message,
+      })
+    }
+    const { name, email, password } = parsedBodyOrError.value
+    const result = await this.createUser.execute({
+      name,
+      email,
+      rawPassword: password,
+    })
+    if (result.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.CONFLICT,
+        message: result.value.message,
+      })
+    }
+    return ResponseFactory.create({
+      status: HTTP_STATUS.CREATED,
+      body: {
+        message: 'User created',
+        email: result.value.email,
       },
     })
   }
