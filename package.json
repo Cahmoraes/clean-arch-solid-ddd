@@ -14,7 +14,8 @@
     "prisma:studio": "npx prisma studio",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate:dev": "npx prisma migrate dev",
-    "tsc:check": "npx tsc --noEmit"
+    "tsc:check": "npx tsc --noEmit",
+    "eslint:fix": "npx eslint --fix src"
   },
   "keywords": [],
   "author": "",
@@ -50,6 +51,7 @@
   },
   "dependencies": {
     "@cahmoraes93/extended-set": "1.2.0",
+    "@fastify/jwt": "9.0.1",
     "@prisma/client": "5.21.1",
     "bcryptjs": "2.4.3",
     "dotenv": "^16.4.5",

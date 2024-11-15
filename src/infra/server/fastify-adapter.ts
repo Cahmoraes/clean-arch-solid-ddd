@@ -7,7 +7,7 @@ import { injectable } from 'inversify'
 
 import { env } from '../env'
 import { GlobalErrorHandler } from './global-error-handler'
-import type { HandleCallback, HttpServer, METHOD } from './http-server'
+import type { Handlers, HttpServer, METHOD } from './http-server'
 
 @injectable()
 export class FastifyAdapter implements HttpServer {
@@ -37,12 +37,15 @@ export class FastifyAdapter implements HttpServer {
   async register(
     method: METHOD,
     path: string,
-    callback: HandleCallback,
+    handlers: Handlers,
   ): Promise<void> {
     this._server[method](
       path,
+      {
+        preHandler: handlers.preHandler,
+      },
       async (request: FastifyRequest, reply: FastifyReply) => {
-        const result = await callback(request, reply)
+        const result = await handlers.callback(request, reply)
         reply.status(result.status).send(result.body)
       },
     )
@@ -50,6 +53,10 @@ export class FastifyAdapter implements HttpServer {
 
   get server() {
     return this._server.server
+  }
+
+  get fastifyInstance() {
+    return this._server
   }
 
   public async ready() {

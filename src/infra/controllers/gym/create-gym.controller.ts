@@ -4,9 +4,9 @@ import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { CreateGymUseCase } from '@/application/use-case/create-gym.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
+import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
-import { TYPES } from '@/infra/ioc/types'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
@@ -36,30 +36,32 @@ export class CreateGymController implements Controller {
   }
 
   public async handle(server: HttpServer): Promise<void> {
-    server.register('post', GymRoutes.CREATE, async (req) => {
-      const parsedBodyOrError = this.parseBody(req.body)
-      if (parsedBodyOrError.isLeft()) {
+    server.register('post', GymRoutes.CREATE, {
+      callback: async (req) => {
+        const parsedBodyOrError = this.parseBody(req.body)
+        if (parsedBodyOrError.isLeft()) {
+          return ResponseFactory.create({
+            status: HTTP_STATUS.BAD_REQUEST,
+            message: parsedBodyOrError.value.message,
+          })
+        }
+        const result = await this.createGymUseCase.execute(
+          parsedBodyOrError.value,
+        )
+        if (result.isLeft()) {
+          return ResponseFactory.create({
+            status: HTTP_STATUS.CONFLICT,
+            message: result.value.message,
+          })
+        }
         return ResponseFactory.create({
-          status: HTTP_STATUS.BAD_REQUEST,
-          message: parsedBodyOrError.value.message,
+          status: HTTP_STATUS.CREATED,
+          body: {
+            message: 'Gym created',
+            id: result.value.gymId,
+          },
         })
-      }
-      const result = await this.createGymUseCase.execute(
-        parsedBodyOrError.value,
-      )
-      if (result.isLeft()) {
-        return ResponseFactory.create({
-          status: HTTP_STATUS.CONFLICT,
-          message: result.value.message,
-        })
-      }
-      return ResponseFactory.create({
-        status: HTTP_STATUS.CREATED,
-        body: {
-          message: 'Gym created',
-          id: result.value.gymId,
-        },
-      })
+      },
     })
   }
 

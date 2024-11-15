@@ -3,10 +3,10 @@ import { createAndSaveGym } from 'test/factory/create-and-save-gym'
 
 import { serverBuild } from '@/bootstrap/server-build'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
-import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
-import { HTTP_STATUS } from '@/infra/server/http-status'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
+import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
+import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import { GymRoutes } from '../routes/gym-routes'
 import type { SearchGymPayload } from './search-gym.controller'

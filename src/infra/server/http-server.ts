@@ -9,8 +9,17 @@ export interface HandleCallback {
   (request: any, response: any): Promise<HandleCallbackResponse>
 }
 
+export interface PreHandler {
+  (request: any, response: any, done: any): Promise<void>
+}
+
+export interface Handlers {
+  callback: HandleCallback
+  preHandler?: PreHandler
+}
+
 export interface Handler {
-  (method: METHOD, path: string, handleCallback: HandleCallback): Promise<void>
+  (method: METHOD, path: string, handlers: Handlers): Promise<void>
 }
 
 export interface HttpServer {

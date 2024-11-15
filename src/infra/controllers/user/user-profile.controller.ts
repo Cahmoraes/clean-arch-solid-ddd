@@ -1,10 +1,15 @@
+import type {
+  FastifyReply,
+  FastifyRequest,
+  HookHandlerDoneFunction,
+} from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 
 import type { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
+import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
-import { TYPES } from '@/infra/ioc/types'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
@@ -30,19 +35,29 @@ export class UserProfileController implements Controller {
   }
 
   async handle(server: HttpServer) {
-    server.register('get', UserRoutes.PROFILE, async (req) => {
-      const { userId } = this.parseParamsOrThrow(req.params)
-      const result = await this.userProfile.execute({ userId })
-      if (result.isLeft()) {
+    server.register('get', UserRoutes.PROFILE, {
+      callback: async (req: FastifyRequest) => {
+        const { userId } = this.parseParamsOrThrow(req.params)
+        const result = await this.userProfile.execute({ userId })
+        if (result.isLeft()) {
+          return ResponseFactory.create({
+            status: HTTP_STATUS.NOT_FOUND,
+            message: 'User not found',
+          })
+        }
         return ResponseFactory.create({
-          status: HTTP_STATUS.NOT_FOUND,
-          message: 'User not found',
+          status: HTTP_STATUS.OK,
+          body: result.value,
         })
-      }
-      return ResponseFactory.create({
-        status: HTTP_STATUS.OK,
-        body: result.value,
-      })
+      },
+      preHandler: async (
+        request: FastifyRequest,
+        reply: FastifyReply,
+        done: HookHandlerDoneFunction,
+      ) => {
+        console.log(request.params)
+        done()
+      },
     })
   }
   private parseParamsOrThrow(params: unknown): UserProfilePayload {

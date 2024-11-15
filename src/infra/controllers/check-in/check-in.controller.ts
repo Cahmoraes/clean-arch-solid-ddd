@@ -32,39 +32,44 @@ export class CheckInController {
 
   private bindMethods() {
     this.handle = this.handle.bind(this)
+    this.callback = this.callback.bind(this)
   }
 
   async handle(server: HttpServer) {
-    server.register('post', CheckInRoutes.CREATE, async (req) => {
-      const parsedBodyOrError = this.parseBody(req.body)
-      if (parsedBodyOrError.isLeft()) {
-        return ResponseFactory.create({
-          status: HTTP_STATUS.BAD_REQUEST,
-          message: parsedBodyOrError.value.message,
-        })
-      }
-      const { userId, gymId, userLatitude, userLongitude } =
-        parsedBodyOrError.value
-      const result = await this.checkIn.execute({
-        userId,
-        gymId,
-        userLatitude,
-        userLongitude,
-      })
-      if (result.isLeft()) {
-        return ResponseFactory.create({
-          status: HTTP_STATUS.CONFLICT,
-          message: result.value.message,
-        })
-      }
+    server.register('post', CheckInRoutes.CREATE, {
+      callback: this.callback,
+    })
+  }
+
+  private async callback(req: any) {
+    const parsedBodyOrError = this.parseBody(req.body)
+    if (parsedBodyOrError.isLeft()) {
       return ResponseFactory.create({
-        status: HTTP_STATUS.CREATED,
-        body: {
-          message: 'Check-in created',
-          id: result.value.checkInId,
-          date: result.value.date,
-        },
+        status: HTTP_STATUS.BAD_REQUEST,
+        message: parsedBodyOrError.value.message,
       })
+    }
+    const { userId, gymId, userLatitude, userLongitude } =
+      parsedBodyOrError.value
+    const result = await this.checkIn.execute({
+      userId,
+      gymId,
+      userLatitude,
+      userLongitude,
+    })
+    if (result.isLeft()) {
+      return ResponseFactory.create({
+        status: HTTP_STATUS.CONFLICT,
+        message: result.value.message,
+      })
+    }
+    return ResponseFactory.create({
+      status: HTTP_STATUS.CREATED,
+      body: {
+        message: 'Check-in created',
+        id: result.value.checkInId,
+        date: result.value.date,
+      },
     })
   }
 
