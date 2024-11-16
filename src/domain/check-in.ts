@@ -1,5 +1,5 @@
 import type { Optional } from '@/@types/optional'
-import { CheckInTimeExceededError } from '@/application/error/check-in-time-exceeded-error'
+import { CheckInTimeExceededError } from '@/domain/error/check-in-time-exceeded-error'
 import { env } from '@/infra/env'
 
 import { type Either, left, right } from './value-object/either'

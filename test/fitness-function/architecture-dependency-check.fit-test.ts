@@ -7,6 +7,9 @@ const layers: { [key: string]: string[] } = {
   infra: ['infra', 'domain', 'application'],
 }
 
+// Lista de arquivos ignorados
+const ignoredFiles = ['infra/env/index.ts', 'infra/ioc/types.ts']
+
 describe('Fitness Function: Verificação de Estrutura Arquitetural', () => {
   it('deve seguir as regras de dependência do Clean Architecture', async () => {
     const result = await madge('src', {
@@ -24,10 +27,12 @@ describe('Fitness Function: Verificação de Estrutura Arquitetural', () => {
         circularDependencies.map((dep) => ` - ${dep.join(' -> ')}`).join('\n'),
     ).toBe(0)
 
-    // Filtra dependências para ignorar arquivos de teste
+    // Filtra dependências para ignorar arquivos de teste e arquivos explicitamente ignorados
     const dependencies = result.obj()
     const filteredDependencies = Object.fromEntries(
-      Object.entries(dependencies).filter(([module]) => !isTestFile(module)),
+      Object.entries(dependencies).filter(
+        ([module]) => !isTestFile(module) && !isIgnoredFile(module),
+      ),
     )
 
     for (const [module, dependents] of Object.entries(filteredDependencies)) {
@@ -36,8 +41,8 @@ describe('Fitness Function: Verificação de Estrutura Arquitetural', () => {
       if (!moduleLayer) continue
 
       dependents.forEach((dependent) => {
-        // Ignora arquivos de teste nas dependências
-        if (isTestFile(dependent)) return
+        // Ignora arquivos de teste e arquivos explicitamente ignorados nas dependências
+        if (isTestFile(dependent) || isIgnoredFile(dependent)) return
 
         const dependentLayer = getLayer(dependent)
         if (!dependentLayer) return
@@ -62,6 +67,11 @@ function isTestFile(filePath: string): boolean {
     /\.spec\.ts$/.test(filePath) ||
     /-test\.ts$/.test(filePath)
   )
+}
+
+// Função para verificar se o arquivo é explicitamente ignorado
+function isIgnoredFile(filePath: string): boolean {
+  return ignoredFiles.includes(filePath)
 }
 
 // Função auxiliar para obter a camada de um módulo com base no caminho

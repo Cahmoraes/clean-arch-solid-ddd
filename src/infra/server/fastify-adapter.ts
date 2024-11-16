@@ -90,10 +90,6 @@ export class FastifyAdapter implements HttpServer {
     return this._server.server
   }
 
-  get fastifyInstance() {
-    return this._server
-  }
-
   public async ready() {
     return this._server.ready()
   }

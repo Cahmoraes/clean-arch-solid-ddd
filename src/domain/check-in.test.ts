@@ -1,4 +1,4 @@
-import { CheckInTimeExceededError } from '@/application/error/check-in-time-exceeded-error'
+import { CheckInTimeExceededError } from '@/domain/error/check-in-time-exceeded-error'
 
 import {
   CheckIn,

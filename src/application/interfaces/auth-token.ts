@@ -1,5 +1,5 @@
+import type { InvalidUserTokenError } from '@/application/error/invalid-user-token-error'
 import type { Either } from '@/domain/value-object/either'
-import type { InvalidUserTokenError } from '@/infra/error/invalid-user-token-error'
 
 export type Payload = string | Buffer | object
 
