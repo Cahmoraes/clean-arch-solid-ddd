@@ -8,7 +8,7 @@ import type { AuthToken } from '@/application/interfaces/auth-token'
 import { env } from '@/infra/env'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 
-export interface PreHandlerAuthenticateProps {
+export interface AuthenticatePreHandlerProps {
   request: FastifyRequest
   reply: FastifyReply
   done: HookHandlerDoneFunction
@@ -23,13 +23,13 @@ export interface TokenPayload {
   iat: number
 }
 
-export class PreHandlerAuthenticate {
+export class AuthenticatePreHandler {
   private readonly request: FastifyRequest
   private readonly reply: FastifyReply
   private readonly done: HookHandlerDoneFunction
   private readonly authToken: AuthToken
 
-  constructor(props: PreHandlerAuthenticateProps) {
+  constructor(props: AuthenticatePreHandlerProps) {
     this.request = props.request
     this.reply = props.reply
     this.done = props.done
@@ -38,20 +38,18 @@ export class PreHandlerAuthenticate {
 
   public async execute(): Promise<void> {
     if (!this.hasToken) {
-      this.reply.code(HTTP_STATUS.UNAUTHORIZED).send({
+      return this.reply.code(HTTP_STATUS.UNAUTHORIZED).send({
         message: 'Unauthorized',
       })
-      return this.done()
     }
     const verifiedOrError = this.authToken.verify<TokenPayload>(
       this.token,
       env.PRIVATE_KEY,
     )
     if (verifiedOrError.isLeft()) {
-      this.reply.code(HTTP_STATUS.UNAUTHORIZED).send({
+      return this.reply.code(HTTP_STATUS.UNAUTHORIZED).send({
         message: 'Unauthorized',
       })
-      return this.done()
     }
     this.setUserOnRequest(verifiedOrError.value)
     this.done()

@@ -1,12 +1,7 @@
-import type {
-  FastifyReply,
-  FastifyRequest,
-  HookHandlerDoneFunction,
-} from 'fastify'
+import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 
-import type { AuthToken } from '@/application/interfaces/auth-token'
 import type { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
@@ -15,7 +10,6 @@ import { HTTP_STATUS } from '@/infra/server/http-status'
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'
-import { PreHandlerAuthenticate } from '../services/pre-handler-authenticate'
 
 const userProfileRequestSchema = z.object({
   userId: z.string(),
@@ -28,8 +22,6 @@ export class UserProfileController implements Controller {
   constructor(
     @inject(TYPES.UseCases.UserProfile)
     private readonly userProfile: UserProfileUseCase,
-    @inject(TYPES.Tokens.Auth)
-    private readonly authToken: AuthToken,
   ) {
     this.bindMethods()
   }
@@ -37,13 +29,12 @@ export class UserProfileController implements Controller {
   private bindMethods() {
     this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
-    this.preHandler = this.preHandler.bind(this)
   }
 
   async handle(server: HttpServer) {
     server.register('get', UserRoutes.PROFILE, {
       callback: this.callback,
-      preHandler: this.preHandler,
+      isProtected: true,
     })
   }
 
@@ -64,19 +55,5 @@ export class UserProfileController implements Controller {
 
   private parseParamsOrThrow(params: unknown): UserProfilePayload {
     return userProfileRequestSchema.parse(params)
-  }
-
-  private async preHandler(
-    request: any,
-    reply: FastifyReply,
-    done: HookHandlerDoneFunction,
-  ): Promise<void> {
-    const preHandlerAuthenticate = new PreHandlerAuthenticate({
-      request,
-      reply,
-      done,
-      authToken: this.authToken,
-    })
-    await preHandlerAuthenticate.execute()
   }
 }
