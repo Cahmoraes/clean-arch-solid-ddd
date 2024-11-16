@@ -41,7 +41,6 @@ describe('My Profile', () => {
       email: 'any@email.com',
       password: 'any_password',
     }
-
     const user = await createAndSaveUser({
       userRepository,
       ...input,

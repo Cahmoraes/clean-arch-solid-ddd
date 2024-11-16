@@ -32,6 +32,7 @@ export const TYPES = {
     SearchGym: Symbol.for('SearchGymUseCase'),
     FetchNearbyGym: Symbol.for('FetchNearbyGymUseCase'),
     ValidateCheckIn: Symbol.for('ValidateCheckInUseCase'),
+    Metrics: Symbol.for('MetricsUseCase'),
   },
   Tokens: {
     Auth: Symbol.for('AuthToken'),

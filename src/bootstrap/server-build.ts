@@ -1,11 +1,11 @@
 import type { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
-import type { MetricsController } from '@/infra/controllers/check-in/metrics.controller'
 import type { ValidateCheckInController } from '@/infra/controllers/check-in/validate-check-in.controller'
 import { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
 import type { SearchGymController } from '@/infra/controllers/gym/search-gym.controller'
 import type { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import type { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import type { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
+import type { UserMetricsController } from '@/infra/controllers/user/user-metrics.controller'
 import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
@@ -28,9 +28,6 @@ export function serverBuild() {
   const gymController = container.get<CreateGymController>(
     TYPES.Controllers.CreateGym,
   )
-  const metricsController = container.get<MetricsController>(
-    TYPES.Controllers.UserMetrics,
-  )
   const searchGymController = container.get<SearchGymController>(
     TYPES.Controllers.SearchGym,
   )
@@ -40,14 +37,17 @@ export function serverBuild() {
   const myProfileController = container.get<MyProfileController>(
     TYPES.Controllers.MyProfile,
   )
+  const userMetricsController = container.get<UserMetricsController>(
+    TYPES.Controllers.UserMetrics,
+  )
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
   userProfileController.handle(fastifyServer)
   checkInController.handle(fastifyServer)
   gymController.handle(fastifyServer)
-  metricsController.handle(fastifyServer)
   searchGymController.handle(fastifyServer)
   validateCheckInController.handle(fastifyServer)
   myProfileController.handle(fastifyServer)
+  userMetricsController.handle(fastifyServer)
   return fastifyServer
 }
