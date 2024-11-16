@@ -8,7 +8,6 @@ import { z } from 'zod'
 
 import type { AuthToken } from '@/application/interfaces/auth-token'
 import type { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
-import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -26,6 +25,8 @@ export type UserProfilePayload = z.infer<typeof userProfileRequestSchema>
 
 @injectable()
 export class UserProfileController implements Controller {
+  private _preHandler?: PreHandlerAuthenticate
+
   constructor(
     @inject(TYPES.UseCases.UserProfile)
     private readonly userProfile: UserProfileUseCase,
@@ -67,11 +68,15 @@ export class UserProfileController implements Controller {
     return userProfileRequestSchema.parse(params)
   }
 
+  public setPreHandler(preHandler: PreHandlerAuthenticate) {
+    this._preHandler = preHandler
+  }
+
   private async preHandler(
     request: any,
     reply: FastifyReply,
     done: HookHandlerDoneFunction,
-  ) {
+  ): Promise<void> {
     const preHandlerAuthenticate = new PreHandlerAuthenticate({
       request,
       reply,
