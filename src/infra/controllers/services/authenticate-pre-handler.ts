@@ -51,7 +51,7 @@ export class AuthenticatePreHandler {
         message: 'Unauthorized',
       })
     }
-    this.setUserOnRequest(verifiedOrError.value)
+    this.attachUserToRequest(verifiedOrError.value)
     this.done()
   }
 
@@ -63,7 +63,7 @@ export class AuthenticatePreHandler {
     return this.request.headers.authorization!.split(' ')[1]
   }
 
-  private setUserOnRequest(user: TokenPayload) {
+  private attachUserToRequest(user: TokenPayload) {
     this.request.user = user
   }
 }
