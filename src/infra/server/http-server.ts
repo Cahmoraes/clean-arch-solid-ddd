@@ -15,7 +15,7 @@ export interface PreHandler {
 
 export interface Handlers {
   callback: HandleCallback
-  preHandler?: PreHandler
+  isProtected?: boolean
 }
 
 export interface Handler {
