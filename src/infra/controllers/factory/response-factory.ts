@@ -3,8 +3,13 @@ export interface ResponseInput {
   [key: string]: any
 }
 
+export interface ResponseOutput {
+  status: number
+  body: any
+}
+
 export class ResponseFactory {
-  public static create(input: ResponseInput) {
+  public static create(input: ResponseInput): ResponseOutput {
     const { status, ...rest } = input
     return {
       status: status,
