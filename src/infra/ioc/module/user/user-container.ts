@@ -5,6 +5,7 @@ import { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
 import { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
 import { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import { CreateUserController } from '@/infra/controllers/user/create-user.controller'
+import { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
 import { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { PrismaUserRepository } from '@/infra/database/repository/prisma/prisma-user-repository'
@@ -22,4 +23,5 @@ export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
   bind(TYPES.UseCases.UserProfile).to(UserProfileUseCase)
   bind(TYPES.Controllers.UserProfile).to(UserProfileController)
+  bind(TYPES.Controllers.MyProfile).to(MyProfileController)
 })
