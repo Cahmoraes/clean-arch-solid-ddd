@@ -18,9 +18,9 @@ export const gymContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<GymRepository>(TYPES.Repositories.Gym).toDynamicValue(
     GymRepositoryProvider.provide,
   )
-  bind(TYPES.UseCases.CreateGym).to(CreateGymUseCase)
   bind(TYPES.Controllers.CreateGym).to(CreateGymController)
-  bind(TYPES.UseCases.SearchGym).to(SearchGymUseCase)
   bind(TYPES.Controllers.SearchGym).to(SearchGymController)
+  bind(TYPES.UseCases.CreateGym).to(CreateGymUseCase)
+  bind(TYPES.UseCases.SearchGym).to(SearchGymUseCase)
   bind(TYPES.UseCases.FetchNearbyGym).to(FetchNearbyGym)
 })
