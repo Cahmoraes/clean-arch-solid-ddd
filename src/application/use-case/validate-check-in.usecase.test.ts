@@ -9,7 +9,7 @@ import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 
 import { CheckInNotFoundError } from '../error/check-in-not-found-error'
-import { CheckInTimeExceededError } from '../error/check-in-time-exceeded-error'
+import { CheckInTimeExceededError } from '../../domain/error/check-in-time-exceeded-error'
 import {
   ValidateCheckInUseCase,
   type ValidateCheckInUseCaseInput,

@@ -7,7 +7,7 @@ import type {
   AuthToken,
   Payload,
 } from '../../application/interfaces/auth-token'
-import { InvalidUserTokenError } from '../error/invalid-user-token-error'
+import { InvalidUserTokenError } from '../../application/error/invalid-user-token-error'
 
 @injectable()
 export class JsonWebTokenAdapter implements AuthToken {
