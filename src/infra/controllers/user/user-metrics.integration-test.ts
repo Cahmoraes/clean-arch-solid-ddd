@@ -57,7 +57,6 @@ describe('User Metrics', () => {
       .get(UserRoutes.METRICS)
       .set('Authorization', `Bearer ${token}`)
 
-    console.log(response.body)
     expect(response.body.checkInsCount).toBe(0)
   })
 

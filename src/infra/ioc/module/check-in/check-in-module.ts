@@ -6,11 +6,17 @@ import { ValidateCheckInUseCase } from '@/application/use-case/validate-check-in
 import { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
 import { ValidateCheckInController } from '@/infra/controllers/check-in/validate-check-in.controller'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
+import { PrismaCheckInRepository } from '@/infra/database/repository/prisma/prisma-check-in-repository'
 
 import { TYPES } from '../../types'
+import { CheckInRepositoryProvider } from './check-in-repository-provider'
 
 export const checkInModule = new ContainerModule((bind: interfaces.Bind) => {
-  bind(TYPES.Repositories.CheckIn).to(InMemoryCheckInRepository)
+  bind<PrismaCheckInRepository>(PrismaCheckInRepository).toSelf()
+  bind<InMemoryCheckInRepository>(InMemoryCheckInRepository).toSelf()
+  bind(TYPES.Repositories.CheckIn).toDynamicValue(
+    CheckInRepositoryProvider.provide,
+  )
   bind(TYPES.Controllers.ValidateCheckIn).to(ValidateCheckInController)
   bind(TYPES.Controllers.CheckIn).to(CheckInController)
   bind(TYPES.UseCases.CheckIn).to(CheckInUseCase)

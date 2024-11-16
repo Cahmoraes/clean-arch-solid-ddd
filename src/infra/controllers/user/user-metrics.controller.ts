@@ -34,7 +34,6 @@ export class UserMetricsController implements Controller {
     const {
       sub: { id },
     } = req.user
-    console.log({ id })
     const metrics = await this.userMetrics.execute({ userId: id })
     return ResponseFactory.create({
       status: HTTP_STATUS.OK,
