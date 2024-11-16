@@ -25,8 +25,6 @@ export type UserProfilePayload = z.infer<typeof userProfileRequestSchema>
 
 @injectable()
 export class UserProfileController implements Controller {
-  private _preHandler?: PreHandlerAuthenticate
-
   constructor(
     @inject(TYPES.UseCases.UserProfile)
     private readonly userProfile: UserProfileUseCase,
@@ -68,10 +66,6 @@ export class UserProfileController implements Controller {
     return userProfileRequestSchema.parse(params)
   }
 
-  public setPreHandler(preHandler: PreHandlerAuthenticate) {
-    this._preHandler = preHandler
-  }
-
   private async preHandler(
     request: any,
     reply: FastifyReply,
@@ -83,6 +77,6 @@ export class UserProfileController implements Controller {
       done,
       authToken: this.authToken,
     })
-    preHandlerAuthenticate.execute()
+    await preHandlerAuthenticate.execute()
   }
 }

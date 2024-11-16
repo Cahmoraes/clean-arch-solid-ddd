@@ -15,6 +15,14 @@ export interface PreHandlerAuthenticateProps {
   authToken: AuthToken
 }
 
+export interface TokenPayload {
+  sub: {
+    id: string
+    email: string
+  }
+  iat: number
+}
+
 export class PreHandlerAuthenticate {
   private readonly request: FastifyRequest
   private readonly reply: FastifyReply
@@ -28,22 +36,24 @@ export class PreHandlerAuthenticate {
     this.authToken = props.authToken
   }
 
-  public async execute() {
+  public async execute(): Promise<void> {
     if (!this.hasToken) {
       this.reply.code(HTTP_STATUS.UNAUTHORIZED).send({
         message: 'Unauthorized',
       })
       return this.done()
     }
-    console.log(this.token)
-    const verifiedOrError = this.authToken.verify(this.token, env.PRIVATE_KEY)
+    const verifiedOrError = this.authToken.verify<TokenPayload>(
+      this.token,
+      env.PRIVATE_KEY,
+    )
     if (verifiedOrError.isLeft()) {
       this.reply.code(HTTP_STATUS.UNAUTHORIZED).send({
         message: 'Unauthorized',
       })
       return this.done()
     }
-    console.log(verifiedOrError.value)
+    this.setUserOnRequest(verifiedOrError.value)
     this.done()
   }
 
@@ -53,5 +63,9 @@ export class PreHandlerAuthenticate {
 
   private get token() {
     return this.request.headers.authorization!.split(' ')[1]
+  }
+
+  private setUserOnRequest(user: TokenPayload) {
+    this.request.user = user
   }
 }
