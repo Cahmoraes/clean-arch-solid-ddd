@@ -1,8 +1,9 @@
 import request from 'supertest'
+import { createAndSaveUser } from 'test/factory/create-and-save-user'
 
 import type { UserRepository } from '@/application/repository/user-repository'
+import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
 import { serverBuild } from '@/bootstrap/server-build'
-import { User } from '@/domain/user'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
@@ -13,7 +14,8 @@ import { UserRoutes } from '../routes/user-routes'
 
 describe('User Profile', () => {
   let fastifyServer: FastifyAdapter
-  let userRepository: UserRepository
+  let userRepository: InMemoryUserRepository
+  let authenticate: AuthenticateUseCase
 
   beforeEach(async () => {
     userRepository = new InMemoryUserRepository()
@@ -21,6 +23,9 @@ describe('User Profile', () => {
     container
       .rebind<UserRepository>(TYPES.Repositories.User)
       .toConstantValue(userRepository)
+    authenticate = container.get<AuthenticateUseCase>(
+      TYPES.UseCases.Authenticate,
+    )
     fastifyServer = serverBuild()
     await fastifyServer.ready()
   })
@@ -37,12 +42,19 @@ describe('User Profile', () => {
       password: 'any_password',
     }
 
-    const user = User.create(input)
-    await userRepository.save(user.forceRight().value)
-    const savedUser = await userRepository.findByEmail(input.email)
-    const userId = savedUser!.id!
+    const user = await createAndSaveUser({
+      userRepository,
+      ...input,
+    })
+    const userId = user!.id!
+    const result = await authenticate.execute({
+      email: input.email,
+      password: input.password,
+    })
+    const token = result.force.right().value.token
     const response = await request(fastifyServer.server)
       .get(toPath(userId))
+      .set('Authorization', `Bearer ${token}`)
       .send()
 
     expect(response.status).toBe(HTTP_STATUS.OK)
@@ -61,8 +73,8 @@ describe('User Profile', () => {
       .get(toPath('inexistent_id'))
       .send()
     expect(response.body).toHaveProperty('message')
-    expect(response.body.message).toEqual('User not found')
-    expect(response.status).toBe(HTTP_STATUS.NOT_FOUND)
+    expect(response.body.message).toEqual('Unauthorized')
+    expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
   })
 
   function toPath(userId: string): string {

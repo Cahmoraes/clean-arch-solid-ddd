@@ -4,6 +4,7 @@ import type { InMemoryUserRepository } from '@/infra/database/repository/in-memo
 export interface CreateAndSaveUserProps {
   userRepository: InMemoryUserRepository
   id?: string
+  email?: string
 }
 
 export async function createAndSaveUser(props: CreateAndSaveUserProps) {
@@ -11,7 +12,7 @@ export async function createAndSaveUser(props: CreateAndSaveUserProps) {
   const user = User.create({
     id: userId,
     name: 'any_name',
-    email: 'john@doe.com.br',
+    email: props.email ?? 'john@doe.com.br',
     password: 'any_password',
   }).force.right().value
   await props.userRepository.save(user)

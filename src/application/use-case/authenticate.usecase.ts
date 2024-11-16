@@ -49,7 +49,8 @@ export class AuthenticateUseCase {
     return this.authToken.sign(
       {
         sub: {
-          id: anUser.email,
+          id: anUser.id!,
+          email: anUser.email,
         },
       },
       env.PRIVATE_KEY,

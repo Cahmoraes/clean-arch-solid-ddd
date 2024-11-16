@@ -16,6 +16,7 @@ import { HTTP_STATUS } from '@/infra/server/http-status'
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'
+import { PreHandlerAuthenticate } from '../services/pre-handler-authenticate'
 
 const userProfileRequestSchema = z.object({
   userId: z.string(),
@@ -71,20 +72,12 @@ export class UserProfileController implements Controller {
     reply: FastifyReply,
     done: HookHandlerDoneFunction,
   ) {
-    console.log(request.params)
-    const verifiedOrError = this.authToken.verify(
-      request.params.userId,
-      env.JWT_SECRET,
-    )
-    if (verifiedOrError.isLeft()) {
-      console.log(verifiedOrError.value.message)
-    }
-    // if (verifiedOrError.isLeft()) {
-    //   reply.code(HTTP_STATUS.UNAUTHORIZED).send({
-    //     message: 'Unauthorized',
-    //   })
-    //   return done()
-    // }
-    done()
+    const preHandlerAuthenticate = new PreHandlerAuthenticate({
+      request,
+      reply,
+      done,
+      authToken: this.authToken,
+    })
+    preHandlerAuthenticate.execute()
   }
 }
