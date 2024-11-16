@@ -15,12 +15,12 @@ export class JsonWebTokenAdapter implements AuthToken {
     return jwt.sign(payload, privateKey)
   }
 
-  public verify(
+  public verify<TokenPayload>(
     token: string,
     publicKey: string,
-  ): Either<InvalidUserTokenError, Payload> {
+  ): Either<InvalidUserTokenError, TokenPayload> {
     try {
-      const payload = jwt.verify(token, publicKey)
+      const payload = jwt.verify(token, publicKey) as TokenPayload
       return right(payload)
     } catch {
       return left(new InvalidUserTokenError())

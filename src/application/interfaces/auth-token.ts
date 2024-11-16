@@ -5,8 +5,8 @@ export type Payload = string | Buffer | object
 
 export interface AuthToken {
   sign(payload: Payload, privateKey: string): string
-  verify(
+  verify<TokenPayload>(
     token: unknown,
     publicKey: string,
-  ): Either<InvalidUserTokenError, Payload>
+  ): Either<InvalidUserTokenError, TokenPayload>
 }

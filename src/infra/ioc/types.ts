@@ -35,4 +35,7 @@ export const TYPES = {
   Tokens: {
     Auth: Symbol.for('AuthToken'),
   },
+  Factories: {
+    PreHandlerAuthenticate: Symbol.for('PreHandlerAuthenticate'),
+  },
 }
