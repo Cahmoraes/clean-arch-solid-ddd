@@ -1,83 +1,48 @@
-import madge from 'madge'
+import { describe, expect, it } from 'vitest'
 
-// Defina as camadas e as regras de dependência
-const layers: { [key: string]: string[] } = {
-  domain: ['domain'],
-  application: ['application', 'domain'],
-  infra: ['infra', 'domain', 'application'],
+import {
+  FitnessConfig,
+  FitnessFunction,
+} from './fitness-function-architecture-dependency-check'
+
+const config: FitnessConfig = {
+  layers: {
+    domain: ['domain'],
+    application: ['application', 'domain'],
+    infra: ['infra', 'domain', 'application'],
+  },
+  ignoredFiles: ['infra/env/index.ts', 'infra/ioc/types.ts'],
+  sourceDir: 'src',
+  tsConfigPath: './tsconfig.json',
 }
-
-// Lista de arquivos ignorados
-const ignoredFiles = ['infra/env/index.ts', 'infra/ioc/types.ts']
 
 describe('Fitness Function: Verificação de Estrutura Arquitetural', () => {
   it('deve seguir as regras de dependência do Clean Architecture', async () => {
-    const result = await madge('src', {
-      fileExtensions: ['ts'],
-      includeNpm: false,
-      tsConfig: './tsconfig.json',
-      baseDir: 'src',
-    })
+    const fitnessFunction = new FitnessFunction(config)
+    await fitnessFunction.evaluate()
 
-    // Verifica se há dependências circulares
-    const circularDependencies = result.circular()
+    // Verificar dependências circulares
     expect(
-      circularDependencies.length,
+      fitnessFunction.hasCircularDependencies(),
       `Dependências circulares detectadas:\n` +
-        circularDependencies.map((dep) => ` - ${dep.join(' -> ')}`).join('\n'),
-    ).toBe(0)
+        fitnessFunction
+          .getCircularDependencies()
+          .map((dep) => ` - ${dep.join(' -> ')}`)
+          .join('\n'),
+    ).toBe(false)
 
-    // Filtra dependências para ignorar arquivos de teste e arquivos explicitamente ignorados
-    const dependencies = result.obj()
-    const filteredDependencies = Object.fromEntries(
-      Object.entries(dependencies).filter(
-        ([module]) => !isTestFile(module) && !isIgnoredFile(module),
-      ),
-    )
-
-    for (const [module, dependents] of Object.entries(filteredDependencies)) {
-      const moduleLayer = getLayer(module)
-
-      if (!moduleLayer) continue
-
-      dependents.forEach((dependent) => {
-        // Ignora arquivos de teste e arquivos explicitamente ignorados nas dependências
-        if (isTestFile(dependent) || isIgnoredFile(dependent)) return
-
-        const dependentLayer = getLayer(dependent)
-        if (!dependentLayer) return
-
-        // Verifica se a camada dependente está permitida
-        const isValidDependency = layers[moduleLayer].includes(dependentLayer)
-        expect(
-          isValidDependency,
-          `Violação de dependência detectada:\n - Módulo '${module}' (camada '${moduleLayer}') ` +
-            `está dependendo do módulo '${dependent}' (camada '${dependentLayer}'), ` +
-            `o que não é permitido pelas regras do Clean Architecture.`,
-        ).toBe(true)
-      })
-    }
+    // Verificar dependências inválidas
+    expect(
+      fitnessFunction.hasInvalidDependencies(),
+      `Violações detectadas:\n` +
+        fitnessFunction
+          .getInvalidDependencies()
+          .map(
+            (violation) =>
+              ` - Módulo '${violation.module}' (camada '${violation.moduleLayer}') ` +
+              `dependendo do módulo '${violation.dependent}' (camada '${violation.dependentLayer}').`,
+          )
+          .join('\n'),
+    ).toBe(false)
   })
 })
-
-// Função para verificar se o arquivo é de teste
-function isTestFile(filePath: string): boolean {
-  return (
-    /\.test\.ts$/.test(filePath) ||
-    /\.spec\.ts$/.test(filePath) ||
-    /-test\.ts$/.test(filePath)
-  )
-}
-
-// Função para verificar se o arquivo é explicitamente ignorado
-function isIgnoredFile(filePath: string): boolean {
-  return ignoredFiles.includes(filePath)
-}
-
-// Função auxiliar para obter a camada de um módulo com base no caminho
-function getLayer(modulePath: string): string | undefined {
-  if (modulePath.includes('domain/')) return 'domain'
-  if (modulePath.includes('application/')) return 'application'
-  if (modulePath.includes('infra/')) return 'infra'
-  return undefined
-}
