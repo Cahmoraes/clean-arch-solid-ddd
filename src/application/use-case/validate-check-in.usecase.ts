@@ -3,8 +3,8 @@ import { inject, injectable } from 'inversify'
 import { type Either, left, right } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
-import { CheckInNotFoundError } from '../error/check-in-not-found-error'
 import type { CheckInTimeExceededError } from '../../domain/error/check-in-time-exceeded-error'
+import { CheckInNotFoundError } from '../error/check-in-not-found-error'
 import type { CheckInRepository } from '../repository/check-in-repository'
 
 export interface ValidateCheckInUseCaseInput {
