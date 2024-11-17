@@ -8,7 +8,7 @@ import { inject, injectable } from 'inversify'
 
 import type { AuthToken } from '@/application/interfaces/auth-token'
 
-import { AuthenticatePreHandler as AuthenticatePreHandler } from '../controllers/services/authenticate-pre-handler'
+import { AuthenticatePreHandler } from '../controllers/services/authenticate-pre-handler'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
 import { GlobalErrorHandler } from './global-error-handler'
