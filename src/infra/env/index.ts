@@ -17,6 +17,9 @@ const envSchema = z.object({
   CHECK_IN_EXPIRATION_TIME: z.coerce.number().default(20),
   DATABASE_URL: z.string().url(),
   JWT_SECRET: z.string().default('jwt-secret-example'),
+  JWT_EXPIRES_IN: z.string().default('10m'),
+  JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+  REFRESH_TOKEN_NAME: z.string().default('refresh_token'),
 })
 
 const _env = envSchema.safeParse(envObject)

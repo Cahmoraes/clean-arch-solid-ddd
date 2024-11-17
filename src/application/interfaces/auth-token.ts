@@ -9,4 +9,5 @@ export interface AuthToken {
     token: unknown,
     publicKey: string,
   ): Either<InvalidUserTokenError, TokenPayload>
+  refreshToken(payload: Payload, privateKey: string): string
 }

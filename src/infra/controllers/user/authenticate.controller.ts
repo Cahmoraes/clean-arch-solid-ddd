@@ -1,10 +1,12 @@
-import type { FastifyRequest } from 'fastify'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
 import { type Either, left, right } from '@/domain/value-object/either'
+import type { CookieManager } from '@/infra/cookie/cookie-manager'
+import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -25,6 +27,8 @@ export class AuthenticateController implements Controller {
   constructor(
     @inject(TYPES.UseCases.Authenticate)
     private readonly authenticate: AuthenticateUseCase,
+    @inject(TYPES.Cookies.Manager)
+    private readonly cookieManager: CookieManager,
   ) {
     this.bindMethods()
   }
@@ -40,7 +44,7 @@ export class AuthenticateController implements Controller {
     })
   }
 
-  private async callback(req: FastifyRequest) {
+  private async callback(req: FastifyRequest, res: FastifyReply) {
     const parsedBodyResult = this.parseBodyResult(req.body)
     if (parsedBodyResult.isLeft())
       return ResponseFactory.create({
@@ -57,9 +61,22 @@ export class AuthenticateController implements Controller {
         message: 'Invalid credentials',
       })
     }
+    res.header(
+      'set-cookie',
+      this.encodeRefreshTokenCookie(result.value.refreshToken),
+    )
     return ResponseFactory.create({
       status: HTTP_STATUS.OK,
       body: result.value,
+    })
+  }
+
+  private encodeRefreshTokenCookie(aString: string) {
+    return this.cookieManager.serialize(env.REFRESH_TOKEN_NAME, aString, {
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
     })
   }
 

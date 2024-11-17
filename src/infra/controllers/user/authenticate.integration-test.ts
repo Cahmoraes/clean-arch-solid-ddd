@@ -47,7 +47,8 @@ describe('Authenticate User', () => {
         email: input.email,
         password: input.password,
       })
-
+    console.log(response.headers['set-cookie'][0])
+    expect(response.headers['set-cookie'][0]).toEqual(expect.any(String))
     expect(response.body).toHaveProperty('token')
     expect(response.body.token).toEqual(expect.any(String))
     expect(response.status).toBe(HTTP_STATUS.OK)
