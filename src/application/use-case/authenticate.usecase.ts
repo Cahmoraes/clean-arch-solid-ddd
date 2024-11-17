@@ -16,6 +16,7 @@ export interface AuthenticateUseCaseInput {
 
 export interface AuthTokenOutputDTO {
   token: string
+  refreshToken: string
 }
 
 export type AuthenticateUseCaseOutput = Either<
@@ -42,15 +43,30 @@ export class AuthenticateUseCase {
     if (!userOrNull.checkPassword(input.password)) {
       return left(new InvalidCredentialsError())
     }
-    return right({ token: this.signUserToken(userOrNull) })
+    return right({
+      token: this.signUserToken(userOrNull),
+      refreshToken: this.createRefreshToken(userOrNull),
+    })
   }
 
-  private signUserToken(anUser: User): string {
+  private signUserToken(user: User): string {
     return this.authToken.sign(
       {
         sub: {
-          id: anUser.id!,
-          email: anUser.email,
+          id: user.id!,
+          email: user.email,
+        },
+      },
+      env.PRIVATE_KEY,
+    )
+  }
+
+  private createRefreshToken(user: User): string {
+    return this.authToken.refreshToken(
+      {
+        sub: {
+          id: user.id!,
+          email: user.email,
         },
       },
       env.PRIVATE_KEY,
