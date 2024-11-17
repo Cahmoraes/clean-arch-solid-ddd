@@ -7,7 +7,7 @@ export interface AuthToken {
   sign(payload: Payload, privateKey: string): string
   verify<TokenPayload>(
     token: unknown,
-    publicKey: string,
+    secretKey: string,
   ): Either<InvalidUserTokenError, TokenPayload>
   refreshToken(payload: Payload, privateKey: string): string
 }

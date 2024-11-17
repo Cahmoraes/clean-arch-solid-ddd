@@ -5,6 +5,7 @@ import type { SearchGymController } from '@/infra/controllers/gym/search-gym.con
 import type { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import type { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import type { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
+import type { RefreshTokenController } from '@/infra/controllers/user/refresh-token.controller'
 import type { UserMetricsController } from '@/infra/controllers/user/user-metrics.controller'
 import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
 import { container } from '@/infra/ioc/container'
@@ -40,6 +41,9 @@ export function serverBuild() {
   const userMetricsController = container.get<UserMetricsController>(
     TYPES.Controllers.UserMetrics,
   )
+  const refreshTokenController = container.get<RefreshTokenController>(
+    TYPES.Controllers.RefreshToken,
+  )
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
   userProfileController.handle(fastifyServer)
@@ -49,5 +53,6 @@ export function serverBuild() {
   validateCheckInController.handle(fastifyServer)
   myProfileController.handle(fastifyServer)
   userMetricsController.handle(fastifyServer)
+  refreshTokenController.handle(fastifyServer)
   return fastifyServer
 }
