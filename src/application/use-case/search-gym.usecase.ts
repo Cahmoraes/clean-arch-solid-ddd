@@ -10,7 +10,7 @@ export interface SearchGymUseCaseInput {
   page?: number
 }
 
-interface CoordinateDTO {
+interface SearchGymCoordinateDTO {
   latitude: number
   longitude: number
 }
@@ -20,7 +20,7 @@ export interface SearchGymUseCaseOutput {
   title: string
   description?: string
   phone?: number
-  coordinate: CoordinateDTO
+  coordinate: SearchGymCoordinateDTO
 }
 
 @injectable()

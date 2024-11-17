@@ -10,13 +10,16 @@ export interface UserProfileUseCaseInput {
   userId: string
 }
 
-interface UserProfileOutputDTO {
+interface UserProfileUseCaseOutputDTO {
   id: string | null
   name: string
   email: string
 }
 
-export type UserProfileUseCaseOutput = Either<Error, UserProfileOutputDTO>
+export type UserProfileUseCaseOutput = Either<
+  Error,
+  UserProfileUseCaseOutputDTO
+>
 
 @injectable()
 export class UserProfileUseCase {
