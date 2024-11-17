@@ -20,18 +20,21 @@ export class JsonWebTokenAdapter implements AuthToken {
 
   public verify<TokenPayload>(
     token: string,
-    publicKey: string,
+    secretKey: string,
   ): Either<InvalidUserTokenError, TokenPayload> {
     try {
-      const payload = jwt.verify(token, publicKey) as TokenPayload
+      const payload = jwt.verify(token, secretKey) as TokenPayload
       return right(payload)
-    } catch {
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log(e.message)
+      }
       return left(new InvalidUserTokenError())
     }
   }
 
-  public refreshToken(payload: Payload, privateKey: string): string {
-    return jwt.sign(payload, privateKey, {
+  public refreshToken(payload: Payload, secretKey: string): string {
+    return jwt.sign(payload, secretKey, {
       expiresIn: env.JWT_REFRESH_EXPIRES_IN,
     })
   }

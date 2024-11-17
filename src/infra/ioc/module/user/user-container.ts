@@ -7,6 +7,7 @@ import { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
 import { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
+import { RefreshTokenController } from '@/infra/controllers/user/refresh-token.controller'
 import { UserMetricsController } from '@/infra/controllers/user/user-metrics.controller'
 import { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
@@ -24,6 +25,7 @@ export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.Controllers.UserProfile).to(UserProfileController)
   bind(TYPES.Controllers.MyProfile).to(MyProfileController)
   bind(TYPES.Controllers.UserMetrics).to(UserMetricsController)
+  bind(TYPES.Controllers.RefreshToken).to(RefreshTokenController)
   bind(TYPES.UseCases.CreateUser).to(CreateUserUseCase)
   bind(TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
   bind(TYPES.UseCases.UserProfile).to(UserProfileUseCase)

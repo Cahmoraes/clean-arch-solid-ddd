@@ -11,7 +11,7 @@ import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import { UserRoutes } from '../routes/user-routes'
 
-describe('Authenticate User', () => {
+describe('Refresh Token', () => {
   let fastifyServer: FastifyAdapter
   let userRepository: UserRepository
 
@@ -31,7 +31,7 @@ describe('Authenticate User', () => {
     await fastifyServer.close()
   })
 
-  test('Deve autenticar um usuário', async () => {
+  test('Deve gerar um novo Refresh Token', async () => {
     const input = {
       name: 'any_name',
       email: 'any@email.com',
@@ -41,27 +41,22 @@ describe('Authenticate User', () => {
     const user = User.create(input)
     await userRepository.save(user.forceRight().value)
 
-    const response = await request(fastifyServer.server)
+    const responseAuthenticate = await request(fastifyServer.server)
       .post(UserRoutes.AUTHENTICATE)
       .send({
         email: input.email,
         password: input.password,
       })
-    expect(response.headers['set-cookie'][0]).toEqual(expect.any(String))
-    expect(response.body).toHaveProperty('token')
-    expect(response.body.token).toEqual(expect.any(String))
-    expect(response.status).toBe(HTTP_STATUS.OK)
-  })
 
-  test('Não deve autenticar um usuário inválido', async () => {
-    const response = await request(fastifyServer.server)
-      .post(UserRoutes.AUTHENTICATE)
-      .send({
-        email: 'inexistent@email.com',
-        password: 'inexistent_password',
-      })
-    expect(response.body).toHaveProperty('message')
-    expect(response.body.message).toEqual('Invalid credentials')
-    expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
+    console.log(responseAuthenticate.body)
+
+    const refreshToken = responseAuthenticate.headers['set-cookie'][0]
+
+    const responseRefreshToken = await request(fastifyServer.server)
+      .patch(UserRoutes.REFRESH)
+      .set('Cookie', refreshToken)
+      .send()
+
+    console.log(responseRefreshToken.body)
   })
 })
