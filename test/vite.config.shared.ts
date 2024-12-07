@@ -1,7 +1,7 @@
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
-export const setupShareConfig = defineConfig({
+export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     setupFiles: '/test/setup-test.ts',
