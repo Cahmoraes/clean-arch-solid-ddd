@@ -9,6 +9,7 @@ import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 
+import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
 import { CheckInRoutes } from '../routes/check-in-routes'
 
@@ -22,7 +23,7 @@ const checkInRequestSchema = z.object({
 type CheckInPayload = z.infer<typeof checkInRequestSchema>
 
 @injectable()
-export class CheckInController {
+export class CheckInController implements Controller {
   constructor(
     @inject(TYPES.UseCases.CheckIn)
     private readonly checkIn: CheckInUseCase,

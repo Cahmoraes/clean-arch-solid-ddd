@@ -75,7 +75,6 @@ export class RefreshTokenController implements Controller {
       env.PRIVATE_KEY,
     )
     res.header('set-cookie', this.encodeRefreshTokenCookie(refreshToken))
-    // const token = this.authToken.sign(payload, privateKey)
     return ResponseFactory.create({
       status: HTTP_STATUS.OK,
       message: token,
