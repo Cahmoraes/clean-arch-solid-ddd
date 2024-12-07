@@ -19,7 +19,9 @@ import { UserRepositoryProvider } from './user-repository-provider'
 export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind<PrismaUserRepository>(PrismaUserRepository).toSelf()
   bind<InMemoryUserRepository>(InMemoryUserRepository).toSelf()
-  bind(TYPES.Repositories.User).toDynamicValue(UserRepositoryProvider.provide)
+  bind(TYPES.Repositories.User)
+    .toDynamicValue(UserRepositoryProvider.provide)
+    .inSingletonScope()
   bind(TYPES.Controllers.CreateUser).to(CreateUserController)
   bind(TYPES.Controllers.Authenticate).to(AuthenticateController)
   bind(TYPES.Controllers.UserProfile).to(UserProfileController)

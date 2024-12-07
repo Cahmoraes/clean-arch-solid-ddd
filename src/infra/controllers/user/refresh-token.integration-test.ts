@@ -50,7 +50,7 @@ describe('Refresh Token', () => {
     console.log(responseAuthenticate.body)
 
     const refreshToken = responseAuthenticate.headers['set-cookie'][0]
-
+    console.log({ refreshToken })
     const responseRefreshToken = await request(fastifyServer.server)
       .patch(UserRoutes.REFRESH)
       .set('Cookie', refreshToken)
