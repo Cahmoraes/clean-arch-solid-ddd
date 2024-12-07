@@ -48,10 +48,10 @@ describe('CheckInUseCase', () => {
       userLongitude: -49.4889672,
     }
     const result = await sut.execute(input)
-    expect(result.forceRight().value.checkInId).toEqual(expect.any(String))
-    expect(result.forceRight().value.date).toEqual(expect.any(Date))
+    expect(result.forceSuccess().value.checkInId).toEqual(expect.any(String))
+    expect(result.forceSuccess().value.date).toEqual(expect.any(Date))
     const checkInSaved = checkInRepository.checkIns.toArray()[0]
-    expect(checkInSaved.id).toEqual(result.forceRight().value.checkInId)
+    expect(checkInSaved.id).toEqual(result.forceSuccess().value.checkInId)
   })
 
   test('Não deve criar um check-in se o usuário não existir', async () => {
@@ -62,7 +62,7 @@ describe('CheckInUseCase', () => {
       userLongitude: -49.4889672,
     }
     const result = await sut.execute(input)
-    expect(result.forceLeft().value).toBeInstanceOf(UserNotFoundError)
+    expect(result.forceFailure().value).toBeInstanceOf(UserNotFoundError)
   })
 
   test('Não deve criar um check-in se a academia não existir', async () => {
@@ -78,7 +78,7 @@ describe('CheckInUseCase', () => {
       userLongitude: -49.4889672,
     }
     const result = await sut.execute(input)
-    expect(result.forceLeft().value).toBeInstanceOf(GymNotFoundError)
+    expect(result.forceFailure().value).toBeInstanceOf(GymNotFoundError)
   })
 
   test('Não deve criar um check-in no mesmo dia', async () => {
@@ -96,7 +96,7 @@ describe('CheckInUseCase', () => {
     }
     await sut.execute(input)
     const result = await sut.execute(input)
-    expect(result.forceLeft().value).toBeInstanceOf(
+    expect(result.forceFailure().value).toBeInstanceOf(
       UserHasAlreadyCheckedInToday,
     )
   })
@@ -116,7 +116,7 @@ describe('CheckInUseCase', () => {
       userLongitude: -48.4889672,
     }
     const result = await sut.execute(input)
-    expect(result.forceLeft().value).toBeInstanceOf(MaxDistanceError)
+    expect(result.forceFailure().value).toBeInstanceOf(MaxDistanceError)
   })
 
   async function _createAndSaveGym(id?: string, latitude = 0, longitude = 0) {
@@ -126,7 +126,7 @@ describe('CheckInUseCase', () => {
       title: 'any_name',
       latitude,
       longitude,
-    }).forceRight().value
+    }).forceSuccess().value
     await gymRepository.save(gym)
     return gymRepository.gyms.toArray()[0]
   }

@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
@@ -32,8 +32,8 @@ export class UserProfileUseCase {
     input: UserProfileUseCaseInput,
   ): Promise<UserProfileUseCaseOutput> {
     const userOrNull = await this.userRepository.findById(input.userId)
-    if (!userOrNull) return left(new UserNotFoundError())
-    return right({
+    if (!userOrNull) return failure(new UserNotFoundError())
+    return success({
       email: userOrNull.email,
       id: userOrNull.id,
       name: userOrNull.name,

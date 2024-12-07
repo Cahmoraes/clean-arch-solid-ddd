@@ -1,6 +1,6 @@
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { Coordinate } from './value-object/coordinate'
-import { type Either, left, right } from './value-object/either'
+import { type Either, failure, success } from './value-object/either'
 import { Id } from './value-object/id'
 import { Name } from './value-object/name'
 import { Phone } from './value-object/phone'
@@ -55,14 +55,16 @@ export class Gym {
   ): Either<InvalidNameLengthError, Gym> {
     const id = Id.create(gymProps.id)
     const nameOrError = Name.create(gymProps.title)
-    if (nameOrError.isLeft()) return left(nameOrError.value)
+    if (nameOrError.isFailure()) return failure(nameOrError.value)
     const coordinateOrError = Coordinate.create({
       latitude: gymProps.latitude,
       longitude: gymProps.longitude,
     })
-    if (coordinateOrError.isLeft()) return left(coordinateOrError.value)
+    if (coordinateOrError.isFailure()) return failure(coordinateOrError.value)
     const phoneOrError = Phone.create(gymProps.phone)
-    if (phoneOrError && phoneOrError.isLeft()) return left(phoneOrError.value)
+    if (phoneOrError && phoneOrError.isFailure()) {
+      return failure(phoneOrError.value)
+    }
     const gym = new Gym({
       ...gymProps,
       id,
@@ -70,7 +72,7 @@ export class Gym {
       title: nameOrError.value,
       phone: phoneOrError.value,
     })
-    return right(gym)
+    return success(gym)
   }
 
   public static restore(gymProps: GymRestoreProps): Gym {

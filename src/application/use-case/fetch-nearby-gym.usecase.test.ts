@@ -47,7 +47,7 @@ describe('FetchNearbyGymUsecase', () => {
       userLongitude: gymData.longitude,
     }
     const result = await sut.execute(input)
-    const gyms = result.force.right().value
+    const gyms = result.force.success().value
     expect(Array.isArray(gyms)).toBe(true)
     expect(gyms).toHaveLength(1)
     expect(gyms[0].title).toBe(gymData.title)
@@ -103,7 +103,7 @@ describe('FetchNearbyGymUsecase', () => {
       userLongitude: -46.633308,
     }
     const result = await sut.execute(input)
-    const gyms = result.force.right().value
+    const gyms = result.force.success().value
     expect(gyms).toHaveLength(3)
     expect(gyms.map((gym) => gym.title)).toEqual(
       expect.arrayContaining(['Academia 1', 'Academia 2', 'Academia 3']),
@@ -117,6 +117,6 @@ describe('FetchNearbyGymUsecase', () => {
       userLongitude: 185,
     }
     const result = await sut.execute(input)
-    expect(result.isLeft()).toBe(true)
+    expect(result.isFailure()).toBe(true)
   })
 })

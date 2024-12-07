@@ -4,7 +4,7 @@ import type { ValidationError } from 'zod-validation-error'
 import { User } from '@/domain/user'
 import { TYPES } from '@/infra/ioc/types'
 
-import { type Either, left, right } from '../../domain/value-object/either'
+import { type Either, failure, success } from '../../domain/value-object/either'
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
 import type { UserRepository } from '../repository/user-repository'
 
@@ -34,11 +34,11 @@ export class CreateUserUseCase {
     input: CreateUserUseCaseInput,
   ): Promise<CreateUserOutput> {
     const userOrNull = await this.findUserByEmail(input.email)
-    if (userOrNull) return left(new UserAlreadyExistsError())
+    if (userOrNull) return failure(new UserAlreadyExistsError())
     const userOrError = await this.createUser(input)
-    if (userOrError.isLeft()) return left(userOrError.value)
+    if (userOrError.isFailure()) return failure(userOrError.value)
     await this.userRepository.save(userOrError.value)
-    return right({
+    return success({
       email: userOrError.value.email,
     })
   }

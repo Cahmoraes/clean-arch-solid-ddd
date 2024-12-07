@@ -46,7 +46,7 @@ export class AuthenticatePreHandler {
       this.token,
       env.PRIVATE_KEY,
     )
-    if (verifiedOrError.isLeft()) {
+    if (verifiedOrError.isFailure()) {
       return this.reply.code(HTTP_STATUS.UNAUTHORIZED).send({
         message: 'Unauthorized',
       })

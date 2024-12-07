@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 
 import type { InvalidNameLengthError } from '@/domain/error/invalid-name-length-error'
 import { Gym } from '@/domain/gym'
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
 import { GymAlreadyExistsError } from '../error/gym-already-exists-error'
@@ -36,8 +36,8 @@ export class CreateGymUseCase {
     input: CreateGymUseCaseInput,
   ): Promise<CreateGymUseCaseOutput> {
     const gymOrError = Gym.create(input)
-    if (gymOrError.isLeft()) return left(gymOrError.value)
+    if (gymOrError.isFailure()) return failure(gymOrError.value)
     const { id } = await this.gymRepository.save(gymOrError.value)
-    return right({ gymId: id })
+    return success({ gymId: id })
   }
 }

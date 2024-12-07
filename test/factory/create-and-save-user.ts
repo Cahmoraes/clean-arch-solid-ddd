@@ -14,7 +14,7 @@ export async function createAndSaveUser(props: CreateAndSaveUserProps) {
     name: 'any_name',
     email: props.email ?? 'john@doe.com.br',
     password: 'any_password',
-  }).force.right().value
+  }).force.success().value
   await props.userRepository.save(user)
   return props.userRepository.users.toArray()[0]
 }

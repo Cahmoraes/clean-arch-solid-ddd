@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { fromError } from 'zod-validation-error'
 
 import type { ValidateCheckInUseCase } from '@/application/use-case/validate-check-in.usecase'
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -41,7 +41,7 @@ export class ValidateCheckInController implements Controller {
 
   private async callback(req: FastifyRequest) {
     const parsedRequest = this.parseBodyPayload(req.body)
-    if (parsedRequest.isLeft()) {
+    if (parsedRequest.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.BAD_REQUEST,
         message: parsedRequest.value.message,
@@ -50,7 +50,7 @@ export class ValidateCheckInController implements Controller {
     const result = await this.validateCheckInUseCase.execute(
       parsedRequest.value,
     )
-    if (result.isLeft()) {
+    if (result.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.CONFLICT,
         message: result.value.message,
@@ -66,7 +66,7 @@ export class ValidateCheckInController implements Controller {
     body: unknown,
   ): Either<Error, ValidateCheckInPayload> {
     const parsedBody = validateCheckInRequestSchema.safeParse(body)
-    if (!parsedBody.success) return left(fromError(parsedBody.error))
-    return right(parsedBody.data)
+    if (!parsedBody.success) return failure(fromError(parsedBody.error))
+    return success(parsedBody.data)
   }
 }

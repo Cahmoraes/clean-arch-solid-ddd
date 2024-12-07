@@ -1,6 +1,6 @@
 import { type ValidationError } from 'zod-validation-error'
 
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { Email } from './value-object/email'
@@ -53,10 +53,12 @@ export class User {
     userCreateProps: UserCreateProps,
   ): Either<ValidationError | InvalidNameLengthError, User> {
     const validatedPropsOrError = this.validate(userCreateProps)
-    if (validatedPropsOrError.isLeft()) return left(validatedPropsOrError.value)
+    if (validatedPropsOrError.isFailure()) {
+      return failure(validatedPropsOrError.value)
+    }
     const id = Id.create(userCreateProps.id)
     const createdAt = userCreateProps.createdAt ?? new Date()
-    return right(
+    return success(
       new User({
         id,
         createdAt,
@@ -71,12 +73,12 @@ export class User {
     userCreateProps: UserCreateProps,
   ): Either<ValidationError | InvalidNameLengthError, ValidatedUserProps> {
     const nameOrError = Name.create(userCreateProps.name)
-    if (nameOrError.isLeft()) return left(nameOrError.value)
+    if (nameOrError.isFailure()) return failure(nameOrError.value)
     const emailOrError = Email.create(userCreateProps.email)
-    if (emailOrError.isLeft()) return left(emailOrError.value)
+    if (emailOrError.isFailure()) return failure(emailOrError.value)
     const passwordOrError = Password.create(userCreateProps.password)
-    if (passwordOrError.isLeft()) return left(passwordOrError.value)
-    return right({
+    if (passwordOrError.isFailure()) return failure(passwordOrError.value)
+    return success({
       name: nameOrError.value,
       email: emailOrError.value,
       password: passwordOrError.value,

@@ -39,7 +39,7 @@ describe('Authenticate User', () => {
     }
 
     const user = User.create(input)
-    await userRepository.save(user.forceRight().value)
+    await userRepository.save(user.forceSuccess().value)
 
     const response = await request(fastifyServer.server)
       .post(UserRoutes.AUTHENTICATE)

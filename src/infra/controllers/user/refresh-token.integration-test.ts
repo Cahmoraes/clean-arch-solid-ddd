@@ -38,7 +38,7 @@ describe('Refresh Token', () => {
     }
 
     const user = User.create(input)
-    await userRepository.save(user.forceRight().value)
+    await userRepository.save(user.forceSuccess().value)
 
     const responseAuthenticate = await request(fastifyServer.server)
       .post(UserRoutes.AUTHENTICATE)
@@ -47,15 +47,13 @@ describe('Refresh Token', () => {
         password: input.password,
       })
 
-    console.log(responseAuthenticate.body)
-
     const refreshToken = responseAuthenticate.headers['set-cookie'][0]
-    console.log({ refreshToken })
     const responseRefreshToken = await request(fastifyServer.server)
       .patch(UserRoutes.REFRESH)
       .set('Cookie', refreshToken)
       .send()
 
-    console.log(responseRefreshToken.body)
+    expect(responseRefreshToken.status).toBe(200)
+    expect(responseRefreshToken.body.message).toEqual(expect.any(String))
   })
 })

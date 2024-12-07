@@ -32,13 +32,13 @@ describe('UserProfile', () => {
       password: 'any_password',
     }
     const user = User.create(userCreateProps)
-    await userRepository.save(user.forceRight().value)
+    await userRepository.save(user.forceSuccess().value)
     const savedUser = userRepository.users.toArray()[0]
     const input: UserProfileUseCaseInput = {
       userId: savedUser.id!,
     }
     const leftOrRight = await sut.execute(input)
-    const result = leftOrRight.force.right().value
+    const result = leftOrRight.force.success().value
     expect(result.id).toBe(input.userId)
     expect(result.name).toBe(userCreateProps.name)
     expect(result.email).toBe(userCreateProps.email)
@@ -49,7 +49,7 @@ describe('UserProfile', () => {
       userId: 'invalid_id',
     }
     const leftOrRight = await sut.execute(input)
-    const result = leftOrRight.force.left().value
+    const result = leftOrRight.force.failure().value
     expect(result).toBeInstanceOf(UserNotFoundError)
   })
 })

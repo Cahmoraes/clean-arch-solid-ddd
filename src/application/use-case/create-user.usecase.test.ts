@@ -32,7 +32,7 @@ describe('CreateUserUseCase', () => {
     }
     const result = await sut.execute(input)
     const user = await userRepository.findByEmail(input.email)
-    expect(result.forceRight().value.email).toBe(input.email)
+    expect(result.forceSuccess().value.email).toBe(input.email)
     expect(user?.id).toBeDefined()
     expect(user?.name).toBe(input.name)
     expect(user?.email).toBe(input.email)
@@ -48,6 +48,6 @@ describe('CreateUserUseCase', () => {
     }
     await sut.execute(input)
     const result = await sut.execute(input)
-    expect(result.forceLeft().value).toBeInstanceOf(UserAlreadyExistsError)
+    expect(result.forceFailure().value).toBeInstanceOf(UserAlreadyExistsError)
   })
 })

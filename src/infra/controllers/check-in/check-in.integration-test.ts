@@ -63,7 +63,7 @@ describe('CheckIn', () => {
       password: 'securepassword123',
     }
     const userOrError = User.create(input)
-    const user = userOrError.forceRight().value
+    const user = userOrError.forceSuccess().value
     await userRepository.save(user)
     return userRepository.users.toArray()[0]
   }
@@ -77,7 +77,7 @@ describe('CheckIn', () => {
       phone: '11971457899',
       id: 'fake_id',
     }
-    const gym = Gym.create(input).forceRight().value
+    const gym = Gym.create(input).forceSuccess().value
     await gymRepository.save(gym)
     return gymRepository.gyms.toArray()[0]
   }

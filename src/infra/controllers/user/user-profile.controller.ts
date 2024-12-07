@@ -41,7 +41,7 @@ export class UserProfileController implements Controller {
   private async callback(req: FastifyRequest) {
     const { userId } = this.parseParamsOrThrow(req.params)
     const result = await this.userProfile.execute({ userId })
-    if (result.isLeft()) {
+    if (result.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.NOT_FOUND,
         message: 'User not found',

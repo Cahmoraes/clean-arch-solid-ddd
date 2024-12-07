@@ -1,6 +1,6 @@
 import { InvalidLatitudeError } from '../error/invalid-latitude-error'
 import { InvalidLongitudeError } from '../error/invalid-longitude-error'
-import { type Either, left, right } from './either'
+import { type Either, failure, success } from './either'
 
 export interface CoordinateCreate {
   latitude: number
@@ -25,21 +25,21 @@ export class Coordinate {
     props: CoordinateCreate,
   ): Either<InvalidLatitudeError | InvalidLongitudeError, Coordinate> {
     const coordsOrError = this.validate(props)
-    if (coordsOrError.isLeft()) return left(coordsOrError.value)
+    if (coordsOrError.isFailure()) return failure(coordsOrError.value)
     const coordinate = new Coordinate(coordsOrError.value)
-    return right(coordinate)
+    return success(coordinate)
   }
 
   public static validate(
     props: CoordinateCreate,
   ): Either<Error, CoordinateCreate> {
     if (props.latitude < MIN_LATITUDE || props.latitude > MAX_LATITUDE) {
-      return left(new InvalidLatitudeError())
+      return failure(new InvalidLatitudeError())
     }
     if (props.longitude < MIN_LONGITUDE || props.longitude > MAX_LONGITUDE) {
-      return left(new InvalidLongitudeError())
+      return failure(new InvalidLongitudeError())
     }
-    return right(props)
+    return success(props)
   }
 
   public static restore(props: CoordinateCreate) {

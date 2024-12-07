@@ -47,7 +47,7 @@ describe('ValidateCheckIn', () => {
       checkInId: checkIn.id!,
     }
     const result = await sut.execute(input)
-    const right = result.force.right().value
+    const right = result.force.success().value
     expect(right.validatedAt).toBeInstanceOf(Date)
     expect(right.validatedAt).toBeInstanceOf(Date)
     expect(checkIn.isValidated).toBe(true)
@@ -68,7 +68,7 @@ describe('ValidateCheckIn', () => {
     const TWENTY_ON_MINUTES = 1000 * 60 * 21
     vi.advanceTimersByTime(TWENTY_ON_MINUTES)
     const result = await sut.execute(input)
-    const right = result.force.left().value
+    const right = result.force.failure().value
     expect(right).toBeInstanceOf(CheckInTimeExceededError)
     vi.useRealTimers()
   })
@@ -78,7 +78,7 @@ describe('ValidateCheckIn', () => {
       checkInId: 'non-existent-id',
     }
     const result = await sut.execute(input)
-    const left = result.force.left().value
+    const left = result.force.failure().value
     expect(left).toBeInstanceOf(CheckInNotFoundError)
   })
 })

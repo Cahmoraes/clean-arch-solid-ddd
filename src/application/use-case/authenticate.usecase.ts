@@ -5,7 +5,7 @@ import type { User } from '@/domain/user'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 
-import { type Either, left, right } from '../../domain/value-object/either'
+import { type Either, failure, success } from '../../domain/value-object/either'
 import { InvalidCredentialsError } from '../error/invalid-credentials-error'
 import type { UserRepository } from '../repository/user-repository'
 
@@ -38,12 +38,12 @@ export class AuthenticateUseCase {
   ): Promise<AuthenticateUseCaseOutput> {
     const userOrNull = await this.userRepository.findByEmail(input.email)
     if (!userOrNull) {
-      return left(new InvalidCredentialsError())
+      return failure(new InvalidCredentialsError())
     }
     if (!userOrNull.checkPassword(input.password)) {
-      return left(new InvalidCredentialsError())
+      return failure(new InvalidCredentialsError())
     }
-    return right({
+    return success({
       token: this.signUserToken(userOrNull),
       refreshToken: this.createRefreshToken(userOrNull),
     })

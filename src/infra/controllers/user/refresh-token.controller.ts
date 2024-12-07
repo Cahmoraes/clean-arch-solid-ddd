@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { AuthToken } from '@/application/interfaces/auth-token'
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import type { CookieManager } from '@/infra/cookie/cookie-manager'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
@@ -50,26 +50,23 @@ export class RefreshTokenController implements Controller {
 
   private async callback(req: FastifyRequest, res: FastifyReply) {
     const cookieOrError = this.parseHeaderResult(req.headers)
-    if (cookieOrError.isLeft()) {
+    if (cookieOrError.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.BAD_REQUEST,
         message: cookieOrError.value.message,
       })
     }
-    console.log('value: ', cookieOrError.value.cookie)
     const cookie = this.cookieManager.parse(cookieOrError.value.cookie)
-    console.log('aqui', cookie.refreshToken)
     const verified = this.authToken.verify<Sub>(
       cookie.refreshToken,
       env.PRIVATE_KEY,
     )
-    if (verified.isLeft()) {
+    if (verified.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.FORBIDDEN,
         message: verified.value.message,
       })
     }
-    console.log(verified.value)
     const token = this.authToken.sign(verified.value.sub, env.PRIVATE_KEY)
     const refreshToken = this.authToken.refreshToken(
       verified.value.sub,
@@ -95,7 +92,7 @@ export class RefreshTokenController implements Controller {
     headers: unknown,
   ): Either<ValidationError, RefreshPayload> {
     const parsedBody = refreshTokenRequestSchema.safeParse(headers)
-    if (!parsedBody.success) return left(fromError(parsedBody.error))
-    return right(parsedBody.data)
+    if (!parsedBody.success) return failure(fromError(parsedBody.error))
+    return success(parsedBody.data)
   }
 }
