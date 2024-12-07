@@ -56,10 +56,11 @@ export class RefreshTokenController implements Controller {
         message: cookieOrError.value.message,
       })
     }
+    console.log('value: ', cookieOrError.value.cookie)
     const cookie = this.cookieManager.parse(cookieOrError.value.cookie)
-    console.log('aqui', cookie.refresh_token)
+    console.log('aqui', cookie.refreshToken)
     const verified = this.authToken.verify<Sub>(
-      cookie.refresh_token,
+      cookie.refreshToken,
       env.PRIVATE_KEY,
     )
     if (verified.isLeft()) {

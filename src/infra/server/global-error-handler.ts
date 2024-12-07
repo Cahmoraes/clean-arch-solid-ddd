@@ -21,6 +21,7 @@ export class GlobalErrorHandler {
         .status(HTTP_STATUS.BAD_REQUEST)
         .send({ message: validationError.toString() })
     }
+    console.log(error)
     reply
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
       .send({ message: 'Internal Server Error' })

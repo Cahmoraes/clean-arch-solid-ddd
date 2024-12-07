@@ -10,7 +10,7 @@ Content-Type: application/json
   "password": "senha123"
 }
 
-### Atenticar usuário
+### Autenticar usuário
 POST {{baseUrl}}/sessions
 Content-Type: application/json
 
@@ -18,4 +18,13 @@ Content-Type: application/json
   "name": "João Silva",
   "email": "joao.silva@example.com",
   "password": "senha123"
+}
+
+### Refresh Token
+PATCH {{baseUrl}}/sessions/refresh
+Content-Type: application/json
+Cookie: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOnsiaWQiOiIwMjMxYTdiNC1hZDdlLTRkZmItOGZkZS1kZDRlYTRmYTcyNDciLCJlbWFpbCI6ImpvYW8uc2lsdmFAZXhhbXBsZS5jb20ifSwiaWF0IjoxNzMzNTk3NzU5LCJleHAiOjE3MzQyMDI1NTl9.sBCGzIeJv6YAD2J49tbCDD0csut6FyGZpRdhjaSVUjw
+
+{
+
 }
