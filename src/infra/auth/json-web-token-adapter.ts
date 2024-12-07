@@ -1,7 +1,7 @@
 import { injectable } from 'inversify'
 import jwt from 'jsonwebtoken'
 
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 
 import { InvalidUserTokenError } from '../../application/error/invalid-user-token-error'
 import type {
@@ -24,12 +24,12 @@ export class JsonWebTokenAdapter implements AuthToken {
   ): Either<InvalidUserTokenError, TokenPayload> {
     try {
       const payload = jwt.verify(token, secretKey) as TokenPayload
-      return right(payload)
+      return success(payload)
     } catch (e) {
       if (e instanceof Error) {
         console.log(e.message)
       }
-      return left(new InvalidUserTokenError())
+      return failure(new InvalidUserTokenError())
     }
   }
 

@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 
 import { CheckIn } from '@/domain/check-in'
 import { DistanceCalculator } from '@/domain/service/distance-calculator'
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
 import { MaxDistanceError } from '../error/max-distance-error'
@@ -48,11 +48,11 @@ export class CheckInUseCase {
     input: CheckInUseCaseInput,
   ): Promise<CheckInUseCaseOutput> {
     const userOrNull = await this.userRepository.findById(input.userId)
-    if (!userOrNull) return left(new UserNotFoundError())
+    if (!userOrNull) return failure(new UserNotFoundError())
     const checkInOnSameDate = await this.hasCheckInOnSameDate()
-    if (checkInOnSameDate) return left(new UserHasAlreadyCheckedInToday())
+    if (checkInOnSameDate) return failure(new UserHasAlreadyCheckedInToday())
     const gymOrNull = await this.gymRepository.findById(input.gymId)
-    if (!gymOrNull) return left(new GymNotFoundError())
+    if (!gymOrNull) return failure(new GymNotFoundError())
     const differenceInDistance = this.distanceBetweenCoords(
       {
         latitude: input.userLatitude,
@@ -64,11 +64,11 @@ export class CheckInUseCase {
       },
     )
     if (this.isDistanceExceeded(differenceInDistance)) {
-      return left(new MaxDistanceError())
+      return failure(new MaxDistanceError())
     }
     const checkIn = CheckIn.create(input)
     const { id } = await this.checkInRepository.save(checkIn)
-    return right({
+    return success({
       checkInId: id,
       date: checkIn.createdAt,
     })

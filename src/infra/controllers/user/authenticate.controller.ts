@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import type { CookieManager } from '@/infra/cookie/cookie-manager'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
@@ -46,7 +46,7 @@ export class AuthenticateController implements Controller {
 
   private async callback(req: FastifyRequest, res: FastifyReply) {
     const parsedBodyResult = this.parseBodyResult(req.body)
-    if (parsedBodyResult.isLeft())
+    if (parsedBodyResult.isFailure())
       return ResponseFactory.create({
         status: HTTP_STATUS.BAD_REQUEST,
         message: parsedBodyResult.value.message,
@@ -55,7 +55,7 @@ export class AuthenticateController implements Controller {
       email: parsedBodyResult.value.email,
       password: parsedBodyResult.value.password,
     })
-    if (result.isLeft()) {
+    if (result.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.UNAUTHORIZED,
         message: 'Invalid credentials',
@@ -84,7 +84,7 @@ export class AuthenticateController implements Controller {
     body: unknown,
   ): Either<ValidationError, AuthenticatePayload> {
     const parsedBody = authenticateRequestSchema.safeParse(body)
-    if (!parsedBody.success) return left(fromError(parsedBody.error))
-    return right(parsedBody.data)
+    if (!parsedBody.success) return failure(fromError(parsedBody.error))
+    return success(parsedBody.data)
   }
 }

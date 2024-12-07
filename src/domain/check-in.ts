@@ -2,7 +2,7 @@ import type { Optional } from '@/@types/optional'
 import { CheckInTimeExceededError } from '@/domain/error/check-in-time-exceeded-error'
 import { env } from '@/infra/env'
 
-import { type Either, left, right } from './value-object/either'
+import { type Either, failure, success } from './value-object/either'
 import { Id } from './value-object/id'
 import { ValidId } from './value-object/valid-id'
 
@@ -125,11 +125,11 @@ export class CheckIn {
 
   public validate(): Either<CheckInTimeExceededError, true> {
     if (this.isNotEligibleToValidate()) {
-      return left(new CheckInTimeExceededError())
+      return failure(new CheckInTimeExceededError())
     }
     this._validatedAt = new Date()
     this._isValidated = true
-    return right(true)
+    return success(true)
   }
 
   private isNotEligibleToValidate(): boolean {

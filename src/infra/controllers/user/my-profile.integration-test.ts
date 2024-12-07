@@ -50,7 +50,7 @@ describe('My Profile', () => {
       email: input.email,
       password: input.password,
     })
-    const token = result.force.right().value.token
+    const token = result.force.success().value.token
     const response = await request(fastifyServer.server)
       .get(UserRoutes.ME)
       .set('Authorization', `Bearer ${token}`)

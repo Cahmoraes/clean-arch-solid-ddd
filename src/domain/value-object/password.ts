@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { env } from '@/infra/env'
 
 const PasswordSchema = z.string().min(6)
@@ -13,18 +13,20 @@ export class Password {
 
   public static create(rawPassword: string): Either<ValidationError, Password> {
     const passwordOrError = this.validate(rawPassword)
-    if (passwordOrError.isLeft()) return left(fromError(passwordOrError.value))
+    if (passwordOrError.isFailure()) {
+      return failure(fromError(passwordOrError.value))
+    }
     const salt = bcrypt.genSaltSync(env.PASSWORD_SALT)
     const hashedPassword = bcrypt.hashSync(passwordOrError.value, salt)
-    return right(new Password(hashedPassword))
+    return success(new Password(hashedPassword))
   }
 
   private static validate(
     rawPassword: string,
   ): Either<ValidationError, string> {
     const passwordParsed = PasswordSchema.safeParse(rawPassword)
-    if (!passwordParsed.success) return left(fromError(passwordParsed.error))
-    return right(passwordParsed.data)
+    if (!passwordParsed.success) return failure(fromError(passwordParsed.error))
+    return success(passwordParsed.data)
   }
 
   public static restore(hashedPassword: string): Password {

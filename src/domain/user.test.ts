@@ -10,12 +10,14 @@ describe('User Entity', () => {
       password: 'securepassword123',
     }
     const userOrError = User.create(input)
-    expect(userOrError.forceRight().value).toBeDefined()
-    expect(userOrError.forceRight().value.name).toEqual(input.name)
-    expect(userOrError.forceRight().value.email).toEqual(input.email)
-    expect(userOrError.forceRight().value.password).toEqual(expect.any(String))
-    expect(userOrError.forceRight().value.createdAt).toEqual(expect.any(Date))
-    expect(userOrError.forceRight().value.id).toBeNull()
+    expect(userOrError.forceSuccess().value).toBeDefined()
+    expect(userOrError.forceSuccess().value.name).toEqual(input.name)
+    expect(userOrError.forceSuccess().value.email).toEqual(input.email)
+    expect(userOrError.forceSuccess().value.password).toEqual(
+      expect.any(String),
+    )
+    expect(userOrError.forceSuccess().value.createdAt).toEqual(expect.any(Date))
+    expect(userOrError.forceSuccess().value.id).toBeNull()
   })
 
   test('Deve restaurar um usuário', () => {
@@ -42,7 +44,9 @@ describe('User Entity', () => {
       password: 'securepassword123',
     }
     const userOrError = User.create(input)
-    expect(userOrError.forceLeft().value).toBeInstanceOf(InvalidNameLengthError)
+    expect(userOrError.forceFailure().value).toBeInstanceOf(
+      InvalidNameLengthError,
+    )
   })
 
   test('Não deve criar um usuário com email inválido', () => {
@@ -52,7 +56,7 @@ describe('User Entity', () => {
       password: 'securepassword123',
     }
     const userOrError = User.create(input)
-    expect(userOrError.forceLeft().value).toBeInstanceOf(InvalidEmailError)
+    expect(userOrError.forceFailure().value).toBeInstanceOf(InvalidEmailError)
   })
 
   test('Deve criar um usuário com uma data de criação pré-definida', () => {
@@ -63,6 +67,6 @@ describe('User Entity', () => {
       createdAt: new Date(),
     }
     const userOrError = User.create(input)
-    expect(userOrError.forceRight().value.createdAt).toBe(input.createdAt)
+    expect(userOrError.forceSuccess().value.createdAt).toBe(input.createdAt)
   })
 })

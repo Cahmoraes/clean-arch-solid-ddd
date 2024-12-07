@@ -29,7 +29,7 @@ describe('CreateGymUseCase', () => {
       phone: '11971457899',
     }
     const result = await sut.execute(input)
-    expect(result.forceRight().value.gymId).toEqual(expect.any(String))
+    expect(result.forceSuccess().value.gymId).toEqual(expect.any(String))
   })
 
   test('Deve falhar ao criar uma Academia sem título', async () => {
@@ -41,7 +41,7 @@ describe('CreateGymUseCase', () => {
       phone: '11971457899',
     }
     const result = await sut.execute(input)
-    expect(result.isLeft()).toBe(true)
+    expect(result.isFailure()).toBe(true)
   })
 
   test('Deve falhar ao criar uma Academia com latitude inválida', async () => {
@@ -53,7 +53,7 @@ describe('CreateGymUseCase', () => {
       phone: '11971457899',
     }
     const result = await sut.execute(input)
-    expect(result.isLeft()).toBe(true)
+    expect(result.isFailure()).toBe(true)
   })
 
   test('Deve falhar ao criar uma Academia com longitude inválida', async () => {
@@ -65,7 +65,7 @@ describe('CreateGymUseCase', () => {
       phone: '11971457899',
     }
     const result = await sut.execute(input)
-    expect(result.isLeft()).toBe(true)
+    expect(result.isFailure()).toBe(true)
     expect(result.value).toBeInstanceOf(InvalidLongitudeError)
   })
 
@@ -78,7 +78,7 @@ describe('CreateGymUseCase', () => {
       phone: '11971457899',
     }
     const result = await sut.execute(input)
-    expect(result.isLeft()).toBe(true)
+    expect(result.isFailure()).toBe(true)
     expect(result.value).toBeInstanceOf(InvalidLatitudeError)
   })
 
@@ -91,7 +91,7 @@ describe('CreateGymUseCase', () => {
       phone: 'invalid-phone',
     }
     const result = await sut.execute(input)
-    expect(result.isLeft()).toBe(true)
+    expect(result.isFailure()).toBe(true)
   })
 
   test('Deve falhar ao tentar criar uma Academia com telefone inválido', async () => {
@@ -103,6 +103,6 @@ describe('CreateGymUseCase', () => {
       phone: 'invalid-phone',
     }
     const result = await sut.execute(input)
-    expect(result.isLeft()).toBe(true)
+    expect(result.isFailure()).toBe(true)
   })
 })

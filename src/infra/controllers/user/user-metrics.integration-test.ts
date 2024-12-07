@@ -52,7 +52,7 @@ describe('User Metrics', () => {
       email: input.email,
       password: input.password,
     })
-    const token = result.force.right().value.token
+    const token = result.force.success().value.token
     const response = await request(fastifyServer.server)
       .get(UserRoutes.METRICS)
       .set('Authorization', `Bearer ${token}`)
@@ -74,7 +74,7 @@ describe('User Metrics', () => {
       email: input.email,
       password: input.password,
     })
-    const token = result.force.right().value.token
+    const token = result.force.success().value.token
 
     await createAndSaveCheckIn({
       checkInRepository,
@@ -106,7 +106,7 @@ describe('User Metrics', () => {
       email: input.email,
       password: input.password,
     })
-    const token = result.force.right().value.token
+    const token = result.force.success().value.token
 
     for (let i = 0; i < 10; i++) {
       await createAndSaveCheckIn({

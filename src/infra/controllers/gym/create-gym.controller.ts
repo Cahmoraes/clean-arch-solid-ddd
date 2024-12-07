@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { CreateGymUseCase } from '@/application/use-case/create-gym.usecase'
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -45,14 +45,14 @@ export class CreateGymController implements Controller {
 
   private async callback(req: FastifyRequest) {
     const parsedBodyOrError = this.parseBody(req.body)
-    if (parsedBodyOrError.isLeft()) {
+    if (parsedBodyOrError.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.BAD_REQUEST,
         message: parsedBodyOrError.value.message,
       })
     }
     const result = await this.createGymUseCase.execute(parsedBodyOrError.value)
-    if (result.isLeft()) {
+    if (result.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.CONFLICT,
         message: result.value.message,
@@ -69,7 +69,7 @@ export class CreateGymController implements Controller {
 
   private parseBody(body: unknown): Either<ValidationError, CreateGymPayload> {
     const parsedBody = createGymSchema.safeParse(body)
-    if (!parsedBody.success) return left(fromError(parsedBody.error))
-    return right(parsedBody.data)
+    if (!parsedBody.success) return failure(fromError(parsedBody.error))
+    return success(parsedBody.data)
   }
 }

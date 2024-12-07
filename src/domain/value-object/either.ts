@@ -1,13 +1,13 @@
-export class Left<L, R> {
+export class Failure<L, R> {
   constructor(readonly value: L) {}
 
   get force() {
     const _self = this
     return {
-      right() {
-        throw new Error('Cannot call right on left')
+      success() {
+        throw new Error('Cannot call success on failure')
       },
-      left() {
+      failure() {
         return {
           get value() {
             return _self.value
@@ -17,7 +17,7 @@ export class Left<L, R> {
     }
   }
 
-  forceLeft() {
+  forceFailure() {
     const _self = this
     return {
       get value() {
@@ -26,51 +26,51 @@ export class Left<L, R> {
     }
   }
 
-  forceRight() {
+  forceSuccess() {
     return {
       get value(): never {
-        throw new Error('Cannot call right on left')
+        throw new Error('Cannot call success on failure')
       },
     }
   }
 
-  public isLeft(): this is Left<L, R> {
+  public isFailure(): this is Failure<L, R> {
     return true
   }
 
-  public isRight(): this is Right<L, R> {
+  public isSuccess(): this is Success<L, R> {
     return false
   }
 }
 
-export class Right<L, R> {
+export class Success<L, R> {
   constructor(readonly value: R) {}
 
   get force() {
     const _self = this
     return {
-      right() {
+      success() {
         return {
           get value() {
             return _self.value
           },
         }
       },
-      left() {
-        throw new Error('Cannot call left on right')
+      failure() {
+        throw new Error('Cannot call failure on success')
       },
     }
   }
 
-  forceLeft() {
+  forceFailure() {
     return {
       get value(): never {
-        throw new Error('Cannot call left on on right')
+        throw new Error('Cannot call failure on success')
       },
     }
   }
 
-  forceRight() {
+  forceSuccess() {
     const _self = this
     return {
       get value() {
@@ -79,16 +79,18 @@ export class Right<L, R> {
     }
   }
 
-  public isLeft(): this is Left<L, R> {
+  public isFailure(): this is Failure<L, R> {
     return false
   }
 
-  public isRight(): this is Right<L, R> {
+  public isSuccess(): this is Success<L, R> {
     return true
   }
 }
 
-export type Either<L, R> = Left<L, R> | Right<L, R>
+export type Either<L, R> = Failure<L, R> | Success<L, R>
 
-export const left = <L, R>(value: L): Either<L, R> => new Left<L, R>(value)
-export const right = <L, R>(value: R): Either<L, R> => new Right<L, R>(value)
+export const failure = <L, R>(value: L): Either<L, R> =>
+  new Failure<L, R>(value)
+export const success = <L, R>(value: R): Either<L, R> =>
+  new Success<L, R>(value)

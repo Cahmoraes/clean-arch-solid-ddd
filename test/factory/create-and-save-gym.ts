@@ -19,7 +19,7 @@ export async function createAndSaveGym(props: CreateAndSaveGym) {
     latitude: props.latitude ?? 0,
     longitude: props.longitude ?? 0,
     ...props,
-  }).forceRight().value
+  }).forceSuccess().value
   await props.gymRepository.save(gym)
   return props.gymRepository.gyms.toArray()[0]
 }

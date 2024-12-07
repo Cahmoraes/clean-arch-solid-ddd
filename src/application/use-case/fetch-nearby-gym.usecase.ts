@@ -4,7 +4,7 @@ import type { InvalidLatitudeError } from '@/domain/error/invalid-latitude-error
 import type { InvalidLongitudeError } from '@/domain/error/invalid-longitude-error'
 import type { Gym } from '@/domain/gym'
 import { Coordinate } from '@/domain/value-object/coordinate'
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
 import type { GymRepository } from '../repository/gym-repository'
@@ -42,9 +42,9 @@ export class FetchNearbyGym {
       latitude: input.userLatitude,
       longitude: input.userLongitude,
     })
-    if (coordOrError.isLeft()) return left(coordOrError.value)
+    if (coordOrError.isFailure()) return failure(coordOrError.value)
     const gyms = await this.gymRepository.fetchNearbyCoord(coordOrError.value)
-    return right(this.createGymsDTO(gyms))
+    return success(this.createGymsDTO(gyms))
   }
 
   private createGymsDTO(gym: Gym[]): FetchNearbyGymOutput[] {

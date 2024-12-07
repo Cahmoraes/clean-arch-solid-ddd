@@ -7,7 +7,7 @@ import type {
   SearchGymUseCase,
   SearchGymUseCaseOutput,
 } from '@/application/use-case/search-gym.usecase'
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -50,7 +50,7 @@ export class SearchGymController implements Controller {
 
   private async callback(req: FastifyRequest) {
     const parsedBodyOrError = this.parseParams(req.params)
-    if (parsedBodyOrError.isLeft()) {
+    if (parsedBodyOrError.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.BAD_REQUEST,
         message: parsedBodyOrError.value.message,
@@ -76,8 +76,8 @@ export class SearchGymController implements Controller {
     params: unknown,
   ): Either<ValidationError, SearchGymPayload> {
     const parsedBody = searchGymRequestSchema.safeParse(params)
-    if (!parsedBody.success) return left(fromError(parsedBody.error))
-    return right(parsedBody.data)
+    if (!parsedBody.success) return failure(fromError(parsedBody.error))
+    return success(parsedBody.data)
   }
 
   private parseQuery(query?: unknown): number | undefined {

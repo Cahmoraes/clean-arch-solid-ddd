@@ -38,8 +38,8 @@ describe('AuthenticateUseCase', () => {
     })
 
     const result = await sut.execute(input)
-    expect(result.forceRight().value).toBeDefined()
-    expect(result.forceRight().value.token).toEqual(expect.any(String))
+    expect(result.forceSuccess().value).toBeDefined()
+    expect(result.forceSuccess().value.token).toEqual(expect.any(String))
   })
 
   test('Não deve autenticar um usuário inexistente', async () => {
@@ -48,7 +48,7 @@ describe('AuthenticateUseCase', () => {
       password: 'any_password',
     }
     const result = await sut.execute(input)
-    expect(result.forceLeft().value).toBeInstanceOf(InvalidCredentialsError)
+    expect(result.forceFailure().value).toBeInstanceOf(InvalidCredentialsError)
   })
 
   test('Não deve autenticar um usuário com senha inválida', async () => {
@@ -68,13 +68,13 @@ describe('AuthenticateUseCase', () => {
       password: 'invalid_password',
     })
 
-    expect(result.forceLeft().value).toBeInstanceOf(InvalidCredentialsError)
+    expect(result.forceFailure().value).toBeInstanceOf(InvalidCredentialsError)
   })
 
   async function createAndSaveUser(userProps: UserCreateProps): Promise<User> {
     const user = makeUser(userProps)
-    await saveUser(user.force.right().value)
-    return user.force.right().value
+    await saveUser(user.force.success().value)
+    return user.force.success().value
 
     function makeUser(userProps: UserCreateProps) {
       return User.create(userProps)

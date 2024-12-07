@@ -80,7 +80,7 @@ describe('CheckIn Entity', () => {
     vi.advanceTimersByTime(TWENTY_ON_MINUTES)
     const result = checkIn.validate()
     expect(checkIn.isValidated).toBe(false)
-    expect(result.forceLeft().value).toBeInstanceOf(CheckInTimeExceededError)
+    expect(result.forceFailure().value).toBeInstanceOf(CheckInTimeExceededError)
     vi.useRealTimers()
   })
 })

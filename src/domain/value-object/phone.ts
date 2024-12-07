@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { InvalidPhoneNumberError } from '../error/invalid-phone-number-error'
-import { type Either, left, right } from './either'
+import { type Either, failure, success } from './either'
 
 export type PhoneCreate = string | number
 
@@ -19,16 +19,16 @@ export class Phone {
     aStringOrNumber?: PhoneCreate,
   ): Either<InvalidPhoneNumberError, Phone> {
     const numberOrError = this.validate(aStringOrNumber)
-    if (numberOrError.isLeft()) return left(numberOrError.value)
-    return right(new Phone(numberOrError.value))
+    if (numberOrError.isFailure()) return failure(numberOrError.value)
+    return success(new Phone(numberOrError.value))
   }
 
   private static validate(
     aStringOrNumber?: PhoneCreate,
   ): Either<InvalidPhoneNumberError, CreatePhoneData> {
     const numberOrError = createPhoneSchema.safeParse(aStringOrNumber)
-    if (!numberOrError.success) return left(new InvalidPhoneNumberError())
-    return right(numberOrError.data)
+    if (!numberOrError.success) return failure(new InvalidPhoneNumberError())
+    return success(numberOrError.data)
   }
 
   public static restore(phone?: number): Phone {

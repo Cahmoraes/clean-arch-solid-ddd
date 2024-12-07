@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 
-import { type Either, left, right } from '@/domain/value-object/either'
+import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
 import type { CheckInTimeExceededError } from '../../domain/error/check-in-time-exceeded-error'
@@ -31,11 +31,11 @@ export class ValidateCheckInUseCase {
     input: ValidateCheckInUseCaseInput,
   ): Promise<ValidateCheckInUseCaseResponse> {
     const checkInOrNull = await this.checkInRepository.findById(input.checkInId)
-    if (!checkInOrNull) return left(new CheckInNotFoundError())
+    if (!checkInOrNull) return failure(new CheckInNotFoundError())
     const validatedOrError = checkInOrNull.validate()
-    if (validatedOrError.isLeft()) return left(validatedOrError.value)
+    if (validatedOrError.isFailure()) return failure(validatedOrError.value)
     await this.checkInRepository.save(checkInOrNull)
-    return right({
+    return success({
       validatedAt: new Date(),
     })
   }

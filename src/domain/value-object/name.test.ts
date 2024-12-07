@@ -2,7 +2,7 @@ import { Name } from './name'
 
 describe('Name', () => {
   test('Deve criar um Nome', () => {
-    const nameOrError = Name.create('fake name').forceRight().value
+    const nameOrError = Name.create('fake name').forceSuccess().value
     expect(nameOrError.value).toBe('fake name')
   })
 
