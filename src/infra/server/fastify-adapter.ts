@@ -8,12 +8,13 @@ import { inject, injectable } from 'inversify'
 
 import type { AuthToken } from '@/application/interfaces/auth-token'
 
-import { AuthenticateHandler } from '../controllers/services/authenticate-pre-handler'
 import { Logger } from '../decorators/logger'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
 import { GlobalErrorHandler } from './global-error-handler'
 import type { Handlers, HttpServer, METHOD } from './http-server'
+import { AdminRoleCheck } from './services/admin-role-check'
+import { AuthenticateHandler } from './services/authenticate-pre-handler'
 
 @injectable()
 export class FastifyAdapter implements HttpServer {
@@ -82,9 +83,9 @@ export class FastifyAdapter implements HttpServer {
     reply: FastifyReply,
     done: HookHandlerDoneFunction,
   ) {
-    console.log('onRequestPreHandler')
-    console.log(request.user)
-    done()
+    const role = request.user.sub.role
+    const adminRoleCheck = new AdminRoleCheck({ request, reply, done })
+    adminRoleCheck.execute(role)
   }
 
   private async authenticateOnRequest(

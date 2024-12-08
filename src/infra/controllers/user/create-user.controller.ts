@@ -6,6 +6,7 @@ import { fromError } from 'zod-validation-error'
 
 import type { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
 import { type Either, failure, success } from '@/domain/value-object/either'
+import { RoleValues } from '@/domain/value-object/role'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
@@ -19,6 +20,10 @@ const createUserRequestSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string().min(6),
+  role: z
+    .enum([RoleValues.ADMIN, RoleValues.MEMBER])
+    .optional()
+    .default('MEMBER'),
 })
 
 type CreateUserPayload = z.infer<typeof createUserRequestSchema>
@@ -54,10 +59,11 @@ export class CreateUserController implements Controller {
         message: parsedBodyOrError.value.message,
       })
     }
-    const { name, email, password } = parsedBodyOrError.value
+    const { name, email, password, role } = parsedBodyOrError.value
     const result = await this.createUser.execute({
       name,
       email,
+      role,
       rawPassword: password,
     })
     if (result.isFailure()) {

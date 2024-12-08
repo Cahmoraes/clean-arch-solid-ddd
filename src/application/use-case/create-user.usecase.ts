@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify'
 import type { ValidationError } from 'zod-validation-error'
 
 import { User } from '@/domain/user'
+import type { RoleTypes } from '@/domain/value-object/role'
 import { TYPES } from '@/infra/ioc/types'
 
 import { type Either, failure, success } from '../../domain/value-object/either'
@@ -12,6 +13,7 @@ export interface CreateUserUseCaseInput {
   name: string
   email: string
   rawPassword: string
+  role?: RoleTypes
 }
 
 export interface CreateUserResponse {
@@ -52,6 +54,7 @@ export class CreateUserUseCase {
       name: input.name,
       email: input.email,
       password: input.rawPassword,
+      role: input.role,
     })
   }
 }

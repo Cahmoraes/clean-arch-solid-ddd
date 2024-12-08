@@ -2,6 +2,8 @@
 @userName = "João Silva"
 @email = "joao.silva@example.com"
 @password = "senha123"
+// MEMBER ou ADMIN
+@role = "MEMBER"
 
 ### Criar Usuário
 # @name createUser
@@ -11,7 +13,8 @@ Content-Type: application/json
 {
   "name": {{userName}},
   "email": {{email}},
-  "password": "senha123"
+  "password": "senha123",
+  "role": {{role}}
 }
 
 ### Autenticar Usuário
