@@ -16,6 +16,7 @@ export interface PreHandler {
 export interface Handlers {
   callback: HandleCallback
   isProtected?: boolean
+  onlyAdmin?: boolean
 }
 
 export interface Handler {

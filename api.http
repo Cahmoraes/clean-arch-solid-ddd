@@ -1,17 +1,21 @@
 @baseUrl = http://localhost:3333
+@userName = "João Silva"
+@email = "joao.silva@example.com"
+@password = "senha123"
 
-###
+### Criar Usuário
+# @name createUser
 POST {{baseUrl}}/users
 Content-Type: application/json
 
 {
-  "name": "João Silva",
-  "email": "joao.silva@example.com",
+  "name": {{userName}},
+  "email": {{email}},
   "password": "senha123"
 }
 
-###
-# @name autenticar
+### Autenticar Usuário
+# @name authenticate
 POST {{baseUrl}}/sessions
 Content-Type: application/json
 
@@ -21,13 +25,27 @@ Content-Type: application/json
 }
 
 ###
-@refreshToken = {{autenticar.response.body.refreshToken}}
+@refreshToken = {{authenticate.response.body.refreshToken}}
 
 # @name refresh
 PATCH {{baseUrl}}/sessions/refresh
 Content-Type: application/json
-Cookie: refreshToken=asd
+Cookie: refreshToken={{refreshToken}}
 
 {
-  "data": "Atualizar o token"
+  
+}
+
+### Criar Academia
+# @name createGym
+POST {{baseUrl}}/gyms
+Content-Type: application/json
+Authorization: Bearer {{authenticate.response.body.token}}
+
+{
+  "title": "Academia do João",
+  "description": "Academia completa",
+  "phone": "123456789",
+  "latitude": -23.563099,
+  "longitude": -46.656571
 }
