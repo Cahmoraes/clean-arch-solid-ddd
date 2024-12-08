@@ -31,11 +31,18 @@ A estrutura do projeto segue os princípios de Clean Architecture, dividindo o c
 
 ## Instalação
 
-1. Clone o repositório:
+1. Clone o repositório (HTTPS):
 ```sh
-  git clone https://github.com/seu-usuario/03-api-solid.git
-  cd 03-api-solid
+  git clone https://github.com/Cahmoraes/clean-arch-solid-ddd.git
+  cd clean-arch-solid-ddd
 ```
+
+1.1 Clone o repositório (SSH):
+```sh
+  git clone git@github.com:Cahmoraes/clean-arch-solid-ddd.git
+  cd clean-arch-solid-ddd
+```
+
 
 2. Instale as dependências:
 ```sh
