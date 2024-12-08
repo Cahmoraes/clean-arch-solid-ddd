@@ -36,6 +36,7 @@ describe('User Entity', () => {
     expect(user.id).toEqual(input.id)
     expect(user.name).toEqual(input.name)
     expect(user.email).toEqual(input.email)
+    expect(user.role).toEqual(input.role)
     expect(user.password).toEqual(expect.any(String))
     expect(user.createdAt).toEqual(input.createdAt)
   })
@@ -72,4 +73,27 @@ describe('User Entity', () => {
     const userOrError = User.create(input)
     expect(userOrError.forceSuccess().value.createdAt).toBe(input.createdAt)
   })
+
+  test('Deve criar um usuário ADMINISTRADOR', () => {
+    const input: UserCreateProps = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'securepassword123',
+      role: 'ADMIN',
+      createdAt: new Date(),
+    }
+    const userOrError = User.create(input)
+    expect(userOrError.forceSuccess().value.role).toBe(RoleValues.ADMIN)
+  })
+
+  const input: UserRestoreProps = {
+    createdAt: new Date(),
+    id: 'any_id',
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    password: 'securepassword123',
+    role: RoleValues.ADMIN,
+  }
+  const user = User.restore(input)
+  expect(user.role).toEqual(RoleValues.ADMIN)
 })
