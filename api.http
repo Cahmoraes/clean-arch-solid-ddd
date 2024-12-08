@@ -3,7 +3,7 @@
 @email = "joao.silva@example.com"
 @password = "senha123"
 // MEMBER ou ADMIN
-@role = "MEMBER"
+@role = "ADMIN"
 
 ### Criar Usuário
 # @name createUser
