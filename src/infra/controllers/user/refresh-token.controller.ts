@@ -9,6 +9,7 @@ import type { CookieManager } from '@/infra/cookie/cookie-manager'
 import { Logger } from '@/infra/decorators/logger'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
+import { Logger as DebugLogger } from '@/infra/logger/logger'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 
@@ -34,6 +35,8 @@ export class RefreshTokenController implements Controller {
     private readonly authToken: AuthToken,
     @inject(TYPES.Cookies.Manager)
     private readonly cookieManager: CookieManager,
+    @inject(TYPES.Logger)
+    private readonly logger: DebugLogger,
   ) {
     this.bindMethods()
   }
@@ -66,6 +69,10 @@ export class RefreshTokenController implements Controller {
       env.PRIVATE_KEY,
     )
     if (verified.isFailure()) {
+      this.logger.warn(this, {
+        cookie: cookie,
+        message: verified.value.message,
+      })
       return ResponseFactory.create({
         status: HTTP_STATUS.FORBIDDEN,
         message: verified.value.message,

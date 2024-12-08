@@ -1,5 +1,5 @@
 export interface Logger {
-  error(instance: object, message: string): void
-  warn(instance: object, message: string): void
-  info(instance: object, message: string): void
+  error(instance: object, message: string | object): void
+  warn(instance: object, message: string | object): void
+  info(instance: object, message: string | object): void
 }
