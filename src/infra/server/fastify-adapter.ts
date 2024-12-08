@@ -12,7 +12,7 @@ import { Logger } from '../decorators/logger'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
 import { GlobalErrorHandler } from './global-error-handler'
-import type { Handlers, HttpServer, METHOD } from './http-server'
+import type { HandlerOptions, HttpServer, METHOD } from './http-server'
 import { AdminRoleCheck } from './services/admin-role-check'
 import { AuthenticateHandler } from './services/authenticate-pre-handler'
 
@@ -51,17 +51,13 @@ export class FastifyAdapter implements HttpServer {
   async register(
     method: METHOD,
     path: string,
-    handlers: Handlers,
+    handlers: HandlerOptions,
   ): Promise<void> {
     this._server[method](
       path,
       {
-        onRequest: this.createAuthenticateOnRequestOrUndefined(
-          handlers.isProtected,
-        ),
-        preHandler: this.createOnRequestPreHandlerOrUndefined(
-          handlers.onlyAdmin,
-        ),
+        onRequest: this.authenticateOnRequestOrUndefined(handlers.isProtected),
+        preHandler: this.onRequestPreHandlerOrUndefined(handlers.onlyAdmin),
       },
       async (request: FastifyRequest, reply: FastifyReply) => {
         const result = await handlers.callback(request, reply)
@@ -70,11 +66,11 @@ export class FastifyAdapter implements HttpServer {
     )
   }
 
-  private createAuthenticateOnRequestOrUndefined(enableAuthenticate?: boolean) {
+  private authenticateOnRequestOrUndefined(enableAuthenticate?: boolean) {
     return enableAuthenticate ? this.authenticateOnRequest : undefined
   }
 
-  private createOnRequestPreHandlerOrUndefined(enableOnRequest?: boolean) {
+  private onRequestPreHandlerOrUndefined(enableOnRequest?: boolean) {
     return enableOnRequest ? this.onRequestPreHandler : undefined
   }
 

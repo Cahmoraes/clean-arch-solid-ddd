@@ -43,6 +43,8 @@ export class CheckInController implements Controller {
   async handle(server: HttpServer) {
     server.register('post', CheckInRoutes.CREATE, {
       callback: this.callback,
+      isProtected: true,
+      onlyAdmin: true,
     })
   }
 

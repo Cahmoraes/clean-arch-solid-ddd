@@ -13,14 +13,14 @@ export interface PreHandler {
   (request: any, response: any, done: any): Promise<void>
 }
 
-export interface Handlers {
+export interface HandlerOptions {
   callback: HandleCallback
   isProtected?: boolean
   onlyAdmin?: boolean
 }
 
 export interface Handler {
-  (method: METHOD, path: string, handlers: Handlers): Promise<void>
+  (method: METHOD, path: string, handlerOptions: HandlerOptions): Promise<void>
 }
 
 export interface HttpServer {

@@ -10,8 +10,9 @@ export class WinstonAdapter implements Logger {
   constructor() {
     this.logger = winston.createLogger({
       format: winston.format.combine(...this.formats()),
-      transports: [new winston.transports.Console()],
+      transports: [],
     })
+    this.enableConsoleTransport()
   }
 
   private formats() {
@@ -19,6 +20,14 @@ export class WinstonAdapter implements Logger {
       winston.format.colorize(),
       winston.format.printf(this.formatMessage),
     ]
+  }
+
+  private enableConsoleTransport() {
+    this.logger.add(
+      new winston.transports.Console({
+        format: winston.format.combine(...this.formats()),
+      }),
+    )
   }
 
   private formatMessage(info: winston.Logform.TransformableInfo): string {

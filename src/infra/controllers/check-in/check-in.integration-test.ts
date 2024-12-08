@@ -1,9 +1,11 @@
 import request from 'supertest'
+import { createAndSaveGym } from 'test/factory/create-and-save-gym'
+import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { isValidDate } from 'test/is-valid-date'
 
+import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
 import { serverBuild } from '@/bootstrap/server-build'
-import { Gym, type GymCreateProps } from '@/domain/gym'
-import { User, type UserCreateProps } from '@/domain/user'
+import { RoleValues } from '@/domain/value-object/role'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
@@ -18,6 +20,7 @@ describe('CheckIn', () => {
   let gymRepository: InMemoryGymRepository
   let checkInRepository: InMemoryCheckInRepository
   let userRepository: InMemoryUserRepository
+  let authenticate: AuthenticateUseCase
 
   beforeEach(async () => {
     container.snapshot()
@@ -29,6 +32,9 @@ describe('CheckIn', () => {
       .rebind(TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
     container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
+    authenticate = container.get<AuthenticateUseCase>(
+      TYPES.UseCases.Authenticate,
+    )
     fastifyServer = serverBuild()
     await fastifyServer.ready()
   })
@@ -39,11 +45,32 @@ describe('CheckIn', () => {
   })
 
   test('Deve realizar um check-in', async () => {
-    const user = await createAndSaveUser()
-    const gym = await createAndSaveGym()
+    const createUserDto = {
+      email: 'john@doe.com',
+      password: 'securepassword123',
+      role: RoleValues.ADMIN,
+    }
+    const user = await createAndSaveUser({ userRepository, ...createUserDto })
+    const gym = await createAndSaveGym({
+      gymRepository,
+      title: 'fake gym',
+      description: 'fake description',
+      latitude: -27.0747279,
+      longitude: -49.4889672,
+      phone: '11971457899',
+      id: 'fake_id',
+    })
+
+    const authenticateOrError = await authenticate.execute({
+      email: createUserDto.email,
+      password: createUserDto.password,
+    })
+
+    const { token } = authenticateOrError.forceSuccess().value
 
     const response = await request(fastifyServer.server)
       .post(CheckInRoutes.CREATE)
+      .auth(token, { type: 'bearer' })
       .send({
         userId: user.id,
         gymId: gym.id,
@@ -55,30 +82,4 @@ describe('CheckIn', () => {
     expect(response.body.id).toBeDefined()
     expect(isValidDate(response.body.date)).toBeTruthy()
   })
-
-  async function createAndSaveUser() {
-    const input: UserCreateProps = {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      password: 'securepassword123',
-    }
-    const userOrError = User.create(input)
-    const user = userOrError.forceSuccess().value
-    await userRepository.save(user)
-    return userRepository.users.toArray()[0]
-  }
-
-  async function createAndSaveGym() {
-    const input: GymCreateProps = {
-      title: 'fake gym',
-      description: 'fake description',
-      latitude: -27.0747279,
-      longitude: -49.4889672,
-      phone: '11971457899',
-      id: 'fake_id',
-    }
-    const gym = Gym.create(input).forceSuccess().value
-    await gymRepository.save(gym)
-    return gymRepository.gyms.toArray()[0]
-  }
 })
