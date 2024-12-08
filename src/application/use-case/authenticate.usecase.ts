@@ -55,6 +55,7 @@ export class AuthenticateUseCase {
         sub: {
           id: user.id!,
           email: user.email,
+          role: user.role,
         },
       },
       env.PRIVATE_KEY,
@@ -67,6 +68,7 @@ export class AuthenticateUseCase {
         sub: {
           id: user.id!,
           email: user.email,
+          role: user.role,
         },
       },
       env.PRIVATE_KEY,

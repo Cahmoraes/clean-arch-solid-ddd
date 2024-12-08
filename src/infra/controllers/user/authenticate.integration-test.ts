@@ -1,9 +1,13 @@
 import request from 'supertest'
 
+import type { User as UserToken } from '@/@types/custom'
 import type { UserRepository } from '@/application/repository/user-repository'
 import { serverBuild } from '@/bootstrap/server-build'
 import { User } from '@/domain/user'
+import { RoleValues } from '@/domain/value-object/role'
+import type { JsonWebTokenAdapter } from '@/infra/auth/json-web-token-adapter'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
+import { env } from '@/infra/env'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
@@ -14,6 +18,7 @@ import { UserRoutes } from '../routes/user-routes'
 describe('Authenticate User', () => {
   let fastifyServer: FastifyAdapter
   let userRepository: UserRepository
+  let jwtAdapter: JsonWebTokenAdapter
 
   beforeEach(async () => {
     const inMemoryRepository = new InMemoryUserRepository()
@@ -22,6 +27,7 @@ describe('Authenticate User', () => {
       .rebind<UserRepository>(TYPES.Repositories.User)
       .toConstantValue(inMemoryRepository)
     userRepository = container.get<UserRepository>(TYPES.Repositories.User)
+    jwtAdapter = container.get(TYPES.Tokens.Auth)
     fastifyServer = serverBuild()
     await fastifyServer.ready()
   })
@@ -49,8 +55,15 @@ describe('Authenticate User', () => {
       })
     expect(response.headers['set-cookie'][0]).toEqual(expect.any(String))
     expect(response.body).toHaveProperty('token')
-    expect(response.body.token).toEqual(expect.any(String))
     expect(response.status).toBe(HTTP_STATUS.OK)
+    const token = response.body.token
+    expect(token).toEqual(expect.any(String))
+    const tokenSubject = jwtAdapter
+      .verify<UserToken>(token, env.PRIVATE_KEY)
+      .force.success().value.sub
+    expect(tokenSubject.email).toBe(input.email)
+    expect(tokenSubject.id).toEqual(expect.any(String))
+    expect(tokenSubject.role).toBe(RoleValues.MEMBER)
   })
 
   test('Não deve autenticar um usuário inválido', async () => {
