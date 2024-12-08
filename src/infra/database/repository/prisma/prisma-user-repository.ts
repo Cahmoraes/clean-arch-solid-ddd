@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify'
 
 import type { UserRepository } from '@/application/repository/user-repository'
 import { User } from '@/domain/user'
+import type { RoleTypes } from '@/domain/value-object/role'
 import { TYPES } from '@/infra/ioc/types'
 
 interface UserData {
@@ -11,6 +12,7 @@ interface UserData {
   email: string
   password_hash: string
   created_at: Date
+  role: RoleTypes
 }
 
 @injectable()
@@ -47,6 +49,7 @@ export class PrismaUserRepository implements UserRepository {
       name: userData.name,
       password: userData.password_hash,
       createdAt: userData.created_at,
+      role: userData.role,
     })
   }
 
@@ -57,6 +60,7 @@ export class PrismaUserRepository implements UserRepository {
         name: user.name,
         password_hash: user.password,
         created_at: user.createdAt,
+        role: user.role,
       },
     })
   }
