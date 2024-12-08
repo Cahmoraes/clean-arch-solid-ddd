@@ -20,8 +20,6 @@ Content-Type: application/json
   "password": "senha123"
 }
 
-
-
 ###
 @refreshToken = {{autenticar.response.body.refreshToken}}
 

@@ -1,6 +1,7 @@
 import { InvalidEmailError } from './error/invalid-email-error'
 import { InvalidNameLengthError } from './error/invalid-name-length-error'
-import { type RestoreUserProps, User, type UserCreateProps } from './user'
+import { User, type UserCreateProps, type UserRestoreProps } from './user'
+import { RoleValues } from './value-object/role'
 
 describe('User Entity', () => {
   test('Deve criar um usuário', () => {
@@ -13,6 +14,7 @@ describe('User Entity', () => {
     expect(userOrError.forceSuccess().value).toBeDefined()
     expect(userOrError.forceSuccess().value.name).toEqual(input.name)
     expect(userOrError.forceSuccess().value.email).toEqual(input.email)
+    expect(userOrError.forceSuccess().value.role).toBe(RoleValues.MEMBER)
     expect(userOrError.forceSuccess().value.password).toEqual(
       expect.any(String),
     )
@@ -21,12 +23,13 @@ describe('User Entity', () => {
   })
 
   test('Deve restaurar um usuário', () => {
-    const input: RestoreUserProps = {
+    const input: UserRestoreProps = {
       createdAt: new Date(),
       id: 'any_id',
       name: 'John Doe',
       email: 'john.doe@example.com',
       password: 'securepassword123',
+      role: RoleValues.MEMBER,
     }
     const user = User.restore(input)
     expect(user).toBeDefined()

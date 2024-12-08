@@ -7,12 +7,14 @@ import { Email } from './value-object/email'
 import { Id } from './value-object/id'
 import { Name } from './value-object/name'
 import { Password } from './value-object/password'
+import { Role, type RoleTypes } from './value-object/role'
 
-export interface UserProps {
+export interface UserConstructorProps {
   id: Id
   name: Name
   email: Email
   password: Password
+  role: Role
   createdAt: Date
 }
 
@@ -21,32 +23,39 @@ export interface UserCreateProps {
   name: string
   email: string
   password: string
+  role?: RoleTypes
   createdAt?: Date
 }
 
-export interface RestoreUserProps {
+export type UserRestoreProps = {
   id: string
   name: string
   email: string
   password: string
+  role: RoleTypes
   createdAt: Date
 }
 
-export type ValidatedUserProps = Omit<UserProps, 'id' | 'createdAt'>
+export type ValidatedUserProps = Omit<
+  UserConstructorProps,
+  'id' | 'createdAt' | 'role'
+>
 
 export class User {
   private readonly _id: Id
   private readonly _name: Name
   private readonly _email: Email
   private readonly _password: Password
+  private readonly _role: Role
   private readonly _createdAt: Date
 
-  private constructor(userDto: UserProps) {
-    this._id = userDto.id
-    this._name = userDto.name
-    this._email = userDto.email
-    this._password = userDto.password
-    this._createdAt = userDto.createdAt
+  private constructor(props: UserConstructorProps) {
+    this._id = props.id
+    this._name = props.name
+    this._email = props.email
+    this._password = props.password
+    this._role = props.role
+    this._createdAt = props.createdAt
   }
 
   public static create(
@@ -58,6 +67,7 @@ export class User {
     }
     const id = Id.create(userCreateProps.id)
     const createdAt = userCreateProps.createdAt ?? new Date()
+    const role = Role.create(userCreateProps.role)
     return success(
       new User({
         id,
@@ -65,6 +75,7 @@ export class User {
         name: validatedPropsOrError.value.name,
         email: validatedPropsOrError.value.email,
         password: validatedPropsOrError.value.password,
+        role: role,
       }),
     )
   }
@@ -85,12 +96,13 @@ export class User {
     })
   }
 
-  public static restore(restoreUserProps: RestoreUserProps) {
+  public static restore(restoreUserProps: UserRestoreProps) {
     return new User({
       id: Id.restore(restoreUserProps.id),
       email: Email.restore(restoreUserProps.email),
       name: Name.restore(restoreUserProps.name),
       password: Password.restore(restoreUserProps.password),
+      role: Role.create(restoreUserProps.role),
       createdAt: restoreUserProps.createdAt,
     })
   }
@@ -109,6 +121,10 @@ export class User {
 
   get password(): string {
     return this._password.value
+  }
+
+  get role(): RoleTypes {
+    return this._role.value
   }
 
   get createdAt(): Date {
