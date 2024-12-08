@@ -1,7 +1,11 @@
 import request from 'supertest'
+import { createAndSaveUser } from 'test/factory/create-and-save-user'
 
+import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
 import { serverBuild } from '@/bootstrap/server-build'
+import { RoleValues } from '@/domain/value-object/role'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
+import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
@@ -11,12 +15,19 @@ import type { CreateGymPayload } from './create-gym.controller'
 
 describe('Create Gym', () => {
   let fastifyServer: FastifyAdapter
+  let userRepository: InMemoryUserRepository
   let gymRepository: InMemoryGymRepository
+  let authenticate: AuthenticateUseCase
 
   beforeEach(async () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
+    userRepository = new InMemoryUserRepository()
+    container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
     container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    authenticate = container.get<AuthenticateUseCase>(
+      TYPES.UseCases.Authenticate,
+    )
     fastifyServer = serverBuild()
     await fastifyServer.ready()
   })
@@ -27,6 +38,20 @@ describe('Create Gym', () => {
   })
 
   test('Deve criar uma academia', async () => {
+    const userInputDto = {
+      email: 'user@email.com',
+      password: 'password',
+      role: RoleValues.ADMIN,
+    }
+    await createAndSaveUser({
+      userRepository,
+      ...userInputDto,
+    })
+    const authenticateOrError = await authenticate.execute({
+      email: userInputDto.email,
+      password: userInputDto.password,
+    })
+    const { token } = authenticateOrError.forceSuccess().value
     const input: CreateGymPayload = {
       title: 'Academia Teste',
       description: 'Academia de teste',
@@ -36,6 +61,7 @@ describe('Create Gym', () => {
     }
     const response = await request(fastifyServer.server)
       .post(GymRoutes.CREATE)
+      .auth(token, { type: 'bearer' })
       .send(input)
 
     expect(response.body.message).toBe('Gym created')

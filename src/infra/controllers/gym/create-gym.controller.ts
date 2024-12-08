@@ -44,6 +44,8 @@ export class CreateGymController implements Controller {
   public async handle(server: HttpServer): Promise<void> {
     server.register('post', GymRoutes.CREATE, {
       callback: this.callback,
+      isProtected: true,
+      onlyAdmin: true,
     })
   }
 

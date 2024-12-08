@@ -1,9 +1,9 @@
 import request from 'supertest'
+import { createAndSaveUser } from 'test/factory/create-and-save-user'
 
 import type { User as UserToken } from '@/@types/custom'
 import type { UserRepository } from '@/application/repository/user-repository'
 import { serverBuild } from '@/bootstrap/server-build'
-import { User } from '@/domain/user'
 import { RoleValues } from '@/domain/value-object/role'
 import type { JsonWebTokenAdapter } from '@/infra/auth/json-web-token-adapter'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
@@ -17,7 +17,7 @@ import { UserRoutes } from '../routes/user-routes'
 
 describe('Authenticate User', () => {
   let fastifyServer: FastifyAdapter
-  let userRepository: UserRepository
+  let userRepository: InMemoryUserRepository
   let jwtAdapter: JsonWebTokenAdapter
 
   beforeEach(async () => {
@@ -26,7 +26,9 @@ describe('Authenticate User', () => {
     container
       .rebind<UserRepository>(TYPES.Repositories.User)
       .toConstantValue(inMemoryRepository)
-    userRepository = container.get<UserRepository>(TYPES.Repositories.User)
+    userRepository = container.get<InMemoryUserRepository>(
+      TYPES.Repositories.User,
+    )
     jwtAdapter = container.get(TYPES.Tokens.Auth)
     fastifyServer = serverBuild()
     await fastifyServer.ready()
@@ -43,16 +45,17 @@ describe('Authenticate User', () => {
       email: 'any@email.com',
       password: 'any_password',
     }
-
-    const user = User.create(input)
-    await userRepository.save(user.forceSuccess().value)
-
+    await createAndSaveUser({
+      userRepository,
+      ...input,
+    })
     const response = await request(fastifyServer.server)
       .post(UserRoutes.AUTHENTICATE)
       .send({
         email: input.email,
         password: input.password,
       })
+    console.log(response.body)
     expect(response.headers['set-cookie'][0]).toEqual(expect.any(String))
     expect(response.body).toHaveProperty('token')
     expect(response.status).toBe(HTTP_STATUS.OK)

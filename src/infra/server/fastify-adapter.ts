@@ -8,7 +8,7 @@ import { inject, injectable } from 'inversify'
 
 import type { AuthToken } from '@/application/interfaces/auth-token'
 
-import { AuthenticatePreHandler } from '../controllers/services/authenticate-pre-handler'
+import { AuthenticateHandler } from '../controllers/services/authenticate-pre-handler'
 import { Logger } from '../decorators/logger'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
@@ -28,7 +28,7 @@ export class FastifyAdapter implements HttpServer {
   }
 
   private bindMethods() {
-    this.authenticatePreHandler = this.authenticatePreHandler.bind(this)
+    this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
   }
 
   public async initialize(): Promise<void> {
@@ -55,8 +55,11 @@ export class FastifyAdapter implements HttpServer {
     this._server[method](
       path,
       {
-        preHandler: this.createAuthenticatePreHandlerOrUndefined(
+        onRequest: this.createAuthenticateOnRequestOrUndefined(
           handlers.isProtected,
+        ),
+        preHandler: this.createOnRequestPreHandlerOrUndefined(
+          handlers.onlyAdmin,
         ),
       },
       async (request: FastifyRequest, reply: FastifyReply) => {
@@ -66,31 +69,41 @@ export class FastifyAdapter implements HttpServer {
     )
   }
 
-  private createAuthenticatePreHandlerOrUndefined(
-    enableAuthenticate?: boolean,
-  ) {
-    return enableAuthenticate ? this.authenticatePreHandler : undefined
+  private createAuthenticateOnRequestOrUndefined(enableAuthenticate?: boolean) {
+    return enableAuthenticate ? this.authenticateOnRequest : undefined
   }
 
-  private async authenticatePreHandler(
-    request: any,
+  private createOnRequestPreHandlerOrUndefined(enableOnRequest?: boolean) {
+    return enableOnRequest ? this.onRequestPreHandler : undefined
+  }
+
+  private onRequestPreHandler(
+    request: FastifyRequest,
     reply: FastifyReply,
     done: HookHandlerDoneFunction,
+  ) {
+    console.log('onRequestPreHandler')
+    console.log(request.user)
+    done()
+  }
+
+  private async authenticateOnRequest(
+    request: any,
+    reply: FastifyReply,
   ): Promise<void> {
-    const preHandlerAuthenticate = new AuthenticatePreHandler({
+    const authenticateHandler = new AuthenticateHandler({
       request,
       reply,
-      done,
       authToken: this.authToken,
     })
-    await preHandlerAuthenticate.execute()
+    await authenticateHandler.execute()
   }
 
   get server() {
     return this._server.server
   }
 
-  public async ready() {
+  public async ready(): Promise<undefined> {
     return this._server.ready()
   }
 
