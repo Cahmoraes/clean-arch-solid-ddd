@@ -6,6 +6,7 @@ import { fromError, type ValidationError } from 'zod-validation-error'
 import type { AuthToken } from '@/application/interfaces/auth-token'
 import { type Either, failure, success } from '@/domain/value-object/either'
 import type { CookieManager } from '@/infra/cookie/cookie-manager'
+import { Logger } from '@/infra/decorators/logger'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
@@ -42,6 +43,9 @@ export class RefreshTokenController implements Controller {
     this.callback = this.callback.bind(this)
   }
 
+  @Logger({
+    message: 'Registrado',
+  })
   async handle(server: HttpServer) {
     server.register('patch', UserRoutes.REFRESH, {
       callback: this.callback,

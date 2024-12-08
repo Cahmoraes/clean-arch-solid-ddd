@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 
 import type { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
+import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -31,6 +32,9 @@ export class UserProfileController implements Controller {
     this.callback = this.callback.bind(this)
   }
 
+  @Logger({
+    message: 'Registrado | Protegido 🔒',
+  })
   async handle(server: HttpServer) {
     server.register('get', UserRoutes.PROFILE, {
       callback: this.callback,

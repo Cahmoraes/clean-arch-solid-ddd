@@ -2,6 +2,7 @@ import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 
 import type { UserMetricsUseCase } from '@/application/use-case/user-metrics.usecase'
+import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -23,6 +24,9 @@ export class UserMetricsController implements Controller {
     this.callback = this.callback.bind(this)
   }
 
+  @Logger({
+    message: 'Registrado | Protegido 🔒',
+  })
   public async handle(server: HttpServer): Promise<void> {
     server.register('get', UserRoutes.METRICS, {
       callback: this.callback,

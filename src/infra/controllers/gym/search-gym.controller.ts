@@ -8,6 +8,7 @@ import type {
   SearchGymUseCaseOutput,
 } from '@/application/use-case/search-gym.usecase'
 import { type Either, failure, success } from '@/domain/value-object/either'
+import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -42,6 +43,9 @@ export class SearchGymController implements Controller {
     this.callback = this.callback.bind(this)
   }
 
+  @Logger({
+    message: 'Registrado',
+  })
   async handle(server: HttpServer) {
     server.register('get', GymRoutes.SEARCH, {
       callback: this.callback,
