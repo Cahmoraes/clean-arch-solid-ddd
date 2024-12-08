@@ -35,7 +35,7 @@ export class ValidateCheckInController implements Controller {
   }
 
   @Logger({
-    message: 'Registrado',
+    message: '✅',
   })
   public async handle(server: HttpServer): Promise<void> {
     server.register('post', CheckInRoutes.VALIDATE, {

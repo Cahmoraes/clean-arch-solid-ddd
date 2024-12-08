@@ -26,7 +26,7 @@ export class MyProfileController implements Controller {
   }
 
   @Logger({
-    message: 'Registrado | Protegido 🔒',
+    message: '✅ | 🔒',
   })
   async handle(server: HttpServer) {
     server.register('get', UserRoutes.ME, {

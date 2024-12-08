@@ -47,7 +47,7 @@ export class RefreshTokenController implements Controller {
   }
 
   @Logger({
-    message: 'Registrado',
+    message: '✅',
   })
   async handle(server: HttpServer) {
     server.register('patch', UserRoutes.REFRESH, {
@@ -69,10 +69,7 @@ export class RefreshTokenController implements Controller {
       env.PRIVATE_KEY,
     )
     if (verified.isFailure()) {
-      this.logger.warn(this, {
-        cookie: cookie,
-        message: verified.value.message,
-      })
+      this.warnOnRefreshTokenFailure(cookie, verified.value.message)
       return ResponseFactory.create({
         status: HTTP_STATUS.FORBIDDEN,
         message: verified.value.message,
@@ -87,6 +84,16 @@ export class RefreshTokenController implements Controller {
     return ResponseFactory.create({
       status: HTTP_STATUS.OK,
       message: token,
+    })
+  }
+
+  private warnOnRefreshTokenFailure(
+    cookie: Record<string, string | undefined>,
+    message: string,
+  ) {
+    this.logger.warn(this, {
+      cookie: cookie,
+      message,
     })
   }
 

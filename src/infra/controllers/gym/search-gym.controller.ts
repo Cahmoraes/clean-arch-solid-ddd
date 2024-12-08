@@ -44,7 +44,7 @@ export class SearchGymController implements Controller {
   }
 
   @Logger({
-    message: 'Registrado',
+    message: '✅',
   })
   async handle(server: HttpServer) {
     server.register('get', GymRoutes.SEARCH, {
