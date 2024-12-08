@@ -22,11 +22,13 @@ export class WinstonAdapter implements Logger {
   }
 
   private formatMessage(info: winston.Logform.TransformableInfo): string {
+    const level = info.level
+    const instance = info.instance ?? ''
     const formattedMessage =
       typeof info.message === 'object'
         ? JSON.stringify(info.message, null, 2)
         : info.message
-    return `${info.level}: ${info.instance || ''} ${formattedMessage}`
+    return `${level}: ${instance} - ${formattedMessage}`
   }
 
   public error(instance: object, message: string | object): void {

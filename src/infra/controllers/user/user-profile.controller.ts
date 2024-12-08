@@ -33,7 +33,7 @@ export class UserProfileController implements Controller {
   }
 
   @Logger({
-    message: 'Registrado | Protegido 🔒',
+    message: '✅ | 🔒',
   })
   async handle(server: HttpServer) {
     server.register('get', UserRoutes.PROFILE, {

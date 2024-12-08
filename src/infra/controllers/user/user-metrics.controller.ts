@@ -25,7 +25,7 @@ export class UserMetricsController implements Controller {
   }
 
   @Logger({
-    message: 'Registrado | Protegido 🔒',
+    message: '✅ | 🔒',
   })
   public async handle(server: HttpServer): Promise<void> {
     server.register('get', UserRoutes.METRICS, {

@@ -40,7 +40,7 @@ export class AuthenticateController implements Controller {
   }
 
   @Logger({
-    message: 'Registrado',
+    message: '✅',
   })
   async handle(server: HttpServer) {
     server.register('post', UserRoutes.AUTHENTICATE, {

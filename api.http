@@ -26,7 +26,7 @@ Content-Type: application/json
 # @name refresh
 PATCH {{baseUrl}}/sessions/refresh
 Content-Type: application/json
-Cookie: refreshToken={{refreshToken}}
+Cookie: refreshToken=asd
 
 {
   "data": "Atualizar o token"
