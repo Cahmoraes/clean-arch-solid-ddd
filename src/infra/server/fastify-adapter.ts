@@ -11,6 +11,7 @@ import type { AuthToken } from '@/application/interfaces/auth-token'
 import { AuthenticatePreHandler } from '../controllers/services/authenticate-pre-handler'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
+import type { Logger } from '../logger/logger'
 import { GlobalErrorHandler } from './global-error-handler'
 import type { Handlers, HttpServer, METHOD } from './http-server'
 
@@ -21,6 +22,8 @@ export class FastifyAdapter implements HttpServer {
   constructor(
     @inject(TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
   ) {
     this._server = fastify({})
     this.bindMethods()
@@ -41,7 +44,10 @@ export class FastifyAdapter implements HttpServer {
         port: env.PORT,
         host: env.HOST,
       })
-      console.log(`HTTP Server running 🚀 http://${env.HOST}:${env.PORT}`)
+      this.logger.info(
+        this,
+        `HTTP Server running 🚀 http://${env.HOST}:${env.PORT}`,
+      )
     } catch (error) {
       console.error(error)
     }

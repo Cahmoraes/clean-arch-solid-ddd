@@ -61,6 +61,7 @@
     "inversify": "6.0.3",
     "jsonwebtoken": "9.0.2",
     "reflect-metadata": "0.2.2",
+    "winston": "3.17.0",
     "zod": "^3.23.8",
     "zod-validation-error": "3.4.0"
   }
