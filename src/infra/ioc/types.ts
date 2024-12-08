@@ -44,4 +44,5 @@ export const TYPES = {
   Factories: {
     PreHandlerAuthenticate: Symbol.for('PreHandlerAuthenticate'),
   },
+  Logger: Symbol.for('Logger'),
 }
