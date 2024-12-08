@@ -5,6 +5,7 @@ import { fromError } from 'zod-validation-error'
 
 import type { CheckInUseCase } from '@/application/use-case/check-in.usecase'
 import { type Either, failure, success } from '@/domain/value-object/either'
+import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
@@ -36,6 +37,9 @@ export class CheckInController implements Controller {
     this.callback = this.callback.bind(this)
   }
 
+  @Logger({
+    message: 'Registrado',
+  })
   async handle(server: HttpServer) {
     server.register('post', CheckInRoutes.CREATE, {
       callback: this.callback,
