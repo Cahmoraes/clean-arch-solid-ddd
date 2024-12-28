@@ -21,7 +21,7 @@ describe('Create User', () => {
     container.unbind(TYPES.Repositories.User)
     container.bind(TYPES.Repositories.User).toConstantValue(inMemoryRepository)
     userRepository = container.get<UserRepository>(TYPES.Repositories.User)
-    fastifyServer = serverBuild()
+    fastifyServer = await serverBuild()
     await fastifyServer.ready()
   })
 

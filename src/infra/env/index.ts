@@ -19,6 +19,7 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default('10m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   REFRESH_TOKEN_NAME: z.string().default('refreshToken'),
+  AMQP_URL: z.string().url().default('amqp://localhost'),
 })
 
 const _env = envSchema.safeParse(envObject)

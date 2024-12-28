@@ -45,4 +45,5 @@ export const TYPES = {
     PreHandlerAuthenticate: Symbol.for('PreHandlerAuthenticate'),
   },
   Logger: Symbol.for('Logger'),
+  Queue: Symbol.for('Queue'),
 }

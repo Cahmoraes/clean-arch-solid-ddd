@@ -28,7 +28,7 @@ describe('Create Gym', () => {
     authenticate = container.get<AuthenticateUseCase>(
       TYPES.UseCases.Authenticate,
     )
-    fastifyServer = serverBuild()
+    fastifyServer = await serverBuild()
     await fastifyServer.ready()
   })
 

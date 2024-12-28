@@ -2,6 +2,7 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
+import { QueueMemoryAdapter } from '@/infra/queue/queue-memory-adapter'
 
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
 import type { UserRepository } from '../repository/user-repository'
@@ -13,10 +14,13 @@ import {
 describe('CreateUserUseCase', () => {
   let sut: CreateUserUseCase
   let userRepository: UserRepository
+  let queue: QueueMemoryAdapter
 
   beforeEach(() => {
     container.snapshot()
     userRepository = setupInMemoryRepositories().userRepository
+    queue = new QueueMemoryAdapter()
+    container.rebind(TYPES.Queue).toConstantValue(queue)
     sut = container.get(TYPES.UseCases.CreateUser)
   })
 
@@ -38,6 +42,7 @@ describe('CreateUserUseCase', () => {
     expect(user?.email).toBe(input.email)
     expect(user?.password).toEqual(expect.any(String))
     expect(user?.createdAt).toEqual(expect.any(Date))
+    expect(queue.queues.has('userCreated')).toBe(true)
   })
 
   test('Não deve criar um usuário com email já existente', async () => {
