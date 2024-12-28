@@ -1,3 +1,4 @@
+import { EVENTS } from '@/domain/event/events'
 import type { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
 import type { ValidateCheckInController } from '@/infra/controllers/check-in/validate-check-in.controller'
 import { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
@@ -10,9 +11,10 @@ import type { UserMetricsController } from '@/infra/controllers/user/user-metric
 import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
+import type { Queue } from '@/infra/queue/queue'
 import { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
-export function serverBuild() {
+export async function serverBuild() {
   const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)
   const userController = container.get<CreateUserController>(
     TYPES.Controllers.CreateUser,
@@ -44,6 +46,11 @@ export function serverBuild() {
   const refreshTokenController = container.get<RefreshTokenController>(
     TYPES.Controllers.RefreshToken,
   )
+  const queue = container.get<Queue>(TYPES.Queue)
+  await queue.connect()
+  await queue.consume(EVENTS.USER_CREATED, (message: any) => {
+    console.log('User created event', message)
+  })
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
   userProfileController.handle(fastifyServer)

@@ -30,7 +30,7 @@ describe('Authenticate User', () => {
       TYPES.Repositories.User,
     )
     jwtAdapter = container.get(TYPES.Tokens.Auth)
-    fastifyServer = serverBuild()
+    fastifyServer = await serverBuild()
     await fastifyServer.ready()
   })
 

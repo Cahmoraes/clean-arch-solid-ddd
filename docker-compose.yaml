@@ -11,5 +11,12 @@ services:
     ports:
       - 5432:5432
 
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+
 volumes:
   postgresql_data:

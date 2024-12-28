@@ -14,7 +14,7 @@ import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 
 describe('ValidateCheckInController (Integration)', () => {
-  let app: FastifyAdapter
+  let server: FastifyAdapter
   let checkInRepository: InMemoryCheckInRepository
   let userRepository: InMemoryUserRepository
 
@@ -26,13 +26,13 @@ describe('ValidateCheckInController (Integration)', () => {
       .rebind(TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
     container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
-    app = serverBuild()
-    await app.ready()
+    server = await serverBuild()
+    await server.ready()
   })
 
   afterAll(async () => {
     container.restore()
-    await app.close()
+    await server.close()
   })
 
   test('should validate a check-in', async () => {
@@ -42,7 +42,7 @@ describe('ValidateCheckInController (Integration)', () => {
       checkInRepository,
       userId: user.id!,
     })
-    const response = await request(app.server)
+    const response = await request(server.server)
       .post(CheckInRoutes.VALIDATE)
       .send({
         checkInId: checkIn.id!,
@@ -54,7 +54,7 @@ describe('ValidateCheckInController (Integration)', () => {
   })
 
   test('should return 400 for invalid check-in ID', async () => {
-    const response = await request(app.server)
+    const response = await request(server.server)
       .post(CheckInRoutes.VALIDATE)
       .send({
         checkInId: 'invalid-id',

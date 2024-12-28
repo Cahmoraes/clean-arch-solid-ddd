@@ -19,7 +19,7 @@ describe('Search Gym', () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
     container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
-    fastifyServer = serverBuild()
+    fastifyServer = await serverBuild()
     await fastifyServer.ready()
   })
 
