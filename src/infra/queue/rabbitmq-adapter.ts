@@ -1,6 +1,7 @@
 import amqp from 'amqplib'
 import { injectable } from 'inversify'
 
+import { Logger } from '../decorators/logger'
 import { env } from '../env'
 import type { Queue } from './queue'
 
@@ -8,6 +9,9 @@ import type { Queue } from './queue'
 export class RabbitMQAdapter implements Queue {
   private connection?: amqp.Connection
 
+  @Logger({
+    message: '✅',
+  })
   public async connect(): Promise<void> {
     this.connection = await amqp.connect(env.AMQP_URL)
   }
