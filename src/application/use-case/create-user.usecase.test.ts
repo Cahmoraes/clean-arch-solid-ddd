@@ -43,6 +43,7 @@ describe('CreateUserUseCase', () => {
     expect(user?.password).toEqual(expect.any(String))
     expect(user?.createdAt).toEqual(expect.any(Date))
     expect(queue.queues.has('userCreated')).toBe(true)
+    expect(queue.queues.size).toBe(2)
   })
 
   test('Não deve criar um usuário com email já existente', async () => {
