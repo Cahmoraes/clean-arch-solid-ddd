@@ -33,9 +33,8 @@ export class NodeMailerAdapter implements MailerGateway {
     subject: string,
     text: string,
   ): Promise<void> {
-    if (!this.transporter) {
-      throw new Error('Transporter not initialized yet.')
-    }
+    if (!this.transporter) await this.init()
+    if (!this.transporter) throw new Error('Transporter not initialized')
     const mailOptions = {
       from: '"No Reply" <no-reply@test.com>', // Remetente fictício
       to, // Destinatário
