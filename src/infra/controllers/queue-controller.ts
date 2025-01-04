@@ -17,20 +17,21 @@ export class QueueController {
     private readonly mailer: MailerGateway,
     @inject(TYPES.Logger)
     private readonly logger: Logger,
-  ) {
-    this.init()
-  }
+  ) {}
 
-  private async init() {
+  public async init() {
     this.logger.info(this, '✅')
-    this.queue.consume(EVENTS.USER_CREATED, (message: UserCreatedEvent) => {
-      console.log('User created event', message)
-      const payload = message.payload
-      this.mailer.sendMail(
-        payload.email,
-        'User created',
-        'User created successfully [Async]',
-      )
-    })
+    await this.queue.consume(
+      EVENTS.USER_CREATED,
+      async (message: UserCreatedEvent) => {
+        console.log('User created event', message)
+        const payload = message.payload
+        await this.mailer.sendMail(
+          payload.email,
+          'User created',
+          'User created successfully [Async]',
+        )
+      },
+    )
   }
 }

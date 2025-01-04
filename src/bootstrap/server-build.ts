@@ -48,7 +48,10 @@ export async function serverBuild() {
   )
   const queue = container.get<Queue>(TYPES.Queue)
   await queue.connect()
-  container.get<QueueController>(TYPES.Controllers.Queue)
+  const queueController = container.get<QueueController>(
+    TYPES.Controllers.Queue,
+  )
+  await queueController.init()
   // await queue.consume(
   //   EVENTS.USER_CREATED,
   //   async (message: UserCreatedEvent) => {
