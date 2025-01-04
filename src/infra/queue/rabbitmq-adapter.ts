@@ -16,11 +16,17 @@ export class RabbitMQAdapter implements Queue {
     this.connection = await amqp.connect(env.AMQP_URL)
   }
 
+  public async close(): Promise<void> {
+    this.assertConnection(this.connection)
+    await this.connection.close()
+  }
+
   public async publish<TData>(exchange: string, data: TData): Promise<void> {
     const channel = await this.createChannel()
-    // await channel.assertExchange(exchange, 'direct', { durable: true })
+    await channel.assertExchange(exchange, 'direct', { durable: true })
     const buffer = Buffer.from(JSON.stringify(data))
-    channel.publish('', 'userCreated', buffer)
+    console.log({ exchange })
+    channel.publish(exchange, '', buffer)
   }
 
   private assertConnection(
@@ -31,7 +37,7 @@ export class RabbitMQAdapter implements Queue {
     }
   }
 
-  private createChannel(): Promise<amqp.Channel> {
+  public createChannel(): Promise<amqp.Channel> {
     this.assertConnection(this.connection)
     return this.connection.createChannel()
   }
@@ -41,7 +47,7 @@ export class RabbitMQAdapter implements Queue {
     callback: CallableFunction,
   ): Promise<void> {
     const channel = await this.createChannel()
-    await channel.assertQueue(queue, { durable: true })
+    // await channel.assertQueue(queue, { durable: true })
     await channel.consume(
       queue,
       async (data: amqp.ConsumeMessage | null): Promise<void> => {

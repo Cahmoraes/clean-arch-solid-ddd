@@ -1,13 +1,19 @@
-import { injectable } from 'inversify'
+import { inject, injectable } from 'inversify'
 import winston from 'winston'
 
+import { TYPES } from '../ioc/types'
+import { EXCHANGES } from '../queue/exchanges'
+import type { Queue } from '../queue/queue'
 import type { Logger } from './logger'
 
 @injectable()
 export class WinstonAdapter implements Logger {
   private readonly logger: winston.Logger
 
-  constructor() {
+  constructor(
+    @inject(TYPES.Queue)
+    private readonly queue: Queue,
+  ) {
     this.logger = winston.createLogger({
       format: winston.format.combine(...this.formats()),
       transports: [],
@@ -58,6 +64,13 @@ export class WinstonAdapter implements Logger {
     this.logger.info({
       instance: instance.constructor.name,
       message: message,
+    })
+  }
+
+  public async publish(type: keyof Logger, message: string) {
+    await this.queue.publish(EXCHANGES.LOG, {
+      type,
+      message,
     })
   }
 }

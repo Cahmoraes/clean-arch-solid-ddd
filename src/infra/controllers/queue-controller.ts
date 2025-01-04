@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify'
 
-import { EVENTS } from '@/domain/event/events'
 import type { UserCreatedEvent } from '@/domain/event/user-created-event'
 
 import type { MailerGateway } from '../gateway/mailer-gateway'
@@ -22,7 +21,7 @@ export class QueueController {
   public async init() {
     this.logger.info(this, '✅')
     await this.queue.consume(
-      EVENTS.USER_CREATED,
+      'sendWelcomeEmail',
       async (message: UserCreatedEvent) => {
         console.log('User created event', message)
         const payload = message.payload
