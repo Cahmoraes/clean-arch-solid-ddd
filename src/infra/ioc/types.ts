@@ -21,6 +21,7 @@ export const TYPES = {
     ValidateCheckIn: Symbol.for('ValidateCheckInController'),
     MyProfile: Symbol.for('MyProfileController'),
     RefreshToken: Symbol.for('RefreshTokenController'),
+    Queue: Symbol.for('QueueController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),

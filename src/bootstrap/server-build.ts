@@ -1,16 +1,14 @@
-import { EVENTS } from '@/domain/event/events'
-import type { UserCreatedEvent } from '@/domain/event/user-created-event'
 import type { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
 import type { ValidateCheckInController } from '@/infra/controllers/check-in/validate-check-in.controller'
 import { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
 import type { SearchGymController } from '@/infra/controllers/gym/search-gym.controller'
+import type { QueueController } from '@/infra/controllers/queue-controller'
 import type { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import type { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import type { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
 import type { RefreshTokenController } from '@/infra/controllers/user/refresh-token.controller'
 import type { UserMetricsController } from '@/infra/controllers/user/user-metrics.controller'
 import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
-import type { MailerGateway } from '@/infra/gateway/mailer-gateway'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
@@ -48,21 +46,21 @@ export async function serverBuild() {
   const refreshTokenController = container.get<RefreshTokenController>(
     TYPES.Controllers.RefreshToken,
   )
-  const mailerGateway = container.get<MailerGateway>(TYPES.Mailer)
   const queue = container.get<Queue>(TYPES.Queue)
   await queue.connect()
-  await queue.consume(
-    EVENTS.USER_CREATED,
-    async (message: UserCreatedEvent) => {
-      console.log('User created event', message)
-      const payload = message.payload
-      await mailerGateway.sendMail(
-        payload.email,
-        'User Created',
-        '[A-sync] User created successfully',
-      )
-    },
-  )
+  container.get<QueueController>(TYPES.Controllers.Queue)
+  // await queue.consume(
+  //   EVENTS.USER_CREATED,
+  //   async (message: UserCreatedEvent) => {
+  //     console.log('User created event', message)
+  //     const payload = message.payload
+  //     await mailerGateway.sendMail(
+  //       payload.email,
+  //       'User Created',
+  //       '[A-sync] User created successfully',
+  //     )
+  //   },
+  // )
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
   userProfileController.handle(fastifyServer)

@@ -75,11 +75,7 @@ export class RefreshTokenController implements Controller {
         message: verified.value.message,
       })
     }
-    const token = this.authToken.sign(verified.value.sub, env.PRIVATE_KEY)
-    const refreshToken = this.authToken.refreshToken(
-      verified.value.sub,
-      env.PRIVATE_KEY,
-    )
+    const { token, refreshToken } = this.createTokens(verified.value.sub)
     res.header('set-cookie', this.encodeRefreshTokenCookie(refreshToken))
     return ResponseFactory.create({
       status: HTTP_STATUS.OK,
@@ -95,6 +91,12 @@ export class RefreshTokenController implements Controller {
       cookie: cookie,
       message,
     })
+  }
+
+  private createTokens(sub: string) {
+    const token = this.authToken.sign(sub, env.PRIVATE_KEY)
+    const refreshToken = this.authToken.refreshToken(sub, env.PRIVATE_KEY)
+    return { token, refreshToken }
   }
 
   private encodeRefreshTokenCookie(aString: string) {
