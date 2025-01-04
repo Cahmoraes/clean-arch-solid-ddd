@@ -60,6 +60,9 @@ export class CreateUserUseCase {
         email: userOrError.value.email,
       }),
     )
+    // console.log(1)
+    // console.log(2)
+    // console.log(3)
     return success({
       email: userOrError.value.email,
     })
