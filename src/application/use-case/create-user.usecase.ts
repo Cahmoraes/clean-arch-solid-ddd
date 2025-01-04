@@ -5,6 +5,7 @@ import { EVENTS } from '@/domain/event/events'
 import { UserCreatedEvent } from '@/domain/event/user-created-event'
 import { User } from '@/domain/user'
 import type { RoleTypes } from '@/domain/value-object/role'
+import type { MailerGateway } from '@/infra/gateway/mailer-gateway'
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
 
@@ -35,6 +36,8 @@ export class CreateUserUseCase {
     private readonly userRepository: UserRepository,
     @inject(TYPES.Queue)
     private readonly queue: Queue,
+    @inject(TYPES.Mailer)
+    private readonly mailer: MailerGateway,
   ) {}
 
   public async execute(
@@ -45,6 +48,11 @@ export class CreateUserUseCase {
     const userOrError = await this.createUser(input)
     if (userOrError.isFailure()) return failure(userOrError.value)
     await this.userRepository.save(userOrError.value)
+    // await this.mailer.sendMail(
+    //   userOrError.value.email,
+    //   'User created',
+    //   'User created successfully [Sync]',
+    // )
     await this.queue.publish(
       EVENTS.USER_CREATED,
       new UserCreatedEvent({

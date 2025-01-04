@@ -3,6 +3,7 @@ import { type ValidationError } from 'zod-validation-error'
 import { type Either, failure, success } from '@/domain/value-object/either'
 
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
+import { Observable } from './observable'
 import { Email } from './value-object/email'
 import { Id } from './value-object/id'
 import { Name } from './value-object/name'
@@ -41,7 +42,7 @@ export type ValidatedUserProps = Omit<
   'id' | 'createdAt' | 'role'
 >
 
-export class User {
+export class User extends Observable {
   private readonly _id: Id
   private readonly _name: Name
   private readonly _email: Email
@@ -50,6 +51,7 @@ export class User {
   private readonly _createdAt: Date
 
   private constructor(props: UserConstructorProps) {
+    super()
     this._id = props.id
     this._name = props.name
     this._email = props.email
