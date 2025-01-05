@@ -1,3 +1,6 @@
+import { DomainEventPublisher } from '@/domain/event/event-publisher'
+import { EVENTS } from '@/domain/event/events'
+import type { UserCreatedEvent } from '@/domain/event/user-created-event'
 import type { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
 import type { ValidateCheckInController } from '@/infra/controllers/check-in/validate-check-in.controller'
 import { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
@@ -64,6 +67,21 @@ export async function serverBuild() {
   //     )
   //   },
   // )
+  // DomainEventPublisher.instance.subscribe(this.createDomainEventSubscriber())
+  DomainEventPublisher.instance.subscribe((event: UserCreatedEvent) => {
+    queue.publish(EVENTS.USER_CREATED, event)
+  })
+  // private createDomainEventSubscriber() {
+  //   return (event: UserCreatedEvent) => {
+  //     this.queue.publish(
+  //       EVENTS.USER_CREATED,
+  //       new UserCreatedEvent({
+  //         name: event.payload.name,
+  //         email: event.payload.email,
+  //       }),
+  //     )
+  //   }
+  // }
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
   userProfileController.handle(fastifyServer)
