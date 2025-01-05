@@ -28,7 +28,6 @@ export class DomainEventPublisher {
   public async publish(event: DomainEvent): Promise<void> {
     for (const subscriber of this.subscribers) {
       await subscriber(event)
-      this.unsubscribe(subscriber)
     }
   }
 }
