@@ -2,7 +2,10 @@ import { type ValidationError } from 'zod-validation-error'
 
 import { type Either, failure, success } from '@/domain/value-object/either'
 
+import type { InvalidEmailError } from './error/invalid-email-error'
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
+import { DomainEventPublisher } from './event/event-publisher'
+import { UserCreatedEvent } from './event/user-created-event'
 import { Observable } from './observable'
 import { Email } from './value-object/email'
 import { Id } from './value-object/id'
@@ -70,6 +73,9 @@ export class User extends Observable {
     const id = Id.create(userCreateProps.id)
     const createdAt = userCreateProps.createdAt ?? new Date()
     const role = Role.create(userCreateProps.role)
+    DomainEventPublisher.instance.publish(
+      this.createUserCreatedEvent(userCreateProps),
+    )
     return success(
       new User({
         id,
@@ -84,7 +90,10 @@ export class User extends Observable {
 
   private static validate(
     userCreateProps: UserCreateProps,
-  ): Either<ValidationError | InvalidNameLengthError, ValidatedUserProps> {
+  ): Either<
+    ValidationError | InvalidNameLengthError | InvalidEmailError,
+    ValidatedUserProps
+  > {
     const nameOrError = Name.create(userCreateProps.name)
     if (nameOrError.isFailure()) return failure(nameOrError.value)
     const emailOrError = Email.create(userCreateProps.email)
@@ -95,6 +104,15 @@ export class User extends Observable {
       name: nameOrError.value,
       email: emailOrError.value,
       password: passwordOrError.value,
+    })
+  }
+
+  private static createUserCreatedEvent(
+    userCreateProps: Pick<UserCreateProps, 'name' | 'email'>,
+  ) {
+    return new UserCreatedEvent({
+      name: userCreateProps.name,
+      email: userCreateProps.email,
     })
   }
 
