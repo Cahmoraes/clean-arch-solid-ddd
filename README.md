@@ -28,6 +28,8 @@ A estrutura do projeto segue os princípios de Clean Architecture, dividindo o c
 - **Inversify**: Container de injeção de dependência para TypeScript.
 - **Vitest**: Framework de testes unitários e de integração.
 - **Zod**: Biblioteca de validação de esquemas.
+- **RabbitMQ**: Sistema de barramento de mensagens para comunicação assíncrona.
+- **NodeMailer**: Módulo para disparos de e-mails.
 
 ## Instalação
 
@@ -41,6 +43,11 @@ A estrutura do projeto segue os princípios de Clean Architecture, dividindo o c
 ```sh
   git clone git@github.com:Cahmoraes/clean-arch-solid-ddd.git
   cd clean-arch-solid-ddd
+```
+
+1.2 Execute o Docker Compose:
+```sh
+  docker compose up -D
 ```
 
 
