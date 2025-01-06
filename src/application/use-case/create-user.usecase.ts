@@ -2,7 +2,6 @@ import { inject, injectable } from 'inversify'
 import type { ValidationError } from 'zod-validation-error'
 
 import { DomainEventPublisher } from '@/domain/event/event-publisher'
-import { EVENTS } from '@/domain/event/events'
 import { UserCreatedEvent } from '@/domain/event/user-created-event'
 import { User } from '@/domain/user'
 import type { RoleTypes } from '@/domain/value-object/role'
@@ -63,14 +62,12 @@ export class CreateUserUseCase {
     return this.userRepository.userOfEmail(email)
   }
 
-  private createDomainEventSubscriber(event: UserCreatedEvent) {
-    this.queue.publish(
-      EVENTS.USER_CREATED,
-      new UserCreatedEvent({
-        name: event.payload.name,
-        email: event.payload.email,
-      }),
-    )
+  private createDomainEventSubscriber(data: UserCreatedEvent) {
+    const event = new UserCreatedEvent({
+      name: data.payload.name,
+      email: data.payload.email,
+    })
+    this.queue.publish(event.eventName, event)
   }
 
   private async createUser(input: CreateUserUseCaseInput) {

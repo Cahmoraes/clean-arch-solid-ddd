@@ -1,10 +1,11 @@
 import { inject, injectable } from 'inversify'
 import type { ValidationError } from 'zod-validation-error'
 
-import type { PasswordChangedEvent } from '@/domain/event/password-changed-event'
+import { PasswordChangedEvent } from '@/domain/event/password-changed-event'
 import type { User } from '@/domain/user'
 import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
+import type { Queue } from '@/infra/queue/queue'
 
 import { PasswordUnchangedError } from '../error/password-unchanged-error'
 import { UserNotFoundError } from '../error/user-not-found-error'
@@ -25,7 +26,15 @@ export class ChangePasswordUseCase {
   constructor(
     @inject(TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
-  ) {}
+    @inject(TYPES.Queue)
+    private readonly queue: Queue,
+  ) {
+    this.bindMethod()
+  }
+
+  private bindMethod(): void {
+    this.handlePasswordChangedEvent = this.handlePasswordChangedEvent.bind(this)
+  }
 
   public async execute(
     input: ChangePasswordUseCaseInput,
@@ -45,7 +54,11 @@ export class ChangePasswordUseCase {
     return user.checkPassword(newRawPassword)
   }
 
-  private handlePasswordChangedEvent(event: PasswordChangedEvent): void {
-    console.log(event.toJSON())
+  private handlePasswordChangedEvent(data: PasswordChangedEvent): void {
+    const event = new PasswordChangedEvent({
+      name: data.payload.name,
+      email: data.payload.email,
+    })
+    this.queue.publish(event.eventName, event)
   }
 }

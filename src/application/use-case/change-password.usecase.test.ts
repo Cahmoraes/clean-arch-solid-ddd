@@ -6,6 +6,8 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
+import { TYPES } from '@/infra/ioc/types'
+import { QueueMemoryAdapter } from '@/infra/queue/queue-memory-adapter'
 
 import { PasswordUnchangedError } from '../error/password-unchanged-error'
 import { UserNotFoundError } from '../error/user-not-found-error'
@@ -17,11 +19,14 @@ import {
 describe('ChangePasswordUseCase', () => {
   let sut: ChangePasswordUseCase
   let userRepository: InMemoryUserRepository
+  let queue: QueueMemoryAdapter
 
   beforeEach(() => {
     container.snapshot()
     const repositories = setupInMemoryRepositories()
     userRepository = repositories.userRepository
+    queue = new QueueMemoryAdapter()
+    container.rebind(TYPES.Queue).toConstantValue(queue)
     sut = container.resolve(ChangePasswordUseCase)
   })
 
@@ -44,6 +49,8 @@ describe('ChangePasswordUseCase', () => {
     expect(result).toBeDefined()
     expect(result.value).toBeNull()
     expect(user.checkPassword(input.newRawPassword)).toBe(true)
+    expect(queue.queues.has('passwordChanged')).toBe(true)
+    expect(queue.queues.size).toBe(1)
   })
 
   test('Não deve alterar o password de um usuário inexistente', async () => {
@@ -123,35 +130,5 @@ describe('ChangePasswordUseCase', () => {
     const result = await sut.execute(input)
     expect(result.isFailure()).toBeTruthy()
     expect(result.value).toBeInstanceOf(PasswordUnchangedError)
-  })
-
-  test.only('Do anything', async () => {
-    const createUserProps: CreateAndSaveUserProps = {
-      userRepository,
-      email: 'test@mail.com',
-      password: 'initialPassword',
-    }
-    const user = await createAndSaveUser(createUserProps)
-
-    const firstChangeInput: ChangePasswordUseCaseInput = {
-      userId: user.id!,
-      newRawPassword: 'newPassword1',
-    }
-    await sut.execute(firstChangeInput)
-    expect(user.checkPassword('newPassword1')).toBe(true)
-
-    const secondChangeInput: ChangePasswordUseCaseInput = {
-      userId: user.id!,
-      newRawPassword: 'newPassword2',
-    }
-    await sut.execute(secondChangeInput)
-    // expect(user.checkPassword('newPassword2')).toBe(true)
-
-    // const thirdChangeInput: ChangePasswordUseCaseInput = {
-    //   userId: user.id!,
-    //   newRawPassword: 'newPassword3',
-    // }
-    // await sut.execute(thirdChangeInput)
-    // expect(user.checkPassword('newPassword3')).toBe(true)
   })
 })

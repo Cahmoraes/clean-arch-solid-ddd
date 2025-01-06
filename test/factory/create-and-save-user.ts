@@ -20,5 +20,5 @@ export async function createAndSaveUser(props: CreateAndSaveUserProps) {
     role: props.role ?? 'MEMBER',
   }).force.success().value
   await props.userRepository.save(user)
-  return props.userRepository.users.toArray()[0]
+  return props.userRepository.users.find((user) => user.id === userId)!
 }

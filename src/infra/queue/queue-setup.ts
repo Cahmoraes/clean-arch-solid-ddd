@@ -15,9 +15,11 @@ async function queueSetup() {
   // Create exchanges
   await createExchange(channel, EXCHANGES.USER_CREATED)
   await createExchange(channel, EXCHANGES.LOG)
+  await createExchange(channel, EXCHANGES.PASSWORD_CHANGED)
   //  Create queues
   await createQueue(channel, QUEUES.SEND_WELCOME_EMAIL)
   await createQueue(channel, QUEUES.LOG)
+  await createQueue(channel, QUEUES.NOTIFY_PASSWORD_CHANGED)
   // Bind queues to exchanges
   await bindQueueToExchange(
     channel,

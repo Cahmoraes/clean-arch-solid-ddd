@@ -45,7 +45,7 @@ export class CreateUserController implements Controller {
   @Logger({
     message: '✅',
   })
-  async handle(server: HttpServer) {
+  public async handle(server: HttpServer) {
     server.register('post', UserRoutes.CREATE, {
       callback: this.callback,
     })

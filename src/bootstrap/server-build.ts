@@ -52,33 +52,6 @@ export async function serverBuild() {
     TYPES.Controllers.Queue,
   )
   await queueController.init()
-  // await queue.consume(
-  //   EVENTS.USER_CREATED,
-  //   async (message: UserCreatedEvent) => {
-  //     console.log('User created event', message)
-  //     const payload = message.payload
-  //     await mailerGateway.sendMail(
-  //       payload.email,
-  //       'User Created',
-  //       '[A-sync] User created successfully',
-  //     )
-  //   },
-  // )
-  // DomainEventPublisher.instance.subscribe(this.createDomainEventSubscriber())
-  // DomainEventPublisher.instance.subscribe((event: UserCreatedEvent) => {
-  //   queue.publish(EVENTS.USER_CREATED, event)
-  // })
-  // private createDomainEventSubscriber() {
-  //   return (event: UserCreatedEvent) => {
-  //     this.queue.publish(
-  //       EVENTS.USER_CREATED,
-  //       new UserCreatedEvent({
-  //         name: event.payload.name,
-  //         email: event.payload.email,
-  //       }),
-  //     )
-  //   }
-  // }
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
   userProfileController.handle(fastifyServer)

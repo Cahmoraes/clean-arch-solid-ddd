@@ -1,29 +1,23 @@
-import { randomUUID } from 'crypto'
-
-import type { DomainEvent } from './domain-event'
+import { DomainEvent } from './domain-event'
+import { EVENTS } from './events'
 
 export interface PasswordChangedEventProps {
   name: string
   email: string
 }
 
-export class PasswordChangedEvent implements DomainEvent {
-  readonly id: string
-  readonly name: string
-  readonly date: Date
+export class PasswordChangedEvent extends DomainEvent {
   readonly payload: PasswordChangedEventProps
 
   constructor(props: PasswordChangedEventProps) {
-    this.id = randomUUID()
-    this.name = 'PasswordChangedEvent'
+    super(EVENTS.PASSWORD_CHANGED)
     this.payload = props
-    this.date = new Date()
   }
 
   public toJSON() {
     return {
       id: this.id,
-      name: this.name,
+      name: this.eventName,
       date: this.date,
       payload: this.payload,
     }
