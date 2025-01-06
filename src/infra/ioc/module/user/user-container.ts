@@ -1,6 +1,7 @@
 import { ContainerModule, type interfaces } from 'inversify'
 
 import { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
+import { ChangePasswordUseCase } from '@/application/use-case/change-password.usecase'
 import { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
 import { UserMetricsUseCase } from '@/application/use-case/user-metrics.usecase'
 import { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
@@ -32,4 +33,5 @@ export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
   bind(TYPES.UseCases.UserProfile).to(UserProfileUseCase)
   bind(TYPES.UseCases.UserMetrics).to(UserMetricsUseCase)
+  bind(TYPES.UseCases.ChangePassword).to(ChangePasswordUseCase)
 })
