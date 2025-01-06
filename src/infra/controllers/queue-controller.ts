@@ -1,11 +1,13 @@
 import { inject, injectable } from 'inversify'
 
+import type { PasswordChangedEvent } from '@/domain/event/password-changed-event'
 import type { UserCreatedEvent } from '@/domain/event/user-created-event'
 
 import type { MailerGateway } from '../gateway/mailer-gateway'
 import { TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import type { Queue } from '../queue/queue'
+import { QUEUES } from '../queue/queues'
 
 @injectable()
 export class QueueController {
@@ -20,8 +22,8 @@ export class QueueController {
 
   public async init() {
     this.logger.info(this, '✅')
-    await this.queue.consume(
-      'sendWelcomeEmail',
+    this.queue.consume(
+      QUEUES.SEND_WELCOME_EMAIL,
       async (message: UserCreatedEvent) => {
         console.log('User created event', message)
         const payload = message.payload
@@ -29,6 +31,19 @@ export class QueueController {
           payload.email,
           'User created',
           'User created successfully [Async]',
+        )
+      },
+    )
+
+    this.queue.consume(
+      QUEUES.NOTIFY_PASSWORD_CHANGED,
+      async (message: PasswordChangedEvent) => {
+        console.log('Password changed event', message)
+        const payload = message.payload
+        await this.mailer.sendMail(
+          payload.email,
+          'Password changed',
+          'Password changed successfully [Async]',
         )
       },
     )
