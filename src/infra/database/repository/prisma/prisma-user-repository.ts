@@ -22,7 +22,7 @@ export class PrismaUserRepository implements UserRepository {
     private readonly prisma: PrismaClient,
   ) {}
 
-  public async findById(id: string): Promise<User | null> {
+  public async userOfId(id: string): Promise<User | null> {
     const userDataOrNull = await this.prisma.user.findUnique({
       where: {
         id,
@@ -32,7 +32,7 @@ export class PrismaUserRepository implements UserRepository {
     return this.restoreUser(userDataOrNull)
   }
 
-  public async findByEmail(email: string): Promise<User | null> {
+  public async userOfEmail(email: string): Promise<User | null> {
     const userDataOrNull = await this.prisma.user.findUnique({
       where: {
         email,

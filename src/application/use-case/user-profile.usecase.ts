@@ -31,7 +31,7 @@ export class UserProfileUseCase {
   public async execute(
     input: UserProfileUseCaseInput,
   ): Promise<UserProfileUseCaseOutput> {
-    const userOrNull = await this.userRepository.findById(input.userId)
+    const userOrNull = await this.userRepository.userOfId(input.userId)
     if (!userOrNull) return failure(new UserNotFoundError())
     return success({
       email: userOrNull.email,

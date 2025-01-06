@@ -36,7 +36,7 @@ export class AuthenticateUseCase {
   public async execute(
     input: AuthenticateUseCaseInput,
   ): Promise<AuthenticateUseCaseOutput> {
-    const userOrNull = await this.userRepository.findByEmail(input.email)
+    const userOrNull = await this.userRepository.userOfEmail(input.email)
     if (!userOrNull) {
       return failure(new InvalidCredentialsError())
     }
