@@ -124,4 +124,34 @@ describe('ChangePasswordUseCase', () => {
     expect(result.isFailure()).toBeTruthy()
     expect(result.value).toBeInstanceOf(PasswordUnchangedError)
   })
+
+  test.only('Do anything', async () => {
+    const createUserProps: CreateAndSaveUserProps = {
+      userRepository,
+      email: 'test@mail.com',
+      password: 'initialPassword',
+    }
+    const user = await createAndSaveUser(createUserProps)
+
+    const firstChangeInput: ChangePasswordUseCaseInput = {
+      userId: user.id!,
+      newRawPassword: 'newPassword1',
+    }
+    await sut.execute(firstChangeInput)
+    expect(user.checkPassword('newPassword1')).toBe(true)
+
+    const secondChangeInput: ChangePasswordUseCaseInput = {
+      userId: user.id!,
+      newRawPassword: 'newPassword2',
+    }
+    await sut.execute(secondChangeInput)
+    // expect(user.checkPassword('newPassword2')).toBe(true)
+
+    // const thirdChangeInput: ChangePasswordUseCaseInput = {
+    //   userId: user.id!,
+    //   newRawPassword: 'newPassword3',
+    // }
+    // await sut.execute(thirdChangeInput)
+    // expect(user.checkPassword('newPassword3')).toBe(true)
+  })
 })

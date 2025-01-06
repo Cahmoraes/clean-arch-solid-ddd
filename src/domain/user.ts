@@ -5,6 +5,7 @@ import { type Either, failure, success } from '@/domain/value-object/either'
 import type { InvalidEmailError } from './error/invalid-email-error'
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { DomainEventPublisher } from './event/event-publisher'
+import { PasswordChangedEvent } from './event/password-changed-event'
 import { UserCreatedEvent } from './event/user-created-event'
 import { Observable } from './observable'
 import { Email } from './value-object/email'
@@ -159,6 +160,11 @@ export class User extends Observable {
     const passwordOrError = Password.create(newRawPassword)
     if (passwordOrError.isFailure()) return failure(passwordOrError.value)
     this._password = passwordOrError.value
+    const event = new PasswordChangedEvent({
+      name: this.name,
+      email: this.email,
+    })
+    this.notifyObservers(event)
     return success(null)
   }
 }
