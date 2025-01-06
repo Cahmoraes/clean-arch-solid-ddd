@@ -32,7 +32,7 @@ export class ChangePasswordUseCase {
   ): Promise<ChangePasswordUseCaseOutput> {
     const userOrNull = await this.userRepository.userOfId(input.userId)
     if (!userOrNull) return failure(new UserNotFoundError())
-    if (this.senhaNaoAlterada(userOrNull, input.newRawPassword)) {
+    if (this.isPasswordUnchanged(userOrNull, input.newRawPassword)) {
       return failure(new PasswordUnchangedError())
     }
     userOrNull.addObserver(this.handlePasswordChangedEvent)
@@ -41,7 +41,7 @@ export class ChangePasswordUseCase {
     return success(null)
   }
 
-  private senhaNaoAlterada(user: User, newRawPassword: string): boolean {
+  private isPasswordUnchanged(user: User, newRawPassword: string): boolean {
     return user.checkPassword(newRawPassword)
   }
 
