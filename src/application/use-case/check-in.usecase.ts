@@ -47,7 +47,7 @@ export class CheckInUseCase {
   public async execute(
     input: CheckInUseCaseInput,
   ): Promise<CheckInUseCaseOutput> {
-    const userOrNull = await this.userRepository.findById(input.userId)
+    const userOrNull = await this.userRepository.userOfId(input.userId)
     if (!userOrNull) return failure(new UserNotFoundError())
     const checkInOnSameDate = await this.hasCheckInOnSameDate()
     if (checkInOnSameDate) return failure(new UserHasAlreadyCheckedInToday())

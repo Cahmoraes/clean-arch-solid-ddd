@@ -37,7 +37,7 @@ export class CheckInHistoryUseCase {
   public async execute(
     input: CheckInHistoryUseCaseInput,
   ): Promise<CheckInHistoryUseCaseOutput> {
-    const userOrNull = await this.userRepository.findById(input.userId)
+    const userOrNull = await this.userRepository.userOfId(input.userId)
     if (!userOrNull) {
       return {
         userId: input.userId,

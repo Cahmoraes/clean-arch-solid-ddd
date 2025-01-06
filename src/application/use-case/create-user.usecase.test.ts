@@ -35,7 +35,7 @@ describe('CreateUserUseCase', () => {
       rawPassword: 'any_password',
     }
     const result = await sut.execute(input)
-    const user = await userRepository.findByEmail(input.email)
+    const user = await userRepository.userOfEmail(input.email)
     expect(result.forceSuccess().value.email).toBe(input.email)
     expect(user?.id).toBeDefined()
     expect(user?.name).toBe(input.name)

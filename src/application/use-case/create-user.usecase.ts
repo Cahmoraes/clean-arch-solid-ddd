@@ -30,16 +30,13 @@ export class CreateUserUseCase {
   constructor(
     @inject(TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
-    // @inject(TYPES.Queue)
-    // private readonly queue: Queue,
   ) {}
 
   public async execute(
     input: CreateUserUseCaseInput,
   ): Promise<CreateUserOutput> {
-    const userOrNull = await this.findUserByEmail(input.email)
+    const userOrNull = await this.userOfEmail(input.email)
     if (userOrNull) return failure(new UserAlreadyExistsError())
-    // DomainEventPublisher.instance.subscribe(this.createDomainEventSubscriber())
     const userOrError = await this.createUser(input)
     if (userOrError.isFailure()) return failure(userOrError.value)
     await this.userRepository.save(userOrError.value)
@@ -48,22 +45,9 @@ export class CreateUserUseCase {
     })
   }
 
-  private async findUserByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findByEmail(email)
+  private async userOfEmail(email: string): Promise<User | null> {
+    return this.userRepository.userOfEmail(email)
   }
-
-  // DomainEventPublisher.instance.subscribe(this.createDomainEventSubscriber())
-  // private createDomainEventSubscriber() {
-  //   return (event: UserCreatedEvent) => {
-  //     this.queue.publish(
-  //       EVENTS.USER_CREATED,
-  //       new UserCreatedEvent({
-  //         name: event.payload.name,
-  //         email: event.payload.email,
-  //       }),
-  //     )
-  //   }
-  // }
 
   private async createUser(input: CreateUserUseCaseInput) {
     return User.create({

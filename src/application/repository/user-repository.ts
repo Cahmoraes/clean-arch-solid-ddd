@@ -1,7 +1,7 @@
 import type { User } from '@/domain/user'
 
 export interface UserRepository {
-  findByEmail(email: string): Promise<User | null>
-  findById(id: string): Promise<User | null>
+  userOfEmail(email: string): Promise<User | null>
+  userOfId(id: string): Promise<User | null>
   save(user: User): Promise<void>
 }
