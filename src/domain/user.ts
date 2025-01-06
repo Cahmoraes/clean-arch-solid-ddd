@@ -49,7 +49,7 @@ export class User extends Observable {
   private readonly _id: Id
   private readonly _name: Name
   private readonly _email: Email
-  private readonly _password: Password
+  private _password: Password
   private readonly _role: Role
   private readonly _createdAt: Date
 
@@ -153,5 +153,12 @@ export class User extends Observable {
 
   public checkPassword(rawPassword: string): boolean {
     return this._password.compare(rawPassword)
+  }
+
+  public changePassword(newRawPassword: string): Either<ValidationError, null> {
+    const passwordOrError = Password.create(newRawPassword)
+    if (passwordOrError.isFailure()) return failure(passwordOrError.value)
+    this._password = passwordOrError.value
+    return success(null)
   }
 }

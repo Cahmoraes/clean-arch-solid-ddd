@@ -86,14 +86,31 @@ describe('User Entity', () => {
     expect(userOrError.forceSuccess().value.role).toBe(RoleValues.ADMIN)
   })
 
-  const input: UserRestoreProps = {
-    createdAt: new Date(),
-    id: 'any_id',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    password: 'securepassword123',
-    role: RoleValues.ADMIN,
-  }
-  const user = User.restore(input)
-  expect(user.role).toEqual(RoleValues.ADMIN)
+  test('Deve restaurar um usuário ADMINISTRADOR', () => {
+    const input: UserRestoreProps = {
+      createdAt: new Date(),
+      id: 'any_id',
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'securepassword123',
+      role: RoleValues.ADMIN,
+    }
+    const user = User.restore(input)
+    expect(user.role).toEqual(RoleValues.ADMIN)
+  })
+
+  test('Deve alterar a senha de um usuário', () => {
+    const input: UserCreateProps = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: '123456',
+    }
+    const user = User.create(input).forceSuccess().value
+    const oldPassword = user.password
+    const newRawPassword = '654321'
+    const result = user.changePassword(newRawPassword)
+    expect(result.isSuccess()).toBe(true)
+    expect(user.password).not.toBe(oldPassword)
+    expect(user.checkPassword(newRawPassword)).toBe(true)
+  })
 })
