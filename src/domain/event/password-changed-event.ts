@@ -6,7 +6,7 @@ export interface PasswordChangedEventProps {
   email: string
 }
 
-export class PasswordChangedEvent extends DomainEvent {
+export class PasswordChangedEvent extends DomainEvent<PasswordChangedEventProps> {
   readonly payload: PasswordChangedEventProps
 
   constructor(props: PasswordChangedEventProps) {

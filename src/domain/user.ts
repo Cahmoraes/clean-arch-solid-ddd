@@ -4,7 +4,7 @@ import { type Either, failure, success } from '@/domain/value-object/either'
 
 import type { InvalidEmailError } from './error/invalid-email-error'
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
-import { DomainEventPublisher } from './event/event-publisher'
+import { DomainEventPublisher } from './event/domain-event-publisher'
 import { PasswordChangedEvent } from './event/password-changed-event'
 import { UserCreatedEvent } from './event/user-created-event'
 import { Observable } from './observable'

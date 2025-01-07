@@ -6,7 +6,7 @@ export interface UserCreatedEventProps {
   email: string
 }
 
-export class UserCreatedEvent extends DomainEvent {
+export class UserCreatedEvent extends DomainEvent<UserCreatedEventProps> {
   readonly payload: UserCreatedEventProps
 
   constructor(props: UserCreatedEventProps) {

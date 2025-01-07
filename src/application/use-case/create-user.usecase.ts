@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 import type { ValidationError } from 'zod-validation-error'
 
-import { DomainEventPublisher } from '@/domain/event/event-publisher'
+import { DomainEventPublisher } from '@/domain/event/domain-event-publisher'
 import { UserCreatedEvent } from '@/domain/event/user-created-event'
 import { User } from '@/domain/user'
 import type { RoleTypes } from '@/domain/value-object/role'
@@ -49,7 +49,10 @@ export class CreateUserUseCase {
   ): Promise<CreateUserOutput> {
     const userOrNull = await this.userOfEmail(input.email)
     if (userOrNull) return failure(new UserAlreadyExistsError())
-    DomainEventPublisher.instance.subscribe(this.createDomainEventSubscriber)
+    DomainEventPublisher.instance.subscribe(
+      'userCreated',
+      this.createDomainEventSubscriber,
+    )
     const userOrError = await this.createUser(input)
     if (userOrError.isFailure()) return failure(userOrError.value)
     await this.userRepository.save(userOrError.value)
@@ -62,11 +65,9 @@ export class CreateUserUseCase {
     return this.userRepository.userOfEmail(email)
   }
 
-  private createDomainEventSubscriber(data: UserCreatedEvent) {
-    const event = new UserCreatedEvent({
-      name: data.payload.name,
-      email: data.payload.email,
-    })
+  private async createDomainEventSubscriber(event: UserCreatedEvent) {
+    console.log('**************')
+    console.log(event)
     this.queue.publish(event.eventName, event)
   }
 
