@@ -25,7 +25,7 @@ export class QueueController {
     this.queue.consume(
       QUEUES.SEND_WELCOME_EMAIL,
       async (message: UserCreatedEvent) => {
-        console.log('User created event', message)
+        // console.log('User created event', message)
         const payload = message.payload
         await this.mailer.sendMail(
           payload.email,

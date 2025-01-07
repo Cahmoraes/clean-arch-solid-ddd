@@ -25,7 +25,7 @@ export class ChangePasswordController implements Controller {
   constructor(
     @inject(TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.UseCases.UserProfile)
+    @inject(TYPES.UseCases.ChangePassword)
     private readonly changePassword: ChangePasswordUseCase,
   ) {
     this.bindMethods()
