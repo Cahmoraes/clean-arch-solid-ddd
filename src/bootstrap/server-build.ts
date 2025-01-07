@@ -1,56 +1,36 @@
-import type { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
-import type { ValidateCheckInController } from '@/infra/controllers/check-in/validate-check-in.controller'
+import { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
+import { ValidateCheckInController } from '@/infra/controllers/check-in/validate-check-in.controller'
 import { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
-import type { SearchGymController } from '@/infra/controllers/gym/search-gym.controller'
-import type { QueueController } from '@/infra/controllers/queue-controller'
-import type { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
-import type { CreateUserController } from '@/infra/controllers/user/create-user.controller'
-import type { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
-import type { RefreshTokenController } from '@/infra/controllers/user/refresh-token.controller'
-import type { UserMetricsController } from '@/infra/controllers/user/user-metrics.controller'
-import type { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
+import { SearchGymController } from '@/infra/controllers/gym/search-gym.controller'
+import { QueueController } from '@/infra/controllers/queue-controller'
+import { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
+import { ChangePasswordController } from '@/infra/controllers/user/change-password.controller'
+import { CreateUserController } from '@/infra/controllers/user/create-user.controller'
+import { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
+import { RefreshTokenController } from '@/infra/controllers/user/refresh-token.controller'
+import { UserMetricsController } from '@/infra/controllers/user/user-metrics.controller'
+import { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
 import { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
 export async function serverBuild() {
-  const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)
-  const userController = container.get<CreateUserController>(
-    TYPES.Controllers.CreateUser,
-  )
-  const authenticateController = container.get<AuthenticateController>(
-    TYPES.Controllers.Authenticate,
-  )
-  const userProfileController = container.get<UserProfileController>(
-    TYPES.Controllers.UserProfile,
-  )
-  const checkInController = container.get<CheckInController>(
-    TYPES.Controllers.CheckIn,
-  )
-  const gymController = container.get<CreateGymController>(
-    TYPES.Controllers.CreateGym,
-  )
-  const searchGymController = container.get<SearchGymController>(
-    TYPES.Controllers.SearchGym,
-  )
-  const validateCheckInController = container.get<ValidateCheckInController>(
-    TYPES.Controllers.ValidateCheckIn,
-  )
-  const myProfileController = container.get<MyProfileController>(
-    TYPES.Controllers.MyProfile,
-  )
-  const userMetricsController = container.get<UserMetricsController>(
-    TYPES.Controllers.UserMetrics,
-  )
-  const refreshTokenController = container.get<RefreshTokenController>(
-    TYPES.Controllers.RefreshToken,
-  )
+  const fastifyServer = container.resolve(FastifyAdapter)
+  const userController = container.resolve(CreateUserController)
+  const authenticateController = container.resolve(AuthenticateController)
+  const userProfileController = container.resolve(UserProfileController)
+  const checkInController = container.resolve(CheckInController)
+  const gymController = container.resolve(CreateGymController)
+  const searchGymController = container.resolve(SearchGymController)
+  const validateCheckInController = container.resolve(ValidateCheckInController)
+  const myProfileController = container.resolve(MyProfileController)
+  const userMetricsController = container.resolve(UserMetricsController)
+  const refreshTokenController = container.resolve(RefreshTokenController)
+  const changePasswordController = container.resolve(ChangePasswordController)
   const queue = container.get<Queue>(TYPES.Queue)
   await queue.connect()
-  const queueController = container.get<QueueController>(
-    TYPES.Controllers.Queue,
-  )
+  const queueController = container.resolve(QueueController)
   await queueController.init()
   userController.handle(fastifyServer)
   authenticateController.handle(fastifyServer)
@@ -62,5 +42,6 @@ export async function serverBuild() {
   myProfileController.handle(fastifyServer)
   userMetricsController.handle(fastifyServer)
   refreshTokenController.handle(fastifyServer)
+  changePasswordController.handle(fastifyServer)
   return fastifyServer
 }

@@ -6,6 +6,7 @@ import { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
 import { UserMetricsUseCase } from '@/application/use-case/user-metrics.usecase'
 import { UserProfileUseCase } from '@/application/use-case/user-profile.usecase'
 import { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
+import { ChangePasswordController } from '@/infra/controllers/user/change-password.controller'
 import { CreateUserController } from '@/infra/controllers/user/create-user.controller'
 import { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
 import { RefreshTokenController } from '@/infra/controllers/user/refresh-token.controller'
@@ -29,6 +30,7 @@ export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.Controllers.MyProfile).to(MyProfileController)
   bind(TYPES.Controllers.UserMetrics).to(UserMetricsController)
   bind(TYPES.Controllers.RefreshToken).to(RefreshTokenController)
+  bind(TYPES.Controllers.ChangePassword).to(ChangePasswordController)
   bind(TYPES.UseCases.CreateUser).to(CreateUserUseCase)
   bind(TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
   bind(TYPES.UseCases.UserProfile).to(UserProfileUseCase)
