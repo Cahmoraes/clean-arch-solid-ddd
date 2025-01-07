@@ -26,6 +26,8 @@ type AuthenticatePayload = z.infer<typeof authenticateRequestSchema>
 @injectable()
 export class AuthenticateController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.Authenticate)
     private readonly authenticate: AuthenticateUseCase,
     @inject(TYPES.Cookies.Manager)
@@ -35,15 +37,14 @@ export class AuthenticateController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  async handle(server: HttpServer) {
-    server.register('post', UserRoutes.AUTHENTICATE, {
+  public async init() {
+    this.server.register('post', UserRoutes.AUTHENTICATE, {
       callback: this.callback,
     })
   }

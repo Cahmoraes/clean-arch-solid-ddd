@@ -31,6 +31,8 @@ type CreateUserPayload = z.infer<typeof createUserRequestSchema>
 @injectable()
 export class CreateUserController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly httpServer: HttpServer,
     @inject(TYPES.UseCases.CreateUser)
     private readonly createUser: CreateUserUseCase,
   ) {
@@ -38,15 +40,14 @@ export class CreateUserController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  public async handle(server: HttpServer) {
-    server.register('post', UserRoutes.CREATE, {
+  public async init() {
+    this.httpServer.register('post', UserRoutes.CREATE, {
       callback: this.callback,
     })
   }

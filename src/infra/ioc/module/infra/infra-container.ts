@@ -15,9 +15,9 @@ import { MailerProvider } from './mailer-provider'
 
 export const infraContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.Prisma.Client).toConstantValue(prismaClient)
-  bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter).inSingletonScope()
+  bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
   bind(TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
-  bind(TYPES.Cookies.Manager).to(CookieAdapter).inSingletonScope()
+  bind(TYPES.Cookies.Manager).to(CookieAdapter)
   bind(TYPES.Logger).to(WinstonAdapter).inSingletonScope()
   bind(TYPES.Queue).to(RabbitMQAdapter).inSingletonScope()
   bind(NodeMailerAdapter).toSelf()

@@ -21,6 +21,8 @@ export type UserProfilePayload = z.infer<typeof userProfileRequestSchema>
 @injectable()
 export class UserProfileController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.UserProfile)
     private readonly userProfile: UserProfileUseCase,
   ) {
@@ -28,15 +30,14 @@ export class UserProfileController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅ | 🔒',
   })
-  async handle(server: HttpServer) {
-    server.register('get', UserRoutes.PROFILE, {
+  async init() {
+    this.server.register('get', UserRoutes.PROFILE, {
       callback: this.callback,
       isProtected: true,
     })

@@ -27,6 +27,8 @@ export type CreateGymPayload = z.infer<typeof createGymSchema>
 @injectable()
 export class CreateGymController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.CreateGym)
     private readonly createGymUseCase: CreateGymUseCase,
   ) {
@@ -34,15 +36,14 @@ export class CreateGymController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  public async handle(server: HttpServer): Promise<void> {
-    server.register('post', GymRoutes.CREATE, {
+  public async init(): Promise<void> {
+    this.server.register('post', GymRoutes.CREATE, {
       callback: this.callback,
       isProtected: true,
       onlyAdmin: true,

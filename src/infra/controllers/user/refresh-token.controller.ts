@@ -31,6 +31,8 @@ type RefreshPayload = z.infer<typeof refreshTokenRequestSchema>
 @injectable()
 export class RefreshTokenController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
     @inject(TYPES.Cookies.Manager)
@@ -42,15 +44,14 @@ export class RefreshTokenController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  async handle(server: HttpServer) {
-    server.register('patch', UserRoutes.REFRESH, {
+  public async init() {
+    this.server.register('patch', UserRoutes.REFRESH, {
       callback: this.callback,
     })
   }

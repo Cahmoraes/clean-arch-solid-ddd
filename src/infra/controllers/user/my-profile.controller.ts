@@ -14,6 +14,8 @@ import { UserRoutes } from '../routes/user-routes'
 @injectable()
 export class MyProfileController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.UserProfile)
     private readonly userProfile: UserProfileUseCase,
   ) {
@@ -21,15 +23,14 @@ export class MyProfileController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅ | 🔒',
   })
-  async handle(server: HttpServer) {
-    server.register('get', UserRoutes.ME, {
+  public async init() {
+    this.server.register('get', UserRoutes.ME, {
       callback: this.callback,
       isProtected: true,
     })

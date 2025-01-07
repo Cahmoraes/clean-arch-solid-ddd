@@ -14,6 +14,8 @@ import { UserRoutes } from '../routes/user-routes'
 @injectable()
 export class UserMetricsController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.UserMetrics)
     private readonly userMetrics: UserMetricsUseCase,
   ) {
@@ -27,8 +29,8 @@ export class UserMetricsController implements Controller {
   @Logger({
     message: '✅ | 🔒',
   })
-  public async handle(server: HttpServer): Promise<void> {
-    server.register('get', UserRoutes.METRICS, {
+  public async init(): Promise<void> {
+    this.server.register('get', UserRoutes.METRICS, {
       callback: this.callback,
       isProtected: true,
     })
