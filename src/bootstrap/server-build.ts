@@ -13,10 +13,10 @@ import { UserProfileController } from '@/infra/controllers/user/user-profile.con
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
-import { FastifyAdapter } from '@/infra/server/fastify-adapter'
+import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
 export async function serverBuild() {
-  const fastifyServer = container.resolve(FastifyAdapter)
+  const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)
   const userController = container.resolve(CreateUserController)
   const authenticateController = container.resolve(AuthenticateController)
   const userProfileController = container.resolve(UserProfileController)
@@ -31,17 +31,17 @@ export async function serverBuild() {
   const queue = container.get<Queue>(TYPES.Queue)
   await queue.connect()
   const queueController = container.resolve(QueueController)
-  await queueController.init()
-  userController.handle(fastifyServer)
-  authenticateController.handle(fastifyServer)
-  userProfileController.handle(fastifyServer)
-  checkInController.handle(fastifyServer)
-  gymController.handle(fastifyServer)
-  searchGymController.handle(fastifyServer)
-  validateCheckInController.handle(fastifyServer)
-  myProfileController.handle(fastifyServer)
-  userMetricsController.handle(fastifyServer)
-  refreshTokenController.handle(fastifyServer)
-  changePasswordController.handle(fastifyServer)
+  queueController.init()
+  userController.init()
+  authenticateController.init()
+  userProfileController.init()
+  checkInController.init()
+  gymController.init()
+  searchGymController.init()
+  validateCheckInController.init()
+  myProfileController.init()
+  userMetricsController.init()
+  refreshTokenController.init()
+  changePasswordController.init()
   return fastifyServer
 }

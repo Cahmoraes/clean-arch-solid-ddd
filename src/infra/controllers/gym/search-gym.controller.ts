@@ -32,6 +32,8 @@ export type SearchGymParams = z.infer<typeof searchGymParamsSchema>
 @injectable()
 export class SearchGymController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.SearchGym)
     private readonly searchGymUseCase: SearchGymUseCase,
   ) {
@@ -39,15 +41,14 @@ export class SearchGymController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  async handle(server: HttpServer) {
-    server.register('get', GymRoutes.SEARCH, {
+  public async init() {
+    this.server.register('get', GymRoutes.SEARCH, {
       callback: this.callback,
     })
   }

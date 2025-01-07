@@ -23,6 +23,8 @@ type ValidateCheckInPayload = z.infer<typeof validateCheckInRequestSchema>
 @injectable()
 export class ValidateCheckInController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.ValidateCheckIn)
     private readonly validateCheckInUseCase: ValidateCheckInUseCase,
   ) {
@@ -30,15 +32,14 @@ export class ValidateCheckInController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  public async handle(server: HttpServer): Promise<void> {
-    server.register('post', CheckInRoutes.VALIDATE, {
+  public async init(): Promise<void> {
+    this.server.register('post', CheckInRoutes.VALIDATE, {
       callback: this.callback,
     })
   }

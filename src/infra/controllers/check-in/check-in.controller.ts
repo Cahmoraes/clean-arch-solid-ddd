@@ -26,6 +26,8 @@ type CheckInPayload = z.infer<typeof checkInRequestSchema>
 @injectable()
 export class CheckInController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.CheckIn)
     private readonly checkIn: CheckInUseCase,
   ) {
@@ -33,15 +35,14 @@ export class CheckInController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  async handle(server: HttpServer) {
-    server.register('post', CheckInRoutes.CREATE, {
+  async init() {
+    this.server.register('post', CheckInRoutes.CREATE, {
       callback: this.callback,
       isProtected: true,
       onlyAdmin: true,

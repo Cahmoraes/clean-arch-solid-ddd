@@ -23,6 +23,8 @@ type ChangePasswordPayload = z.infer<typeof changePasswordSchema>
 @injectable()
 export class ChangePasswordController implements Controller {
   constructor(
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
     @inject(TYPES.UseCases.UserProfile)
     private readonly changePassword: ChangePasswordUseCase,
   ) {
@@ -30,15 +32,14 @@ export class ChangePasswordController implements Controller {
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅ | 🔒',
   })
-  async handle(server: HttpServer) {
-    server.register('patch', UserRoutes.CHANGE_PASSWORD, {
+  public async init() {
+    this.server.register('patch', UserRoutes.CHANGE_PASSWORD, {
       callback: this.callback,
       isProtected: true,
     })
