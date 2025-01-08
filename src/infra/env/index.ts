@@ -7,7 +7,7 @@ const envObject = config({
 }).parsed
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production']).default('development'),
+  NODE_ENV: z.enum(['development', 'production']).default('production'),
   PORT: z.coerce.number(),
   HOST: z.string().default('0.0.0.0'),
   USE_PRISMA: z.string().transform((v) => v === 'true'),
