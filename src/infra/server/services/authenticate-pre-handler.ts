@@ -3,8 +3,9 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { AuthToken } from '@/application/interfaces/auth-token'
 import type { RoleTypes } from '@/domain/value-object/role'
 import { env } from '@/infra/env'
+import { container } from '@/infra/ioc/container'
+import { TYPES } from '@/infra/ioc/types'
 import type { Logger } from '@/infra/logger/logger'
-import { WinstonAdapter } from '@/infra/logger/winston-adapter'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 
 export interface AuthenticateHandlerProps {
@@ -33,7 +34,7 @@ export class AuthenticateHandler {
     this.request = props.request
     this.reply = props.reply
     this.authToken = props.authToken
-    this.logger = new WinstonAdapter()
+    this.logger = container.get<Logger>(TYPES.Logger)
   }
 
   public async execute(): Promise<void> {
