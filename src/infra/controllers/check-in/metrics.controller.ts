@@ -25,20 +25,21 @@ export class MetricsController implements Controller {
   constructor(
     @inject(TYPES.UseCases.UserMetrics)
     private readonly userMetricsUseCase: UserMetricsUseCase,
+    @inject(TYPES.Server.Fastify)
+    private readonly server: HttpServer,
   ) {
     this.bindMethods()
   }
 
   private bindMethods() {
-    this.handle = this.handle.bind(this)
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  public async handle(server: HttpServer): Promise<void> {
-    server.register('get', CheckInRoutes.METRICS, {
+  public async init(): Promise<void> {
+    this.server.register('get', CheckInRoutes.METRICS, {
       callback: this.callback,
     })
   }
