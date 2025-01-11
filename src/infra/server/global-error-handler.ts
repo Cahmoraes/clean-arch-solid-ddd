@@ -27,9 +27,6 @@ export class GlobalErrorHandler {
         .status(HTTP_STATUS.BAD_REQUEST)
         .send({ message: validationError.toString() })
     }
-    console.log(error)
-    console.log(`***********************`)
-    console.log(this)
     GlobalErrorHandler.publish(error)
     reply
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
