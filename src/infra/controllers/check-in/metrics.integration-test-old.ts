@@ -19,7 +19,7 @@ describe('Metrics', () => {
     container
       .rebind(TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
-    fastifyServer = serverBuild()
+    fastifyServer = await serverBuild()
     await fastifyServer.ready()
   })
 

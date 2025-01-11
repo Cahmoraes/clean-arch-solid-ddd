@@ -12,6 +12,7 @@ import { UserMetricsController } from '@/infra/controllers/user/user-metrics.con
 import { UserProfileController } from '@/infra/controllers/user/user-profile.controller'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
+import { EXCHANGES } from '@/infra/queue/exchanges'
 import type { Queue } from '@/infra/queue/queue'
 import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
@@ -32,6 +33,9 @@ export async function serverBuild() {
   await queue.connect()
   const queueController = container.resolve(QueueController)
   queueController.init()
+  queue.publish(EXCHANGES.LOG, {
+    message: 'Server started',
+  })
   userController.init()
   authenticateController.init()
   userProfileController.init()

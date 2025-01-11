@@ -47,5 +47,10 @@ export class QueueController {
         )
       },
     )
+
+    this.queue.consume(QUEUES.LOG, async (event: any) => {
+      console.log('QUEUE [LOG]')
+      console.log(event)
+    })
   }
 }

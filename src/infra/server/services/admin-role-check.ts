@@ -5,8 +5,9 @@ import type {
 } from 'fastify'
 
 import { type RoleTypes, RoleValues } from '@/domain/value-object/role'
+import { container } from '@/infra/ioc/container'
+import { TYPES } from '@/infra/ioc/types'
 import type { Logger } from '@/infra/logger/logger'
-import { WinstonAdapter } from '@/infra/logger/winston-adapter'
 
 import { HTTP_STATUS } from '../http-status'
 
@@ -26,7 +27,7 @@ export class AdminRoleCheck {
     this.request = props.request
     this.reply = props.reply
     this.done = props.done
-    this.logger = new WinstonAdapter()
+    this.logger = container.get<Logger>(TYPES.Logger)
   }
 
   public execute(role: RoleTypes) {

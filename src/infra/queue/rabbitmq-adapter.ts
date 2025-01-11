@@ -47,7 +47,6 @@ export class RabbitMQAdapter implements Queue {
     callback: CallableFunction,
   ): Promise<void> {
     const channel = await this.createChannel()
-    // await channel.assertQueue(queue, { durable: true })
     await channel.consume(
       queue,
       async (data: amqp.ConsumeMessage | null): Promise<void> => {
