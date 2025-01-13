@@ -9,7 +9,7 @@ import { type Either, failure, success } from '@/domain/value-object/either'
 import { RoleValues } from '@/domain/value-object/role'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
-import type { HttpServer } from '@/infra/server/http-server'
+import type { HttpServer, Schema } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import type { Controller } from '../controller'
@@ -47,9 +47,14 @@ export class CreateUserController implements Controller {
     message: '✅',
   })
   public async init() {
-    this.httpServer.register('post', UserRoutes.CREATE, {
-      callback: this.callback,
-    })
+    this.httpServer.register(
+      'post',
+      UserRoutes.CREATE,
+      {
+        callback: this.callback,
+      },
+      makeCreateUserControllerSwaggerSchema(),
+    )
   }
 
   private async callback(req: FastifyRequest) {
@@ -60,11 +65,9 @@ export class CreateUserController implements Controller {
         message: parsedBodyOrError.value.message,
       })
     }
-    const { name, email, password, role } = parsedBodyOrError.value
+    const { password, ...rest } = parsedBodyOrError.value
     const result = await this.createUser.execute({
-      name,
-      email,
-      role,
+      ...rest,
       rawPassword: password,
     })
     if (result.isFailure()) {
@@ -88,5 +91,44 @@ export class CreateUserController implements Controller {
     const parsedBody = createUserRequestSchema.safeParse(body)
     if (!parsedBody.success) return failure(fromError(parsedBody.error))
     return success(parsedBody.data)
+  }
+}
+
+function makeCreateUserControllerSwaggerSchema(): Schema {
+  return {
+    tags: ['users'],
+    summary: 'Create a new user',
+    description: 'Endpoint to create a new user with role and credentials.',
+    body: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        email: { type: 'string' },
+        password: { type: 'string', minLength: 6 },
+        role: {
+          type: 'string',
+          enum: ['ADMIN', 'MEMBER'],
+          default: 'MEMBER',
+        },
+      },
+      required: ['name', 'email', 'password'],
+    },
+    response: {
+      201: {
+        description: 'User created successfully',
+        type: 'object',
+        properties: {
+          message: { type: 'string' },
+          email: { type: 'string' },
+        },
+      },
+      400: {
+        description: 'Bad Request',
+        type: 'object',
+        properties: {
+          message: { type: 'string' },
+        },
+      },
+    },
   }
 }

@@ -6,12 +6,14 @@ import { UserAlreadyExistsError } from '@/application/error/user-already-exists-
 
 import { container } from '../ioc/container'
 import { TYPES } from '../ioc/types'
+import type { Logger } from '../logger/logger'
 import { EXCHANGES } from '../queue/exchanges'
 import type { Queue } from '../queue/queue'
 import { HTTP_STATUS } from './http-status'
 
 export class GlobalErrorHandler {
   private static _queue?: Queue
+  private static _logger?: Logger
 
   public static handle(
     error: FastifyError,
@@ -28,6 +30,7 @@ export class GlobalErrorHandler {
         .send({ message: validationError.toString() })
     }
     GlobalErrorHandler.publish(error)
+    GlobalErrorHandler.logger().error(error, error.message)
     reply
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
       .send({ message: 'Internal Server Error' })
@@ -45,5 +48,12 @@ export class GlobalErrorHandler {
     queue.publish(EXCHANGES.LOG, {
       message: error.message,
     })
+  }
+
+  private static logger(): Logger {
+    if (!GlobalErrorHandler._logger) {
+      GlobalErrorHandler._logger = container.get<Logger>(TYPES.Logger)
+    }
+    return GlobalErrorHandler._logger
   }
 }

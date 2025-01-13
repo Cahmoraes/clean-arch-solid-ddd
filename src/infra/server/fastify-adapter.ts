@@ -1,3 +1,6 @@
+import fastifyCors from '@fastify/cors'
+import fastifySwagger from '@fastify/swagger'
+import fastifySwaggerUI from '@fastify/swagger-ui'
 import fastify, {
   FastifyInstance,
   type FastifyReply,
@@ -11,8 +14,10 @@ import type { AuthToken } from '@/application/interfaces/auth-token'
 import { Logger } from '../decorators/logger'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
+import { FastifySwaggerSetupFactory } from './factories/fastify-swagger-setup-factory'
+import { FastifySwaggerUISetupFactory } from './factories/fastify-swagger-ui-setup-factory'
 import { GlobalErrorHandler } from './global-error-handler'
-import type { HandlerOptions, HttpServer, METHOD } from './http-server'
+import type { HandlerOptions, HttpServer, METHOD, Schema } from './http-server'
 import { AdminRoleCheck } from './services/admin-role-check'
 import { AuthenticateHandler } from './services/authenticate-pre-handler'
 
@@ -25,16 +30,38 @@ export class FastifyAdapter implements HttpServer {
     private readonly authToken: AuthToken,
   ) {
     this._server = fastify({})
+
     this.bindMethods()
+    this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
+    this.setupErrorHandler()
+    await this.setupCORS()
+    await this.setupSwagger()
+  }
+
+  private async setupCORS() {
+    await this._server.register(fastifyCors)
+  }
+
+  private async setupSwagger() {
+    await this._server.register(
+      fastifySwagger,
+      FastifySwaggerSetupFactory.create(),
+    )
+    await this._server.register(
+      fastifySwaggerUI,
+      FastifySwaggerUISetupFactory.create(),
+    )
+  }
+
+  private setupErrorHandler() {
+    this._server.setErrorHandler(GlobalErrorHandler.handle)
   }
 
   private bindMethods() {
     this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
-  }
-
-  public async initialize(): Promise<void> {
-    this._server.setErrorHandler(GlobalErrorHandler.handle)
-    await this.listen()
   }
 
   @Logger({
@@ -48,14 +75,16 @@ export class FastifyAdapter implements HttpServer {
     })
   }
 
-  async register(
+  public async register(
     method: METHOD,
     path: string,
     handlers: HandlerOptions,
+    schema?: Schema,
   ): Promise<void> {
     this._server[method](
       path,
       {
+        schema,
         onRequest: this.authenticateOnRequestOrUndefined(handlers.isProtected),
         preHandler: this.onRequestPreHandlerOrUndefined(handlers.onlyAdmin),
       },
@@ -104,7 +133,7 @@ export class FastifyAdapter implements HttpServer {
     return this._server.ready()
   }
 
-  async close(): Promise<void> {
+  public async close(): Promise<void> {
     await this._server.close()
   }
 }
