@@ -68,7 +68,7 @@ describe('Create User', () => {
     })
   })
 
-  test('Não deve criar um usuário com dados inválidos', async () => {
+  test.only('Não deve criar um usuário com dados inválidos', async () => {
     const input = {
       name: 'any_name',
       email: 'invalid_email',

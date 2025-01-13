@@ -6,5 +6,5 @@ main()
 
 async function main() {
   const server = await serverBuild()
-  await server.initialize()
+  await server.listen()
 }

@@ -29,11 +29,37 @@ export class MyProfileController implements Controller {
   @Logger({
     message: '✅ | 🔒',
   })
-  public async init() {
-    this.server.register('get', UserRoutes.ME, {
-      callback: this.callback,
-      isProtected: true,
-    })
+  public async init(): Promise<void> {
+    this.server.register(
+      'get',
+      UserRoutes.ME,
+      {
+        callback: this.callback,
+        isProtected: true,
+      },
+      {
+        tags: ['user'],
+        description: 'Get the profile of the authenticated user',
+        response: {
+          200: {
+            description: 'Successful response',
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              name: { type: 'string' },
+              email: { type: 'string' },
+            },
+          },
+          404: {
+            description: 'User not found',
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+    )
   }
 
   private async callback(req: FastifyRequest) {

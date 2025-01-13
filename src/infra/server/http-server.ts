@@ -19,12 +19,27 @@ export interface HandlerOptions {
   onlyAdmin?: boolean
 }
 
+export interface Schema {
+  tags?: string[]
+  summary?: string
+  description?: string
+  body?: unknown
+  querystring?: unknown
+  params?: unknown
+  headers?: unknown
+  response?: unknown
+}
+
 export interface Handler {
-  (method: METHOD, path: string, handlerOptions: HandlerOptions): Promise<void>
+  (
+    method: METHOD,
+    path: string,
+    handlerOptions: HandlerOptions,
+    schema?: Schema,
+  ): Promise<void>
 }
 
 export interface HttpServer {
   listen(): Promise<void>
-  initialize(): Promise<void>
   register: Handler
 }
