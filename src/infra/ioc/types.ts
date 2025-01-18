@@ -37,6 +37,7 @@ export const TYPES = {
     ValidateCheckIn: Symbol.for('ValidateCheckInUseCase'),
     Metrics: Symbol.for('MetricsUseCase'),
     ChangePassword: Symbol.for('ChangePasswordUseCase'),
+    FetchUsers: Symbol.for('FetchUsersUseCase'),
   },
   Tokens: {
     Auth: Symbol.for('AuthToken'),
@@ -46,6 +47,9 @@ export const TYPES = {
   },
   Factories: {
     PreHandlerAuthenticate: Symbol.for('PreHandlerAuthenticate'),
+  },
+  DAO: {
+    User: Symbol.for('UserDAO'),
   },
   Logger: Symbol.for('Logger'),
   Queue: Symbol.for('Queue'),
