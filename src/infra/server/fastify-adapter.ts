@@ -99,6 +99,18 @@ export class FastifyAdapter implements HttpServer {
     return enableAuthenticate ? this.authenticateOnRequest : undefined
   }
 
+  private async authenticateOnRequest(
+    request: any,
+    reply: FastifyReply,
+  ): Promise<void> {
+    const authenticateHandler = new AuthenticateHandler({
+      request,
+      reply,
+      authToken: this.authToken,
+    })
+    await authenticateHandler.execute()
+  }
+
   private onRequestPreHandlerOrUndefined(enableOnRequest?: boolean) {
     return enableOnRequest ? this.onRequestPreHandler : undefined
   }
@@ -111,18 +123,6 @@ export class FastifyAdapter implements HttpServer {
     const role = request.user.sub.role
     const adminRoleCheck = new AdminRoleCheck({ request, reply, done })
     adminRoleCheck.execute(role)
-  }
-
-  private async authenticateOnRequest(
-    request: any,
-    reply: FastifyReply,
-  ): Promise<void> {
-    const authenticateHandler = new AuthenticateHandler({
-      request,
-      reply,
-      authToken: this.authToken,
-    })
-    await authenticateHandler.execute()
   }
 
   get server() {
