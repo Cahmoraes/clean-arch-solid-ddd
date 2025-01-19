@@ -6,6 +6,7 @@ import { QueueController } from '@/infra/controllers/queue-controller'
 import { AuthenticateController } from '@/infra/controllers/user/authenticate.controller'
 import { ChangePasswordController } from '@/infra/controllers/user/change-password.controller'
 import { CreateUserController } from '@/infra/controllers/user/create-user.controller'
+import { FetchUsersController } from '@/infra/controllers/user/fetch-users.controller'
 import { MyProfileController } from '@/infra/controllers/user/my-profile.controller'
 import { RefreshTokenController } from '@/infra/controllers/user/refresh-token.controller'
 import { UserMetricsController } from '@/infra/controllers/user/user-metrics.controller'
@@ -29,6 +30,7 @@ export async function serverBuild() {
   const userMetricsController = container.resolve(UserMetricsController)
   const refreshTokenController = container.resolve(RefreshTokenController)
   const changePasswordController = container.resolve(ChangePasswordController)
+  const fetchUsersController = container.resolve(FetchUsersController)
   const queue = container.get<Queue>(TYPES.Queue)
   await queue.connect()
   const queueController = container.resolve(QueueController)
@@ -47,5 +49,6 @@ export async function serverBuild() {
   userMetricsController.init()
   refreshTokenController.init()
   changePasswordController.init()
+  fetchUsersController.init()
   return fastifyServer
 }
