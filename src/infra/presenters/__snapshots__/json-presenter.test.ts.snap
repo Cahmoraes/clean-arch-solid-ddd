@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`JSON Presenter > Deve formatar para CSV 1`] = `
+[
+  {
+    "createdAt": "2025-01-18T23:48:24.009Z",
+    "email": "any_email",
+    "id": "fake_id",
+    "name": "any_name",
+    "role": "MEMBER",
+  },
+  {
+    "createdAt": "2025-01-19T10:31:45.365Z",
+    "email": "Shanelle_McLaughlin@gmail.com",
+    "id": "53524955-138e-43bc-8939-0c80e32c79ed",
+    "name": "Ms. Madeline Yost",
+    "role": "MEMBER",
+  },
+]
+`;

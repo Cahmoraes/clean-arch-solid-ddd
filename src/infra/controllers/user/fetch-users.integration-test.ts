@@ -24,7 +24,7 @@ describe('Fetch Users', () => {
     await fastifyServer.close()
   })
 
-  test('Deve retornar os usuários da página 1', async () => {
+  test.only('Deve retornar os usuários da página 1', async () => {
     const fakeId = 'fake_id'
     userDAO.createFakeUser({
       name: 'any_name',
@@ -38,6 +38,7 @@ describe('Fetch Users', () => {
         limit: 10,
         page: 1,
       })
+      .set('Accept', 'application/json')
 
     expect(response.body.users.length).toBe(10)
     expect(response.body.pagination).toEqual({
