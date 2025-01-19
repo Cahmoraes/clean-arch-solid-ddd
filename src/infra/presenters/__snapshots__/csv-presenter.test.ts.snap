@@ -1,0 +1,6 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CSV Presenter > Deve formatar para CSV 1`] = `
+"id,role,createdAt,name,email
+fake_id,MEMBER,2025-01-18T23:48:24.009Z,any_name,any_email,53524955-138e-43bc-8939-0c80e32c79ed,MEMBER,2025-01-19T10:31:45.365Z,Ms. Madeline Yost,Shanelle_McLaughlin@gmail.com"
+`;
