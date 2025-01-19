@@ -15,8 +15,8 @@ import { ResponseFactory } from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'
 
 const fetchUsersRequestSchema = z.object({
-  limit: z.number(),
-  page: z.number(),
+  limit: z.coerce.number(),
+  page: z.coerce.number(),
 })
 
 type FetchUsersRequest = z.infer<typeof fetchUsersRequestSchema>
@@ -33,7 +33,7 @@ export class FetchUsersController implements Controller {
   }
 
   private bindMethods() {
-    this.callback = this.callback.bind
+    this.callback = this.callback.bind(this)
   }
 
   @Logger({

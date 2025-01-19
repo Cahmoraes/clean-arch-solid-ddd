@@ -1,0 +1,76 @@
+import request from 'supertest'
+
+import { serverBuild } from '@/bootstrap/server-build'
+import { UserDAOMemory } from '@/infra/database/dao/user-dao-memory'
+import { container } from '@/infra/ioc/container'
+import { TYPES } from '@/infra/ioc/types'
+import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
+
+import { UserRoutes } from '../routes/user-routes'
+
+describe('Fetch Users', () => {
+  let fastifyServer: FastifyAdapter
+  let userDAO: UserDAOMemory
+
+  beforeEach(async () => {
+    container.snapshot()
+    userDAO = container.get(TYPES.DAO.User)
+    fastifyServer = await serverBuild()
+    await fastifyServer.ready()
+  })
+
+  afterEach(async () => {
+    container.restore()
+    await fastifyServer.close()
+  })
+
+  test('Deve retornar os usuários da página 1', async () => {
+    const fakeId = 'fake_id'
+    userDAO.createFakeUser({
+      name: 'any_name',
+      email: 'any_email',
+      id: fakeId,
+    })
+    userDAO.bulkCreateFakeUsers(19)
+    const response = await request(fastifyServer.server)
+      .get(UserRoutes.FETCH)
+      .query({
+        limit: 10,
+        page: 1,
+      })
+
+    expect(response.body.users.length).toBe(10)
+    expect(response.body.pagination).toEqual({
+      limit: 10,
+      page: 1,
+      total: 20,
+    })
+    expect(response.body.users[0].id).toBe(fakeId)
+    expect(response.status).toBe(200)
+  })
+
+  test('Deve retornar os usuários da página 2', async () => {
+    const fakeId = 'fake_id'
+    userDAO.createFakeUser({
+      name: 'any_name',
+      email: 'any_email',
+      id: fakeId,
+    })
+    userDAO.bulkCreateFakeUsers(19)
+    const response = await request(fastifyServer.server)
+      .get(UserRoutes.FETCH)
+      .query({
+        limit: 10,
+        page: 2,
+      })
+
+    expect(response.body.users.length).toBe(10)
+    expect(response.body.pagination).toEqual({
+      limit: 10,
+      page: 2,
+      total: 20,
+    })
+    expect(response.status).toBe(200)
+    expect(response.body.users[0].id).not.toBe(fakeId)
+  })
+})
