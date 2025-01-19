@@ -5,14 +5,19 @@ export interface FetchUsersInput {
   limit: number
 }
 
-export interface FetchUsersOutput {
+export interface FetchUsersData {
   id: string
-  email: string
-  name: string
   role: RoleTypes
   createdAt: string
+  name: string
+  email: string
+}
+
+export interface FetchUsersOutput {
+  usersData: FetchUsersData[]
+  total: number
 }
 
 export interface UserDAO {
-  fetchUsers(input: FetchUsersInput): Promise<FetchUsersOutput[]>
+  fetchAndCountUsers(input: FetchUsersInput): Promise<FetchUsersOutput>
 }

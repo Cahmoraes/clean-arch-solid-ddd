@@ -10,12 +10,23 @@ export interface FetchUsersUseCaseInput {
   limit: number
 }
 
-export interface FetchUsersUseCaseOutput {
+export interface FetchUsersData {
   id: string
   role: RoleTypes
   createdAt: string
   name: string
   email: string
+}
+
+export interface FetchUsersMeta {
+  total: number
+  page: number
+  limit: number
+}
+
+export interface FetchUsersUseCaseOutput {
+  data: FetchUsersData[]
+  pagination: FetchUsersMeta
 }
 
 @injectable()
@@ -27,8 +38,15 @@ export class FetchUsersUseCase {
 
   public async execute(
     input: FetchUsersUseCaseInput,
-  ): Promise<FetchUsersUseCaseOutput[]> {
-    const usersData = await this.userDAO.fetchUsers(input)
-    return usersData
+  ): Promise<FetchUsersUseCaseOutput> {
+    const { usersData, total } = await this.userDAO.fetchAndCountUsers(input)
+    return {
+      data: usersData,
+      pagination: {
+        total,
+        page: input.page,
+        limit: input.limit,
+      },
+    }
   }
 }
