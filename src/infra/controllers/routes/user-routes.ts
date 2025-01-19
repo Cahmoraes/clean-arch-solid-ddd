@@ -1,5 +1,6 @@
 export const UserRoutes = {
   CREATE: '/users',
+  FETCH: '/users',
   AUTHENTICATE: '/sessions',
   REFRESH: '/sessions/refresh',
   PROFILE: '/users/:userId',

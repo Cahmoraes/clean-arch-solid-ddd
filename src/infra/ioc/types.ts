@@ -23,6 +23,7 @@ export const TYPES = {
     RefreshToken: Symbol.for('RefreshTokenController'),
     Queue: Symbol.for('QueueController'),
     ChangePassword: Symbol.for('ChangePasswordController'),
+    FetchUsers: Symbol.for('FetchUsersController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),
