@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker'
 import { injectable } from 'inversify'
 
 import type {
+  FetchUsersData,
   FetchUsersInput,
   FetchUsersOutput,
   UserDAO,
@@ -31,7 +32,7 @@ export class UserDAOMemory implements UserDAO {
     }
   }
 
-  public createFakeUser(createUserInput?: CreateUserInput): FetchUsersOutput {
+  public createFakeUser(createUserInput?: CreateUserInput): FetchUsersData {
     const fakeUser = {
       id: faker.string.uuid(),
       role: faker.helpers.arrayElement(['ADMIN', 'MEMBER']),
@@ -44,9 +45,19 @@ export class UserDAOMemory implements UserDAO {
     return fakeUser
   }
 
-  public async fetchUsers(input: FetchUsersInput): Promise<FetchUsersOutput[]> {
-    return this.usersData
+  public clear(): void {
+    this.usersData.clear()
+  }
+
+  public async fetchAndCountUsers(
+    input: FetchUsersInput,
+  ): Promise<FetchUsersOutput> {
+    const usersData = this.usersData
       .toArray()
       .slice((input.page - 1) * input.limit, input.page * input.limit)
+    return {
+      usersData,
+      total: this.usersData.size,
+    }
   }
 }
