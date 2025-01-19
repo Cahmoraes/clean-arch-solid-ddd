@@ -15,7 +15,6 @@ export class CSVPresenter implements Presenter<string> {
     const values: any[] = []
     for (const [, rowValues] of rows.entries()) {
       for (const value of Object.values(rowValues)) {
-        console.log(value)
         values.push(value)
       }
     }

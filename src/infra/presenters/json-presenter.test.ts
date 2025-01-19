@@ -1,8 +1,16 @@
-import { CSVPresenter } from './csv-presenter'
+import { JSONPresenter } from './json-presenter'
 
-describe('CSV Presenter', () => {
-  let sut: CSVPresenter
-  const data = [
+interface Example {
+  id: string
+  role: string
+  createdAt: string
+  name: string
+  email: string
+}
+
+describe('JSON Presenter', () => {
+  let sut: JSONPresenter<Example[]>
+  const data: Example[] = [
     {
       id: 'fake_id',
       role: 'MEMBER',
@@ -20,7 +28,7 @@ describe('CSV Presenter', () => {
   ]
 
   beforeEach(() => {
-    sut = new CSVPresenter()
+    sut = new JSONPresenter()
   })
 
   test('Deve formatar para CSV', () => {

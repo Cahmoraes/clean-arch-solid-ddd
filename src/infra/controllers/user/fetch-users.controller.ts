@@ -7,6 +7,7 @@ import type { FetchUsersUseCase } from '@/application/use-case/fetch-users.useca
 import { type Either, failure, success } from '@/domain/value-object/either'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
+import { PresenterFactory } from '@/infra/presenters/presenter-factory'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 
@@ -58,6 +59,7 @@ export class FetchUsersController implements Controller {
       limit,
       page,
     })
+    this.presenter(req)
     return ResponseFactory.create({
       status: HTTP_STATUS.OK,
       body: {
@@ -75,5 +77,12 @@ export class FetchUsersController implements Controller {
       return failure(fromError(parsedQueryParams.error))
     }
     return success(parsedQueryParams.data)
+  }
+
+  private presenter(req: FastifyRequest) {
+    const accept = req.headers['accept']
+    console.log('accept', accept)
+    const presenter = PresenterFactory.create(accept)
+    return presenter
   }
 }
