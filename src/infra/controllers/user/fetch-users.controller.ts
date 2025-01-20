@@ -59,11 +59,10 @@ export class FetchUsersController implements Controller {
       limit,
       page,
     })
-    this.presenter(req)
     return ResponseFactory.create({
       status: HTTP_STATUS.OK,
       body: {
-        users: result.data,
+        users: this.presenter(req).format(result.data),
         pagination: result.pagination,
       },
     })
