@@ -24,7 +24,7 @@ describe('Fetch Users', () => {
     await fastifyServer.close()
   })
 
-  test.only('Deve retornar os usuários da página 1', async () => {
+  test('Deve retornar os usuários da página 1 em JSON', async () => {
     const fakeId = 'fake_id'
     userDAO.createFakeUser({
       name: 'any_name',
@@ -74,5 +74,30 @@ describe('Fetch Users', () => {
     })
     expect(response.status).toBe(200)
     expect(response.body.users[0].id).not.toBe(fakeId)
+  })
+
+  test('Deve retornar os usuários da página 1 em CSV', async () => {
+    const fakeId = 'fake_id'
+    userDAO.createFakeUser({
+      name: 'any_name',
+      email: 'any_email',
+      id: fakeId,
+    })
+    userDAO.bulkCreateFakeUsers(19)
+    const response = await request(fastifyServer.server)
+      .get(UserRoutes.FETCH)
+      .query({
+        limit: 10,
+        page: 1,
+      })
+      .set('Accept', 'text/csv')
+
+    expect(response.body.users).toEqual(expect.stringContaining(fakeId))
+    expect(response.body.pagination).toEqual({
+      limit: 10,
+      page: 1,
+      total: 20,
+    })
+    expect(response.status).toBe(200)
   })
 })
