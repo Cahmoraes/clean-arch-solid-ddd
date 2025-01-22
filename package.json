@@ -19,7 +19,7 @@
     "prisma:migrate:dev": "npx prisma migrate dev",
     "tsc:check": "npx tsc --noEmit",
     "eslint:fix": "npx eslint --fix src",
-    "promise-like": "npx tsx --watch ./test/proxy-like/index.ts",
+    "promise-like": "npx tsx --watch ./test/proxy-like/index-2.ts",
     "commit": "cz"
   },
   "keywords": [],

@@ -9,7 +9,6 @@ import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import { PresenterFactory } from '@/infra/presenters/presenter-factory'
 import type { HttpServer } from '@/infra/server/http-server'
-import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
@@ -49,8 +48,7 @@ export class FetchUsersController implements Controller {
   private async callback(req: FastifyRequest) {
     const parsedQueryParamsOrError = this.parseBodyOrError(req.query)
     if (parsedQueryParamsOrError.isFailure()) {
-      return ResponseFactory.create({
-        status: HTTP_STATUS.BAD_REQUEST,
+      return ResponseFactory.BAD_REQUEST({
         message: parsedQueryParamsOrError.value.message,
       })
     }
@@ -59,10 +57,9 @@ export class FetchUsersController implements Controller {
       limit,
       page,
     })
-    return ResponseFactory.create({
-      status: HTTP_STATUS.OK,
+    return ResponseFactory.OK({
       body: {
-        users: this.presenter(req).format(result.data),
+        users: this.presenter(req.headers['accept']).format(result.data),
         pagination: result.pagination,
       },
     })
@@ -78,10 +75,9 @@ export class FetchUsersController implements Controller {
     return success(parsedQueryParams.data)
   }
 
-  private presenter(req: FastifyRequest) {
-    const accept = req.headers['accept']
-    console.log('accept', accept)
-    const presenter = PresenterFactory.create(accept)
+  private presenter(header?: string) {
+    console.log('accept', header)
+    const presenter = PresenterFactory.create(header)
     return presenter
   }
 }
