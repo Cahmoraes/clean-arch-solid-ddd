@@ -2,22 +2,22 @@ import { CSVPresenter } from './csv-presenter'
 import { JSONPresenter } from './json-presenter'
 import type { Presenter } from './presenter'
 
-export const FormatType = {
+export const MimeType = {
   JSON: 'application/json',
   CSV: 'text/csv',
 } as const
 
-export type FormatTypes = (typeof FormatType)[keyof typeof FormatType]
+export type MimeTypes = (typeof MimeType)[keyof typeof MimeType]
 
 export class PresenterFactory {
-  public static create<Output>(format?: string): Presenter<unknown> {
-    switch (format) {
-      case FormatType.JSON:
-        return new JSONPresenter<Output>()
-      case FormatType.CSV:
+  public static create(mimeType?: string): Presenter {
+    switch (mimeType) {
+      case MimeType.JSON:
+        return new JSONPresenter()
+      case MimeType.CSV:
         return new CSVPresenter()
       default:
-        return new JSONPresenter<Output>()
+        return new JSONPresenter()
     }
   }
 }

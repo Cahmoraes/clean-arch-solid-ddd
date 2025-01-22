@@ -10,7 +10,6 @@ import { RoleValues } from '@/domain/value-object/role'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer, Schema } from '@/infra/server/http-server'
-import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
@@ -60,8 +59,7 @@ export class CreateUserController implements Controller {
   private async callback(req: FastifyRequest) {
     const parsedBodyOrError = this.parseBodyOrError(req.body)
     if (parsedBodyOrError.isFailure()) {
-      return ResponseFactory.create({
-        status: HTTP_STATUS.BAD_REQUEST,
+      return ResponseFactory.BAD_REQUEST({
         message: parsedBodyOrError.value.message,
       })
     }
@@ -71,13 +69,11 @@ export class CreateUserController implements Controller {
       rawPassword: password,
     })
     if (result.isFailure()) {
-      return ResponseFactory.create({
-        status: HTTP_STATUS.CONFLICT,
+      return ResponseFactory.CONFLICT({
         message: result.value.message,
       })
     }
-    return ResponseFactory.create({
-      status: HTTP_STATUS.CREATED,
+    return ResponseFactory.CREATED({
       body: {
         message: 'User created',
         email: result.value.email,

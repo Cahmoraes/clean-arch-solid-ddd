@@ -1,7 +1,7 @@
 import type { Presenter } from './presenter'
 
-export class JSONPresenter<Output> implements Presenter<Output> {
-  public format<Input>(data: Input): Output {
-    return data as unknown as Output
+export class JSONPresenter implements Presenter {
+  public format<Input>(data: Input): unknown {
+    return data as unknown
   }
 }

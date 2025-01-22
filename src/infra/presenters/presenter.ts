@@ -1,3 +1,3 @@
-export interface Presenter<Output> {
-  format<Input extends Array<any>>(data: Input): Output
+export interface Presenter {
+  format<Input extends Array<any>>(data: Input): unknown
 }

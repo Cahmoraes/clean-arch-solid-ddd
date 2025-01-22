@@ -60,7 +60,7 @@ describe.only('Change Password', () => {
         newRawPassword: newPassword,
       })
 
-    expect(response.status).toBe(HTTP_STATUS.OK)
+    expect(response.status).toBe(HTTP_STATUS.NO_CONTENT)
     expect(user.checkPassword(newPassword)).toBeTruthy()
     expect(user.checkPassword(oldPassword)).toBeFalsy()
     expect(response.body).toEqual({})

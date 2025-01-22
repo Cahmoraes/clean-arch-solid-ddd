@@ -1,6 +1,6 @@
 import type { Presenter } from './presenter'
 
-export class CSVPresenter implements Presenter<string> {
+export class CSVPresenter implements Presenter {
   public format<Input extends Array<any>>(data: Input): string {
     const headers = this.extractHeaders(data)
     const rows = this.extractValues(data)

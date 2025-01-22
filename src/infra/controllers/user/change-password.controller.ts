@@ -8,7 +8,6 @@ import { type Either, failure, success } from '@/domain/value-object/either'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
-import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
@@ -48,8 +47,7 @@ export class ChangePasswordController implements Controller {
   private async callback(req: FastifyRequest) {
     const parsedBodyOrError = this.parseBodyOrError(req.body)
     if (parsedBodyOrError.isFailure()) {
-      return ResponseFactory.create({
-        status: HTTP_STATUS.BAD_REQUEST,
+      return ResponseFactory.BAD_REQUEST({
         message: parsedBodyOrError.value.message,
       })
     }
@@ -58,14 +56,11 @@ export class ChangePasswordController implements Controller {
       newRawPassword: parsedBodyOrError.value.newRawPassword,
     })
     if (result.isFailure()) {
-      return ResponseFactory.create({
-        status: HTTP_STATUS.CONFLICT,
+      return ResponseFactory.CONFLICT({
         message: result.value.message,
       })
     }
-    return ResponseFactory.create({
-      status: HTTP_STATUS.OK,
-    })
+    return ResponseFactory.NO_CONTENT()
   }
 
   private parseBodyOrError(
