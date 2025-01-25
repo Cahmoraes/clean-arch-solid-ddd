@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify'
 
+import type { CheckInCreatedEvent } from '@/domain/event/check-in-created-event'
 import type { PasswordChangedEvent } from '@/domain/event/password-changed-event'
 import type { UserCreatedEvent } from '@/domain/event/user-created-event'
 
@@ -37,9 +38,9 @@ export class QueueController {
 
     this.queue.consume(
       QUEUES.NOTIFY_PASSWORD_CHANGED,
-      async (message: PasswordChangedEvent) => {
-        console.log('Password changed event', message)
-        const payload = message.payload
+      async (event: PasswordChangedEvent) => {
+        console.log('Password changed event', event)
+        const payload = event.payload
         await this.mailer.sendMail(
           payload.email,
           'Password changed',
@@ -50,6 +51,11 @@ export class QueueController {
 
     this.queue.consume(QUEUES.LOG, async (event: any) => {
       console.log('QUEUE [LOG]')
+      console.log(event)
+    })
+
+    this.queue.consume(QUEUES.CHECK_IN, async (event: CheckInCreatedEvent) => {
+      console.log('QUEUE [CHECK_IN]')
       console.log(event)
     })
   }

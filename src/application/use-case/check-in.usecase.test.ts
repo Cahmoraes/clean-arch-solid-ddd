@@ -1,6 +1,8 @@
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
+import { DomainEventPublisher } from '@/domain/event/domain-event-publisher'
+import { EVENTS } from '@/domain/event/events'
 import { Gym } from '@/domain/gym'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
@@ -14,7 +16,7 @@ import { UserNotFoundError } from '../error/user-not-found-error'
 import { GymNotFoundError } from '../error/user-not-found-error copy'
 import { CheckInUseCase, type CheckInUseCaseInput } from './check-in.usecase'
 
-describe.only('CheckInUseCase', () => {
+describe('CheckInUseCase', () => {
   let gymRepository: InMemoryGymRepository
   let userRepository: InMemoryUserRepository
   let checkInRepository: InMemoryCheckInRepository
@@ -52,6 +54,10 @@ describe.only('CheckInUseCase', () => {
     expect(result.forceSuccess().value.date).toEqual(expect.any(Date))
     const checkInSaved = checkInRepository.checkIns.toArray()[0]
     expect(checkInSaved.id).toEqual(result.forceSuccess().value.checkInId)
+    const hasCheckInCreatedEvent = DomainEventPublisher.instance[
+      'subscribers'
+    ].has(EVENTS.CHECK_IN_CREATED)
+    expect(hasCheckInCreatedEvent).toBe(true)
   })
 
   test('Não deve criar um check-in se o usuário não existir', async () => {
