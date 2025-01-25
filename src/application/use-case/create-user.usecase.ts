@@ -8,7 +8,12 @@ import type { RoleTypes } from '@/domain/value-object/role'
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
 
-import { type Either, failure, success } from '../../domain/value-object/either'
+import {
+  type Either,
+  type Failure,
+  failure,
+  success,
+} from '../../domain/value-object/either'
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
 import type { UserRepository } from '../repository/user-repository'
 
@@ -27,6 +32,10 @@ export type CreateUserOutput = Either<
   UserAlreadyExistsError | ValidationError,
   CreateUserResponse
 >
+
+type ErrorType<T> = T extends Failure<infer E, any> ? E : never
+
+export type CreateUserError = ErrorType<CreateUserOutput>
 
 @injectable()
 export class CreateUserUseCase {
