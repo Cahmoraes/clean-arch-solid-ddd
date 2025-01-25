@@ -1,18 +1,29 @@
 import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 import { z } from 'zod'
-import type { ValidationError } from 'zod-validation-error'
-import { fromError } from 'zod-validation-error'
+import { fromError, ValidationError } from 'zod-validation-error'
 
-import type { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
-import { type Either, failure, success } from '@/domain/value-object/either'
+import { UserAlreadyExistsError } from '@/application/error/user-already-exists-error'
+import type {
+  CreateUserError,
+  CreateUserUseCase,
+} from '@/application/use-case/create-user.usecase'
+import {
+  type Either,
+  type Failure,
+  failure,
+  success,
+} from '@/domain/value-object/either'
 import { RoleValues } from '@/domain/value-object/role'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer, Schema } from '@/infra/server/http-server'
 
 import type { Controller } from '../controller'
-import { ResponseFactory } from '../factory/response-factory'
+import {
+  ResponseFactory,
+  type ResponseOutput,
+} from '../factory/response-factory'
 import { UserRoutes } from '../routes/user-routes'
 
 const createUserRequestSchema = z.object({
@@ -69,9 +80,7 @@ export class CreateUserController implements Controller {
       rawPassword: password,
     })
     if (result.isFailure()) {
-      return ResponseFactory.CONFLICT({
-        message: result.value.message,
-      })
+      return this.createResponseError(result)
     }
     return ResponseFactory.CREATED({
       body: {
@@ -87,6 +96,19 @@ export class CreateUserController implements Controller {
     const parsedBody = createUserRequestSchema.safeParse(body)
     if (!parsedBody.success) return failure(fromError(parsedBody.error))
     return success(parsedBody.data)
+  }
+
+  private createResponseError(
+    result: Failure<CreateUserError, unknown>,
+  ): ResponseOutput {
+    if (result.value instanceof UserAlreadyExistsError) {
+      return ResponseFactory.CONFLICT({
+        message: result.value.message,
+      })
+    }
+    return ResponseFactory.UNPROCESSABLE_ENTITY({
+      message: result.value.message,
+    })
   }
 }
 

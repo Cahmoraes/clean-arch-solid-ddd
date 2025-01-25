@@ -68,7 +68,7 @@ describe('Create User', () => {
     })
   })
 
-  test.only('Não deve criar um usuário com dados inválidos', async () => {
+  test('Não deve criar um usuário com dados inválidos para o controller', async () => {
     const input = {
       name: 'any_name',
       email: 'invalid_email',
@@ -82,6 +82,23 @@ describe('Create User', () => {
     expect(result.status).toBe(HTTP_STATUS.BAD_REQUEST)
     expect(result.body).toEqual({
       message: 'Validation error: Invalid email at "email"',
+    })
+  })
+
+  test.only('Não deve criar um usuário com a propriedade name inválida. Acima de 30 caracteres', async () => {
+    const input = {
+      name: 'any_name'.repeat(30),
+      email: 'john@doe.com',
+      password: 'any_password',
+    }
+
+    const result = await request(fastifyServer.server)
+      .post(UserRoutes.CREATE)
+      .send(input)
+
+    expect(result.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
+    expect(result.body).toEqual({
+      message: 'Name must have between 10 and 30 characters',
     })
   })
 })

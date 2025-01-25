@@ -39,6 +39,13 @@ export class ResponseFactory {
     })
   }
 
+  public static UNPROCESSABLE_ENTITY(input: OmitWithoutStatus) {
+    return this.create({
+      status: HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      ...input,
+    })
+  }
+
   public static CREATED(input: OmitWithoutStatus) {
     return this.create({
       status: HTTP_STATUS.CREATED,
