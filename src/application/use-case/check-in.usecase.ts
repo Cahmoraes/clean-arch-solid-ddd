@@ -54,7 +54,7 @@ export class CheckInUseCase {
     if (!userOrNull) return failure(new UserNotFoundError())
     const checkInOnSameDate = await this.hasCheckInOnSameDate()
     if (checkInOnSameDate) return failure(new UserHasAlreadyCheckedInToday())
-    const gymOrNull = await this.gymRepository.findById(input.gymId)
+    const gymOrNull = await this.gymRepository.gymOfId(input.gymId)
     if (!gymOrNull) return failure(new GymNotFoundError())
     const distanceOrError = this.distanceBetweenCoords(
       {
@@ -66,9 +66,7 @@ export class CheckInUseCase {
         longitude: gymOrNull.longitude,
       },
     )
-    if (distanceOrError.isFailure()) {
-      return failure(distanceOrError.value)
-    }
+    if (distanceOrError.isFailure()) return failure(distanceOrError.value)
     if (this.isDistanceExceeded(distanceOrError.value)) {
       return failure(new MaxDistanceError())
     }
@@ -90,7 +88,6 @@ export class CheckInUseCase {
     userCoord: Coordinate,
     gymCoord: Coordinate,
   ): Either<InvalidDistanceError, Distance> {
-    // return DistanceCalculator.distanceBetweenCoordinates(userCoord, gymCoord)
     return Distance.create(userCoord, gymCoord)
   }
 

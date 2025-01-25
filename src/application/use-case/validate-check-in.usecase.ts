@@ -30,7 +30,9 @@ export class ValidateCheckInUseCase {
   public async execute(
     input: ValidateCheckInUseCaseInput,
   ): Promise<ValidateCheckInUseCaseResponse> {
-    const checkInOrNull = await this.checkInRepository.findById(input.checkInId)
+    const checkInOrNull = await this.checkInRepository.checkOfById(
+      input.checkInId,
+    )
     if (!checkInOrNull) return failure(new CheckInNotFoundError())
     const validatedOrError = checkInOrNull.validate()
     if (validatedOrError.isFailure()) return failure(validatedOrError.value)

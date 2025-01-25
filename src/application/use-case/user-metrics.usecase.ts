@@ -22,7 +22,7 @@ export class UserMetricsUseCase {
   public async execute(
     input: UserMetricsUseCaseInput,
   ): Promise<UserMetricsUseCaseOutput> {
-    const checkInsCount = await this.checkInRepository.countByUserId(
+    const checkInsCount = await this.checkInRepository.countOfUserId(
       input.userId,
     )
     return {

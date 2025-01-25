@@ -36,7 +36,7 @@ export class InMemoryCheckInRepository implements CheckInRepository {
     }
   }
 
-  public async findById(id: string): Promise<CheckIn | null> {
+  public async checkOfById(id: string): Promise<CheckIn | null> {
     return this.checkIns.find((checkIn) => checkIn.id === id)
   }
 
@@ -51,14 +51,14 @@ export class InMemoryCheckInRepository implements CheckInRepository {
     })
   }
 
-  public async findManyByUserId(userId: string, page = 0): Promise<CheckIn[]> {
+  public async checkInsOfUserId(userId: string, page = 0): Promise<CheckIn[]> {
     return this.checkIns
       .filter((checkIn) => checkIn.userId === userId)
       .toArray()
       .slice((page - 1) * env.ITEMS_PER_PAGE, page * env.ITEMS_PER_PAGE)
   }
 
-  public async countByUserId(userId: string): Promise<number> {
+  public async countOfUserId(userId: string): Promise<number> {
     return this.checkIns.filter((checkIn) => checkIn.userId === userId).size
   }
 }

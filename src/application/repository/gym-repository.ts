@@ -7,7 +7,7 @@ export interface SaveGymResult {
 
 export interface GymRepository {
   save(gym: Gym): Promise<SaveGymResult>
-  findByTitle(title: string, page: number): Promise<Gym[]>
-  findById(id: string): Promise<Gym | null>
+  gymOfTitle(title: string, page: number): Promise<Gym[]>
+  gymOfId(id: string): Promise<Gym | null>
   fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]>
 }
