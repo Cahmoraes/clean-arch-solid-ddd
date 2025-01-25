@@ -42,7 +42,7 @@ export class PrismaGymRepository implements GymRepository {
     return { id: result.id }
   }
 
-  public async findByTitle(title: string, page: number): Promise<Gym[]> {
+  public async gymOfTitle(title: string, page: number): Promise<Gym[]> {
     const gymData = await this.prismaClient.gym.findMany({
       where: { title },
       skip: page * env.ITEMS_PER_PAGE,
@@ -62,7 +62,7 @@ export class PrismaGymRepository implements GymRepository {
     })
   }
 
-  public async findById(id: string): Promise<Gym | null> {
+  public async gymOfId(id: string): Promise<Gym | null> {
     const gymData = await this.prismaClient.gym.findUnique({
       where: { id },
     })

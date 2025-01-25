@@ -44,7 +44,7 @@ export class CheckInHistoryUseCase {
         checkIns: [],
       }
     }
-    const checkIns = await this.checkInRepository.findManyByUserId(
+    const checkIns = await this.checkInRepository.checkInsOfUserId(
       input.userId,
       this.pageNumberOrDefault(input.page),
     )

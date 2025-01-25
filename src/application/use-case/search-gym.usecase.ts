@@ -33,7 +33,7 @@ export class SearchGymUseCase {
   public async execute(
     input: SearchGymUseCaseInput,
   ): Promise<SearchGymUseCaseOutput[]> {
-    const gyms = await this.gymRepository.findByTitle(
+    const gyms = await this.gymRepository.gymOfTitle(
       input.name,
       this.pageNumberOrDefault(input.page),
     )

@@ -31,11 +31,11 @@ export class InMemoryGymRepository implements GymRepository {
     return { id }
   }
 
-  public async findById(id: string): Promise<Gym | null> {
+  public async gymOfId(id: string): Promise<Gym | null> {
     return this.gyms.find((gym) => gym.id === id)
   }
 
-  public async findByTitle(title: string, page: number): Promise<Gym[]> {
+  public async gymOfTitle(title: string, page: number): Promise<Gym[]> {
     return this.gyms
       .filter((gym) =>
         gym.title.toLocaleLowerCase().includes(title.toLocaleLowerCase()),

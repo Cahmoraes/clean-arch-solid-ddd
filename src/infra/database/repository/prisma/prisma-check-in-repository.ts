@@ -44,7 +44,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
     }
   }
 
-  public async findById(id: string): Promise<CheckIn | null> {
+  public async checkOfById(id: string): Promise<CheckIn | null> {
     const checkInData = await this.prismaClient.checkIn.findUnique({
       where: {
         id,
@@ -87,7 +87,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
     return checkInOnSameDate > 0
   }
 
-  public async findManyByUserId(
+  public async checkInsOfUserId(
     userId: string,
     page: number,
   ): Promise<CheckIn[]> {
@@ -107,7 +107,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
     )
   }
 
-  public async countByUserId(userId: string): Promise<number> {
+  public async countOfUserId(userId: string): Promise<number> {
     return await this.prismaClient.checkIn.count({
       where: {
         user_id: userId,
