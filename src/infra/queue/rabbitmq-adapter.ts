@@ -8,6 +8,7 @@ import type { Queue } from './queue'
 @injectable()
 export class RabbitMQAdapter implements Queue {
   private connection?: amqp.Connection
+  private _channel?: amqp.Channel
 
   @Logger({
     message: '✅',
@@ -22,11 +23,17 @@ export class RabbitMQAdapter implements Queue {
   }
 
   public async publish<TData>(exchange: string, data: TData): Promise<void> {
-    const channel = await this.createChannel()
+    const channel = await this.channel()
     await channel.assertExchange(exchange, 'direct', { durable: true })
     const buffer = Buffer.from(JSON.stringify(data))
     console.log({ exchange })
     channel.publish(exchange, '', buffer)
+  }
+  private async channel(): Promise<amqp.Channel> {
+    if (!this._channel) {
+      this._channel = await this.createChannel()
+    }
+    return this._channel
   }
 
   private assertConnection(
@@ -46,15 +53,23 @@ export class RabbitMQAdapter implements Queue {
     queue: string,
     callback: CallableFunction,
   ): Promise<void> {
-    const channel = await this.createChannel()
+    const channel = await this.channel()
     await channel.consume(
       queue,
       async (data: amqp.ConsumeMessage | null): Promise<void> => {
         if (!data) return
-        const message = JSON.parse(data.content.toString())
+        const message = this.parseData(data)
         await callback(message)
         channel.ack(data)
       },
     )
+  }
+
+  private parseData<TData>(data: amqp.ConsumeMessage): TData {
+    try {
+      return JSON.parse(data.content.toString())
+    } catch {
+      return data.content.toString() as unknown as TData
+    }
   }
 }

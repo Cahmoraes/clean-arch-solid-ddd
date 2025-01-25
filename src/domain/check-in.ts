@@ -2,6 +2,8 @@ import type { Optional } from '@/@types/optional'
 import { CheckInTimeExceededError } from '@/domain/error/check-in-time-exceeded-error'
 import { env } from '@/infra/env'
 
+import { CheckInCreatedEvent } from './event/check-in-created-event'
+import { DomainEventPublisher } from './event/domain-event-publisher'
 import { type Either, failure, success } from './value-object/either'
 import { Id } from './value-object/id'
 import { ValidId } from './value-object/valid-id'
@@ -63,7 +65,7 @@ export class CheckIn {
     const userId = ValidId.create(props.userId)
     const gymId = ValidId.create(props.gymId)
     const createdAt = new Date()
-    return new CheckIn({
+    const checkIn = new CheckIn({
       id,
       userId,
       gymId,
@@ -71,6 +73,18 @@ export class CheckIn {
       isValidated: false,
       userLatitude: props.userLatitude,
       userLongitude: props.userLongitude,
+    })
+    DomainEventPublisher.instance.publish(
+      this.createCheckInCreatedEvent(checkIn),
+    )
+    return checkIn
+  }
+
+  private static createCheckInCreatedEvent(checkIn: CheckIn) {
+    return new CheckInCreatedEvent({
+      checkInId: checkIn.id!,
+      userId: checkIn.userId,
+      gymId: checkIn.gymId,
     })
   }
 

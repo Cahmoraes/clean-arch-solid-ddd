@@ -2,10 +2,13 @@ import { inject, injectable } from 'inversify'
 
 import { CheckIn } from '@/domain/check-in'
 import type { InvalidDistanceError } from '@/domain/error/invalid-distance-error'
+import type { CheckInCreatedEvent } from '@/domain/event/check-in-created-event'
+import { DomainEventPublisher } from '@/domain/event/domain-event-publisher'
 import { MaxDistanceSpecification } from '@/domain/specification/max-distance-specification'
 import { Distance } from '@/domain/value-object/distance'
 import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
+import type { Queue } from '@/infra/queue/queue'
 
 import { MaxDistanceError } from '../error/max-distance-error'
 import { UserHasAlreadyCheckedInToday } from '../error/user-has-already-checked-in-today'
@@ -45,7 +48,16 @@ export class CheckInUseCase {
     private readonly gymRepository: GymRepository,
     @inject(TYPES.Repositories.CheckIn)
     private readonly checkInRepository: CheckInRepository,
-  ) {}
+    @inject(TYPES.Queue)
+    private readonly queue: Queue,
+  ) {
+    this.bindMethod()
+  }
+
+  private bindMethod(): void {
+    this.createDomainEventSubscriber =
+      this.createDomainEventSubscriber.bind(this)
+  }
 
   public async execute(
     input: CheckInUseCaseInput,
@@ -72,10 +84,20 @@ export class CheckInUseCase {
     }
     const checkIn = CheckIn.create(input)
     const { id } = await this.checkInRepository.save(checkIn)
+    DomainEventPublisher.instance.subscribe(
+      'checkInCreated',
+      this.createDomainEventSubscriber,
+    )
     return success({
       checkInId: id,
       date: checkIn.createdAt,
     })
+  }
+
+  private async createDomainEventSubscriber(event: CheckInCreatedEvent) {
+    console.log('**************')
+    console.log(event)
+    this.queue.publish(event.eventName, event)
   }
 
   private async hasCheckInOnSameDate(): Promise<boolean> {
