@@ -14,7 +14,7 @@ import { UserNotFoundError } from '../error/user-not-found-error'
 import { GymNotFoundError } from '../error/user-not-found-error copy'
 import { CheckInUseCase, type CheckInUseCaseInput } from './check-in.usecase'
 
-describe('CheckInUseCase', () => {
+describe.only('CheckInUseCase', () => {
   let gymRepository: InMemoryGymRepository
   let userRepository: InMemoryUserRepository
   let checkInRepository: InMemoryCheckInRepository
@@ -107,7 +107,6 @@ describe('CheckInUseCase', () => {
       userRepository,
       id: userId,
     })
-    await _createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
     await _createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
     const input: CheckInUseCaseInput = {
       userId,
