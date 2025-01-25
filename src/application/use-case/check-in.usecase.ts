@@ -1,7 +1,9 @@
 import { inject, injectable } from 'inversify'
 
 import { CheckIn } from '@/domain/check-in'
-import { DistanceCalculator } from '@/domain/service/distance-calculator'
+import type { InvalidDistanceError } from '@/domain/error/invalid-distance-error'
+import { MaxDistanceSpecification } from '@/domain/specification/max-distance-specification'
+import { Distance } from '@/domain/value-object/distance'
 import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
@@ -29,12 +31,13 @@ interface Coordinate {
   longitude: number
 }
 
-export type CheckInUseCaseOutput = Either<Error, CheckInUseCaseResponse>
+export type CheckInUseCaseOutput = Either<
+  Error | InvalidDistanceError,
+  CheckInUseCaseResponse
+>
 
 @injectable()
 export class CheckInUseCase {
-  private readonly MAX_DISTANCE_IN_KM = 0.1
-
   constructor(
     @inject(TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
@@ -53,7 +56,7 @@ export class CheckInUseCase {
     if (checkInOnSameDate) return failure(new UserHasAlreadyCheckedInToday())
     const gymOrNull = await this.gymRepository.findById(input.gymId)
     if (!gymOrNull) return failure(new GymNotFoundError())
-    const differenceInDistance = this.distanceBetweenCoords(
+    const distanceOrError = this.distanceBetweenCoords(
       {
         latitude: input.userLatitude,
         longitude: input.userLongitude,
@@ -63,7 +66,10 @@ export class CheckInUseCase {
         longitude: gymOrNull.longitude,
       },
     )
-    if (this.isDistanceExceeded(differenceInDistance)) {
+    if (distanceOrError.isFailure()) {
+      return failure(distanceOrError.value)
+    }
+    if (this.isDistanceExceeded(distanceOrError.value)) {
       return failure(new MaxDistanceError())
     }
     const checkIn = CheckIn.create(input)
@@ -83,11 +89,13 @@ export class CheckInUseCase {
   private distanceBetweenCoords(
     userCoord: Coordinate,
     gymCoord: Coordinate,
-  ): number {
-    return DistanceCalculator.distanceBetweenCoordinates(userCoord, gymCoord)
+  ): Either<InvalidDistanceError, Distance> {
+    // return DistanceCalculator.distanceBetweenCoordinates(userCoord, gymCoord)
+    return Distance.create(userCoord, gymCoord)
   }
 
-  private isDistanceExceeded(differenceInDistance: number): boolean {
-    return differenceInDistance > this.MAX_DISTANCE_IN_KM
+  private isDistanceExceeded(distance: Distance): boolean {
+    const maxDistanceSpecification = new MaxDistanceSpecification()
+    return maxDistanceSpecification.isSatisfiedBy(distance)
   }
 }
