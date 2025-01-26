@@ -4,6 +4,8 @@ import {
 } from 'test/factory/create-and-save-user'
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
+import { InvalidEmailError } from '@/domain/error/invalid-email-error'
+import { InvalidNameLengthError } from '@/domain/error/invalid-name-length-error'
 import type { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
 
@@ -56,5 +58,51 @@ describe.only('UpdateUserProfile', () => {
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
+  })
+
+  test('Não deve atualizar o perfil de um usuário com nome inválido', async () => {
+    const userId = 'any_user_id'
+    const createAndSaveUserProps: CreateAndSaveUserProps = {
+      userRepository,
+      name: 'john doe',
+      email: 'john@doe.com',
+      password: 'any_password',
+      id: userId,
+    }
+    await createAndSaveUser(createAndSaveUserProps)
+    const input: UpdateUserProfileUseCaseInput = {
+      userId,
+      name: '',
+      email: 'martin@fowler.com',
+    }
+    const result = await sut.execute(input)
+    expect(result.isFailure()).toBe(true)
+    expect(result.value).toBeInstanceOf(InvalidNameLengthError)
+    const userMemory = await userRepository.userOfId(userId)
+    expect(userMemory?.email).toBe('john@doe.com')
+    expect(userMemory?.name).toBe('john doe')
+  })
+
+  test('Não deve atualizar o perfil de um usuário com e-mail inválido', async () => {
+    const userId = 'any_user_id'
+    const createAndSaveUserProps: CreateAndSaveUserProps = {
+      userRepository,
+      name: 'john doe',
+      email: 'john@doe.com',
+      password: 'any_password',
+      id: userId,
+    }
+    await createAndSaveUser(createAndSaveUserProps)
+    const input: UpdateUserProfileUseCaseInput = {
+      userId,
+      name: 'Martin Fowler',
+      email: '',
+    }
+    const result = await sut.execute(input)
+    expect(result.isFailure()).toBe(true)
+    expect(result.value).toBeInstanceOf(InvalidEmailError)
+    const userMemory = await userRepository.userOfId(userId)
+    expect(userMemory?.email).toBe('john@doe.com')
+    expect(userMemory?.name).toBe('john doe')
   })
 })

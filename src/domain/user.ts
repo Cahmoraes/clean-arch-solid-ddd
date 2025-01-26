@@ -49,13 +49,14 @@ export type ValidatedUserProps = Omit<
   'id' | 'createdAt' | 'role'
 >
 
+export type UserValidationErrors =
+  | ValidationError
+  | InvalidNameLengthError
+  | InvalidEmailError
+
 export class User
   extends Observable
-  implements
-    Cloneable<
-      UpdateUserProps,
-      Either<ValidationError | InvalidNameLengthError, User>
-    >
+  implements Cloneable<UpdateUserProps, Either<UserValidationErrors, User>>
 {
   private readonly _id: Id
   private readonly _name: Name
@@ -76,7 +77,7 @@ export class User
 
   public static create(
     userCreateProps: UserCreateProps,
-  ): Either<ValidationError | InvalidNameLengthError, User> {
+  ): Either<UserValidationErrors, User> {
     const validatedPropsOrError = this.validate(userCreateProps)
     if (validatedPropsOrError.isFailure()) {
       return failure(validatedPropsOrError.value)

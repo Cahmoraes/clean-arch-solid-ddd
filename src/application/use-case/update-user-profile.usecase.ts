@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify'
 
+import type { User, UserValidationErrors } from '@/domain/user'
 import { type Either, failure, success } from '@/domain/value-object/either'
 import { TYPES } from '@/infra/ioc/types'
 
@@ -12,7 +13,10 @@ export interface UpdateUserProfileUseCaseInput {
   email: string
 }
 
-export type UpdateUserProfileUseCaseOutput = Either<UserNotFoundError, User>
+export type UpdateUserProfileUseCaseOutput = Either<
+  UserNotFoundError | UserValidationErrors,
+  User
+>
 
 @injectable()
 export class UpdateUserProfileUseCase {
