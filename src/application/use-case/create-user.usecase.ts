@@ -62,11 +62,11 @@ export class CreateUserUseCase {
       'userCreated',
       this.createDomainEventSubscriber,
     )
-    const userCreationResult = await this.createUser(input)
-    if (userCreationResult.isFailure()) return failure(userCreationResult.value)
-    await this.userRepository.save(userCreationResult.value)
+    const createUserResult = await this.createUser(input)
+    if (createUserResult.isFailure()) return failure(createUserResult.value)
+    await this.userRepository.save(createUserResult.value)
     return success({
-      email: userCreationResult.value.email,
+      email: createUserResult.value.email,
     })
   }
 

@@ -24,6 +24,7 @@ export const TYPES = {
     Queue: Symbol.for('QueueController'),
     ChangePassword: Symbol.for('ChangePasswordController'),
     FetchUsers: Symbol.for('FetchUsersController'),
+    UpdateUserProfile: Symbol.for('UpdateUserProfileController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),

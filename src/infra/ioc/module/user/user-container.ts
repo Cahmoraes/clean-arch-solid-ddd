@@ -37,6 +37,7 @@ export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.Controllers.RefreshToken).to(RefreshTokenController)
   bind(TYPES.Controllers.ChangePassword).to(ChangePasswordController)
   bind(TYPES.Controllers.FetchUsers).to(FetchUsersController)
+  bind(TYPES.Controllers.UpdateUserProfile).to(UserProfileController)
   bind(TYPES.UseCases.CreateUser).to(CreateUserUseCase)
   bind(TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
   bind(TYPES.UseCases.UserProfile).to(UserProfileUseCase)
