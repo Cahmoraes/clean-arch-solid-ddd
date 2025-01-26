@@ -68,24 +68,24 @@ export class CreateUserController implements Controller {
   }
 
   private async callback(req: FastifyRequest) {
-    const parsedBodyOrError = this.parseBodyOrError(req.body)
-    if (parsedBodyOrError.isFailure()) {
+    const parseBodyResult = this.parseBodyOrError(req.body)
+    if (parseBodyResult.isFailure()) {
       return ResponseFactory.BAD_REQUEST({
-        message: parsedBodyOrError.value.message,
+        message: parseBodyResult.value.message,
       })
     }
-    const { password, ...rest } = parsedBodyOrError.value
-    const result = await this.createUser.execute({
+    const { password, ...rest } = parseBodyResult.value
+    const createUserResult = await this.createUser.execute({
       ...rest,
       rawPassword: password,
     })
-    if (result.isFailure()) {
-      return this.createResponseError(result)
+    if (createUserResult.isFailure()) {
+      return this.createResponseError(createUserResult)
     }
     return ResponseFactory.CREATED({
       body: {
         message: 'User created',
-        email: result.value.email,
+        email: createUserResult.value.email,
       },
     })
   }
@@ -93,9 +93,11 @@ export class CreateUserController implements Controller {
   private parseBodyOrError(
     body: unknown,
   ): Either<ValidationError, CreateUserPayload> {
-    const parsedBody = createUserRequestSchema.safeParse(body)
-    if (!parsedBody.success) return failure(fromError(parsedBody.error))
-    return success(parsedBody.data)
+    const createUserValidationResult = createUserRequestSchema.safeParse(body)
+    if (!createUserValidationResult.success) {
+      return failure(fromError(createUserValidationResult.error))
+    }
+    return success(createUserValidationResult.data)
   }
 
   private createResponseError(
