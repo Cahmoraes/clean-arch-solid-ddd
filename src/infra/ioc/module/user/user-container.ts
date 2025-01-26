@@ -43,4 +43,5 @@ export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.UseCases.UserMetrics).to(UserMetricsUseCase)
   bind(TYPES.UseCases.ChangePassword).to(ChangePasswordUseCase)
   bind(TYPES.UseCases.FetchUsers).to(FetchUsersUseCase)
+  bind(TYPES.UseCases.UpdateUserProfile).to(UserProfileUseCase)
 })

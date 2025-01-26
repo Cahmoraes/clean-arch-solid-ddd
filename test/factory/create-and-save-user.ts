@@ -5,6 +5,7 @@ import type { InMemoryUserRepository } from '@/infra/database/repository/in-memo
 export interface CreateAndSaveUserProps {
   userRepository: InMemoryUserRepository
   id?: string
+  name?: string
   email?: string
   password?: string
   role?: RoleTypes
@@ -12,10 +13,12 @@ export interface CreateAndSaveUserProps {
 
 export async function createAndSaveUser(props: CreateAndSaveUserProps) {
   const userId = props.id ?? 'any_user_id'
+  const name = props.name ?? 'any_name'
+  const email = props.email ?? 'john@doe.com.br'
   const user = User.create({
     id: userId,
-    name: 'any_name',
-    email: props.email ?? 'john@doe.com.br',
+    name: name,
+    email: email,
     password: props.password ?? 'any_password',
     role: props.role ?? 'MEMBER',
   }).force.success().value

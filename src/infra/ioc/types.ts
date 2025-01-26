@@ -39,6 +39,7 @@ export const TYPES = {
     Metrics: Symbol.for('MetricsUseCase'),
     ChangePassword: Symbol.for('ChangePasswordUseCase'),
     FetchUsers: Symbol.for('FetchUsersUseCase'),
+    UpdateUserProfile: Symbol.for('UpdateUserProfileUseCase'),
   },
   Tokens: {
     Auth: Symbol.for('AuthToken'),

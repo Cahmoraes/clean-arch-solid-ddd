@@ -113,4 +113,48 @@ describe('User Entity', () => {
     expect(user.password).not.toBe(oldPassword)
     expect(user.checkPassword(newRawPassword)).toBe(true)
   })
+
+  test('Deve clonar um usuário', () => {
+    const input: UserCreateProps = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'securepassword123',
+    }
+    const user = User.create(input).forceSuccess().value
+    const clone = user.clone().forceSuccess().value
+    expect(clone).toBeInstanceOf(User)
+    expect(clone.name).toBe(user.name)
+    expect(clone.email).toBe(user.email)
+    expect(clone.password).toBe(user.password)
+    expect(clone.role).toBe(user.role)
+    expect(clone.createdAt).toBe(user.createdAt)
+    clone.changePassword('new_password')
+    expect(clone.checkPassword('new_password')).toBe(true)
+    expect(user.checkPassword('new_password')).toBe(false)
+  })
+
+  test('Deve clonar um usuário com dados alterados', () => {
+    const input: UserCreateProps = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'securepassword123',
+    }
+    const user = User.create(input).forceSuccess().value
+    const clone = user
+      .clone({
+        email: 'martin@fowler.com',
+        name: 'Martin Fowler',
+      })
+      .forceSuccess().value
+
+    expect(clone).toBeInstanceOf(User)
+    expect(clone.id).toBe(user.id)
+    expect(clone.name).toBe('Martin Fowler')
+    expect(clone.email).toBe('martin@fowler.com')
+    expect(clone.password).toBe(user.password)
+    expect(clone.role).toBe(user.role)
+    expect(clone.createdAt).toBe(user.createdAt)
+    expect(clone.checkPassword('securepassword123')).toBe(true)
+    expect(user.checkPassword('securepassword123')).toBe(true)
+  })
 })

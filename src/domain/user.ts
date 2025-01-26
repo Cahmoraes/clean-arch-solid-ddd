@@ -7,6 +7,7 @@ import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { DomainEventPublisher } from './event/domain-event-publisher'
 import { PasswordChangedEvent } from './event/password-changed-event'
 import { UserCreatedEvent } from './event/user-created-event'
+import type { Cloneable } from './interfaces/cloneable'
 import { Observable } from './observable'
 import { Email } from './value-object/email'
 import { Id } from './value-object/id'
@@ -24,7 +25,7 @@ export interface UserConstructorProps {
 }
 
 export interface UserCreateProps {
-  id?: string
+  id?: string | null
   name: string
   email: string
   password: string
@@ -41,12 +42,21 @@ export type UserRestoreProps = {
   createdAt: Date
 }
 
+export type UpdateUserProps = Partial<Pick<UserCreateProps, 'name' | 'email'>>
+
 export type ValidatedUserProps = Omit<
   UserConstructorProps,
   'id' | 'createdAt' | 'role'
 >
 
-export class User extends Observable {
+export class User
+  extends Observable
+  implements
+    Cloneable<
+      UpdateUserProps,
+      Either<ValidationError | InvalidNameLengthError, User>
+    >
+{
   private readonly _id: Id
   private readonly _name: Name
   private readonly _email: Email
@@ -166,5 +176,33 @@ export class User extends Observable {
     })
     this.notifyObservers(event)
     return success(null)
+  }
+
+  public clone(
+    input?: UpdateUserProps,
+  ): Either<ValidationError | InvalidNameLengthError, User> {
+    if (!input) {
+      const user = new User({
+        id: this._id,
+        name: this._name,
+        email: this._email,
+        password: this._password,
+        role: this._role,
+        createdAt: this._createdAt,
+      })
+      return success(user)
+    }
+    const password = this._password
+    const userOrError = User.create({
+      id: this.id,
+      name: input.name ?? this.name,
+      email: input.email ?? this.email,
+      password: this.password,
+      role: this.role,
+      createdAt: this.createdAt,
+    })
+    if (userOrError.isFailure()) return failure(userOrError.value)
+    userOrError.value._password = password
+    return success(userOrError.value)
   }
 }
