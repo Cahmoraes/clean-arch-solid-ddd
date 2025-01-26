@@ -179,9 +179,7 @@ export class User
     return success(null)
   }
 
-  public clone(
-    input?: UpdateUserProps,
-  ): Either<ValidationError | InvalidNameLengthError, User> {
+  public clone(input?: UpdateUserProps): Either<UserValidationErrors, User> {
     if (!input) {
       const user = new User({
         id: this._id,
