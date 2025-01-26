@@ -7,7 +7,6 @@ import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { DomainEventPublisher } from './event/domain-event-publisher'
 import { PasswordChangedEvent } from './event/password-changed-event'
 import { UserCreatedEvent } from './event/user-created-event'
-import type { Cloneable } from './interfaces/cloneable'
 import { Observable } from './observable'
 import { Email } from './value-object/email'
 import { Id } from './value-object/id'
@@ -54,16 +53,13 @@ export type UserValidationErrors =
   | InvalidNameLengthError
   | InvalidEmailError
 
-export class User
-  extends Observable
-  implements Cloneable<UpdateUserProps, Either<UserValidationErrors, User>>
-{
-  private readonly _id: Id
-  private readonly _name: Name
-  private readonly _email: Email
+export class User extends Observable {
+  private _id: Id
+  private _name: Name
+  private _email: Email
   private _password: Password
-  private readonly _role: Role
-  private readonly _createdAt: Date
+  private _role: Role
+  private _createdAt: Date
 
   private constructor(props: UserConstructorProps) {
     super()
@@ -179,19 +175,9 @@ export class User
     return success(null)
   }
 
-  public clone(input?: UpdateUserProps): Either<UserValidationErrors, User> {
-    if (!input) {
-      const user = new User({
-        id: this._id,
-        name: this._name,
-        email: this._email,
-        password: this._password,
-        role: this._role,
-        createdAt: this._createdAt,
-      })
-      return success(user)
-    }
-    const password = this._password
+  public updateProfile(
+    input: UpdateUserProps,
+  ): Either<UserValidationErrors, null> {
     const userOrError = User.create({
       id: this.id,
       name: input.name ?? this.name,
@@ -201,7 +187,8 @@ export class User
       createdAt: this.createdAt,
     })
     if (userOrError.isFailure()) return failure(userOrError.value)
-    userOrError.value._password = password
-    return success(userOrError.value)
+    this._email = userOrError.value._email
+    this._name = userOrError.value._name
+    return success(null)
   }
 }

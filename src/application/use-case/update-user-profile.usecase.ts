@@ -28,11 +28,13 @@ export class UpdateUserProfileUseCase {
   public async execute(
     input: UpdateUserProfileUseCaseInput,
   ): Promise<UpdateUserProfileUseCaseOutput> {
-    const userOrNull = await this.userRepository.userOfId(input.userId)
-    if (!userOrNull) return failure(new UserNotFoundError())
-    const clonedUser = userOrNull.clone(input)
-    if (clonedUser.isFailure()) return failure(clonedUser.value)
-    await this.userRepository.update(clonedUser.value)
-    return success(clonedUser.value)
+    const user = await this.userRepository.userOfId(input.userId)
+    if (!user) return failure(new UserNotFoundError())
+    const profileUpdateResult = user.updateProfile(input)
+    if (profileUpdateResult.isFailure()) {
+      return failure(profileUpdateResult.value)
+    }
+    await this.userRepository.update(user)
+    return success(user)
   }
 }
