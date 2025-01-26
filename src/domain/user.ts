@@ -74,9 +74,9 @@ export class User extends Observable {
   public static create(
     userCreateProps: UserCreateProps,
   ): Either<UserValidationErrors, User> {
-    const validatedPropsOrError = this.validate(userCreateProps)
-    if (validatedPropsOrError.isFailure()) {
-      return failure(validatedPropsOrError.value)
+    const validatePropsResult = this.validate(userCreateProps)
+    if (validatePropsResult.isFailure()) {
+      return failure(validatePropsResult.value)
     }
     const id = Id.create(userCreateProps.id)
     const createdAt = userCreateProps.createdAt ?? new Date()
@@ -88,9 +88,9 @@ export class User extends Observable {
       new User({
         id,
         createdAt,
-        name: validatedPropsOrError.value.name,
-        email: validatedPropsOrError.value.email,
-        password: validatedPropsOrError.value.password,
+        name: validatePropsResult.value.name,
+        email: validatePropsResult.value.email,
+        password: validatePropsResult.value.password,
         role: role,
       }),
     )
@@ -102,16 +102,18 @@ export class User extends Observable {
     ValidationError | InvalidNameLengthError | InvalidEmailError,
     ValidatedUserProps
   > {
-    const nameOrError = Name.create(userCreateProps.name)
-    if (nameOrError.isFailure()) return failure(nameOrError.value)
-    const emailOrError = Email.create(userCreateProps.email)
-    if (emailOrError.isFailure()) return failure(emailOrError.value)
-    const passwordOrError = Password.create(userCreateProps.password)
-    if (passwordOrError.isFailure()) return failure(passwordOrError.value)
+    const createNameResult = Name.create(userCreateProps.name)
+    if (createNameResult.isFailure()) return failure(createNameResult.value)
+    const createEmailResult = Email.create(userCreateProps.email)
+    if (createEmailResult.isFailure()) return failure(createEmailResult.value)
+    const createPasswordResult = Password.create(userCreateProps.password)
+    if (createPasswordResult.isFailure()) {
+      return failure(createPasswordResult.value)
+    }
     return success({
-      name: nameOrError.value,
-      email: emailOrError.value,
-      password: passwordOrError.value,
+      name: createNameResult.value,
+      email: createEmailResult.value,
+      password: createPasswordResult.value,
     })
   }
 
@@ -130,7 +132,7 @@ export class User extends Observable {
       email: Email.restore(restoreUserProps.email),
       name: Name.restore(restoreUserProps.name),
       password: Password.restore(restoreUserProps.password),
-      role: Role.create(restoreUserProps.role),
+      role: Role.restore(restoreUserProps.role),
       createdAt: restoreUserProps.createdAt,
     })
   }
@@ -164,9 +166,11 @@ export class User extends Observable {
   }
 
   public changePassword(newRawPassword: string): Either<ValidationError, null> {
-    const passwordOrError = Password.create(newRawPassword)
-    if (passwordOrError.isFailure()) return failure(passwordOrError.value)
-    this._password = passwordOrError.value
+    const passwordCreateResult = Password.create(newRawPassword)
+    if (passwordCreateResult.isFailure()) {
+      return failure(passwordCreateResult.value)
+    }
+    this._password = passwordCreateResult.value
     const event = new PasswordChangedEvent({
       name: this.name,
       email: this.email,
@@ -178,7 +182,7 @@ export class User extends Observable {
   public updateProfile(
     input: UpdateUserProps,
   ): Either<UserValidationErrors, null> {
-    const userOrError = User.create({
+    const userCreateResult = User.create({
       id: this.id,
       name: input.name ?? this.name,
       email: input.email ?? this.email,
@@ -186,9 +190,9 @@ export class User extends Observable {
       role: this.role,
       createdAt: this.createdAt,
     })
-    if (userOrError.isFailure()) return failure(userOrError.value)
-    this._email = userOrError.value._email
-    this._name = userOrError.value._name
+    if (userCreateResult.isFailure()) return failure(userCreateResult.value)
+    this._email = userCreateResult.value._email
+    this._name = userCreateResult.value._name
     return success(null)
   }
 }
