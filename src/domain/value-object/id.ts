@@ -1,9 +1,11 @@
 import type { ValueObject } from './value-object'
 
+type StringOrNullable = string | null | undefined
+
 export class Id implements ValueObject {
   private readonly _value: null | string
 
-  private constructor(aString?: string) {
+  private constructor(aString: StringOrNullable) {
     this._value = aString ?? null
   }
 
@@ -11,7 +13,7 @@ export class Id implements ValueObject {
     return this._value
   }
 
-  public static create(aString?: string) {
+  public static create(aString: StringOrNullable) {
     return new Id(aString)
   }
 

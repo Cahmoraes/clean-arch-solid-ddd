@@ -23,6 +23,13 @@ export class InMemoryUserRepository implements UserRepository {
     this.users.add(userWithId)
   }
 
+  public async update(user: User): Promise<void> {
+    const userOrNull = this.users.find((u) => u.id === user.id)
+    if (!userOrNull) return
+    this.users.delete(userOrNull)
+    this.users.add(user)
+  }
+
   public async userOfEmail(email: string): Promise<User | null> {
     return this.users.find((user) => user.email === email)
   }
