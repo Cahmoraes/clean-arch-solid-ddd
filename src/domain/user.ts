@@ -7,6 +7,7 @@ import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { DomainEventPublisher } from './event/domain-event-publisher'
 import { PasswordChangedEvent } from './event/password-changed-event'
 import { UserCreatedEvent } from './event/user-created-event'
+import { UserProfileUpdatedEvent } from './event/user-profile-updated-event'
 import { Observable } from './observable'
 import { Email } from './value-object/email'
 import { Id } from './value-object/id'
@@ -41,7 +42,7 @@ export type UserRestoreProps = {
   createdAt: Date
 }
 
-export type UpdateUserProps = Partial<Pick<UserCreateProps, 'name' | 'email'>>
+export type UserUpdateProps = Partial<Pick<UserCreateProps, 'name' | 'email'>>
 
 export type ValidatedUserProps = Omit<
   UserConstructorProps,
@@ -180,7 +181,7 @@ export class User extends Observable {
   }
 
   public updateProfile(
-    input: UpdateUserProps,
+    input: UserUpdateProps,
   ): Either<UserValidationErrors, null> {
     const userCreateResult = User.create({
       id: this.id,
@@ -193,6 +194,20 @@ export class User extends Observable {
     if (userCreateResult.isFailure()) return failure(userCreateResult.value)
     this._email = userCreateResult.value._email
     this._name = userCreateResult.value._name
+    const event = this.createUserProfileUpdatedEvent({
+      email: this.email,
+      name: this.name,
+    })
+    this.notifyObservers(event)
     return success(null)
+  }
+
+  private createUserProfileUpdatedEvent(
+    updateUserProps: Required<UserUpdateProps>,
+  ) {
+    return new UserProfileUpdatedEvent({
+      name: updateUserProps.name,
+      email: updateUserProps.email,
+    })
   }
 }
