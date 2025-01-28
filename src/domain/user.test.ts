@@ -120,13 +120,15 @@ describe('User Entity', () => {
       email: 'john.doe@example.com',
       password: 'securepassword123',
     }
+    const observer = vi.fn()
     const user = User.create(input).forceSuccess().value
-    const result = user.updateProfile({
+    user.addObserver(observer)
+    const updateUserResult = user.updateProfile({
       email: 'martin@fowler.com',
       name: 'Martin Fowler',
     })
-    expect(result.isSuccess()).toBe(true)
-
+    expect(updateUserResult.isSuccess()).toBe(true)
+    expect(observer).toBeCalledTimes(1)
     expect(user).toBeInstanceOf(User)
     expect(user.id).toBe(user.id)
     expect(user.name).toBe('Martin Fowler')

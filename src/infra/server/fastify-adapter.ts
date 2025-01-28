@@ -30,7 +30,6 @@ export class FastifyAdapter implements HttpServer {
     private readonly authToken: AuthToken,
   ) {
     this._server = fastify({})
-
     this.bindMethods()
     this.initialize()
   }
@@ -69,6 +68,7 @@ export class FastifyAdapter implements HttpServer {
     message: `HTTP Server running 🚀 http://${env.HOST}:${env.PORT}`,
   })
   public async listen(): Promise<void> {
+    await this.ready()
     await this._server.listen({
       port: env.PORT,
       host: env.HOST,
