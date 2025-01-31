@@ -13,7 +13,7 @@ export class Id implements ValueObject {
     return this._value
   }
 
-  public static create(aString: StringOrNullable) {
+  public static create(aString?: StringOrNullable) {
     return new Id(aString)
   }
 
