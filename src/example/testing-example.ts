@@ -1,7 +1,7 @@
 import { Example } from './example'
 
 export class TestingExample extends Example {
-  performFetch() {
+  protected performFetch() {
     return [{ title: 'testing' }]
   }
 }

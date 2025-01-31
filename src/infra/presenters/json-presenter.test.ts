@@ -9,7 +9,7 @@ interface Example {
 }
 
 describe('JSON Presenter', () => {
-  let sut: JSONPresenter<Example[]>
+  let sut: JSONPresenter
   const data: Example[] = [
     {
       id: 'fake_id',

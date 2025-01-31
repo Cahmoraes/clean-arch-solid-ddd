@@ -39,4 +39,36 @@ describe('Coordinate', () => {
     expect(result.isFailure()).toBe(true)
     expect(result.value).toBeInstanceOf(InvalidLatitudeError)
   })
+
+  test('Deve criar uma coordenada com latitude máxima', () => {
+    const input = { latitude: 90, longitude: 0 }
+    const coord = Coordinate.create(input).forceSuccess().value
+    expect(coord).toBeDefined()
+    expect(coord.latitude).toBe(input.latitude)
+    expect(coord.longitude).toBe(input.longitude)
+  })
+
+  test('Deve criar uma coordenada com latitude mínima', () => {
+    const input = { latitude: -90, longitude: 0 }
+    const coord = Coordinate.create(input).forceSuccess().value
+    expect(coord).toBeDefined()
+    expect(coord.latitude).toBe(input.latitude)
+    expect(coord.longitude).toBe(input.longitude)
+  })
+
+  test('Deve criar uma coordenada com longitude máxima', () => {
+    const input = { latitude: 0, longitude: 180 }
+    const coord = Coordinate.create(input).forceSuccess().value
+    expect(coord).toBeDefined()
+    expect(coord.latitude).toBe(input.latitude)
+    expect(coord.longitude).toBe(input.longitude)
+  })
+
+  test('Deve criar uma coordenada com longitude mínima', () => {
+    const input = { latitude: 0, longitude: -180 }
+    const coord = Coordinate.create(input).forceSuccess().value
+    expect(coord).toBeDefined()
+    expect(coord.latitude).toBe(input.latitude)
+    expect(coord.longitude).toBe(input.longitude)
+  })
 })
