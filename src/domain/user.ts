@@ -1,6 +1,8 @@
 import { type ValidationError } from 'zod-validation-error'
 
+import { CreateUserUseCase } from '@/application/use-case/create-user.usecase'
 import { type Either, failure, success } from '@/domain/value-object/either'
+import { CookieAdapter } from '@/infra/cookie/cookie-adapter'
 
 import type { InvalidEmailError } from './error/invalid-email-error'
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
@@ -43,6 +45,8 @@ export type UserRestoreProps = {
 }
 
 export type UserUpdateProps = Partial<Pick<UserCreateProps, 'name' | 'email'>>
+
+const cookieAdapter = new CookieAdapter()
 
 export type ValidatedUserProps = Omit<
   UserConstructorProps,
