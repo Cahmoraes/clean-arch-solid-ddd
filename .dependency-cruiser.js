@@ -18,6 +18,53 @@ const rules = {
     tsConfig: {
       fileName: 'tsconfig.json',
     },
+    doNotFollow: {
+      /* path: an array of regular expressions in strings to match against */
+      path: ['node_modules'],
+    },
+    skipAnalysisNotInRules: true,
+    reporterOptions: {
+      dot: {
+        /* pattern of modules that can be consolidated in the detailed
+           graphical dependency graph. The default pattern in this configuration
+           collapses everything in node_modules to one folder deep so you see
+           the external modules, but their innards.
+         */
+        collapsePattern: 'node_modules/(?:@[^/]+/[^/]+|[^/]+)',
+
+        /* Options to tweak the appearance of your graph.See
+           https://github.com/sverweij/dependency-cruiser/blob/main/doc/options-reference.md#reporteroptions
+           for details and some examples. If you don't specify a theme
+           dependency-cruiser falls back to a built-in one.
+        */
+        // theme: {
+        //   graph: {
+        //     /* splines: "ortho" gives straight lines, but is slow on big graphs
+        //        splines: "true" gives bezier curves (fast, not as nice as ortho)
+        //    */
+        //     splines: "true"
+        //   },
+        // }
+      },
+      archi: {
+        /* pattern of modules that can be consolidated in the high level
+          graphical dependency graph. If you use the high level graphical
+          dependency graph reporter (`archi`) you probably want to tweak
+          this collapsePattern to your situation.
+        */
+        collapsePattern:
+          '^(?:packages|src|lib(s?)|app(s?)|bin|test(s?)|spec(s?))/[^/]+|node_modules/(?:@[^/]+/[^/]+|[^/]+)',
+
+        /* Options to tweak the appearance of your graph. If you don't specify a
+           theme for 'archi' dependency-cruiser will use the one specified in the
+           dot section above and otherwise use the default one.
+         */
+        // theme: { },
+      },
+      text: {
+        highlightFocused: true,
+      },
+    },
   },
 }
 

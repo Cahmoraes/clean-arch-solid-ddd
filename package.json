@@ -21,8 +21,8 @@
     "eslint:fix": "npx eslint --fix src",
     "promise-like": "npx tsx --watch ./test/proxy-like/index-2.ts",
     "commit": "cz",
-    "fit:validate-dependencies": "npx depcruise --validate .dependency-cruiser.js src --output-type err-long",
-    "dependency:metrics": "npx depcruise src --include-only \"^src\" --output-type dot | dot -T svg > dependency-graph.svg"
+    "fit:validate-dependencies": "npx depcruise --validate .dependency-cruiser.js src",
+    "dependency:metrics": "npx depcruise .dependency-cruiser.js src --include-only \"^src\" --output-type dot | dot -T svg > dependency-graph.svg"
   },
   "keywords": [],
   "author": "",

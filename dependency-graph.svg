@@ -258,7 +258,7 @@
 <g id="node1" class="node">
 <title>src/@types/custom.d.ts</title>
 <g id="a_node1"><a xlink:href="src/@types/custom.d.ts" xlink:title="custom.d.ts">
-<path fill="#ccffcc" stroke="black" d="M110,-5494.04C110,-5494.04 51,-5494.04 51,-5494.04 48,-5494.04 45,-5491.04 45,-5488.04 45,-5488.04 45,-5482.04 45,-5482.04 45,-5479.04 48,-5476.04 51,-5476.04 51,-5476.04 110,-5476.04 110,-5476.04 113,-5476.04 116,-5479.04 116,-5482.04 116,-5482.04 116,-5488.04 116,-5488.04 116,-5491.04 113,-5494.04 110,-5494.04"/>
+<path fill="#ddfeff" stroke="black" d="M110,-5494.04C110,-5494.04 51,-5494.04 51,-5494.04 48,-5494.04 45,-5491.04 45,-5488.04 45,-5488.04 45,-5482.04 45,-5482.04 45,-5479.04 48,-5476.04 51,-5476.04 51,-5476.04 110,-5476.04 110,-5476.04 113,-5476.04 116,-5479.04 116,-5482.04 116,-5482.04 116,-5488.04 116,-5488.04 116,-5491.04 113,-5494.04 110,-5494.04"/>
 <text text-anchor="start" x="53" y="-5482.84" font-family="Helvetica,sans-Serif" font-size="9.00">custom.d.ts</text>
 </a>
 </g>
@@ -267,7 +267,7 @@
 <g id="node2" class="node">
 <title>src/@types/optional.d.ts</title>
 <g id="a_node2"><a xlink:href="src/@types/optional.d.ts" xlink:title="optional.d.ts">
-<path fill="#ccffcc" stroke="black" d="M111,-5464.04C111,-5464.04 50,-5464.04 50,-5464.04 47,-5464.04 44,-5461.04 44,-5458.04 44,-5458.04 44,-5452.04 44,-5452.04 44,-5449.04 47,-5446.04 50,-5446.04 50,-5446.04 111,-5446.04 111,-5446.04 114,-5446.04 117,-5449.04 117,-5452.04 117,-5452.04 117,-5458.04 117,-5458.04 117,-5461.04 114,-5464.04 111,-5464.04"/>
+<path fill="#ddfeff" stroke="black" d="M111,-5464.04C111,-5464.04 50,-5464.04 50,-5464.04 47,-5464.04 44,-5461.04 44,-5458.04 44,-5458.04 44,-5452.04 44,-5452.04 44,-5449.04 47,-5446.04 50,-5446.04 50,-5446.04 111,-5446.04 111,-5446.04 114,-5446.04 117,-5449.04 117,-5452.04 117,-5452.04 117,-5458.04 117,-5458.04 117,-5461.04 114,-5464.04 111,-5464.04"/>
 <text text-anchor="start" x="52" y="-5452.84" font-family="Helvetica,sans-Serif" font-size="9.00">optional.d.ts</text>
 </a>
 </g>
@@ -276,7 +276,7 @@
 <g id="node3" class="node">
 <title>src/application/dao/user&#45;dao.ts</title>
 <g id="a_node3"><a xlink:href="src/application/dao/user-dao.ts" xlink:title="user&#45;dao.ts">
-<path fill="#ccffcc" stroke="black" d="M299,-3896.04C299,-3896.04 245,-3896.04 245,-3896.04 242,-3896.04 239,-3893.04 239,-3890.04 239,-3890.04 239,-3884.04 239,-3884.04 239,-3881.04 242,-3878.04 245,-3878.04 245,-3878.04 299,-3878.04 299,-3878.04 302,-3878.04 305,-3881.04 305,-3884.04 305,-3884.04 305,-3890.04 305,-3890.04 305,-3893.04 302,-3896.04 299,-3896.04"/>
+<path fill="#ddfeff" stroke="black" d="M299,-3896.04C299,-3896.04 245,-3896.04 245,-3896.04 242,-3896.04 239,-3893.04 239,-3890.04 239,-3890.04 239,-3884.04 239,-3884.04 239,-3881.04 242,-3878.04 245,-3878.04 245,-3878.04 299,-3878.04 299,-3878.04 302,-3878.04 305,-3881.04 305,-3884.04 305,-3884.04 305,-3890.04 305,-3890.04 305,-3893.04 302,-3896.04 299,-3896.04"/>
 <text text-anchor="start" x="247" y="-3884.84" font-family="Helvetica,sans-Serif" font-size="9.00">user&#45;dao.ts</text>
 </a>
 </g>
@@ -294,7 +294,7 @@
 <g id="node5" class="node">
 <title>src/application/error/gym&#45;already&#45;exists&#45;error.ts</title>
 <g id="a_node5"><a xlink:href="src/application/error/gym-already-exists-error.ts" xlink:title="gym&#45;already&#45;exists&#45;error.ts">
-<path fill="#ccffcc" stroke="black" d="M780,-3480.04C780,-3480.04 655,-3480.04 655,-3480.04 652,-3480.04 649,-3477.04 649,-3474.04 649,-3474.04 649,-3468.04 649,-3468.04 649,-3465.04 652,-3462.04 655,-3462.04 655,-3462.04 780,-3462.04 780,-3462.04 783,-3462.04 786,-3465.04 786,-3468.04 786,-3468.04 786,-3474.04 786,-3474.04 786,-3477.04 783,-3480.04 780,-3480.04"/>
+<path fill="#ddfeff" stroke="black" d="M780,-3480.04C780,-3480.04 655,-3480.04 655,-3480.04 652,-3480.04 649,-3477.04 649,-3474.04 649,-3474.04 649,-3468.04 649,-3468.04 649,-3465.04 652,-3462.04 655,-3462.04 655,-3462.04 780,-3462.04 780,-3462.04 783,-3462.04 786,-3465.04 786,-3468.04 786,-3468.04 786,-3474.04 786,-3474.04 786,-3477.04 783,-3480.04 780,-3480.04"/>
 <text text-anchor="start" x="657" y="-3468.84" font-family="Helvetica,sans-Serif" font-size="9.00">gym&#45;already&#45;exists&#45;error.ts</text>
 </a>
 </g>
@@ -303,7 +303,7 @@
 <g id="node6" class="node">
 <title>src/application/error/gym&#45;not&#45;found&#45;error.ts</title>
 <g id="a_node6"><a xlink:href="src/application/error/gym-not-found-error.ts" xlink:title="gym&#45;not&#45;found&#45;error.ts">
-<path fill="#ccffcc" stroke="black" d="M771,-3450.04C771,-3450.04 664,-3450.04 664,-3450.04 661,-3450.04 658,-3447.04 658,-3444.04 658,-3444.04 658,-3438.04 658,-3438.04 658,-3435.04 661,-3432.04 664,-3432.04 664,-3432.04 771,-3432.04 771,-3432.04 774,-3432.04 777,-3435.04 777,-3438.04 777,-3438.04 777,-3444.04 777,-3444.04 777,-3447.04 774,-3450.04 771,-3450.04"/>
+<path fill="#ddfeff" stroke="black" d="M771,-3450.04C771,-3450.04 664,-3450.04 664,-3450.04 661,-3450.04 658,-3447.04 658,-3444.04 658,-3444.04 658,-3438.04 658,-3438.04 658,-3435.04 661,-3432.04 664,-3432.04 664,-3432.04 771,-3432.04 771,-3432.04 774,-3432.04 777,-3435.04 777,-3438.04 777,-3438.04 777,-3444.04 777,-3444.04 777,-3447.04 774,-3450.04 771,-3450.04"/>
 <text text-anchor="start" x="666" y="-3438.84" font-family="Helvetica,sans-Serif" font-size="9.00">gym&#45;not&#45;found&#45;error.ts</text>
 </a>
 </g>
@@ -384,7 +384,7 @@
 <g id="node15" class="node">
 <title>src/application/interfaces/auth&#45;token.ts</title>
 <g id="a_node15"><a xlink:href="src/application/interfaces/auth-token.ts" xlink:title="auth&#45;token.ts">
-<path fill="#ccffcc" stroke="black" d="M304.5,-3836.04C304.5,-3836.04 239.5,-3836.04 239.5,-3836.04 236.5,-3836.04 233.5,-3833.04 233.5,-3830.04 233.5,-3830.04 233.5,-3824.04 233.5,-3824.04 233.5,-3821.04 236.5,-3818.04 239.5,-3818.04 239.5,-3818.04 304.5,-3818.04 304.5,-3818.04 307.5,-3818.04 310.5,-3821.04 310.5,-3824.04 310.5,-3824.04 310.5,-3830.04 310.5,-3830.04 310.5,-3833.04 307.5,-3836.04 304.5,-3836.04"/>
+<path fill="#ddfeff" stroke="black" d="M304.5,-3836.04C304.5,-3836.04 239.5,-3836.04 239.5,-3836.04 236.5,-3836.04 233.5,-3833.04 233.5,-3830.04 233.5,-3830.04 233.5,-3824.04 233.5,-3824.04 233.5,-3821.04 236.5,-3818.04 239.5,-3818.04 239.5,-3818.04 304.5,-3818.04 304.5,-3818.04 307.5,-3818.04 310.5,-3821.04 310.5,-3824.04 310.5,-3824.04 310.5,-3830.04 310.5,-3830.04 310.5,-3833.04 307.5,-3836.04 304.5,-3836.04"/>
 <text text-anchor="start" x="241.5" y="-3824.84" font-family="Helvetica,sans-Serif" font-size="9.00">auth&#45;token.ts</text>
 </a>
 </g>
@@ -393,7 +393,7 @@
 <g id="node16" class="node">
 <title>src/application/repository/check&#45;in&#45;repository.ts</title>
 <g id="a_node16"><a xlink:href="src/application/repository/check-in-repository.ts" xlink:title="check&#45;in&#45;repository.ts">
-<path fill="#ccffcc" stroke="black" d="M322.5,-3776.04C322.5,-3776.04 221.5,-3776.04 221.5,-3776.04 218.5,-3776.04 215.5,-3773.04 215.5,-3770.04 215.5,-3770.04 215.5,-3764.04 215.5,-3764.04 215.5,-3761.04 218.5,-3758.04 221.5,-3758.04 221.5,-3758.04 322.5,-3758.04 322.5,-3758.04 325.5,-3758.04 328.5,-3761.04 328.5,-3764.04 328.5,-3764.04 328.5,-3770.04 328.5,-3770.04 328.5,-3773.04 325.5,-3776.04 322.5,-3776.04"/>
+<path fill="#ddfeff" stroke="black" d="M322.5,-3776.04C322.5,-3776.04 221.5,-3776.04 221.5,-3776.04 218.5,-3776.04 215.5,-3773.04 215.5,-3770.04 215.5,-3770.04 215.5,-3764.04 215.5,-3764.04 215.5,-3761.04 218.5,-3758.04 221.5,-3758.04 221.5,-3758.04 322.5,-3758.04 322.5,-3758.04 325.5,-3758.04 328.5,-3761.04 328.5,-3764.04 328.5,-3764.04 328.5,-3770.04 328.5,-3770.04 328.5,-3773.04 325.5,-3776.04 322.5,-3776.04"/>
 <text text-anchor="start" x="223.5" y="-3764.84" font-family="Helvetica,sans-Serif" font-size="9.00">check&#45;in&#45;repository.ts</text>
 </a>
 </g>
@@ -402,7 +402,7 @@
 <g id="node17" class="node">
 <title>src/application/repository/gym&#45;repository.ts</title>
 <g id="a_node17"><a xlink:href="src/application/repository/gym-repository.ts" xlink:title="gym&#45;repository.ts">
-<path fill="#ccffcc" stroke="black" d="M313.5,-3746.04C313.5,-3746.04 230.5,-3746.04 230.5,-3746.04 227.5,-3746.04 224.5,-3743.04 224.5,-3740.04 224.5,-3740.04 224.5,-3734.04 224.5,-3734.04 224.5,-3731.04 227.5,-3728.04 230.5,-3728.04 230.5,-3728.04 313.5,-3728.04 313.5,-3728.04 316.5,-3728.04 319.5,-3731.04 319.5,-3734.04 319.5,-3734.04 319.5,-3740.04 319.5,-3740.04 319.5,-3743.04 316.5,-3746.04 313.5,-3746.04"/>
+<path fill="#ddfeff" stroke="black" d="M313.5,-3746.04C313.5,-3746.04 230.5,-3746.04 230.5,-3746.04 227.5,-3746.04 224.5,-3743.04 224.5,-3740.04 224.5,-3740.04 224.5,-3734.04 224.5,-3734.04 224.5,-3731.04 227.5,-3728.04 230.5,-3728.04 230.5,-3728.04 313.5,-3728.04 313.5,-3728.04 316.5,-3728.04 319.5,-3731.04 319.5,-3734.04 319.5,-3734.04 319.5,-3740.04 319.5,-3740.04 319.5,-3743.04 316.5,-3746.04 313.5,-3746.04"/>
 <text text-anchor="start" x="232.5" y="-3734.84" font-family="Helvetica,sans-Serif" font-size="9.00">gym&#45;repository.ts</text>
 </a>
 </g>
@@ -411,7 +411,7 @@
 <g id="node18" class="node">
 <title>src/application/repository/user&#45;repository.ts</title>
 <g id="a_node18"><a xlink:href="src/application/repository/user-repository.ts" xlink:title="user&#45;repository.ts">
-<path fill="#ccffcc" stroke="black" d="M312.5,-3716.04C312.5,-3716.04 231.5,-3716.04 231.5,-3716.04 228.5,-3716.04 225.5,-3713.04 225.5,-3710.04 225.5,-3710.04 225.5,-3704.04 225.5,-3704.04 225.5,-3701.04 228.5,-3698.04 231.5,-3698.04 231.5,-3698.04 312.5,-3698.04 312.5,-3698.04 315.5,-3698.04 318.5,-3701.04 318.5,-3704.04 318.5,-3704.04 318.5,-3710.04 318.5,-3710.04 318.5,-3713.04 315.5,-3716.04 312.5,-3716.04"/>
+<path fill="#ddfeff" stroke="black" d="M312.5,-3716.04C312.5,-3716.04 231.5,-3716.04 231.5,-3716.04 228.5,-3716.04 225.5,-3713.04 225.5,-3710.04 225.5,-3710.04 225.5,-3704.04 225.5,-3704.04 225.5,-3701.04 228.5,-3698.04 231.5,-3698.04 231.5,-3698.04 312.5,-3698.04 312.5,-3698.04 315.5,-3698.04 318.5,-3701.04 318.5,-3704.04 318.5,-3704.04 318.5,-3710.04 318.5,-3710.04 318.5,-3713.04 315.5,-3716.04 312.5,-3716.04"/>
 <text text-anchor="start" x="233.5" y="-3704.84" font-family="Helvetica,sans-Serif" font-size="9.00">user&#45;repository.ts</text>
 </a>
 </g>
@@ -672,10 +672,8 @@
 <!-- src/infra/ioc/container.ts&#45;&gt;src/infra/ioc/module/check&#45;in/check&#45;in&#45;module.ts -->
 <g id="edge395" class="edge">
 <title>src/infra/ioc/container.ts&#45;&gt;src/infra/ioc/module/check&#45;in/check&#45;in&#45;module.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M85.93,-2148.28C94.65,-2165.34 115.73,-2201.64 145,-2219.04 163.39,-2229.97 185.78,-2235.79 206.56,-2238.8"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="214.06,-2241.81 220.27,-2240.43 214.56,-2237.64 214.06,-2241.81"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="214.31,-2239.72 211.33,-2239.37 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="208.95" cy="-2239.08" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M85.93,-2148.28C94.65,-2165.34 115.73,-2201.64 145,-2219.04 165.68,-2231.33 191.41,-2237.16 214.23,-2239.8"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="214.08,-2241.89 220.27,-2240.43 214.52,-2237.72 214.08,-2241.89"/>
 </g>
 <!-- src/infra/ioc/module/gym/gym&#45;container.ts -->
 <g id="node166" class="node">
@@ -689,10 +687,8 @@
 <!-- src/infra/ioc/container.ts&#45;&gt;src/infra/ioc/module/gym/gym&#45;container.ts -->
 <g id="edge396" class="edge">
 <title>src/infra/ioc/container.ts&#45;&gt;src/infra/ioc/module/gym/gym&#45;container.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M115.82,-2146.65C143.88,-2152.87 184.07,-2161.78 216.52,-2168.97"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M115.82,-2146.65C146.14,-2153.37 190.64,-2163.23 224.22,-2170.67"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="224.04,-2172.79 230.35,-2172.03 224.95,-2168.69 224.04,-2172.79"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="224.5,-2170.74 221.57,-2170.09 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="219.22" cy="-2169.57" rx="2.4" ry="2.4"/>
 </g>
 <!-- src/infra/ioc/module/infra/infra&#45;container.ts -->
 <g id="node167" class="node">
@@ -706,10 +702,8 @@
 <!-- src/infra/ioc/container.ts&#45;&gt;src/infra/ioc/module/infra/infra&#45;container.ts -->
 <g id="edge397" class="edge">
 <title>src/infra/ioc/container.ts&#45;&gt;src/infra/ioc/module/infra/infra&#45;container.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M81.55,-2148.13C82.22,-2179.46 88.75,-2284.01 145,-2339.04 162.76,-2356.42 188.24,-2365.71 211.64,-2370.64"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="219.21,-2374.14 225.48,-2373.13 219.95,-2370 219.21,-2374.14"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="219.58,-2372.07 216.63,-2371.54 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="214.26" cy="-2371.12" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M81.55,-2148.13C82.22,-2179.46 88.75,-2284.01 145,-2339.04 164.76,-2358.38 194.08,-2367.7 219.46,-2372.15"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="219.22,-2374.24 225.48,-2373.13 219.9,-2370.1 219.22,-2374.24"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts -->
 <g id="node168" class="node">
@@ -723,10 +717,8 @@
 <!-- src/infra/ioc/container.ts&#45;&gt;src/infra/ioc/module/user/user&#45;container.ts -->
 <g id="edge398" class="edge">
 <title>src/infra/ioc/container.ts&#45;&gt;src/infra/ioc/module/user/user&#45;container.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M82.73,-2148.38C86.62,-2173.88 101.11,-2245.05 145,-2279.04 163.83,-2293.62 188.99,-2299.85 211.88,-2302.16"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="219.63,-2304.81 225.76,-2303.13 219.92,-2300.62 219.63,-2304.81"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="219.78,-2302.71 216.78,-2302.5 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="214.39" cy="-2302.34" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M82.73,-2148.38C86.62,-2173.88 101.11,-2245.05 145,-2279.04 165.96,-2295.27 194.77,-2301.15 219.56,-2302.8"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="219.66,-2304.91 225.76,-2303.13 219.88,-2300.72 219.66,-2304.91"/>
 </g>
 <!-- src/application/use&#45;case/authenticate.usecase.ts -->
 <g id="node23" class="node">
@@ -2144,10 +2136,8 @@
 <!-- src/infra/controllers/check&#45;in/check&#45;in.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge206" class="edge">
 <title>src/infra/controllers/check&#45;in/check&#45;in.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M327.74,-1486.49C350.6,-1486.38 375.42,-1481.42 391,-1464.04 399.44,-1454.63 397.32,-1021.57 399,-1009.04 419.39,-857.28 475.68,-680.94 496.3,-619.51"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="500.89,-612.53 500.83,-606.17 496.91,-611.18 500.89,-612.53"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="498.9,-611.85 497.94,-614.69 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="497.16" cy="-616.96" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M327.74,-1486.49C350.6,-1486.38 375.42,-1481.42 391,-1464.04 399.44,-1454.63 397.32,-1021.57 399,-1009.04 420.3,-850.52 480.77,-665.17 498.84,-611.99"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="500.88,-612.53 500.83,-606.17 496.9,-611.17 500.88,-612.53"/>
 </g>
 <!-- src/infra/server/http&#45;status.ts -->
 <g id="node133" class="node">
@@ -2191,10 +2181,8 @@
 <!-- src/infra/controllers/check&#45;in/validate&#45;check&#45;in.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge238" class="edge">
 <title>src/infra/controllers/check&#45;in/validate&#45;check&#45;in.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M346.51,-1450.56C363.49,-1447.19 379.82,-1440.24 391,-1427.04 398.51,-1418.18 397.44,-1020.55 399,-1009.04 419.51,-857.3 475.73,-680.95 496.31,-619.51"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="500.9,-612.53 500.83,-606.17 496.92,-611.18 500.9,-612.53"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="498.91,-611.85 497.95,-614.69 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="497.18" cy="-616.97" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M346.51,-1450.56C363.49,-1447.19 379.82,-1440.24 391,-1427.04 398.51,-1418.18 397.44,-1020.55 399,-1009.04 420.42,-850.53 480.81,-665.18 498.85,-611.99"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="500.88,-612.53 500.83,-606.17 496.91,-611.17 500.88,-612.53"/>
 </g>
 <!-- src/infra/controllers/check&#45;in/validate&#45;check&#45;in.controller.ts&#45;&gt;src/infra/server/http&#45;status.ts -->
 <g id="edge240" class="edge">
@@ -2223,10 +2211,8 @@
 <!-- src/infra/controllers/gym/create&#45;gym.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge245" class="edge">
 <title>src/infra/controllers/gym/create&#45;gym.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M334.6,-765.84C355.24,-764.69 376.64,-759.17 391,-744.04 407.42,-726.75 384.75,-656.16 399,-637.04 413.99,-616.94 440.41,-606.94 463,-601.96"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.26,-602.57 476.78,-599.42 470.5,-598.44 471.26,-602.57"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="470.88,-600.51 467.93,-601.05 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="465.57" cy="-601.49" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M334.6,-765.84C355.24,-764.69 376.64,-759.17 391,-744.04 407.42,-726.75 384.75,-656.16 399,-637.04 415.77,-614.55 446.83,-604.71 470.84,-600.4"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.2,-602.47 476.78,-599.42 470.52,-598.32 471.2,-602.47"/>
 </g>
 <!-- src/infra/controllers/gym/create&#45;gym.controller.ts&#45;&gt;src/infra/server/http&#45;status.ts -->
 <g id="edge247" class="edge">
@@ -2270,10 +2256,8 @@
 <!-- src/infra/controllers/gym/search&#45;gym.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge258" class="edge">
 <title>src/infra/controllers/gym/search&#45;gym.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M335.19,-736.74C355.52,-735.81 376.56,-730.61 391,-716.04 403.42,-703.51 388.27,-651.05 399,-637.04 414.26,-617.13 440.68,-607.13 463.19,-602.11"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.42,-602.7 476.93,-599.53 470.64,-598.57 471.42,-602.7"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.03,-600.64 468.08,-601.19 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="465.72" cy="-601.64" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M335.19,-736.74C355.52,-735.81 376.56,-730.61 391,-716.04 403.42,-703.51 388.27,-651.05 399,-637.04 415.99,-614.87 446.83,-604.99 470.71,-600.58"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.36,-602.6 476.93,-599.53 470.66,-598.46 471.36,-602.6"/>
 </g>
 <!-- src/infra/controllers/gym/search&#45;gym.controller.ts&#45;&gt;src/infra/server/http&#45;status.ts -->
 <g id="edge260" class="edge">
@@ -2335,10 +2319,8 @@
 <!-- src/infra/controllers/user/authenticate.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge272" class="edge">
 <title>src/infra/controllers/user/authenticate.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M337.71,-915.99C357.51,-914.53 377.58,-908.78 391,-894.04 409.19,-874.07 384.55,-673.87 399,-651.04 413.32,-628.42 440.37,-614.82 463.42,-606.93"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.64,-606.6 476.76,-602.82 470.41,-602.58 471.64,-606.6"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.03,-604.59 468.16,-605.47 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="465.86" cy="-606.18" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M337.71,-915.99C357.51,-914.53 377.58,-908.78 391,-894.04 409.19,-874.07 384.55,-673.87 399,-651.04 414.87,-625.97 446.36,-611.99 470.73,-604.57"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.58,-606.51 476.76,-602.82 470.41,-602.48 471.58,-606.51"/>
 </g>
 <!-- src/infra/controllers/user/authenticate.controller.ts&#45;&gt;src/infra/server/http&#45;status.ts -->
 <g id="edge275" class="edge">
@@ -2382,10 +2364,8 @@
 <!-- src/infra/controllers/user/change&#45;password.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge287" class="edge">
 <title>src/infra/controllers/user/change&#45;password.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M348.1,-972.14C363.65,-969.5 378.95,-964.1 391,-954.04 495.24,-867.07 504.61,-684.44 504.52,-620.09"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="506.52,-612.08 504.34,-606.11 502.32,-612.14 506.52,-612.08"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="504.42,-612.11 504.46,-615.11 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="504.49" cy="-617.51" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M348.1,-972.14C363.65,-969.5 378.95,-964.1 391,-954.04 499.88,-863.19 505.26,-667.97 504.46,-612.2"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="506.56,-612.07 504.34,-606.11 502.36,-612.15 506.56,-612.07"/>
 </g>
 <!-- src/infra/controllers/user/change&#45;password.controller.ts&#45;&gt;src/infra/controllers/routes/user&#45;routes.ts -->
 <g id="edge285" class="edge">
@@ -2426,10 +2406,8 @@
 <!-- src/infra/controllers/user/create&#45;user.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge306" class="edge">
 <title>src/infra/controllers/user/create&#45;user.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M333.7,-1246.21C354.76,-1245.25 376.66,-1239.75 391,-1224.04 399.43,-1214.81 397.19,-1011.42 399,-999.04 420.65,-851.32 475.93,-679.68 496.31,-619.37"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="500.84,-612.59 500.79,-606.24 496.86,-611.23 500.84,-612.59"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="498.85,-611.91 497.88,-614.75 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="497.11" cy="-617.02" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M333.7,-1246.21C354.76,-1245.25 376.66,-1239.75 391,-1224.04 399.43,-1214.81 397.19,-1011.42 399,-999.04 421.61,-844.73 480.93,-664.33 498.82,-611.97"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="500.83,-612.59 500.79,-606.24 496.85,-611.23 500.83,-612.59"/>
 </g>
 <!-- src/infra/controllers/user/create&#45;user.controller.ts&#45;&gt;src/infra/controllers/routes/user&#45;routes.ts -->
 <g id="edge302" class="edge">
@@ -2458,10 +2436,8 @@
 <!-- src/infra/controllers/user/fetch&#45;users.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge318" class="edge">
 <title>src/infra/controllers/user/fetch&#45;users.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M333.72,-1095.62C354.53,-1094.52 376.26,-1089.09 391,-1074.04 402.73,-1062.07 395.98,-1015.53 399,-999.04 425.86,-852.18 477.93,-680.01 496.88,-619.46"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="501.24,-612.63 501.04,-606.28 497.23,-611.37 501.24,-612.63"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="499.23,-612 498.33,-614.86 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="497.61" cy="-617.15" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M333.72,-1095.62C354.53,-1094.52 376.26,-1089.09 391,-1074.04 402.73,-1062.07 395.98,-1015.53 399,-999.04 427.06,-845.63 482.62,-664.6 499.21,-612.04"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="501.23,-612.63 501.04,-606.28 497.22,-611.36 501.23,-612.63"/>
 </g>
 <!-- src/infra/controllers/user/fetch&#45;users.controller.ts&#45;&gt;src/infra/controllers/routes/user&#45;routes.ts -->
 <g id="edge316" class="edge">
@@ -2499,10 +2475,8 @@
 <!-- src/infra/controllers/user/my&#45;profile.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge327" class="edge">
 <title>src/infra/controllers/user/my&#45;profile.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M331.73,-1004.17C352.56,-1002.98 374.82,-997.85 391,-984.04 448.16,-935.25 488.94,-696 500.6,-620.16"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="503.87,-612.48 502.69,-606.24 499.72,-611.86 503.87,-612.48"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="501.79,-612.17 501.35,-615.14 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="500.99" cy="-617.51" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M331.73,-1004.17C352.56,-1002.98 374.82,-997.85 391,-984.04 450.32,-933.41 491.99,-677.67 501.79,-612.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="503.88,-612.48 502.69,-606.24 499.73,-611.87 503.88,-612.48"/>
 </g>
 <!-- src/infra/controllers/user/my&#45;profile.controller.ts&#45;&gt;src/infra/server/http&#45;status.ts -->
 <g id="edge329" class="edge">
@@ -2543,10 +2517,8 @@
 <!-- src/infra/controllers/user/refresh&#45;token.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge339" class="edge">
 <title>src/infra/controllers/user/refresh&#45;token.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M338.67,-881.72C358.29,-879.01 378.01,-872.12 391,-857.04 406.97,-838.52 384.76,-656.93 399,-637.04 413.61,-616.65 440.03,-606.65 462.71,-601.75"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="471.03,-602.39 476.56,-599.26 470.29,-598.26 471.03,-602.39"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="470.66,-600.32 467.71,-600.85 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="465.34" cy="-601.28" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M338.67,-881.72C358.29,-879.01 378.01,-872.12 391,-857.04 406.97,-838.52 384.76,-656.93 399,-637.04 415.34,-614.24 446.45,-604.43 470.59,-600.22"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="470.97,-602.28 476.56,-599.26 470.31,-598.13 470.97,-602.28"/>
 </g>
 <!-- src/infra/controllers/user/refresh&#45;token.controller.ts&#45;&gt;src/infra/server/http&#45;status.ts -->
 <g id="edge343" class="edge">
@@ -2590,10 +2562,8 @@
 <!-- src/infra/controllers/user/user&#45;metrics.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge357" class="edge">
 <title>src/infra/controllers/user/user&#45;metrics.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M336.22,-1064.85C356.03,-1063.35 376.49,-1057.85 391,-1044.04 405.71,-1030.04 394.65,-1018.89 399,-999.04 430.89,-853.51 479.67,-681.13 497.33,-619.96"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="501.63,-612.67 501.28,-606.33 497.59,-611.5 501.63,-612.67"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="499.61,-612.09 498.78,-614.97 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="498.11" cy="-617.27" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M336.22,-1064.85C356.03,-1063.35 376.49,-1057.85 391,-1044.04 405.71,-1030.04 394.65,-1018.89 399,-999.04 432.38,-846.7 484.27,-664.94 499.6,-612.12"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="501.62,-612.67 501.28,-606.33 497.59,-611.5 501.62,-612.67"/>
 </g>
 <!-- src/infra/controllers/user/user&#45;metrics.controller.ts&#45;&gt;src/infra/server/http&#45;status.ts -->
 <g id="edge359" class="edge">
@@ -2622,10 +2592,8 @@
 <!-- src/infra/controllers/user/user&#45;profile.controller.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge368" class="edge">
 <title>src/infra/controllers/user/user&#45;profile.controller.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M333.7,-1034.23C354.01,-1032.86 375.42,-1027.6 391,-1014.04 406.5,-1000.55 478.25,-704.65 498.6,-619.67"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="502.47,-612.51 501.83,-606.19 498.39,-611.54 502.47,-612.51"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="500.43,-612.02 499.74,-614.94 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="499.18" cy="-617.28" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M333.7,-1034.23C354.01,-1032.86 375.42,-1027.6 391,-1014.04 406.99,-1000.12 482.93,-685.31 500.41,-612.14"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="502.48,-612.51 501.83,-606.19 498.39,-611.54 502.48,-612.51"/>
 </g>
 <!-- src/infra/controllers/user/user&#45;profile.controller.ts&#45;&gt;src/infra/server/http&#45;status.ts -->
 <g id="edge370" class="edge">
@@ -2790,7 +2758,7 @@
 <g id="node96" class="node">
 <title>src/domain/interfaces/cloneable.ts</title>
 <g id="a_node96"><a xlink:href="src/domain/interfaces/cloneable.ts" xlink:title="cloneable.ts">
-<path fill="#ccffcc" stroke="black" d="M301.5,-5138.04C301.5,-5138.04 242.5,-5138.04 242.5,-5138.04 239.5,-5138.04 236.5,-5135.04 236.5,-5132.04 236.5,-5132.04 236.5,-5126.04 236.5,-5126.04 236.5,-5123.04 239.5,-5120.04 242.5,-5120.04 242.5,-5120.04 301.5,-5120.04 301.5,-5120.04 304.5,-5120.04 307.5,-5123.04 307.5,-5126.04 307.5,-5126.04 307.5,-5132.04 307.5,-5132.04 307.5,-5135.04 304.5,-5138.04 301.5,-5138.04"/>
+<path fill="#ddfeff" stroke="black" d="M301.5,-5138.04C301.5,-5138.04 242.5,-5138.04 242.5,-5138.04 239.5,-5138.04 236.5,-5135.04 236.5,-5132.04 236.5,-5132.04 236.5,-5126.04 236.5,-5126.04 236.5,-5123.04 239.5,-5120.04 242.5,-5120.04 242.5,-5120.04 301.5,-5120.04 301.5,-5120.04 304.5,-5120.04 307.5,-5123.04 307.5,-5126.04 307.5,-5126.04 307.5,-5132.04 307.5,-5132.04 307.5,-5135.04 304.5,-5138.04 301.5,-5138.04"/>
 <text text-anchor="start" x="244.5" y="-5126.84" font-family="Helvetica,sans-Serif" font-size="9.00">cloneable.ts</text>
 </a>
 </g>
@@ -2850,7 +2818,7 @@
 <g id="node102" class="node">
 <title>src/domain/specification/specification.ts</title>
 <g id="a_node102"><a xlink:href="src/domain/specification/specification.ts" xlink:title="specification.ts">
-<path fill="#ccffcc" stroke="black" d="M541.5,-4978.04C541.5,-4978.04 468.5,-4978.04 468.5,-4978.04 465.5,-4978.04 462.5,-4975.04 462.5,-4972.04 462.5,-4972.04 462.5,-4966.04 462.5,-4966.04 462.5,-4963.04 465.5,-4960.04 468.5,-4960.04 468.5,-4960.04 541.5,-4960.04 541.5,-4960.04 544.5,-4960.04 547.5,-4963.04 547.5,-4966.04 547.5,-4966.04 547.5,-4972.04 547.5,-4972.04 547.5,-4975.04 544.5,-4978.04 541.5,-4978.04"/>
+<path fill="#ddfeff" stroke="black" d="M541.5,-4978.04C541.5,-4978.04 468.5,-4978.04 468.5,-4978.04 465.5,-4978.04 462.5,-4975.04 462.5,-4972.04 462.5,-4972.04 462.5,-4966.04 462.5,-4966.04 462.5,-4963.04 465.5,-4960.04 468.5,-4960.04 468.5,-4960.04 541.5,-4960.04 541.5,-4960.04 544.5,-4960.04 547.5,-4963.04 547.5,-4966.04 547.5,-4966.04 547.5,-4972.04 547.5,-4972.04 547.5,-4975.04 544.5,-4978.04 541.5,-4978.04"/>
 <text text-anchor="start" x="470.5" y="-4966.84" font-family="Helvetica,sans-Serif" font-size="9.00">specification.ts</text>
 </a>
 </g>
@@ -3102,7 +3070,7 @@
 <g id="node118" class="node">
 <title>src/domain/value&#45;object/value&#45;object.ts</title>
 <g id="a_node118"><a xlink:href="src/domain/value-object/value-object.ts" xlink:title="value&#45;object.ts">
-<path fill="#ccffcc" stroke="black" d="M540.5,-4506.04C540.5,-4506.04 469.5,-4506.04 469.5,-4506.04 466.5,-4506.04 463.5,-4503.04 463.5,-4500.04 463.5,-4500.04 463.5,-4494.04 463.5,-4494.04 463.5,-4491.04 466.5,-4488.04 469.5,-4488.04 469.5,-4488.04 540.5,-4488.04 540.5,-4488.04 543.5,-4488.04 546.5,-4491.04 546.5,-4494.04 546.5,-4494.04 546.5,-4500.04 546.5,-4500.04 546.5,-4503.04 543.5,-4506.04 540.5,-4506.04"/>
+<path fill="#ddfeff" stroke="black" d="M540.5,-4506.04C540.5,-4506.04 469.5,-4506.04 469.5,-4506.04 466.5,-4506.04 463.5,-4503.04 463.5,-4500.04 463.5,-4500.04 463.5,-4494.04 463.5,-4494.04 463.5,-4491.04 466.5,-4488.04 469.5,-4488.04 469.5,-4488.04 540.5,-4488.04 540.5,-4488.04 543.5,-4488.04 546.5,-4491.04 546.5,-4494.04 546.5,-4494.04 546.5,-4500.04 546.5,-4500.04 546.5,-4503.04 543.5,-4506.04 540.5,-4506.04"/>
 <text text-anchor="start" x="471.5" y="-4494.84" font-family="Helvetica,sans-Serif" font-size="9.00">value&#45;object.ts</text>
 </a>
 </g>
@@ -3293,10 +3261,8 @@
 <!-- src/infra/decorators/logger.ts&#45;&gt;src/infra/ioc/container.ts -->
 <g id="edge392" class="edge">
 <title>src/infra/decorators/logger.ts&#45;&gt;src/infra/ioc/container.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M476.96,-593.19C408.77,-585.18 229.24,-575.05 145,-675.04 96.55,-732.56 83.42,-1933.17 81.71,-2115.83"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M476.96,-593.19C408.77,-585.18 229.24,-575.05 145,-675.04 95.79,-733.46 83.02,-1970.91 81.63,-2123.63"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="79.53,-2123.7 81.58,-2129.71 83.73,-2123.73 79.53,-2123.7"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="81.63,-2123.71 81.66,-2120.71 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="81.68" cy="-2118.31" rx="2.4" ry="2.4"/>
 </g>
 <!-- src/infra/decorators/logger.ts&#45;&gt;src/infra/ioc/types.ts -->
 <g id="edge393" class="edge">
@@ -3500,7 +3466,7 @@
 <g id="node138" class="node">
 <title>src/infra/controllers/controller.ts</title>
 <g id="a_node138"><a xlink:href="src/infra/controllers/controller.ts" xlink:title="controller.ts">
-<path fill="#ccffcc" stroke="black" d="M301,-704.04C301,-704.04 243,-704.04 243,-704.04 240,-704.04 237,-701.04 237,-698.04 237,-698.04 237,-692.04 237,-692.04 237,-689.04 240,-686.04 243,-686.04 243,-686.04 301,-686.04 301,-686.04 304,-686.04 307,-689.04 307,-692.04 307,-692.04 307,-698.04 307,-698.04 307,-701.04 304,-704.04 301,-704.04"/>
+<path fill="#ddfeff" stroke="black" d="M301,-704.04C301,-704.04 243,-704.04 243,-704.04 240,-704.04 237,-701.04 237,-698.04 237,-698.04 237,-692.04 237,-692.04 237,-689.04 240,-686.04 243,-686.04 243,-686.04 301,-686.04 301,-686.04 304,-686.04 307,-689.04 307,-692.04 307,-692.04 307,-698.04 307,-698.04 307,-701.04 304,-704.04 301,-704.04"/>
 <text text-anchor="start" x="245" y="-692.84" font-family="Helvetica,sans-Serif" font-size="9.00">controller.ts</text>
 </a>
 </g>
@@ -4085,7 +4051,7 @@
 <g id="node156" class="node">
 <title>src/infra/cookie/cookie&#45;manager.ts</title>
 <g id="a_node156"><a xlink:href="src/infra/cookie/cookie-manager.ts" xlink:title="cookie&#45;manager.ts">
-<path fill="#ccffcc" stroke="black" d="M548.5,-2512.04C548.5,-2512.04 461.5,-2512.04 461.5,-2512.04 458.5,-2512.04 455.5,-2509.04 455.5,-2506.04 455.5,-2506.04 455.5,-2500.04 455.5,-2500.04 455.5,-2497.04 458.5,-2494.04 461.5,-2494.04 461.5,-2494.04 548.5,-2494.04 548.5,-2494.04 551.5,-2494.04 554.5,-2497.04 554.5,-2500.04 554.5,-2500.04 554.5,-2506.04 554.5,-2506.04 554.5,-2509.04 551.5,-2512.04 548.5,-2512.04"/>
+<path fill="#ddfeff" stroke="black" d="M548.5,-2512.04C548.5,-2512.04 461.5,-2512.04 461.5,-2512.04 458.5,-2512.04 455.5,-2509.04 455.5,-2506.04 455.5,-2506.04 455.5,-2500.04 455.5,-2500.04 455.5,-2497.04 458.5,-2494.04 461.5,-2494.04 461.5,-2494.04 548.5,-2494.04 548.5,-2494.04 551.5,-2494.04 554.5,-2497.04 554.5,-2500.04 554.5,-2500.04 554.5,-2506.04 554.5,-2506.04 554.5,-2509.04 551.5,-2512.04 548.5,-2512.04"/>
 <text text-anchor="start" x="463.5" y="-2500.84" font-family="Helvetica,sans-Serif" font-size="9.00">cookie&#45;manager.ts</text>
 </a>
 </g>
@@ -4202,7 +4168,7 @@
 <g id="node163" class="node">
 <title>src/infra/gateway/mailer&#45;gateway.ts</title>
 <g id="a_node163"><a xlink:href="src/infra/gateway/mailer-gateway.ts" xlink:title="mailer&#45;gateway.ts">
-<path fill="#ccffcc" stroke="black" d="M759,-2406.04C759,-2406.04 676,-2406.04 676,-2406.04 673,-2406.04 670,-2403.04 670,-2400.04 670,-2400.04 670,-2394.04 670,-2394.04 670,-2391.04 673,-2388.04 676,-2388.04 676,-2388.04 759,-2388.04 759,-2388.04 762,-2388.04 765,-2391.04 765,-2394.04 765,-2394.04 765,-2400.04 765,-2400.04 765,-2403.04 762,-2406.04 759,-2406.04"/>
+<path fill="#ddfeff" stroke="black" d="M759,-2406.04C759,-2406.04 676,-2406.04 676,-2406.04 673,-2406.04 670,-2403.04 670,-2400.04 670,-2400.04 670,-2394.04 670,-2394.04 670,-2391.04 673,-2388.04 676,-2388.04 676,-2388.04 759,-2388.04 759,-2388.04 762,-2388.04 765,-2391.04 765,-2394.04 765,-2394.04 765,-2400.04 765,-2400.04 765,-2403.04 762,-2406.04 759,-2406.04"/>
 <text text-anchor="start" x="678" y="-2394.84" font-family="Helvetica,sans-Serif" font-size="9.00">mailer&#45;gateway.ts</text>
 </a>
 </g>
@@ -4219,10 +4185,8 @@
 <!-- src/infra/gateway/node&#45;mailer&#45;adapter.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge394" class="edge">
 <title>src/infra/gateway/node&#45;mailer&#45;adapter.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M711.95,-2357.82C695.35,-2323.59 638.03,-2200.18 619,-2091.04 615.6,-2071.53 620.51,-682.42 611,-665.04 597.16,-639.76 569.46,-622.42 545.98,-611.58"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="539.48,-606.51 533.14,-606.08 537.83,-610.37 539.48,-606.51"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="538.65,-608.44 541.41,-609.62 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="543.62" cy="-610.57" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M711.95,-2357.82C695.35,-2323.59 638.03,-2200.18 619,-2091.04 615.6,-2071.53 620.51,-682.42 611,-665.04 595.75,-637.18 563.64,-618.95 538.93,-608.45"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="539.49,-606.41 533.14,-606.08 537.89,-610.3 539.49,-606.41"/>
 </g>
 <!-- src/infra/ioc/module/check&#45;in/check&#45;in&#45;module.ts&#45;&gt;src/infra/ioc/types.ts -->
 <g id="edge399" class="edge">
@@ -4257,18 +4221,14 @@
 <!-- src/infra/ioc/module/check&#45;in/check&#45;in&#45;module.ts&#45;&gt;src/infra/controllers/check&#45;in/check&#45;in.controller.ts -->
 <g id="edge404" class="edge">
 <title>src/infra/ioc/module/check&#45;in/check&#45;in&#45;module.ts&#45;&gt;src/infra/controllers/check&#45;in/check&#45;in.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M220.44,-2248.25C187.91,-2249.54 150.33,-2243.87 141,-2213.04 138.13,-2203.56 138.13,-1509.52 141,-1500.04 149.8,-1470.98 184.27,-1466.28 215.64,-1468.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-1471.5 229.73,-1470.03 223.98,-1467.32 223.54,-1471.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-1469.41 220.78,-1469.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-1468.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M220.44,-2248.25C187.91,-2249.54 150.33,-2243.87 141,-2213.04 138.13,-2203.56 138.13,-1509.52 141,-1500.04 150.55,-1468.5 190.35,-1465.66 223.61,-1469.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-1471.39 229.73,-1470.03 224.03,-1467.22 223.52,-1471.39"/>
 </g>
 <!-- src/infra/ioc/module/check&#45;in/check&#45;in&#45;module.ts&#45;&gt;src/infra/controllers/check&#45;in/validate&#45;check&#45;in.controller.ts -->
 <g id="edge405" class="edge">
 <title>src/infra/ioc/module/check&#45;in/check&#45;in&#45;module.ts&#45;&gt;src/infra/controllers/check&#45;in/validate&#45;check&#45;in.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M220.44,-2248.25C187.91,-2249.54 150.33,-2243.87 141,-2213.04 138.01,-2203.17 138.01,-1479.92 141,-1470.04 149.8,-1440.98 184.27,-1436.28 215.64,-1438.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-1441.5 229.73,-1440.03 223.98,-1437.32 223.54,-1441.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-1439.41 220.78,-1439.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-1438.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M220.44,-2248.25C187.91,-2249.54 150.33,-2243.87 141,-2213.04 138.01,-2203.17 138.01,-1479.92 141,-1470.04 150.55,-1438.5 190.35,-1435.66 223.61,-1439.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-1441.39 229.73,-1440.03 224.03,-1437.22 223.52,-1441.39"/>
 </g>
 <!-- src/infra/ioc/module/check&#45;in/check&#45;in&#45;module.ts&#45;&gt;src/infra/database/repository/prisma/prisma&#45;check&#45;in&#45;repository.ts -->
 <g id="edge407" class="edge">
@@ -4324,18 +4284,14 @@
 <!-- src/infra/ioc/module/gym/gym&#45;container.ts&#45;&gt;src/infra/controllers/gym/create&#45;gym.controller.ts -->
 <g id="edge416" class="edge">
 <title>src/infra/ioc/module/gym/gym&#45;container.ts&#45;&gt;src/infra/controllers/gym/create&#45;gym.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M265.57,-2171.98C242.85,-2139.32 166.34,-2023.84 141,-1915.04 137.42,-1899.69 136.43,-795.13 141,-780.04 149.8,-750.98 184.27,-746.28 215.64,-748.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-751.5 229.73,-750.03 223.98,-747.32 223.54,-751.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-749.41 220.78,-749.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-748.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M265.57,-2171.98C242.85,-2139.32 166.34,-2023.84 141,-1915.04 137.42,-1899.69 136.43,-795.13 141,-780.04 150.55,-748.5 190.35,-745.66 223.61,-749.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-751.39 229.73,-750.03 224.03,-747.22 223.52,-751.39"/>
 </g>
 <!-- src/infra/ioc/module/gym/gym&#45;container.ts&#45;&gt;src/infra/controllers/gym/search&#45;gym.controller.ts -->
 <g id="edge417" class="edge">
 <title>src/infra/ioc/module/gym/gym&#45;container.ts&#45;&gt;src/infra/controllers/gym/search&#45;gym.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M265.57,-2171.98C242.85,-2139.32 166.34,-2023.84 141,-1915.04 137.33,-1899.28 136.31,-765.53 141,-750.04 149.8,-720.98 184.27,-716.28 215.64,-718.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-721.5 229.73,-720.03 223.98,-717.32 223.54,-721.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-719.41 220.78,-719.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-718.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M265.57,-2171.98C242.85,-2139.32 166.34,-2023.84 141,-1915.04 137.33,-1899.28 136.31,-765.53 141,-750.04 150.55,-718.5 190.35,-715.66 223.61,-719.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-721.39 229.73,-720.03 224.03,-717.22 223.52,-721.39"/>
 </g>
 <!-- src/infra/ioc/module/gym/gym&#45;container.ts&#45;&gt;src/infra/database/repository/prisma/prisma&#45;gym&#45;repository.ts -->
 <g id="edge419" class="edge">
@@ -4403,10 +4359,8 @@
 <!-- src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/gateway/node&#45;mailer&#45;adapter.ts -->
 <g id="edge431" class="edge">
 <title>src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/gateway/node&#45;mailer&#45;adapter.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M302.18,-2385.05C327.5,-2392.36 365.28,-2402.08 399,-2406.04 445.79,-2411.54 572.78,-2433.59 611,-2406.04 620.12,-2399.47 610.41,-2389.29 619,-2382.04 626.47,-2375.74 635.46,-2371.5 644.92,-2368.72"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="653.09,-2369.05 658.49,-2365.69 652.18,-2364.95 653.09,-2369.05"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="652.64,-2367 649.71,-2367.65 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="647.37" cy="-2368.17" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M302.18,-2385.05C327.5,-2392.36 365.28,-2402.08 399,-2406.04 445.79,-2411.54 572.78,-2433.59 611,-2406.04 620.12,-2399.47 610.41,-2389.29 619,-2382.04 628.45,-2374.07 640.32,-2369.4 652.5,-2366.81"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="652.98,-2368.85 658.49,-2365.69 652.21,-2364.72 652.98,-2368.85"/>
 </g>
 <!-- src/infra/ioc/module/infra/mailer&#45;provider.ts -->
 <g id="node171" class="node">
@@ -4420,10 +4374,8 @@
 <!-- src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/ioc/module/infra/mailer&#45;provider.ts -->
 <g id="edge424" class="edge">
 <title>src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/ioc/module/infra/mailer&#45;provider.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M318.64,-2379.01C354.35,-2381.33 404.35,-2384.57 443.42,-2387.11"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M318.64,-2379.01C356.7,-2381.48 410.99,-2385 450.98,-2387.6"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="451.15,-2389.71 457.27,-2388.01 451.42,-2385.52 451.15,-2389.71"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="451.28,-2387.62 448.29,-2387.42 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="445.89" cy="-2387.27" rx="2.4" ry="2.4"/>
 </g>
 <!-- src/infra/ioc/module/infra/queue&#45;provider.ts -->
 <g id="node172" class="node">
@@ -4437,10 +4389,8 @@
 <!-- src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/ioc/module/infra/queue&#45;provider.ts -->
 <g id="edge425" class="edge">
 <title>src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/ioc/module/infra/queue&#45;provider.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M318.64,-2373.08C354.24,-2370.77 404.02,-2367.53 443.03,-2365"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M318.64,-2373.08C356.58,-2370.62 410.63,-2367.11 450.58,-2364.51"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="451.02,-2366.59 456.87,-2364.1 450.75,-2362.4 451.02,-2366.59"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="450.88,-2364.49 447.89,-2364.69 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="445.49" cy="-2364.84" rx="2.4" ry="2.4"/>
 </g>
 <!-- src/infra/logger/winston&#45;adapter.ts -->
 <g id="node173" class="node">
@@ -4469,10 +4419,8 @@
 <!-- src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/queue/rabbitmq&#45;adapter.ts -->
 <g id="edge434" class="edge">
 <title>src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/queue/rabbitmq&#45;adapter.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M280.22,-2385.27C301.6,-2413.16 364.71,-2499.81 391,-2583.04 396.71,-2601.13 385.91,-2654.31 399,-2668.04 409.11,-2678.65 423.08,-2684.11 437.53,-2686.6"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="445.23,-2689.57 451.42,-2688.15 445.69,-2685.4 445.23,-2689.57"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="445.46,-2687.49 442.48,-2687.15 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="440.1" cy="-2686.89" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M280.22,-2385.27C301.6,-2413.16 364.71,-2499.81 391,-2583.04 396.71,-2601.13 385.91,-2654.31 399,-2668.04 410.88,-2680.51 428.09,-2685.87 445.16,-2687.65"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="445.28,-2689.77 451.42,-2688.15 445.61,-2685.58 445.28,-2689.77"/>
 </g>
 <!-- src/infra/server/fastify&#45;adapter.ts -->
 <g id="node175" class="node">
@@ -4486,10 +4434,8 @@
 <!-- src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/server/fastify&#45;adapter.ts -->
 <g id="edge435" class="edge">
 <title>src/infra/ioc/module/infra/infra&#45;container.ts&#45;&gt;src/infra/server/fastify&#45;adapter.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.48,-2375.34C197.6,-2372.27 163.77,-2363.29 145,-2339.04 143.04,-2336.5 89.11,-609.1 82.22,-388.19"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.48,-2375.34C197.6,-2372.27 163.77,-2363.29 145,-2339.04 143.01,-2336.47 87.7,-563.83 81.98,-380.34"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="84.07,-380.2 81.79,-374.27 79.88,-380.33 84.07,-380.2"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="81.97,-380.27 82.07,-383.27 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="82.14" cy="-385.66" rx="2.4" ry="2.4"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/ioc/types.ts -->
 <g id="edge442" class="edge">
@@ -4542,66 +4488,50 @@
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/authenticate.controller.ts -->
 <g id="edge450" class="edge">
 <title>src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/authenticate.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 138.3,-2264.12 138.3,-938.97 141,-930.04 149.8,-900.98 184.27,-896.28 215.64,-898.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-901.5 229.73,-900.03 223.98,-897.32 223.54,-901.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-899.41 220.78,-899.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-898.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 138.3,-2264.12 138.3,-938.97 141,-930.04 150.55,-898.5 190.35,-895.66 223.61,-899.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-901.39 229.73,-900.03 224.03,-897.22 223.52,-901.39"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/change&#45;password.controller.ts -->
 <g id="edge451" class="edge">
 <title>src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/change&#45;password.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 135.84,-2255.99 135.84,-1007.1 141,-990.04 149.8,-960.98 184.27,-956.28 215.64,-958.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-961.5 229.73,-960.03 223.98,-957.32 223.54,-961.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-959.41 220.78,-959.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-958.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 135.84,-2255.99 135.84,-1007.1 141,-990.04 150.55,-958.5 190.35,-955.66 223.61,-959.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-961.39 229.73,-960.03 224.03,-957.22 223.52,-961.39"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/create&#45;user.controller.ts -->
 <g id="edge452" class="edge">
 <title>src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/create&#45;user.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 136.92,-2259.58 136.92,-1273.51 141,-1260.04 149.8,-1230.98 184.27,-1226.28 215.64,-1228.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-1231.5 229.73,-1230.03 223.98,-1227.32 223.54,-1231.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-1229.41 220.78,-1229.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-1228.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 136.92,-2259.58 136.92,-1273.51 141,-1260.04 150.55,-1228.5 190.35,-1225.66 223.61,-1229.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-1231.39 229.73,-1230.03 224.03,-1227.22 223.52,-1231.39"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/fetch&#45;users.controller.ts -->
 <g id="edge453" class="edge">
 <title>src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/fetch&#45;users.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 136.32,-2257.58 136.32,-1125.5 141,-1110.04 149.8,-1080.98 184.27,-1076.28 215.64,-1078.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-1081.5 229.73,-1080.03 223.98,-1077.32 223.54,-1081.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-1079.41 220.78,-1079.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-1078.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 136.32,-2257.58 136.32,-1125.5 141,-1110.04 150.55,-1078.5 190.35,-1075.66 223.61,-1079.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-1081.39 229.73,-1080.03 224.03,-1077.22 223.52,-1081.39"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/my&#45;profile.controller.ts -->
 <g id="edge454" class="edge">
 <title>src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/my&#45;profile.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 135.96,-2256.39 135.96,-1036.7 141,-1020.04 149.8,-990.98 184.27,-986.28 215.64,-988.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-991.5 229.73,-990.03 223.98,-987.32 223.54,-991.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-989.41 220.78,-989.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-988.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 135.96,-2256.39 135.96,-1036.7 141,-1020.04 150.55,-988.5 190.35,-985.66 223.61,-989.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-991.39 229.73,-990.03 224.03,-987.22 223.52,-991.39"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/refresh&#45;token.controller.ts -->
 <g id="edge455" class="edge">
 <title>src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/refresh&#45;token.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 138.24,-2263.92 138.24,-909.17 141,-900.04 149.8,-870.98 184.27,-866.28 215.64,-868.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-871.5 229.73,-870.03 223.98,-867.32 223.54,-871.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-869.41 220.78,-869.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-868.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 138.24,-2263.92 138.24,-909.17 141,-900.04 150.55,-868.5 190.35,-865.66 223.61,-869.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-871.39 229.73,-870.03 224.03,-867.22 223.52,-871.39"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/user&#45;metrics.controller.ts -->
 <g id="edge456" class="edge">
 <title>src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/user&#45;metrics.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 136.2,-2257.18 136.2,-1095.9 141,-1080.04 149.8,-1050.98 184.27,-1046.28 215.64,-1048.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-1051.5 229.73,-1050.03 223.98,-1047.32 223.54,-1051.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-1049.41 220.78,-1049.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-1048.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 136.2,-2257.18 136.2,-1095.9 141,-1080.04 150.55,-1048.5 190.35,-1045.66 223.61,-1049.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-1051.39 229.73,-1050.03 224.03,-1047.22 223.52,-1051.39"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/user&#45;profile.controller.ts -->
 <g id="edge457" class="edge">
 <title>src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/controllers/user/user&#45;profile.controller.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 136.08,-2256.79 136.08,-1066.3 141,-1050.04 149.8,-1020.98 184.27,-1016.28 215.64,-1018.56"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.54,-1021.5 229.73,-1020.03 223.98,-1017.32 223.54,-1021.5"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.76,-1019.41 220.78,-1019.1 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="218.39" cy="-1018.85" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M225.68,-2307.98C192.06,-2310.08 150.84,-2305.54 141,-2273.04 136.08,-2256.79 136.08,-1066.3 141,-1050.04 150.55,-1018.5 190.35,-1015.66 223.61,-1019.29"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="223.52,-1021.39 229.73,-1020.03 224.03,-1017.22 223.52,-1021.39"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;container.ts&#45;&gt;src/infra/database/dao/user&#45;dao&#45;memory.ts -->
 <g id="edge458" class="edge">
@@ -4681,10 +4611,8 @@
 <!-- src/infra/ioc/module/infra/mailer&#45;provider.ts&#45;&gt;src/infra/gateway/node&#45;mailer&#45;adapter.ts -->
 <g id="edge438" class="edge">
 <title>src/infra/ioc/module/infra/mailer&#45;provider.ts&#45;&gt;src/infra/gateway/node&#45;mailer&#45;adapter.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M552.72,-2385.72C579.59,-2382.65 613.93,-2378.74 644.21,-2375.28"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M552.72,-2385.72C581.9,-2382.39 619.89,-2378.06 651.93,-2374.4"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="652.53,-2376.45 658.25,-2373.68 652.05,-2372.28 652.53,-2376.45"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="652.29,-2374.36 649.31,-2374.7 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="646.93" cy="-2374.98" rx="2.4" ry="2.4"/>
 </g>
 <!-- src/infra/ioc/module/infra/queue&#45;provider.ts&#45;&gt;src/infra/env/index.ts -->
 <g id="edge439" class="edge">
@@ -4701,10 +4629,8 @@
 <!-- src/infra/ioc/module/infra/queue&#45;provider.ts&#45;&gt;src/infra/queue/rabbitmq&#45;adapter.ts -->
 <g id="edge441" class="edge">
 <title>src/infra/ioc/module/infra/queue&#45;provider.ts&#45;&gt;src/infra/queue/rabbitmq&#45;adapter.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M456.91,-2353.73C430.79,-2352.78 402.35,-2357.76 395,-2382.04 390.49,-2396.93 390.49,-2647.15 395,-2662.04 400.54,-2680.32 418.02,-2687.67 437.47,-2689.77"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="445.39,-2692.27 451.48,-2690.47 445.59,-2688.07 445.39,-2692.27"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="445.49,-2690.17 442.49,-2690.02 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="440.1" cy="-2689.9" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M456.91,-2353.73C430.79,-2352.78 402.35,-2357.76 395,-2382.04 390.49,-2396.93 390.49,-2647.15 395,-2662.04 401.28,-2682.8 422.97,-2689.45 445.45,-2690.36"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="445.45,-2692.46 451.48,-2690.47 445.52,-2688.26 445.45,-2692.46"/>
 </g>
 <!-- src/infra/logger/winston&#45;adapter.ts&#45;&gt;src/infra/ioc/types.ts -->
 <g id="edge465" class="edge">
@@ -4727,10 +4653,8 @@
 <!-- src/infra/queue/rabbitmq&#45;adapter.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge475" class="edge">
 <title>src/infra/queue/rabbitmq&#45;adapter.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M451.48,-2690.47C426.97,-2690.53 401.85,-2684.65 395,-2662.04 388.37,-2640.15 392.06,-1037.73 395,-1015.04 415.02,-860.34 475.06,-681.25 496.92,-619.4"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="501.57,-612.64 501.61,-606.28 497.62,-611.23 501.57,-612.64"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="499.59,-611.93 498.58,-614.76 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="497.77" cy="-617.02" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M451.48,-2690.47C426.97,-2690.53 401.85,-2684.65 395,-2662.04 388.37,-2640.15 392.06,-1037.73 395,-1015.04 415.86,-853.78 480.22,-666.03 499.49,-612.18"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="501.56,-612.64 501.61,-606.28 497.6,-611.22 501.56,-612.64"/>
 </g>
 <!-- src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/ioc/types.ts -->
 <g id="edge480" class="edge">
@@ -4747,10 +4671,8 @@
 <!-- src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/decorators/logger.ts -->
 <g id="edge478" class="edge">
 <title>src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/decorators/logger.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M88.59,-374.1C99.61,-387.81 122,-414.1 145,-432.04 247.15,-511.73 277.74,-529.45 399,-575.04 419.38,-582.71 443.05,-587.96 462.75,-591.4"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="470.34,-594.76 476.6,-593.65 471.01,-590.62 470.34,-594.76"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="470.68,-592.69 467.72,-592.21 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="465.35" cy="-591.83" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M88.59,-374.1C99.61,-387.81 122,-414.1 145,-432.04 247.15,-511.73 277.74,-529.45 399,-575.04 422.17,-583.75 449.57,-589.35 470.58,-592.72"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="470.35,-594.81 476.6,-593.65 470.99,-590.65 470.35,-594.81"/>
 </g>
 <!-- src/infra/server/factories/fastify&#45;swagger&#45;setup&#45;factory.ts -->
 <g id="node186" class="node">
@@ -4794,10 +4716,8 @@
 <!-- src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/server/global&#45;error&#45;handler.ts -->
 <g id="edge483" class="edge">
 <title>src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/server/global&#45;error&#45;handler.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M93.37,-374.3C105.59,-383.28 125.52,-396.48 145,-403.04 162.28,-408.87 181.58,-412.39 199.78,-414.48"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="207.57,-417.36 213.75,-415.85 207.98,-413.18 207.57,-417.36"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="207.77,-415.27 204.79,-414.97 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="202.4" cy="-414.74" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M93.37,-374.3C105.59,-383.28 125.52,-396.48 145,-403.04 164.84,-409.73 187.33,-413.38 207.76,-415.32"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="207.58,-417.42 213.75,-415.85 207.95,-413.23 207.58,-417.42"/>
 </g>
 <!-- src/infra/server/services/admin&#45;role&#45;check.ts -->
 <g id="node189" class="node">
@@ -4811,10 +4731,8 @@
 <!-- src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/server/services/admin&#45;role&#45;check.ts -->
 <g id="edge484" class="edge">
 <title>src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/server/services/admin&#45;role&#45;check.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M126.89,-365.04C150.26,-365.04 179.2,-365.04 204.99,-365.04"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M126.89,-365.04C152.64,-365.04 185.15,-365.04 212.77,-365.04"/>
 <polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="212.95,-367.14 218.95,-365.04 212.95,-362.94 212.95,-367.14"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="212.95,-365.04 209.95,-365.04 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="207.55" cy="-365.04" rx="2.4" ry="2.4"/>
 </g>
 <!-- src/infra/server/services/authenticate&#45;pre&#45;handler.ts -->
 <g id="node190" class="node">
@@ -4828,10 +4746,8 @@
 <!-- src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/server/services/authenticate&#45;pre&#45;handler.ts -->
 <g id="edge485" class="edge">
 <title>src/infra/server/fastify&#45;adapter.ts&#45;&gt;src/infra/server/services/authenticate&#45;pre&#45;handler.ts</title>
-<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M116.62,-356C125.81,-353.83 135.74,-351.68 145,-350.04 158.75,-347.61 173.41,-345.46 187.69,-343.61"/>
-<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="196.11,-344.67 201.8,-341.85 195.59,-340.51 196.11,-344.67"/>
-<polyline fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="195.85,-342.59 192.87,-342.96 "/>
-<ellipse fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" cx="190.49" cy="-343.26" rx="2.4" ry="2.4"/>
+<path fill="none" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" d="M116.62,-356C125.81,-353.83 135.74,-351.68 145,-350.04 161.33,-347.15 178.94,-344.67 195.68,-342.59"/>
+<polygon fill="#000000" fill-opacity="0.200000" stroke="#000000" stroke-width="2" stroke-opacity="0.200000" points="196.1,-344.66 201.8,-341.85 195.59,-340.49 196.1,-344.66"/>
 </g>
 <!-- src/infra/ioc/module/user/user&#45;repository&#45;provider.ts&#45;&gt;src/infra/env/index.ts -->
 <g id="edge463" class="edge">
@@ -4909,7 +4825,7 @@
 <g id="node183" class="node">
 <title>src/infra/presenters/presenter.ts</title>
 <g id="a_node183"><a xlink:href="src/infra/presenters/presenter.ts" xlink:title="presenter.ts">
-<path fill="#ccffcc" stroke="black" d="M534.5,-2812.04C534.5,-2812.04 475.5,-2812.04 475.5,-2812.04 472.5,-2812.04 469.5,-2809.04 469.5,-2806.04 469.5,-2806.04 469.5,-2800.04 469.5,-2800.04 469.5,-2797.04 472.5,-2794.04 475.5,-2794.04 475.5,-2794.04 534.5,-2794.04 534.5,-2794.04 537.5,-2794.04 540.5,-2797.04 540.5,-2800.04 540.5,-2800.04 540.5,-2806.04 540.5,-2806.04 540.5,-2809.04 537.5,-2812.04 534.5,-2812.04"/>
+<path fill="#ddfeff" stroke="black" d="M534.5,-2812.04C534.5,-2812.04 475.5,-2812.04 475.5,-2812.04 472.5,-2812.04 469.5,-2809.04 469.5,-2806.04 469.5,-2806.04 469.5,-2800.04 469.5,-2800.04 469.5,-2797.04 472.5,-2794.04 475.5,-2794.04 475.5,-2794.04 534.5,-2794.04 534.5,-2794.04 537.5,-2794.04 540.5,-2797.04 540.5,-2800.04 540.5,-2800.04 540.5,-2806.04 540.5,-2806.04 540.5,-2809.04 537.5,-2812.04 534.5,-2812.04"/>
 <text text-anchor="start" x="477.5" y="-2800.84" font-family="Helvetica,sans-Serif" font-size="9.00">presenter.ts</text>
 </a>
 </g>
@@ -4951,7 +4867,7 @@
 <g id="node185" class="node">
 <title>src/infra/queue/queue.ts</title>
 <g id="a_node185"><a xlink:href="src/infra/queue/queue.ts" xlink:title="queue.ts">
-<path fill="#ccffcc" stroke="black" d="M527,-2662.04C527,-2662.04 483,-2662.04 483,-2662.04 480,-2662.04 477,-2659.04 477,-2656.04 477,-2656.04 477,-2650.04 477,-2650.04 477,-2647.04 480,-2644.04 483,-2644.04 483,-2644.04 527,-2644.04 527,-2644.04 530,-2644.04 533,-2647.04 533,-2650.04 533,-2650.04 533,-2656.04 533,-2656.04 533,-2659.04 530,-2662.04 527,-2662.04"/>
+<path fill="#ddfeff" stroke="black" d="M527,-2662.04C527,-2662.04 483,-2662.04 483,-2662.04 480,-2662.04 477,-2659.04 477,-2656.04 477,-2656.04 477,-2650.04 477,-2650.04 477,-2647.04 480,-2644.04 483,-2644.04 483,-2644.04 527,-2644.04 527,-2644.04 530,-2644.04 533,-2647.04 533,-2650.04 533,-2650.04 533,-2656.04 533,-2656.04 533,-2659.04 530,-2662.04 527,-2662.04"/>
 <text text-anchor="start" x="485" y="-2650.84" font-family="Helvetica,sans-Serif" font-size="9.00">queue.ts</text>
 </a>
 </g>
@@ -5044,7 +4960,7 @@
 <g id="node191" class="node">
 <title>src/infra/server/http&#45;server.ts</title>
 <g id="a_node191"><a xlink:href="src/infra/server/http-server.ts" xlink:title="http&#45;server.ts">
-<path fill="#ccffcc" stroke="black" d="M113,-295.04C113,-295.04 48,-295.04 48,-295.04 45,-295.04 42,-292.04 42,-289.04 42,-289.04 42,-283.04 42,-283.04 42,-280.04 45,-277.04 48,-277.04 48,-277.04 113,-277.04 113,-277.04 116,-277.04 119,-280.04 119,-283.04 119,-283.04 119,-289.04 119,-289.04 119,-292.04 116,-295.04 113,-295.04"/>
+<path fill="#ddfeff" stroke="black" d="M113,-295.04C113,-295.04 48,-295.04 48,-295.04 45,-295.04 42,-292.04 42,-289.04 42,-289.04 42,-283.04 42,-283.04 42,-280.04 45,-277.04 48,-277.04 48,-277.04 113,-277.04 113,-277.04 116,-277.04 119,-280.04 119,-283.04 119,-283.04 119,-289.04 119,-289.04 119,-292.04 116,-295.04 113,-295.04"/>
 <text text-anchor="start" x="50" y="-283.84" font-family="Helvetica,sans-Serif" font-size="9.00">http&#45;server.ts</text>
 </a>
 </g>
