@@ -1,4 +1,4 @@
-# SOLID | Clean Architecture | Domain Driven-Design
+# Projeto API Solid
 
 ## Descrição
 
@@ -50,7 +50,6 @@ A estrutura do projeto segue os princípios de Clean Architecture, dividindo o c
   docker compose up -D
 ```
 
-
 2. Instale as dependências:
 ```sh
   npm ci
@@ -71,6 +70,19 @@ Scripts Disponíveis:
   - **npm run test**:integration: Executa os testes de integração.
   - **npm run build**: Compila o projeto para a pasta build.
   - **npm run prisma**:studio: Abre o Prisma Studio para gerenciar o banco de dados.
+
+## Configuração do Dependency Cruiser
+
+O arquivo `.dependency-cruiser.js` contém as regras de dependência para o projeto. Ele define quais dependências são permitidas e quais são proibidas entre diferentes camadas do sistema. Aqui estão as principais regras configuradas:
+
+- **noDomainToApplicationExceptPermitted**: Impede que a camada `domain` dependa da camada `application`, exceto para arquivos permitidos.
+- **noDomainToInfraExceptPermitted**: Impede que a camada `domain` dependa da camada `infra`, exceto para arquivos permitidos.
+- **noApplicationToInfraExceptPermitted**: Impede que a camada `application` dependa da camada `infra`, exceto para arquivos permitidos.
+- **allowInfraCircularDependency**: Permite dependências circulares dentro da pasta `infra/`, mas impede ciclos em outras camadas do sistema.
+
+As regras são configuradas na seção `forbidden` do arquivo, e opções adicionais de configuração estão disponíveis na seção `options`.
+
+Para mais detalhes, consulte o arquivo [.dependency-cruiser.js](./.dependency-cruiser.js).
 
 ### Licença
 Este projeto está licenciado sob a licença MIT. 
