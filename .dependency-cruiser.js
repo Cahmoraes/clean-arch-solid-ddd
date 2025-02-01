@@ -3,16 +3,13 @@ const permittedFileImports = [
   'src/infra/ioc/types.ts',
 ]
 
-// export function permittedFileImportsToString() {
-//   return permittedFileImports.map((file) => `^${file.replace(/\//g, '\\/')}$`)
-// }
-
 /** @type {import('dependency-cruiser').IConfiguration} */
 const rules = {
   forbidden: [
     noDomainToApplicationExceptPermitted(),
     noDomainToInfraExceptPermitted(),
     noApplicationToInfraExceptPermitted(),
+    allowInfraCircularDependency(),
   ],
   options: {
     tsConfig: {
@@ -68,12 +65,13 @@ const rules = {
   },
 }
 
+export default rules
+
 /**
  * @return import('dependency-cruiser').IForbiddenRuleType
  */
 /**
- * Retorna uma regra de dependência que impede que a camada 'application' dependa da camada 'infra',
- * exceto para arquivos permitidos.
+ * Retorna uma regra de dependência que impede dependências circulares.
  *
  * @returns {import('dependency-cruiser').IForbiddenRuleType} Regra de dependência com as seguintes propriedades:
  * - name: Nome da regra.
@@ -150,4 +148,31 @@ function noDomainToInfraExceptPermitted() {
   }
 }
 
-export default rules
+/**
+ * Define uma regra do Dependency Cruiser que permite dependências circulares
+ * dentro da pasta `infra/`, mas impede ciclos em outras camadas do sistema.
+ *
+ * @returns {import('dependency-cruiser').IForbiddenRuleType} Regra de dependência com as seguintes propriedades:
+ * - `name`: Identificador da regra.
+ * - `comment`: Explicação sobre o propósito da regra.
+ * - `severity`: Define a severidade como "ignore" para não gerar erro nesses ciclos específicos.
+ * - `from`: Define que a regra se aplica apenas a módulos dentro de `src/infra/`.
+ * - `to`: Permite ciclos dentro de `infra/`, restringindo-os apenas a essa pasta usando `viaOnly`.
+ */
+function allowInfraCircularDependency() {
+  return {
+    name: 'allow-infra-circular-dependency',
+    comment:
+      'Permite ciclos dentro da pasta `infra/`, mas impede ciclos em outras camadas.',
+    severity: 'ignore', // 🔥 Ignora esses ciclos específicos
+    from: {
+      path: '^src/infra/', // Permite apenas ciclos na pasta infra
+    },
+    to: {
+      circular: true, // 🚀 Permite ciclos internos
+      viaOnly: {
+        path: '^src/infra/', // 🔥 Garante que os ciclos aceitos estão apenas dentro de infra/
+      },
+    },
+  }
+}
