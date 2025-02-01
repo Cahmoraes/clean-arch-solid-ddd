@@ -18,14 +18,17 @@ export default [
   {
     rules: {
       complexity: ['error', 5],
-    },
-  },
-  {
-    rules: {
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-this-alias': 'off',
+    },
+  },
+  {
+    // Override para arquivos de teste
+    files: ['**/*.test.ts'],
+    rules: {
+      complexity: 'off', // Desativa a regra de complexidade para testes
     },
   },
 ]

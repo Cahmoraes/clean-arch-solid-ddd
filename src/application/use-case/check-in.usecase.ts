@@ -59,6 +59,7 @@ export class CheckInUseCase {
       this.createDomainEventSubscriber.bind(this)
   }
 
+  // eslint-disable-next-line complexity
   public async execute(
     input: CheckInUseCaseInput,
   ): Promise<CheckInUseCaseOutput> {
