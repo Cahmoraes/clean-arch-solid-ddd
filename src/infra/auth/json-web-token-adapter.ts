@@ -1,13 +1,14 @@
 import { injectable } from 'inversify'
 import jwt from 'jsonwebtoken'
 
-import { type Either, failure, success } from '@/domain/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/domain/shared/value-object/either'
 
-import { InvalidUserTokenError } from '../../application/error/invalid-user-token-error'
-import type {
-  AuthToken,
-  Payload,
-} from '../../application/interfaces/auth-token'
+import { InvalidUserTokenError } from '../../application/user/error/invalid-user-token-error'
+import type { AuthToken, Payload } from '../../application/user/auth/auth-token'
 import { env } from '../env'
 
 @injectable()

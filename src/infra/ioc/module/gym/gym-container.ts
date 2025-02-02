@@ -1,9 +1,9 @@
 import { ContainerModule, type interfaces } from 'inversify'
 
-import type { GymRepository } from '@/application/repository/gym-repository'
-import { CreateGymUseCase } from '@/application/use-case/create-gym.usecase'
-import { FetchNearbyGym } from '@/application/use-case/fetch-nearby-gym.usecase'
-import { SearchGymUseCase } from '@/application/use-case/search-gym.usecase'
+import type { GymRepository } from '@/application/gym/repository/gym-repository'
+import { CreateGymUseCase } from '@/application/gym/use-case/create-gym.usecase'
+import { FetchNearbyGym } from '@/application/gym/use-case/fetch-nearby-gym.usecase'
+import { SearchGymUseCase } from '@/application/gym/use-case/search-gym.usecase'
 import { CreateGymController } from '@/infra/controllers/gym/create-gym.controller'
 import { SearchGymController } from '@/infra/controllers/gym/search-gym.controller'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'

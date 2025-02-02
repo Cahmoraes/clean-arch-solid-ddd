@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
-import type { AuthToken } from '@/application/interfaces/auth-token'
-import type { RoleTypes } from '@/domain/value-object/role'
+import type { AuthToken } from '@/application/user/auth/auth-token'
+import type { RoleTypes } from '@/domain/user/value-object/role'
 import { env } from '@/infra/env'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'

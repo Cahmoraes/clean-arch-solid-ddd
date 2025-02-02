@@ -1,9 +1,9 @@
 import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 
-import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
+import type { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
 import { serverBuild } from '@/bootstrap/server-build'
-import { RoleValues } from '@/domain/value-object/role'
+import { RoleValues } from '@/domain/user/value-object/role'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'

@@ -1,5 +1,5 @@
-import { User } from '@/domain/user'
-import type { RoleTypes } from '@/domain/value-object/role'
+import { User } from '@/domain/user/user'
+import type { RoleTypes } from '@/domain/user/value-object/role'
 import type { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 
 export interface CreateAndSaveUserProps {

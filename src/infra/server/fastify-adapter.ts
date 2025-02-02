@@ -9,7 +9,7 @@ import fastify, {
 } from 'fastify'
 import { inject, injectable } from 'inversify'
 
-import type { AuthToken } from '@/application/interfaces/auth-token'
+import type { AuthToken } from '@/application/user/auth/auth-token'
 
 import { Logger } from '../decorators/logger'
 import { env } from '../env'
