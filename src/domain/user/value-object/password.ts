@@ -2,7 +2,11 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import { type Either, failure, success } from '@/domain/shared/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/domain/shared/value-object/either'
 import { env } from '@/infra/env'
 
 const PasswordSchema = z.string().min(6)

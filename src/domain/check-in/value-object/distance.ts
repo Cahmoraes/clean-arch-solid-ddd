@@ -1,6 +1,6 @@
+import { type Either, failure, success } from '../../shared/value-object/either'
 import { InvalidDistanceError } from '../error/invalid-distance-error'
 import { Coordinate } from './coordinate'
-import { type Either, failure, success } from '../../shared/value-object/either'
 
 export interface CoordinateDTO {
   latitude: number

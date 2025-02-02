@@ -1,19 +1,19 @@
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
+import { Gym } from '@/domain/gym/gym'
 import { DomainEventPublisher } from '@/domain/shared/event/domain-event-publisher'
 import { EVENTS } from '@/domain/shared/event/events'
-import { Gym } from '@/domain/gym/gym'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 
-import { MaxDistanceError } from '../error/max-distance-error'
 import { UserHasAlreadyCheckedInToday } from '../../user/error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '../../user/error/user-not-found-error'
 import { GymNotFoundError } from '../../user/error/user-not-found-error copy'
+import { MaxDistanceError } from '../error/max-distance-error'
 import { CheckInUseCase, type CheckInUseCaseInput } from './check-in.usecase'
 
 describe('CheckInUseCase', () => {

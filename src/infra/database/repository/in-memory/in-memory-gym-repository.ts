@@ -8,8 +8,8 @@ import type {
   SaveGymResult,
 } from '@/application/gym/repository/gym-repository'
 import { DistanceCalculator } from '@/domain/check-in/service/distance-calculator'
-import { Gym } from '@/domain/gym/gym'
 import type { Coordinate } from '@/domain/check-in/value-object/coordinate'
+import { Gym } from '@/domain/gym/gym'
 import { env } from '@/infra/env'
 
 @injectable()

@@ -6,14 +6,14 @@ import {
   success,
 } from '@/domain/shared/value-object/either'
 
+import { DomainEventPublisher } from '../shared/event/domain-event-publisher'
+import { Observable } from '../shared/observable'
+import { Id } from '../shared/value-object/id'
 import type { InvalidEmailError } from './error/invalid-email-error'
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
-import { DomainEventPublisher } from '../shared/event/domain-event-publisher'
 import { PasswordChangedEvent } from './event/password-changed-event'
 import { UserCreatedEvent } from './event/user-created-event'
 import { UserProfileUpdatedEvent } from './event/user-profile-updated-event'
-import { Observable } from '../shared/observable'
-import { Id } from '../shared/value-object/id'
 import { Email } from './value-object/email'
 import { Name } from './value-object/name'
 import { Password } from './value-object/password'

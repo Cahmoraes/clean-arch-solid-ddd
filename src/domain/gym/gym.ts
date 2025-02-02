@@ -1,7 +1,7 @@
-import type { InvalidNameLengthError } from '../user/error/invalid-name-length-error'
 import { Coordinate } from '../check-in/value-object/coordinate'
 import { type Either, failure, success } from '../shared/value-object/either'
 import { Id } from '../shared/value-object/id'
+import type { InvalidNameLengthError } from '../user/error/invalid-name-length-error'
 import { Name } from '../user/value-object/name'
 import { Phone } from '../user/value-object/phone'
 

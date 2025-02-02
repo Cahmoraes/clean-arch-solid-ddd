@@ -4,7 +4,11 @@ import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { FetchUsersUseCase } from '@/application/user/use-case/fetch-users.usecase'
-import { type Either, failure, success } from '@/domain/shared/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/domain/shared/value-object/either'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import { PresenterFactory } from '@/infra/presenters/presenter-factory'

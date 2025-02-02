@@ -14,13 +14,13 @@ import {
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
 
-import { MaxDistanceError } from '../error/max-distance-error'
+import type { GymRepository } from '../../gym/repository/gym-repository'
 import { UserHasAlreadyCheckedInToday } from '../../user/error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '../../user/error/user-not-found-error'
 import { GymNotFoundError } from '../../user/error/user-not-found-error copy'
-import type { CheckInRepository } from '../repository/check-in-repository'
-import type { GymRepository } from '../../gym/repository/gym-repository'
 import type { UserRepository } from '../../user/repository/user-repository'
+import { MaxDistanceError } from '../error/max-distance-error'
+import type { CheckInRepository } from '../repository/check-in-repository'
 
 export interface CheckInUseCaseInput {
   userId: string

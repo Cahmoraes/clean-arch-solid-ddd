@@ -3,8 +3,8 @@ import { inject, injectable } from 'inversify'
 import type { CheckIn } from '@/domain/check-in/check-in'
 import { TYPES } from '@/infra/ioc/types'
 
-import type { CheckInRepository } from '../repository/check-in-repository'
 import type { UserRepository } from '../../user/repository/user-repository'
+import type { CheckInRepository } from '../repository/check-in-repository'
 
 export interface CheckInHistoryUseCaseInput {
   userId: string
