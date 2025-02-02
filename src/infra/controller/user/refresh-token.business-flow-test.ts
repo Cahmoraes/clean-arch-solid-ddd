@@ -10,7 +10,7 @@ import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
 import { UserRoutes } from '../routes/user-routes'
 
-describe('Refresh Token', () => {
+describe('Atualizar Refresh Token', () => {
   let fastifyServer: FastifyAdapter
   let userRepository: UserRepository
 

@@ -8,7 +8,7 @@ import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
 import { UserRoutes } from '../routes/user-routes'
 
-describe('Fetch Users', () => {
+describe('Buscar Usuários', () => {
   let fastifyServer: FastifyAdapter
   let userDAO: UserDAOMemory
 

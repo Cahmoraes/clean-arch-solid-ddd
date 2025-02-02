@@ -12,7 +12,7 @@ import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
 import { UserRoutes } from '../routes/user-routes'
 
-describe('User Metrics', () => {
+describe('Obter Métricas do Usuário', () => {
   let fastifyServer: FastifyAdapter
   let checkInRepository: InMemoryCheckInRepository
   let authenticate: AuthenticateUseCase

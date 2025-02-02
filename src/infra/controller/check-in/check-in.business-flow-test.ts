@@ -15,7 +15,7 @@ import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
 import { CheckInRoutes } from '../routes/check-in-routes'
 
-describe('CheckIn', () => {
+describe('Realizar CheckIn', () => {
   let fastifyServer: FastifyAdapter
   let gymRepository: InMemoryGymRepository
   let checkInRepository: InMemoryCheckInRepository

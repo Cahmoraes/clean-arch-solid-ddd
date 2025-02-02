@@ -9,7 +9,7 @@ import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 
 import { CheckInRoutes } from '../routes/check-in-routes'
 
-describe('Metrics', () => {
+describe('Obter Métricas de CheckIn', () => {
   let fastifyServer: FastifyAdapter
   let checkInRepository: InMemoryCheckInRepository
 

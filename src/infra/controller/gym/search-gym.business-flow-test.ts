@@ -11,7 +11,7 @@ import { HTTP_STATUS } from '@/infra/server/http-status'
 import { GymRoutes } from '../routes/gym-routes'
 import type { SearchGymPayload } from './search-gym.controller'
 
-describe('Search Gym', () => {
+describe('Buscar Academia', () => {
   let fastifyServer: FastifyAdapter
   let gymRepository: InMemoryGymRepository
 
