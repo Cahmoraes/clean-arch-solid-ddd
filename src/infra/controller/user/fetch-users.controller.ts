@@ -9,9 +9,9 @@ import {
   failure,
   success,
 } from '@/domain/shared/value-object/either'
-import { Logger } from '@/infra/decorators/logger'
+import { Logger } from '@/infra/decorator/logger'
 import { TYPES } from '@/infra/ioc/types'
-import { PresenterFactory } from '@/infra/presenters/presenter-factory'
+import { PresenterFactory } from '@/infra/presenter/presenter-factory'
 import type { HttpServer } from '@/infra/server/http-server'
 
 import type { Controller } from '../controller'

@@ -15,7 +15,7 @@ import {
   success,
 } from '@/domain/shared/value-object/either'
 import { RoleValues } from '@/domain/user/value-object/role'
-import { Logger } from '@/infra/decorators/logger'
+import { Logger } from '@/infra/decorator/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer, Schema } from '@/infra/server/http-server'
 

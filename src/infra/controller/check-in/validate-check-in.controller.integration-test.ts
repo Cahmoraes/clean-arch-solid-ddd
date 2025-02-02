@@ -5,7 +5,7 @@ import { isValidDate } from 'test/is-valid-date'
 import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 
 import { serverBuild } from '@/bootstrap/server-build'
-import { CheckInRoutes } from '@/infra/controllers/routes/check-in-routes'
+import { CheckInRoutes } from '@/infra/controller/routes/check-in-routes'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'

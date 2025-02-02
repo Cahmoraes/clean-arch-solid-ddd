@@ -1,7 +1,7 @@
 import { injectable } from 'inversify'
 import nodemailer, { Transporter } from 'nodemailer'
 
-import { Logger } from '../decorators/logger'
+import { Logger } from '../decorator/logger'
 import type { MailerGateway } from './mailer-gateway'
 
 @injectable()

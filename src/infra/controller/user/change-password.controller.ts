@@ -3,37 +3,33 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import type { CreateGymUseCase } from '@/application/gym/use-case/create-gym.usecase'
+import type { ChangePasswordUseCase } from '@/application/user/use-case/change-password.usecase'
 import {
   type Either,
   failure,
   success,
 } from '@/domain/shared/value-object/either'
-import { Logger } from '@/infra/decorators/logger'
+import { Logger } from '@/infra/decorator/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 
 import type { Controller } from '../controller'
 import { ResponseFactory } from '../factory/response-factory'
-import { GymRoutes } from '../routes/gym-routes'
+import { UserRoutes } from '../routes/user-routes'
 
-const createGymSchema = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  phone: z.string().optional(),
-  latitude: z.number(),
-  longitude: z.number(),
+const changePasswordSchema = z.object({
+  newRawPassword: z.string().min(6),
 })
 
-export type CreateGymPayload = z.infer<typeof createGymSchema>
+type ChangePasswordPayload = z.infer<typeof changePasswordSchema>
 
 @injectable()
-export class CreateGymController implements Controller {
+export class ChangePasswordController implements Controller {
   constructor(
     @inject(TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.UseCases.CreateGym)
-    private readonly createGymUseCase: CreateGymUseCase,
+    @inject(TYPES.UseCases.ChangePassword)
+    private readonly changePassword: ChangePasswordUseCase,
   ) {
     this.bindMethods()
   }
@@ -43,40 +39,43 @@ export class CreateGymController implements Controller {
   }
 
   @Logger({
-    message: '✅',
+    message: '✅ | 🔒',
   })
-  public async init(): Promise<void> {
-    this.server.register('post', GymRoutes.CREATE, {
+  public async init() {
+    this.server.register('patch', UserRoutes.CHANGE_PASSWORD, {
       callback: this.callback,
       isProtected: true,
-      onlyAdmin: true,
     })
   }
 
   private async callback(req: FastifyRequest) {
-    const parsedBodyOrError = this.parseBody(req.body)
+    const parsedBodyOrError = this.parseBodyOrError(req.body)
     if (parsedBodyOrError.isFailure()) {
       return ResponseFactory.BAD_REQUEST({
         message: parsedBodyOrError.value.message,
       })
     }
-    const result = await this.createGymUseCase.execute(parsedBodyOrError.value)
+    const result = await this.changePassword.execute({
+      userId: this.extractUserId(req),
+      newRawPassword: parsedBodyOrError.value.newRawPassword,
+    })
     if (result.isFailure()) {
       return ResponseFactory.CONFLICT({
         message: result.value.message,
       })
     }
-    return ResponseFactory.CREATED({
-      body: {
-        message: 'Gym created',
-        id: result.value.gymId,
-      },
-    })
+    return ResponseFactory.NO_CONTENT()
   }
 
-  private parseBody(body: unknown): Either<ValidationError, CreateGymPayload> {
-    const parsedBody = createGymSchema.safeParse(body)
+  private parseBodyOrError(
+    body: unknown,
+  ): Either<ValidationError, ChangePasswordPayload> {
+    const parsedBody = changePasswordSchema.safeParse(body)
     if (!parsedBody.success) return failure(fromError(parsedBody.error))
     return success(parsedBody.data)
+  }
+
+  private extractUserId(req: FastifyRequest): string {
+    return req.user.sub.id
   }
 }
