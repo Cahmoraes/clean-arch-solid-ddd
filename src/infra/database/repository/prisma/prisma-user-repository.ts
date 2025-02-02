@@ -1,9 +1,9 @@
 import type { PrismaClient } from '@prisma/client'
 import { inject, injectable } from 'inversify'
 
-import type { UserRepository } from '@/application/repository/user-repository'
-import { User } from '@/domain/user'
-import type { RoleTypes } from '@/domain/value-object/role'
+import type { UserRepository } from '@/application/user/repository/user-repository'
+import { User } from '@/domain/user/user'
+import type { RoleTypes } from '@/domain/user/value-object/role'
 import { TYPES } from '@/infra/ioc/types'
 
 interface UserData {

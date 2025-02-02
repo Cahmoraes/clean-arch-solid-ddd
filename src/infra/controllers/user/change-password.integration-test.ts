@@ -1,8 +1,8 @@
 import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 
-import type { UserRepository } from '@/application/repository/user-repository'
-import type { AuthenticateUseCase } from '@/application/use-case/authenticate.usecase'
+import type { UserRepository } from '@/application/user/repository/user-repository'
+import type { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
 import { serverBuild } from '@/bootstrap/server-build'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'

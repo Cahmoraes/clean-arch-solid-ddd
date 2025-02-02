@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify'
 
-import type { CheckInCreatedEvent } from '@/domain/event/check-in-created-event'
-import type { PasswordChangedEvent } from '@/domain/event/password-changed-event'
-import type { UserCreatedEvent } from '@/domain/event/user-created-event'
+import type { CheckInCreatedEvent } from '@/domain/check-in/event/check-in-created-event'
+import type { PasswordChangedEvent } from '@/domain/user/event/password-changed-event'
+import type { UserCreatedEvent } from '@/domain/user/event/user-created-event'
 
 import type { MailerGateway } from '../gateway/mailer-gateway'
 import { TYPES } from '../ioc/types'

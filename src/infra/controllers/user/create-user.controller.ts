@@ -3,18 +3,18 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, ValidationError } from 'zod-validation-error'
 
-import { UserAlreadyExistsError } from '@/application/error/user-already-exists-error'
+import { UserAlreadyExistsError } from '@/application/user/error/user-already-exists-error'
 import type {
   CreateUserError,
   CreateUserUseCase,
-} from '@/application/use-case/create-user.usecase'
+} from '@/application/user/use-case/create-user.usecase'
 import {
   type Either,
   type Failure,
   failure,
   success,
-} from '@/domain/value-object/either'
-import { RoleValues } from '@/domain/value-object/role'
+} from '@/domain/shared/value-object/either'
+import { RoleValues } from '@/domain/user/value-object/role'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer, Schema } from '@/infra/server/http-server'

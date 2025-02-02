@@ -4,7 +4,7 @@ import type {
   HookHandlerDoneFunction,
 } from 'fastify'
 
-import { type RoleTypes, RoleValues } from '@/domain/value-object/role'
+import { type RoleTypes, RoleValues } from '@/domain/user/value-object/role'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 import type { Logger } from '@/infra/logger/logger'

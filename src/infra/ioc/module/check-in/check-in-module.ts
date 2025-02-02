@@ -1,8 +1,8 @@
 import { ContainerModule, type interfaces } from 'inversify'
 
-import { CheckInUseCase } from '@/application/use-case/check-in.usecase'
-import { CheckInHistoryUseCase } from '@/application/use-case/check-in-history.usecase'
-import { ValidateCheckInUseCase } from '@/application/use-case/validate-check-in.usecase'
+import { CheckInUseCase } from '@/application/check-in/use-case/check-in.usecase'
+import { CheckInHistoryUseCase } from '@/application/check-in/use-case/check-in-history.usecase'
+import { ValidateCheckInUseCase } from '@/application/check-in/use-case/validate-check-in.usecase'
 import { CheckInController } from '@/infra/controllers/check-in/check-in.controller'
 import { ValidateCheckInController } from '@/infra/controllers/check-in/validate-check-in.controller'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
