@@ -1,5 +1,5 @@
 import { injectable } from 'inversify'
-import jwt from 'jsonwebtoken'
+import jwt, { type SignOptions } from 'jsonwebtoken'
 
 import {
   type Either,
@@ -15,7 +15,7 @@ import { env } from '../env'
 export class JsonWebTokenAdapter implements AuthToken {
   public sign(payload: Payload, privateKey: string): string {
     return jwt.sign(payload, privateKey, {
-      expiresIn: env.JWT_EXPIRES_IN,
+      expiresIn: env.JWT_EXPIRES_IN as SignOptions['expiresIn'],
     })
   }
 
@@ -36,7 +36,7 @@ export class JsonWebTokenAdapter implements AuthToken {
 
   public refreshToken(payload: Payload, secretKey: string): string {
     return jwt.sign(payload, secretKey, {
-      expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+      expiresIn: env.JWT_REFRESH_EXPIRES_IN as SignOptions['expiresIn'],
     })
   }
 }

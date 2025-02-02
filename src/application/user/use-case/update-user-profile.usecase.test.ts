@@ -14,7 +14,7 @@ import {
   type UpdateUserProfileUseCaseInput,
 } from './update-user-profile.usecase'
 
-describe.only('UpdateUserProfile', () => {
+describe('UpdateUserProfile', () => {
   let sut: UpdateUserProfileUseCase
   let userRepository: InMemoryUserRepository
 
