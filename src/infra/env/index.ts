@@ -16,8 +16,8 @@ const envSchema = z.object({
   ITEMS_PER_PAGE: z.coerce.number().default(20),
   CHECK_IN_EXPIRATION_TIME: z.coerce.number().default(20),
   DATABASE_URL: z.string().url(),
-  JWT_EXPIRES_IN: z.string().default('10m'),
-  JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+  JWT_EXPIRES_IN: z.string().default('10Min'),
+  JWT_REFRESH_EXPIRES_IN: z.string().default('7D'),
   REFRESH_TOKEN_NAME: z.string().default('refreshToken'),
   AMQP_URL: z.string().url().default('amqp://localhost'),
 })
