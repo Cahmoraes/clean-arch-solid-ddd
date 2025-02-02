@@ -8,15 +8,14 @@ export default mergeConfig(
     test: {
       include: ['**/**/*.test.ts'],
       coverage: {
-        include: ['**/src/**'], // Mantém apenas os arquivos relevantes
+        include: ['**/src/**'],
         exclude: [
           '**/**/@types',
           '**/node_modules/**',
-          '**/**/*.integration-test.ts', // Já está sendo excluído corretamente
+          '**/**/*.business-flow-test.ts',
           '**/**/*.controller.ts',
           '**/infra/**',
-          '**/**/*.test.ts', // 🔥 Exclui testes unitários do relatório de cobertura
-          '**/**/*.spec.ts', // 🔥 Exclui testes de spec
+          '**/**/*.test.ts',
         ],
       },
     },

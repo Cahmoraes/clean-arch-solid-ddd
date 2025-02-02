@@ -6,7 +6,7 @@ export default mergeConfig(
   setupShareConfig,
   defineConfig({
     test: {
-      include: ['**/**/*.integration-test.ts'],
+      include: ['**/**/*.business-flow-test.ts'],
     },
   }),
 )
