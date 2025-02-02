@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import { InvalidPhoneNumberError } from '../error/invalid-phone-number-error'
 import { type Either, failure, success } from '../../shared/value-object/either'
+import { InvalidPhoneNumberError } from '../error/invalid-phone-number-error'
 
 export type PhoneCreate = string | number
 

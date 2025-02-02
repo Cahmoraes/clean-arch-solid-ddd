@@ -6,8 +6,8 @@ import type {
   GymRepository,
   SaveGymResult,
 } from '@/application/gym/repository/gym-repository'
-import { Gym } from '@/domain/gym/gym'
 import type { Coordinate } from '@/domain/check-in/value-object/coordinate'
+import { Gym } from '@/domain/gym/gym'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 

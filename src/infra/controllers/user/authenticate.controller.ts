@@ -4,7 +4,11 @@ import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
 import type { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
-import { type Either, failure, success } from '@/domain/shared/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/domain/shared/value-object/either'
 import type { CookieManager } from '@/infra/cookie/cookie-manager'
 import { Logger } from '@/infra/decorators/logger'
 import { env } from '@/infra/env'

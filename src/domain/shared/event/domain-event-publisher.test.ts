@@ -1,6 +1,6 @@
-import { DomainEventPublisher } from './domain-event-publisher'
 import { PasswordChangedEvent } from '../../user/event/password-changed-event'
 import { UserCreatedEvent } from '../../user/event/user-created-event'
+import { DomainEventPublisher } from './domain-event-publisher'
 
 describe('DomainEventPublisher', () => {
   beforeEach(() => {

@@ -7,8 +7,8 @@ import {
   success,
 } from '@/domain/shared/value-object/either'
 
-import { InvalidUserTokenError } from '../../application/user/error/invalid-user-token-error'
 import type { AuthToken, Payload } from '../../application/user/auth/auth-token'
+import { InvalidUserTokenError } from '../../application/user/error/invalid-user-token-error'
 import { env } from '../env'
 
 @injectable()

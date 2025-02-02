@@ -4,7 +4,11 @@ import { z } from 'zod'
 import { fromError, ValidationError } from 'zod-validation-error'
 
 import type { UpdateUserProfileUseCase } from '@/application/user/use-case/update-user-profile.usecase'
-import { type Either, failure, success } from '@/domain/shared/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/domain/shared/value-object/either'
 import { Logger } from '@/infra/decorators/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'

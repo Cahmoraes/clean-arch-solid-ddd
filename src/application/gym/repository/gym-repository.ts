@@ -1,5 +1,5 @@
-import type { Gym } from '@/domain/gym/gym'
 import type { Coordinate } from '@/domain/check-in/value-object/coordinate'
+import type { Gym } from '@/domain/gym/gym'
 
 export interface SaveGymResult {
   id: string
