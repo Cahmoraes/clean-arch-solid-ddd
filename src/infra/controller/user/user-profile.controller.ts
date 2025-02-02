@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 
 import type { UserProfileUseCase } from '@/application/user/use-case/user-profile.usecase'
-import { Logger } from '@/infra/decorators/logger'
+import { Logger } from '@/infra/decorator/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'

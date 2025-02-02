@@ -1,7 +1,7 @@
 import amqp from 'amqplib'
 import { injectable } from 'inversify'
 
-import { Logger } from '../decorators/logger'
+import { Logger } from '../decorator/logger'
 import { env } from '../env'
 import type { Queue } from './queue'
 

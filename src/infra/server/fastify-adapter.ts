@@ -11,7 +11,7 @@ import { inject, injectable } from 'inversify'
 
 import type { AuthToken } from '@/application/user/auth/auth-token'
 
-import { Logger } from '../decorators/logger'
+import { Logger } from '../decorator/logger'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
 import { FastifySwaggerSetupFactory } from './factories/fastify-swagger-setup-factory'
