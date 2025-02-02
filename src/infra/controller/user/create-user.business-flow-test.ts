@@ -11,7 +11,7 @@ import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import { UserRoutes } from '../routes/user-routes'
 
-describe('Create User', () => {
+describe('Cadastrar Usuário', () => {
   let fastifyServer: FastifyAdapter
   let userRepository: UserRepository
 

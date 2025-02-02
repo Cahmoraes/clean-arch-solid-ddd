@@ -13,7 +13,7 @@ import { TYPES } from '@/infra/ioc/types'
 import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 
-describe('Validate CheckIn', () => {
+describe('Validar CheckIn', () => {
   let server: FastifyAdapter
   let checkInRepository: InMemoryCheckInRepository
   let userRepository: InMemoryUserRepository

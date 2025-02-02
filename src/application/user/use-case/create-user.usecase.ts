@@ -58,10 +58,7 @@ export class CreateUserUseCase {
   ): Promise<CreateUserOutput> {
     const foundUser = await this.userOfEmail(input.email)
     if (foundUser) return failure(new UserAlreadyExistsError())
-    DomainEventPublisher.instance.subscribe(
-      'userCreated',
-      this.createDomainEventSubscriber,
-    )
+    this.subscribeToDomainEvent()
     const createUserResult = await this.createUser(input)
     if (createUserResult.isFailure()) return failure(createUserResult.value)
     await this.userRepository.save(createUserResult.value)
@@ -74,7 +71,16 @@ export class CreateUserUseCase {
     return this.userRepository.userOfEmail(email)
   }
 
-  private async createDomainEventSubscriber(event: UserCreatedEvent) {
+  private subscribeToDomainEvent(): void {
+    DomainEventPublisher.instance.subscribe(
+      'userCreated',
+      this.createDomainEventSubscriber,
+    )
+  }
+
+  private async createDomainEventSubscriber(
+    event: UserCreatedEvent,
+  ): Promise<void> {
     console.log('**************')
     console.log(event)
     this.queue.publish(event.eventName, event)

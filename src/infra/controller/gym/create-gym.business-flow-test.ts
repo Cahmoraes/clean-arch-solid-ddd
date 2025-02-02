@@ -13,7 +13,7 @@ import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
 import { GymRoutes } from '../routes/gym-routes'
 import type { CreateGymPayload } from './create-gym.controller'
 
-describe('Create Gym', () => {
+describe('Cadastrar Academia', () => {
   let fastifyServer: FastifyAdapter
   let userRepository: InMemoryUserRepository
   let gymRepository: InMemoryGymRepository

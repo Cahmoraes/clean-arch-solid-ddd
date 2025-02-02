@@ -12,7 +12,7 @@ import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import { UserRoutes } from '../routes/user-routes'
 
-describe('User Profile', () => {
+describe('Obter Perfil do usuário por ID', () => {
   let fastifyServer: FastifyAdapter
   let userRepository: InMemoryUserRepository
   let authenticate: AuthenticateUseCase

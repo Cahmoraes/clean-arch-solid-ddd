@@ -15,7 +15,7 @@ import { HTTP_STATUS } from '@/infra/server/http-status'
 
 import { UserRoutes } from '../routes/user-routes'
 
-describe('Authenticate User', () => {
+describe('Autenticar Usuário', () => {
   let fastifyServer: FastifyAdapter
   let userRepository: InMemoryUserRepository
   let jwtAdapter: JsonWebTokenAdapter
