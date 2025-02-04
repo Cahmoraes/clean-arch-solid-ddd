@@ -3,7 +3,7 @@ import type { ValidationError } from 'zod-validation-error'
 
 import { DomainEventPublisher } from '@/domain/shared/event/domain-event-publisher'
 import { UserCreatedEvent } from '@/domain/user/event/user-created-event'
-import { User } from '@/domain/user/user'
+import { User, type UserValidationErrors } from '@/domain/user/user'
 import type { RoleTypes } from '@/domain/user/value-object/role'
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
@@ -86,7 +86,9 @@ export class CreateUserUseCase {
     this.queue.publish(event.eventName, event)
   }
 
-  private async createUser(input: CreateUserUseCaseInput) {
+  private async createUser(
+    input: CreateUserUseCaseInput,
+  ): Promise<Either<UserValidationErrors, User>> {
     return User.create({
       name: input.name,
       email: input.email,
