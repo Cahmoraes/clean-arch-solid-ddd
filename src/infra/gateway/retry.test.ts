@@ -107,5 +107,24 @@ describe.only('Retry', () => {
       await expect(promise).resolves.toEqual('Success')
       expect(retry['_attempts']).toBe(1)
     })
+
+    test('Deve falhar 2 vezes e depois ter sucesso', async () => {
+      const failTwoTimesAndThenSuccess = vi
+        .fn()
+        .mockRejectedValueOnce('Fail')
+        .mockRejectedValueOnce('Fail')
+        .mockResolvedValueOnce('Success')
+
+      const retry = Retry.wrap({
+        callback: failTwoTimesAndThenSuccess,
+        maxAttempts: 3,
+        time: 1000,
+      })
+
+      const promise = retry.execute()
+      await vi.runAllTimersAsync()
+      await expect(promise).resolves.toEqual('Success')
+      expect(retry['_attempts']).toBe(2)
+    })
   })
 })
