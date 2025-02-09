@@ -30,7 +30,7 @@ describe.only('Retry', () => {
         maxAttempts: 3,
         time: 1000,
       })
-      const result = await retry.execute()
+      const result = await retry.run()
       expect(result).toBe('Only async function')
     })
 
@@ -40,7 +40,7 @@ describe.only('Retry', () => {
         maxAttempts: 3,
         time: 1000,
       })
-      const result = await retry.execute(1)
+      const result = await retry.run(1)
       expect(result).toBe('Only async function with parameter: 1')
     })
 
@@ -50,9 +50,9 @@ describe.only('Retry', () => {
         maxAttempts: 3,
         time: 1000,
       })
-      const result1 = await retry.execute(1)
+      const result1 = await retry.run(1)
       expect(result1).toBe('Only async function with parameter: 1')
-      const result2 = await retry.execute(2)
+      const result2 = await retry.run(2)
       expect(result2).toBe('Only async function with parameter: 2')
     })
   })
@@ -64,7 +64,7 @@ describe.only('Retry', () => {
         maxAttempts: 0,
         time: 1000,
       })
-      await expect(() => retry.execute()).rejects.toThrow(
+      await expect(() => retry.run()).rejects.toThrow(
         'Only reject function',
       )
     })
@@ -76,7 +76,7 @@ describe.only('Retry', () => {
         time: 1000,
       })
 
-      const promise = retry.execute()
+      const promise = retry.run()
       const expectation = expect(promise).rejects.toThrow(
         'Only reject function',
       )
@@ -102,7 +102,7 @@ describe.only('Retry', () => {
         time: 1000,
       })
 
-      const promise = retry.execute()
+      const promise = retry.run()
       await vi.runAllTimersAsync()
       await expect(promise).resolves.toEqual('Success')
       expect(retry['_attempts']).toBe(1)
@@ -121,7 +121,7 @@ describe.only('Retry', () => {
         time: 1000,
       })
 
-      const promise = retry.execute()
+      const promise = retry.run()
       await vi.runAllTimersAsync()
       await expect(promise).resolves.toEqual('Success')
       expect(retry['_attempts']).toBe(2)
