@@ -25,7 +25,7 @@ export class Retry<Callback extends GenericFunction> {
     return new Retry(props)
   }
 
-  public async execute(
+  public async run(
     ...args: Parameters<Callback>
   ): Promise<ReturnType<Callback>> {
     try {
@@ -42,16 +42,16 @@ export class Retry<Callback extends GenericFunction> {
     this.incrementAttempts()
     if (this._attempts < this.maxAttempts) {
       await this.sleep(this.time)
-      return this.execute(...args)
+      return this.run(...args)
     }
     throw error
   }
 
-  private incrementAttempts() {
+  private incrementAttempts(): void {
     this._attempts++
   }
 
-  private sleep(ms: number) {
+  private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms))
   }
 }
