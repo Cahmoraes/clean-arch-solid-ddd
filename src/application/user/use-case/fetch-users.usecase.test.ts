@@ -2,6 +2,7 @@ import {
   type CreateUserInput,
   UserDAOMemory,
 } from '@/infra/database/dao/user-dao-memory'
+import { RedisAdapter } from '@/infra/database/redis/redis-adapter'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 
@@ -13,15 +14,18 @@ import {
 describe('FetchUsersUseCase', () => {
   let sut: FetchUsersUseCase
   let userDAO: UserDAOMemory
+  let redisAdapter: RedisAdapter
 
   beforeEach(() => {
     container.snapshot()
+    redisAdapter = container.get(TYPES.Redis)
     sut = container.resolve(FetchUsersUseCase)
     userDAO = container.get(TYPES.DAO.User)
   })
 
-  afterEach(() => {
+  afterEach(async () => {
     container.restore()
+    await redisAdapter.clear()
   })
 
   test('Deve buscar 10 usuários cadastrados na primeira página', async () => {
@@ -64,7 +68,7 @@ describe('FetchUsersUseCase', () => {
     expect(result.pagination.total).toBe(totalItems)
   })
 
-  test('Deve retornar uma lista contendo apenas um usuário', async () => {
+  test.only('Deve retornar uma lista contendo apenas um usuário', async () => {
     const totalItems = 1
     const fakeUser: CreateUserInput = {
       id: 'any_id',

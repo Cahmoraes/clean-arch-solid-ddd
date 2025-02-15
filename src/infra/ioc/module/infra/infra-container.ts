@@ -4,6 +4,7 @@ import { JsonWebTokenAdapter } from '@/infra/auth/json-web-token-adapter'
 import { QueueController } from '@/infra/controller/queue-controller'
 import { CookieAdapter } from '@/infra/cookie/cookie-adapter'
 import { prismaClient } from '@/infra/database/connection/prisma-client'
+import { RedisAdapter } from '@/infra/database/redis/redis-adapter'
 import { MailerGatewayMemory } from '@/infra/gateway/mailer-gateway-memory'
 import { NodeMailerAdapter } from '@/infra/gateway/node-mailer-adapter'
 import { WinstonAdapter } from '@/infra/logger/winston-adapter'
@@ -20,11 +21,11 @@ export const infraContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
   bind(TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
   bind(TYPES.Cookies.Manager).to(CookieAdapter)
+  bind(TYPES.Redis).to(RedisAdapter).inSingletonScope()
   bind(TYPES.Logger).to(WinstonAdapter).inSingletonScope()
   bind(RabbitMQAdapter).toSelf().inSingletonScope()
   bind(QueueMemoryAdapter).toSelf()
   bind(TYPES.Queue).toDynamicValue(QueueProvider.provide)
-
   bind(NodeMailerAdapter).toSelf().inSingletonScope()
   bind(MailerGatewayMemory).toSelf()
   bind(TYPES.Mailer).toDynamicValue(MailerProvider.provide)

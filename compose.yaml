@@ -18,5 +18,16 @@ services:
       - 5672:5672
       - 15672:15672
 
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    command: ['redis-server', '--appendonly', 'yes']
+
 volumes:
   postgresql_data:
+  redis_data:
