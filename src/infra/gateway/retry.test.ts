@@ -64,9 +64,7 @@ describe.only('Retry', () => {
         maxAttempts: 0,
         time: 1000,
       })
-      await expect(() => retry.run()).rejects.toThrow(
-        'Only reject function',
-      )
+      await expect(() => retry.run()).rejects.toThrow('Only reject function')
     })
 
     test('Deve realizar o máximo de tentativas permitido com tempo agendado', async () => {

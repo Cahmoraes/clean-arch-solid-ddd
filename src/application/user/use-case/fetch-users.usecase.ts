@@ -1,9 +1,11 @@
 import { inject, injectable } from 'inversify'
 
 import type { RoleTypes } from '@/domain/user/value-object/role'
+import type { CacheDB } from '@/infra/database/redis/cache-db'
+import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 
-import type { UserDAO } from '../dao/user-dao'
+import type { FetchUsersOutput, UserDAO } from '../dao/user-dao'
 
 export interface FetchUsersUseCaseInput {
   page: number
@@ -34,19 +36,52 @@ export class FetchUsersUseCase {
   constructor(
     @inject(TYPES.DAO.User)
     private readonly userDAO: UserDAO,
+    @inject(TYPES.Redis)
+    private readonly cacheDB: CacheDB,
   ) {}
 
   public async execute(
     input: FetchUsersUseCaseInput,
   ): Promise<FetchUsersUseCaseOutput> {
-    const { usersData, total } = await this.userDAO.fetchAndCountUsers(input)
+    const cachedData = await this.fetchUserFromCache(input)
+    if (cachedData) return cachedData
+    const usersData = await this.userDAO.fetchAndCountUsers(input)
+    this.saveUserDataToCache(input, usersData)
     return {
-      data: usersData,
+      data: usersData.usersData,
       pagination: {
-        total,
+        total: usersData.total,
         page: input.page,
         limit: input.limit,
       },
     }
+  }
+
+  private async fetchUserFromCache(
+    input: FetchUsersUseCaseInput,
+  ): Promise<FetchUsersUseCaseOutput | null> {
+    return this.cacheDB.get<FetchUsersUseCaseOutput>(this.createCacheKey(input))
+  }
+
+  private createCacheKey(input: FetchUsersUseCaseInput): string {
+    return `fetch-users:${input.page}:${input.limit}`
+  }
+
+  private async saveUserDataToCache(
+    input: FetchUsersUseCaseInput,
+    usersData: FetchUsersOutput,
+  ): Promise<void> {
+    this.cacheDB.set(
+      this.createCacheKey(input),
+      {
+        data: usersData,
+        pagination: {
+          total: usersData.total,
+          page: input.page,
+          limit: input.limit,
+        },
+      },
+      env.TTL,
+    )
   }
 }
