@@ -34,7 +34,7 @@ export class CircuitBreaker {
 
   public async run(): Promise<any> {
     try {
-      return await this.performSuccess()
+      return await this.performRun()
     } catch {
       this.performCatch()
       return 'error'
@@ -61,7 +61,7 @@ export class CircuitBreaker {
     this._totalSuccess++
   }
 
-  private async performSuccess(): Promise<any> {
+  private async performRun(): Promise<any> {
     this.incrementTotalRequests()
     const result = await this.callback()
     this.incrementTotalSuccess()
