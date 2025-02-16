@@ -1,54 +1,119 @@
 type AsyncFunction = (...args: any) => Promise<any>
-
 type State = 'open' | 'closed' | 'half-open'
 
 export interface CircuitBreakerConstructor {
   callback: AsyncFunction
-  failureThreshold: number
-  resetTime: number
+  failureThresholdPercentageLimit: number
+  resetTimeout: number
 }
 
 export class CircuitBreaker {
+  private _totalRequests: number
+  private _totalFailures: number
+  private _totalSuccess: number
   private _state: State
-  private readonly failureThreshold: number
-  private readonly resetTime: number
-  private readonly resetTime: number
+  private _lastFailureTime: number | null
   private readonly callback: AsyncFunction
-  private _nextAttempt: number
+  private readonly failureThresholdPercentageLimit: number
+  private readonly resetTimeout: number
 
   private constructor(props: CircuitBreakerConstructor) {
-    this.failureThreshold = props.failureThreshold
-    this.resetTime = props.resetTime
-    this.callback = props.callback
     this._state = 'closed'
+    this._totalRequests = 0
+    this._totalFailures = 0
+    this._totalSuccess = 0
+    this._lastFailureTime = null
+    this.callback = props.callback
+    this.failureThresholdPercentageLimit = props.failureThresholdPercentageLimit
+    this.resetTimeout = props.resetTimeout
   }
 
-  public static wrap(props: CircuitBreakerConstructor) {
+  public static wrap(props: CircuitBreakerConstructor): CircuitBreaker {
     return new CircuitBreaker(props)
   }
 
-  public async run(...args: any) {
-    if (this.isOpen) {
-      const now = Date.now()
-      if (now < this._nextAttempt) {
-        throw new Error('CircuitBreaker is open')
-      }
-      this.changeToHalfOpen()
+  public async run(): Promise<any> {
+    try {
+      return await this.performSuccess()
+    } catch {
+      return this.performCatch()
+      return 'error'
     }
-    const result = await this.callback(...args)
-    console.log(result)
-    return result
+  }
+
+  private get isClosed(): boolean {
+    return this._state === 'closed'
   }
 
   private get isOpen(): boolean {
     return this._state === 'open'
   }
 
-  private changeToHalfOpen(): void {
+  private get isHalfOpen(): boolean {
+    return this._state === 'half-open'
+  }
+
+  private incrementTotalRequests(): void {
+    this._totalRequests++
+  }
+
+  private incrementTotalSuccess(): void {
+    this._totalSuccess++
+  }
+
+  private async performSuccess(): Promise<any> {
+    this.incrementTotalRequests()
+    const result = await this.callback()
+    this.incrementTotalSuccess()
+    return result
+  }
+
+  private performCatch() {
+    this.incrementTotalFailures()
+    this.updateLastFailureTime()
+    if (this.exceedFailureThreshold) {
+      this.openCircuit()
+      this.scheduleReset()
+    }
+  }
+
+  private incrementTotalFailures(): void {
+    this._totalFailures++
+  }
+
+  private updateLastFailureTime(): void {
+    this._lastFailureTime = Date.now()
+  }
+
+  private openCircuit(): void {
+    this._state = 'open'
+  }
+
+  private scheduleReset(): void {
+    setTimeout(() => {
+      this.halfOpen()
+    }, this.resetTimeout)
+  }
+
+  private halfOpen(): void {
     this._state = 'half-open'
   }
 
-  private close(): void {
-    this._state = 'closed'
+  private get failureThresholdPercentage(): number {
+    return this._totalRequests === 0
+      ? 0
+      : (this._totalFailures / this._totalRequests) * 100
+  }
+
+  private get successThresholdPercentage(): number {
+    return this._totalRequests === 0
+      ? 0
+      : (this._totalSuccess / this._totalRequests) * 100
+  }
+
+  private get exceedFailureThreshold(): boolean {
+    return (
+      this.failureThresholdPercentage > this.failureThresholdPercentageLimit
+    )
   }
 }
