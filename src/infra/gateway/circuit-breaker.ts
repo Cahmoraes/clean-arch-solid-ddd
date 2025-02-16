@@ -87,6 +87,8 @@ export class CircuitBreaker {
 
   private openCircuit(): void {
     this._state = 'open'
+    this._totalSuccess = 0
+    this._totalFailures = 0
   }
 
   private scheduleReset(): void {
