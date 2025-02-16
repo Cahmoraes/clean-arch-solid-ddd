@@ -36,7 +36,7 @@ export class CircuitBreaker {
     try {
       return await this.performSuccess()
     } catch {
-      return this.performCatch()
+      this.performCatch()
       return 'error'
     }
   }
