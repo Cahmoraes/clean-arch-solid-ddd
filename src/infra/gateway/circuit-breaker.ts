@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 type AsyncFunction = (...args: any) => Promise<any>
 type State = 'open' | 'closed' | 'half-open'
 
@@ -63,17 +64,37 @@ export class CircuitBreaker {
 
   private async performRun(): Promise<any> {
     this.incrementTotalRequests()
+    if (this.isOpen) {
+      if (
+        this._lastFailureTime &&
+        Date.now() - this._lastFailureTime > this.resetTimeout
+      ) {
+        this.halfOpen()
+      } else {
+        throw new Error('⚡ Circuito ABERTO: Chamadas bloqueadas.')
+      }
+    }
     const result = await this.callback()
     this.incrementTotalSuccess()
+
+    if (
+      this._state === 'half-open' &&
+      this._totalSuccess >= this.successThresholdPercentage
+    ) {
+      console.log('✅ Circuito FECHADO: Chamadas normalizadas.')
+      this._state = 'closed'
+      this._totalSuccess = 0
+    }
+
     return result
   }
 
   private performCatch() {
     this.incrementTotalFailures()
     this.updateLastFailureTime()
-    if (this.exceedFailureThreshold) {
+    if (this.hasExceedFailureThreshold) {
       this.openCircuit()
-      this.scheduleReset()
+      // this.scheduleReset()
     }
   }
 
@@ -87,8 +108,6 @@ export class CircuitBreaker {
 
   private openCircuit(): void {
     this._state = 'open'
-    this._totalSuccess = 0
-    this._totalFailures = 0
   }
 
   private scheduleReset(): void {
@@ -113,7 +132,7 @@ export class CircuitBreaker {
       : (this._totalSuccess / this._totalRequests) * 100
   }
 
-  private get exceedFailureThreshold(): boolean {
+  private get hasExceedFailureThreshold(): boolean {
     return (
       this.failureThresholdPercentage > this.failureThresholdPercentageLimit
     )
