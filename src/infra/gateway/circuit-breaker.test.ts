@@ -63,7 +63,7 @@ describe.only('CircuitBreaker', () => {
     expect(circuitBreaker['hasExceedFailureThreshold']).toBe(false)
   })
 
-  test.only('Deve causar entrar em estado half-open', async () => {
+  test('Deve causar entrar em estado half-open', async () => {
     const circuitBreakerProps: CircuitBreakerConstructor = {
       callback: onlyFailure,
       failureThresholdPercentageLimit: 50,
@@ -75,9 +75,16 @@ describe.only('CircuitBreaker', () => {
     await circuitBreaker.run()
     expect(circuitBreaker['_lastFailureTime']).toBeDefined()
     await circuitBreaker.run()
+    console.log(circuitBreaker['_state'])
+
+    // Avança o tempo para disparar o reset (chamado por scheduleReset)
+    vi.advanceTimersByTime(1000)
+
+    expect(circuitBreaker['isHalfOpen']).toBe(true)
     expect(circuitBreaker['isClosed']).toBe(false)
     expect(circuitBreaker['_totalRequests']).toBe(3)
     expect(circuitBreaker['_totalFailures']).toBe(3)
-    expect(circuitBreaker['isOpen']).toBe(true)
+    // Em half-open, o circuito não está aberto, logo:
+    expect(circuitBreaker['isOpen']).toBe(false)
   })
 })
