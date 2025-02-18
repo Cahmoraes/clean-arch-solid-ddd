@@ -94,7 +94,7 @@ export class CircuitBreaker {
     this.updateLastFailureTime()
     if (this.hasExceedFailureThreshold) {
       this.openCircuit()
-      // this.scheduleReset()
+      this.scheduleReset()
     }
   }
 
