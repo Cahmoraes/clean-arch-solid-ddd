@@ -76,15 +76,11 @@ describe.only('CircuitBreaker', () => {
     expect(circuitBreaker['_lastFailureTime']).toBeDefined()
     await circuitBreaker.run()
     console.log(circuitBreaker['_state'])
-
-    // Avança o tempo para disparar o reset (chamado por scheduleReset)
     vi.advanceTimersByTime(1000)
-
     expect(circuitBreaker['isHalfOpen']).toBe(true)
     expect(circuitBreaker['isClosed']).toBe(false)
     expect(circuitBreaker['_totalRequests']).toBe(3)
     expect(circuitBreaker['_totalFailures']).toBe(3)
-    // Em half-open, o circuito não está aberto, logo:
     expect(circuitBreaker['isOpen']).toBe(false)
   })
 })
