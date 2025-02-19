@@ -35,11 +35,8 @@ export class CircuitBreaker {
   public async run(): Promise<any> {
     try {
       this.incrementTotalRequests()
-      const result = await this.performRun()
-      this.incrementTotalSuccess()
-      return result
+      return await this.performRun()
     } catch (e) {
-      this.incrementTotalFailures()
       this.performCatch()
       throw e
     }
@@ -66,6 +63,7 @@ export class CircuitBreaker {
   }
 
   private async performRun(): Promise<any> {
+    this.incrementTotalSuccess()
     if (this.checkHalfOpenEligibility) this.halfOpen()
     if (this.isOpen) throw new OpenCircleError()
     const result = await this.callback()
@@ -92,6 +90,7 @@ export class CircuitBreaker {
   }
 
   private performCatch() {
+    this.incrementTotalFailures()
     this.updateLastFailureTime()
     if (this.hasExceedFailureThreshold) {
       this.open()
