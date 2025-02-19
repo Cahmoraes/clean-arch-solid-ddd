@@ -52,10 +52,10 @@ describe.only('CircuitBreaker', () => {
     const circuitBreaker = CircuitBreaker.wrap(circuitBreakerProps)
     expect(circuitBreaker['_lastFailureTime']).toBe(null)
     await circuitBreaker.run()
-    await circuitBreaker.run()
+    await expect(() => circuitBreaker.run()).rejects.toThrow()
     expect(circuitBreaker['_lastFailureTime']).toBeDefined()
     await circuitBreaker.run()
-    await circuitBreaker.run()
+    await expect(() => circuitBreaker.run()).rejects.toThrow()
     expect(circuitBreaker['isClosed']).toBe(true)
     expect(circuitBreaker['_totalRequests']).toBe(4)
     expect(circuitBreaker['_totalFailures']).toBe(2)
@@ -63,7 +63,7 @@ describe.only('CircuitBreaker', () => {
     expect(circuitBreaker['hasExceedFailureThreshold']).toBe(false)
   })
 
-  test('Deve causar entrar em estado half-open', async () => {
+  test.only('Deve causar entrar em estado half-open', async () => {
     const circuitBreakerProps: CircuitBreakerConstructor = {
       callback: onlyFailure,
       failureThresholdPercentageLimit: 50,
@@ -71,11 +71,10 @@ describe.only('CircuitBreaker', () => {
     }
     const circuitBreaker = CircuitBreaker.wrap(circuitBreakerProps)
     expect(circuitBreaker['_lastFailureTime']).toBe(null)
-    await circuitBreaker.run()
-    await circuitBreaker.run()
+    await expect(() => circuitBreaker.run()).rejects.toThrow()
+    await expect(() => circuitBreaker.run()).rejects.toThrow()
     expect(circuitBreaker['_lastFailureTime']).toBeDefined()
-    await circuitBreaker.run()
-    console.log(circuitBreaker['_state'])
+    await expect(() => circuitBreaker.run()).rejects.toThrow()
     vi.advanceTimersByTime(1000)
     expect(circuitBreaker['isHalfOpen']).toBe(true)
     expect(circuitBreaker['isClosed']).toBe(false)

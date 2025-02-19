@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 type AsyncFunction = (...args: any) => Promise<any>
 type State = 'open' | 'closed' | 'half-open'
 
@@ -35,10 +34,14 @@ export class CircuitBreaker {
 
   public async run(): Promise<any> {
     try {
-      return await this.performRun()
-    } catch {
+      this.incrementTotalRequests()
+      const result = await this.performRun()
+      this.incrementTotalSuccess()
+      return result
+    } catch (e) {
+      this.incrementTotalFailures()
       this.performCatch()
-      return 'error'
+      throw e
     }
   }
 
@@ -63,37 +66,35 @@ export class CircuitBreaker {
   }
 
   private async performRun(): Promise<any> {
-    this.incrementTotalRequests()
-    if (this.isOpen) {
-      if (
-        this._lastFailureTime &&
-        Date.now() - this._lastFailureTime > this.resetTimeout
-      ) {
-        this.halfOpen()
-      } else {
-        throw new Error('⚡ Circuito ABERTO: Chamadas bloqueadas.')
-      }
-    }
+    if (this.checkHalfOpenEligibility) this.halfOpen()
+    if (this.isOpen) throw new OpenCircleError()
     const result = await this.callback()
-    this.incrementTotalSuccess()
-
-    if (
-      this._state === 'half-open' &&
-      this._totalSuccess >= this.successThresholdPercentage
-    ) {
-      console.log('✅ Circuito FECHADO: Chamadas normalizadas.')
-      this._state = 'closed'
-      this._totalSuccess = 0
-    }
-
+    if (this.shouldCloseCircuit) this.close()
     return result
   }
 
+  private get checkHalfOpenEligibility(): boolean {
+    return this.isOpen && this.shouldEnterHalfOpenState
+  }
+
+  private get shouldEnterHalfOpenState(): boolean {
+    return (
+      Boolean(this._lastFailureTime) &&
+      Date.now() - this._lastFailureTime! > this.resetTimeout
+    )
+  }
+
+  private get shouldCloseCircuit(): boolean {
+    return (
+      this._state === 'half-open' &&
+      this._totalSuccess >= this.successThresholdPercentage
+    )
+  }
+
   private performCatch() {
-    this.incrementTotalFailures()
     this.updateLastFailureTime()
     if (this.hasExceedFailureThreshold) {
-      this.openCircuit()
+      this.open()
       this.scheduleReset()
     }
   }
@@ -106,8 +107,13 @@ export class CircuitBreaker {
     this._lastFailureTime = Date.now()
   }
 
-  private openCircuit(): void {
+  private open(): void {
     this._state = 'open'
+  }
+
+  private close(): void {
+    this._state = 'closed'
+    this._totalSuccess = 0
   }
 
   private scheduleReset(): void {
@@ -136,5 +142,12 @@ export class CircuitBreaker {
     return (
       this.failureThresholdPercentage > this.failureThresholdPercentageLimit
     )
+  }
+}
+
+export class OpenCircleError extends Error {
+  constructor() {
+    super('⚡ Circuito ABERTO: Chamadas bloqueadas.')
+    this.name = 'OpenCircleError'
   }
 }
