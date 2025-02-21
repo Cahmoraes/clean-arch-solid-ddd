@@ -18,7 +18,7 @@ const onlyFailure = vi
   .mockRejectedValueOnce('error')
   .mockRejectedValueOnce('error')
 
-describe.only('CircuitBreaker', () => {
+describe('CircuitBreaker', () => {
   beforeAll(() => {
     vi.useFakeTimers()
   })
@@ -63,7 +63,7 @@ describe.only('CircuitBreaker', () => {
     expect(circuitBreaker['hasExceedFailureThreshold']).toBe(false)
   })
 
-  test.only('Deve causar entrar em estado half-open', async () => {
+  test('Deve causar entrar em estado half-open', async () => {
     const circuitBreakerProps: CircuitBreakerConstructor = {
       callback: onlyFailure,
       failureThresholdPercentageLimit: 50,
