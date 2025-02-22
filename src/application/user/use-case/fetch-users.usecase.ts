@@ -43,8 +43,8 @@ export class FetchUsersUseCase {
   public async execute(
     input: FetchUsersUseCaseInput,
   ): Promise<FetchUsersUseCaseOutput> {
-    const cachedData = await this.fetchUserFromCache(input)
-    if (cachedData) return cachedData
+    const usersCacheResult = await this.fetchUsersFromCache(input)
+    if (usersCacheResult) return usersCacheResult
     const usersData = await this.userDAO.fetchAndCountUsers(input)
     this.saveUserDataToCache(input, usersData)
     return {
@@ -57,7 +57,7 @@ export class FetchUsersUseCase {
     }
   }
 
-  private async fetchUserFromCache(
+  private async fetchUsersFromCache(
     input: FetchUsersUseCaseInput,
   ): Promise<FetchUsersUseCaseOutput | null> {
     return this.cacheDB.get<FetchUsersUseCaseOutput>(this.createCacheKey(input))
