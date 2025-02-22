@@ -19,6 +19,7 @@ model User {
   password_hash String
   role          Role     @default(MEMBER)
   created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   checkIns CheckIn[]
 
@@ -31,6 +32,7 @@ model CheckIn {
   validated_at DateTime?
   latitude     Decimal
   longitude    Decimal
+  updated_at   DateTime  @updatedAt
 
   user    User   @relation(fields: [user_id], references: [id])
   user_id String
@@ -42,12 +44,14 @@ model CheckIn {
 }
 
 model Gym {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   title       String
   description String?
   phone       String?
   latitude    Decimal
   longitude   Decimal
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   checkIns CheckIn[]
 

@@ -1,6 +1,6 @@
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
-import { User, type UserCreateProps } from '@/domain/user/user'
+import { User, type UserCreate } from '@/domain/user/user'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 
@@ -71,12 +71,12 @@ describe('AuthenticateUseCase', () => {
     expect(result.forceFailure().value).toBeInstanceOf(InvalidCredentialsError)
   })
 
-  async function createAndSaveUser(userProps: UserCreateProps): Promise<User> {
+  async function createAndSaveUser(userProps: UserCreate): Promise<User> {
     const user = makeUser(userProps)
     await saveUser(user.force.success().value)
     return user.force.success().value
 
-    function makeUser(userProps: UserCreateProps) {
+    function makeUser(userProps: UserCreate) {
       return User.create(userProps)
     }
 

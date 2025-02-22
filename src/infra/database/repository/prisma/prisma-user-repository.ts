@@ -12,6 +12,7 @@ interface UserData {
   email: string
   password_hash: string
   created_at: Date
+  updated_at: Date
   role: RoleTypes
 }
 
@@ -49,6 +50,7 @@ export class PrismaUserRepository implements UserRepository {
       name: userData.name,
       password: userData.password_hash,
       createdAt: userData.created_at,
+      updatedAt: userData.updated_at,
       role: userData.role,
     })
   }

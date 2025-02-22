@@ -19,37 +19,40 @@ import { Name } from './value-object/name'
 import { Password } from './value-object/password'
 import { Role, type RoleTypes } from './value-object/role'
 
-export interface UserConstructorProps {
+export interface UserConstructor {
   id: Id
   name: Name
   email: Email
   password: Password
   role: Role
   createdAt: Date
+  updatedAt?: Date
 }
 
-export interface UserCreateProps {
+export interface UserCreate {
   id?: string | null
   name: string
   email: string
   password: string
   role?: RoleTypes
   createdAt?: Date
+  updatedAt?: Date
 }
 
-export type UserRestoreProps = {
+export type UserRestore = {
   id: string
   name: string
   email: string
   password: string
   role: RoleTypes
   createdAt: Date
+  updatedAt?: Date
 }
 
-export type UserUpdateProps = Partial<Pick<UserCreateProps, 'name' | 'email'>>
+export type UserUpdateProps = Partial<Pick<UserCreate, 'name' | 'email'>>
 
 export type ValidatedUserProps = Omit<
-  UserConstructorProps,
+  UserConstructor,
   'id' | 'createdAt' | 'role'
 >
 
@@ -65,8 +68,9 @@ export class User extends Observable {
   private _password: Password
   private _role: Role
   private _createdAt: Date
+  private _updatedAt?: Date
 
-  private constructor(props: UserConstructorProps) {
+  private constructor(props: UserConstructor) {
     super()
     this._id = props.id
     this._name = props.name
@@ -77,7 +81,7 @@ export class User extends Observable {
   }
 
   public static create(
-    userCreateProps: UserCreateProps,
+    userCreateProps: UserCreate,
   ): Either<UserValidationErrors, User> {
     const validatePropsResult = this.validate(userCreateProps)
     if (validatePropsResult.isFailure()) {
@@ -102,7 +106,7 @@ export class User extends Observable {
   }
 
   private static validate(
-    userCreateProps: UserCreateProps,
+    userCreateProps: UserCreate,
   ): Either<
     ValidationError | InvalidNameLengthError | InvalidEmailError,
     ValidatedUserProps
@@ -123,7 +127,7 @@ export class User extends Observable {
   }
 
   private static createUserCreatedEvent(
-    userCreateProps: Pick<UserCreateProps, 'name' | 'email'>,
+    userCreateProps: Pick<UserCreate, 'name' | 'email'>,
   ) {
     return new UserCreatedEvent({
       name: userCreateProps.name,
@@ -131,7 +135,7 @@ export class User extends Observable {
     })
   }
 
-  public static restore(restoreUserProps: UserRestoreProps) {
+  public static restore(restoreUserProps: UserRestore) {
     return new User({
       id: Id.restore(restoreUserProps.id),
       email: Email.restore(restoreUserProps.email),
@@ -166,6 +170,14 @@ export class User extends Observable {
     return this._createdAt
   }
 
+  get updatedAt(): Date | undefined {
+    return this._updatedAt
+  }
+
+  private refreshUpdatedAt() {
+    this._updatedAt = new Date()
+  }
+
   public checkPassword(rawPassword: string): boolean {
     return this._password.compare(rawPassword)
   }
@@ -176,6 +188,7 @@ export class User extends Observable {
       return failure(passwordCreateResult.value)
     }
     this._password = passwordCreateResult.value
+    this.refreshUpdatedAt()
     const event = new PasswordChangedEvent({
       name: this.name,
       email: this.email,
@@ -198,6 +211,7 @@ export class User extends Observable {
     if (userCreateResult.isFailure()) return failure(userCreateResult.value)
     this._email = userCreateResult.value._email
     this._name = userCreateResult.value._name
+    this.refreshUpdatedAt()
     const event = this.createUserProfileUpdatedEvent({
       email: this.email,
       name: this.name,

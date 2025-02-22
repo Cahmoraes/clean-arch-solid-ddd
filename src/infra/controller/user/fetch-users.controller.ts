@@ -50,7 +50,7 @@ export class FetchUsersController implements Controller {
   }
 
   private async callback(req: FastifyRequest) {
-    const parsedQueryParamsOrError = this.parseBodyOrError(req.query)
+    const parsedQueryParamsOrError = this.parseQueryOrError(req.query)
     if (parsedQueryParamsOrError.isFailure()) {
       return ResponseFactory.BAD_REQUEST({
         message: parsedQueryParamsOrError.value.message,
@@ -69,7 +69,7 @@ export class FetchUsersController implements Controller {
     })
   }
 
-  private parseBodyOrError(
+  private parseQueryOrError(
     body: unknown,
   ): Either<ValidationError, FetchUsersRequest> {
     const parsedQueryParams = fetchUsersRequestSchema.safeParse(body)
@@ -80,7 +80,6 @@ export class FetchUsersController implements Controller {
   }
 
   private presenter(header?: string) {
-    console.log('accept', header)
     const presenter = PresenterFactory.create(header)
     return presenter
   }
