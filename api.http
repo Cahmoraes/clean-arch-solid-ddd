@@ -39,6 +39,16 @@ Cookie: refreshToken={{refreshToken}}
   
 }
 
+### Perfil
+# @name userProfile
+GET {{baseUrl}}/users?limit=10&page=1
+Content-Type: application/json
+
+{
+
+}
+
+
 ### Criar Academia
 # @name createGym
 POST {{baseUrl}}/gyms

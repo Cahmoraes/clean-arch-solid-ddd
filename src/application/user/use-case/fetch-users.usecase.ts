@@ -43,10 +43,10 @@ export class FetchUsersUseCase {
   public async execute(
     input: FetchUsersUseCaseInput,
   ): Promise<FetchUsersUseCaseOutput> {
-    const usersCacheResult = await this.fetchUsersFromCache(input)
-    if (usersCacheResult) return usersCacheResult
+    // const usersCacheResult = await this.fetchUsersFromCache(input)
+    // if (usersCacheResult) return usersCacheResult
     const usersData = await this.userDAO.fetchAndCountUsers(input)
-    this.saveUserDataToCache(input, usersData)
+    // this.saveUserDataToCache(input, usersData)
     return {
       data: usersData.usersData,
       pagination: {

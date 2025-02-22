@@ -1,11 +1,11 @@
 import { InvalidEmailError } from './error/invalid-email-error'
 import { InvalidNameLengthError } from './error/invalid-name-length-error'
-import { User, type UserCreateProps, type UserRestoreProps } from './user'
+import { User, type UserCreate, type UserRestore } from './user'
 import { RoleValues } from './value-object/role'
 
 describe('User Entity', () => {
   test('Deve criar um usuário', () => {
-    const input: UserCreateProps = {
+    const input: UserCreate = {
       name: 'John Doe',
       email: 'john.doe@example.com',
       password: 'securepassword123',
@@ -19,11 +19,12 @@ describe('User Entity', () => {
       expect.any(String),
     )
     expect(userOrError.forceSuccess().value.createdAt).toEqual(expect.any(Date))
+    expect(userOrError.forceSuccess().value.updatedAt).toBeUndefined()
     expect(userOrError.forceSuccess().value.id).toBeNull()
   })
 
   test('Deve restaurar um usuário', () => {
-    const input: UserRestoreProps = {
+    const input: UserRestore = {
       createdAt: new Date(),
       id: 'any_id',
       name: 'John Doe',
@@ -42,7 +43,7 @@ describe('User Entity', () => {
   })
 
   test('Não deve criar um usuário com nome inválido', () => {
-    const input: UserCreateProps = {
+    const input: UserCreate = {
       name: '',
       email: 'john.doe@example.com',
       password: 'securepassword123',
@@ -54,7 +55,7 @@ describe('User Entity', () => {
   })
 
   test('Não deve criar um usuário com email inválido', () => {
-    const input: UserCreateProps = {
+    const input: UserCreate = {
       name: 'John Doe',
       email: '',
       password: 'securepassword123',
@@ -64,7 +65,7 @@ describe('User Entity', () => {
   })
 
   test('Deve criar um usuário com uma data de criação pré-definida', () => {
-    const input: UserCreateProps = {
+    const input: UserCreate = {
       name: 'John Doe',
       email: 'john.doe@example.com',
       password: 'securepassword123',
@@ -75,7 +76,7 @@ describe('User Entity', () => {
   })
 
   test('Deve criar um usuário ADMINISTRADOR', () => {
-    const input: UserCreateProps = {
+    const input: UserCreate = {
       name: 'John Doe',
       email: 'john.doe@example.com',
       password: 'securepassword123',
@@ -87,7 +88,7 @@ describe('User Entity', () => {
   })
 
   test('Deve restaurar um usuário ADMINISTRADOR', () => {
-    const input: UserRestoreProps = {
+    const input: UserRestore = {
       createdAt: new Date(),
       id: 'any_id',
       name: 'John Doe',
@@ -100,7 +101,7 @@ describe('User Entity', () => {
   })
 
   test('Deve alterar a senha de um usuário', () => {
-    const input: UserCreateProps = {
+    const input: UserCreate = {
       name: 'John Doe',
       email: 'john.doe@example.com',
       password: '123456',
@@ -115,7 +116,7 @@ describe('User Entity', () => {
   })
 
   test('Deve atualizar um usuário com dados alterados', () => {
-    const input: UserCreateProps = {
+    const input: UserCreate = {
       name: 'John Doe',
       email: 'john.doe@example.com',
       password: 'securepassword123',
@@ -136,6 +137,7 @@ describe('User Entity', () => {
     expect(user.password).toBe(user.password)
     expect(user.role).toBe(user.role)
     expect(user.createdAt).toBe(user.createdAt)
+    expect(user.updatedAt).toEqual(expect.any(Date))
     expect(user.checkPassword('securepassword123')).toBe(true)
   })
 })

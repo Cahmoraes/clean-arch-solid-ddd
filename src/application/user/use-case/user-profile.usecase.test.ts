@@ -1,6 +1,6 @@
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
-import { User, type UserCreateProps } from '@/domain/user/user'
+import { User, type UserCreate } from '@/domain/user/user'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
@@ -26,7 +26,7 @@ describe('UserProfile', () => {
   })
 
   test('Deve obter os dados de um usuário', async () => {
-    const userCreateProps: UserCreateProps = {
+    const userCreateProps: UserCreate = {
       name: 'any_name',
       email: 'john@email.com',
       password: 'any_password',
