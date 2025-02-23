@@ -1,7 +1,7 @@
 import request from 'supertest'
 
 import { serverBuild } from '@/bootstrap/server-build'
-import { UserDAOMemory } from '@/infra/database/dao/user-dao-memory'
+import { UserDAOMemory } from '@/infra/database/dao/in-memory/user-dao-memory'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
 import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
