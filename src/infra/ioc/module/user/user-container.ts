@@ -1,6 +1,5 @@
 import { ContainerModule, type interfaces } from 'inversify'
 
-import type { UserDAO } from '@/application/user/dao/user-dao'
 import { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
 import { ChangePasswordUseCase } from '@/application/user/use-case/change-password.usecase'
 import { CreateUserUseCase } from '@/application/user/use-case/create-user.usecase'
@@ -15,20 +14,26 @@ import { MyProfileController } from '@/infra/controller/user/my-profile.controll
 import { RefreshTokenController } from '@/infra/controller/user/refresh-token.controller'
 import { UserMetricsController } from '@/infra/controller/user/user-metrics.controller'
 import { UserProfileController } from '@/infra/controller/user/user-profile.controller'
-import { UserDAOMemory } from '@/infra/database/dao/user-dao-memory'
+import { UserDAOMemory } from '@/infra/database/dao/in-memory/user-dao-memory'
+import { PrismaUserDAO } from '@/infra/database/dao/prisma/prisma-user-dao'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { PrismaUserRepository } from '@/infra/database/repository/prisma/prisma-user-repository'
 
 import { TYPES } from '../../types'
+import { UserDAOProvider } from './user-dao-provider'
 import { UserRepositoryProvider } from './user-repository-provider'
 
 export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
-  bind<PrismaUserRepository>(PrismaUserRepository).toSelf()
-  bind<InMemoryUserRepository>(InMemoryUserRepository).toSelf()
+  bind(PrismaUserRepository).toSelf()
+  bind(InMemoryUserRepository).toSelf()
   bind(TYPES.Repositories.User)
     .toDynamicValue(UserRepositoryProvider.provide)
     .inSingletonScope()
-  bind<UserDAO>(TYPES.DAO.User).to(UserDAOMemory).inSingletonScope()
+  bind(UserDAOMemory).toSelf().inSingletonScope()
+  bind(PrismaUserDAO).toSelf().inSingletonScope()
+  bind(TYPES.DAO.User)
+    .toDynamicValue(UserDAOProvider.provide)
+    .inSingletonScope()
   bind(TYPES.Controllers.CreateUser).to(CreateUserController)
   bind(TYPES.Controllers.Authenticate).to(AuthenticateController)
   bind(TYPES.Controllers.UserProfile).to(UserProfileController)
