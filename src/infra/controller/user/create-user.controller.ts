@@ -14,6 +14,7 @@ import {
   failure,
   success,
 } from '@/domain/shared/value-object/either'
+import type { UserValidationErrors } from '@/domain/user/user'
 import { RoleValues } from '@/domain/user/value-object/role'
 import { Logger } from '@/infra/decorator/logger'
 import { TYPES } from '@/infra/ioc/types'
@@ -108,10 +109,13 @@ export class CreateUserController implements Controller {
         message: result.value.message,
       })
     }
-    console.log(result.value)
     return ResponseFactory.UNPROCESSABLE_ENTITY({
-      message: result.value[0],
+      message: this.extractErrorMessages(result.value),
     })
+  }
+
+  private extractErrorMessages(errors: UserValidationErrors[]): string {
+    return errors.flatMap((error) => error.message).join(', ')
   }
 }
 
@@ -145,6 +149,20 @@ function makeCreateUserControllerSwaggerSchema(): Schema {
       },
       400: {
         description: 'Bad Request',
+        type: 'object',
+        properties: {
+          message: { type: 'string' },
+        },
+      },
+      409: {
+        description: 'Conflict - User already exists',
+        type: 'object',
+        properties: {
+          message: { type: 'string' },
+        },
+      },
+      422: {
+        description: 'Unprocessable Entity',
         type: 'object',
         properties: {
           message: { type: 'string' },

@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify'
-import type { ValidationError } from 'zod-validation-error'
 
 import { DomainEventPublisher } from '@/domain/shared/event/domain-event-publisher'
 import { UserCreatedEvent } from '@/domain/user/event/user-created-event'
@@ -29,7 +28,7 @@ export interface CreateUserResponse {
 }
 
 export type CreateUserOutput = Either<
-  UserAlreadyExistsError | ValidationError,
+  UserAlreadyExistsError | UserValidationErrors[],
   CreateUserResponse
 >
 
@@ -88,7 +87,7 @@ export class CreateUserUseCase {
 
   private async createUser(
     input: CreateUserUseCaseInput,
-  ): Promise<Either<UserValidationErrors, User>> {
+  ): Promise<Either<UserValidationErrors[], User>> {
     return User.create({
       name: input.name,
       email: input.email,

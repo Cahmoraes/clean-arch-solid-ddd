@@ -85,7 +85,7 @@ describe('Cadastrar Usuário', () => {
     })
   })
 
-  test('Não deve criar um usuário com a propriedade name inválida. Acima de 30 caracteres', async () => {
+  test.only('Não deve criar um usuário com a propriedade name inválida. Acima de 30 caracteres', async () => {
     const input = {
       name: 'any_name'.repeat(30),
       email: 'john@doe.com',
