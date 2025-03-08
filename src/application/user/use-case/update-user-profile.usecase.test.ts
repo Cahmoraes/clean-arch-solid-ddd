@@ -77,7 +77,7 @@ describe('UpdateUserProfile', () => {
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
-    expect(result.value).toBeInstanceOf(InvalidNameLengthError)
+    expect(result.value).toEqual([expect.any(InvalidNameLengthError)])
     const userMemory = await userRepository.userOfId(userId)
     expect(userMemory?.email).toBe('john@doe.com')
     expect(userMemory?.name).toBe('john doe')
@@ -100,7 +100,7 @@ describe('UpdateUserProfile', () => {
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
-    expect(result.value).toBeInstanceOf(InvalidEmailError)
+    expect(result.value).toEqual([expect.any(InvalidEmailError)])
     const userMemory = await userRepository.userOfId(userId)
     expect(userMemory?.email).toBe('john@doe.com')
     expect(userMemory?.name).toBe('john doe')

@@ -49,9 +49,9 @@ describe('User Entity', () => {
       password: 'securepassword123',
     }
     const userOrError = User.create(input)
-    expect(userOrError.forceFailure().value).toBeInstanceOf(
-      InvalidNameLengthError,
-    )
+    expect(userOrError.forceFailure().value).toEqual([
+      expect.any(InvalidNameLengthError),
+    ])
   })
 
   test('Não deve criar um usuário com email inválido', () => {
@@ -61,7 +61,22 @@ describe('User Entity', () => {
       password: 'securepassword123',
     }
     const userOrError = User.create(input)
-    expect(userOrError.forceFailure().value).toBeInstanceOf(InvalidEmailError)
+    expect(userOrError.forceFailure().value).toEqual([
+      expect.any(InvalidEmailError),
+    ])
+  })
+
+  test('Não deve criar um usuário com nome e email inválido', () => {
+    const input: UserCreate = {
+      name: '',
+      email: '',
+      password: 'securepassword123',
+    }
+    const userOrError = User.create(input)
+    expect(userOrError.forceFailure().value).toEqual([
+      expect.any(InvalidNameLengthError),
+      expect.any(InvalidEmailError),
+    ])
   })
 
   test('Deve criar um usuário com uma data de criação pré-definida', () => {
