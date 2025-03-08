@@ -108,8 +108,9 @@ export class CreateUserController implements Controller {
         message: result.value.message,
       })
     }
+    console.log(result.value)
     return ResponseFactory.UNPROCESSABLE_ENTITY({
-      message: result.value.message,
+      message: result.value[0],
     })
   }
 }

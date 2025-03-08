@@ -8,6 +8,7 @@ import {
 
 import { DomainEventPublisher } from '../shared/event/domain-event-publisher'
 import { Observable } from '../shared/observable'
+import { Result } from '../shared/result'
 import { Id } from '../shared/value-object/id'
 import type { InvalidEmailError } from './error/invalid-email-error'
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
@@ -82,7 +83,7 @@ export class User extends Observable {
 
   public static create(
     userCreateProps: UserCreate,
-  ): Either<UserValidationErrors, User> {
+  ): Either<UserValidationErrors[], User> {
     const validatePropsResult = this.validate(userCreateProps)
     if (validatePropsResult.isFailure()) {
       return failure(validatePropsResult.value)
@@ -107,22 +108,16 @@ export class User extends Observable {
 
   private static validate(
     userCreateProps: UserCreate,
-  ): Either<
-    ValidationError | InvalidNameLengthError | InvalidEmailError,
-    ValidatedUserProps
-  > {
-    const createNameResult = Name.create(userCreateProps.name)
-    if (createNameResult.isFailure()) return failure(createNameResult.value)
-    const createEmailResult = Email.create(userCreateProps.email)
-    if (createEmailResult.isFailure()) return failure(createEmailResult.value)
-    const createPasswordResult = Password.create(userCreateProps.password)
-    if (createPasswordResult.isFailure()) {
-      return failure(createPasswordResult.value)
-    }
+  ): Either<UserValidationErrors[], ValidatedUserProps> {
+    const nameResult = Name.create(userCreateProps.name)
+    const emailResult = Email.create(userCreateProps.email)
+    const passwordResult = Password.create(userCreateProps.password)
+    const result = Result.combine([nameResult, emailResult, passwordResult])
+    if (!result.isValid) return failure(result.errors)
     return success({
-      name: createNameResult.value,
-      email: createEmailResult.value,
-      password: createPasswordResult.value,
+      email: emailResult.forceSuccess().value,
+      name: nameResult.forceSuccess().value,
+      password: passwordResult.forceSuccess().value,
     })
   }
 
@@ -199,7 +194,7 @@ export class User extends Observable {
 
   public updateProfile(
     input: UserUpdateProps,
-  ): Either<UserValidationErrors, null> {
+  ): Either<UserValidationErrors[], null> {
     const userCreateResult = User.create({
       id: this.id,
       name: input.name ?? this.name,
