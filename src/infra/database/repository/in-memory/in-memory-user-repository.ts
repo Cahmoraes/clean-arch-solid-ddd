@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import ExtendedSet from '@cahmoraes93/extended-set'
 import { injectable } from 'inversify'
 
+import type { UserQuery } from '@/application/user/repository/user-query'
 import type { UserRepository } from '@/application/user/repository/user-repository'
 import { User } from '@/domain/user/user'
 
@@ -29,6 +30,16 @@ export class InMemoryUserRepository implements UserRepository {
     if (!userOrNull) return
     this.users.delete(userOrNull)
     this.users.add(user)
+  }
+
+  public async get(objectQuery: UserQuery): Promise<User | null> {
+    const users = this.users.find((user) => {
+      const fields = objectQuery.fields
+      return Object.keys(fields).every((field) => {
+        return (user as any)[field] === (fields as any)[field]
+      })
+    })
+    return users
   }
 
   public async userOfEmail(email: string): Promise<User | null> {
