@@ -14,6 +14,7 @@ import {
   success,
 } from '../../../domain/shared/value-object/either'
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
+import { UserQuery } from '../repository/user-query'
 import type { UserRepository } from '../repository/user-repository'
 
 export interface CreateUserUseCaseInput {
@@ -55,7 +56,7 @@ export class CreateUserUseCase {
   public async execute(
     input: CreateUserUseCaseInput,
   ): Promise<CreateUserOutput> {
-    const foundUser = await this.userOfEmail(input.email)
+    const foundUser = await this.userOfEmail(input)
     if (foundUser) return failure(new UserAlreadyExistsError())
     this.subscribeToDomainEvent()
     const createUserResult = await this.createUser(input)
@@ -66,8 +67,11 @@ export class CreateUserUseCase {
     })
   }
 
-  private async userOfEmail(email: string): Promise<User | null> {
-    return this.userRepository.userOfEmail(email)
+  private async userOfEmail(
+    userDTO: CreateUserUseCaseInput,
+  ): Promise<User | null> {
+    const userObjectQuery = UserQuery.from(userDTO).addField('email')
+    return this.userRepository.get(userObjectQuery)
   }
 
   private subscribeToDomainEvent(): void {
