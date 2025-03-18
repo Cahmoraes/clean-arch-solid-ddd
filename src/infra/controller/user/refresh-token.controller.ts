@@ -13,7 +13,7 @@ import type { CookieManager } from '@/infra/cookie/cookie-manager'
 import { Logger } from '@/infra/decorator/logger'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
-import { Logger as DebugLogger } from '@/infra/logger/logger'
+import type { Logger as DebugLogger } from '@/infra/logger/logger'
 import type { HttpServer } from '@/infra/server/http-server'
 import { HTTP_STATUS } from '@/infra/server/http-status'
 

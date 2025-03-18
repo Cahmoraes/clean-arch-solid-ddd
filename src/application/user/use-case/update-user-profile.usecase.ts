@@ -18,7 +18,7 @@ export interface UpdateUserProfileUseCaseInput {
 }
 
 export type UpdateUserProfileUseCaseOutput = Either<
-  UserNotFoundError | UserValidationErrors,
+  UserValidationErrors[] | UserValidationErrors,
   User
 >
 
