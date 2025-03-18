@@ -13,7 +13,7 @@
     "test:business-flow": "vitest --config ./test/vite.config.business-flow.ts",
     "test:e2e:prisma": "vitest --config ./test/vite.config.integration.ts",
     "test:fitness": "vitest --config ./test/vite.config.fitness.ts",
-    "build": "npx tsup src --out-dir build",
+    "build": "npx tsup",
     "prisma:studio": "npx prisma studio",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate:dev": "npx prisma migrate dev",
@@ -30,6 +30,7 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "@swc/core": "1.11.11",
     "@types/amqplib": "0.10.6",
     "@types/bcryptjs": "2.4.6",
     "@types/jsonwebtoken": "9.0.8",
