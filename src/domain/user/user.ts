@@ -79,6 +79,7 @@ export class User extends Observable {
     this._password = props.password
     this._role = props.role
     this._createdAt = props.createdAt
+    this._updatedAt = props.updatedAt
   }
 
   public static create(
@@ -138,6 +139,7 @@ export class User extends Observable {
       password: Password.restore(restoreUserProps.password),
       role: Role.restore(restoreUserProps.role),
       createdAt: restoreUserProps.createdAt,
+      updatedAt: restoreUserProps.updatedAt,
     })
   }
 

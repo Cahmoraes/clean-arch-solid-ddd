@@ -10,6 +10,12 @@ export const TYPES = {
     Gym: Symbol.for('GymRepository'),
     CheckIn: Symbol.for('CheckInRepository'),
   },
+  PG: {
+    Client: Symbol.for('PgClient'),
+    User: Symbol.for('PgUserRepository'),
+    Gym: Symbol.for('PgGymRepository'),
+    CheckIn: Symbol.for('PgCheckInRepository'),
+  },
   Controllers: {
     CreateUser: Symbol.for('UserController'),
     Authenticate: Symbol.for('AuthenticateController'),
