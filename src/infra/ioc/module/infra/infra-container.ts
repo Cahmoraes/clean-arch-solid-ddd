@@ -3,6 +3,7 @@ import { ContainerModule, type interfaces } from 'inversify'
 import { JsonWebTokenAdapter } from '@/infra/auth/json-web-token-adapter'
 import { QueueController } from '@/infra/controller/queue-controller'
 import { CookieAdapter } from '@/infra/cookie/cookie-adapter'
+import { PgClient } from '@/infra/database/connection/pg-client'
 import { prismaClient } from '@/infra/database/connection/prisma-client'
 import { CacheDBMemory } from '@/infra/database/redis/cache-db-memory'
 import { RedisAdapter } from '@/infra/database/redis/redis-adapter'
@@ -20,6 +21,7 @@ import { QueueProvider } from './queue-provider'
 
 export const infraContainer = new ContainerModule((bind: interfaces.Bind) => {
   bind(TYPES.Prisma.Client).toConstantValue(prismaClient)
+  bind(TYPES.PG.Client).toConstantValue(new PgClient())
   bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
   bind(TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
   bind(TYPES.Cookies.Manager).to(CookieAdapter)

@@ -15,7 +15,7 @@ const envSchema = z.object({
   PRIVATE_KEY: z.string().default('private-key-example'),
   ITEMS_PER_PAGE: z.coerce.number().default(20),
   CHECK_IN_EXPIRATION_TIME: z.coerce.number().default(20),
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.string(),
   JWT_EXPIRES_IN: z.string().default('10Min'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7D'),
   REFRESH_TOKEN_NAME: z.string().default('refreshToken'),
