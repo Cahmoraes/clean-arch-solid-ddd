@@ -30,7 +30,6 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.19.0",
-    "@swc/core": "1.11.11",
     "@types/amqplib": "0.10.6",
     "@types/bcryptjs": "2.4.6",
     "@types/jsonwebtoken": "9.0.8",
