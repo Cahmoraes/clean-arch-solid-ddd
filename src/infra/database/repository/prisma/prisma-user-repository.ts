@@ -1,6 +1,7 @@
 import type { PrismaClient } from '@prisma/client'
 import { inject, injectable } from 'inversify'
 
+import type { UserQuery } from '@/application/user/repository/user-query'
 import type { UserRepository } from '@/application/user/repository/user-repository'
 import { User } from '@/domain/user/user'
 import type { RoleTypes } from '@/domain/user/value-object/role'
@@ -22,6 +23,16 @@ export class PrismaUserRepository implements UserRepository {
     @inject(TYPES.Prisma.Client)
     private readonly prisma: PrismaClient,
   ) {}
+
+  public async get(userQuery: UserQuery): Promise<User | null> {
+    const userDataOrNull = await this.prisma.user.findFirst({
+      where: {
+        ...userQuery,
+      },
+    })
+    if (!userDataOrNull) return null
+    return this.restoreUser(userDataOrNull)
+  }
 
   public async userOfId(id: string): Promise<User | null> {
     const userDataOrNull = await this.prisma.user.findUnique({
