@@ -2,9 +2,10 @@ import { config } from 'dotenv'
 import { z } from 'zod'
 import { fromError } from 'zod-validation-error'
 
-const envObject = config({
-  path: process.env.NODE_ENV === 'test' ? '.env.development' : '.env',
-}).parsed
+config()
+// const envObject = config({
+//   path: process.env.NODE_ENV === 'test' ? '.env.development' : '.env',
+// }).parsed
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production']).default('production'),
@@ -25,7 +26,7 @@ const envSchema = z.object({
   TTL: z.coerce.number().default(60),
 })
 
-const _env = envSchema.safeParse(envObject)
+const _env = envSchema.safeParse(process.env)
 if (!_env.success) {
   const validationError = fromError(_env.error)
   console.error(validationError.toString())

@@ -7,6 +7,10 @@ main()
 async function main(): Promise<void> {
   const server = await serverBuild()
   await server.listen()
+  console.log('PORT:', process.env.PORT)
+  console.log('USE_PRISMA:', process.env.USE_PRISMA)
+  console.log('DATABASE_URL:', process.env.DATABASE_URL)
+
   // const pgUserRepository = container.get<PgUserRepository>(TYPES.PG.User)
   // console.log(pgUserRepository)
   // const user = User.create({
