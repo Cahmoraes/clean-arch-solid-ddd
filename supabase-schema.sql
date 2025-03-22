@@ -1,10 +1,15 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'MEMBER');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password_hash" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'MEMBER',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -16,6 +21,7 @@ CREATE TABLE "check_ins" (
     "validated_at" TIMESTAMP(3),
     "latitude" DECIMAL(65,30) NOT NULL,
     "longitude" DECIMAL(65,30) NOT NULL,
+    "updated_at" TIMESTAMP(3) NOT NULL,
     "user_id" TEXT NOT NULL,
     "gym_id" TEXT NOT NULL,
 
@@ -30,6 +36,8 @@ CREATE TABLE "gyms" (
     "phone" TEXT,
     "latitude" DECIMAL(65,30) NOT NULL,
     "longitude" DECIMAL(65,30) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "gyms_pkey" PRIMARY KEY ("id")
 );
@@ -42,3 +50,4 @@ ALTER TABLE "check_ins" ADD CONSTRAINT "check_ins_user_id_fkey" FOREIGN KEY ("us
 
 -- AddForeignKey
 ALTER TABLE "check_ins" ADD CONSTRAINT "check_ins_gym_id_fkey" FOREIGN KEY ("gym_id") REFERENCES "gyms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
