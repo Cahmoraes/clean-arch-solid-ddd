@@ -23,8 +23,9 @@ describe('Autenticar Usuário', () => {
   beforeEach(async () => {
     const inMemoryRepository = new InMemoryUserRepository()
     container.snapshot()
+    await container.unbind(TYPES.Repositories.User)
     container
-      .rebind<UserRepository>(TYPES.Repositories.User)
+      .bind<UserRepository>(TYPES.Repositories.User)
       .toConstantValue(inMemoryRepository)
     userRepository = container.get<InMemoryUserRepository>(
       TYPES.Repositories.User,

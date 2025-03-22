@@ -18,7 +18,8 @@ describe('Buscar Academia', () => {
   beforeEach(async () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
-    container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    await container.unbind(TYPES.Repositories.Gym)
+    container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
     fastifyServer = await serverBuild()
     await fastifyServer.ready()
   })

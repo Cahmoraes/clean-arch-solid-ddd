@@ -20,8 +20,9 @@ describe('Obter Perfil do usuário por ID', () => {
   beforeEach(async () => {
     userRepository = new InMemoryUserRepository()
     container.snapshot()
+    await container.unbind(TYPES.Repositories.User)
     container
-      .rebind<UserRepository>(TYPES.Repositories.User)
+      .bind<UserRepository>(TYPES.Repositories.User)
       .toConstantValue(userRepository)
     authenticate = container.get<AuthenticateUseCase>(
       TYPES.UseCases.Authenticate,

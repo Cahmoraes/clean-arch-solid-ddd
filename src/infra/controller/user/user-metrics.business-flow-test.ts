@@ -21,10 +21,12 @@ describe('Obter Métricas do Usuário', () => {
   beforeEach(async () => {
     userRepository = new InMemoryUserRepository()
     container.snapshot()
-    container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
+    await container.unbind(TYPES.Repositories.User)
+    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
     checkInRepository = new InMemoryCheckInRepository()
+    await container.unbind(TYPES.Repositories.CheckIn)
     container
-      .rebind(TYPES.Repositories.CheckIn)
+      .bind(TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
     authenticate = container.get<AuthenticateUseCase>(
       TYPES.UseCases.Authenticate,

@@ -9,9 +9,10 @@ import { TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import type { Queue } from '../queue/queue'
 import { QUEUES } from '../queue/queues'
+import type { Controller } from './controller'
 
 @injectable()
-export class QueueController {
+export class QueueController implements Controller {
   constructor(
     @inject(TYPES.Queue)
     private readonly queue: Queue,

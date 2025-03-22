@@ -73,7 +73,7 @@ export class UpdateUserProfileController implements Controller {
     })
     if (profileUpdateResult.isFailure()) {
       return ResponseFactory.UNPROCESSABLE_ENTITY({
-        message: profileUpdateResult.value.message,
+        message: profileUpdateResult.value.toString(),
       })
     }
     return ResponseFactory.CREATED({
