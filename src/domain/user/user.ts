@@ -237,7 +237,7 @@ export class User extends Observable {
       name: this.name,
       email: this.email,
     })
-    this.notifyObservers(event)
+    this.notify(event)
     return success(null)
   }
 
@@ -260,7 +260,7 @@ export class User extends Observable {
       email: this.email,
       name: this.name,
     })
-    this.notifyObservers(event)
+    this.notify(event)
     return success(null)
   }
 
