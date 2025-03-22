@@ -20,8 +20,6 @@ const envSchema = z.object({
   REDIS_HOST: z.string().default('127.0.0.1'),
   REDIS_PORT: z.coerce.number().default(6379),
   TTL: z.coerce.number().default(60),
-  SUPABASE_URL: z.string(),
-  SUPABASE_KEY: z.string(),
   DIRECT_URL: z.string().optional(),
 })
 
