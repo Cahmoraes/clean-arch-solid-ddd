@@ -138,7 +138,7 @@ describe('User Entity', () => {
     }
     const observer = vi.fn()
     const user = User.create(input).forceSuccess().value
-    user.addObserver(observer)
+    user.subscribe(observer)
     const updateUserResult = user.updateProfile({
       email: 'martin@fowler.com',
       name: 'Martin Fowler',

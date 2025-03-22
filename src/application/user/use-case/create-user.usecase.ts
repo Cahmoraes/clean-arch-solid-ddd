@@ -56,8 +56,8 @@ export class CreateUserUseCase {
   public async execute(
     input: CreateUserUseCaseInput,
   ): Promise<CreateUserOutput> {
-    const foundUser = await this.userOfEmail(input)
-    if (foundUser) return failure(new UserAlreadyExistsError())
+    const userFound = await this.userOfEmail(input)
+    if (userFound) return failure(new UserAlreadyExistsError())
     this.subscribeToDomainEvent()
     const createUserResult = await this.createUser(input)
     if (createUserResult.isFailure()) return failure(createUserResult.value)
@@ -70,8 +70,8 @@ export class CreateUserUseCase {
   private async userOfEmail(
     userDTO: CreateUserUseCaseInput,
   ): Promise<User | null> {
-    const userObjectQuery = UserQuery.from(userDTO).addField('email')
-    return this.userRepository.get(userObjectQuery)
+    const userQuery = UserQuery.from(userDTO).addField('email')
+    return this.userRepository.get(userQuery)
   }
 
   private subscribeToDomainEvent(): void {

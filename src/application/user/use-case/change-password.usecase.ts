@@ -43,13 +43,13 @@ export class ChangePasswordUseCase {
   public async execute(
     input: ChangePasswordUseCaseInput,
   ): Promise<ChangePasswordUseCaseOutput> {
-    const userOrNull = await this.userRepository.userOfId(input.userId)
-    if (!userOrNull) return failure(new UserNotFoundError())
-    if (this.isPasswordUnchanged(userOrNull, input.newRawPassword)) {
+    const userFound = await this.userRepository.userOfId(input.userId)
+    if (!userFound) return failure(new UserNotFoundError())
+    if (this.isPasswordUnchanged(userFound, input.newRawPassword)) {
       return failure(new PasswordUnchangedError())
     }
-    userOrNull.addObserver(this.handlePasswordChangedEvent)
-    const result = userOrNull.changePassword(input.newRawPassword)
+    userFound.subscribe(this.handlePasswordChangedEvent)
+    const result = userFound.changePassword(input.newRawPassword)
     if (result.isFailure()) return failure(result.value)
     return success(null)
   }

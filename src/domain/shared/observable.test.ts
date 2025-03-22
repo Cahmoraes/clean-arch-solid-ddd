@@ -9,8 +9,8 @@ describe('Observable Entity', () => {
   test('Deve notificar o observer', async () => {
     const observable = new Observable()
     const observer = vi.fn()
-    observable.addObserver(observer)
-    await observable.notifyObservers('data')
+    observable.subscribe(observer)
+    await observable.notify('data')
     expect(observer).toHaveBeenCalledWith('data')
   })
 })
