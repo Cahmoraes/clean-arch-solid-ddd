@@ -17,9 +17,9 @@ describe('CheckInHistoryUseCase', () => {
   let userRepository: InMemoryUserRepository
   let checkInRepository: InMemoryCheckInRepository
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
-    const repositories = setupInMemoryRepositories()
+    const repositories = await setupInMemoryRepositories()
     userRepository = repositories.userRepository
     checkInRepository = repositories.checkInRepository
     sut = container.get<CheckInHistoryUseCase>(TYPES.UseCases.CheckInHistory)

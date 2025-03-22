@@ -11,6 +11,7 @@ export interface CreateAndSaveUserProps {
   role?: RoleTypes
 }
 
+// eslint-disable-next-line complexity
 export async function createAndSaveUser(props: CreateAndSaveUserProps) {
   const userId = props.id ?? 'any_user_id'
   const name = props.name ?? 'any_name'

@@ -15,9 +15,9 @@ describe('UserProfile', () => {
   let sut: UserProfileUseCase
   let userRepository: InMemoryUserRepository
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
-    userRepository = setupInMemoryRepositories().userRepository
+    userRepository = (await setupInMemoryRepositories()).userRepository
     sut = container.get<UserProfileUseCase>(TYPES.UseCases.UserProfile)
   })
 

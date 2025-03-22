@@ -14,9 +14,9 @@ describe('SearchGymUseCase', () => {
   let sut: SearchGymUseCase
   let gymRepository: InMemoryGymRepository
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
-    gymRepository = setupInMemoryRepositories().gymRepository
+    gymRepository = (await setupInMemoryRepositories()).gymRepository
     sut = container.get(TYPES.UseCases.SearchGym)
   })
 

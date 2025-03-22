@@ -1,4 +1,4 @@
-import { ContainerModule, type interfaces } from 'inversify'
+import { ContainerModule } from 'inversify'
 
 import type { GymRepository } from '@/application/gym/repository/gym-repository'
 import { CreateGymUseCase } from '@/application/gym/use-case/create-gym.usecase'
@@ -12,7 +12,7 @@ import { PrismaGymRepository } from '@/infra/database/repository/prisma/prisma-g
 import { TYPES } from '../../types'
 import { GymRepositoryProvider } from './gym-repository-provider'
 
-export const gymContainer = new ContainerModule((bind: interfaces.Bind) => {
+export const gymContainer = new ContainerModule(({ bind }) => {
   bind<GymRepository>(PrismaGymRepository).toSelf()
   bind<GymRepository>(InMemoryGymRepository).toSelf()
   bind<GymRepository>(TYPES.Repositories.Gym).toDynamicValue(

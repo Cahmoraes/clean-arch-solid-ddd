@@ -11,9 +11,9 @@ describe('UserMetricsUseCase', () => {
   let sut: UserMetricsUseCase
   let checkInRepository: InMemoryCheckInRepository
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
-    checkInRepository = setupInMemoryRepositories().checkInRepository
+    checkInRepository = (await setupInMemoryRepositories()).checkInRepository
     sut = container.get<UserMetricsUseCase>(TYPES.UseCases.UserMetrics)
   })
 

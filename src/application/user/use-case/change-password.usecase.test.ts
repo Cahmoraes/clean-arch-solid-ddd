@@ -21,13 +21,14 @@ describe('ChangePasswordUseCase', () => {
   let userRepository: InMemoryUserRepository
   let queue: QueueMemoryAdapter
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
-    const repositories = setupInMemoryRepositories()
+    const repositories = await setupInMemoryRepositories()
     userRepository = repositories.userRepository
     queue = new QueueMemoryAdapter()
-    container.rebind(TYPES.Queue).toConstantValue(queue)
-    sut = container.resolve(ChangePasswordUseCase)
+    await container.unbind(TYPES.Queue)
+    container.bind(TYPES.Queue).toConstantValue(queue)
+    sut = container.get(ChangePasswordUseCase, { autobind: true })
   })
 
   afterEach(() => {

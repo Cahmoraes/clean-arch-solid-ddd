@@ -10,15 +10,16 @@ export interface SetupInMemoryRepositoriesOutput {
   checkInRepository: InMemoryCheckInRepository
 }
 
-export function setupInMemoryRepositories(): SetupInMemoryRepositoriesOutput {
+export async function setupInMemoryRepositories(): Promise<SetupInMemoryRepositoriesOutput> {
   const userRepository = new InMemoryUserRepository()
-  container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
+  await container.unbind(TYPES.Repositories.User)
+  container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
   const gymRepository = new InMemoryGymRepository()
-  container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+  await container.unbind(TYPES.Repositories.Gym)
+  container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
   const checkInRepository = new InMemoryCheckInRepository()
-  container
-    .rebind(TYPES.Repositories.CheckIn)
-    .toConstantValue(checkInRepository)
+  await container.unbind(TYPES.Repositories.CheckIn)
+  container.bind(TYPES.Repositories.CheckIn).toConstantValue(checkInRepository)
   return {
     userRepository,
     gymRepository,

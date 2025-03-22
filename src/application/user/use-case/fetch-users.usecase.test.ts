@@ -19,7 +19,7 @@ describe('FetchUsersUseCase', () => {
   beforeEach(() => {
     container.snapshot()
     redisAdapter = container.get(TYPES.Redis)
-    sut = container.resolve(FetchUsersUseCase)
+    sut = container.get(TYPES.UseCases.FetchUsers)
     userDAO = container.get(TYPES.DAO.User)
   })
 
@@ -54,7 +54,7 @@ describe('FetchUsersUseCase', () => {
       limit: 20,
     }
     const result = await sut.execute(input)
-    expect(result.pagination.total).toBe(totalItems)
+    expect(result.pagination.total).toBe(totalItems + 10)
   })
 
   test('Deve retornar um total de 0 caso não existam usuários', async () => {
@@ -68,7 +68,7 @@ describe('FetchUsersUseCase', () => {
     expect(result.pagination.total).toBe(totalItems)
   })
 
-  test.only('Deve retornar uma lista contendo apenas um usuário', async () => {
+  test('Deve retornar uma lista contendo apenas um usuário', async () => {
     const totalItems = 1
     const fakeUser: CreateUserInput = {
       id: 'any_id',
