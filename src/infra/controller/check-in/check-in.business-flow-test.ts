@@ -27,11 +27,14 @@ describe('Realizar CheckIn', () => {
     gymRepository = new InMemoryGymRepository()
     checkInRepository = new InMemoryCheckInRepository()
     userRepository = new InMemoryUserRepository()
-    container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    await container.unbind(TYPES.Repositories.Gym)
+    container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    await container.unbind(TYPES.Repositories.CheckIn)
     container
-      .rebind(TYPES.Repositories.CheckIn)
+      .bind(TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
-    container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
+    await container.unbind(TYPES.Repositories.User)
+    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
     authenticate = container.get<AuthenticateUseCase>(
       TYPES.UseCases.Authenticate,
     )

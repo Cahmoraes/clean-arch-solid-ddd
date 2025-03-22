@@ -23,8 +23,10 @@ describe('Cadastrar Academia', () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
     userRepository = new InMemoryUserRepository()
-    container.rebind(TYPES.Repositories.User).toConstantValue(userRepository)
-    container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    await container.unbind(TYPES.Repositories.User)
+    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
+    await container.unbind(TYPES.Repositories.Gym)
+    container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
     authenticate = container.get<AuthenticateUseCase>(
       TYPES.UseCases.Authenticate,
     )

@@ -7,7 +7,7 @@ import type { Queue } from './queue'
 
 @injectable()
 export class RabbitMQAdapter implements Queue {
-  private connection?: amqp.Connection
+  private connection?: amqp.ChannelModel
   private _channel?: amqp.Channel
 
   @Logger({
@@ -37,8 +37,8 @@ export class RabbitMQAdapter implements Queue {
   }
 
   private assertConnection(
-    connection?: amqp.Connection,
-  ): asserts connection is amqp.Connection {
+    connection?: amqp.ChannelModel,
+  ): asserts connection is amqp.ChannelModel {
     if (!connection) {
       throw new Error('Connection not established')
     }

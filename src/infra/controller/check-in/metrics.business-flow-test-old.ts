@@ -16,8 +16,9 @@ describe('Obter Métricas de CheckIn', () => {
   beforeEach(async () => {
     container.snapshot()
     checkInRepository = new InMemoryCheckInRepository()
+    await container.unbind(TYPES.Repositories.CheckIn)
     container
-      .rebind(TYPES.Repositories.CheckIn)
+      .bind(TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
     fastifyServer = await serverBuild()
     await fastifyServer.ready()

@@ -3,7 +3,7 @@ import { RoleValues } from '@/domain/user/value-object/role'
 
 import { UserQuery } from './user-query'
 
-describe('UserObjectQuery', () => {
+describe('UserQuery', () => {
   const userProps = {
     id: '1',
     name: 'John Doe',
@@ -14,7 +14,7 @@ describe('UserObjectQuery', () => {
     updatedAt: new Date(),
   }
 
-  test('Deve criar um UserObjectQuery', () => {
+  test('Deve criar um UserQuery', () => {
     const user = User.restore(userProps)
     const userObjectQuery = UserQuery.from(user).addField('name').addField('id')
     expect(userObjectQuery.userDTO).toBe(user)
