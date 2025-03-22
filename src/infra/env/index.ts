@@ -1,14 +1,10 @@
-import { config } from 'dotenv'
+import 'dotenv/config'
+
 import { z } from 'zod'
 import { fromError } from 'zod-validation-error'
 
-config()
-// const envObject = config({
-//   path: process.env.NODE_ENV === 'test' ? '.env.development' : '.env',
-// }).parsed
-
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production']).default('production'),
+  NODE_ENV: z.enum(['test', 'production']).default('production'),
   PORT: z.coerce.number(),
   HOST: z.string().default('0.0.0.0'),
   USE_PRISMA: z.string().transform((v) => v === 'true'),
@@ -24,6 +20,9 @@ const envSchema = z.object({
   REDIS_HOST: z.string().default('127.0.0.1'),
   REDIS_PORT: z.coerce.number().default(6379),
   TTL: z.coerce.number().default(60),
+  SUPABASE_URL: z.string(),
+  SUPABASE_KEY: z.string(),
+  DIRECT_URL: z.string().optional(),
 })
 
 const _env = envSchema.safeParse(process.env)
@@ -37,10 +36,10 @@ const env = _env.data
 
 export { env }
 
-export function isDevelopment() {
-  return env.NODE_ENV === 'development'
+export function isDevelopment(): boolean {
+  return env.NODE_ENV === 'test'
 }
 
-export function isProduction() {
+export function isProduction(): boolean {
   return env.NODE_ENV === 'production'
 }

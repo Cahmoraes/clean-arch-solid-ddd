@@ -71,7 +71,6 @@ export class CreateUserUseCase {
     userDTO: CreateUserUseCaseInput,
   ): Promise<User | null> {
     const userObjectQuery = UserQuery.from(userDTO).addField('email')
-    console.log(this.userRepository)
     return this.userRepository.get(userObjectQuery)
   }
 

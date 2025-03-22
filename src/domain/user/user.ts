@@ -62,6 +62,38 @@ export type UserValidationErrors =
   | InvalidNameLengthError
   | InvalidEmailError
 
+/**
+ * Represents a user in the system.
+ *
+ * The User class extends Observable to enable event-based notifications
+ * when user-related actions occur.
+ *
+ * @remarks
+ * User objects cannot be created directly. Instead, use the static
+ * `create` method for new users or `restore` for reconstituting users
+ * from persistence.
+ *
+ * @example
+ * ```typescript
+ * // Creating a new user
+ * const userResult = User.create({
+ *   id: '123',
+ *   name: 'John Doe',
+ *   email: 'john@example.com',
+ *   password: 'password123',
+ *   role: 'MEMBER'
+ * });
+ *
+ * if (userResult.isSuccess()) {
+ *   const user = userResult.value;
+ *   // Use user object
+ * }
+ * ```
+ *
+ * @fires UserCreatedEvent - When a new user is created
+ * @fires PasswordChangedEvent - When a user's password is changed
+ * @fires UserProfileUpdatedEvent - When a user's profile is updated
+ */
 export class User extends Observable {
   private _id: Id
   private _name: Name
@@ -107,6 +139,21 @@ export class User extends Observable {
     )
   }
 
+  /**
+   * Validates user creation properties and returns a validated user object or validation errors.
+   *
+   * @param userCreateProps - The properties required to create a user
+   * @returns Either a list of validation errors or validated user properties
+   *
+   * @remarks
+   * This method performs validation on all required user properties:
+   * - name: validated through the Name value object
+   * - email: validated through the Email value object
+   * - password: validated through the Password value object
+   *
+   * If any validation fails, it returns a failure containing all validation errors.
+   * If all validations pass, it returns a success with the validated property objects.
+   */
   private static validate(
     userCreateProps: UserCreate,
   ): Either<UserValidationErrors[], ValidatedUserProps> {
