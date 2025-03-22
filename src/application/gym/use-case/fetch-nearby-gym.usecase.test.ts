@@ -13,10 +13,11 @@ describe('FetchNearbyGymUsecase', () => {
   let sut: FetchNearbyGym
   let gymRepository: InMemoryGymRepository
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
-    container.rebind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    await container.unbind(TYPES.Repositories.Gym)
+    container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
     sut = container.get(TYPES.UseCases.FetchNearbyGym)
   })
 

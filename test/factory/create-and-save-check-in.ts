@@ -10,6 +10,7 @@ export interface CreateAndSaveCheckInProps {
   userLongitude?: number
 }
 
+// eslint-disable-next-line complexity
 export async function createAndSaveCheckIn(props: CreateAndSaveCheckInProps) {
   const input: CheckInCreateProps = {
     id: props.id ?? 'any_id',

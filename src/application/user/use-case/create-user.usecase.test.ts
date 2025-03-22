@@ -16,11 +16,12 @@ describe('CreateUserUseCase', () => {
   let userRepository: UserRepository
   let queue: QueueMemoryAdapter
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
-    userRepository = setupInMemoryRepositories().userRepository
+    userRepository = (await setupInMemoryRepositories()).userRepository
     queue = new QueueMemoryAdapter()
-    container.rebind(TYPES.Queue).toConstantValue(queue)
+    await container.unbind(TYPES.Queue)
+    container.bind(TYPES.Queue).toConstantValue(queue)
     sut = container.get(TYPES.UseCases.CreateUser)
   })
 

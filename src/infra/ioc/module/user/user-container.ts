@@ -1,4 +1,4 @@
-import { ContainerModule, type interfaces } from 'inversify'
+import { ContainerModule } from 'inversify'
 
 import { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
 import { ChangePasswordUseCase } from '@/application/user/use-case/change-password.usecase'
@@ -24,7 +24,7 @@ import { TYPES } from '../../types'
 import { UserDAOProvider } from './user-dao-provider'
 import { UserRepositoryProvider } from './user-repository-provider'
 
-export const userContainer = new ContainerModule((bind: interfaces.Bind) => {
+export const userContainer = new ContainerModule(({ bind }) => {
   bind(PrismaUserRepository).toSelf()
   bind(InMemoryUserRepository).toSelf()
   bind(TYPES.Repositories.User)

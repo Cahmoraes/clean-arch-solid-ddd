@@ -14,7 +14,7 @@ async function onlyRejectFunction() {
   return Promise.reject('Only reject function')
 }
 
-describe.only('Retry', () => {
+describe('Retry', () => {
   beforeAll(() => {
     vi.useFakeTimers()
   })

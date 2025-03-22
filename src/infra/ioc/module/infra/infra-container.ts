@@ -1,4 +1,4 @@
-import { ContainerModule, type interfaces } from 'inversify'
+import { ContainerModule } from 'inversify'
 
 import { JsonWebTokenAdapter } from '@/infra/auth/json-web-token-adapter'
 import { QueueController } from '@/infra/controller/queue-controller'
@@ -19,7 +19,7 @@ import { CacheDBProvider } from './cache-db-provider'
 import { MailerProvider } from './mailer-provider'
 import { QueueProvider } from './queue-provider'
 
-export const infraContainer = new ContainerModule((bind: interfaces.Bind) => {
+export const infraContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Prisma.Client).toConstantValue(prismaClient)
   bind(TYPES.PG.Client).toConstantValue(new PgClient())
   bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)

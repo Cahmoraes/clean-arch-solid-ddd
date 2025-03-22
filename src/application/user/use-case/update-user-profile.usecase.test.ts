@@ -18,10 +18,10 @@ describe('UpdateUserProfile', () => {
   let sut: UpdateUserProfileUseCase
   let userRepository: InMemoryUserRepository
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
-    userRepository = setupInMemoryRepositories().userRepository
-    sut = container.resolve(UpdateUserProfileUseCase)
+    userRepository = (await setupInMemoryRepositories()).userRepository
+    sut = container.get(UpdateUserProfileUseCase, { autobind: true })
   })
 
   afterEach(() => {

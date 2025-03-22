@@ -15,9 +15,9 @@ describe('AuthenticateUseCase', () => {
   let sut: AuthenticateUseCase
   let userRepository: UserRepository
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
-    userRepository = setupInMemoryRepositories().userRepository
+    userRepository = (await setupInMemoryRepositories()).userRepository
     sut = container.get(TYPES.UseCases.Authenticate)
   })
 

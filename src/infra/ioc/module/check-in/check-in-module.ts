@@ -1,4 +1,4 @@
-import { ContainerModule, type interfaces } from 'inversify'
+import { ContainerModule } from 'inversify'
 
 import { CheckInUseCase } from '@/application/check-in/use-case/check-in.usecase'
 import { CheckInHistoryUseCase } from '@/application/check-in/use-case/check-in-history.usecase'
@@ -11,12 +11,12 @@ import { PrismaCheckInRepository } from '@/infra/database/repository/prisma/pris
 import { TYPES } from '../../types'
 import { CheckInRepositoryProvider } from './check-in-repository-provider'
 
-export const checkInModule = new ContainerModule((bind: interfaces.Bind) => {
+export const checkInModule = new ContainerModule(({ bind }) => {
   bind<PrismaCheckInRepository>(PrismaCheckInRepository).toSelf()
   bind<InMemoryCheckInRepository>(InMemoryCheckInRepository).toSelf()
-  bind(TYPES.Repositories.CheckIn).toDynamicValue(
-    CheckInRepositoryProvider.provide,
-  )
+  bind(TYPES.Repositories.CheckIn)
+    .toDynamicValue(CheckInRepositoryProvider.provide)
+    .inSingletonScope()
   bind(TYPES.Controllers.ValidateCheckIn).to(ValidateCheckInController)
   bind(TYPES.Controllers.CheckIn).to(CheckInController)
   bind(TYPES.UseCases.CheckIn).to(CheckInUseCase)
