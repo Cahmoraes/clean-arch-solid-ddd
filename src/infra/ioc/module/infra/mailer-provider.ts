@@ -8,7 +8,7 @@ import { NodeMailerAdapter } from '@/infra/gateway/node-mailer-adapter'
 export class MailerProvider {
   public static provide(context: ResolutionContext): MailerGateway {
     return isProduction()
-      ? context.get(MailerGatewayMemory)
-      : context.get(NodeMailerAdapter)
+      ? context.get(NodeMailerAdapter)
+      : context.get(MailerGatewayMemory)
   }
 }
