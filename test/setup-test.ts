@@ -14,12 +14,12 @@ config({
   override: true,
 })
 
-if (env.USE_PRISMA) {
-  execSync('npx dotenv -e .env.development -- npx prisma migrate deploy', {
-    stdio: 'inherit',
-  })
-  prismaSetupTest()
-}
+// if (env.USE_PRISMA) {
+//   execSync('npx dotenv -e .env.development -- npx prisma migrate deploy', {
+//     stdio: 'inherit',
+//   })
+//   prismaSetupTest()
+// }
 
 export function prismaSetupTest() {
   beforeAll(async () => {

@@ -35,11 +35,11 @@ export class DomainEventPublisher {
     subscribers.delete(subscriber)
   }
 
-  public async publish<T>(event: DomainEvent<T>): Promise<void> {
+  public publish<T>(event: DomainEvent<T>): void {
     if (!this.subscribers.has(event.eventName)) return
     const subscribers = this.subscribers.get(event.eventName)!
     for (const subscriber of subscribers) {
-      await subscriber(event)
+      subscriber(event)
     }
   }
 }
