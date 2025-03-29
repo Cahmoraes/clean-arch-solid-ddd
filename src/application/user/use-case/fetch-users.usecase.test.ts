@@ -16,8 +16,11 @@ describe('FetchUsersUseCase', () => {
   let userDAO: UserDAOMemory
   let redisAdapter: RedisAdapter
 
-  beforeEach(() => {
+  beforeEach(async () => {
     container.snapshot()
+    await container.unbind(TYPES.DAO.User)
+    const userDAOMemory = new UserDAOMemory()
+    container.bind(TYPES.DAO.User).toConstantValue(userDAOMemory)
     redisAdapter = container.get(TYPES.Redis)
     sut = container.get(TYPES.UseCases.FetchUsers)
     userDAO = container.get(TYPES.DAO.User)
@@ -54,7 +57,7 @@ describe('FetchUsersUseCase', () => {
       limit: 20,
     }
     const result = await sut.execute(input)
-    expect(result.pagination.total).toBe(totalItems + 10)
+    expect(result.pagination.total).toBe(totalItems)
   })
 
   test('Deve retornar um total de 0 caso não existam usuários', async () => {
@@ -77,6 +80,7 @@ describe('FetchUsersUseCase', () => {
       name: 'any_name',
       email: 'any_email',
     }
+
     userDAO.createFakeUser(fakeUser)
     const input: FetchUsersUseCaseInput = {
       page: 1,
