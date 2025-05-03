@@ -4,14 +4,14 @@ import { env } from '@/infra/env'
 
 import { DomainEventPublisher } from '../shared/event/domain-event-publisher'
 import { type Either, failure, success } from '../shared/value-object/either'
+import { ExistingId } from '../shared/value-object/existing-id'
 import { Id } from '../shared/value-object/id'
-import { ValidId } from '../shared/value-object/valid-id'
 import { CheckInCreatedEvent } from './event/check-in-created-event'
 
 interface CheckInProps {
   id: Id
-  userId: ValidId
-  gymId: ValidId
+  userId: ExistingId
+  gymId: ExistingId
   createdAt: Date
   validatedAt?: Date
   userLatitude: number
@@ -41,8 +41,8 @@ export type CheckInRestoreProps = {
 
 export class CheckIn {
   private readonly _id: Id
-  private readonly _userId: ValidId
-  private readonly _gymId: ValidId
+  private readonly _userId: ExistingId
+  private readonly _gymId: ExistingId
   private readonly _createdAt: Date
   private readonly _latitude: number
   private readonly _longitude: number
@@ -62,8 +62,8 @@ export class CheckIn {
 
   public static create(props: CheckInCreateProps) {
     const id = Id.create(props.id)
-    const userId = ValidId.create(props.userId)
-    const gymId = ValidId.create(props.gymId)
+    const userId = ExistingId.create(props.userId)
+    const gymId = ExistingId.create(props.gymId)
     const createdAt = new Date()
     const checkIn = new CheckIn({
       id,
@@ -91,8 +91,8 @@ export class CheckIn {
   public static restore(props: CheckInRestoreProps) {
     return new CheckIn({
       id: Id.create(props.id),
-      userId: ValidId.create(props.userId),
-      gymId: ValidId.create(props.gymId),
+      userId: ExistingId.create(props.userId),
+      gymId: ExistingId.create(props.gymId),
       createdAt: props.createdAt,
       validatedAt: props.validatedAt,
       userLatitude: props.userLatitude,

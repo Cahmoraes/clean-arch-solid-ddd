@@ -1,6 +1,6 @@
 import { InvalidIdError } from '../error/invalid-id-error'
 
-export class ValidId {
+export class ExistingId {
   private constructor(private readonly _value: string) {}
 
   get value(): string {
@@ -9,15 +9,15 @@ export class ValidId {
 
   public static create(aString: string) {
     if (!aString) throw new InvalidIdError()
-    return new ValidId(aString)
+    return new ExistingId(aString)
   }
 
   public static restore(aString: string) {
-    return new ValidId(aString)
+    return new ExistingId(aString)
   }
 
   public equals(other: unknown): boolean {
-    if (!(other instanceof ValidId)) return false
+    if (!(other instanceof ExistingId)) return false
     return other._value === this._value
   }
 }
