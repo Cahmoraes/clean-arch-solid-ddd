@@ -1,29 +1,29 @@
 import { InvalidIdError } from '../error/invalid-id-error'
-import { ValidId } from './valid-id'
+import { ExistingId } from './existing-id'
 
 describe('ValidId', () => {
   test('Teve criar um ID', () => {
     const validId = 'validId'
-    const id = ValidId.create(validId)
+    const id = ExistingId.create(validId)
     expect(id.value).toBeDefined()
   })
 
   test('Deve criar um ID com um valor definido', () => {
     const idValue = 'any_id'
-    const id = ValidId.create(idValue)
+    const id = ExistingId.create(idValue)
     expect(id.value).toBe(idValue)
   })
 
   test('Deve restaurar um ID', () => {
     const idValue = 'any_id'
-    const id = ValidId.restore(idValue)
+    const id = ExistingId.restore(idValue)
     expect(id.value).toBe(idValue)
   })
 
   test('Deve comparar dois IDs e retornar true se forem iguais', () => {
     const idValue = 'any_id'
-    const idOne = ValidId.create(idValue)
-    const idTwo = ValidId.create(idValue)
+    const idOne = ExistingId.create(idValue)
+    const idTwo = ExistingId.create(idValue)
     const result = idOne.equals(idTwo)
     expect(result).toBeTruthy()
   })
@@ -31,8 +31,8 @@ describe('ValidId', () => {
   test('Deve comparar dois IDs e retornar false se forem diferentes', () => {
     const idValueOne = 'idOne'
     const idValueTwo = 'idTwo'
-    const idOne = ValidId.create(idValueOne)
-    const idTwo = ValidId.create(idValueTwo)
+    const idOne = ExistingId.create(idValueOne)
+    const idTwo = ExistingId.create(idValueTwo)
     const result = idOne.equals(idTwo)
     expect(result).toBeFalsy()
   })
@@ -40,15 +40,15 @@ describe('ValidId', () => {
   test('Deve retornar false se o ID passado para comparação não for um ID', () => {
     const idValueOne = 'idOne'
     const idValueTwo = 'idTwo'
-    const idOne = ValidId.create(idValueOne)
+    const idOne = ExistingId.create(idValueOne)
     const idTwo = {
       _value: idValueTwo,
-    } as unknown as ValidId
+    } as unknown as ExistingId
     const result = idOne.equals(idTwo)
     expect(result).toBeFalsy()
   })
 
   test('Deve lançar um erro ao tentar criar um ID inválido', () => {
-    expect(() => ValidId.create('')).toThrow(InvalidIdError)
+    expect(() => ExistingId.create('')).toThrow(InvalidIdError)
   })
 })
