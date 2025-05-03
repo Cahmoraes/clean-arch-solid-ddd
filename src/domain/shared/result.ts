@@ -19,8 +19,8 @@ export class Result<Type> {
     const errors = results
       .filter((error) => error.isFailure())
       .map((error) => error.value)
-    const hasErrors = errors.length === 0
-    return hasErrors ? Result.ok(null) : Result.fail(errors)
+    const hasErrors = errors.length > 0
+    return hasErrors ? Result.fail(errors) : Result.ok(null)
   }
 
   private static ok<Type>(aValue: Type): Result<Type> {
