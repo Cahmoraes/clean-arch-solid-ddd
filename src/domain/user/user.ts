@@ -255,7 +255,7 @@ export class User extends Observable {
     if (userCreateResult.isFailure()) return failure(userCreateResult.value)
     this._email = userCreateResult.value._email
     this._name = userCreateResult.value._name
-    this.refreshUpdatedAt()
+    void this.refreshUpdatedAt()
     const event = this.createUserProfileUpdatedEvent({
       email: this.email,
       name: this.name,

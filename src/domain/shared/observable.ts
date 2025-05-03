@@ -11,9 +11,9 @@ export class Observable {
     this.observers.delete(observer)
   }
 
-  public async notify<TData>(data: TData): Promise<void> {
+  public async notify<Event>(event: Event): Promise<void> {
     for (const observer of this.observers) {
-      await observer(data)
+      await observer(event)
     }
   }
 }
