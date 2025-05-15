@@ -1,7 +1,7 @@
 import request from 'supertest'
 import { createAndSaveGym } from 'test/factory/create-and-save-gym'
+import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
-import { serverBuild } from '@/bootstrap/server-build'
 import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
@@ -18,9 +18,8 @@ describe('Buscar Academia', () => {
   beforeEach(async () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
-    await container.unbind(TYPES.Repositories.Gym)
-    container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
-    fastifyServer = await serverBuild()
+    container.rebindSync(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()
   })
 

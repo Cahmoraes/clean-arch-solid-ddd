@@ -12,14 +12,13 @@ export interface SetupInMemoryRepositoriesOutput {
 
 export async function setupInMemoryRepositories(): Promise<SetupInMemoryRepositoriesOutput> {
   const userRepository = new InMemoryUserRepository()
-  await container.unbind(TYPES.Repositories.User)
-  container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
+  container.rebindSync(TYPES.Repositories.User).toConstantValue(userRepository)
   const gymRepository = new InMemoryGymRepository()
-  await container.unbind(TYPES.Repositories.Gym)
-  container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+  container.rebindSync(TYPES.Repositories.Gym).toConstantValue(gymRepository)
   const checkInRepository = new InMemoryCheckInRepository()
-  await container.unbind(TYPES.Repositories.CheckIn)
-  container.bind(TYPES.Repositories.CheckIn).toConstantValue(checkInRepository)
+  container
+    .rebindSync(TYPES.Repositories.CheckIn)
+    .toConstantValue(checkInRepository)
   return {
     userRepository,
     gymRepository,
