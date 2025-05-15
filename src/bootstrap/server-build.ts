@@ -23,6 +23,7 @@ interface ConstructorClass {
 }
 
 export async function serverBuild() {
+  console.log('TYPES.Server.Fastify', container.isBound(TYPES.Server.Fastify))
   const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)
   const userController = resolve(CreateUserController)
   const authenticateController = resolve(AuthenticateController)

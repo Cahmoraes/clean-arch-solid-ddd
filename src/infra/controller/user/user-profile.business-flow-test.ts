@@ -1,9 +1,8 @@
 import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
+import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
-import type { UserRepository } from '@/application/user/repository/user-repository'
 import type { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
-import { serverBuild } from '@/bootstrap/server-build'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
@@ -20,14 +19,14 @@ describe('Obter Perfil do usuário por ID', () => {
   beforeEach(async () => {
     userRepository = new InMemoryUserRepository()
     container.snapshot()
-    await container.unbind(TYPES.Repositories.User)
     container
-      .bind<UserRepository>(TYPES.Repositories.User)
+      .rebindSync(TYPES.Repositories.User)
       .toConstantValue(userRepository)
+
     authenticate = container.get<AuthenticateUseCase>(
       TYPES.UseCases.Authenticate,
     )
-    fastifyServer = await serverBuild()
+    fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()
   })
 

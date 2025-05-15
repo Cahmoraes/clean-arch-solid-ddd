@@ -58,13 +58,13 @@ export class CreateUserController implements Controller {
     message: '✅',
   })
   public async init() {
-    this.httpServer.register(
+    await this.httpServer.register(
       'post',
       UserRoutes.CREATE,
       {
         callback: this.callback,
       },
-      makeCreateUserControllerSwaggerSchema(),
+      // makeCreateUserControllerSwaggerSchema(),
     )
   }
 

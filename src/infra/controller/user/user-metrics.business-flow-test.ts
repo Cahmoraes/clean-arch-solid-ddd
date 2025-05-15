@@ -1,9 +1,9 @@
 import request from 'supertest'
 import { createAndSaveCheckIn } from 'test/factory/create-and-save-check-in'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
+import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import type { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
-import { serverBuild } from '@/bootstrap/server-build'
 import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
@@ -21,17 +21,17 @@ describe('Obter Métricas do Usuário', () => {
   beforeEach(async () => {
     userRepository = new InMemoryUserRepository()
     container.snapshot()
-    await container.unbind(TYPES.Repositories.User)
-    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
-    checkInRepository = new InMemoryCheckInRepository()
-    await container.unbind(TYPES.Repositories.CheckIn)
     container
-      .bind(TYPES.Repositories.CheckIn)
+      .rebindSync(TYPES.Repositories.User)
+      .toConstantValue(userRepository)
+    checkInRepository = new InMemoryCheckInRepository()
+    container
+      .rebindSync(TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
     authenticate = container.get<AuthenticateUseCase>(
       TYPES.UseCases.Authenticate,
     )
-    fastifyServer = await serverBuild()
+    fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()
   })
 

@@ -1,7 +1,7 @@
 import request from 'supertest'
+import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import type { UserRepository } from '@/application/user/repository/user-repository'
-import { serverBuild } from '@/bootstrap/server-build'
 import { User } from '@/domain/user/user'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
@@ -15,14 +15,13 @@ describe('Atualizar Refresh Token', () => {
   let userRepository: UserRepository
 
   beforeEach(async () => {
-    const inMemoryRepository = new InMemoryUserRepository()
     container.snapshot()
-    await container.unbind(TYPES.Repositories.User)
+    const inMemoryUserRepository = new InMemoryUserRepository()
     container
-      .bind<UserRepository>(TYPES.Repositories.User)
-      .toConstantValue(inMemoryRepository)
-    userRepository = container.get<UserRepository>(TYPES.Repositories.User)
-    fastifyServer = await serverBuild()
+      .rebindSync(TYPES.Repositories.User)
+      .toConstantValue(inMemoryUserRepository)
+    userRepository = inMemoryUserRepository
+    fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()
   })
 
@@ -49,11 +48,12 @@ describe('Atualizar Refresh Token', () => {
       })
 
     const refreshToken = responseAuthenticate.headers['set-cookie'][0]
+    console.log('refreshToken', refreshToken)
     const responseRefreshToken = await request(fastifyServer.server)
       .patch(UserRoutes.REFRESH)
       .set('Cookie', refreshToken)
       .send()
-
+    console.log('.body.message', responseRefreshToken.body.message)
     expect(responseRefreshToken.status).toBe(200)
     expect(responseRefreshToken.body.message).toEqual(expect.any(String))
   })
