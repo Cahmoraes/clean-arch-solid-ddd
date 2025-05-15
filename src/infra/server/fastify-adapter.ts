@@ -36,8 +36,8 @@ export class FastifyAdapter implements HttpServer {
 
   private async initialize(): Promise<void> {
     this.setupErrorHandler()
-    await this.setupCORS()
-    await this.setupSwagger()
+    // await this.setupCORS()
+    // await this.setupSwagger()
   }
 
   private async setupCORS() {
@@ -81,18 +81,26 @@ export class FastifyAdapter implements HttpServer {
     handlers: HandlerOptions,
     schema?: Schema,
   ): Promise<void> {
-    this._server[method](
-      path,
-      {
-        schema,
-        onRequest: this.authenticateOnRequestOrUndefined(handlers.isProtected),
-        preHandler: this.onRequestPreHandlerOrUndefined(handlers.onlyAdmin),
-      },
-      async (request: FastifyRequest, reply: FastifyReply) => {
-        const result = await handlers.callback(request, reply)
-        reply.status(result.status).send(result.body)
-      },
-    )
+    try {
+      this._server[method](
+        path,
+        {
+          schema,
+          onRequest: this.authenticateOnRequestOrUndefined(
+            handlers.isProtected,
+          ),
+          preHandler: this.onRequestPreHandlerOrUndefined(handlers.onlyAdmin),
+        },
+        async (request: FastifyRequest, reply: FastifyReply) => {
+          const result = await handlers.callback(request, reply)
+          reply.status(result.status).send(result.body)
+        },
+      )
+      console.log(`Route registered: ${method.toUpperCase()} ${path}`)
+    } catch (error) {
+      console.error(`Error registering route: ${method.toUpperCase()} ${path}`)
+      console.error(error)
+    }
   }
 
   private authenticateOnRequestOrUndefined(enableAuthenticate?: boolean) {
@@ -130,10 +138,11 @@ export class FastifyAdapter implements HttpServer {
   }
 
   public async ready(): Promise<undefined> {
-    return this._server.ready()
+    await this._server.ready()
+    console.log('Server is ready')
   }
 
   public async close(): Promise<void> {
-    await this._server.close()
+    return this._server.close()
   }
 }

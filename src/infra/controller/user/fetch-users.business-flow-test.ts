@@ -1,6 +1,6 @@
 import request from 'supertest'
+import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
-import { serverBuild } from '@/bootstrap/server-build'
 import { UserDAOMemory } from '@/infra/database/dao/in-memory/user-dao-memory'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
@@ -14,8 +14,11 @@ describe('Buscar Usuários', () => {
 
   beforeEach(async () => {
     container.snapshot()
+    const userDAOMemory = new UserDAOMemory()
+    container.rebindSync(TYPES.DAO.User).toConstantValue(userDAOMemory)
+    userDAO = userDAOMemory
     userDAO = container.get(TYPES.DAO.User)
-    fastifyServer = await serverBuild()
+    fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()
   })
 
@@ -78,6 +81,7 @@ describe('Buscar Usuários', () => {
 
   test('Deve retornar os usuários da página 1 em CSV', async () => {
     const fakeId = 'fake_id'
+    console.log({ userDAO })
     userDAO.createFakeUser({
       name: 'any_name',
       email: 'any_email',

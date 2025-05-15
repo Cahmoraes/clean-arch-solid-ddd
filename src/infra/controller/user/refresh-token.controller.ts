@@ -26,6 +26,10 @@ interface Sub {
   email: string
 }
 
+interface Cookie {
+  refresh_token: string
+}
+
 const refreshTokenRequestSchema = z.object({
   cookie: z.string(),
 })
@@ -68,12 +72,14 @@ export class RefreshTokenController implements Controller {
         message: cookieOrError.value.message,
       })
     }
-    const cookie = this.cookieManager.parse(cookieOrError.value.cookie)
+    const cookie = this.cookieParse(cookieOrError.value.cookie)
+    console.log('cookie', cookie)
     const verified = this.authToken.verify<Sub>(
-      cookie.refreshToken,
+      cookie.refresh_token,
       env.PRIVATE_KEY,
     )
     if (verified.isFailure()) {
+      console.log('****** aqui *******')
       this.warnOnRefreshTokenFailure(cookie, verified.value.message)
       return ResponseFactory.create({
         status: HTTP_STATUS.FORBIDDEN,
@@ -88,10 +94,12 @@ export class RefreshTokenController implements Controller {
     })
   }
 
-  private warnOnRefreshTokenFailure(
-    cookie: Record<string, string | undefined>,
-    message: string,
-  ) {
+  private cookieParse(cookie: string): Cookie {
+    const parsedCookie = this.cookieManager.parse(cookie)
+    return parsedCookie as unknown as Cookie
+  }
+
+  private warnOnRefreshTokenFailure(cookie: Cookie, message: string) {
     this.logger.warn(this, {
       cookie: cookie,
       message,

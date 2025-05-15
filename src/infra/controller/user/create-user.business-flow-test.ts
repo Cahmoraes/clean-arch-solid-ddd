@@ -1,7 +1,7 @@
 import request from 'supertest'
+import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import type { UserRepository } from '@/application/user/repository/user-repository'
-import { serverBuild } from '@/bootstrap/server-build'
 import { User } from '@/domain/user/user'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
@@ -18,10 +18,11 @@ describe('Cadastrar Usuário', () => {
   beforeEach(async () => {
     const inMemoryRepository = new InMemoryUserRepository()
     container.snapshot()
-    container.unbind(TYPES.Repositories.User)
-    container.bind(TYPES.Repositories.User).toConstantValue(inMemoryRepository)
+    container
+      .rebindSync(TYPES.Repositories.User)
+      .toConstantValue(inMemoryRepository)
     userRepository = container.get<UserRepository>(TYPES.Repositories.User)
-    fastifyServer = await serverBuild()
+    fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()
   })
 
@@ -85,7 +86,7 @@ describe('Cadastrar Usuário', () => {
     })
   })
 
-  test.only('Não deve criar um usuário com a propriedade name inválida. Acima de 30 caracteres', async () => {
+  test('Não deve criar um usuário com a propriedade name inválida. Acima de 30 caracteres', async () => {
     const input = {
       name: 'any_name'.repeat(30),
       email: 'john@doe.com',

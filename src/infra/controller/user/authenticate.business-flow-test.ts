@@ -1,9 +1,8 @@
 import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
+import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import type { User as UserToken } from '@/@types/custom'
-import type { UserRepository } from '@/application/user/repository/user-repository'
-import { serverBuild } from '@/bootstrap/server-build'
 import { RoleValues } from '@/domain/user/value-object/role'
 import type { JsonWebTokenAdapter } from '@/infra/auth/json-web-token-adapter'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
@@ -23,15 +22,14 @@ describe('Autenticar Usuário', () => {
   beforeEach(async () => {
     const inMemoryRepository = new InMemoryUserRepository()
     container.snapshot()
-    await container.unbind(TYPES.Repositories.User)
     container
-      .bind<UserRepository>(TYPES.Repositories.User)
+      .rebindSync(TYPES.Repositories.User)
       .toConstantValue(inMemoryRepository)
     userRepository = container.get<InMemoryUserRepository>(
       TYPES.Repositories.User,
     )
     jwtAdapter = container.get(TYPES.Tokens.Auth)
-    fastifyServer = await serverBuild()
+    fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()
   })
 
