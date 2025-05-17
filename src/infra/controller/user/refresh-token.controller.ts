@@ -73,13 +73,11 @@ export class RefreshTokenController implements Controller {
       })
     }
     const cookie = this.cookieParse(cookieOrError.value.cookie)
-    console.log('cookie', cookie)
     const verified = this.authToken.verify<Sub>(
       cookie.refresh_token,
       env.PRIVATE_KEY,
     )
     if (verified.isFailure()) {
-      console.log('****** aqui *******')
       this.warnOnRefreshTokenFailure(cookie, verified.value.message)
       return ResponseFactory.create({
         status: HTTP_STATUS.FORBIDDEN,
@@ -112,7 +110,7 @@ export class RefreshTokenController implements Controller {
     return { token, refreshToken }
   }
 
-  private encodeRefreshTokenCookie(aString: string) {
+  private encodeRefreshTokenCookie(aString: string): string {
     return this.cookieManager.serialize(env.REFRESH_TOKEN_NAME, aString, {
       path: '/',
       httpOnly: true,
