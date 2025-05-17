@@ -24,13 +24,12 @@ describe('ValidateCheckIn', () => {
     container.snapshot()
     checkInRepository = new InMemoryCheckInRepository()
     userRepository = new InMemoryUserRepository()
-    await container.unbind(TYPES.Repositories.CheckIn)
-
     container
-      .bind(TYPES.Repositories.CheckIn)
+      .rebindSync(TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
-    await container.unbind(TYPES.Repositories.User)
-    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
+    container
+      .rebindSync(TYPES.Repositories.User)
+      .toConstantValue(userRepository)
     sut = container.get(TYPES.UseCases.ValidateCheckIn)
   })
 
