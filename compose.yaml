@@ -28,6 +28,20 @@ services:
       - redis_data:/data
     command: ['redis-server', '--appendonly', 'yes']
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - postgresql
+      - rabbitmq
+      - redis
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
 volumes:
   postgresql_data:
   redis_data:
