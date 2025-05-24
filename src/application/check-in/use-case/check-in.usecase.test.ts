@@ -87,7 +87,7 @@ describe('CheckInUseCase', () => {
     expect(result.forceFailure().value).toBeInstanceOf(GymNotFoundError)
   })
 
-  test('Não deve criar um check-in no mesmo dia', async () => {
+  test('Não deve criar dois check-ins no mesmo dia', async () => {
     const userId = 'any_user_id'
     await createAndSaveUser({
       userRepository,
@@ -105,6 +105,38 @@ describe('CheckInUseCase', () => {
     expect(result.forceFailure().value).toBeInstanceOf(
       UserHasAlreadyCheckedInToday,
     )
+  })
+
+  test('Deve criar dois check-ins no mesmo dia para usuários diferentes', async () => {
+    const user_one_Id = 'any_user_one_id'
+    await createAndSaveUser({
+      userRepository,
+      id: user_one_Id,
+    })
+
+    const user_two_Id = 'any_user_two_id'
+    await createAndSaveUser({
+      userRepository,
+      id: user_two_Id,
+    })
+
+    await _createAndSaveGym('any_gym_id', -27.0747279, -49.4889672)
+    const inputUserOne: CheckInUseCaseInput = {
+      userId: user_one_Id,
+      gymId: 'any_gym_id',
+      userLatitude: -27.0747279,
+      userLongitude: -49.4889672,
+    }
+    await sut.execute(inputUserOne)
+
+    const inputUserTwo: CheckInUseCaseInput = {
+      userId: user_two_Id,
+      gymId: 'any_gym_id',
+      userLatitude: -27.0747279,
+      userLongitude: -49.4889672,
+    }
+    const result = await sut.execute(inputUserTwo)
+    expect(result.forceSuccess().value.checkInId).toEqual(expect.any(String))
   })
 
   test('Não deve ser possível criar um check-in distante de 100 metros', async () => {

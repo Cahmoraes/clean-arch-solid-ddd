@@ -63,24 +63,25 @@ export class CheckInUseCase {
       this.createDomainEventSubscriber.bind(this)
   }
 
-  // eslint-disable-next-line complexity
   public async execute(
     input: CheckInUseCaseInput,
   ): Promise<CheckInUseCaseOutput> {
-    const userOrNull = await this.userRepository.userOfId(input.userId)
-    if (!userOrNull) return failure(new UserNotFoundError())
-    const checkInOnSameDate = await this.hasCheckInOnSameDate()
-    if (checkInOnSameDate) return failure(new UserHasAlreadyCheckedInToday())
-    const gymOrNull = await this.gymRepository.gymOfId(input.gymId)
-    if (!gymOrNull) return failure(new GymNotFoundError())
+    const checkInUserIsEligible = await this.validateUserCheckInEligibility(
+      input.userId,
+    )
+    if (checkInUserIsEligible.isFailure()) {
+      return failure(checkInUserIsEligible.value)
+    }
+    const gymFound = await this.gymRepository.gymOfId(input.gymId)
+    if (!gymFound) return failure(new GymNotFoundError())
     const distanceOrError = this.distanceBetweenCoords(
       {
         latitude: input.userLatitude,
         longitude: input.userLongitude,
       },
       {
-        latitude: gymOrNull.latitude,
-        longitude: gymOrNull.longitude,
+        latitude: gymFound.latitude,
+        longitude: gymFound.longitude,
       },
     )
     if (distanceOrError.isFailure()) return failure(distanceOrError.value)
@@ -99,15 +100,30 @@ export class CheckInUseCase {
     })
   }
 
-  private async createDomainEventSubscriber(event: CheckInCreatedEvent) {
+  private async validateUserCheckInEligibility(
+    userId: string,
+  ): Promise<Either<UserNotFoundError | UserHasAlreadyCheckedInToday, null>> {
+    const userFound = await this.userRepository.userOfId(userId)
+    if (!userFound) return failure(new UserNotFoundError())
+    const checkInOnSameDate = await this.hasCheckInOnSameDate(userId)
+    if (checkInOnSameDate) return failure(new UserHasAlreadyCheckedInToday())
+    return success(null)
+  }
+
+  private async createDomainEventSubscriber(
+    event: CheckInCreatedEvent,
+  ): Promise<void> {
     console.log('**************')
     console.log(event)
     this.queue.publish(event.eventName, event)
   }
 
-  private async hasCheckInOnSameDate(): Promise<boolean> {
+  private async hasCheckInOnSameDate(userId: string): Promise<boolean> {
     const today = new Date()
-    const checkInOnSameDate = await this.checkInRepository.onSameDate(today)
+    const checkInOnSameDate = await this.checkInRepository.onSameDateOfUserId(
+      userId,
+      today,
+    )
     return checkInOnSameDate
   }
 
