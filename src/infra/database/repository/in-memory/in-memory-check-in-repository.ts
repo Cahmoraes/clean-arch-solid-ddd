@@ -40,14 +40,20 @@ export class InMemoryCheckInRepository implements CheckInRepository {
     return this.checkIns.find((checkIn) => checkIn.id === id)
   }
 
-  public async onSameDate(date: Date): Promise<boolean> {
+  public async onSameDateOfUserId(
+    userId: string,
+    date: Date,
+  ): Promise<boolean> {
     const startOfDay = new Date(date)
     startOfDay.setHours(0, 0, 0, 0)
     const endOfDay = new Date(date)
     endOfDay.setHours(23, 59, 59, 999)
     return this.checkIns.some((checkIn) => {
       const checkInDate = checkIn.createdAt
-      return checkInDate >= startOfDay && checkInDate <= endOfDay
+      const isSameUserId = checkIn.userId === userId
+      const checkInOnRangeDate =
+        checkInDate >= startOfDay && checkInDate <= endOfDay
+      return isSameUserId && checkInOnRangeDate
     })
   }
 

@@ -71,13 +71,17 @@ export class PrismaCheckInRepository implements CheckInRepository {
     })
   }
 
-  public async onSameDate(date: Date): Promise<boolean> {
+  public async onSameDateOfUserId(
+    userId: string,
+    date: Date,
+  ): Promise<boolean> {
     const startOfDay = new Date(date)
     startOfDay.setHours(0, 0, 0, 0)
     const endOfDay = new Date(date)
     endOfDay.setHours(23, 59, 59, 999)
     const checkInOnSameDate = await this.prismaClient.checkIn.count({
       where: {
+        user_id: userId,
         created_at: {
           gte: startOfDay,
           lt: endOfDay,
