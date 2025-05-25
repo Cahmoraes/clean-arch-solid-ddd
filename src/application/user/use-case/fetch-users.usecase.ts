@@ -46,7 +46,7 @@ export class FetchUsersUseCase {
     const usersCacheResult = await this.fetchUsersFromCache(input)
     if (usersCacheResult) return usersCacheResult
     const usersData = await this.userDAO.fetchAndCountUsers(input)
-    this.saveUserDataToCache(input, usersData)
+    void this.saveUserDataToCache(input, usersData)
     return {
       data: usersData.usersData,
       pagination: {
