@@ -5,6 +5,7 @@ import type { InvalidDistanceError } from '@/domain/check-in/error/invalid-dista
 import type { CheckInCreatedEvent } from '@/domain/check-in/event/check-in-created-event'
 import { MaxDistanceSpecification } from '@/domain/check-in/specification/max-distance-specification'
 import { Distance } from '@/domain/check-in/value-object/distance'
+import type { Gym } from '@/domain/gym/gym'
 import { DomainEventPublisher } from '@/domain/shared/event/domain-event-publisher'
 import {
   type Either,
@@ -74,23 +75,16 @@ export class CheckInUseCase {
     }
     const gymFound = await this.gymRepository.gymOfId(input.gymId)
     if (!gymFound) return failure(new GymNotFoundError())
-    const distanceOrError = this.distanceBetweenCoords(
-      {
-        latitude: input.userLatitude,
-        longitude: input.userLongitude,
-      },
-      {
-        latitude: gymFound.latitude,
-        longitude: gymFound.longitude,
-      },
+    const validateDistanceResult = await this.validateDistanceEligibility(
+      input,
+      gymFound,
     )
-    if (distanceOrError.isFailure()) return failure(distanceOrError.value)
-    if (this.isDistanceExceeded(distanceOrError.value)) {
-      return failure(new MaxDistanceError())
+    if (validateDistanceResult.isFailure()) {
+      return failure(validateDistanceResult.value)
     }
     const checkIn = CheckIn.create(input)
     const { id } = await this.checkInRepository.save(checkIn)
-    DomainEventPublisher.instance.subscribe(
+    void DomainEventPublisher.instance.subscribe(
       'checkInCreated',
       this.createDomainEventSubscriber,
     )
@@ -108,6 +102,27 @@ export class CheckInUseCase {
     const checkInOnSameDate = await this.hasCheckInOnSameDate(userId)
     if (checkInOnSameDate) return failure(new UserHasAlreadyCheckedInToday())
     return success(null)
+  }
+
+  private async validateDistanceEligibility(
+    input: CheckInUseCaseInput,
+    gym: Gym,
+  ): Promise<Either<InvalidDistanceError | MaxDistanceError, Distance>> {
+    const distanceResult = this.distanceBetweenCoords(
+      {
+        latitude: input.userLatitude,
+        longitude: input.userLongitude,
+      },
+      {
+        latitude: gym.latitude,
+        longitude: gym.longitude,
+      },
+    )
+    if (distanceResult.isFailure()) return failure(distanceResult.value)
+    if (this.isDistanceExceeded(distanceResult.value)) {
+      return failure(new MaxDistanceError())
+    }
+    return success(distanceResult.value)
   }
 
   private async createDomainEventSubscriber(
