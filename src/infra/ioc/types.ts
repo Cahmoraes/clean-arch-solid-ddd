@@ -4,6 +4,7 @@ export const TYPES = {
   },
   Prisma: {
     Client: Symbol.for('PrismaClient'),
+    UnitOfWork: Symbol.for('PrismaUnitOfWork'),
   },
   Repositories: {
     User: Symbol.for('UserRepository'),
