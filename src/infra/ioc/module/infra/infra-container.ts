@@ -7,6 +7,7 @@ import { PgClient } from '@/infra/database/connection/pg-client'
 import { prismaClient } from '@/infra/database/connection/prisma-client'
 import { CacheDBMemory } from '@/infra/database/redis/cache-db-memory'
 import { RedisAdapter } from '@/infra/database/redis/redis-adapter'
+import { PrismaUnitOfWork } from '@/infra/database/repository/unit-of-work/unit-of-work'
 import { MailerGatewayMemory } from '@/infra/gateway/mailer-gateway-memory'
 import { NodeMailerAdapter } from '@/infra/gateway/node-mailer-adapter'
 import { WinstonAdapter } from '@/infra/logger/winston-adapter'
@@ -21,6 +22,7 @@ import { QueueProvider } from './queue-provider'
 
 export const infraContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Prisma.Client).toConstantValue(prismaClient)
+  bind(TYPES.Prisma.UnitOfWork).to(PrismaUnitOfWork)
   bind(TYPES.PG.Client).toConstantValue(new PgClient())
   bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
   bind(TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
