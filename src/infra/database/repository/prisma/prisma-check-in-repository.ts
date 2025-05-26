@@ -1,4 +1,5 @@
 import type { PrismaClient } from '@prisma/client'
+import type { ITXClientDenyList } from '@prisma/client/runtime/library'
 import { inject, injectable } from 'inversify'
 
 import type {
@@ -23,11 +24,46 @@ interface CreateCheckInProps {
 export class PrismaCheckInRepository implements CheckInRepository {
   constructor(
     @inject(TYPES.Prisma.Client)
-    private readonly prismaClient: PrismaClient,
+    private readonly prismaClient:
+      | PrismaClient
+      | Omit<PrismaClient, ITXClientDenyList>,
   ) {}
+
+  public withTransaction(
+    prismaClient: Omit<PrismaClient, ITXClientDenyList>,
+  ): CheckInRepository {
+    return PrismaCheckInRepository.create(prismaClient)
+  }
+
+  private static create(
+    prismaClient: Omit<PrismaClient, ITXClientDenyList>,
+  ): PrismaCheckInRepository {
+    return new PrismaCheckInRepository(prismaClient)
+  }
 
   public async save(checkIn: CheckIn): Promise<SaveResponse> {
     const result = await this.prismaClient.checkIn.create({
+      data: {
+        gym_id: checkIn.gymId,
+        user_id: checkIn.userId,
+        validated_at: checkIn.validatedAt,
+        latitude: checkIn.latitude,
+        longitude: checkIn.longitude,
+      },
+      select: {
+        gym_id: true,
+      },
+    })
+    return {
+      id: result.gym_id,
+    }
+  }
+
+  public async saveWithTransaction(
+    checkIn: CheckIn,
+    prismaClient: Omit<PrismaClient, ITXClientDenyList>,
+  ): Promise<SaveResponse> {
+    const result = await prismaClient.checkIn.create({
       data: {
         gym_id: checkIn.gymId,
         user_id: checkIn.userId,
@@ -96,6 +132,27 @@ export class PrismaCheckInRepository implements CheckInRepository {
     page: number,
   ): Promise<CheckIn[]> {
     const checkInData = await this.prismaClient.checkIn.findMany({
+      where: {
+        user_id: userId,
+      },
+      skip: page * env.ITEMS_PER_PAGE,
+      take: env.ITEMS_PER_PAGE,
+    })
+    return checkInData.map((data) =>
+      this.createCheckIn({
+        ...data,
+        latitude: data.latitude.toNumber(),
+        longitude: data.longitude.toNumber(),
+      }),
+    )
+  }
+
+  public async checkInsOfUserIdWithTransaction(
+    userId: string,
+    page: number,
+    prismaClient: Omit<PrismaClient, ITXClientDenyList>,
+  ): Promise<CheckIn[]> {
+    const checkInData = await prismaClient.checkIn.findMany({
       where: {
         user_id: userId,
       },

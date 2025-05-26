@@ -22,7 +22,7 @@ import { QueueProvider } from './queue-provider'
 
 export const infraContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Prisma.Client).toConstantValue(prismaClient)
-  bind(TYPES.Prisma.UnitOfWork).to(PrismaUnitOfWork)
+  bind(TYPES.Prisma.UnitOfWork).to(PrismaUnitOfWork).inSingletonScope()
   bind(TYPES.PG.Client).toConstantValue(new PgClient())
   bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
   bind(TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()

@@ -12,6 +12,8 @@ import {
   failure,
   success,
 } from '@/domain/shared/value-object/either'
+import type { PrismaCheckInRepository } from '@/infra/database/repository/prisma/prisma-check-in-repository'
+import type { PrismaUnitOfWork } from '@/infra/database/repository/unit-of-work/unit-of-work'
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
 
@@ -21,7 +23,6 @@ import { UserNotFoundError } from '../../user/error/user-not-found-error'
 import { GymNotFoundError } from '../../user/error/user-not-found-error copy'
 import type { UserRepository } from '../../user/repository/user-repository'
 import { MaxDistanceError } from '../error/max-distance-error'
-import type { CheckInRepository } from '../repository/check-in-repository'
 
 export interface CheckInUseCaseInput {
   userId: string
@@ -52,9 +53,11 @@ export class CheckInUseCase {
     @inject(TYPES.Repositories.Gym)
     private readonly gymRepository: GymRepository,
     @inject(TYPES.Repositories.CheckIn)
-    private readonly checkInRepository: CheckInRepository,
+    private readonly checkInRepository: PrismaCheckInRepository,
     @inject(TYPES.Queue)
     private readonly queue: Queue,
+    @inject(TYPES.Prisma.UnitOfWork)
+    private readonly unityOfWork: PrismaUnitOfWork,
   ) {
     this.bindMethod()
   }
@@ -83,11 +86,17 @@ export class CheckInUseCase {
       return failure(validateDistanceResult.value)
     }
     const checkIn = CheckIn.create(input)
-    const { id } = await this.checkInRepository.save(checkIn)
-    void DomainEventPublisher.instance.subscribe(
-      'checkInCreated',
-      this.createDomainEventSubscriber,
-    )
+    const id = await this.unityOfWork.performTransaction(async (tx) => {
+      const { id } = await this.checkInRepository
+        .withTransaction(tx)
+        .save(checkIn)
+      // throw new Error('Erro Transaction')
+      void DomainEventPublisher.instance.subscribe(
+        'checkInCreated',
+        this.createDomainEventSubscriber,
+      )
+      return id
+    })
     return success({
       checkInId: id,
       date: checkIn.createdAt,

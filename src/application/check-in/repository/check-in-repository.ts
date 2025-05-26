@@ -10,4 +10,5 @@ export interface CheckInRepository {
   onSameDateOfUserId(userId: string, date: Date): Promise<boolean>
   checkInsOfUserId(userId: string, page: number): Promise<CheckIn[]>
   countOfUserId(userId: string): Promise<number>
+  withTransaction(object: unknown): CheckInRepository
 }

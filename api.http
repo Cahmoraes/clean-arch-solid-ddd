@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:80
 @userName = "João Silva"
-@email = "joaos.silva190@example.com"
+@email = "joaosd.silva1900@example.com"
 @password = "senha123"
 // MEMBER ou ADMIN
 @role = "ADMIN"
@@ -23,7 +23,7 @@ POST {{baseUrl}}/sessions
 Content-Type: application/json
 
 {
-  "email": "joao.silva@example.com",
+  "email": "joaosd.silva1900@example.com",
   "password": "senha123"
 }
 
@@ -61,4 +61,17 @@ Authorization: Bearer {{authenticate.response.body.token}}
   "phone": "123456789",
   "latitude": -23.563099,
   "longitude": -46.656571
+}
+
+### Criar CheckIn
+# @name createCheckIn
+POST {{baseUrl}}/check-ins
+Content-Type: application/json
+Authorization: Bearer {{authenticate.response.body.token}}
+
+{
+  "userId": "48fbdee1-93df-4d0a-8058-4f7b42ed61b1",
+  "gymId": "3bfa88ee-df51-40a6-a78e-eff83ea359dd",
+  "userLatitude": -23.563099,
+  "userLongitude": -46.656571
 }
