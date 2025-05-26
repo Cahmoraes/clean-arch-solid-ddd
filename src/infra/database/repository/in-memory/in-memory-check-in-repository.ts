@@ -16,6 +16,10 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 
   public checkIns = new ExtendedSet<CheckIn>()
 
+  withTransaction(): CheckInRepository {
+    return this
+  }
+
   public async save(checkIn: CheckIn): Promise<SaveResponse> {
     const checkInId = checkIn.id ?? randomUUID()
     const userId = checkIn.userId ?? randomUUID()

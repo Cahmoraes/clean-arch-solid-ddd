@@ -7,8 +7,6 @@ import { User } from '@/domain/user/user'
 import type { RoleTypes } from '@/domain/user/value-object/role'
 import { TYPES } from '@/infra/ioc/types'
 
-import type { PrismaUnitOfWork } from '../unit-of-work/unit-of-work'
-
 interface UserData {
   id: string
   name: string
@@ -24,8 +22,6 @@ export class PrismaUserRepository implements UserRepository {
   constructor(
     @inject(TYPES.Prisma.Client)
     private readonly prisma: PrismaClient,
-    @inject(TYPES.Prisma.UnitOfWork)
-    private readonly unitOfWork: PrismaUnitOfWork,
   ) {}
 
   public async get(userQuery: UserQuery): Promise<User | null> {
@@ -71,17 +67,15 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   public async save(user: User): Promise<void> {
-    await this.unitOfWork.performTransaction([
-      this.prisma.user.create({
-        data: {
-          email: user.email,
-          name: user.name,
-          password_hash: user.password,
-          created_at: user.createdAt,
-          role: user.role,
-        },
-      }),
-    ])
+    await this.prisma.user.create({
+      data: {
+        email: user.email,
+        name: user.name,
+        password_hash: user.password,
+        created_at: user.createdAt,
+        role: user.role,
+      },
+    })
   }
 
   public async update(user: User): Promise<void> {
