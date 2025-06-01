@@ -139,7 +139,6 @@ export class FastifyAdapter implements HttpServer {
 
   public async ready(): Promise<undefined> {
     await this._server.ready()
-    console.log('Server is ready')
   }
 
   public async close(): Promise<void> {

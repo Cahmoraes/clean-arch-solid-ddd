@@ -29,7 +29,7 @@ export const infraContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Cookies.Manager).to(CookieAdapter)
   bind(RedisAdapter).toSelf().inSingletonScope()
   bind(CacheDBMemory).toSelf()
-  bind(TYPES.Redis).toDynamicValue(CacheDBProvider.provide)
+  bind(TYPES.Redis).toDynamicValue(CacheDBProvider.provide).inSingletonScope()
   bind(TYPES.Logger).to(WinstonAdapter).inSingletonScope()
   bind(RabbitMQAdapter).toSelf().inSingletonScope()
   bind(QueueMemoryAdapter).toSelf()

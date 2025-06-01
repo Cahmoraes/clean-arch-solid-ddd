@@ -44,6 +44,7 @@ export class FetchUsersUseCase {
     input: FetchUsersUseCaseInput,
   ): Promise<FetchUsersUseCaseOutput> {
     const usersCacheResult = await this.fetchUsersFromCache(input)
+    console.log({ usersCacheResult })
     if (usersCacheResult) return usersCacheResult
     const usersData = await this.userDAO.fetchAndCountUsers(input)
     void this.saveUserDataToCache(input, usersData)
