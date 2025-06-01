@@ -2,6 +2,8 @@ import { inject, injectable } from 'inversify'
 import IORedis, { type Redis } from 'ioredis'
 
 import { env } from '@/infra/env'
+import { TYPES } from '@/infra/ioc/types'
+import type { Logger } from '@/infra/logger/logger'
 
 import type { CacheDB } from './cache-db'
 import { CacheDBMemory } from './cache-db-memory'
@@ -11,10 +13,13 @@ export class RedisAdapter implements CacheDB {
   private client: Redis
   private isRedisAvailable = true
   private connectionAttempts = 0
-  private readonly maxAttempts = 10
+  private readonly maxAttempts = 3
   private reconnecting = false
 
-  constructor(@inject(CacheDBMemory) private readonly cacheMemory: CacheDB) {
+  constructor(
+    @inject(CacheDBMemory) private readonly cacheMemory: CacheDB,
+    @inject(TYPES.Logger) private readonly logger: Logger,
+  ) {
     this.client = this.createClient()
     this.setupMonitoring()
   }
@@ -25,54 +30,63 @@ export class RedisAdapter implements CacheDB {
       port: env.REDIS_PORT,
       enableOfflineQueue: false,
       maxRetriesPerRequest: null,
-      retryStrategy: (times) => {
-        this.connectionAttempts++
-        if (this.connectionAttempts > this.maxAttempts) {
-          console.warn(
-            'Máximo de tentativas atingido. Pausando reconexão por 60s.',
-          )
-          if (!this.reconnecting) this.cooldownAndReconnect()
-          return null
-        }
-        const delay = Math.min(1000 * Math.pow(2, times), 10000)
-        console.warn(`Tentativa ${times}: nova em ${delay}ms`)
-        return delay
-      },
+      retryStrategy: this.createRetryStrategy(),
     })
   }
 
+  private createRetryStrategy() {
+    return (times: number) => {
+      this.connectionAttempts++
+      if (this.connectionAttempts > this.maxAttempts) {
+        this.logger.warn(
+          this,
+          'Máximo de tentativas atingido. Pausando reconexão por 60s.',
+        )
+        if (!this.reconnecting) this.cooldownAndReconnect()
+        return null
+      }
+      const delay = Math.min(1000 * Math.pow(2, times), 10000)
+      this.logger.warn(this, `Tentativa ${times}: nova em ${delay}ms`)
+      return delay
+    }
+  }
+
   private cooldownAndReconnect(): void {
-    const ONE_MINUTE = 30000
+    const COOLDOWN_TIME = 30000 // 30 segundos
     this.reconnecting = true
     this.isRedisAvailable = false
     setTimeout(async () => {
-      console.warn('Tentando nova instância Redis após cooldown...')
+      this.logger.warn(this, 'Tentando nova instância Redis após cooldown...')
       try {
         if (this.client.status !== 'end') {
           await this.client.quit()
         }
       } catch {
-        console.warn('Falha ao encerrar Redis anterior. Ignorando.')
+        this.logger.warn(this, 'Falha ao encerrar Redis anterior. Ignorando.')
+      } finally {
+        this.client = this.createClient()
+        this.setupMonitoring()
+        this.connectionAttempts = 0
+        this.reconnecting = false
       }
-      this.client = this.createClient()
-      this.setupMonitoring()
-      this.connectionAttempts = 0
-      this.reconnecting = false
-    }, ONE_MINUTE)
+    }, COOLDOWN_TIME)
   }
 
   private setupMonitoring(): void {
+    this.client.removeAllListeners('ready')
+    this.client.removeAllListeners('error')
+    this.client.removeAllListeners('end')
     this.client.on('ready', () => {
       this.isRedisAvailable = true
-      console.info('Redis disponível novamente.')
+      this.logger.info(this, 'Redis disponível novamente.')
     })
     this.client.on('error', () => {
       this.isRedisAvailable = false
-      console.warn('Redis error - fallback ativado.')
+      this.logger.warn(this, 'Redis error - fallback ativado.')
     })
     this.client.on('end', () => {
       this.isRedisAvailable = false
-      console.warn('Redis connection closed.')
+      this.logger.warn(this, 'Redis connection closed.')
     })
   }
 
@@ -81,17 +95,22 @@ export class RedisAdapter implements CacheDB {
   }
 
   public async get<T>(key: string): Promise<T | null> {
-    if (this.useFallback) {
-      return this.cacheMemory.get<T>(key)
-    }
+    if (this.useFallback) return this.cacheMemory.get<T>(key)
+    const data = await this.client.get(key)
+    return this.parsedRedisData(data, key)
+  }
 
+  private async parsedRedisData<T>(
+    data: string | null,
+    key: string,
+  ): Promise<T | null> {
     try {
-      const data = await this.client.get(key)
-      return data ? JSON.parse(data) : null
+      if (!data) return null
+      return JSON.parse(data!)
     } catch {
-      console.warn('Erro no Redis durante get(). Ativando fallback.')
-      this.isRedisAvailable = false
-      return this.cacheMemory.get<T>(key)
+      this.logger.warn(this, `Failed to parse JSON for key ${key}:`)
+      await this.client.del(key)
+      return null
     }
   }
 
@@ -104,14 +123,7 @@ export class RedisAdapter implements CacheDB {
       await this.cacheMemory.set(key, value, ttlSeconds)
       return
     }
-
-    try {
-      await this.client.set(key, JSON.stringify(value), 'EX', ttlSeconds)
-    } catch {
-      console.warn('Erro no Redis durante set(). Ativando fallback.')
-      this.isRedisAvailable = false
-      await this.cacheMemory.set(key, value, ttlSeconds)
-    }
+    await this.client.set(key, JSON.stringify(value), 'EX', ttlSeconds)
   }
 
   public async delete(key: string): Promise<void> {
@@ -119,14 +131,7 @@ export class RedisAdapter implements CacheDB {
       await this.cacheMemory.delete(key)
       return
     }
-
-    try {
-      await this.client.del(key)
-    } catch {
-      console.warn('Erro no Redis durante delete(). Ativando fallback.')
-      this.isRedisAvailable = false
-      await this.cacheMemory.delete(key)
-    }
+    await this.client.del(key)
   }
 
   public async clear(): Promise<void> {
@@ -134,13 +139,17 @@ export class RedisAdapter implements CacheDB {
       await this.cacheMemory.clear()
       return
     }
+    await this.client.flushall()
+  }
 
+  public async disconnect(): Promise<void> {
     try {
-      await this.client.flushall()
+      this.client.removeAllListeners()
+      if (this.client.status !== 'end') {
+        await this.client.quit()
+      }
     } catch {
-      console.warn('Erro no Redis durante clear(). Ativando fallback.')
-      this.isRedisAvailable = false
-      await this.cacheMemory.clear()
+      this.logger.warn(this, 'Error during Redis disconnect:')
     }
   }
 }
