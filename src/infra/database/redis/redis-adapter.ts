@@ -10,6 +10,7 @@ import { CacheDBMemory } from './cache-db-memory'
 
 @injectable()
 export class RedisAdapter implements CacheDB {
+  private static COOLDOWN_TIME = 3_0000 // 30 segundos
   private client: Redis
   private isRedisAvailable = true
   private connectionAttempts = 0
@@ -38,9 +39,10 @@ export class RedisAdapter implements CacheDB {
     return (times: number) => {
       this.connectionAttempts++
       if (this.connectionAttempts > this.maxAttempts) {
+        const timeInSeconds = RedisAdapter.COOLDOWN_TIME / 1000
         this.logger.warn(
           this,
-          'Máximo de tentativas atingido. Pausando reconexão por 60s.',
+          `Máximo de tentativas atingido. Pausando reconexão por ${timeInSeconds}s.`,
         )
         if (!this.reconnecting) this.cooldownAndReconnect()
         return null
@@ -52,7 +54,6 @@ export class RedisAdapter implements CacheDB {
   }
 
   private cooldownAndReconnect(): void {
-    const COOLDOWN_TIME = 30000 // 30 segundos
     this.reconnecting = true
     this.isRedisAvailable = false
     setTimeout(async () => {
@@ -69,7 +70,7 @@ export class RedisAdapter implements CacheDB {
         this.connectionAttempts = 0
         this.reconnecting = false
       }
-    }, COOLDOWN_TIME)
+    }, RedisAdapter.COOLDOWN_TIME)
   }
 
   private setupMonitoring(): void {
