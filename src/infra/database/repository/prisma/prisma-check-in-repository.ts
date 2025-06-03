@@ -32,12 +32,6 @@ export class PrismaCheckInRepository implements CheckInRepository {
   public withTransaction(
     prismaClient: Omit<PrismaClient, ITXClientDenyList>,
   ): CheckInRepository {
-    return PrismaCheckInRepository.create(prismaClient)
-  }
-
-  private static create(
-    prismaClient: Omit<PrismaClient, ITXClientDenyList>,
-  ): PrismaCheckInRepository {
     return new PrismaCheckInRepository(prismaClient)
   }
 

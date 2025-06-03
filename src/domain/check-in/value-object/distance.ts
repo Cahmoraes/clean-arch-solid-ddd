@@ -16,6 +16,29 @@ export class Distance {
     this._to = to
   }
 
+  public static create(
+    from: CoordinateDTO,
+    to: CoordinateDTO,
+  ): Either<InvalidDistanceError, Distance>
+  public static create(
+    from: Coordinate,
+    to: Coordinate,
+  ): Either<InvalidDistanceError, Distance> {
+    if (from instanceof Coordinate && to instanceof Coordinate) {
+      return success(new Distance(from, to))
+    }
+    const fromCoordOrError = Coordinate.create(from)
+    if (fromCoordOrError.isFailure()) {
+      return failure(new InvalidDistanceError(fromCoordOrError.value.message))
+    }
+    const toCoordOrError = Coordinate.create(to)
+    if (toCoordOrError.isFailure()) {
+      return failure(new InvalidDistanceError(toCoordOrError.value.message))
+    }
+    const distance = new Distance(fromCoordOrError.value, toCoordOrError.value)
+    return success(distance)
+  }
+
   get from(): Coordinate {
     return this._from
   }
@@ -46,28 +69,5 @@ export class Distance {
     dist = dist * 60 * 1.1515
     dist = dist * 1.609344
     return dist
-  }
-
-  public static create(
-    from: CoordinateDTO,
-    to: CoordinateDTO,
-  ): Either<InvalidDistanceError, Distance>
-  public static create(
-    from: Coordinate,
-    to: Coordinate,
-  ): Either<InvalidDistanceError, Distance> {
-    if (from instanceof Coordinate && to instanceof Coordinate) {
-      return success(new Distance(from, to))
-    }
-    const fromCoordOrError = Coordinate.create(from)
-    if (fromCoordOrError.isFailure()) {
-      return failure(new InvalidDistanceError(fromCoordOrError.value.message))
-    }
-    const toCoordOrError = Coordinate.create(to)
-    if (toCoordOrError.isFailure()) {
-      return failure(new InvalidDistanceError(toCoordOrError.value.message))
-    }
-    const distance = new Distance(fromCoordOrError.value, toCoordOrError.value)
-    return success(distance)
   }
 }
