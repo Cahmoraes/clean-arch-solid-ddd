@@ -4,6 +4,7 @@ import type { RoleTypes } from '@/domain/user/value-object/role'
 import type { CacheDB } from '@/infra/database/redis/cache-db'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
+import type { Logger } from '@/infra/logger/logger'
 
 import type { FetchUsersOutput, UserDAO } from '../dao/user-dao'
 
@@ -38,6 +39,8 @@ export class FetchUsersUseCase {
     private readonly userDAO: UserDAO,
     @inject(TYPES.Redis)
     private readonly cacheDB: CacheDB,
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
   ) {}
 
   public async execute(
@@ -47,7 +50,9 @@ export class FetchUsersUseCase {
     console.log({ usersCacheResult })
     if (usersCacheResult) return usersCacheResult
     const usersData = await this.userDAO.fetchAndCountUsers(input)
-    void this.saveUserDataToCache(input, usersData)
+    void this.saveUserDataToCache(input, usersData).catch((error) => {
+      this.logger.warn(this, `Falha ao salvar cache de usuários: ${error}`)
+    })
     return {
       data: usersData.usersData,
       pagination: {

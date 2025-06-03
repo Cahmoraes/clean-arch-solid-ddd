@@ -12,7 +12,6 @@ import {
   failure,
   success,
 } from '@/domain/shared/value-object/either'
-import type { PrismaCheckInRepository } from '@/infra/database/repository/prisma/prisma-check-in-repository'
 import type { PrismaUnitOfWork } from '@/infra/database/repository/unit-of-work/unit-of-work'
 import { TYPES } from '@/infra/ioc/types'
 import type { Queue } from '@/infra/queue/queue'
@@ -23,6 +22,7 @@ import { UserNotFoundError } from '../../user/error/user-not-found-error'
 import { GymNotFoundError } from '../../user/error/user-not-found-error copy'
 import type { UserRepository } from '../../user/repository/user-repository'
 import { MaxDistanceError } from '../error/max-distance-error'
+import type { CheckInRepository } from '../repository/check-in-repository'
 
 export interface CheckInUseCaseInput {
   userId: string
@@ -53,7 +53,7 @@ export class CheckInUseCase {
     @inject(TYPES.Repositories.Gym)
     private readonly gymRepository: GymRepository,
     @inject(TYPES.Repositories.CheckIn)
-    private readonly checkInRepository: PrismaCheckInRepository,
+    private readonly checkInRepository: CheckInRepository,
     @inject(TYPES.Queue)
     private readonly queue: Queue,
     @inject(TYPES.Prisma.UnitOfWork)
@@ -86,7 +86,7 @@ export class CheckInUseCase {
       return failure(validateDistanceResult.value)
     }
     const checkIn = CheckIn.create(input)
-    const id = await this.unityOfWork.performTransaction(async (tx) => {
+    const checkInId = await this.unityOfWork.performTransaction(async (tx) => {
       const { id } = await this.checkInRepository
         .withTransaction(tx)
         .save(checkIn)
@@ -98,7 +98,7 @@ export class CheckInUseCase {
       return id
     })
     return success({
-      checkInId: id,
+      checkInId,
       date: checkIn.createdAt,
     })
   }
