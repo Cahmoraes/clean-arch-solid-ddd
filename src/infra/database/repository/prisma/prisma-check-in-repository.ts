@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import type { PrismaClient } from '@prisma/client'
 import type { ITXClientDenyList } from '@prisma/client/runtime/library'
 import { inject, injectable } from 'inversify'
 
@@ -8,7 +8,6 @@ import type {
 } from '@/application/check-in/repository/check-in-repository'
 import { CheckIn } from '@/domain/check-in/check-in'
 import { env } from '@/infra/env'
-import { InvalidTransactionInstance } from '@/infra/errors/invalid-transaction-instance-error'
 import { TYPES } from '@/infra/ioc/types'
 
 interface CreateCheckInProps {
@@ -30,12 +29,9 @@ export class PrismaCheckInRepository implements CheckInRepository {
       | Omit<PrismaClient, ITXClientDenyList>,
   ) {}
 
-  public withTransaction<TX extends object>(
-    prismaClient: TX,
+  public withTransaction(
+    prismaClient: Omit<PrismaClient, ITXClientDenyList>,
   ): CheckInRepository {
-    if (!(prismaClient instanceof PrismaClient)) {
-      throw new InvalidTransactionInstance(prismaClient)
-    }
     return new PrismaCheckInRepository(prismaClient)
   }
 
