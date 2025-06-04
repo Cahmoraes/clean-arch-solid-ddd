@@ -2,6 +2,7 @@ import {
   type CreateUserInput,
   UserDAOMemory,
 } from '@/infra/database/dao/in-memory/user-dao-memory'
+import { CacheDBMemory } from '@/infra/database/redis/cache-db-memory'
 import { RedisAdapter } from '@/infra/database/redis/redis-adapter'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'
@@ -18,9 +19,10 @@ describe('FetchUsersUseCase', () => {
 
   beforeEach(async () => {
     container.snapshot()
-    await container.unbind(TYPES.DAO.User)
     const userDAOMemory = new UserDAOMemory()
-    container.bind(TYPES.DAO.User).toConstantValue(userDAOMemory)
+    container.rebindSync(TYPES.DAO.User).toConstantValue(userDAOMemory)
+    const cacheMemoryDB = new CacheDBMemory()
+    container.rebindSync(TYPES.Redis).toConstantValue(cacheMemoryDB)
     redisAdapter = container.get(TYPES.Redis)
     sut = container.get(TYPES.UseCases.FetchUsers)
     userDAO = container.get(TYPES.DAO.User)
