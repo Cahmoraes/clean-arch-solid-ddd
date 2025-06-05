@@ -1,6 +1,6 @@
 export class GymNotFoundError extends Error {
-  constructor() {
-    super('Gym not found')
+  constructor(errorOptions?: ErrorOptions) {
+    super('Gym not found', errorOptions)
     this.name = 'GymNotFoundError'
   }
 }
