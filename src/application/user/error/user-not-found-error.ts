@@ -1,6 +1,6 @@
 export class UserNotFoundError extends Error {
-  constructor() {
-    super('User not found')
+  constructor(errorOptions?: ErrorOptions) {
+    super('User not found', errorOptions)
     this.name = 'UserNotFoundError'
   }
 }

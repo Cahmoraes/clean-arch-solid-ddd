@@ -1,6 +1,6 @@
 export class InvalidIdError extends Error {
-  constructor() {
-    super('Invalid ID: ID cannot be empty')
+  constructor(errorOptions?: ErrorOptions) {
+    super('Invalid ID: ID cannot be empty', errorOptions)
     this.name = 'InvalidIdError'
   }
 }

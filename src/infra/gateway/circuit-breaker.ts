@@ -145,8 +145,8 @@ export class CircuitBreaker {
 }
 
 export class OpenCircleError extends Error {
-  constructor() {
-    super('⚡ Circuito ABERTO: Chamadas bloqueadas.')
+  constructor(errorOptions?: ErrorOptions) {
+    super('⚡ Circuito ABERTO: Chamadas bloqueadas.', errorOptions)
     this.name = 'OpenCircleError'
   }
 }

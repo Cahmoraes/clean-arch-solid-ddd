@@ -1,6 +1,6 @@
 export class InvalidPhoneNumberError extends Error {
-  constructor() {
-    super('Invalid phone number')
+  constructor(errorOptions?: ErrorOptions) {
+    super('Invalid phone number', errorOptions)
     this.name = 'InvalidPhoneNumberError'
   }
 }

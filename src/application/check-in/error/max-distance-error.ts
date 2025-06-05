@@ -1,6 +1,6 @@
 export class MaxDistanceError extends Error {
-  constructor() {
-    super('Distance too far')
+  constructor(errorOptions?: ErrorOptions) {
+    super('Distance too far', errorOptions)
     this.name = 'MaxDistanceError'
   }
 }
