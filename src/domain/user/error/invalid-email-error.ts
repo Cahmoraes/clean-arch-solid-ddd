@@ -1,6 +1,6 @@
 export class InvalidEmailError extends Error {
-  constructor() {
-    super('Invalid email format')
+  constructor(errorOptions?: ErrorOptions) {
+    super('Invalid email format', errorOptions)
     this.name = 'InvalidEmailError'
   }
 }

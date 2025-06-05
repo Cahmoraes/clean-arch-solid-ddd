@@ -1,6 +1,6 @@
 export class GymAlreadyExistsError extends Error {
-  constructor() {
-    super('Gym already exists')
+  constructor(errorOptions?: ErrorOptions) {
+    super('Gym already exists', errorOptions)
     this.name = 'GymAlreadyExistsError'
   }
 }
