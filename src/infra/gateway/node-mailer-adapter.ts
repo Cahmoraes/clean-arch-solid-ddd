@@ -10,6 +10,8 @@ import { Retry } from './retry'
 @injectable()
 export class NodeMailerAdapter implements MailerGateway {
   private transporter?: Transporter
+  private static HOST: string
+  private static PORT: number
 
   constructor(@inject(TYPES.Logger) private readonly logger: Logger) {
     this.init()
@@ -18,11 +20,11 @@ export class NodeMailerAdapter implements MailerGateway {
   @LoggerDecorate({
     message: '✅',
   })
-  private async init() {
+  private async init(): Promise<void> {
     const testAccount = await nodemailer.createTestAccount()
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
+      host: NodeMailerAdapter.HOST,
+      port: NodeMailerAdapter.PORT,
       secure: false,
       auth: {
         user: testAccount.user,
@@ -36,7 +38,6 @@ export class NodeMailerAdapter implements MailerGateway {
     subject: string,
     text: string,
   ): Promise<void> {
-    console.log('****** sendMail ******')
     if (!this.transporter) await this.init()
     if (!this.transporter) throw new Error('Transporter not initialized')
     const mailOptions = {
@@ -50,11 +51,9 @@ export class NodeMailerAdapter implements MailerGateway {
       maxAttempts: 3,
       time: 1000,
     })
-    console.log('****** email ******')
     sendMailWithRetry
       .run(mailOptions)
       .then((mailResponse) => {
-        console.log('aqui')
         this.fireAndForgetSendMail(mailResponse)
       })
       .catch(() => {
@@ -63,7 +62,7 @@ export class NodeMailerAdapter implements MailerGateway {
   }
 
   private async fireAndForgetSendMail(mailResponse: any): Promise<void> {
-    console.log(`Email sent ${mailResponse.messageId}`)
+    this.logger.info(this, `Email sent ${mailResponse.messageId}`)
     const testMessageURL = nodemailer.getTestMessageUrl(mailResponse)
     this.logger.info(this, `Preview URL: ${testMessageURL}`)
   }
