@@ -1,10 +1,18 @@
 import { inject, injectable } from 'inversify'
 import winston from 'winston'
 
+import { isProduction } from '../env'
 import { TYPES } from '../ioc/types'
 import { EXCHANGES } from '../queue/exchanges'
 import type { Queue } from '../queue/queue'
 import type { Logger } from './logger'
+
+export const enum LoggerLevels {
+  ERROR = 'error',
+  WARN = 'warn',
+  INFO = 'info',
+  SILENT = 'silent',
+}
 
 @injectable()
 export class WinstonAdapter implements Logger {
@@ -15,6 +23,7 @@ export class WinstonAdapter implements Logger {
     private readonly queue: Queue,
   ) {
     this.logger = winston.createLogger({
+      level: isProduction() ? LoggerLevels.INFO : LoggerLevels.SILENT,
       format: winston.format.combine(...this.formats()),
       transports: [],
     })
@@ -25,6 +34,7 @@ export class WinstonAdapter implements Logger {
     return [
       winston.format.colorize(),
       winston.format.printf(this.formatMessage),
+      winston.format.errors({ stack: true }),
     ]
   }
 

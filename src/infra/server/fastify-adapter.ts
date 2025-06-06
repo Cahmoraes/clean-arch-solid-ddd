@@ -11,9 +11,10 @@ import { inject, injectable } from 'inversify'
 
 import type { AuthToken } from '@/application/user/auth/auth-token'
 
-import { Logger } from '../decorator/logger'
+import { Logger as LoggerDecorate } from '../decorator/logger'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
+import type { Logger } from '../logger/logger'
 import { FastifySwaggerSetupFactory } from './factories/fastify-swagger-setup-factory'
 import { FastifySwaggerUISetupFactory } from './factories/fastify-swagger-ui-setup-factory'
 import { GlobalErrorHandler } from './global-error-handler'
@@ -28,6 +29,8 @@ export class FastifyAdapter implements HttpServer {
   constructor(
     @inject(TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
   ) {
     this._server = fastify({})
     this.bindMethods()
@@ -63,7 +66,7 @@ export class FastifyAdapter implements HttpServer {
     this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
   }
 
-  @Logger({
+  @LoggerDecorate({
     type: 'info',
     message: `HTTP Server running 🚀 http://${env.HOST}:${env.PORT}`,
   })
@@ -96,10 +99,16 @@ export class FastifyAdapter implements HttpServer {
           reply.status(result.status).send(result.body)
         },
       )
-      console.log(`Route registered: ${method.toUpperCase()} ${path}`)
+      this.logger.info(
+        this,
+        `Route registered: ${method.toUpperCase()} ${path}`,
+      )
     } catch (error) {
-      console.error(`Error registering route: ${method.toUpperCase()} ${path}`)
-      console.error(error)
+      this.logger.error(
+        this,
+        `Error registering route: ${method.toUpperCase()} ${path}`,
+      )
+      this.logger.error(this, error as object)
     }
   }
 
