@@ -64,7 +64,7 @@ export class CreateUserController implements Controller {
       {
         callback: this.callback,
       },
-      // makeCreateUserControllerSwaggerSchema(),
+      makeCreateUserControllerSwaggerSchema(),
     )
   }
 
