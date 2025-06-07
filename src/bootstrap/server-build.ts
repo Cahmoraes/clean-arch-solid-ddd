@@ -17,13 +17,15 @@ import { TYPES } from '@/infra/ioc/types'
 import { EXCHANGES } from '@/infra/queue/exchanges'
 import type { Queue } from '@/infra/queue/queue'
 import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
+import type { Logger } from '@/infra/logger/logger'
 
 interface ConstructorClass {
   new (...args: any[]): Controller
 }
 
 export async function serverBuild() {
-  console.log('TYPES.Server.Fastify', container.isBound(TYPES.Server.Fastify))
+  const logger = container.get<Logger>(TYPES.Logger)
+  logger.info(serverBuild, `TYPES.Server.Fastify ${container.isBound(TYPES.Server.Fastify)}`)
   const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)
   const userController = resolve(CreateUserController)
   const authenticateController = resolve(AuthenticateController)

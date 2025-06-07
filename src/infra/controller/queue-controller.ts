@@ -39,7 +39,8 @@ export class QueueController implements Controller {
     this.queue.consume(
       QUEUES.NOTIFY_PASSWORD_CHANGED,
       async (event: PasswordChangedEvent): Promise<void> => {
-        console.log('Password changed event', event)
+        this.logger.info(this, 'Password changed event')
+        this.logger.info(this, event)
         const payload = event.payload
         await this.mailer.sendMail(
           payload.email,
@@ -50,15 +51,15 @@ export class QueueController implements Controller {
     )
 
     this.queue.consume(QUEUES.LOG, async (event: any): Promise<void> => {
-      console.log('QUEUE [LOG]')
-      console.log(event)
+      this.logger.info(this, 'QUEUE [LOG]')
+      this.logger.info(this, event)
     })
 
     this.queue.consume(
       QUEUES.CHECK_IN,
       async (event: CheckInCreatedEvent): Promise<void> => {
-        console.log('QUEUE [CHECK_IN]')
-        console.log(event)
+        this.logger.info(this, 'QUEUE [CHECK_IN]')
+        this.logger.info(this, event)
       },
     )
   }
