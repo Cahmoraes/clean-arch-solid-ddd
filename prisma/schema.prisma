@@ -9,14 +9,15 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name          String
-  email         String    @unique
+  email         String     @unique
   password_hash String
-  created_at    DateTime  @default(now())
-  role          Role      @default(MEMBER)
-  updated_at    DateTime  @updatedAt
+  created_at    DateTime   @default(now())
+  role          Role       @default(MEMBER)
+  updated_at    DateTime   @updatedAt
   checkIns      CheckIn[]
+  status        UserStatus @default(ACTIVATED)
 
   @@map("users")
 }
@@ -53,4 +54,9 @@ model Gym {
 enum Role {
   ADMIN
   MEMBER
+}
+
+enum UserStatus {
+  ACTIVATED
+  SUSPENDED
 }

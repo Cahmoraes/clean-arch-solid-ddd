@@ -186,4 +186,18 @@ describe('User Entity', () => {
     expect(user.isSuspend).toBe(false)
     expect(user.isActive).toBe(true)
   })
+
+  test('Deve restaurar um usuário suspenso', () => {
+    const input: UserRestore = {
+      createdAt: new Date(),
+      id: 'any_id',
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'securepassword123',
+      role: RoleValues.MEMBER,
+      status: 'suspended',
+    }
+    const user = User.restore(input)
+    expect(user.isActive).toBe(false)
+  })
 })
