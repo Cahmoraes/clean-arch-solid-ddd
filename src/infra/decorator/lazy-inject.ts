@@ -8,7 +8,7 @@ export function LazyInject<Dependency = object>(
     {},
     {
       get(_, property) {
-        return async function (...args: unknown[]) {
+        return async function (...args: unknown[]): Promise<void> {
           if (!lazyContainer) {
             const container = await importContainerWithLazyLoading()
             lazyContainer = container
