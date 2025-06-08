@@ -5,6 +5,7 @@ import { UserCreatedEvent } from '@/domain/user/event/user-created-event'
 import { User, type UserValidationErrors } from '@/domain/user/user'
 import type { RoleTypes } from '@/domain/user/value-object/role'
 import { TYPES } from '@/infra/ioc/types'
+import type { Logger } from '@/infra/logger/logger'
 import type { Queue } from '@/infra/queue/queue'
 
 import {
@@ -44,6 +45,8 @@ export class CreateUserUseCase {
     private readonly userRepository: UserRepository,
     @inject(TYPES.Queue)
     private readonly queue: Queue,
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
   ) {
     this.bindMethod()
   }
@@ -84,8 +87,7 @@ export class CreateUserUseCase {
   private async createDomainEventSubscriber(
     event: UserCreatedEvent,
   ): Promise<void> {
-    console.log('**************')
-    console.log(event)
+    this.logger.info(this, event)
     this.queue.publish(event.eventName, event)
   }
 

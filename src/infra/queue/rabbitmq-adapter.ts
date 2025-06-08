@@ -1,16 +1,20 @@
 import amqp from 'amqplib'
 import { injectable } from 'inversify'
 
-import { Logger } from '../decorator/logger'
+import { LazyInject } from '../decorator/lazy-inject'
+import { Logger as LoggerDecorate } from '../decorator/logger'
 import { env } from '../env'
+import { TYPES } from '../ioc/types'
+import type { Logger } from '../logger/logger'
 import type { Queue } from './queue'
 
 @injectable()
 export class RabbitMQAdapter implements Queue {
   private connection?: amqp.ChannelModel
   private _channel?: amqp.Channel
+  private readonly logger: Logger = LazyInject(TYPES.Logger)
 
-  @Logger({
+  @LoggerDecorate({
     message: '✅',
   })
   public async connect(): Promise<void> {
@@ -26,7 +30,7 @@ export class RabbitMQAdapter implements Queue {
     const channel = await this.channel()
     await channel.assertExchange(exchange, 'direct', { durable: true })
     const buffer = Buffer.from(JSON.stringify(data))
-    console.log({ exchange })
+    this.logger.info(this, { exchange })
     channel.publish(exchange, '', buffer)
   }
   private async channel(): Promise<amqp.Channel> {

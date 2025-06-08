@@ -1,13 +1,17 @@
 import { injectable } from 'inversify'
 
+import { LazyInject } from '../decorator/lazy-inject'
+import { TYPES } from '../ioc/types'
+import type { Logger } from '../logger/logger'
 import type { Queue } from './queue'
 
 @injectable()
 export class QueueMemoryAdapter implements Queue {
   public queues: Map<string, CallableFunction[]> = new Map()
+  private readonly logger = LazyInject<Logger>(TYPES.Logger)
 
   async connect(): Promise<void> {
-    console.log('QueueMemoryAdapter connected')
+    this.logger.info(this, 'QueueMemoryAdapter connected')
   }
 
   async publish<TData>(exchange: string, data: TData): Promise<void> {
