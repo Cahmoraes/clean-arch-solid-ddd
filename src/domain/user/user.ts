@@ -19,6 +19,11 @@ import { Email } from './value-object/email'
 import { Name } from './value-object/name'
 import { Password } from './value-object/password'
 import { Role, type RoleTypes } from './value-object/role'
+import {
+  type StatusTypes,
+  type UserStatus,
+  UserStatusFactory,
+} from './value-object/status'
 
 export interface UserConstructor {
   id: Id
@@ -28,6 +33,7 @@ export interface UserConstructor {
   role: Role
   createdAt: Date
   updatedAt?: Date
+  status: StatusTypes
 }
 
 export interface UserCreate {
@@ -38,6 +44,7 @@ export interface UserCreate {
   role?: RoleTypes
   createdAt?: Date
   updatedAt?: Date
+  status?: StatusTypes
 }
 
 export type UserRestore = {
@@ -48,13 +55,14 @@ export type UserRestore = {
   role: RoleTypes
   createdAt: Date
   updatedAt?: Date
+  status: StatusTypes
 }
 
 export type UserUpdateProps = Partial<Pick<UserCreate, 'name' | 'email'>>
 
 export type ValidatedUserProps = Omit<
   UserConstructor,
-  'id' | 'createdAt' | 'role'
+  'id' | 'createdAt' | 'role' | 'status'
 >
 
 export type UserValidationErrors =
@@ -62,38 +70,6 @@ export type UserValidationErrors =
   | InvalidNameLengthError
   | InvalidEmailError
 
-/**
- * Represents a user in the system.
- *
- * The User class extends Observable to enable event-based notifications
- * when user-related actions occur.
- *
- * @remarks
- * User objects cannot be created directly. Instead, use the static
- * `create` method for new users or `restore` for reconstituting users
- * from persistence.
- *
- * @example
- * ```typescript
- * // Creating a new user
- * const userResult = User.create({
- *   id: '123',
- *   name: 'John Doe',
- *   email: 'john@example.com',
- *   password: 'password123',
- *   role: 'MEMBER'
- * });
- *
- * if (userResult.isSuccess()) {
- *   const user = userResult.value;
- *   // Use user object
- * }
- * ```
- *
- * @fires UserCreatedEvent - When a new user is created
- * @fires PasswordChangedEvent - When a user's password is changed
- * @fires UserProfileUpdatedEvent - When a user's profile is updated
- */
 export class User extends Observable {
   private _id: Id
   private _name: Name
@@ -102,6 +78,7 @@ export class User extends Observable {
   private _role: Role
   private _createdAt: Date
   private _updatedAt?: Date
+  private _status: UserStatus
 
   private constructor(props: UserConstructor) {
     super()
@@ -112,6 +89,7 @@ export class User extends Observable {
     this._role = props.role
     this._createdAt = props.createdAt
     this._updatedAt = props.updatedAt
+    this._status = UserStatusFactory.create(this, props.status)
   }
 
   public static create(
@@ -135,25 +113,11 @@ export class User extends Observable {
         email: validatePropsResult.value.email,
         password: validatePropsResult.value.password,
         role: role,
+        status: userCreateProps.status ?? 'activated',
       }),
     )
   }
 
-  /**
-   * Validates user creation properties and returns a validated user object or validation errors.
-   *
-   * @param userCreateProps - The properties required to create a user
-   * @returns Either a list of validation errors or validated user properties
-   *
-   * @remarks
-   * This method performs validation on all required user properties:
-   * - name: validated through the Name value object
-   * - email: validated through the Email value object
-   * - password: validated through the Password value object
-   *
-   * If any validation fails, it returns a failure containing all validation errors.
-   * If all validations pass, it returns a success with the validated property objects.
-   */
   private static validate(
     userCreateProps: UserCreate,
   ): Either<UserValidationErrors[], ValidatedUserProps> {
@@ -187,6 +151,7 @@ export class User extends Observable {
       role: Role.restore(restoreUserProps.role),
       createdAt: restoreUserProps.createdAt,
       updatedAt: restoreUserProps.updatedAt,
+      status: restoreUserProps.status,
     })
   }
 
@@ -251,6 +216,7 @@ export class User extends Observable {
       password: this.password,
       role: this.role,
       createdAt: this.createdAt,
+      status: this._status.type,
     })
     if (userCreateResult.isFailure()) return failure(userCreateResult.value)
     this._email = userCreateResult.value._email
@@ -271,5 +237,25 @@ export class User extends Observable {
       name: updateUserProps.name,
       email: updateUserProps.email,
     })
+  }
+
+  public changeStatus(userStatus: UserStatus): void {
+    this._status = userStatus
+  }
+
+  public suspend(): void {
+    this._status.suspend()
+  }
+
+  public get isSuspend(): boolean {
+    return this._status.type === 'suspended'
+  }
+
+  public activate(): void {
+    this._status.activate()
+  }
+
+  public get isActive(): boolean {
+    return this._status.type === 'activated'
   }
 }
