@@ -1,5 +1,6 @@
 import { ContainerModule } from 'inversify'
 
+import { ActiveUserUseCase } from '@/application/user/use-case/active-user.usecase'
 import { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
 import { ChangePasswordUseCase } from '@/application/user/use-case/change-password.usecase'
 import { CreateUserUseCase } from '@/application/user/use-case/create-user.usecase'
@@ -54,4 +55,5 @@ export const userContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.UseCases.FetchUsers).to(FetchUsersUseCase)
   bind(TYPES.UseCases.UpdateUserProfile).to(UserProfileUseCase)
   bind(TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
+  bind(TYPES.UseCases.ActiveUser).to(ActiveUserUseCase)
 })
