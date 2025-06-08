@@ -10,11 +10,11 @@ export class QueueMemoryAdapter implements Queue {
   public queues: Map<string, CallableFunction[]> = new Map()
   private readonly logger: Logger = LazyInject(TYPES.Logger)
 
-  async connect(): Promise<void> {
+  public async connect(): Promise<void> {
     this.logger.info(this, 'QueueMemoryAdapter connected')
   }
 
-  async publish<TData>(exchange: string, data: TData): Promise<void> {
+  public async publish<TData>(exchange: string, data: TData): Promise<void> {
     if (!this.queues.has(exchange)) {
       this.queues.set(exchange, [])
     }
@@ -23,7 +23,10 @@ export class QueueMemoryAdapter implements Queue {
     }
   }
 
-  async consume(queue: string, callback: CallableFunction): Promise<void> {
+  public async consume(
+    queue: string,
+    callback: CallableFunction,
+  ): Promise<void> {
     if (!this.queues.has(queue)) {
       this.queues.set(queue, [])
     }
