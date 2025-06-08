@@ -8,7 +8,7 @@ import type { Queue } from './queue'
 @injectable()
 export class QueueMemoryAdapter implements Queue {
   public queues: Map<string, CallableFunction[]> = new Map()
-  private readonly logger = LazyInject<Logger>(TYPES.Logger)
+  private readonly logger: Logger = LazyInject(TYPES.Logger)
 
   async connect(): Promise<void> {
     this.logger.info(this, 'QueueMemoryAdapter connected')
