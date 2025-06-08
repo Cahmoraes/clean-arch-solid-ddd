@@ -7,8 +7,8 @@ export function LazyInject<Dependency = object>(
     {},
     {
       get(_, property): CallableFunction {
+        const dependency = container.get<any>(serviceIdentifier)
         return function (...args: unknown[]): void {
-          const dependency = container.get<any>(serviceIdentifier)
           Reflect.apply(dependency[property], dependency, args)
         }
       },

@@ -21,6 +21,7 @@ describe('User Entity', () => {
     expect(userOrError.forceSuccess().value.createdAt).toEqual(expect.any(Date))
     expect(userOrError.forceSuccess().value.updatedAt).toBeUndefined()
     expect(userOrError.forceSuccess().value.id).toBeNull()
+    expect(userOrError.forceSuccess().value.isActive).toBe(true)
   })
 
   test('Deve restaurar um usuário', () => {
@@ -31,6 +32,7 @@ describe('User Entity', () => {
       email: 'john.doe@example.com',
       password: 'securepassword123',
       role: RoleValues.MEMBER,
+      status: 'activated',
     }
     const user = User.restore(input)
     expect(user).toBeDefined()
@@ -40,6 +42,7 @@ describe('User Entity', () => {
     expect(user.role).toEqual(input.role)
     expect(user.password).toEqual(expect.any(String))
     expect(user.createdAt).toEqual(input.createdAt)
+    expect(user.isActive).toBe(true)
   })
 
   test('Não deve criar um usuário com nome inválido', () => {
@@ -110,6 +113,7 @@ describe('User Entity', () => {
       email: 'john.doe@example.com',
       password: 'securepassword123',
       role: RoleValues.ADMIN,
+      status: 'activated',
     }
     const user = User.restore(input)
     expect(user.role).toEqual(RoleValues.ADMIN)
@@ -154,5 +158,32 @@ describe('User Entity', () => {
     expect(user.createdAt).toBe(user.createdAt)
     expect(user.updatedAt).toEqual(expect.any(Date))
     expect(user.checkPassword('securepassword123')).toBe(true)
+  })
+
+  test('Deve suspender um usuário ativo', () => {
+    const input: UserCreate = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'securepassword123',
+    }
+    const user = User.create(input).forceSuccess().value
+    expect(user.isSuspend).toBe(false)
+    user.suspend()
+    expect(user.isActive).toBe(false)
+    expect(user.isSuspend).toBe(true)
+  })
+
+  test('Deve ativar um usuário suspenso', () => {
+    const input: UserCreate = {
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'securepassword123',
+      status: 'suspended',
+    }
+    const user = User.create(input).forceSuccess().value
+    expect(user.isSuspend).toBe(true)
+    user.activate()
+    expect(user.isSuspend).toBe(false)
+    expect(user.isActive).toBe(true)
   })
 })

@@ -11,7 +11,8 @@ export class QueueMemoryAdapter implements Queue {
   private readonly logger: Logger = LazyInject(TYPES.Logger)
 
   public async connect(): Promise<void> {
-    this.logger.info(this, 'QueueMemoryAdapter connected')
+    this.logger.info(this, 'QueueMemoryAdapter connected 1')
+    this.logger.info(this, 'QueueMemoryAdapter connected 2')
   }
 
   public async publish<TData>(exchange: string, data: TData): Promise<void> {
