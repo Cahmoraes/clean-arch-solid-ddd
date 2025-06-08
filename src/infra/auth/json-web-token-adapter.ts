@@ -1,4 +1,4 @@
-import { injectable } from 'inversify'
+import { inject, injectable } from 'inversify'
 import jwt, { type SignOptions } from 'jsonwebtoken'
 
 import {
@@ -10,9 +10,16 @@ import {
 import type { AuthToken, Payload } from '../../application/user/auth/auth-token'
 import { InvalidUserTokenError } from '../../application/user/error/invalid-user-token-error'
 import { env } from '../env'
+import { TYPES } from '../ioc/types'
+import type { Logger } from '../logger/logger'
 
 @injectable()
 export class JsonWebTokenAdapter implements AuthToken {
+  constructor(
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
+  ) {}
+
   public sign(payload: Payload, privateKey: string): string {
     return jwt.sign(payload, privateKey, {
       expiresIn: env.JWT_EXPIRES_IN as SignOptions['expiresIn'],
@@ -26,9 +33,9 @@ export class JsonWebTokenAdapter implements AuthToken {
     try {
       const payload = jwt.verify(token, secretKey) as TokenPayload
       return success(payload)
-    } catch (e) {
-      if (e instanceof Error) {
-        console.log(e.message)
+    } catch (error) {
+      if (error instanceof Error) {
+        this.logger.error(this, error.message)
       }
       return failure(new InvalidUserTokenError())
     }

@@ -14,6 +14,7 @@ import {
 } from '@/domain/shared/value-object/either'
 import type { PrismaUnitOfWork } from '@/infra/database/repository/unit-of-work/unit-of-work'
 import { TYPES } from '@/infra/ioc/types'
+import type { Logger } from '@/infra/logger/logger'
 import type { Queue } from '@/infra/queue/queue'
 
 import type { GymRepository } from '../../gym/repository/gym-repository'
@@ -58,6 +59,8 @@ export class CheckInUseCase {
     private readonly queue: Queue,
     @inject(TYPES.Prisma.UnitOfWork)
     private readonly unityOfWork: PrismaUnitOfWork,
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
   ) {
     this.bindMethod()
   }
@@ -137,8 +140,7 @@ export class CheckInUseCase {
   private async createDomainEventSubscriber(
     event: CheckInCreatedEvent,
   ): Promise<void> {
-    console.log('**************')
-    console.log(event)
+    this.logger.info(this, event)
     this.queue.publish(event.eventName, event)
   }
 

@@ -22,7 +22,7 @@ export class QueueController implements Controller {
     private readonly logger: Logger,
   ) {}
 
-  public async init() {
+  public async init(): Promise<void> {
     this.logger.info(this, '✅')
     this.queue.consume(
       QUEUES.SEND_WELCOME_EMAIL,
@@ -39,7 +39,10 @@ export class QueueController implements Controller {
     this.queue.consume(
       QUEUES.NOTIFY_PASSWORD_CHANGED,
       async (event: PasswordChangedEvent): Promise<void> => {
-        console.log('Password changed event', event)
+        this.logger.info(
+          this,
+          `Password changed event: ${JSON.stringify(event, null, 2)}`,
+        )
         const payload = event.payload
         await this.mailer.sendMail(
           payload.email,
@@ -50,15 +53,16 @@ export class QueueController implements Controller {
     )
 
     this.queue.consume(QUEUES.LOG, async (event: any): Promise<void> => {
-      console.log('QUEUE [LOG]')
-      console.log(event)
+      this.logger.info(this, `QUEUE [LOG]: ${JSON.stringify(event, null, 2)}`)
     })
 
     this.queue.consume(
       QUEUES.CHECK_IN,
       async (event: CheckInCreatedEvent): Promise<void> => {
-        console.log('QUEUE [CHECK_IN]')
-        console.log(event)
+        this.logger.info(
+          this,
+          `QUEUE [CHECK_IN]: ${JSON.stringify(event, null, 2)}`,
+        )
       },
     )
   }
