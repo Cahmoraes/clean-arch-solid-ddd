@@ -8,6 +8,8 @@ import { prismaClient } from '@/infra/database/connection/prisma-client'
 import { CacheDBMemory } from '@/infra/database/redis/cache-db-memory'
 import { RedisAdapter } from '@/infra/database/redis/redis-adapter'
 import { PrismaUnitOfWork } from '@/infra/database/repository/unit-of-work/prisma-unit-of-work'
+import { TestingUnitOfWork } from '@/infra/database/repository/unit-of-work/testing-unit-of-work'
+import { UnitOfWorkProvider } from '@/infra/database/repository/unit-of-work/unit-of-work-provider'
 import { MailerGatewayMemory } from '@/infra/gateway/mailer-gateway-memory'
 import { NodeMailerAdapter } from '@/infra/gateway/node-mailer-adapter'
 import { WinstonAdapter } from '@/infra/logger/winston-adapter'
@@ -38,4 +40,7 @@ export const infraContainer = new ContainerModule(({ bind }) => {
   bind(MailerGatewayMemory).toSelf().inSingletonScope()
   bind(TYPES.Mailer).toDynamicValue(MailerProvider.provide)
   bind(TYPES.Controllers.Queue).to(QueueController).inSingletonScope()
+  bind(PrismaUnitOfWork).toSelf().inSingletonScope()
+  bind(TestingUnitOfWork).toSelf().inSingletonScope()
+  bind(TYPES.UnitOfWork).toDynamicValue(UnitOfWorkProvider.provide)
 })

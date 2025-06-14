@@ -4,12 +4,14 @@ import { inject, injectable } from 'inversify'
 
 import { TYPES } from '@/infra/ioc/types'
 
+import type { UnitOfWork } from './unit-of-work'
+
 type Callback = (
   prismaClient: Omit<PrismaClient, ITXClientDenyList>,
 ) => Promise<any>
 
 @injectable()
-export class PrismaUnitOfWork {
+export class PrismaUnitOfWork implements UnitOfWork {
   constructor(
     @inject(TYPES.Prisma.Client) private readonly prismaClient: PrismaClient,
   ) {}
