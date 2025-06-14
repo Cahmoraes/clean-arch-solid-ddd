@@ -12,7 +12,7 @@ import {
   failure,
   success,
 } from '@/domain/shared/value-object/either'
-import type { PrismaUnitOfWork } from '@/infra/database/repository/unit-of-work/unit-of-work'
+import type { PrismaUnitOfWork } from '@/infra/database/repository/unit-of-work/prisma-unit-of-work'
 import { TYPES } from '@/infra/ioc/types'
 import type { Logger } from '@/infra/logger/logger'
 import type { Queue } from '@/infra/queue/queue'
