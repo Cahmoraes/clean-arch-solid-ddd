@@ -67,4 +67,5 @@ export const TYPES = {
   Queue: Symbol.for('Queue'),
   Mailer: Symbol.for('Mailer'),
   Redis: Symbol.for('Redis'),
+  UnitOfWork: Symbol.for('UnitOfWork'),
 }
