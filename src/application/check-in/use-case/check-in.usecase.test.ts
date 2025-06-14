@@ -16,6 +16,19 @@ import { GymNotFoundError } from '../../user/error/user-not-found-error copy'
 import { MaxDistanceError } from '../error/max-distance-error'
 import { CheckInUseCase, type CheckInUseCaseInput } from './check-in.usecase'
 
+vi.mock(
+  '@/infra/database/repository/unit-of-work/prisma-unit-of-work',
+  async () => {
+    return {
+      PrismaUnitOfWork: vi.fn().mockImplementation(() => ({
+        async performTransaction(callback: (tx: any) => Promise<any>) {
+          return await callback({})
+        },
+      })),
+    }
+  },
+)
+
 describe('CheckInUseCase', () => {
   let gymRepository: InMemoryGymRepository
   let userRepository: InMemoryUserRepository
