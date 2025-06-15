@@ -7,8 +7,8 @@ import type {
   FetchUsersInput,
   FetchUsersOutput,
   UserDAO,
-} from '@/application/user/dao/user-dao'
-import type { RoleTypes } from '@/domain/user/value-object/role'
+} from '@/user/application/dao/user-dao'
+import type { RoleTypes } from '@/user/domain/value-object/role'
 
 export interface CreateUserInput {
   id?: string
