@@ -5,10 +5,10 @@ import {
   type Either,
   failure,
   success,
-} from '@/domain/shared/value-object/either'
+} from '@/shared/domain/value-object/either'
 
-import type { AuthToken, Payload } from '../../application/user/auth/auth-token'
-import { InvalidUserTokenError } from '../../application/user/error/invalid-user-token-error'
+import type { AuthToken, Payload } from '../../user/application/auth/auth-token'
+import { InvalidUserTokenError } from '../../user/application/error/invalid-user-token-error'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'

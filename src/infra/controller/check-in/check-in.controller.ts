@@ -3,12 +3,12 @@ import { z } from 'zod'
 import type { ValidationError } from 'zod-validation-error'
 import { fromError } from 'zod-validation-error'
 
-import type { CheckInUseCase } from '@/application/check-in/use-case/check-in.usecase'
+import type { CheckInUseCase } from '@/check-in/application/use-case/check-in.usecase'
 import {
   type Either,
   failure,
   success,
-} from '@/domain/shared/value-object/either'
+} from '@/shared/domain/value-object/either'
 import { Logger } from '@/infra/decorator/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'

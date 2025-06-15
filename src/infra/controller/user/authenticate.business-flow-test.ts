@@ -3,7 +3,7 @@ import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import type { User as UserToken } from '@/@types/custom'
-import { RoleValues } from '@/domain/user/value-object/role'
+import { RoleValues } from '@/user/domain/value-object/role'
 import type { JsonWebTokenAdapter } from '@/infra/auth/json-web-token-adapter'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { env } from '@/infra/env'

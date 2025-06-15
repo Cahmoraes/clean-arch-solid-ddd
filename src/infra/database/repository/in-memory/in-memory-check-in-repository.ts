@@ -6,8 +6,8 @@ import { injectable } from 'inversify'
 import type {
   CheckInRepository,
   SaveResponse,
-} from '@/application/check-in/repository/check-in-repository'
-import { CheckIn } from '@/domain/check-in/check-in'
+} from '@/check-in/application/repository/check-in-repository'
+import { CheckIn } from '@/check-in/domain/check-in'
 import { env } from '@/infra/env'
 
 @injectable()
