@@ -10,8 +10,6 @@ import { Retry } from './retry'
 @injectable()
 export class NodeMailerAdapter implements MailerGateway {
   private transporter?: Transporter
-  private static HOST: string
-  private static PORT: number
 
   constructor(@inject(TYPES.Logger) private readonly logger: Logger) {
     this.init()
@@ -23,9 +21,9 @@ export class NodeMailerAdapter implements MailerGateway {
   private async init(): Promise<void> {
     const testAccount = await nodemailer.createTestAccount()
     this.transporter = nodemailer.createTransport({
-      host: NodeMailerAdapter.HOST,
-      port: NodeMailerAdapter.PORT,
-      secure: false,
+      host: testAccount.smtp.host,
+      port: testAccount.smtp.port,
+      secure: testAccount.smtp.secure,
       auth: {
         user: testAccount.user,
         pass: testAccount.pass,
@@ -56,8 +54,8 @@ export class NodeMailerAdapter implements MailerGateway {
       .then((mailResponse) => {
         this.fireAndForgetSendMail(mailResponse)
       })
-      .catch(() => {
-        this.logger.error(this, 'Failed to send email:')
+      .catch((e) => {
+        this.logger.error(this, `Failed to send email: ${e}`)
       })
   }
 

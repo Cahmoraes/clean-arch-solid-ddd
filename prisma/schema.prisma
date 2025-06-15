@@ -17,7 +17,7 @@ model User {
   role          Role       @default(MEMBER)
   updated_at    DateTime   @updatedAt
   checkIns      CheckIn[]
-  status        UserStatus @default(ACTIVATED)
+  status        UserStatus @default(activated)
 
   @@map("users")
 }
@@ -57,6 +57,6 @@ enum Role {
 }
 
 enum UserStatus {
-  ACTIVATED
-  SUSPENDED
+  activated
+  suspended
 }
