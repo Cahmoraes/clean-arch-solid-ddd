@@ -24,22 +24,8 @@ jobs:
       - name: Instalação de dependências
         run: npm ci
 
+      - name: Copiar arquivo de ambiente para testes
+        run: cp .env.test .env
+
       - name: Executar testes de unidade
         run: npm test
-        env:
-          NODE_ENV: test
-          PORT: 3333
-          HOST: 0.0.0.0
-          USE_PRISMA: false
-          PASSWORD_SALT: 2
-          PRIVATE_KEY: private-key-example
-          CHECK_IN_EXPIRATION_TIME: 20
-          JWT_EXPIRES_IN: 10m
-          JWT_REFRESH_EXPIRES_IN: 7d
-          REFRESH_TOKEN_NAME: refresh_token
-          ITEMS_PER_PAGE: 20
-          AMQP_URL: amqp://localhost
-          DATABASE_URL: postgresql://test:test@localhost:5432/test?schema=public
-          REDIS_HOST: 127.0.0.1
-          REDIS_PORT: 6379
-          TTL: 60
