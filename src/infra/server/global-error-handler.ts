@@ -2,7 +2,7 @@ import type { FastifyError, FastifyReply, FastifyRequest } from 'fastify'
 import { ZodError } from 'zod'
 import { fromError } from 'zod-validation-error'
 
-import { UserAlreadyExistsError } from '@/application/user/error/user-already-exists-error'
+import { UserAlreadyExistsError } from '@/user/application/error/user-already-exists-error'
 
 import { container } from '../ioc/container'
 import { TYPES } from '../ioc/types'

@@ -3,12 +3,12 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import type { ChangePasswordUseCase } from '@/application/user/use-case/change-password.usecase'
+import type { ChangePasswordUseCase } from '@/user/application/use-case/change-password.usecase'
 import {
   type Either,
   failure,
   success,
-} from '@/domain/shared/value-object/either'
+} from '@/shared/domain/value-object/either'
 import { Logger } from '@/infra/decorator/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'

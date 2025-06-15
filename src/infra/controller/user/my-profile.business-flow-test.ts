@@ -2,7 +2,7 @@ import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
-import type { AuthenticateUseCase } from '@/application/user/use-case/authenticate.usecase'
+import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/infra/ioc/container'
 import { TYPES } from '@/infra/ioc/types'

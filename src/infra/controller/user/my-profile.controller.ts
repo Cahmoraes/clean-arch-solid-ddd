@@ -1,7 +1,7 @@
 import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 
-import type { UserProfileUseCase } from '@/application/user/use-case/user-profile.usecase'
+import type { UserProfileUseCase } from '@/user/application/use-case/user-profile.usecase'
 import { Logger } from '@/infra/decorator/logger'
 import { TYPES } from '@/infra/ioc/types'
 import type { HttpServer } from '@/infra/server/http-server'

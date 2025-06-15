@@ -3,9 +3,9 @@ import { randomUUID } from 'node:crypto'
 import ExtendedSet from '@cahmoraes93/extended-set'
 import { injectable } from 'inversify'
 
-import type { UserQuery } from '@/application/user/repository/user-query'
-import type { UserRepository } from '@/application/user/repository/user-repository'
-import { User } from '@/domain/user/user'
+import type { UserQuery } from '@/user/application/repository/user-query'
+import type { UserRepository } from '@/user/application/repository/user-repository'
+import { User } from '@/user/domain/user'
 
 @injectable()
 export class InMemoryUserRepository implements UserRepository {

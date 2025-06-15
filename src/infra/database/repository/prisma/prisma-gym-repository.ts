@@ -5,9 +5,9 @@ import { inject, injectable } from 'inversify'
 import type {
   GymRepository,
   SaveGymResult,
-} from '@/application/gym/repository/gym-repository'
-import type { Coordinate } from '@/domain/check-in/value-object/coordinate'
-import { Gym } from '@/domain/gym/gym'
+} from '@/gym/application/repository/gym-repository'
+import type { Coordinate } from '@/check-in/domain/value-object/coordinate'
+import { Gym } from '@/gym/domain/gym'
 import { env } from '@/infra/env'
 import { TYPES } from '@/infra/ioc/types'
 

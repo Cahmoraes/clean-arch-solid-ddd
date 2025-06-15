@@ -1,6 +1,6 @@
 import type { ResolutionContext } from 'inversify'
 
-import type { UserDAO } from '@/application/user/dao/user-dao'
+import type { UserDAO } from '@/user/application/dao/user-dao'
 import { UserDAOMemory } from '@/infra/database/dao/in-memory/user-dao-memory'
 import { PrismaUserDAO } from '@/infra/database/dao/prisma/prisma-user-dao'
 import { env } from '@/infra/env'

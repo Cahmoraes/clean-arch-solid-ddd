@@ -5,8 +5,8 @@ import { inject, injectable } from 'inversify'
 import type {
   CheckInRepository,
   SaveResponse,
-} from '@/application/check-in/repository/check-in-repository'
-import { CheckIn } from '@/domain/check-in/check-in'
+} from '@/check-in/application/repository/check-in-repository'
+import { CheckIn } from '@/check-in/domain/check-in'
 import { env } from '@/infra/env'
 import { InvalidTransactionInstance } from '@/infra/errors/invalid-transaction-instance-error'
 import { TYPES } from '@/infra/ioc/types'

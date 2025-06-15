@@ -5,7 +5,7 @@ import type {
   FetchUsersInput,
   FetchUsersOutput,
   UserDAO,
-} from '@/application/user/dao/user-dao'
+} from '@/user/application/dao/user-dao'
 import { TYPES } from '@/infra/ioc/types'
 
 @injectable()
