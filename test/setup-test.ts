@@ -10,7 +10,7 @@ import { prismaClient } from '@/shared/infra/database/connection/prisma-client'
 import { env } from '@/shared/infra/env'
 
 config({
-  path: join(cwd(), '.env.development'),
+  path: join(cwd(), '.env'),
   override: true,
 })
 
