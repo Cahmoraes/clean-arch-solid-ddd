@@ -2,10 +2,10 @@ import request from 'supertest'
 import { createAndSaveCheckIn } from 'test/factory/create-and-save-check-in'
 
 import { serverBuild } from '@/bootstrap/server-build'
-import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
-import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
+import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 import { CheckInRoutes } from './routes/check-in-routes'
 

@@ -4,9 +4,9 @@ import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publish
 import { UserCreatedEvent } from '@/user/domain/event/user-created-event'
 import { User, type UserValidationErrors } from '@/user/domain/user'
 import type { RoleTypes } from '@/user/domain/value-object/role'
-import { TYPES } from '@/infra/ioc/types'
-import type { Logger } from '@/infra/logger/logger'
-import type { Queue } from '@/infra/queue/queue'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { Logger } from '@/shared/infra/logger/logger'
+import type { Queue } from '@/shared/infra/queue/queue'
 
 import {
   type Either,

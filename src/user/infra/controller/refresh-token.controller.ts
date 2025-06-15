@@ -9,16 +9,16 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import type { CookieManager } from '@/infra/cookie/cookie-manager'
-import { Logger } from '@/infra/decorator/logger'
-import { env } from '@/infra/env'
-import { TYPES } from '@/infra/ioc/types'
-import type { Logger as DebugLogger } from '@/infra/logger/logger'
-import type { HttpServer } from '@/infra/server/http-server'
-import { HTTP_STATUS } from '@/infra/server/http-status'
+import type { CookieManager } from '@/shared/infra/cookie/cookie-manager'
+import { Logger } from '@/shared/infra/decorator/logger'
+import { env } from '@/shared/infra/env'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { Logger as DebugLogger } from '@/shared/infra/logger/logger'
+import type { HttpServer } from '@/shared/infra/server/http-server'
+import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
-import type { Controller } from '@/infra/controller/controller'
-import { ResponseFactory } from '@/infra/controller/factory/response-factory'
+import type { Controller } from '@/shared/infra/controller/controller'
+import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { UserRoutes } from './routes/user-routes'
 
 interface Sub {

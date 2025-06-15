@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 
-import { TYPES } from '@/infra/ioc/types'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import type { CheckInRepository } from '@/check-in/application/repository/check-in-repository'
 

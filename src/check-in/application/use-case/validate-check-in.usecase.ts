@@ -5,7 +5,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { TYPES } from '@/infra/ioc/types'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import type { CheckInTimeExceededError } from '@/check-in/domain/error/check-in-time-exceeded-error'
 import { CheckInNotFoundError } from '../error/check-in-not-found-error'

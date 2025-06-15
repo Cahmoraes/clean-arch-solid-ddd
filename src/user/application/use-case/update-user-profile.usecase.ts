@@ -6,7 +6,7 @@ import {
   success,
 } from '@/shared/domain/value-object/either'
 import type { User, UserValidationErrors } from '@/user/domain/user'
-import { TYPES } from '@/infra/ioc/types'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
 import type { UserRepository } from '../repository/user-repository'

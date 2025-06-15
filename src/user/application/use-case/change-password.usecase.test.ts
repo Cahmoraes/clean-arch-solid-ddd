@@ -4,10 +4,10 @@ import {
 } from 'test/factory/create-and-save-user'
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
-import { QueueMemoryAdapter } from '@/infra/queue/queue-memory-adapter'
+import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
+import { QueueMemoryAdapter } from '@/shared/infra/queue/queue-memory-adapter'
 
 import { PasswordUnchangedError } from '../error/password-unchanged-error'
 import { UserNotFoundError } from '../error/user-not-found-error'

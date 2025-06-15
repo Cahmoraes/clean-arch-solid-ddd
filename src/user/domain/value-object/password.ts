@@ -7,7 +7,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { env } from '@/infra/env'
+import { env } from '@/shared/infra/env'
 
 const PasswordSchema = z.string().min(6)
 export type PasswordData = z.infer<typeof PasswordSchema>

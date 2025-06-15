@@ -9,7 +9,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { TYPES } from '@/infra/ioc/types'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import type { GymRepository } from '../repository/gym-repository'
 

@@ -7,8 +7,8 @@ import {
   success,
 } from '@/shared/domain/value-object/either'
 import type { User } from '@/user/domain/user'
-import { env } from '@/infra/env'
-import { TYPES } from '@/infra/ioc/types'
+import { env } from '@/shared/infra/env'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import { InvalidCredentialsError } from '../error/invalid-credentials-error'
 import type { UserRepository } from '../repository/user-repository'

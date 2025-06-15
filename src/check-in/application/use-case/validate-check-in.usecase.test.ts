@@ -3,10 +3,10 @@ import {
   type CreateAndSaveCheckInProps,
 } from 'test/factory/create-and-save-check-in'
 
-import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
+import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
+import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import { CheckInTimeExceededError } from '@/check-in/domain/error/check-in-time-exceeded-error'
 import { CheckInNotFoundError } from '../error/check-in-not-found-error'

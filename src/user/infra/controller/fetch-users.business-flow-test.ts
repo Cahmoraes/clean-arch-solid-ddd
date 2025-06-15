@@ -1,10 +1,10 @@
 import request from 'supertest'
 import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
-import { UserDAOMemory } from '@/infra/database/dao/in-memory/user-dao-memory'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
-import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
+import { UserDAOMemory } from '@/shared/infra/database/dao/in-memory/user-dao-memory'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 import { UserRoutes } from './routes/user-routes'
 

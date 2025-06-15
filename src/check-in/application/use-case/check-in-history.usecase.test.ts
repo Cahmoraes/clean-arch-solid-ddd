@@ -2,10 +2,10 @@ import { createAndSaveCheckIn } from 'test/factory/create-and-save-check-in'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
-import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
+import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
+import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import type {
   CheckInHistoryUseCase,
