@@ -6,8 +6,8 @@ import { cwd } from 'node:process'
 
 import { config } from 'dotenv'
 
-import { prismaClient } from '@/infra/database/connection/prisma-client'
-import { env } from '@/infra/env'
+import { prismaClient } from '@/shared/infra/database/connection/prisma-client'
+import { env } from '@/shared/infra/env'
 
 config({
   path: join(cwd(), '.env.development'),

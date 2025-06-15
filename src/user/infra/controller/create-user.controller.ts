@@ -16,15 +16,15 @@ import {
 } from '@/shared/domain/value-object/either'
 import type { UserValidationErrors } from '@/user/domain/user'
 import { RoleValues } from '@/user/domain/value-object/role'
-import { Logger } from '@/infra/decorator/logger'
-import { TYPES } from '@/infra/ioc/types'
-import type { HttpServer, Schema } from '@/infra/server/http-server'
+import { Logger } from '@/shared/infra/decorator/logger'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { HttpServer, Schema } from '@/shared/infra/server/http-server'
 
-import type { Controller } from '@/infra/controller/controller'
+import type { Controller } from '@/shared/infra/controller/controller'
 import {
   ResponseFactory,
   type ResponseOutput,
-} from '@/infra/controller/factory/response-factory'
+} from '@/shared/infra/controller/factory/response-factory'
 import { UserRoutes } from './routes/user-routes'
 
 const createUserRequestSchema = z.object({

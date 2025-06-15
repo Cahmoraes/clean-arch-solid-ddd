@@ -1,6 +1,6 @@
 import type { Optional } from '@/@types/optional'
 import { CheckInTimeExceededError } from '@/check-in/domain/error/check-in-time-exceeded-error'
-import { env } from '@/infra/env'
+import { env } from '@/shared/infra/env'
 
 import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publisher'
 import { type Either, failure, success } from '@/shared/domain/value-object/either'

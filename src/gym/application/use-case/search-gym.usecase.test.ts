@@ -1,9 +1,9 @@
 import { createAndSaveGym } from 'test/factory/create-and-save-gym'
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
-import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
+import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import {
   SearchGymUseCase,

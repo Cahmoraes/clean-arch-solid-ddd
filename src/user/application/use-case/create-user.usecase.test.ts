@@ -1,8 +1,8 @@
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
-import { QueueMemoryAdapter } from '@/infra/queue/queue-memory-adapter'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
+import { QueueMemoryAdapter } from '@/shared/infra/queue/queue-memory-adapter'
 
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
 import type { UserRepository } from '../repository/user-repository'

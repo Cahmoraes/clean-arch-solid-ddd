@@ -6,8 +6,8 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { InvalidEmailError } from '@/user/domain/error/invalid-email-error'
 import { InvalidNameLengthError } from '@/user/domain/error/invalid-name-length-error'
-import type { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
-import { container } from '@/infra/ioc/container'
+import type { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
+import { container } from '@/shared/infra/ioc/container'
 
 import {
   UpdateUserProfileUseCase,
