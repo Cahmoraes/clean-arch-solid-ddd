@@ -9,7 +9,7 @@ import { RabbitMQAdapter } from '@/infra/queue/rabbitmq-adapter'
 export class QueueProvider {
   public static provide(context: ResolutionContext): Queue {
     return isProduction()
-      ? context.get(QueueMemoryAdapter)
-      : context.get(QueueMemoryAdapter)
+      ? context.get(QueueMemoryAdapter, { autobind: true })
+      : context.get(QueueMemoryAdapter, { autobind: true })
   }
 }

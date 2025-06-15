@@ -9,7 +9,7 @@ import type { UnitOfWork } from './unit-of-work'
 export class UnitOfWorkProvider {
   public static provide(context: ResolutionContext): UnitOfWork {
     return isProduction()
-      ? context.get(PrismaUnitOfWork)
-      : context.get(TestingUnitOfWork)
+      ? context.get(PrismaUnitOfWork, { autobind: true })
+      : context.get(TestingUnitOfWork, { autobind: true })
   }
 }

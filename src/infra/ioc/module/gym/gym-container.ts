@@ -6,15 +6,11 @@ import { FetchNearbyGym } from '@/application/gym/use-case/fetch-nearby-gym.usec
 import { SearchGymUseCase } from '@/application/gym/use-case/search-gym.usecase'
 import { CreateGymController } from '@/infra/controller/gym/create-gym.controller'
 import { SearchGymController } from '@/infra/controller/gym/search-gym.controller'
-import { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
-import { PrismaGymRepository } from '@/infra/database/repository/prisma/prisma-gym-repository'
 
 import { TYPES } from '../../types'
 import { GymRepositoryProvider } from './gym-repository-provider'
 
 export const gymContainer = new ContainerModule(({ bind }) => {
-  bind<GymRepository>(PrismaGymRepository).toSelf()
-  bind<GymRepository>(InMemoryGymRepository).toSelf()
   bind<GymRepository>(TYPES.Repositories.Gym).toDynamicValue(
     GymRepositoryProvider.provide,
   )
