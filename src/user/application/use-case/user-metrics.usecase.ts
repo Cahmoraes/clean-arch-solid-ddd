@@ -1,8 +1,7 @@
 import { inject, injectable } from 'inversify'
 
-import { TYPES } from '@/shared/infra/ioc/types'
-
 import type { CheckInRepository } from '@/check-in/application/repository/check-in-repository'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 export interface UserMetricsUseCaseInput {
   userId: string

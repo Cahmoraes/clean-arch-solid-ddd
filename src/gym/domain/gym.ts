@@ -1,5 +1,9 @@
 import { Coordinate } from '@/check-in/domain/value-object/coordinate'
-import { type Either, failure, success } from '@/shared/domain/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/shared/domain/value-object/either'
 import { Id } from '@/shared/domain/value-object/id'
 import type { InvalidNameLengthError } from '@/user/domain/error/invalid-name-length-error'
 import { Name } from '@/user/domain/value-object/name'

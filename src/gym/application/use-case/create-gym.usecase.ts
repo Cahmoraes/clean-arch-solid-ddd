@@ -6,8 +6,8 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import type { InvalidNameLengthError } from '@/user/domain/error/invalid-name-length-error'
 import { TYPES } from '@/shared/infra/ioc/types'
+import type { InvalidNameLengthError } from '@/user/domain/error/invalid-name-length-error'
 
 import { GymAlreadyExistsError } from '../error/gym-already-exists-error'
 import type { GymRepository } from '../repository/gym-repository'

@@ -1,11 +1,15 @@
 import type { Optional } from '@/@types/optional'
 import { CheckInTimeExceededError } from '@/check-in/domain/error/check-in-time-exceeded-error'
-import { env } from '@/shared/infra/env'
-
 import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publisher'
-import { type Either, failure, success } from '@/shared/domain/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/shared/domain/value-object/either'
 import { ExistingId } from '@/shared/domain/value-object/existing-id'
 import { Id } from '@/shared/domain/value-object/id'
+import { env } from '@/shared/infra/env'
+
 import { CheckInCreatedEvent } from './event/check-in-created-event'
 
 interface CheckInProps {

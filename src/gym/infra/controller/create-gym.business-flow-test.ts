@@ -1,17 +1,17 @@
 import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 
-import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 import { serverBuild } from '@/bootstrap/server-build'
-import { RoleValues } from '@/user/domain/value-object/role'
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
+import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
+import { RoleValues } from '@/user/domain/value-object/role'
 
-import { GymRoutes } from './routes/gym-routes'
 import type { CreateGymPayload } from './create-gym.controller'
+import { GymRoutes } from './routes/gym-routes'
 
 describe('Cadastrar Academia', () => {
   let fastifyServer: FastifyAdapter

@@ -3,21 +3,21 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 import {
   type Either,
   failure,
   success,
 } from '@/shared/domain/value-object/either'
+import type { Controller } from '@/shared/infra/controller/controller'
+import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import type { CookieManager } from '@/shared/infra/cookie/cookie-manager'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { env } from '@/shared/infra/env'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
+import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 
-import type { Controller } from '@/shared/infra/controller/controller'
-import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { UserRoutes } from './routes/user-routes'
 
 const authenticateRequestSchema = z.object({

@@ -7,7 +7,10 @@ import {
   success,
 } from '@/shared/domain/value-object/either'
 
-import type { AuthToken, Payload } from '../../../user/application/auth/auth-token'
+import type {
+  AuthToken,
+  Payload,
+} from '../../../user/application/auth/auth-token'
 import { InvalidUserTokenError } from '../../../user/application/error/invalid-user-token-error'
 import { env } from '../env'
 import { TYPES } from '../ioc/types'

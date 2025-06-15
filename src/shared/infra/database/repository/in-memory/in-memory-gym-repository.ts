@@ -3,12 +3,12 @@ import { randomUUID } from 'node:crypto'
 import ExtendedSet from '@cahmoraes93/extended-set'
 import { injectable } from 'inversify'
 
+import { DistanceCalculator } from '@/check-in/domain/service/distance-calculator'
+import type { Coordinate } from '@/check-in/domain/value-object/coordinate'
 import type {
   GymRepository,
   SaveGymResult,
 } from '@/gym/application/repository/gym-repository'
-import { DistanceCalculator } from '@/check-in/domain/service/distance-calculator'
-import type { Coordinate } from '@/check-in/domain/value-object/coordinate'
 import { Gym } from '@/gym/domain/gym'
 import { env } from '@/shared/infra/env'
 

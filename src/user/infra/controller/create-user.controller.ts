@@ -3,28 +3,28 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, ValidationError } from 'zod-validation-error'
 
-import { UserAlreadyExistsError } from '@/user/application/error/user-already-exists-error'
-import type {
-  CreateUserError,
-  CreateUserUseCase,
-} from '@/user/application/use-case/create-user.usecase'
 import {
   type Either,
   type Failure,
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import type { UserValidationErrors } from '@/user/domain/user'
-import { RoleValues } from '@/user/domain/value-object/role'
-import { Logger } from '@/shared/infra/decorator/logger'
-import { TYPES } from '@/shared/infra/ioc/types'
-import type { HttpServer, Schema } from '@/shared/infra/server/http-server'
-
 import type { Controller } from '@/shared/infra/controller/controller'
 import {
   ResponseFactory,
   type ResponseOutput,
 } from '@/shared/infra/controller/factory/response-factory'
+import { Logger } from '@/shared/infra/decorator/logger'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { HttpServer, Schema } from '@/shared/infra/server/http-server'
+import { UserAlreadyExistsError } from '@/user/application/error/user-already-exists-error'
+import type {
+  CreateUserError,
+  CreateUserUseCase,
+} from '@/user/application/use-case/create-user.usecase'
+import type { UserValidationErrors } from '@/user/domain/user'
+import { RoleValues } from '@/user/domain/value-object/role'
+
 import { UserRoutes } from './routes/user-routes'
 
 const createUserRequestSchema = z.object({

@@ -2,11 +2,11 @@ import type { PrismaClient } from '@prisma/client'
 import type { Decimal } from '@prisma/client/runtime/library'
 import { inject, injectable } from 'inversify'
 
+import type { Coordinate } from '@/check-in/domain/value-object/coordinate'
 import type {
   GymRepository,
   SaveGymResult,
 } from '@/gym/application/repository/gym-repository'
-import type { Coordinate } from '@/check-in/domain/value-object/coordinate'
 import { Gym } from '@/gym/domain/gym'
 import { env } from '@/shared/infra/env'
 import { TYPES } from '@/shared/infra/ioc/types'

@@ -1,4 +1,9 @@
-import { type Either, failure, success } from '@/shared/domain/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/shared/domain/value-object/either'
+
 import { InvalidDistanceError } from '../error/invalid-distance-error'
 import { Coordinate } from './coordinate'
 

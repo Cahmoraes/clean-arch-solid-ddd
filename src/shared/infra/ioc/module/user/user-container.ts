@@ -1,5 +1,6 @@
 import { ContainerModule } from 'inversify'
 
+import { PgUserRepository } from '@/shared/infra/database/repository/pg/pg-user-repository'
 import { ActiveUserUseCase } from '@/user/application/use-case/active-user.usecase'
 import { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 import { ChangePasswordUseCase } from '@/user/application/use-case/change-password.usecase'
@@ -16,7 +17,6 @@ import { MyProfileController } from '@/user/infra/controller/my-profile.controll
 import { RefreshTokenController } from '@/user/infra/controller/refresh-token.controller'
 import { UserMetricsController } from '@/user/infra/controller/user-metrics.controller'
 import { UserProfileController } from '@/user/infra/controller/user-profile.controller'
-import { PgUserRepository } from '@/shared/infra/database/repository/pg/pg-user-repository'
 
 import { TYPES } from '../../types'
 import { UserDAOProvider } from './user-dao-provider'

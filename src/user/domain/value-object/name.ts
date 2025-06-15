@@ -1,6 +1,11 @@
 import { z } from 'zod'
 
-import { type Either, failure, success } from '@/shared/domain/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/shared/domain/value-object/either'
+
 import { InvalidNameLengthError } from '../error/invalid-name-length-error'
 
 const createNameSchema = z.string().min(5).max(30)

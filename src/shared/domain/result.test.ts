@@ -1,5 +1,6 @@
 import { Email } from '@/user/domain/value-object/email'
 import { Name } from '@/user/domain/value-object/name'
+
 import { Result } from './result'
 import { type Either, failure, success } from './value-object/either'
 

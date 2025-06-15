@@ -3,7 +3,6 @@ import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import type { User as UserToken } from '@/@types/custom'
-import { RoleValues } from '@/user/domain/value-object/role'
 import type { JsonWebTokenAdapter } from '@/shared/infra/auth/json-web-token-adapter'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { env } from '@/shared/infra/env'
@@ -11,6 +10,7 @@ import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
+import { RoleValues } from '@/user/domain/value-object/role'
 
 import { UserRoutes } from './routes/user-routes'
 

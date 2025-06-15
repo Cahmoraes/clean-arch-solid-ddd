@@ -1,12 +1,12 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
-import type { AuthToken } from '@/user/application/auth/auth-token'
-import type { RoleTypes } from '@/user/domain/value-object/role'
 import { env } from '@/shared/infra/env'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
+import type { AuthToken } from '@/user/application/auth/auth-token'
+import type { RoleTypes } from '@/user/domain/value-object/role'
 
 export interface AuthenticateHandlerProps {
   request: FastifyRequest

@@ -4,10 +4,10 @@ import type {
   HookHandlerDoneFunction,
 } from 'fastify'
 
-import { type RoleTypes, RoleValues } from '@/user/domain/value-object/role'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
+import { type RoleTypes, RoleValues } from '@/user/domain/value-object/role'
 
 import { HTTP_STATUS } from '../http-status'
 

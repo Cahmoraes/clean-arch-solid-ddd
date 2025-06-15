@@ -1,11 +1,11 @@
 import type { PrismaClient } from '@prisma/client'
 import { inject, injectable } from 'inversify'
 
+import { TYPES } from '@/shared/infra/ioc/types'
 import type { UserQuery } from '@/user/application/repository/user-query'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import { User } from '@/user/domain/user'
 import type { RoleTypes } from '@/user/domain/value-object/role'
-import { TYPES } from '@/shared/infra/ioc/types'
 
 interface UserData {
   id: string
