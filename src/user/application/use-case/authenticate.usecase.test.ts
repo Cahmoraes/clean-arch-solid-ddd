@@ -1,8 +1,8 @@
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
 import { User, type UserCreate } from '@/user/domain/user'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import { InvalidCredentialsError } from '../error/invalid-credentials-error'
 import type { UserRepository } from '../repository/user-repository'

@@ -12,10 +12,10 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import type { UnitOfWork } from '@/infra/database/repository/unit-of-work/unit-of-work'
-import { TYPES } from '@/infra/ioc/types'
-import type { Logger } from '@/infra/logger/logger'
-import type { Queue } from '@/infra/queue/queue'
+import type { UnitOfWork } from '@/shared/infra/database/repository/unit-of-work/unit-of-work'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { Logger } from '@/shared/infra/logger/logger'
+import type { Queue } from '@/shared/infra/queue/queue'
 
 import type { GymRepository } from '@/gym/application/repository/gym-repository'
 import { UserHasAlreadyCheckedInToday } from '@/user/application/error/user-has-already-checked-in-today'

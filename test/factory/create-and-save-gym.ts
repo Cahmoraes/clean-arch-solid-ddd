@@ -1,5 +1,5 @@
 import { Gym } from '@/gym/domain/gym'
-import type { InMemoryGymRepository } from '@/infra/database/repository/in-memory/in-memory-gym-repository'
+import type { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 
 export interface CreateAndSaveGym {
   gymRepository: InMemoryGymRepository

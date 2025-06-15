@@ -1,10 +1,10 @@
 import {
   type CreateUserInput,
   UserDAOMemory,
-} from '@/infra/database/dao/in-memory/user-dao-memory'
-import { RedisAdapter } from '@/infra/database/redis/redis-adapter'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
+} from '@/shared/infra/database/dao/in-memory/user-dao-memory'
+import { RedisAdapter } from '@/shared/infra/database/redis/redis-adapter'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import {
   FetchUsersUseCase,

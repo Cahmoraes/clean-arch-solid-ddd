@@ -1,9 +1,9 @@
 import { CheckInController } from '@/check-in/infra/controller/check-in.controller'
 import { ValidateCheckInController } from '@/check-in/infra/controller/validate-check-in.controller'
-import type { Controller } from '@/infra/controller/controller'
+import type { Controller } from '@/shared/infra/controller/controller'
 import { CreateGymController } from '@/gym/infra/controller/create-gym.controller'
 import { SearchGymController } from '@/gym/infra/controller/search-gym.controller'
-import { QueueController } from '@/infra/controller/queue-controller'
+import { QueueController } from '@/shared/infra/controller/queue-controller'
 import { AuthenticateController } from '@/user/infra/controller/authenticate.controller'
 import { ChangePasswordController } from '@/user/infra/controller/change-password.controller'
 import { CreateUserController } from '@/user/infra/controller/create-user.controller'
@@ -12,11 +12,11 @@ import { MyProfileController } from '@/user/infra/controller/my-profile.controll
 import { RefreshTokenController } from '@/user/infra/controller/refresh-token.controller'
 import { UserMetricsController } from '@/user/infra/controller/user-metrics.controller'
 import { UserProfileController } from '@/user/infra/controller/user-profile.controller'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
-import { EXCHANGES } from '@/infra/queue/exchanges'
-import type { Queue } from '@/infra/queue/queue'
-import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
+import { EXCHANGES } from '@/shared/infra/queue/exchanges'
+import type { Queue } from '@/shared/infra/queue/queue'
+import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 interface ConstructorClass {
   new (...args: any[]): Controller

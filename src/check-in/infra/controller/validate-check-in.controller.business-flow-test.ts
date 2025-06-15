@@ -6,12 +6,12 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 
 import { serverBuild } from '@/bootstrap/server-build'
 import { CheckInRoutes } from '@/check-in/infra/controller/routes/check-in-routes'
-import { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
-import type { FastifyAdapter } from '@/infra/server/fastify-adapter'
-import { HTTP_STATUS } from '@/infra/server/http-status'
+import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
+import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
+import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
 describe('Validar CheckIn', () => {
   let server: FastifyAdapter

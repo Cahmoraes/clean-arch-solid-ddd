@@ -8,8 +8,8 @@ import {
 } from '@/shared/domain/value-object/either'
 import { PasswordChangedEvent } from '@/user/domain/event/password-changed-event'
 import type { User } from '@/user/domain/user'
-import { TYPES } from '@/infra/ioc/types'
-import type { Queue } from '@/infra/queue/queue'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { Queue } from '@/shared/infra/queue/queue'
 
 import { PasswordUnchangedError } from '../error/password-unchanged-error'
 import { UserNotFoundError } from '../error/user-not-found-error'
