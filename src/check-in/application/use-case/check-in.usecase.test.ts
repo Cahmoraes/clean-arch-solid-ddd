@@ -1,6 +1,7 @@
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
+import { GymNotFoundError } from '@/gym/application/error/gym-not-found-error'
 import { Gym } from '@/gym/domain/gym'
 import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publisher'
 import { EVENTS } from '@/shared/domain/event/events'
@@ -9,10 +10,9 @@ import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-mem
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
-
 import { UserHasAlreadyCheckedInToday } from '@/user/application/error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '@/user/application/error/user-not-found-error'
-import { GymNotFoundError } from '@/gym/application/error/gym-not-found-error'
+
 import { MaxDistanceError } from '../error/max-distance-error'
 import { CheckInUseCase, type CheckInUseCaseInput } from './check-in.usecase'
 

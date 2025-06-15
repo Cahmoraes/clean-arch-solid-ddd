@@ -1,14 +1,14 @@
 import { inject, injectable } from 'inversify'
 
-import type { AuthToken } from '@/user/application/auth/auth-token'
 import {
   type Either,
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import type { User } from '@/user/domain/user'
 import { env } from '@/shared/infra/env'
 import { TYPES } from '@/shared/infra/ioc/types'
+import type { AuthToken } from '@/user/application/auth/auth-token'
+import type { User } from '@/user/domain/user'
 
 import { InvalidCredentialsError } from '../error/invalid-credentials-error'
 import type { UserRepository } from '../repository/user-repository'

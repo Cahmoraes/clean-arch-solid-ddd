@@ -3,18 +3,18 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, ValidationError } from 'zod-validation-error'
 
-import type { UpdateUserProfileUseCase } from '@/user/application/use-case/update-user-profile.usecase'
 import {
   type Either,
   failure,
   success,
 } from '@/shared/domain/value-object/either'
+import type { Controller } from '@/shared/infra/controller/controller'
+import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
+import type { UpdateUserProfileUseCase } from '@/user/application/use-case/update-user-profile.usecase'
 
-import type { Controller } from '@/shared/infra/controller/controller'
-import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { UserRoutes } from './routes/user-routes'
 
 const updateUserProfileRequestSchema = z.object({

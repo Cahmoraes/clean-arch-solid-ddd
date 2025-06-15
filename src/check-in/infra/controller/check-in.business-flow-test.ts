@@ -3,15 +3,15 @@ import { createAndSaveGym } from 'test/factory/create-and-save-gym'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { isValidDate } from 'test/is-valid-date'
 
-import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 import { serverBuild } from '@/bootstrap/server-build'
-import { RoleValues } from '@/user/domain/value-object/role'
 import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
+import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
+import { RoleValues } from '@/user/domain/value-object/role'
 
 import { CheckInRoutes } from './routes/check-in-routes'
 

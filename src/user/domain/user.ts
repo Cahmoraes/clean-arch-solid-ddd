@@ -1,15 +1,15 @@
 import { type ValidationError } from 'zod-validation-error'
 
+import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publisher'
+import { Observable } from '@/shared/domain/observable'
+import { Result } from '@/shared/domain/result'
 import {
   type Either,
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-
-import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publisher'
-import { Observable } from '@/shared/domain/observable'
-import { Result } from '@/shared/domain/result'
 import { Id } from '@/shared/domain/value-object/id'
+
 import type { InvalidEmailError } from './error/invalid-email-error'
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { PasswordChangedEvent } from './event/password-changed-event'

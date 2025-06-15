@@ -1,5 +1,6 @@
 import { PasswordChangedEvent } from '@/user/domain/event/password-changed-event'
 import { UserCreatedEvent } from '@/user/domain/event/user-created-event'
+
 import { DomainEventPublisher } from './domain-event-publisher'
 
 describe('DomainEventPublisher', () => {

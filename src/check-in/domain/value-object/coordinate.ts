@@ -1,4 +1,9 @@
-import { type Either, failure, success } from '@/shared/domain/value-object/either'
+import {
+  type Either,
+  failure,
+  success,
+} from '@/shared/domain/value-object/either'
+
 import { InvalidLatitudeError } from '../error/invalid-latitude-error'
 import { InvalidLongitudeError } from '../error/invalid-longitude-error'
 
