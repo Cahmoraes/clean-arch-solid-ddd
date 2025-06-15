@@ -16,25 +16,17 @@ import { MyProfileController } from '@/infra/controller/user/my-profile.controll
 import { RefreshTokenController } from '@/infra/controller/user/refresh-token.controller'
 import { UserMetricsController } from '@/infra/controller/user/user-metrics.controller'
 import { UserProfileController } from '@/infra/controller/user/user-profile.controller'
-import { UserDAOMemory } from '@/infra/database/dao/in-memory/user-dao-memory'
-import { PrismaUserDAO } from '@/infra/database/dao/prisma/prisma-user-dao'
-import { InMemoryUserRepository } from '@/infra/database/repository/in-memory/in-memory-user-repository'
 import { PgUserRepository } from '@/infra/database/repository/pg/pg-user-repository'
-import { PrismaUserRepository } from '@/infra/database/repository/prisma/prisma-user-repository'
 
 import { TYPES } from '../../types'
 import { UserDAOProvider } from './user-dao-provider'
 import { UserRepositoryProvider } from './user-repository-provider'
 
 export const userContainer = new ContainerModule(({ bind }) => {
-  bind(PrismaUserRepository).toSelf()
-  bind(InMemoryUserRepository).toSelf()
   bind(TYPES.Repositories.User)
     .toDynamicValue(UserRepositoryProvider.provide)
     .inSingletonScope()
   bind(TYPES.PG.User).to(PgUserRepository).inRequestScope()
-  bind(UserDAOMemory).toSelf().inSingletonScope()
-  bind(PrismaUserDAO).toSelf().inSingletonScope()
   bind(TYPES.DAO.User)
     .toDynamicValue(UserDAOProvider.provide)
     .inSingletonScope()

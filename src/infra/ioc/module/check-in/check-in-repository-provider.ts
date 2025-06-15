@@ -8,7 +8,7 @@ import { isProduction } from '@/infra/env'
 export class CheckInRepositoryProvider {
   public static provide(context: ResolutionContext): CheckInRepository {
     return isProduction()
-      ? context.get(PrismaCheckInRepository)
-      : context.get(InMemoryCheckInRepository)
+      ? context.get(PrismaCheckInRepository, { autobind: true })
+      : context.get(InMemoryCheckInRepository, { autobind: true })
   }
 }

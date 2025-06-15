@@ -8,7 +8,7 @@ import { env } from '@/infra/env'
 export class UserDAOProvider {
   public static provide(context: ResolutionContext): UserDAO {
     return env.USE_PRISMA
-      ? context.get(PrismaUserDAO)
-      : context.get(UserDAOMemory)
+      ? context.get(PrismaUserDAO, { autobind: true })
+      : context.get(UserDAOMemory, { autobind: true })
   }
 }

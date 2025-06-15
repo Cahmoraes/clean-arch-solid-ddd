@@ -8,7 +8,7 @@ import { isProduction } from '@/infra/env'
 export class CacheDBProvider {
   public static provide(context: ResolutionContext): CacheDB {
     return isProduction()
-      ? context.get(RedisAdapter)
-      : context.get(CacheDBMemory)
+      ? context.get(RedisAdapter, { autobind: true })
+      : context.get(CacheDBMemory, { autobind: true })
   }
 }
