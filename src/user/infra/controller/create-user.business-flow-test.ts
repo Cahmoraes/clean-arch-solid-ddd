@@ -1,13 +1,13 @@
 import request from 'supertest'
 import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
-import type { UserRepository } from '@/user/application/repository/user-repository'
-import { User } from '@/user/domain/user'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
+import type { UserRepository } from '@/user/application/repository/user-repository'
+import { User } from '@/user/domain/user'
 
 import { UserRoutes } from './routes/user-routes'
 

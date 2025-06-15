@@ -1,14 +1,14 @@
 import type { FastifyRequest } from 'fastify'
 import { inject, injectable } from 'inversify'
 
-import type { UserProfileUseCase } from '@/user/application/use-case/user-profile.usecase'
+import type { Controller } from '@/shared/infra/controller/controller'
+import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
+import type { UserProfileUseCase } from '@/user/application/use-case/user-profile.usecase'
 
-import type { Controller } from '@/shared/infra/controller/controller'
-import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { UserRoutes } from './routes/user-routes'
 
 @injectable()

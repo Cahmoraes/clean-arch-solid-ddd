@@ -2,12 +2,12 @@ import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
-import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
+import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 
 import { UserRoutes } from './routes/user-routes'
 

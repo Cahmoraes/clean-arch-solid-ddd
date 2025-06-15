@@ -3,19 +3,19 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
-import type { FetchUsersUseCase } from '@/user/application/use-case/fetch-users.usecase'
 import {
   type Either,
   failure,
   success,
 } from '@/shared/domain/value-object/either'
+import type { Controller } from '@/shared/infra/controller/controller'
+import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { TYPES } from '@/shared/infra/ioc/types'
 import { PresenterFactory } from '@/shared/infra/presenter/presenter-factory'
 import type { HttpServer } from '@/shared/infra/server/http-server'
+import type { FetchUsersUseCase } from '@/user/application/use-case/fetch-users.usecase'
 
-import type { Controller } from '@/shared/infra/controller/controller'
-import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { UserRoutes } from './routes/user-routes'
 
 const fetchUsersRequestSchema = z.object({

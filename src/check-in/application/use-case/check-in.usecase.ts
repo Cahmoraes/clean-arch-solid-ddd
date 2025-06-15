@@ -5,6 +5,8 @@ import type { InvalidDistanceError } from '@/check-in/domain/error/invalid-dista
 import type { CheckInCreatedEvent } from '@/check-in/domain/event/check-in-created-event'
 import { MaxDistanceSpecification } from '@/check-in/domain/specification/max-distance-specification'
 import { Distance } from '@/check-in/domain/value-object/distance'
+import { GymNotFoundError } from '@/gym/application/error/gym-not-found-error'
+import type { GymRepository } from '@/gym/application/repository/gym-repository'
 import type { Gym } from '@/gym/domain/gym'
 import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publisher'
 import {
@@ -16,12 +18,10 @@ import type { UnitOfWork } from '@/shared/infra/database/repository/unit-of-work
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
 import type { Queue } from '@/shared/infra/queue/queue'
-
-import type { GymRepository } from '@/gym/application/repository/gym-repository'
 import { UserHasAlreadyCheckedInToday } from '@/user/application/error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '@/user/application/error/user-not-found-error'
-import { GymNotFoundError } from '@/gym/application/error/gym-not-found-error'
 import type { UserRepository } from '@/user/application/repository/user-repository'
+
 import { MaxDistanceError } from '../error/max-distance-error'
 import type { CheckInRepository } from '../repository/check-in-repository'
 

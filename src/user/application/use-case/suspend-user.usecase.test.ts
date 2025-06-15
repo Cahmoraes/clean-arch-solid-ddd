@@ -1,9 +1,9 @@
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
-import { User } from '@/user/domain/user'
 import type { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
+import { User } from '@/user/domain/user'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
 import {

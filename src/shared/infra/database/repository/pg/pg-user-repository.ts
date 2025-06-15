@@ -1,9 +1,8 @@
 import { inject, injectable } from 'inversify'
 
-import type { UserQuery } from '@/user/application/repository/user-query'
+import { TYPES } from '@/shared/infra/ioc/types'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import { User } from '@/user/domain/user'
-import { TYPES } from '@/shared/infra/ioc/types'
 
 import type { PgClient } from '../../connection/pg-client'
 
@@ -30,6 +29,7 @@ export class PgUserRepository implements UserRepository {
       role: row.role,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      status: row.status,
     })
   }
 
@@ -47,6 +47,7 @@ export class PgUserRepository implements UserRepository {
       role: row.role,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      status: row.status,
     })
   }
 
@@ -57,11 +58,11 @@ export class PgUserRepository implements UserRepository {
     )
   }
 
-  public async update(user: User): Promise<void> {
+  public async update(): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  public async get(userQuery: UserQuery): Promise<User | null> {
+  public async get(): Promise<User | null> {
     throw new Error('Method not implemented.')
   }
 }

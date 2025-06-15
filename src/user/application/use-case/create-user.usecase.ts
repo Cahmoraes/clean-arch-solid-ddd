@@ -1,19 +1,19 @@
 import { inject, injectable } from 'inversify'
 
 import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publisher'
-import { UserCreatedEvent } from '@/user/domain/event/user-created-event'
-import { User, type UserValidationErrors } from '@/user/domain/user'
-import type { RoleTypes } from '@/user/domain/value-object/role'
-import { TYPES } from '@/shared/infra/ioc/types'
-import type { Logger } from '@/shared/infra/logger/logger'
-import type { Queue } from '@/shared/infra/queue/queue'
-
 import {
   type Either,
   type Failure,
   failure,
   success,
 } from '@/shared/domain/value-object/either'
+import { TYPES } from '@/shared/infra/ioc/types'
+import type { Logger } from '@/shared/infra/logger/logger'
+import type { Queue } from '@/shared/infra/queue/queue'
+import { UserCreatedEvent } from '@/user/domain/event/user-created-event'
+import { User, type UserValidationErrors } from '@/user/domain/user'
+import type { RoleTypes } from '@/user/domain/value-object/role'
+
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
 import { UserQuery } from '../repository/user-query'
 import type { UserRepository } from '../repository/user-repository'
