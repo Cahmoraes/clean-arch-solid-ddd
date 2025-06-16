@@ -23,7 +23,7 @@ POST {{baseUrl}}/sessions
 Content-Type: application/json
 
 {
-  "email": "joaosd.silva1900@example.com",
+  "email": "joao.silva@example.com",
   "password": "senha123"
 }
 
@@ -74,4 +74,13 @@ Authorization: Bearer {{authenticate.response.body.token}}
   "gymId": "3bfa88ee-df51-40a6-a78e-eff83ea359dd",
   "userLatitude": -23.563099,
   "userLongitude": -46.656571
+}
+
+### Ativar Usuário
+# @name activateUser
+PATCH {{baseUrl}}/users/activate
+Content-Type: application/json
+
+{
+  "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
 }

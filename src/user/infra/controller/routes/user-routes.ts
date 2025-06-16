@@ -1,12 +1,15 @@
+const PREFIX = '/users'
+
 export const UserRoutes = {
-  CREATE: '/users',
-  FETCH: '/users',
+  CREATE: PREFIX,
+  FETCH: PREFIX,
   AUTHENTICATE: '/sessions',
   REFRESH: '/sessions/refresh',
-  PROFILE: '/users/:userId',
-  ME: '/users/me',
-  METRICS: '/users/me/metrics',
-  CHANGE_PASSWORD: '/users/me/change-password',
+  PROFILE: `${PREFIX}/:userId`,
+  ME: `${PREFIX}/me`,
+  METRICS: `${PREFIX}/me/metrics`,
+  CHANGE_PASSWORD: `${PREFIX}/me/change-password`,
+  ACTIVATE_USER: `${PREFIX}/activate`,
 } as const
 
 export type UserRoutesType = (typeof UserRoutes)[keyof typeof UserRoutes]

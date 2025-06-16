@@ -9,6 +9,7 @@ import { FetchUsersUseCase } from '@/user/application/use-case/fetch-users.useca
 import { SuspendUserUseCase } from '@/user/application/use-case/suspend-user.usecase'
 import { UserMetricsUseCase } from '@/user/application/use-case/user-metrics.usecase'
 import { UserProfileUseCase } from '@/user/application/use-case/user-profile.usecase'
+import { ActivateUserController } from '@/user/infra/controller/activate-user.controller'
 import { AuthenticateController } from '@/user/infra/controller/authenticate.controller'
 import { ChangePasswordController } from '@/user/infra/controller/change-password.controller'
 import { CreateUserController } from '@/user/infra/controller/create-user.controller'
@@ -48,4 +49,5 @@ export const userContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.UseCases.UpdateUserProfile).to(UserProfileUseCase)
   bind(TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
   bind(TYPES.UseCases.ActiveUser).to(ActiveUserUseCase)
+  bind(TYPES.Controllers.ActivateUser).to(ActivateUserController)
 })
