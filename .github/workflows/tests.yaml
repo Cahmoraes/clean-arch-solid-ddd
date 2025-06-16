@@ -24,5 +24,8 @@ jobs:
       - name: Instalação de dependências
         run: npm ci
 
+      - name: Copiar arquivo de ambiente para testes
+        run: cp .env.test .env
+
       - name: Executar testes de unidade
         run: npm test
