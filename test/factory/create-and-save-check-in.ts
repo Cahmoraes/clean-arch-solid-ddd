@@ -1,5 +1,5 @@
-import { CheckIn, type CheckInCreateProps } from '@/domain/check-in/check-in'
-import type { InMemoryCheckInRepository } from '@/infra/database/repository/in-memory/in-memory-check-in-repository'
+import { CheckIn, type CheckInCreateProps } from '@/check-in/domain/check-in'
+import type { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
 
 export interface CreateAndSaveCheckInProps {
   checkInRepository: InMemoryCheckInRepository

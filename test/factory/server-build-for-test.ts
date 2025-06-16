@@ -1,7 +1,7 @@
 import { serverBuild } from '@/bootstrap/server-build'
-import { container } from '@/infra/ioc/container'
-import { TYPES } from '@/infra/ioc/types'
-import { FastifyAdapter } from '@/infra/server/fastify-adapter'
+import { container } from '@/shared/infra/ioc/container'
+import { TYPES } from '@/shared/infra/ioc/types'
+import { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 export async function serverBuildForTest(): Promise<FastifyAdapter> {
   container

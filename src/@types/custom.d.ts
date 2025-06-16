@@ -1,6 +1,6 @@
 import 'fastify'
 
-import type { RoleTypes } from '@/domain/user/value-object/role'
+import type { RoleTypes } from '@/user/domain/value-object/role'
 
 interface Sub {
   id: string
