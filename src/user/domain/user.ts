@@ -20,7 +20,7 @@ import { Name } from './value-object/name'
 import { Password } from './value-object/password'
 import { Role, type RoleTypes } from './value-object/role'
 import {
-  type StatusTypes,
+  StatusTypes,
   type UserStatus,
   UserStatusFactory,
 } from './value-object/status'
@@ -113,7 +113,7 @@ export class User extends Observable {
         email: validatePropsResult.value.email,
         password: validatePropsResult.value.password,
         role: role,
-        status: userCreateProps.status ?? 'activated',
+        status: userCreateProps.status ?? StatusTypes.ACTIVATED,
       }),
     )
   }
@@ -248,7 +248,7 @@ export class User extends Observable {
   }
 
   public get isSuspend(): boolean {
-    return this._status.type === 'suspended'
+    return this._status.type === StatusTypes.SUSPENDED
   }
 
   public activate(): void {
@@ -256,6 +256,6 @@ export class User extends Observable {
   }
 
   public get isActive(): boolean {
-    return this._status.type === 'activated'
+    return this._status.type === StatusTypes.ACTIVATED
   }
 }
