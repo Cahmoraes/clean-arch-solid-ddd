@@ -1,3 +1,4 @@
+import { ActivateUserController } from '@/user/infra/controller/activate-user.controller'
 import { AuthenticateController } from '@/user/infra/controller/authenticate.controller'
 import { ChangePasswordController } from '@/user/infra/controller/change-password.controller'
 import { CreateUserController } from '@/user/infra/controller/create-user.controller'
@@ -24,6 +25,7 @@ export function setupUserModule(): ModuleControllers {
     resolve(RefreshTokenController),
     resolve(ChangePasswordController),
     resolve(FetchUsersController),
+    resolve(ActivateUserController),
   ]
   return { controllers }
 }

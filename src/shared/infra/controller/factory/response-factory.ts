@@ -25,7 +25,7 @@ export class ResponseFactory {
     return rest.body ? rest.body : rest
   }
 
-  public static OK(input: OmitWithoutStatus) {
+  public static OK(input?: OmitWithoutStatus) {
     return this.create({
       status: HTTP_STATUS.OK,
       ...input,

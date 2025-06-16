@@ -32,6 +32,7 @@ export const TYPES = {
     ChangePassword: Symbol.for('ChangePasswordController'),
     FetchUsers: Symbol.for('FetchUsersController'),
     UpdateUserProfile: Symbol.for('UpdateUserProfileController'),
+    ActivateUser: Symbol.for('ActivateUserController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),

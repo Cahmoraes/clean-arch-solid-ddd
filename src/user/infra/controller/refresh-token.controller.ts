@@ -27,7 +27,7 @@ interface Sub {
 }
 
 interface Cookie {
-  refresh_token: string
+  refreshToken: string
 }
 
 const refreshTokenRequestSchema = z.object({
@@ -51,14 +51,14 @@ export class RefreshTokenController implements Controller {
     this.bindMethods()
   }
 
-  private bindMethods() {
+  private bindMethods(): void {
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  public async init() {
+  public async init(): Promise<void> {
     this.server.register('patch', UserRoutes.REFRESH, {
       callback: this.callback,
     })
@@ -74,7 +74,7 @@ export class RefreshTokenController implements Controller {
     }
     const cookie = this.cookieParse(cookieOrError.value.cookie)
     const verified = this.authToken.verify<Sub>(
-      cookie.refresh_token,
+      cookie.refreshToken,
       env.PRIVATE_KEY,
     )
     if (verified.isFailure()) {
