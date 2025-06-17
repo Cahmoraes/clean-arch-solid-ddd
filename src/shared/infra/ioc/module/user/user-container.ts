@@ -2,7 +2,6 @@ import { ContainerModule } from 'inversify'
 
 import { PgUserRepository } from '@/shared/infra/database/repository/pg/pg-user-repository'
 import { ActiveUserUseCase } from '@/user/application/use-case/active-user.usecase'
-import { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 import { ChangePasswordUseCase } from '@/user/application/use-case/change-password.usecase'
 import { CreateUserUseCase } from '@/user/application/use-case/create-user.usecase'
 import { FetchUsersUseCase } from '@/user/application/use-case/fetch-users.usecase'
@@ -10,7 +9,6 @@ import { SuspendUserUseCase } from '@/user/application/use-case/suspend-user.use
 import { UserMetricsUseCase } from '@/user/application/use-case/user-metrics.usecase'
 import { UserProfileUseCase } from '@/user/application/use-case/user-profile.usecase'
 import { ActivateUserController } from '@/user/infra/controller/activate-user.controller'
-import { AuthenticateController } from '@/user/infra/controller/authenticate.controller'
 import { ChangePasswordController } from '@/user/infra/controller/change-password.controller'
 import { CreateUserController } from '@/user/infra/controller/create-user.controller'
 import { FetchUsersController } from '@/user/infra/controller/fetch-users.controller'
@@ -32,7 +30,6 @@ export const userContainer = new ContainerModule(({ bind }) => {
     .toDynamicValue(UserDAOProvider.provide)
     .inSingletonScope()
   bind(TYPES.Controllers.CreateUser).to(CreateUserController)
-  bind(TYPES.Controllers.Authenticate).to(AuthenticateController)
   bind(TYPES.Controllers.UserProfile).to(UserProfileController)
   bind(TYPES.Controllers.MyProfile).to(MyProfileController)
   bind(TYPES.Controllers.UserMetrics).to(UserMetricsController)
@@ -41,7 +38,7 @@ export const userContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Controllers.FetchUsers).to(FetchUsersController)
   bind(TYPES.Controllers.UpdateUserProfile).to(UserProfileController)
   bind(TYPES.UseCases.CreateUser).to(CreateUserUseCase)
-  bind(TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
+
   bind(TYPES.UseCases.UserProfile).to(UserProfileUseCase)
   bind(TYPES.UseCases.UserMetrics).to(UserMetricsUseCase)
   bind(TYPES.UseCases.ChangePassword).to(ChangePasswordUseCase)

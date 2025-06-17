@@ -49,7 +49,6 @@ describe('Buscar Usuários', () => {
       page: 1,
       total: 20,
     })
-    console.log(response.body.users)
     expect(response.body.users[0].id).toBe(fakeId)
     expect(response.status).toBe(200)
   })

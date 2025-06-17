@@ -18,7 +18,7 @@ import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 
-import { UserRoutes } from './routes/user-routes'
+import { SessionRoutes } from './session-routes'
 
 const authenticateRequestSchema = z.object({
   email: z.string().email(),
@@ -48,7 +48,7 @@ export class AuthenticateController implements Controller {
     message: '✅',
   })
   public async init() {
-    this.server.register('post', UserRoutes.AUTHENTICATE, {
+    this.server.register('post', SessionRoutes.AUTHENTICATE, {
       callback: this.callback,
     })
   }

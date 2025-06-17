@@ -3,8 +3,6 @@ const PREFIX = '/users'
 export const UserRoutes = {
   CREATE: PREFIX,
   FETCH: PREFIX,
-  AUTHENTICATE: '/sessions',
-  REFRESH: '/sessions/refresh',
   PROFILE: `${PREFIX}/:userId`,
   ME: `${PREFIX}/me`,
   METRICS: `${PREFIX}/me/metrics`,

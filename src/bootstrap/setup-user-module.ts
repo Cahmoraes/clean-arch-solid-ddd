@@ -1,5 +1,4 @@
 import { ActivateUserController } from '@/user/infra/controller/activate-user.controller'
-import { AuthenticateController } from '@/user/infra/controller/authenticate.controller'
 import { ChangePasswordController } from '@/user/infra/controller/change-password.controller'
 import { CreateUserController } from '@/user/infra/controller/create-user.controller'
 import { FetchUsersController } from '@/user/infra/controller/fetch-users.controller'
@@ -18,7 +17,6 @@ import { type ModuleControllers, resolve } from './server-build'
 export function setupUserModule(): ModuleControllers {
   const controllers = [
     resolve(CreateUserController),
-    resolve(AuthenticateController),
     resolve(UserProfileController),
     resolve(MyProfileController),
     resolve(UserMetricsController),

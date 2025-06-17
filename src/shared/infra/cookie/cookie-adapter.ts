@@ -14,7 +14,6 @@ export class CookieAdapter implements CookieManager {
   }
 
   public parse(cookie?: string): Record<string, string | undefined> {
-    console.log({ cookie })
     if (!cookie) return {}
     return parse(cookie)
   }
