@@ -1,4 +1,5 @@
 import { InvalidIdError } from '../error/invalid-id-error'
+import { type Either, failure, success } from './either'
 
 export class ExistingId {
   private constructor(private readonly _value: string) {}
@@ -7,12 +8,20 @@ export class ExistingId {
     return this._value
   }
 
-  public static create(aString: string) {
-    if (!aString) throw new InvalidIdError()
-    return new ExistingId(aString)
+  public static create(aString: string): Either<InvalidIdError, ExistingId> {
+    if (!this.validateUUID(aString)) {
+      return failure(new InvalidIdError())
+    }
+    return success(new ExistingId(aString))
   }
 
-  public static restore(aString: string) {
+  private static validateUUID(aString: string): boolean {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    return uuidRegex.test(aString)
+  }
+
+  public static restore(aString: string): ExistingId {
     return new ExistingId(aString)
   }
 

@@ -46,7 +46,6 @@ describe('Atualizar Refresh Token', () => {
         email: input.email,
         password: input.password,
       })
-
     const refreshToken = responseAuthenticate.headers['set-cookie'][0]
     const responseRefreshToken = await request(fastifyServer.server)
       .patch(UserRoutes.REFRESH)
