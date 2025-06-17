@@ -8,7 +8,7 @@ import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-me
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
-import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
+import type { AuthenticateUseCase } from '@/session/application/use-case/authenticate.usecase'
 
 import { UserRoutes } from './routes/user-routes'
 

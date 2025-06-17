@@ -65,7 +65,6 @@ export class RefreshTokenController implements Controller {
 
   private async callback(req: FastifyRequest, res: FastifyReply) {
     const cookieOrError = this.parseHeaderResult(req.headers)
-    console.log('cookieOrError', cookieOrError.value)
     if (cookieOrError.isFailure()) {
       return ResponseFactory.create({
         status: HTTP_STATUS.BAD_REQUEST,
@@ -73,12 +72,10 @@ export class RefreshTokenController implements Controller {
       })
     }
     const cookie = this.cookieParse(cookieOrError.value.cookie)
-    console.log({ cookie })
     const verified = this.authToken.verify<Sub>(
       cookie.refreshToken,
       env.PRIVATE_KEY,
     )
-    console.log({ verified })
     if (verified.isFailure()) {
       this.warnOnRefreshTokenFailure(cookie, verified.value.message)
       return ResponseFactory.create({
