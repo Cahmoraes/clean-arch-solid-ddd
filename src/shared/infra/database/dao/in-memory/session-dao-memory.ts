@@ -17,4 +17,8 @@ export class SessionDAOMemory implements SessionDAO {
   public async sessionById(id: string): Promise<SessionData | null> {
     return this.sessionsData.find((session) => id === session.id)
   }
+
+  public async delete(session: SessionData): Promise<void> {
+    this.sessionsData.delete(session)
+  }
 }
