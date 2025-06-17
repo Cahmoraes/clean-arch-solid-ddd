@@ -12,7 +12,7 @@ import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 import { RoleValues } from '@/user/domain/value-object/role'
 
-import { SessionRoutes } from './session-routes'
+import { SessionRoutes } from './routes/session-routes'
 
 describe('Autenticar Usuário', () => {
   let fastifyServer: FastifyAdapter

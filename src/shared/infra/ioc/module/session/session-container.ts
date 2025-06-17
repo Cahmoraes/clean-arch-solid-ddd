@@ -1,7 +1,7 @@
 import { ContainerModule } from 'inversify'
 
-import { AuthenticateController } from '@/session/infra/controller/routes/authenticate.controller'
-import { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
+import { AuthenticateController } from '@/session/infra/controller/authenticate.controller'
+import { AuthenticateUseCase } from '@/session/application/use-case/authenticate.usecase'
 
 import { TYPES } from '../../types'
 

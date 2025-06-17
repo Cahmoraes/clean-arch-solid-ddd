@@ -80,7 +80,6 @@ describe('Buscar Usuários', () => {
 
   test('Deve retornar os usuários da página 1 em CSV', async () => {
     const fakeId = 'fake_id'
-    console.log({ userDAO })
     userDAO.createFakeUser({
       name: 'any_name',
       email: 'any_email',

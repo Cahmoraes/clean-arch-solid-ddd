@@ -13,7 +13,7 @@ import { ChangePasswordController } from '@/user/infra/controller/change-passwor
 import { CreateUserController } from '@/user/infra/controller/create-user.controller'
 import { FetchUsersController } from '@/user/infra/controller/fetch-users.controller'
 import { MyProfileController } from '@/user/infra/controller/my-profile.controller'
-import { RefreshTokenController } from '@/user/infra/controller/refresh-token.controller'
+import { RefreshTokenController } from '@/session/infra/controller/refresh-token.controller'
 import { UserMetricsController } from '@/user/infra/controller/user-metrics.controller'
 import { UserProfileController } from '@/user/infra/controller/user-profile.controller'
 

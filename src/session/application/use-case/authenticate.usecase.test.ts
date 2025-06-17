@@ -4,8 +4,8 @@ import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import { User, type UserCreate } from '@/user/domain/user'
 
-import { InvalidCredentialsError } from '../error/invalid-credentials-error'
-import type { UserRepository } from '../repository/user-repository'
+import { InvalidCredentialsError } from '../../../user/application/error/invalid-credentials-error'
+import type { UserRepository } from '../../../user/application/repository/user-repository'
 import type {
   AuthenticateUseCase,
   AuthenticateUseCaseInput,
