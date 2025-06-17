@@ -66,8 +66,8 @@ export class CheckIn {
 
   public static create(props: CheckInCreateProps) {
     const id = Id.create(props.id)
-    const userId = ExistingId.create(props.userId)
-    const gymId = ExistingId.create(props.gymId)
+    const userId = ExistingId.restore(props.userId)
+    const gymId = ExistingId.restore(props.gymId)
     const createdAt = new Date()
     const checkIn = new CheckIn({
       id,
@@ -95,8 +95,8 @@ export class CheckIn {
   public static restore(props: CheckInRestoreProps) {
     return new CheckIn({
       id: Id.create(props.id),
-      userId: ExistingId.create(props.userId),
-      gymId: ExistingId.create(props.gymId),
+      userId: ExistingId.restore(props.userId),
+      gymId: ExistingId.restore(props.gymId),
       createdAt: props.createdAt,
       validatedAt: props.validatedAt,
       userLatitude: props.userLatitude,
