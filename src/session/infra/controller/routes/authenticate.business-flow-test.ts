@@ -12,7 +12,7 @@ import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 import { RoleValues } from '@/user/domain/value-object/role'
 
-import { UserRoutes } from './routes/user-routes'
+import { SessionRoutes } from './session-routes'
 
 describe('Autenticar Usuário', () => {
   let fastifyServer: FastifyAdapter
@@ -49,12 +49,11 @@ describe('Autenticar Usuário', () => {
       ...input,
     })
     const response = await request(fastifyServer.server)
-      .post(UserRoutes.AUTHENTICATE)
+      .post(SessionRoutes.AUTHENTICATE)
       .send({
         email: input.email,
         password: input.password,
       })
-    console.log(response.body)
     expect(response.headers['set-cookie'][0]).toEqual(expect.any(String))
     expect(response.body).toHaveProperty('token')
     expect(response.status).toBe(HTTP_STATUS.OK)
@@ -70,7 +69,7 @@ describe('Autenticar Usuário', () => {
 
   test('Não deve autenticar um usuário inválido', async () => {
     const response = await request(fastifyServer.server)
-      .post(UserRoutes.AUTHENTICATE)
+      .post(SessionRoutes.AUTHENTICATE)
       .send({
         email: 'inexistent@email.com',
         password: 'inexistent_password',
