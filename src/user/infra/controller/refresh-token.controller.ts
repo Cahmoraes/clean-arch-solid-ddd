@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
+import { SessionRoutes } from '@/session/infra/controller/routes/session-routes'
 import {
   type Either,
   failure,
@@ -18,8 +19,6 @@ import type { Logger as DebugLogger } from '@/shared/infra/logger/logger'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 import type { AuthToken } from '@/user/application/auth/auth-token'
-
-import { UserRoutes } from './routes/user-routes'
 
 interface Sub {
   sub: string
@@ -59,7 +58,7 @@ export class RefreshTokenController implements Controller {
     message: '✅',
   })
   public async init(): Promise<void> {
-    this.server.register('patch', UserRoutes.REFRESH, {
+    this.server.register('patch', SessionRoutes.REFRESH, {
       callback: this.callback,
     })
   }
