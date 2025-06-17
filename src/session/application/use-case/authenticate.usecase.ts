@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto'
+
 import { inject, injectable } from 'inversify'
 
 import {
@@ -8,10 +10,9 @@ import {
 import { env } from '@/shared/infra/env'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { AuthToken } from '@/user/application/auth/auth-token'
+import { InvalidCredentialsError } from '@/user/application/error/invalid-credentials-error'
+import type { UserRepository } from '@/user/application/repository/user-repository'
 import type { User } from '@/user/domain/user'
-
-import { InvalidCredentialsError } from '../../../user/application/error/invalid-credentials-error'
-import type { UserRepository } from '../../../user/application/repository/user-repository'
 
 export interface AuthenticateUseCaseInput {
   email: string
@@ -47,32 +48,40 @@ export class AuthenticateUseCase {
     if (!userOrNull.checkPassword(input.password)) {
       return failure(new InvalidCredentialsError())
     }
+    const sessionId = this.createSessionId()
+    console.log({ sessionId })
     return success({
-      token: this.signUserToken(userOrNull),
-      refreshToken: this.createRefreshToken(userOrNull),
+      token: this.signUserToken(userOrNull, sessionId),
+      refreshToken: this.createRefreshToken(userOrNull, sessionId),
     })
   }
 
-  private signUserToken(user: User): string {
+  private createSessionId(): string {
+    return randomBytes(16).toString('hex')
+  }
+
+  private signUserToken(user: User, sessionId: string): string {
     return this.authToken.sign(
       {
         sub: {
           id: user.id!,
           email: user.email,
           role: user.role,
+          sessionId,
         },
       },
       env.PRIVATE_KEY,
     )
   }
 
-  private createRefreshToken(user: User): string {
+  private createRefreshToken(user: User, sessionId: string): string {
     return this.authToken.refreshToken(
       {
         sub: {
           id: user.id!,
           email: user.email,
           role: user.role,
+          sessionId,
         },
       },
       env.PRIVATE_KEY,
