@@ -51,6 +51,7 @@ export const TYPES = {
     UpdateUserProfile: Symbol.for('UpdateUserProfileUseCase'),
     SuspendUser: Symbol.for('SuspendUserUseCase'),
     ActiveUser: Symbol.for('ActiveUserUseCase'),
+    Logout: Symbol.for('LogoutUseCase'),
   },
   Tokens: {
     Auth: Symbol.for('AuthToken'),
