@@ -34,11 +34,9 @@ O sistema atual utiliza JWT stateless, mas precisamos implementar funcionalidade
 ```typescript
 // Redis Key Pattern: session:{sessionId}
 interface SessionData {
+  id: string
   userId: string
   createdAt: Date
-  lastActivity: Date
-  deviceInfo?: string
-  ipAddress?: string
 }
 ```
 
