@@ -5,16 +5,23 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
+import { env } from '@/shared/infra/env'
 import { TYPES } from '@/shared/infra/ioc/types'
 
-import type { SessionDAO } from '../dao/session-dao'
-import { SessionNotFoundError } from '../error/session-not-found-error'
+import type { SessionDAO, SessionData } from '../dao/session-dao'
+import { SessionRevokedError } from '../error/session-revoked-error'
 
 export interface LogoutUseCaseInput {
-  sessionId: string
+  jwi: string
+  userId: string
 }
 
-export type LogoutUseCaseOutput = Either<Error, null>
+export type LogoutUseCaseOutput = Either<SessionRevokedError, SessionData>
+
+interface createAndSaveSessionProps {
+  userId: string
+  jwi: string
+}
 
 @injectable()
 export class LogoutUseCase {
@@ -26,9 +33,22 @@ export class LogoutUseCase {
   public async execute(
     input: LogoutUseCaseInput,
   ): Promise<LogoutUseCaseOutput> {
-    const session = await this.sessionDAO.sessionById(input.sessionId)
-    if (!session) return failure(new SessionNotFoundError(input.sessionId))
-    await this.sessionDAO.delete(session)
-    return success(null)
+    const foundSession = await this.sessionDAO.sessionById(input.jwi)
+    if (foundSession) return failure(new SessionRevokedError())
+    const sessionData = this.createSession(input)
+    await this.sessionDAO.create(sessionData)
+    return success(sessionData)
+  }
+
+  private createSession({
+    jwi,
+    userId,
+  }: createAndSaveSessionProps): SessionData {
+    return {
+      jwi,
+      userId,
+      createdAt: new Date().toISOString(),
+      expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+    }
   }
 }

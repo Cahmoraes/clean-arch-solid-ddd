@@ -1,6 +1,5 @@
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
-import type { SessionDAOMemory } from '@/shared/infra/database/dao/in-memory/session-dao-memory'
 import { env } from '@/shared/infra/env'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
@@ -27,14 +26,12 @@ describe('AuthenticateUseCase', () => {
   let sut: AuthenticateUseCase
   let userRepository: UserRepository
   let authToken: AuthToken
-  let sessionDAO: SessionDAOMemory
 
   beforeEach(async () => {
     container.snapshot()
     userRepository = (await setupInMemoryRepositories()).userRepository
     sut = container.get(TYPES.UseCases.Authenticate)
     authToken = container.get(TYPES.Tokens.Auth)
-    sessionDAO = container.get(TYPES.DAO.Session)
   })
 
   afterEach(() => {
@@ -58,10 +55,6 @@ describe('AuthenticateUseCase', () => {
     const jwtResult = verifyToken(token)
     const refreshTokenResult = verifyToken(refreshToken)
     expect(jwtResult.sub).toMatchObject(refreshTokenResult.sub)
-    const sessionData = await sessionDAO.sessionById(jwtResult.sub.sessionId)
-    expect(sessionData!.id).toBe(jwtResult.sub.sessionId)
-    expect(sessionData!.userId).toBe(jwtResult.sub.id)
-    expect(sessionData!.expiresIn).toBe(env.JWT_REFRESH_EXPIRES_IN)
   })
 
   test('Não deve autenticar um usuário inexistente', async () => {
