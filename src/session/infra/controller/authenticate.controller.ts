@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify'
 import { z } from 'zod'
 import { fromError, type ValidationError } from 'zod-validation-error'
 
+import type { AuthenticateUseCase } from '@/session/application/use-case/authenticate.usecase'
 import {
   type Either,
   failure,
@@ -16,9 +17,8 @@ import { env } from '@/shared/infra/env'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
-import type { AuthenticateUseCase } from '@/user/application/use-case/authenticate.usecase'
 
-import { SessionRoutes } from './session-routes'
+import { SessionRoutes } from './routes/session-routes'
 
 const authenticateRequestSchema = z.object({
   email: z.string().email(),

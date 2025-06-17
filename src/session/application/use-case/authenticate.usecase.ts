@@ -10,8 +10,8 @@ import { TYPES } from '@/shared/infra/ioc/types'
 import type { AuthToken } from '@/user/application/auth/auth-token'
 import type { User } from '@/user/domain/user'
 
-import { InvalidCredentialsError } from '../error/invalid-credentials-error'
-import type { UserRepository } from '../repository/user-repository'
+import { InvalidCredentialsError } from '../../../user/application/error/invalid-credentials-error'
+import type { UserRepository } from '../../../user/application/repository/user-repository'
 
 export interface AuthenticateUseCaseInput {
   email: string
