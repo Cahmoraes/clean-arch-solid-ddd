@@ -14,6 +14,8 @@ import { InvalidCredentialsError } from '@/user/application/error/invalid-creden
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import type { User } from '@/user/domain/user'
 
+import type { SessionDAO } from '../dao/session-dao'
+
 export interface AuthenticateUseCaseInput {
   email: string
   password: string
@@ -36,6 +38,8 @@ export class AuthenticateUseCase {
     private readonly userRepository: UserRepository,
     @inject(TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
+    @inject(TYPES.DAO.Session)
+    private readonly sessionDAO: SessionDAO,
   ) {}
 
   public async execute(
@@ -49,7 +53,7 @@ export class AuthenticateUseCase {
       return failure(new InvalidCredentialsError())
     }
     const sessionId = this.createSessionId()
-    console.log({ sessionId })
+    await this.createAndSaveSession(userOrNull, sessionId)
     return success({
       token: this.signUserToken(userOrNull, sessionId),
       refreshToken: this.createRefreshToken(userOrNull, sessionId),
@@ -58,6 +62,18 @@ export class AuthenticateUseCase {
 
   private createSessionId(): string {
     return randomBytes(16).toString('hex')
+  }
+
+  private async createAndSaveSession(
+    user: User,
+    sessionId: string,
+  ): Promise<void> {
+    return this.sessionDAO.create({
+      id: sessionId,
+      userId: user.id!,
+      createdAt: new Date().toISOString(),
+      expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+    })
   }
 
   private signUserToken(user: User, sessionId: string): string {

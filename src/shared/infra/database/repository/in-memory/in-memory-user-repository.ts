@@ -21,6 +21,7 @@ export class InMemoryUserRepository implements UserRepository {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       role: user.role,
+      status: user.status,
     })
     this.users.add(userWithId)
   }

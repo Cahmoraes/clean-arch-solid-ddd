@@ -179,6 +179,10 @@ export class User extends Observable {
     return this._createdAt
   }
 
+  get status(): StatusTypes {
+    return this._status.type
+  }
+
   get updatedAt(): Date | undefined {
     return this._updatedAt
   }

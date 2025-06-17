@@ -64,6 +64,7 @@ export const TYPES = {
   },
   DAO: {
     User: Symbol.for('UserDAO'),
+    Session: Symbol.for('SessionDAO'),
   },
   Logger: Symbol.for('Logger'),
   Queue: Symbol.for('Queue'),
