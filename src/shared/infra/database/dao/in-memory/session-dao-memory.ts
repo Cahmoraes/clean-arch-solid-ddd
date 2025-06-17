@@ -8,14 +8,14 @@ import type {
 
 @injectable()
 export class SessionDAOMemory implements SessionDAO {
-  public sessionsData = new ExtendedSet<any>()
+  public sessionsData = new ExtendedSet<SessionData>()
 
   public async create(session: SessionData): Promise<void> {
     this.sessionsData.add(session)
   }
 
   public async sessionById(id: string): Promise<SessionData | null> {
-    return this.sessionsData.find((session) => id === session.id)
+    return this.sessionsData.find((session) => id === session.jwi)
   }
 
   public async delete(session: SessionData): Promise<void> {

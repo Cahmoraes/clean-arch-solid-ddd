@@ -14,8 +14,6 @@ import { InvalidCredentialsError } from '@/user/application/error/invalid-creden
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import type { User } from '@/user/domain/user'
 
-import type { SessionDAO } from '../dao/session-dao'
-
 export interface AuthenticateUseCaseInput {
   email: string
   password: string
@@ -38,8 +36,6 @@ export class AuthenticateUseCase {
     private readonly userRepository: UserRepository,
     @inject(TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
-    @inject(TYPES.DAO.Session)
-    private readonly sessionDAO: SessionDAO,
   ) {}
 
   public async execute(
@@ -52,52 +48,39 @@ export class AuthenticateUseCase {
     if (!userOrNull.checkPassword(input.password)) {
       return failure(new InvalidCredentialsError())
     }
-    const sessionId = this.createSessionId()
-    await this.createAndSaveSession(userOrNull, sessionId)
+    const jwi = this.createJSONWebId()
     return success({
-      token: this.signUserToken(userOrNull, sessionId),
-      refreshToken: this.createRefreshToken(userOrNull, sessionId),
+      token: this.signUserToken(userOrNull, jwi),
+      refreshToken: this.createRefreshToken(userOrNull, jwi),
     })
   }
 
-  private createSessionId(): string {
+  private createJSONWebId(): string {
     return randomBytes(16).toString('hex')
   }
 
-  private async createAndSaveSession(
-    user: User,
-    sessionId: string,
-  ): Promise<void> {
-    return this.sessionDAO.create({
-      id: sessionId,
-      userId: user.id!,
-      createdAt: new Date().toISOString(),
-      expiresIn: env.JWT_REFRESH_EXPIRES_IN,
-    })
-  }
-
-  private signUserToken(user: User, sessionId: string): string {
+  private signUserToken(user: User, jwi: string): string {
     return this.authToken.sign(
       {
         sub: {
           id: user.id!,
           email: user.email,
           role: user.role,
-          sessionId,
+          jwi,
         },
       },
       env.PRIVATE_KEY,
     )
   }
 
-  private createRefreshToken(user: User, sessionId: string): string {
+  private createRefreshToken(user: User, jwi: string): string {
     return this.authToken.refreshToken(
       {
         sub: {
           id: user.id!,
           email: user.email,
           role: user.role,
-          sessionId,
+          jwi,
         },
       },
       env.PRIVATE_KEY,

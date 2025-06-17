@@ -1,9 +1,9 @@
 import type { SessionDAOMemory } from '@/shared/infra/database/dao/in-memory/session-dao-memory'
+import { env } from '@/shared/infra/env'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 
-import type { SessionData } from '../dao/session-dao'
-import { SessionNotFoundError } from '../error/session-not-found-error'
+import { SessionRevokedError } from '../error/session-revoked-error'
 import { LogoutUseCase, type LogoutUseCaseInput } from './logout.usecase'
 
 describe('LogoutUseCase', () => {
@@ -21,28 +21,35 @@ describe('LogoutUseCase', () => {
   })
 
   test('Deve fazer o logout de uma sessão válida', async () => {
-    const sessionId = 'any-session-id'
-    const sessionData: SessionData = {
-      id: sessionId,
-      createdAt: new Date().toISOString(),
-      expiresIn: '1d',
-      userId: 'any-user-id',
-    }
-    await sessionDAO.create(sessionData)
+    const userId = 'any-user-id'
+    const jwi = 'any-jwi'
     const input: LogoutUseCaseInput = {
-      sessionId,
+      jwi,
+      userId,
     }
-    const result = await sut.execute(input)
-    expect(result.value).toBe(null)
-    const hasSession = await sessionDAO.sessionById(sessionId)
-    expect(hasSession).toBeFalsy()
+    const sessionResult = await sut.execute(input)
+    expect(sessionResult.isSuccess()).toBe(true)
+    const sessionData = await sessionDAO.sessionById(input.jwi)
+    expect(sessionData!.jwi).toBe(input.jwi)
+    expect(sessionData!.userId).toBe(input.userId)
+    expect(sessionData!.expiresIn).toBe(env.JWT_REFRESH_EXPIRES_IN)
   })
 
-  test('Deve retornar um "failure" ao tentar fazer o logout de um sessão inexistente', async () => {
+  test('Deve retornar um "failure" ao tentar fazer o logout de uma sessão já existente', async () => {
+    const userId = 'any-user-id'
+    const jwi = 'existing-jwi'
+    await sessionDAO.create({
+      jwi,
+      userId,
+      createdAt: new Date().toISOString(),
+      expiresIn: env.JWT_REFRESH_EXPIRES_IN,
+    })
     const input: LogoutUseCaseInput = {
-      sessionId: 'any-session-id',
+      jwi,
+      userId,
     }
     const result = await sut.execute(input)
-    expect(result.value).toBeInstanceOf(SessionNotFoundError)
+    expect(result.isFailure()).toBe(true)
+    expect(result.value).toBeInstanceOf(SessionRevokedError)
   })
 })

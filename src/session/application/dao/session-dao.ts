@@ -1,5 +1,5 @@
 export interface SessionData {
-  id: string
+  jwi: string
   userId: string
   createdAt: string
   expiresIn: string
