@@ -24,7 +24,7 @@ export const infraContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
   bind(TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
   bind(TYPES.Cookies.Manager).to(CookieAdapter).inRequestScope()
-  bind(TYPES.Redis).toDynamicValue(CacheDBProvider.provide)
+  bind(TYPES.Redis).toDynamicValue(CacheDBProvider.provide).inSingletonScope()
   bind(TYPES.Logger).to(WinstonAdapter).inSingletonScope()
   bind(TYPES.Queue).toDynamicValue(QueueProvider.provide).inSingletonScope()
   bind(NodeMailerAdapter).toSelf().inSingletonScope()

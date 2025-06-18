@@ -7,6 +7,6 @@ export interface SessionData {
 
 export interface SessionDAO {
   sessionById(id: string): Promise<SessionData | null>
-  create(session: SessionData): Promise<void>
+  create(session: SessionData, ttl?: number): Promise<void>
   delete(session: SessionData): Promise<void>
 }
