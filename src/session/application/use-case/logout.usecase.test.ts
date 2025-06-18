@@ -1,4 +1,4 @@
-import type { SessionDAOMemory } from '@/shared/infra/database/dao/in-memory/session-dao-memory'
+import { RedisSessionDAO } from '@/shared/infra/database/dao/redis/redis-session-dao'
 import { env } from '@/shared/infra/env'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
@@ -8,11 +8,17 @@ import { LogoutUseCase, type LogoutUseCaseInput } from './logout.usecase'
 
 describe('LogoutUseCase', () => {
   let sut: LogoutUseCase
-  let sessionDAO: SessionDAOMemory
+  let sessionDAO: RedisSessionDAO
 
   beforeEach(() => {
     container.snapshot()
+    container
+      .rebindSync(TYPES.DAO.Session)
+      .to(RedisSessionDAO)
+      .inSingletonScope()
     sut = container.get(TYPES.UseCases.Logout)
+
+    // const redisSessionDAO = container.get(RedisSessionDAO, { autobind: true })
     sessionDAO = container.get(TYPES.DAO.Session)
   })
 

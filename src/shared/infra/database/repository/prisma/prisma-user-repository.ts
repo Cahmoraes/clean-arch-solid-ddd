@@ -6,6 +6,7 @@ import type { UserQuery } from '@/user/application/repository/user-query'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import { User } from '@/user/domain/user'
 import type { RoleTypes } from '@/user/domain/value-object/role'
+import type { StatusTypes } from '@/user/domain/value-object/status'
 
 interface UserData {
   id: string
@@ -15,6 +16,7 @@ interface UserData {
   created_at: Date
   updated_at: Date
   role: RoleTypes
+  status: StatusTypes
 }
 
 @injectable()
@@ -63,6 +65,7 @@ export class PrismaUserRepository implements UserRepository {
       createdAt: userData.created_at,
       updatedAt: userData.updated_at,
       role: userData.role,
+      status: userData.status,
     })
   }
 
