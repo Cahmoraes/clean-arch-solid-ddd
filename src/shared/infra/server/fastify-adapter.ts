@@ -39,11 +39,11 @@ export class FastifyAdapter implements HttpServer {
 
   private async initialize(): Promise<void> {
     this.setupErrorHandler()
-    // await this.setupCORS()
-    // await this.setupSwagger()
+    await this.setupCORS()
+    await this.setupSwagger()
   }
 
-  private async setupCORS() {
+  private async setupCORS(): Promise<void> {
     await this._server.register(fastifyCors)
   }
 
