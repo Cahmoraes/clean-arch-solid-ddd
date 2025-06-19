@@ -1,8 +1,4 @@
-import type {
-  FastifyReply,
-  FastifyRequest,
-  HookHandlerDoneFunction,
-} from 'fastify'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
@@ -14,19 +10,16 @@ import { HTTP_STATUS } from '../http-status'
 export interface AdminRoleCheckConstructor {
   request: FastifyRequest
   reply: FastifyReply
-  done: HookHandlerDoneFunction
 }
 
 export class AdminRoleCheck {
   private readonly request: FastifyRequest
   private readonly reply: FastifyReply
-  private readonly done: HookHandlerDoneFunction
   private readonly logger: Logger
 
   constructor(props: AdminRoleCheckConstructor) {
     this.request = props.request
     this.reply = props.reply
-    this.done = props.done
     this.logger = container.get<Logger>(TYPES.Logger)
   }
 
@@ -37,7 +30,6 @@ export class AdminRoleCheck {
         .status(HTTP_STATUS.FORBIDDEN)
         .send({ message: 'Forbidden' })
     }
-    this.done()
   }
 
   private logWhenRoleIsNotAdmin() {
