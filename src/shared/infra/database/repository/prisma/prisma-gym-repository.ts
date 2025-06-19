@@ -18,6 +18,7 @@ export interface GymCreateProps {
   phone?: string | null
   latitude: Decimal
   longitude: Decimal
+  cnpj: string
 }
 
 @injectable()
@@ -36,6 +37,7 @@ export class PrismaGymRepository implements GymRepository {
         phone: gym.phone ? gym.phone.toString() : undefined,
         latitude: gym.latitude,
         longitude: gym.longitude,
+        cnpj: gym.cnpj,
       },
       select: { id: true },
     })
@@ -51,7 +53,7 @@ export class PrismaGymRepository implements GymRepository {
     return gymData.map(this.createGym)
   }
 
-  private createGym(props: GymCreateProps) {
+  private createGym(props: GymCreateProps): Gym {
     return Gym.restore({
       id: props.id,
       title: props.title,
@@ -59,6 +61,7 @@ export class PrismaGymRepository implements GymRepository {
       phone: props.phone ? Number(props.phone) : undefined,
       latitude: props.latitude.toNumber(),
       longitude: props.longitude.toNumber(),
+      cnpj: props.cnpj,
     })
   }
 
