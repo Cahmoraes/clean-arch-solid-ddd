@@ -5,7 +5,7 @@ import fastify, {
   FastifyInstance,
   type FastifyReply,
   type FastifyRequest,
-  type HookHandlerDoneFunction,
+  type RouteHandler,
 } from 'fastify'
 import { inject, injectable } from 'inversify'
 
@@ -81,7 +81,7 @@ export class FastifyAdapter implements HttpServer {
   public async register(
     method: METHOD,
     path: string,
-    handlers: HandlerOptions,
+    handlerOptions: HandlerOptions,
     schema?: Schema,
   ): Promise<void> {
     try {
@@ -90,14 +90,11 @@ export class FastifyAdapter implements HttpServer {
         {
           schema,
           onRequest: this.authenticateOnRequestOrUndefined(
-            handlers.isProtected,
+            handlerOptions.isProtected,
           ),
-          preHandler: this.onRequestPreHandlerOrUndefined(handlers.onlyAdmin),
+          preHandler: [this.onlyAdminPreHandler(handlerOptions.onlyAdmin)],
         },
-        async (request: FastifyRequest, reply: FastifyReply) => {
-          const result = await handlers.callback(request, reply)
-          reply.status(result.status).send(result.body)
-        },
+        this.routeHandler(handlerOptions),
       )
       this.logger.info(
         this,
@@ -112,8 +109,29 @@ export class FastifyAdapter implements HttpServer {
     }
   }
 
-  private authenticateOnRequestOrUndefined(enableAuthenticate?: boolean) {
+  private authenticateOnRequestOrUndefined(
+    enableAuthenticate?: boolean,
+  ): RouteHandler | undefined {
     return enableAuthenticate ? this.authenticateOnRequest : undefined
+  }
+
+  private onlyAdminPreHandler(onlyAdmin?: boolean): RouteHandler {
+    return async (request: FastifyRequest, reply: FastifyReply) => {
+      if (!onlyAdmin) return
+      const role = request.user.sub.role
+      const adminRoleCheck = new AdminRoleCheck({ request, reply })
+      return adminRoleCheck.execute(role)
+    }
+  }
+
+  private routeHandler(handlers: HandlerOptions): RouteHandler {
+    return async (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ): Promise<void> => {
+      const result = await handlers.callback(request, reply)
+      reply.status(result.status).send(result.body)
+    }
   }
 
   private async authenticateOnRequest(
@@ -126,20 +144,6 @@ export class FastifyAdapter implements HttpServer {
       authToken: this.authToken,
     })
     await authenticateHandler.execute()
-  }
-
-  private onRequestPreHandlerOrUndefined(enableOnRequest?: boolean) {
-    return enableOnRequest ? this.onRequestPreHandler : undefined
-  }
-
-  private onRequestPreHandler(
-    request: FastifyRequest,
-    reply: FastifyReply,
-    done: HookHandlerDoneFunction,
-  ) {
-    const role = request.user.sub.role
-    const adminRoleCheck = new AdminRoleCheck({ request, reply, done })
-    adminRoleCheck.execute(role)
   }
 
   get server() {
