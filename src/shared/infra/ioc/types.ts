@@ -20,6 +20,7 @@ export const TYPES = {
   Controllers: {
     CreateUser: Symbol.for('UserController'),
     Authenticate: Symbol.for('AuthenticateController'),
+    Logout: Symbol.for('LogoutController'),
     UserProfile: Symbol.for('UserProfileController'),
     CheckIn: Symbol.for('CheckInController'),
     CreateGym: Symbol.for('CreateGymController'),

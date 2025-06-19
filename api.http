@@ -84,3 +84,13 @@ Content-Type: application/json
 {
   "userId": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
 }
+
+### Logout Usuário
+# @name logout  
+POST {{baseUrl}}/sessions/logout
+Content-Type: application/json
+Authorization: Bearer {{authenticate.response.body.token}}
+
+{
+  
+}
