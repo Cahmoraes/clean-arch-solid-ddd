@@ -6,6 +6,7 @@ interface Sub {
   id: string
   email: string
   role: RoleTypes
+  jwi: string
 }
 
 interface User {
