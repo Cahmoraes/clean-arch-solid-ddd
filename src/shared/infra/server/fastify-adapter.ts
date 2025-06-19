@@ -9,6 +9,7 @@ import fastify, {
 } from 'fastify'
 import { inject, injectable } from 'inversify'
 
+import type { SessionDAO } from '@/session/application/dao/session-dao'
 import type { AuthToken } from '@/user/application/auth/auth-token'
 
 import { Logger as LoggerDecorate } from '../decorator/logger'
@@ -21,6 +22,7 @@ import { GlobalErrorHandler } from './global-error-handler'
 import type { HandlerOptions, HttpServer, METHOD, Schema } from './http-server'
 import { AdminRoleCheck } from './services/admin-role-check'
 import { AuthenticateHandler } from './services/authenticate-pre-handler'
+import { CheckSessionRevokedHandler } from './services/check-session-revoked'
 
 @injectable()
 export class FastifyAdapter implements HttpServer {
@@ -31,6 +33,8 @@ export class FastifyAdapter implements HttpServer {
     private readonly authToken: AuthToken,
     @inject(TYPES.Logger)
     private readonly logger: Logger,
+    @inject(TYPES.DAO.Session)
+    private readonly sessionDAO: SessionDAO,
   ) {
     this._server = fastify({})
     this.bindMethods()
@@ -92,7 +96,10 @@ export class FastifyAdapter implements HttpServer {
           onRequest: this.authenticateOnRequestOrUndefined(
             handlerOptions.isProtected,
           ),
-          preHandler: [this.onlyAdminPreHandler(handlerOptions.onlyAdmin)],
+          preHandler: [
+            this.onlyAdminPreHandler(handlerOptions.onlyAdmin),
+            this.checkSessionRevoked(handlerOptions.isProtected),
+          ],
         },
         this.routeHandler(handlerOptions),
       )
@@ -121,6 +128,19 @@ export class FastifyAdapter implements HttpServer {
       const role = request.user.sub.role
       const adminRoleCheck = new AdminRoleCheck({ request, reply })
       return adminRoleCheck.execute(role)
+    }
+  }
+
+  private checkSessionRevoked(isProtected?: boolean): RouteHandler {
+    return async (request: FastifyRequest, reply: FastifyReply) => {
+      if (!isProtected) return
+      const checkSessionRevoked = new CheckSessionRevokedHandler({
+        reply,
+        request,
+      })
+      checkSessionRevoked.execute({
+        jwi: request.user.sub.jwi,
+      })
     }
   }
 
