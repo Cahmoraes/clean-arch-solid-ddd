@@ -2,7 +2,6 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 
 import type { SessionDAO } from '@/session/application/dao/session-dao'
 
-import { ResponseFactory } from '../../controller/factory/response-factory'
 import { container } from '../../ioc/container'
 import { TYPES } from '../../ioc/types'
 import { HTTP_STATUS } from '../http-status'
@@ -32,10 +31,8 @@ export class CheckSessionRevokedHandler {
   ): Promise<void> {
     const sessionFound = await this.sessionDAO.sessionById(input.jwi)
     if (!sessionFound) return
-    this.reply.status(HTTP_STATUS.FORBIDDEN).send(
-      ResponseFactory.FORBIDDEN({
-        message: 'Você precisa fazer o Logging',
-      }),
-    )
+    this.reply.status(HTTP_STATUS.UNAUTHORIZED).send({
+      message: 'Session already revoked',
+    })
   }
 }
