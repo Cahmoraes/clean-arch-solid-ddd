@@ -39,6 +39,7 @@ model CheckIn {
 
 model Gym {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cnpj        String    @unique
   title       String
   description String?
   phone       String?

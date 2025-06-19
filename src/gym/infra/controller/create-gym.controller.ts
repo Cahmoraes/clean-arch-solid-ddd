@@ -18,6 +18,7 @@ import type { HttpServer } from '@/shared/infra/server/http-server'
 import { GymRoutes } from './routes/gym-routes'
 
 const createGymSchema = z.object({
+  cnpj: z.string(),
   title: z.string(),
   description: z.string().optional(),
   phone: z.string().optional(),

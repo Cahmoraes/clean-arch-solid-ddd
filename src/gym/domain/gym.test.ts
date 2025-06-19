@@ -8,6 +8,7 @@ describe('Gym Entity', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       phone: '11971457899',
+      cnpj: '11.222.333/0001-81',
     }
     const gym = Gym.create(input).forceSuccess().value
     expect(gym.title).toBe(input.title)
@@ -25,6 +26,7 @@ describe('Gym Entity', () => {
       longitude: -46.633308,
       phone: 11971457899,
       id: 'fake_id',
+      cnpj: '11.222.333/0001-81',
     }
     const gym = Gym.restore(input)
     expect(gym.title).toBe(input.title)

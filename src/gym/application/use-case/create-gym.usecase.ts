@@ -13,6 +13,7 @@ import { GymAlreadyExistsError } from '../error/gym-already-exists-error'
 import type { GymRepository } from '../repository/gym-repository'
 
 export interface CreateGymUseCaseInput {
+  cnpj: string
   title: string
   description?: string
   phone?: string

@@ -2,12 +2,12 @@ import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 
 import { serverBuild } from '@/bootstrap/server-build'
+import type { AuthenticateUseCase } from '@/session/application/use-case/authenticate.usecase'
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
-import type { AuthenticateUseCase } from '@/session/application/use-case/authenticate.usecase'
 import { RoleValues } from '@/user/domain/value-object/role'
 
 import type { CreateGymPayload } from './create-gym.controller'
@@ -55,6 +55,7 @@ describe('Cadastrar Academia', () => {
     })
     const { token } = authenticateOrError.forceSuccess().value
     const input: CreateGymPayload = {
+      cnpj: '11.222.333/0001-81',
       title: 'Academia Teste',
       description: 'Academia de teste',
       phone: '123456789',

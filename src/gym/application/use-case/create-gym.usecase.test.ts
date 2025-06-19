@@ -27,6 +27,7 @@ describe('CreateGymUseCase', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       phone: '11971457899',
+      cnpj: '11.222.333/0001-81',
     }
     const result = await sut.execute(input)
     expect(result.forceSuccess().value.gymId).toEqual(expect.any(String))
@@ -39,6 +40,7 @@ describe('CreateGymUseCase', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       phone: '11971457899',
+      cnpj: '11.222.333/0001-81',
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
@@ -51,6 +53,7 @@ describe('CreateGymUseCase', () => {
       latitude: 999,
       longitude: -46.633308,
       phone: '11971457899',
+      cnpj: '11.222.333/0001-81',
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
@@ -63,6 +66,7 @@ describe('CreateGymUseCase', () => {
       latitude: -23.55052,
       longitude: 999,
       phone: '11971457899',
+      cnpj: '11.222.333/0001-81',
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
@@ -76,6 +80,7 @@ describe('CreateGymUseCase', () => {
       latitude: 999,
       longitude: -23.55052,
       phone: '11971457899',
+      cnpj: '11.222.333/0001-81',
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
@@ -89,6 +94,7 @@ describe('CreateGymUseCase', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       phone: 'invalid-phone',
+      cnpj: '11.222.333/0001-81',
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
@@ -101,6 +107,7 @@ describe('CreateGymUseCase', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       phone: 'invalid-phone',
+      cnpj: '11.222.333/0001-81',
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)

@@ -56,6 +56,7 @@ Content-Type: application/json
 Authorization: Bearer {{authenticate.response.body.token}}
 
 {
+  "cnpj": "11.222.333/0001-81",
   "title": "Academia do João",
   "description": "Academia completa",
   "phone": "123456789",

@@ -18,6 +18,7 @@ export async function createAndSaveGym(props: CreateAndSaveGym) {
     title: 'any_name',
     latitude: props.latitude ?? 0,
     longitude: props.longitude ?? 0,
+    cnpj: '11.222.333/0001-81',
     ...props,
   }).forceSuccess().value
   await props.gymRepository.save(gym)

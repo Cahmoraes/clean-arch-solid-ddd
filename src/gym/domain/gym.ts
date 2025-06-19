@@ -1,3 +1,5 @@
+import type { InvalidLatitudeError } from '@/check-in/domain/error/invalid-latitude-error'
+import type { InvalidLongitudeError } from '@/check-in/domain/error/invalid-longitude-error'
 import { Coordinate } from '@/check-in/domain/value-object/coordinate'
 import {
   type Either,
@@ -9,8 +11,12 @@ import type { InvalidNameLengthError } from '@/user/domain/error/invalid-name-le
 import { Name } from '@/user/domain/value-object/name'
 import { Phone } from '@/user/domain/value-object/phone'
 
+import type { InvalidCNPJError } from './error/invalid-cnpj-error'
+import { CNPJ } from './value-object/CNPJ'
+
 interface GymConstructor {
   id: Id
+  cnpj: CNPJ
   title: Name
   description?: string
   phone: Phone
@@ -19,24 +25,26 @@ interface GymConstructor {
 
 export type GymCreateProps = Omit<
   GymConstructor,
-  'id' | 'coordinate' | 'title' | 'phone'
+  'id' | 'coordinate' | 'title' | 'phone' | 'cnpj'
 > & {
   id?: string
   phone?: string
   title: string
   latitude: number
   longitude: number
+  cnpj: string
 }
 
 export type GymRestoreProps = Omit<
   GymConstructor,
-  'id' | 'coordinate' | 'title' | 'phone'
+  'id' | 'coordinate' | 'title' | 'phone' | 'cnpj'
 > & {
   id: string
   phone?: number
   title: string
   latitude: number
   longitude: number
+  cnpj: string
 }
 
 export class Gym {
@@ -45,6 +53,7 @@ export class Gym {
   private readonly _description?: string
   private readonly _phone?: Phone
   private readonly _coordinate: Coordinate
+  private readonly _cnpj: CNPJ
 
   private constructor(gymProps: GymConstructor) {
     this._id = gymProps.id
@@ -52,11 +61,19 @@ export class Gym {
     this._description = gymProps.description
     this._phone = gymProps.phone
     this._coordinate = gymProps.coordinate
+    this._cnpj = gymProps.cnpj
   }
 
+  // eslint-disable-next-line complexity
   public static create(
     gymProps: GymCreateProps,
-  ): Either<InvalidNameLengthError, Gym> {
+  ): Either<
+    | InvalidNameLengthError
+    | InvalidLatitudeError
+    | InvalidLongitudeError
+    | InvalidCNPJError,
+    Gym
+  > {
     const id = Id.create(gymProps.id)
     const nameOrError = Name.create(gymProps.title)
     if (nameOrError.isFailure()) return failure(nameOrError.value)
@@ -69,12 +86,15 @@ export class Gym {
     if (phoneOrError && phoneOrError.isFailure()) {
       return failure(phoneOrError.value)
     }
+    const cnpjOrError = CNPJ.create(gymProps.cnpj)
+    if (cnpjOrError.isFailure()) return failure(cnpjOrError.value)
     const gym = new Gym({
       ...gymProps,
       id,
       coordinate: coordinateOrError.value,
       title: nameOrError.value,
       phone: phoneOrError.value,
+      cnpj: cnpjOrError.value,
     })
     return success(gym)
   }
@@ -87,7 +107,8 @@ export class Gym {
       latitude: gymProps.latitude,
       longitude: gymProps.longitude,
     })
-    return new Gym({ ...gymProps, id, coordinate, title, phone })
+    const cnpj = CNPJ.restore(gymProps.cnpj)
+    return new Gym({ ...gymProps, id, coordinate, title, phone, cnpj })
   }
 
   get id(): string | null {
@@ -112,5 +133,9 @@ export class Gym {
 
   get longitude(): number {
     return this._coordinate.longitude
+  }
+
+  get cnpj(): string {
+    return this._cnpj.value
   }
 }
