@@ -23,7 +23,7 @@ export class AdminRoleCheck {
     this.logger = container.get<Logger>(TYPES.Logger)
   }
 
-  public execute(role: RoleTypes) {
+  public execute(role: RoleTypes): FastifyReply | void {
     if (role !== RoleValues.ADMIN) {
       this.logWhenRoleIsNotAdmin()
       return this.reply
@@ -32,7 +32,7 @@ export class AdminRoleCheck {
     }
   }
 
-  private logWhenRoleIsNotAdmin() {
+  private logWhenRoleIsNotAdmin(): void {
     this.logger.warn(this, {
       message: 'User is not an admin',
       route: this.request.url,
