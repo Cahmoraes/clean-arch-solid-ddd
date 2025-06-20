@@ -1,5 +1,7 @@
 import { InvalidLatitudeError } from '@/check-in/domain/error/invalid-latitude-error'
 import { InvalidLongitudeError } from '@/check-in/domain/error/invalid-longitude-error'
+import type { Gym } from '@/gym/domain/gym'
+import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 
@@ -10,10 +12,16 @@ import {
 
 describe('CreateGymUseCase', () => {
   let sut: CreateGymUseCase
+  let gymRepository: InMemoryGymRepository
 
   beforeEach(() => {
     container.snapshot()
+    container
+      .rebindSync(TYPES.Repositories.Gym)
+      .to(InMemoryGymRepository)
+      .inSingletonScope()
     sut = container.get(TYPES.UseCases.CreateGym)
+    gymRepository = container.get(TYPES.Repositories.Gym)
   })
 
   afterEach(() => {
@@ -30,7 +38,18 @@ describe('CreateGymUseCase', () => {
       cnpj: '11.222.333/0001-81',
     }
     const result = await sut.execute(input)
-    expect(result.forceSuccess().value.gymId).toEqual(expect.any(String))
+    const gymId = result.forceSuccess().value.gymId
+    expect(gymId).toEqual(expect.any(String))
+    console.log(gymRepository)
+    const gym = (await gymRepository.gymOfId(gymId)) as NonNullable<Gym>
+    expect(gym.id).toEqual(expect.any(String))
+    expect(gym.title).toBe(input.title)
+    expect(gym.description).toBe(input.description)
+    expect(gym.latitude).toBe(input.latitude)
+    expect(gym.longitude).toBe(input.longitude)
+    console.log('gym.phone', gym.phone)
+    expect(gym.cnpj).toBe(input.cnpj)
+    expect(gym.phone).toBe(input.phone)
   })
 
   test('Deve falhar ao criar uma Academia sem título', async () => {
