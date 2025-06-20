@@ -15,7 +15,7 @@ describe('Gym Entity', () => {
     expect(gym.description).toBe(input.description)
     expect(gym.latitude).toBe(input.latitude)
     expect(gym.longitude).toBe(input.longitude)
-    expect(gym.phone).toBe(Number(input.phone))
+    expect(gym.phone).toBe(input.phone)
   })
 
   test('Deve restaurar uma academia', () => {
@@ -24,7 +24,7 @@ describe('Gym Entity', () => {
       description: 'fake description',
       latitude: -23.55052,
       longitude: -46.633308,
-      phone: 11971457899,
+      phone: '11971457899',
       id: 'fake_id',
       cnpj: '11.222.333/0001-81',
     }

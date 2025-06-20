@@ -8,17 +8,27 @@ import {
 
 import { InvalidPhoneNumberError } from '../error/invalid-phone-number-error'
 
-export type PhoneCreate = string | number
+export type PhoneCreate = string
 
-const createPhoneSchema = z
-  .union([z.string(), z.number(), z.undefined()])
-  .transform((value) => (value === undefined ? undefined : Number(value)))
-  .refine((value) => value === undefined || !isNaN(value))
+const createPhoneSchema = z.union([
+  z.undefined(),
+  z.string().refine(checkValidPhoneString).transform(sanitizePhoneNumber),
+])
+
+function checkValidPhoneString(aString: string): boolean {
+  const cleanValue = aString.replace(/\D/g, '')
+  const parsed = parseInt(cleanValue, 10)
+  return !isNaN(parsed) && cleanValue.length > 0
+}
+
+function sanitizePhoneNumber(aString: string): string {
+  return aString.replace(/\D/g, '').trim()
+}
 
 type CreatePhoneData = z.infer<typeof createPhoneSchema>
 
 export class Phone {
-  private constructor(private readonly _value?: number) {}
+  private constructor(private readonly _value?: string) {}
 
   public static create(
     aStringOrNumber?: PhoneCreate,
@@ -36,7 +46,7 @@ export class Phone {
     return success(numberOrError.data)
   }
 
-  public static restore(phone?: number): Phone {
+  public static restore(phone?: string): Phone {
     return new Phone(phone)
   }
 
@@ -44,7 +54,7 @@ export class Phone {
     return this._value?.toString()
   }
 
-  get value(): number | undefined {
+  get value(): string | undefined {
     return this._value
   }
 }

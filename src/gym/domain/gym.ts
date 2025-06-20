@@ -40,7 +40,7 @@ export type GymRestoreProps = Omit<
   'id' | 'coordinate' | 'title' | 'phone' | 'cnpj'
 > & {
   id: string
-  phone?: number
+  phone?: string
   title: string
   latitude: number
   longitude: number
@@ -123,7 +123,7 @@ export class Gym {
     return this._description
   }
 
-  get phone(): number | undefined {
+  get phone(): string | undefined {
     return this._phone?.value
   }
 
