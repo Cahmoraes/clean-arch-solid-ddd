@@ -52,7 +52,7 @@ describe('FetchNearbyGymUsecase', () => {
     expect(Array.isArray(gyms)).toBe(true)
     expect(gyms).toHaveLength(1)
     expect(gyms[0].title).toBe(gymData.title)
-    expect(gyms[0].phone).toBe(Number(gymData.phone))
+    expect(gyms[0].phone).toBe(gymData.phone)
     expect(gyms[0].description).toBe(gymData.description)
   })
 
