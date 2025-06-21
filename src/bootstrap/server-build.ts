@@ -1,5 +1,6 @@
 import type { Controller } from '@/shared/infra/controller/controller'
 import { QueueController } from '@/shared/infra/controller/queue-controller'
+import type { DatabaseHealthProvider } from '@/shared/infra/health/database-health-provider'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import { EXCHANGES } from '@/shared/infra/queue/exchanges'
@@ -31,6 +32,11 @@ export async function serverBuild() {
     ...setupCheckInModule().controllers,
     ...setupSessionModule().controllers,
   ])
+  const databaseHealthProvider = container.get<DatabaseHealthProvider>(
+    TYPES.HealthCheck.Database,
+  )
+  const health = await databaseHealthProvider.check()
+  console.log({ health })
   queue.publish(EXCHANGES.LOG, {
     message: 'Server started',
   })

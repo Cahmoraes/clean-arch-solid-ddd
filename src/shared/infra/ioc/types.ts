@@ -67,6 +67,9 @@ export const TYPES = {
     User: Symbol.for('UserDAO'),
     Session: Symbol.for('SessionDAO'),
   },
+  HealthCheck: {
+    Database: Symbol.for('HealthCheckDatabase'),
+  },
   Logger: Symbol.for('Logger'),
   Queue: Symbol.for('Queue'),
   Mailer: Symbol.for('Mailer'),
