@@ -55,4 +55,8 @@ export class InMemoryGymRepository implements GymRepository {
     })
     return nearbyGyms.toArray()
   }
+
+  public async gymOfCNPJ(cnpj: string): Promise<Gym | null> {
+    return this.gyms.find((gym) => gym.cnpj === cnpj)
+  }
 }
