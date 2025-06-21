@@ -64,7 +64,6 @@ export class Gym {
     this._cnpj = gymProps.cnpj
   }
 
-  // eslint-disable-next-line complexity
   public static create(
     gymProps: GymCreateProps,
   ): Either<
@@ -83,9 +82,7 @@ export class Gym {
     })
     if (coordinateOrError.isFailure()) return failure(coordinateOrError.value)
     const phoneOrError = Phone.create(gymProps.phone)
-    if (phoneOrError && phoneOrError.isFailure()) {
-      return failure(phoneOrError.value)
-    }
+    if (phoneOrError.isFailure()) return failure(phoneOrError.value)
     const cnpjOrError = CNPJ.create(gymProps.cnpj)
     if (cnpjOrError.isFailure()) return failure(cnpjOrError.value)
     const gym = new Gym({
