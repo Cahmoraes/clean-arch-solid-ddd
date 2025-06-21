@@ -29,7 +29,7 @@ export const userContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.DAO.User)
     .toDynamicValue(UserDAOProvider.provide)
     .inSingletonScope()
-  bind(TYPES.Controllers.CreateUser).to(CreateUserController)
+  bind(TYPES.Controllers.CreateUser).to(CreateUserController).inRequestScope()
   bind(TYPES.Controllers.UserProfile).to(UserProfileController)
   bind(TYPES.Controllers.MyProfile).to(MyProfileController)
   bind(TYPES.Controllers.UserMetrics).to(UserMetricsController)
@@ -38,7 +38,6 @@ export const userContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Controllers.FetchUsers).to(FetchUsersController)
   bind(TYPES.Controllers.UpdateUserProfile).to(UserProfileController)
   bind(TYPES.UseCases.CreateUser).to(CreateUserUseCase)
-
   bind(TYPES.UseCases.UserProfile).to(UserProfileUseCase)
   bind(TYPES.UseCases.UserMetrics).to(UserMetricsUseCase)
   bind(TYPES.UseCases.ChangePassword).to(ChangePasswordUseCase)
