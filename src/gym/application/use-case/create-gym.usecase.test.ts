@@ -5,6 +5,7 @@ import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-mem
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 
+import { GymWithCNPJAlreadyExistsError } from '../error/gym-with-cnpj-already-exists-error'
 import {
   CreateGymUseCase,
   type CreateGymUseCaseInput,
@@ -40,14 +41,12 @@ describe('CreateGymUseCase', () => {
     const result = await sut.execute(input)
     const gymId = result.forceSuccess().value.gymId
     expect(gymId).toEqual(expect.any(String))
-    console.log(gymRepository)
     const gym = (await gymRepository.gymOfId(gymId)) as NonNullable<Gym>
     expect(gym.id).toEqual(expect.any(String))
     expect(gym.title).toBe(input.title)
     expect(gym.description).toBe(input.description)
     expect(gym.latitude).toBe(input.latitude)
     expect(gym.longitude).toBe(input.longitude)
-    console.log('gym.phone', gym.phone)
     expect(gym.cnpj).toBe(input.cnpj)
     expect(gym.phone).toBe(input.phone)
   })
@@ -130,5 +129,20 @@ describe('CreateGymUseCase', () => {
     }
     const result = await sut.execute(input)
     expect(result.isFailure()).toBe(true)
+  })
+
+  test('Deve falhar ao tentar criar uma Academia com CNPJ existente', async () => {
+    const input: CreateGymUseCaseInput = {
+      title: 'fake gym',
+      description: 'fake description',
+      latitude: -23.55052,
+      longitude: -46.633308,
+      phone: '111111111',
+      cnpj: '11.222.333/0001-81',
+    }
+    await sut.execute(input)
+    const result = await sut.execute(input)
+    expect(result.isFailure()).toBe(true)
+    expect(result.value).toBeInstanceOf(GymWithCNPJAlreadyExistsError)
   })
 })

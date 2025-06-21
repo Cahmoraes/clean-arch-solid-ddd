@@ -58,7 +58,7 @@ export class PrismaGymRepository implements GymRepository {
       id: props.id,
       title: props.title,
       description: props.description ?? undefined,
-      phone: props.phone ? Number(props.phone) : undefined,
+      phone: props.phone ? props.phone : undefined,
       latitude: props.latitude.toNumber(),
       longitude: props.longitude.toNumber(),
       cnpj: props.cnpj,
@@ -82,5 +82,15 @@ export class PrismaGymRepository implements GymRepository {
       ) <= 10000
     `
     return gyms.map(this.createGym)
+  }
+
+  public async gymOfCNPJ(cnpj: string): Promise<Gym | null> {
+    const gymDataOrNull = await this.prismaClient.gym.findUnique({
+      where: {
+        cnpj,
+      },
+    })
+    if (!gymDataOrNull) return null
+    return this.createGym(gymDataOrNull)
   }
 }

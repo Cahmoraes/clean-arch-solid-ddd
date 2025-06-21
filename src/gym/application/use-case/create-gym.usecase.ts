@@ -10,6 +10,7 @@ import { TYPES } from '@/shared/infra/ioc/types'
 import type { InvalidNameLengthError } from '@/user/domain/error/invalid-name-length-error'
 
 import { GymAlreadyExistsError } from '../error/gym-already-exists-error'
+import { GymWithCNPJAlreadyExistsError } from '../error/gym-with-cnpj-already-exists-error'
 import type { GymRepository } from '../repository/gym-repository'
 
 export interface CreateGymUseCaseInput {
@@ -40,6 +41,10 @@ export class CreateGymUseCase {
   public async execute(
     input: CreateGymUseCaseInput,
   ): Promise<CreateGymUseCaseOutput> {
+    const foundGym = await this.gymRepository.gymOfCNPJ(input.cnpj)
+    if (foundGym) {
+      return failure(new GymWithCNPJAlreadyExistsError(input.cnpj))
+    }
     const gymOrError = Gym.create(input)
     if (gymOrError.isFailure()) return failure(gymOrError.value)
     const { id } = await this.gymRepository.save(gymOrError.value)
