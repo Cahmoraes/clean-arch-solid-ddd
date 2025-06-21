@@ -12,7 +12,7 @@ Implementar o serviço principal que coordena todas as verificações de saúde 
 
 ### Passo 1: Estrutura Base da Classe
 
-- [ ] Criar classe `HealthCheckService` com decorator `@injectable()`
+- [X] Criar classe `HealthCheckService` com decorator `@injectable()`
 - [ ] Implementar interface `HealthCheckService`
 - [ ] Configurar injeção de dependências dos providers
 - [ ] Inicializar propriedades de configuração
