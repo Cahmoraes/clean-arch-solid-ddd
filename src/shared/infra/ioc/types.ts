@@ -34,6 +34,7 @@ export const TYPES = {
     FetchUsers: Symbol.for('FetchUsersController'),
     UpdateUserProfile: Symbol.for('UpdateUserProfileController'),
     ActivateUser: Symbol.for('ActivateUserController'),
+    HealthCheck: Symbol.for('HealthCheckController'),
   },
   UseCases: {
     CreateUser: Symbol.for('CreateUserUserCase'),
@@ -68,6 +69,7 @@ export const TYPES = {
     Session: Symbol.for('SessionDAO'),
   },
   HealthCheck: {
+    Service: Symbol.for('HealthCheckService'),
     Database: Symbol.for('DatabaseHealthProvider'),
     Cache: Symbol.for('CacheHealthProvider'),
   },
