@@ -5,8 +5,7 @@ export interface HealthStatus {
   uptime: number
   services: {
     database: ServiceHealth
-    email: ServiceHealth
-    messageQueue: ServiceHealth
+    cache: ServiceHealth
   }
 }
 
