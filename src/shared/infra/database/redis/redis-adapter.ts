@@ -153,4 +153,9 @@ export class RedisAdapter implements CacheDB {
       this.logger.warn(this, 'Error during Redis disconnect:')
     }
   }
+
+  public async isHealth(): Promise<boolean> {
+    const result = await this.client.ping()
+    return result === 'PONG'
+  }
 }
