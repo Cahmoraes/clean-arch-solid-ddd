@@ -30,6 +30,7 @@ export async function serverBuild() {
     ...setupGymModule().controllers,
     ...setupCheckInModule().controllers,
     ...setupSessionModule().controllers,
+    // ...setupHealthCheckModule().controllers,
   ])
   queue.publish(EXCHANGES.LOG, {
     message: 'Server started',
