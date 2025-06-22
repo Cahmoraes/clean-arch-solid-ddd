@@ -41,5 +41,6 @@ export interface Handler {
 
 export interface HttpServer {
   listen(): Promise<void>
+  close(): Promise<void>
   register: Handler
 }
