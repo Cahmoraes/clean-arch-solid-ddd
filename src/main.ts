@@ -12,6 +12,7 @@ async function main(): Promise<HttpServer> {
 
 async function setupGracefulShutdown(server: HttpServer): Promise<void> {
   await server.close()
+  process.exit()
 }
 
 const server = await main()

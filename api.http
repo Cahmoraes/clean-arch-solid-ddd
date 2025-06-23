@@ -95,3 +95,12 @@ Authorization: Bearer {{authenticate.response.body.token}}
 {
   
 }
+
+### Health Check
+# @name healthCheck
+GET {{baseUrl}}/health-check
+Content-Type: application/json
+
+{
+  
+}
