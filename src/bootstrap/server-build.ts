@@ -8,6 +8,7 @@ import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 import { setupCheckInModule } from './setup-check-in-module'
 import { setupGymModule } from './setup-gym-module'
+import { setupHealthCheckModule } from './setup-health-check-module'
 import { setupSessionModule } from './setup-session-module'
 import { setupUserModule } from './setup-user-module'
 
@@ -30,7 +31,7 @@ export async function serverBuild() {
     ...setupGymModule().controllers,
     ...setupCheckInModule().controllers,
     ...setupSessionModule().controllers,
-    // ...setupHealthCheckModule().controllers,
+    ...setupHealthCheckModule().controllers,
   ])
   queue.publish(EXCHANGES.LOG, {
     message: 'Server started',
