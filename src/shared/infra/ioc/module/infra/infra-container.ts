@@ -3,6 +3,8 @@ import { ContainerModule } from 'inversify'
 import { JsonWebTokenAdapter } from '@/shared/infra/auth/json-web-token-adapter'
 import { QueueController } from '@/shared/infra/controller/queue-controller'
 import { CookieAdapter } from '@/shared/infra/cookie/cookie-adapter'
+import { NodeCronAdapter } from '@/shared/infra/cron/node-cron-adapter'
+import { UpdateUserProfileCacheTask } from '@/shared/infra/cron/task/update-user-profile-cache-task'
 import { PgClient } from '@/shared/infra/database/connection/pg-client'
 import { prismaClient } from '@/shared/infra/database/connection/prisma-client'
 import { PrismaUnitOfWork } from '@/shared/infra/database/repository/unit-of-work/prisma-unit-of-work'
@@ -32,4 +34,6 @@ export const infraContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Mailer).toDynamicValue(MailerProvider.provide)
   bind(TYPES.Controllers.Queue).to(QueueController).inSingletonScope()
   bind(TYPES.UnitOfWork).toDynamicValue(UnitOfWorkProvider.provide)
+  bind(TYPES.CronJob).to(NodeCronAdapter)
+  bind(TYPES.Task.UpdateUserProfileCache).to(UpdateUserProfileCacheTask)
 })

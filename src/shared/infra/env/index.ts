@@ -21,6 +21,7 @@ const envSchema = z.object({
   REDIS_PORT: z.coerce.number().default(6379),
   TTL: z.coerce.number().default(60),
   DIRECT_URL: z.string().optional(),
+  CRON_TIME_TO_UPDATE_CACHE: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)
