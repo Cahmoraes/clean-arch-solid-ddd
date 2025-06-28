@@ -7,10 +7,7 @@ import type { CronJob } from './cron-job'
 export class NodeCronAdapter implements CronJob {
   private readonly nodeCron = nodeCron
 
-  public async schedule(
-    timer: string,
-    callback: CallableFunction,
-  ): Promise<void> {
+  public schedule(timer: string, callback: CallableFunction): void {
     this.nodeCron.schedule(timer, () => {
       callback()
     })

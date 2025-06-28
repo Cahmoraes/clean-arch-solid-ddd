@@ -29,7 +29,7 @@ export const userContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.DAO.User)
     .toDynamicValue(UserDAOProvider.provide)
     .inSingletonScope()
-  bind(TYPES.Controllers.CreateUser).to(CreateUserController).inRequestScope()
+  bind(TYPES.Controllers.CreateUser).to(CreateUserController)
   bind(TYPES.Controllers.UserProfile).to(UserProfileController)
   bind(TYPES.Controllers.MyProfile).to(MyProfileController)
   bind(TYPES.Controllers.UserMetrics).to(UserMetricsController)
