@@ -24,7 +24,7 @@ export interface FetchNearbyGymOutput {
   description?: string
   latitude: number
   longitude: number
-  phone?: number
+  phone: string
 }
 
 export type FetchNearbyGymResponse = Either<
@@ -58,7 +58,7 @@ export class FetchNearbyGym {
       description: gym.description,
       latitude: gym.latitude,
       longitude: gym.longitude,
-      phone: gym.phone,
+      phone: gym.phone ?? '',
     }))
   }
 }

@@ -1,5 +1,4 @@
 import type { Controller } from '@/shared/infra/controller/controller'
-import { QueueController } from '@/shared/infra/controller/queue-controller'
 import { container } from '@/shared/infra/ioc/container'
 import { TYPES } from '@/shared/infra/ioc/types'
 import { EXCHANGES } from '@/shared/infra/queue/exchanges'
@@ -12,10 +11,6 @@ import { setupHealthCheckModule } from './setup-health-check-module'
 import { setupSessionModule } from './setup-session-module'
 import { setupUserModule } from './setup-user-module'
 
-interface ConstructorClass {
-  new (...args: any[]): Controller
-}
-
 export interface ModuleControllers {
   controllers: Controller[]
 }
@@ -24,7 +19,7 @@ export async function serverBuild() {
   const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)
   const queue = container.get<Queue>(TYPES.Queue)
   await queue.connect()
-  const queueController = resolve(QueueController)
+  const queueController = resolve(TYPES.Controllers.Queue)
   queueController.init()
   initializeControllers([
     ...setupUserModule().controllers,
@@ -49,6 +44,6 @@ function initializeControllers(controllers: Controller[]): void {
 /**
  * Resolve a controller from the IoC container
  */
-export function resolve(aClass: ConstructorClass): Controller {
-  return container.get(aClass, { autobind: true })
+export function resolve(serviceIdentifier: symbol): Controller {
+  return container.get(serviceIdentifier)
 }

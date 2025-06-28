@@ -1,5 +1,4 @@
-import { CreateGymController } from '@/gym/infra/controller/create-gym.controller'
-import { SearchGymController } from '@/gym/infra/controller/search-gym.controller'
+import { TYPES } from '@/shared/infra/ioc/types'
 
 import { type ModuleControllers, resolve } from './server-build'
 
@@ -9,8 +8,8 @@ import { type ModuleControllers, resolve } from './server-build'
  */
 export function setupGymModule(): ModuleControllers {
   const controllers = [
-    resolve(CreateGymController),
-    resolve(SearchGymController),
+    resolve(TYPES.Controllers.CreateGym),
+    resolve(TYPES.Controllers.SearchGym),
   ]
   return { controllers }
 }

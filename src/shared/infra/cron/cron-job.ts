@@ -1,3 +1,3 @@
 export interface CronJob {
-  schedule(timer: string, callback: CallableFunction): Promise<void>
+  schedule(timer: string, callback: CallableFunction): void
 }

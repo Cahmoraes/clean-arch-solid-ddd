@@ -19,7 +19,7 @@ export interface SearchGymUseCaseOutput {
   id: string
   title: string
   description?: string
-  phone?: number
+  phone: string
   coordinate: SearchGymCoordinateDTO
 }
 
@@ -49,7 +49,7 @@ export class SearchGymUseCase {
       id: g.id!,
       title: g.title,
       description: g.description,
-      phone: g.phone,
+      phone: g.phone ?? '',
       coordinate: {
         latitude: g.latitude,
         longitude: g.longitude,
