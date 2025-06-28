@@ -2,11 +2,13 @@ import 'reflect-metadata'
 
 import { serverBuild } from '@/bootstrap/server-build'
 
+import { setupCronJob } from './bootstrap/setup-cron-job'
 import type { HttpServer } from './shared/infra/server/http-server'
 
 async function main(): Promise<HttpServer> {
   const server = await serverBuild()
   await server.listen()
+  setupCronJob()
   return server
 }
 

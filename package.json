@@ -88,6 +88,7 @@
     "ioredis": "5.6.1",
     "jsonwebtoken": "9.0.2",
     "node-cache": "5.1.2",
+    "node-cron": "4.1.1",
     "nodemailer": "7.0.3",
     "pg": "8.16.0",
     "reflect-metadata": "0.2.2",

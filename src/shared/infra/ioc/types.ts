@@ -78,4 +78,8 @@ export const TYPES = {
   Mailer: Symbol.for('Mailer'),
   Redis: Symbol.for('Redis'),
   UnitOfWork: Symbol.for('UnitOfWork'),
+  CronJob: Symbol.for('CronJob'),
+  Task: {
+    UpdateUserProfileCache: Symbol.for('UpdateUserProfileCacheTask'),
+  },
 }
