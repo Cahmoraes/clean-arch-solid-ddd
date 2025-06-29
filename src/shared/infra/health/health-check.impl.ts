@@ -4,10 +4,10 @@ import { version } from '../../../../package.json'
 import { TYPES } from '../ioc/types'
 import type { CacheHealthProvider } from './cache/cache-health-provider'
 import type { DatabaseHealthProvider } from './database/database-health-provider'
-import type { HealthStatus, ServiceHealth } from './health-check.types'
+import type { HealthStatus, ServiceHealth } from './health-check'
 
 @injectable()
-export class HealthCheckService {
+export class HealthCheckImpl {
   constructor(
     @inject(TYPES.HealthCheck.Database)
     private readonly databaseProvider: DatabaseHealthProvider,
