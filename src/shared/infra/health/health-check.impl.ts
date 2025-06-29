@@ -6,6 +6,8 @@ import type { CacheHealthProvider } from './cache/cache-health-provider'
 import type { DatabaseHealthProvider } from './database/database-health-provider'
 import type { HealthStatus, ServiceHealth } from './health-check'
 
+export type HealthCheckStatusType = 'healthy' | 'unhealthy'
+
 @injectable()
 export class HealthCheckImpl {
   constructor(
@@ -34,8 +36,8 @@ export class HealthCheckImpl {
 
   private determineOverallStatus(
     services: ServiceHealth[],
-  ): 'healthy' | 'unhealthy' {
-    return services.some((service) => service.status === 'down')
+  ): HealthCheckStatusType {
+    return services.some((service): boolean => service.status === 'down')
       ? 'unhealthy'
       : 'healthy'
   }
