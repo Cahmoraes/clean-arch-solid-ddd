@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 
-import type { HealthCheckService } from '../health/health-check.service'
+import type { HealthCheckImpl } from '../health/health-check.impl'
 import { TYPES } from '../ioc/types'
 import type { HttpServer } from '../server/http-server'
 import type { Controller } from './controller'
@@ -13,7 +13,7 @@ export class HealthCheckController implements Controller {
     @inject(TYPES.Server.Fastify)
     private readonly httpServer: HttpServer,
     @inject(TYPES.HealthCheck.Service)
-    private readonly healthCheckService: HealthCheckService,
+    private readonly healthCheckService: HealthCheckImpl,
   ) {
     this.bindMethods()
   }

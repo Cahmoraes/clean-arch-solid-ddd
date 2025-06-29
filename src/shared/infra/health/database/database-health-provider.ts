@@ -2,7 +2,7 @@ import type { PrismaClient } from '@prisma/client'
 import { inject, injectable } from 'inversify'
 
 import { TYPES } from '../../ioc/types'
-import type { HealthProvider, ServiceHealth } from '../health-check.types'
+import type { HealthProvider, ServiceHealth } from '../health-check'
 
 @injectable()
 export class DatabaseHealthProvider implements HealthProvider {

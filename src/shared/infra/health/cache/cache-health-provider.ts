@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 
 import type { RedisAdapter } from '../../database/redis/redis-adapter'
 import { TYPES } from '../../ioc/types'
-import type { HealthProvider, ServiceHealth } from '../health-check.types'
+import type { HealthProvider, ServiceHealth } from '../health-check'
 
 @injectable()
 export class CacheHealthProvider implements HealthProvider {
