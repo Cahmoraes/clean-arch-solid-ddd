@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify'
 
+import { version } from '../../../../package.json'
 import { TYPES } from '../ioc/types'
 import type { CacheHealthProvider } from './cache/cache-health-provider'
 import type { DatabaseHealthProvider } from './database/database-health-provider'
@@ -23,7 +24,7 @@ export class HealthCheckService {
       status: this.determineOverallStatus(services),
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      version: '1.0.0',
+      version,
       services: {
         database: services[0],
         cache: services[1],
