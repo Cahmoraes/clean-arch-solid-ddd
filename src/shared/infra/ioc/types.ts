@@ -1,4 +1,3 @@
-// Barrel export - Re-exports all type modules for easy importing
 export { AUTH_TYPES } from './module/service-identifier/auth-types'
 export { CHECKIN_TYPES } from './module/service-identifier/checkin-types'
 export { GYM_TYPES } from './module/service-identifier/gym-types'
