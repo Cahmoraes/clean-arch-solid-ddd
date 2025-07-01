@@ -12,6 +12,7 @@ import { env } from '@/shared/infra/env'
 config({
   path: join(cwd(), '.env'),
   override: true,
+  quiet: true,
 })
 
 // if (env.USE_PRISMA) {
