@@ -164,14 +164,14 @@ function allowInfraCircularDependency() {
     name: 'allow-infra-circular-dependency',
     comment:
       'Permite ciclos dentro da pasta `infra/`, mas impede ciclos em outras camadas.',
-    severity: 'ignore', // 🔥 Ignora esses ciclos específicos
+    severity: 'ignore', // Ignora esses ciclos específicos
     from: {
       path: '^src/infra/', // Permite apenas ciclos na pasta infra
     },
     to: {
-      circular: true, // 🚀 Permite ciclos internos
+      circular: true, // Permite ciclos internos
       viaOnly: {
-        path: '^src/infra/', // 🔥 Garante que os ciclos aceitos estão apenas dentro de infra/
+        path: '^src/infra/', // Garante que os ciclos aceitos estão apenas dentro de infra/
       },
     },
   }
