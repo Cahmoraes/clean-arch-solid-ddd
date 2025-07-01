@@ -1,4 +1,4 @@
-import { TYPES } from '@/shared/infra/ioc/types'
+import { HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 
 import { type ModuleControllers, resolve } from './server-build'
 
@@ -7,6 +7,6 @@ import { type ModuleControllers, resolve } from './server-build'
  * Resolves and returns all health-check-related controllers
  */
 export function setupHealthCheckModule(): ModuleControllers {
-  const controllers = [resolve(TYPES.Controllers.HealthCheck)]
+  const controllers = [resolve(HEALTH_CHECK_TYPES.Controllers.HealthCheck)]
   return { controllers }
 }

@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import winston from 'winston'
 
 import { isProduction } from '../env'
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import { EXCHANGES } from '../queue/exchanges'
 import type { Queue } from '../queue/queue'
 import type { Logger } from './logger'
@@ -19,7 +19,7 @@ export class WinstonAdapter implements Logger {
   private readonly logger: winston.Logger
 
   constructor(
-    @inject(TYPES.Queue)
+    @inject(SHARED_TYPES.Queue)
     private readonly queue: Queue,
   ) {
     this.logger = winston.createLogger({

@@ -1,6 +1,6 @@
 import type { Controller } from '@/shared/infra/controller/controller'
 import { container } from '@/shared/infra/ioc/container'
-import { SHARED_TYPES, TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 import { EXCHANGES } from '@/shared/infra/queue/exchanges'
 import type { Queue } from '@/shared/infra/queue/queue'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
@@ -16,8 +16,10 @@ export interface ModuleControllers {
 }
 
 export async function serverBuild() {
-  const fastifyServer = container.get<FastifyAdapter>(TYPES.Server.Fastify)
-  const queue = container.get<Queue>(TYPES.Queue)
+  const fastifyServer = container.get<FastifyAdapter>(
+    SHARED_TYPES.Server.Fastify,
+  )
+  const queue = container.get<Queue>(SHARED_TYPES.Queue)
   await queue.connect()
   const queueController = resolve(SHARED_TYPES.Controllers.Queue)
   queueController.init()

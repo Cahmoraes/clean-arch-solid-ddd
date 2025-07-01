@@ -11,7 +11,7 @@ import {
 import type { Controller } from '@/shared/infra/controller/controller'
 import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import type { ActiveUserUseCase } from '@/user/application/use-case/active-user.usecase'
 
@@ -26,9 +26,9 @@ type ActivateUserPayload = z.infer<typeof activateUserSchema>
 @injectable()
 export class ActivateUserController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly httpServer: HttpServer,
-    @inject(TYPES.UseCases.ActivateUser)
+    @inject(USER_TYPES.UseCases.ActivateUser)
     private readonly activeUser: ActiveUserUseCase,
   ) {
     this.bindMethod()

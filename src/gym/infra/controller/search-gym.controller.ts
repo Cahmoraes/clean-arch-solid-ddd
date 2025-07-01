@@ -15,7 +15,7 @@ import {
 import type { Controller } from '@/shared/infra/controller/controller'
 import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { GYM_TYPES, SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
@@ -36,9 +36,9 @@ export type SearchGymParams = z.infer<typeof searchGymParamsSchema>
 @injectable()
 export class SearchGymController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.UseCases.SearchGym)
+    @inject(GYM_TYPES.UseCases.SearchGym)
     private readonly searchGymUseCase: SearchGymUseCase,
   ) {
     this.bindMethods()

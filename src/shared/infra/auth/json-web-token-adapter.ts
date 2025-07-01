@@ -13,13 +13,13 @@ import type {
 } from '../../../user/application/auth/auth-token'
 import { InvalidUserTokenError } from '../../../user/application/error/invalid-user-token-error'
 import { env } from '../env'
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 
 @injectable()
 export class JsonWebTokenAdapter implements AuthToken {
   constructor(
-    @inject(TYPES.Logger)
+    @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
   ) {}
 

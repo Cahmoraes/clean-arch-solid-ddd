@@ -5,7 +5,7 @@ import { fromError } from 'zod-validation-error'
 import { UserAlreadyExistsError } from '@/user/application/error/user-already-exists-error'
 
 import { container } from '../ioc/container'
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import { EXCHANGES } from '../queue/exchanges'
 import type { Queue } from '../queue/queue'
@@ -38,7 +38,7 @@ export class GlobalErrorHandler {
 
   private static queue(): Queue {
     if (!GlobalErrorHandler._queue) {
-      GlobalErrorHandler._queue = container.get<Queue>(TYPES.Queue)
+      GlobalErrorHandler._queue = container.get<Queue>(SHARED_TYPES.Queue)
     }
     return GlobalErrorHandler._queue
   }
@@ -52,7 +52,7 @@ export class GlobalErrorHandler {
 
   private static logger(): Logger {
     if (!GlobalErrorHandler._logger) {
-      GlobalErrorHandler._logger = container.get<Logger>(TYPES.Logger)
+      GlobalErrorHandler._logger = container.get<Logger>(SHARED_TYPES.Logger)
     }
     return GlobalErrorHandler._logger
   }

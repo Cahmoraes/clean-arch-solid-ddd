@@ -15,7 +15,7 @@ import {
   type ResponseOutput,
 } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer, Schema } from '@/shared/infra/server/http-server'
 import { UserAlreadyExistsError } from '@/user/application/error/user-already-exists-error'
 import type {
@@ -42,9 +42,9 @@ type CreateUserPayload = z.infer<typeof createUserRequestSchema>
 @injectable()
 export class CreateUserController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly httpServer: HttpServer,
-    @inject(TYPES.UseCases.CreateUser)
+    @inject(USER_TYPES.UseCases.CreateUser)
     private readonly createUser: CreateUserUseCase,
   ) {
     this.bindMethods()

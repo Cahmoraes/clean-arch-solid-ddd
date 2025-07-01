@@ -2,7 +2,7 @@ import { createAndSaveGym } from 'test/factory/create-and-save-gym'
 
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 
 import {
   FetchNearbyGym,
@@ -16,9 +16,9 @@ describe('FetchNearbyGymUsecase', () => {
   beforeEach(async () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
-    await container.unbind(TYPES.Repositories.Gym)
-    container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
-    sut = container.get(TYPES.UseCases.FetchNearbyGym)
+    await container.unbind(GYM_TYPES.Repositories.Gym)
+    container.bind(GYM_TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    sut = container.get(GYM_TYPES.UseCases.FetchNearbyGym)
   })
 
   afterEach(() => {

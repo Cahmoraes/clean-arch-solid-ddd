@@ -1,13 +1,13 @@
 import { inject, injectable } from 'inversify'
 
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import type { MailerGateway } from './mailer-gateway'
 
 @injectable()
 export class MailerGatewayMemory implements MailerGateway {
   constructor(
-    @inject(TYPES.Logger)
+    @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
   ) {}
 

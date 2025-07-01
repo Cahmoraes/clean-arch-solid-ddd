@@ -6,7 +6,7 @@ import type { AuthenticateUseCase } from '@/session/application/use-case/authent
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { RoleValues } from '@/user/domain/value-object/role'
 
@@ -23,12 +23,12 @@ describe('Cadastrar Academia', () => {
     container.snapshot()
     gymRepository = new InMemoryGymRepository()
     userRepository = new InMemoryUserRepository()
-    await container.unbind(TYPES.Repositories.User)
-    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
-    await container.unbind(TYPES.Repositories.Gym)
-    container.bind(TYPES.Repositories.Gym).toConstantValue(gymRepository)
+    await container.unbind(USER_TYPES.Repositories.User)
+    container.bind(USER_TYPES.Repositories.User).toConstantValue(userRepository)
+    await container.unbind(GYM_TYPES.Repositories.Gym)
+    container.bind(GYM_TYPES.Repositories.Gym).toConstantValue(gymRepository)
     authenticate = container.get<AuthenticateUseCase>(
-      TYPES.UseCases.Authenticate,
+      AUTH_TYPES.UseCases.Authenticate,
     )
     fastifyServer = await serverBuild()
     await fastifyServer.ready()

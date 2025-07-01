@@ -3,7 +3,7 @@ import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import { UserDAOMemory } from '@/shared/infra/database/dao/in-memory/user-dao-memory'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 import { UserRoutes } from './routes/user-routes'
@@ -15,9 +15,9 @@ describe('Buscar Usuários', () => {
   beforeEach(async () => {
     container.snapshot()
     const userDAOMemory = new UserDAOMemory()
-    container.rebindSync(TYPES.DAO.User).toConstantValue(userDAOMemory)
+    container.rebindSync(USER_TYPES.DAO.User).toConstantValue(userDAOMemory)
     userDAO = userDAOMemory
-    userDAO = container.get(TYPES.DAO.User)
+    userDAO = container.get(USER_TYPES.DAO.User)
     fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()
   })

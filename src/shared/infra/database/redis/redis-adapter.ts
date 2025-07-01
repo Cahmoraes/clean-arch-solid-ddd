@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import IORedis, { type Redis } from 'ioredis'
 
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
 
 import type { CacheDB } from './cache-db'
@@ -19,7 +19,7 @@ export class RedisAdapter implements CacheDB {
 
   constructor(
     @inject(CacheDBMemory) private readonly cacheMemory: CacheDB,
-    @inject(TYPES.Logger) private readonly logger: Logger,
+    @inject(SHARED_TYPES.Logger) private readonly logger: Logger,
   ) {
     this.client = this.createClient()
     this.setupMonitoring()

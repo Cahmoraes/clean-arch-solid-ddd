@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import nodemailer, { Transporter } from 'nodemailer'
 
 import { Logger as LoggerDecorate } from '../decorator/logger'
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import type { MailerGateway } from './mailer-gateway'
 import { Retry } from './retry'
@@ -11,7 +11,7 @@ import { Retry } from './retry'
 export class NodeMailerAdapter implements MailerGateway {
   private transporter?: Transporter
 
-  constructor(@inject(TYPES.Logger) private readonly logger: Logger) {
+  constructor(@inject(SHARED_TYPES.Logger) private readonly logger: Logger) {
     this.init()
   }
 

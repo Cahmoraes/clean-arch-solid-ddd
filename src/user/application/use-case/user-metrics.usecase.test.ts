@@ -3,7 +3,7 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 
 import type { UserMetricsUseCase } from './user-metrics.usecase'
 
@@ -14,7 +14,7 @@ describe('UserMetricsUseCase', () => {
   beforeEach(async () => {
     container.snapshot()
     checkInRepository = (await setupInMemoryRepositories()).checkInRepository
-    sut = container.get<UserMetricsUseCase>(TYPES.UseCases.UserMetrics)
+    sut = container.get<UserMetricsUseCase>(USER_TYPES.UseCases.UserMetrics)
   })
 
   afterEach(() => {

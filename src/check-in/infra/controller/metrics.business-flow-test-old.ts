@@ -4,7 +4,7 @@ import { createAndSaveCheckIn } from 'test/factory/create-and-save-check-in'
 import { serverBuild } from '@/bootstrap/server-build'
 import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 import { CheckInRoutes } from './routes/check-in-routes'
@@ -16,9 +16,9 @@ describe('Obter Métricas de CheckIn', () => {
   beforeEach(async () => {
     container.snapshot()
     checkInRepository = new InMemoryCheckInRepository()
-    await container.unbind(TYPES.Repositories.CheckIn)
+    await container.unbind(CHECKIN_TYPES.Repositories.CheckIn)
     container
-      .bind(TYPES.Repositories.CheckIn)
+      .bind(CHECKIN_TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
     fastifyServer = await serverBuild()
     await fastifyServer.ready()

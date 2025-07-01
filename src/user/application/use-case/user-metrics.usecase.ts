@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import type { CheckInRepository } from '@/check-in/application/repository/check-in-repository'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 
 export interface UserMetricsUseCaseInput {
   userId: string
@@ -14,7 +14,7 @@ export interface UserMetricsUseCaseOutput {
 @injectable()
 export class UserMetricsUseCase {
   constructor(
-    @inject(TYPES.Repositories.CheckIn)
+    @inject(CHECKIN_TYPES.Repositories.CheckIn)
     private readonly checkInRepository: CheckInRepository,
   ) {}
 

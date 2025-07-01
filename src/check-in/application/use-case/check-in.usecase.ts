@@ -15,7 +15,12 @@ import {
   success,
 } from '@/shared/domain/value-object/either'
 import type { UnitOfWork } from '@/shared/infra/database/repository/unit-of-work/unit-of-work'
-import { TYPES } from '@/shared/infra/ioc/types'
+import {
+  CHECKIN_TYPES,
+  GYM_TYPES,
+  SHARED_TYPES,
+  USER_TYPES,
+} from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
 import type { Queue } from '@/shared/infra/queue/queue'
 import { UserHasAlreadyCheckedInToday } from '@/user/application/error/user-has-already-checked-in-today'
@@ -49,17 +54,17 @@ export type CheckInUseCaseOutput = Either<
 @injectable()
 export class CheckInUseCase {
   constructor(
-    @inject(TYPES.Repositories.User)
+    @inject(USER_TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
-    @inject(TYPES.Repositories.Gym)
+    @inject(GYM_TYPES.Repositories.Gym)
     private readonly gymRepository: GymRepository,
-    @inject(TYPES.Repositories.CheckIn)
+    @inject(CHECKIN_TYPES.Repositories.CheckIn)
     private readonly checkInRepository: CheckInRepository,
-    @inject(TYPES.Queue)
+    @inject(SHARED_TYPES.Queue)
     private readonly queue: Queue,
-    @inject(TYPES.UnitOfWork)
+    @inject(SHARED_TYPES.UnitOfWork)
     private readonly unityOfWork: UnitOfWork,
-    @inject(TYPES.Logger)
+    @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
   ) {
     this.bindMethod()

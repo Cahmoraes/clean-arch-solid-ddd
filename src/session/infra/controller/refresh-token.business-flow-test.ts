@@ -4,7 +4,7 @@ import { serverBuildForTest } from 'test/factory/server-build-for-test'
 import { SessionRoutes } from '@/session/infra/controller/routes/session-routes'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import { User } from '@/user/domain/user'
@@ -17,7 +17,7 @@ describe('Atualizar Refresh Token', () => {
     container.snapshot()
     const inMemoryUserRepository = new InMemoryUserRepository()
     container
-      .rebindSync(TYPES.Repositories.User)
+      .rebindSync(USER_TYPES.Repositories.User)
       .toConstantValue(inMemoryUserRepository)
     userRepository = inMemoryUserRepository
     fastifyServer = await serverBuildForTest()

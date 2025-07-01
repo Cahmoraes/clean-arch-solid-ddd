@@ -1,11 +1,11 @@
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import { WinstonAdapter } from '../logger/winston-adapter'
 
 export async function importLoggerWithLazyLoading(): Promise<WinstonAdapter> {
   const module = await import('../ioc/container')
   const container = module.container
-  const logger = container.get<WinstonAdapter>(TYPES.Logger)
+  const logger = container.get<WinstonAdapter>(SHARED_TYPES.Logger)
   return logger
 }
 

@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import type { CheckIn } from '@/check-in/domain/check-in'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { CHECKIN_TYPES, USER_TYPES } from '@/shared/infra/ioc/types'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 
 import type { CheckInRepository } from '../repository/check-in-repository'
@@ -28,9 +28,9 @@ export interface CheckInHistoryUseCaseOutput {
 @injectable()
 export class CheckInHistoryUseCase {
   constructor(
-    @inject(TYPES.Repositories.User)
+    @inject(USER_TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
-    @inject(TYPES.Repositories.CheckIn)
+    @inject(CHECKIN_TYPES.Repositories.CheckIn)
     private readonly checkInRepository: CheckInRepository,
   ) {}
 

@@ -9,7 +9,7 @@ import type {
 import { CheckIn } from '@/check-in/domain/check-in'
 import { env } from '@/shared/infra/env'
 import { InvalidTransactionInstance } from '@/shared/infra/errors/invalid-transaction-instance-error'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 
 interface CreateCheckInProps {
   id: string
@@ -24,7 +24,7 @@ interface CreateCheckInProps {
 @injectable()
 export class PrismaCheckInRepository implements CheckInRepository {
   constructor(
-    @inject(TYPES.Prisma.Client)
+    @inject(SHARED_TYPES.Prisma.Client)
     private readonly prismaClient:
       | PrismaClient
       | Omit<PrismaClient, ITXClientDenyList>,

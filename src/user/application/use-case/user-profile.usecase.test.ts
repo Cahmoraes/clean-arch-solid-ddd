@@ -2,7 +2,7 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import { User, type UserCreate } from '@/user/domain/user'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
@@ -18,7 +18,7 @@ describe('UserProfile', () => {
   beforeEach(async () => {
     container.snapshot()
     userRepository = (await setupInMemoryRepositories()).userRepository
-    sut = container.get<UserProfileUseCase>(TYPES.UseCases.UserProfile)
+    sut = container.get<UserProfileUseCase>(USER_TYPES.UseCases.UserProfile)
   })
 
   afterEach(() => {

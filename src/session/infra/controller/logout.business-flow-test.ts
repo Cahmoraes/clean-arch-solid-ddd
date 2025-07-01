@@ -5,7 +5,7 @@ import { serverBuildForTest } from 'test/factory/server-build-for-test'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { env } from '@/shared/infra/env'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
@@ -19,10 +19,10 @@ describe('Logout Usuário', () => {
     const inMemoryRepository = new InMemoryUserRepository()
     container.snapshot()
     container
-      .rebindSync(TYPES.Repositories.User)
+      .rebindSync(USER_TYPES.Repositories.User)
       .toConstantValue(inMemoryRepository)
     userRepository = container.get<InMemoryUserRepository>(
-      TYPES.Repositories.User,
+      USER_TYPES.Repositories.User,
     )
     fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()

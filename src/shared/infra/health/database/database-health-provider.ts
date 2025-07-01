@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@prisma/client'
 import { inject, injectable } from 'inversify'
 
-import { TYPES } from '../../ioc/types'
+import { HEALTH_CHECK_TYPES, SHARED_TYPES } from '../../ioc/types'
 import type { HealthProvider, ServiceHealth } from '../health-check'
 
 @injectable()
@@ -9,7 +9,7 @@ export class DatabaseHealthProvider implements HealthProvider {
   public readonly name = 'database'
 
   constructor(
-    @inject(TYPES.Prisma.Client)
+    @inject(SHARED_TYPES.Prisma.Client)
     private readonly connection: PrismaClient,
   ) {}
 

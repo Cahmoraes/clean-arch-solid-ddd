@@ -3,7 +3,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { SessionDAO } from '@/session/application/dao/session-dao'
 
 import { container } from '../../ioc/container'
-import { TYPES } from '../../ioc/types'
+import { AUTH_TYPES } from '../../ioc/types'
 import { HTTP_STATUS } from '../http-status'
 
 export interface CheckSessionRevokedHandlerConstructor {
@@ -23,7 +23,7 @@ export class CheckSessionRevokedHandler {
   constructor(props: CheckSessionRevokedHandlerConstructor) {
     this.request = props.request
     this.reply = props.reply
-    this.sessionDAO = container.get<SessionDAO>(TYPES.DAO.Session)
+    this.sessionDAO = container.get<SessionDAO>(AUTH_TYPES.DAO.Session)
   }
 
   public async execute(

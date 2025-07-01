@@ -5,7 +5,7 @@ import { serverBuildForTest } from 'test/factory/server-build-for-test'
 import type { AuthenticateUseCase } from '@/session/application/use-case/authenticate.usecase'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
@@ -21,10 +21,10 @@ describe('Obter Meu Perfil', () => {
     container.snapshot()
 
     container
-      .rebindSync(TYPES.Repositories.User)
+      .rebindSync(USER_TYPES.Repositories.User)
       .toConstantValue(userRepository)
     authenticate = container.get<AuthenticateUseCase>(
-      TYPES.UseCases.Authenticate,
+      AUTH_TYPES.UseCases.Authenticate,
     )
     fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()

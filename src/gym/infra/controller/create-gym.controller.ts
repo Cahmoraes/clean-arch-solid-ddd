@@ -12,7 +12,7 @@ import {
 import type { Controller } from '@/shared/infra/controller/controller'
 import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { GYM_TYPES, SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 
 import { GymRoutes } from './routes/gym-routes'
@@ -31,9 +31,9 @@ export type CreateGymPayload = z.infer<typeof createGymSchema>
 @injectable()
 export class CreateGymController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.UseCases.CreateGym)
+    @inject(GYM_TYPES.UseCases.CreateGym)
     private readonly createGymUseCase: CreateGymUseCase,
   ) {
     this.bindMethods()

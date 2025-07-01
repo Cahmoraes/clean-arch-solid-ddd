@@ -7,7 +7,7 @@ import { ResponseFactory } from '@/shared/infra/controller/factory/response-fact
 import type { CookieManager } from '@/shared/infra/cookie/cookie-manager'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
@@ -16,11 +16,11 @@ import { SessionRoutes } from './routes/session-routes'
 @injectable()
 export class LogoutController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.UseCases.Logout)
+    @inject(AUTH_TYPES.UseCases.Logout)
     private readonly logout: LogoutUseCase,
-    @inject(TYPES.Cookies.Manager)
+    @inject(AUTH_TYPES.Cookies.Manager)
     private readonly cookieManager: CookieManager,
   ) {
     this.bindMethods()

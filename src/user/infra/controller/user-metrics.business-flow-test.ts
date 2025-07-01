@@ -7,7 +7,7 @@ import type { AuthenticateUseCase } from '@/session/application/use-case/authent
 import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 import { UserRoutes } from './routes/user-routes'
@@ -22,14 +22,14 @@ describe('Obter Métricas do Usuário', () => {
     userRepository = new InMemoryUserRepository()
     container.snapshot()
     container
-      .rebindSync(TYPES.Repositories.User)
+      .rebindSync(USER_TYPES.Repositories.User)
       .toConstantValue(userRepository)
     checkInRepository = new InMemoryCheckInRepository()
     container
-      .rebindSync(TYPES.Repositories.CheckIn)
+      .rebindSync(CHECKIN_TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
     authenticate = container.get<AuthenticateUseCase>(
-      TYPES.UseCases.Authenticate,
+      AUTH_TYPES.UseCases.Authenticate,
     )
     fastifyServer = await serverBuildForTest()
     await fastifyServer.ready()

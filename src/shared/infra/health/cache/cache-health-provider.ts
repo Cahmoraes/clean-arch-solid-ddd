@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import type { RedisAdapter } from '../../database/redis/redis-adapter'
-import { TYPES } from '../../ioc/types'
+import { HEALTH_CHECK_TYPES, SHARED_TYPES } from '../../ioc/types'
 import type { HealthProvider, ServiceHealth } from '../health-check'
 
 @injectable()
@@ -9,7 +9,7 @@ export class CacheHealthProvider implements HealthProvider {
   readonly name = 'cache'
 
   constructor(
-    @inject(TYPES.Redis)
+    @inject(SHARED_TYPES.Redis)
     private readonly redisClient: RedisAdapter,
   ) {}
 

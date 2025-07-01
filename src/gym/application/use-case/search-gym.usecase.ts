@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import type { Gym } from '@/gym/domain/gym'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { GYM_TYPES } from '@/shared/infra/ioc/types'
 
 import type { GymRepository } from '../repository/gym-repository'
 
@@ -26,7 +26,7 @@ export interface SearchGymUseCaseOutput {
 @injectable()
 export class SearchGymUseCase {
   constructor(
-    @inject(TYPES.Repositories.Gym)
+    @inject(GYM_TYPES.Repositories.Gym)
     private readonly gymRepository: GymRepository,
   ) {}
 

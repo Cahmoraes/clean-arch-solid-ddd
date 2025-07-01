@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@prisma/client'
 import { inject, injectable } from 'inversify'
 
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { UserQuery } from '@/user/application/repository/user-query'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import { User } from '@/user/domain/user'
@@ -22,7 +22,7 @@ interface UserData {
 @injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(
-    @inject(TYPES.Prisma.Client)
+    @inject(SHARED_TYPES.Prisma.Client)
     private readonly prisma: PrismaClient,
   ) {}
 

@@ -11,7 +11,7 @@ import {
 import type { Controller } from '@/shared/infra/controller/controller'
 import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import type { ChangePasswordUseCase } from '@/user/application/use-case/change-password.usecase'
 
@@ -26,9 +26,9 @@ type ChangePasswordPayload = z.infer<typeof changePasswordSchema>
 @injectable()
 export class ChangePasswordController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.UseCases.ChangePassword)
+    @inject(USER_TYPES.UseCases.ChangePassword)
     private readonly changePassword: ChangePasswordUseCase,
   ) {
     this.bindMethods()

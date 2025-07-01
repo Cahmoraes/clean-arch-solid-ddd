@@ -11,7 +11,7 @@ import {
 import type { Controller } from '@/shared/infra/controller/controller'
 import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import { PresenterFactory } from '@/shared/infra/presenter/presenter-factory'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import type { FetchUsersUseCase } from '@/user/application/use-case/fetch-users.usecase'
@@ -28,9 +28,9 @@ type FetchUsersRequest = z.infer<typeof fetchUsersRequestSchema>
 @injectable()
 export class FetchUsersController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly httpServer: HttpServer,
-    @inject(TYPES.UseCases.FetchUsers)
+    @inject(USER_TYPES.UseCases.FetchUsers)
     private readonly fetchUsers: FetchUsersUseCase,
   ) {
     this.bindMethods()

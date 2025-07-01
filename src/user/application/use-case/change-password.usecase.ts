@@ -6,7 +6,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { Queue } from '@/shared/infra/queue/queue'
 import { PasswordChangedEvent } from '@/user/domain/event/password-changed-event'
 import type { User } from '@/user/domain/user'
@@ -28,9 +28,9 @@ export type ChangePasswordUseCaseOutput = Either<
 @injectable()
 export class ChangePasswordUseCase {
   constructor(
-    @inject(TYPES.Repositories.User)
+    @inject(USER_TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
-    @inject(TYPES.Queue)
+    @inject(SHARED_TYPES.Queue)
     private readonly queue: Queue,
   ) {
     this.bindMethod()

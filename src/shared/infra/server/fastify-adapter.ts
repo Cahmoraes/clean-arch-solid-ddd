@@ -14,7 +14,7 @@ import type { AuthToken } from '@/user/application/auth/auth-token'
 
 import { Logger as LoggerDecorate } from '../decorator/logger'
 import { env } from '../env'
-import { TYPES } from '../ioc/types'
+import { AUTH_TYPES, SHARED_TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import { FastifySwaggerSetupFactory } from './factories/fastify-swagger-setup-factory'
 import { FastifySwaggerUISetupFactory } from './factories/fastify-swagger-ui-setup-factory'
@@ -29,11 +29,11 @@ export class FastifyAdapter implements HttpServer {
   private readonly _server: FastifyInstance
 
   constructor(
-    @inject(TYPES.Tokens.Auth)
+    @inject(AUTH_TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
-    @inject(TYPES.Logger)
+    @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
-    @inject(TYPES.DAO.Session)
+    @inject(AUTH_TYPES.DAO.Session)
     private readonly sessionDAO: SessionDAO,
   ) {
     this._server = fastify({})

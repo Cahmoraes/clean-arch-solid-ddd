@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import { User } from '@/user/domain/user'
 
@@ -9,7 +9,7 @@ import type { PgClient } from '../../connection/pg-client'
 @injectable()
 export class PgUserRepository implements UserRepository {
   constructor(
-    @inject(TYPES.PG.Client)
+    @inject(SHARED_TYPES.PG.Client)
     private readonly pgClient: PgClient,
   ) {
     this.pgClient.connect()
