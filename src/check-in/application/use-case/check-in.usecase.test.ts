@@ -9,7 +9,7 @@ import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import { UserHasAlreadyCheckedInToday } from '@/user/application/error/user-has-already-checked-in-today'
 import { UserNotFoundError } from '@/user/application/error/user-not-found-error'
 
@@ -28,7 +28,7 @@ describe('CheckInUseCase', () => {
     gymRepository = repositories.gymRepository
     userRepository = repositories.userRepository
     checkInRepository = repositories.checkInRepository
-    sut = container.get<CheckInUseCase>(TYPES.UseCases.CheckIn)
+    sut = container.get<CheckInUseCase>(CHECKIN_TYPES.UseCases.CheckIn)
   })
 
   afterEach(() => {

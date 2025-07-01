@@ -1,7 +1,7 @@
 import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-repositories'
 
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import { QueueMemoryAdapter } from '@/shared/infra/queue/queue-memory-adapter'
 
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
@@ -20,9 +20,9 @@ describe('CreateUserUseCase', () => {
     container.snapshot()
     userRepository = (await setupInMemoryRepositories()).userRepository
     queue = new QueueMemoryAdapter()
-    await container.unbind(TYPES.Queue)
-    container.bind(TYPES.Queue).toConstantValue(queue)
-    sut = container.get(TYPES.UseCases.CreateUser)
+    await container.unbind(SHARED_TYPES.Queue)
+    container.bind(SHARED_TYPES.Queue).toConstantValue(queue)
+    sut = container.get(USER_TYPES.UseCases.CreateUser)
   })
 
   afterEach(() => {

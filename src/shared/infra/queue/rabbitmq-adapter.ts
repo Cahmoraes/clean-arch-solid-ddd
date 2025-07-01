@@ -4,7 +4,7 @@ import { injectable } from 'inversify'
 import { LazyInject } from '../decorator/lazy-inject'
 import { Logger as LoggerDecorate } from '../decorator/logger'
 import { env } from '../env'
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import type { Queue } from './queue'
 
@@ -12,7 +12,7 @@ import type { Queue } from './queue'
 export class RabbitMQAdapter implements Queue {
   private connection?: amqp.ChannelModel
   private _channel?: amqp.Channel
-  private readonly logger: Logger = LazyInject(TYPES.Logger)
+  private readonly logger: Logger = LazyInject(SHARED_TYPES.Logger)
 
   @LoggerDecorate({
     message: '✅',

@@ -9,7 +9,7 @@ import { CheckInRoutes } from '@/check-in/infra/controller/routes/check-in-route
 import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
@@ -22,12 +22,12 @@ describe('Validar CheckIn', () => {
     container.snapshot()
     checkInRepository = new InMemoryCheckInRepository()
     userRepository = new InMemoryUserRepository()
-    await container.unbind(TYPES.Repositories.CheckIn)
+    await container.unbind(CHECKIN_TYPES.Repositories.CheckIn)
     container
-      .bind(TYPES.Repositories.CheckIn)
+      .bind(CHECKIN_TYPES.Repositories.CheckIn)
       .toConstantValue(checkInRepository)
-    await container.unbind(TYPES.Repositories.User)
-    container.bind(TYPES.Repositories.User).toConstantValue(userRepository)
+    await container.unbind(USER_TYPES.Repositories.User)
+    container.bind(USER_TYPES.Repositories.User).toConstantValue(userRepository)
     server = await serverBuild()
     await server.ready()
   })

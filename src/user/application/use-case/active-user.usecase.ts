@@ -5,7 +5,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { USER_TYPES } from '@/shared/infra/ioc/types'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
 import type { UserRepository } from '../repository/user-repository'
@@ -19,7 +19,7 @@ export type ActiveUserUseCaseOutput = Promise<Either<UserNotFoundError, null>>
 @injectable()
 export class ActiveUserUseCase {
   constructor(
-    @inject(TYPES.Repositories.User)
+    @inject(USER_TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
   ) {}
 

@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import { version } from '../../../../package.json'
-import { TYPES } from '../ioc/types'
+import { HEALTH_CHECK_TYPES } from '../ioc/types'
 import type { CacheHealthProvider } from './cache/cache-health-provider'
 import type { DatabaseHealthProvider } from './database/database-health-provider'
 import type { HealthStatus, ServiceHealth } from './health-check'
@@ -11,9 +11,9 @@ export type HealthCheckStatusType = 'healthy' | 'unhealthy'
 @injectable()
 export class HealthCheckImpl {
   constructor(
-    @inject(TYPES.HealthCheck.Database)
+    @inject(HEALTH_CHECK_TYPES.Providers.Database)
     private readonly databaseProvider: DatabaseHealthProvider,
-    @inject(TYPES.HealthCheck.Cache)
+    @inject(HEALTH_CHECK_TYPES.Providers.Cache)
     private readonly cacheProvider: CacheHealthProvider,
   ) {}
 

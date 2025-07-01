@@ -1,7 +1,7 @@
 import { RedisSessionDAO } from '@/shared/infra/database/dao/redis/redis-session-dao'
 import { env } from '@/shared/infra/env'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 
 import { SessionRevokedError } from '../error/session-revoked-error'
 import { LogoutUseCase, type LogoutUseCaseInput } from './logout.usecase'
@@ -13,13 +13,13 @@ describe('LogoutUseCase', () => {
   beforeEach(() => {
     container.snapshot()
     container
-      .rebindSync(TYPES.DAO.Session)
+      .rebindSync(AUTH_TYPES.DAO.Session)
       .to(RedisSessionDAO)
       .inSingletonScope()
-    sut = container.get(TYPES.UseCases.Logout)
+    sut = container.get(AUTH_TYPES.UseCases.Logout)
 
     // const redisSessionDAO = container.get(RedisSessionDAO, { autobind: true })
-    sessionDAO = container.get(TYPES.DAO.Session)
+    sessionDAO = container.get(AUTH_TYPES.DAO.Session)
   })
 
   afterEach(() => {

@@ -5,7 +5,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { User, UserValidationErrors } from '@/user/domain/user'
 
 import { UserNotFoundError } from '../error/user-not-found-error'
@@ -25,7 +25,7 @@ export type UpdateUserProfileUseCaseOutput = Either<
 @injectable()
 export class UpdateUserProfileUseCase {
   constructor(
-    @inject(TYPES.Repositories.User)
+    @inject(USER_TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
   ) {}
 

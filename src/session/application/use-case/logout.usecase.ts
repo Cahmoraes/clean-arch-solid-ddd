@@ -6,7 +6,7 @@ import {
   success,
 } from '@/shared/domain/value-object/either'
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { AUTH_TYPES } from '@/shared/infra/ioc/types'
 
 import type { SessionDAO, SessionData } from '../dao/session-dao'
 import { SessionRevokedError } from '../error/session-revoked-error'
@@ -26,7 +26,7 @@ interface createAndSaveSessionProps {
 @injectable()
 export class LogoutUseCase {
   constructor(
-    @inject(TYPES.DAO.Session)
+    @inject(AUTH_TYPES.DAO.Session)
     private readonly sessionDAO: SessionDAO,
   ) {}
 

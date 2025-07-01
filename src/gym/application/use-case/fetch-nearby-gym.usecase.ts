@@ -9,7 +9,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { GYM_TYPES } from '@/shared/infra/ioc/types'
 
 import type { GymRepository } from '../repository/gym-repository'
 
@@ -35,7 +35,7 @@ export type FetchNearbyGymResponse = Either<
 @injectable()
 export class FetchNearbyGym {
   constructor(
-    @inject(TYPES.Repositories.Gym)
+    @inject(GYM_TYPES.Repositories.Gym)
     private readonly gymRepository: GymRepository,
   ) {}
 

@@ -5,14 +5,14 @@ import type {
   SessionData,
 } from '@/session/application/dao/session-dao'
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 
 import type { CacheDB } from '../../redis/cache-db'
 
 @injectable()
 export class RedisSessionDAO implements SessionDAO {
   constructor(
-    @inject(TYPES.Redis)
+    @inject(SHARED_TYPES.Redis)
     private readonly cacheDB: CacheDB,
   ) {}
 

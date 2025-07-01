@@ -3,7 +3,7 @@ import { InvalidLongitudeError } from '@/check-in/domain/error/invalid-longitude
 import type { Gym } from '@/gym/domain/gym'
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 
 import { GymWithCNPJAlreadyExistsError } from '../error/gym-with-cnpj-already-exists-error'
 import {
@@ -18,11 +18,11 @@ describe('CreateGymUseCase', () => {
   beforeEach(() => {
     container.snapshot()
     container
-      .rebindSync(TYPES.Repositories.Gym)
+      .rebindSync(GYM_TYPES.Repositories.Gym)
       .to(InMemoryGymRepository)
       .inSingletonScope()
-    sut = container.get(TYPES.UseCases.CreateGym)
-    gymRepository = container.get(TYPES.Repositories.Gym)
+    sut = container.get(GYM_TYPES.UseCases.CreateGym)
+    gymRepository = container.get(GYM_TYPES.Repositories.Gym)
   })
 
   afterEach(() => {

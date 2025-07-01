@@ -1,4 +1,4 @@
-import { TYPES } from '@/shared/infra/ioc/types'
+import { CHECKIN_TYPES } from '@/shared/infra/ioc/types'
 
 import { type ModuleControllers, resolve } from './server-build'
 
@@ -8,8 +8,8 @@ import { type ModuleControllers, resolve } from './server-build'
  */
 export function setupCheckInModule(): ModuleControllers {
   const controllers = [
-    resolve(TYPES.Controllers.CheckIn),
-    resolve(TYPES.Controllers.ValidateCheckIn),
+    resolve(CHECKIN_TYPES.Controllers.CheckIn),
+    resolve(CHECKIN_TYPES.Controllers.ValidateCheckIn),
   ]
   return { controllers }
 }

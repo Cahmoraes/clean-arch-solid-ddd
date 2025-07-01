@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 
 import type { CacheDB } from '@/shared/infra/database/redis/cache-db'
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
 import type { RoleTypes } from '@/user/domain/value-object/role'
 
@@ -35,11 +35,11 @@ export interface FetchUsersUseCaseOutput {
 @injectable()
 export class FetchUsersUseCase {
   constructor(
-    @inject(TYPES.DAO.User)
+    @inject(USER_TYPES.DAO.User)
     private readonly userDAO: UserDAO,
-    @inject(TYPES.Redis)
+    @inject(SHARED_TYPES.Redis)
     private readonly cacheDB: CacheDB,
-    @inject(TYPES.Logger)
+    @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
   ) {}
 

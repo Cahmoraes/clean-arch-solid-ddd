@@ -14,7 +14,7 @@ import { ResponseFactory } from '@/shared/infra/controller/factory/response-fact
 import type { CookieManager } from '@/shared/infra/cookie/cookie-manager'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { AUTH_TYPES, SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
@@ -30,11 +30,11 @@ type AuthenticatePayload = z.infer<typeof authenticateRequestSchema>
 @injectable()
 export class AuthenticateController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.UseCases.Authenticate)
-    private readonly authenticate: AuthenticateUseCase,
-    @inject(TYPES.Cookies.Manager)
+    @inject(AUTH_TYPES.UseCases.Authenticate)
+    private readonly authenticateUseCase: AuthenticateUseCase,
+    @inject(AUTH_TYPES.Cookies.Manager)
     private readonly cookieManager: CookieManager,
   ) {
     this.bindMethods()
@@ -60,7 +60,7 @@ export class AuthenticateController implements Controller {
         status: HTTP_STATUS.BAD_REQUEST,
         message: parsedBodyResult.value.message,
       })
-    const result = await this.authenticate.execute({
+    const result = await this.authenticateUseCase.execute({
       email: parsedBodyResult.value.email,
       password: parsedBodyResult.value.password,
     })

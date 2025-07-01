@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 
 import type { HealthCheckImpl } from '../health/health-check.impl'
-import { TYPES } from '../ioc/types'
+import { HEALTH_CHECK_TYPES, SHARED_TYPES } from '../ioc/types'
 import type { HttpServer } from '../server/http-server'
 import type { Controller } from './controller'
 import { ResponseFactory } from './factory/response-factory'
@@ -10,9 +10,9 @@ import { HealthCheckRoutes } from './routes/health-check-routes'
 @injectable()
 export class HealthCheckController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly httpServer: HttpServer,
-    @inject(TYPES.HealthCheck.Service)
+    @inject(HEALTH_CHECK_TYPES.Service)
     private readonly healthCheckService: HealthCheckImpl,
   ) {
     this.bindMethods()

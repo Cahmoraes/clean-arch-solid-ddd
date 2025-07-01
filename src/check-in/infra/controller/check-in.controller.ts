@@ -12,7 +12,7 @@ import {
 import type { Controller } from '@/shared/infra/controller/controller'
 import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
 import { Logger } from '@/shared/infra/decorator/logger'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { CHECKIN_TYPES, SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 
@@ -30,9 +30,9 @@ type CheckInPayload = z.infer<typeof checkInRequestSchema>
 @injectable()
 export class CheckInController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.UseCases.CheckIn)
+    @inject(CHECKIN_TYPES.UseCases.CheckIn)
     private readonly checkIn: CheckInUseCase,
   ) {
     this.bindMethods()

@@ -14,26 +14,30 @@ import { NodeMailerAdapter } from '@/shared/infra/gateway/node-mailer-adapter'
 import { WinstonAdapter } from '@/shared/infra/logger/winston-adapter'
 import { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
-import { SHARED_TYPES, TYPES } from '../../types'
+import { AUTH_TYPES, SHARED_TYPES, USER_TYPES } from '../../types'
 import { CacheDBProvider } from './cache-db-provider'
 import { MailerProvider } from './mailer-provider'
 import { QueueProvider } from './queue-provider'
 
 export const infraContainer = new ContainerModule(({ bind }) => {
-  bind(TYPES.Prisma.Client).toConstantValue(prismaClient)
-  bind(TYPES.Prisma.UnitOfWork).to(PrismaUnitOfWork).inSingletonScope()
-  bind(TYPES.PG.Client).toConstantValue(new PgClient())
-  bind(TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
-  bind(TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
-  bind(TYPES.Cookies.Manager).to(CookieAdapter).inRequestScope()
-  bind(TYPES.Redis).toDynamicValue(CacheDBProvider.provide).inSingletonScope()
-  bind(TYPES.Logger).to(WinstonAdapter).inSingletonScope()
-  bind(TYPES.Queue).toDynamicValue(QueueProvider.provide).inSingletonScope()
+  bind(SHARED_TYPES.Prisma.Client).toConstantValue(prismaClient)
+  bind(SHARED_TYPES.Prisma.UnitOfWork).to(PrismaUnitOfWork).inSingletonScope()
+  bind(SHARED_TYPES.PG.Client).toConstantValue(new PgClient())
+  bind(AUTH_TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
+  bind(SHARED_TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
+  bind(AUTH_TYPES.Cookies.Manager).to(CookieAdapter).inRequestScope()
+  bind(SHARED_TYPES.Redis)
+    .toDynamicValue(CacheDBProvider.provide)
+    .inSingletonScope()
+  bind(SHARED_TYPES.Logger).to(WinstonAdapter).inSingletonScope()
+  bind(SHARED_TYPES.Queue)
+    .toDynamicValue(QueueProvider.provide)
+    .inSingletonScope()
   bind(NodeMailerAdapter).toSelf().inSingletonScope()
   bind(MailerGatewayMemory).toSelf().inSingletonScope()
   bind(SHARED_TYPES.Mailer).toDynamicValue(MailerProvider.provide)
-  bind(TYPES.Controllers.Queue).to(QueueController).inSingletonScope()
-  bind(TYPES.UnitOfWork).toDynamicValue(UnitOfWorkProvider.provide)
+  bind(SHARED_TYPES.Controllers.Queue).to(QueueController).inSingletonScope()
+  bind(SHARED_TYPES.UnitOfWork).toDynamicValue(UnitOfWorkProvider.provide)
   bind(SHARED_TYPES.CronJob).to(NodeCronAdapter)
-  bind(TYPES.Task.UpdateUserProfileCache).to(UpdateUserProfileCacheTask)
+  bind(USER_TYPES.Task.UpdateUserProfileCache).to(UpdateUserProfileCacheTask)
 })

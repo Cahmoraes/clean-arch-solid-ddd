@@ -9,7 +9,7 @@ import type {
 } from '@/gym/application/repository/gym-repository'
 import { Gym } from '@/gym/domain/gym'
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 
 export interface GymCreateProps {
   id: string
@@ -24,7 +24,7 @@ export interface GymCreateProps {
 @injectable()
 export class PrismaGymRepository implements GymRepository {
   constructor(
-    @inject(TYPES.Prisma.Client)
+    @inject(SHARED_TYPES.Prisma.Client)
     private readonly prismaClient: PrismaClient,
   ) {}
 

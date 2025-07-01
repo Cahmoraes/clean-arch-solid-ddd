@@ -6,7 +6,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { CHECKIN_TYPES } from '@/shared/infra/ioc/types'
 
 import { CheckInNotFoundError } from '../error/check-in-not-found-error'
 import type { CheckInRepository } from '../repository/check-in-repository'
@@ -27,7 +27,7 @@ export type ValidateCheckInUseCaseResponse = Either<
 @injectable()
 export class ValidateCheckInUseCase {
   constructor(
-    @inject(TYPES.Repositories.CheckIn)
+    @inject(CHECKIN_TYPES.Repositories.CheckIn)
     private readonly checkInRepository: CheckInRepository,
   ) {}
 
