@@ -36,6 +36,7 @@ export class NodeMailerAdapter implements MailerGateway {
     subject: string,
     text: string,
   ): Promise<void> {
+    console.log('Sending email... *******')
     if (!this.transporter) await this.init()
     if (!this.transporter) throw new Error('Transporter not initialized')
     const mailOptions = {

@@ -44,6 +44,6 @@ export const userContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.UseCases.FetchUsers).to(FetchUsersUseCase)
   bind(TYPES.UseCases.UpdateUserProfile).to(UserProfileUseCase)
   bind(TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
-  bind(TYPES.UseCases.ActiveUser).to(ActiveUserUseCase)
+  bind(TYPES.UseCases.ActivateUser).to(ActiveUserUseCase)
   bind(TYPES.Controllers.ActivateUser).to(ActivateUserController)
 })

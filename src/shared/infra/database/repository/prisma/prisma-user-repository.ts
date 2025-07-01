@@ -28,9 +28,7 @@ export class PrismaUserRepository implements UserRepository {
 
   public async get(userQuery: UserQuery): Promise<User | null> {
     const userDataOrNull = await this.prisma.user.findFirst({
-      where: {
-        ...userQuery.fields,
-      },
+      where: userQuery.fields,
     })
     if (!userDataOrNull) return null
     return this.restoreUser(userDataOrNull)

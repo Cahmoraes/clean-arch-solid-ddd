@@ -14,7 +14,7 @@ import { NodeMailerAdapter } from '@/shared/infra/gateway/node-mailer-adapter'
 import { WinstonAdapter } from '@/shared/infra/logger/winston-adapter'
 import { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
-import { TYPES } from '../../types'
+import { SHARED_TYPES, TYPES } from '../../types'
 import { CacheDBProvider } from './cache-db-provider'
 import { MailerProvider } from './mailer-provider'
 import { QueueProvider } from './queue-provider'
@@ -31,9 +31,9 @@ export const infraContainer = new ContainerModule(({ bind }) => {
   bind(TYPES.Queue).toDynamicValue(QueueProvider.provide).inSingletonScope()
   bind(NodeMailerAdapter).toSelf().inSingletonScope()
   bind(MailerGatewayMemory).toSelf().inSingletonScope()
-  bind(TYPES.Mailer).toDynamicValue(MailerProvider.provide)
+  bind(SHARED_TYPES.Mailer).toDynamicValue(MailerProvider.provide)
   bind(TYPES.Controllers.Queue).to(QueueController).inSingletonScope()
   bind(TYPES.UnitOfWork).toDynamicValue(UnitOfWorkProvider.provide)
-  bind(TYPES.CronJob).to(NodeCronAdapter)
+  bind(SHARED_TYPES.CronJob).to(NodeCronAdapter)
   bind(TYPES.Task.UpdateUserProfileCache).to(UpdateUserProfileCacheTask)
 })
