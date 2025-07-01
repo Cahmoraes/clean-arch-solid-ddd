@@ -34,13 +34,12 @@ export class InMemoryUserRepository implements UserRepository {
   }
 
   public async get(objectQuery: UserQuery): Promise<User | null> {
-    const users = this.users.find((user) => {
-      const fields = objectQuery.fields
+    const fields = objectQuery.fields
+    return this.users.find((user) => {
       return Object.keys(fields).every((field) => {
         return (user as any)[field] === (fields as any)[field]
       })
     })
-    return users
   }
 
   public async userOfEmail(email: string): Promise<User | null> {

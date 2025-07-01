@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./build/main.js",
     "dev": "npx tsx --watch src/main.ts",
-    "setup-queue": "npx tsx ./src/infra/queue/queue-setup.ts",
+    "setup-queue": "npx tsx src/shared/infra/queue/queue-setup.ts",
     "test": "npx vitest --config ./test/vite.config.app-domain.ts",
     "test-create-users": "concurrently \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\"",
     "test:cov": "npx vitest --coverage --config ./test/vite.config.app-domain.ts",

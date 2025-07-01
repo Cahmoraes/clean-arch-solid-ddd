@@ -28,7 +28,7 @@ export class ActivateUserController implements Controller {
   constructor(
     @inject(TYPES.Server.Fastify)
     private readonly httpServer: HttpServer,
-    @inject(TYPES.UseCases.ActiveUser)
+    @inject(TYPES.UseCases.ActivateUser)
     private readonly activeUser: ActiveUserUseCase,
   ) {
     this.bindMethod()

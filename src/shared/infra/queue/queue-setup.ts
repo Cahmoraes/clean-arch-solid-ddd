@@ -10,6 +10,7 @@ import type { RabbitMQAdapter } from './rabbitmq-adapter'
 
 async function queueSetup() {
   const queue = container.get<RabbitMQAdapter>(TYPES.Queue)
+  console.log(queue)
   await queue.connect()
   const channel = await queue.createChannel()
   // Create exchanges

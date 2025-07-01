@@ -9,6 +9,6 @@ export class MailerProvider {
   public static provide(context: ResolutionContext): MailerGateway {
     return isProduction()
       ? context.get(NodeMailerAdapter)
-      : context.get(MailerGatewayMemory)
+      : context.get(NodeMailerAdapter)
   }
 }

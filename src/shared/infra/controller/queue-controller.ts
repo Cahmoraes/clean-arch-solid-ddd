@@ -5,7 +5,7 @@ import type { PasswordChangedEvent } from '@/user/domain/event/password-changed-
 import type { UserCreatedEvent } from '@/user/domain/event/user-created-event'
 
 import type { MailerGateway } from '../gateway/mailer-gateway'
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES, TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import type { Queue } from '../queue/queue'
 import { QUEUES } from '../queue/queues'
@@ -16,7 +16,7 @@ export class QueueController implements Controller {
   constructor(
     @inject(TYPES.Queue)
     private readonly queue: Queue,
-    @inject(TYPES.Mailer)
+    @inject(SHARED_TYPES.Mailer)
     private readonly mailer: MailerGateway,
     @inject(TYPES.Logger)
     private readonly logger: Logger,
