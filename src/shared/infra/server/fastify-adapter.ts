@@ -29,7 +29,7 @@ export class FastifyAdapter implements HttpServer {
   private readonly _server: FastifyInstance
 
   constructor(
-    @inject(AUTH_TYPES.Tokens.Auth)
+    @inject(SHARED_TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
     @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
