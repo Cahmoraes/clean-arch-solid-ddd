@@ -19,7 +19,7 @@ describe('ActiveUserUseCase', () => {
     container.snapshot()
     const repositories = await setupInMemoryRepositories()
     userRepository = repositories.userRepository
-    sut = container.get(TYPES.UseCases.ActiveUser)
+    sut = container.get(TYPES.UseCases.ActivateUser)
   })
 
   afterEach(() => {
