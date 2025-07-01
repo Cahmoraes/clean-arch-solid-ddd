@@ -8,7 +8,7 @@ import {
   success,
 } from '@/shared/domain/value-object/either'
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { AUTH_TYPES, USER_TYPES } from '@/shared/infra/ioc/types'
 import type { AuthToken } from '@/user/application/auth/auth-token'
 import { InvalidCredentialsError } from '@/user/application/error/invalid-credentials-error'
 import type { UserRepository } from '@/user/application/repository/user-repository'
@@ -32,9 +32,9 @@ export type AuthenticateUseCaseOutput = Either<
 @injectable()
 export class AuthenticateUseCase {
   constructor(
-    @inject(TYPES.Repositories.User)
+    @inject(USER_TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
-    @inject(TYPES.Tokens.Auth)
+    @inject(AUTH_TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
   ) {}
 

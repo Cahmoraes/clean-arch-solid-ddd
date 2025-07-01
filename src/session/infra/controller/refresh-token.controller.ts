@@ -14,7 +14,7 @@ import { ResponseFactory } from '@/shared/infra/controller/factory/response-fact
 import type { CookieManager } from '@/shared/infra/cookie/cookie-manager'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { env } from '@/shared/infra/env'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 import type { Logger as DebugLogger } from '@/shared/infra/logger/logger'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
@@ -38,13 +38,13 @@ type RefreshPayload = z.infer<typeof refreshTokenRequestSchema>
 @injectable()
 export class RefreshTokenController implements Controller {
   constructor(
-    @inject(TYPES.Server.Fastify)
+    @inject(SHARED_TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(TYPES.Tokens.Auth)
+    @inject(AUTH_TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
-    @inject(TYPES.Cookies.Manager)
+    @inject(AUTH_TYPES.Cookies.Manager)
     private readonly cookieManager: CookieManager,
-    @inject(TYPES.Logger)
+    @inject(SHARED_TYPES.Logger)
     private readonly logger: DebugLogger,
   ) {
     this.bindMethods()

@@ -5,7 +5,7 @@ import type { RoleTypes } from '@/user/domain/value-object/role'
 
 import type { CacheDB } from '../../database/redis/cache-db'
 import { env } from '../../env'
-import { TYPES } from '../../ioc/types'
+import { SHARED_TYPES, USER_TYPES } from '../../ioc/types'
 import type { Logger } from '../../logger/logger'
 import type { Task } from './task'
 
@@ -26,11 +26,11 @@ export interface CacheUsersData {
 @injectable()
 export class UpdateUserProfileCacheTask implements Task {
   constructor(
-    @inject(TYPES.DAO.User)
+    @inject(USER_TYPES.DAO.User)
     private readonly userDAO: UserDAO,
-    @inject(TYPES.Redis)
+    @inject(SHARED_TYPES.Redis)
     private readonly cacheDB: CacheDB,
-    @inject(TYPES.Logger)
+    @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
   ) {
     this.bindMethod()

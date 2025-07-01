@@ -5,7 +5,7 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
 
 import type {
   CheckInHistoryUseCase,
@@ -22,7 +22,7 @@ describe('CheckInHistoryUseCase', () => {
     const repositories = await setupInMemoryRepositories()
     userRepository = repositories.userRepository
     checkInRepository = repositories.checkInRepository
-    sut = container.get<CheckInHistoryUseCase>(TYPES.UseCases.CheckInHistory)
+    sut = container.get<CheckInHistoryUseCase>(CHECKIN_TYPES.UseCases.CheckInHistory)
   })
 
   afterEach(() => {

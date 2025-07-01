@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@prisma/client'
 import { inject, injectable } from 'inversify'
 
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type {
   FetchUsersInput,
   FetchUsersOutput,
@@ -11,7 +11,7 @@ import type {
 @injectable()
 export class PrismaUserDAO implements UserDAO {
   constructor(
-    @inject(TYPES.Prisma.Client)
+    @inject(SHARED_TYPES.Prisma.Client)
     private readonly prisma: PrismaClient,
   ) {}
 

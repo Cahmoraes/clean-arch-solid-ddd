@@ -7,7 +7,7 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES } from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
 import type { Queue } from '@/shared/infra/queue/queue'
 import { UserCreatedEvent } from '@/user/domain/event/user-created-event'
@@ -41,11 +41,11 @@ export type CreateUserError = ErrorType<CreateUserOutput>
 @injectable()
 export class CreateUserUseCase {
   constructor(
-    @inject(TYPES.Repositories.User)
+    @inject(USER_TYPES.Repositories.User)
     private readonly userRepository: UserRepository,
-    @inject(TYPES.Queue)
+    @inject(SHARED_TYPES.Queue)
     private readonly queue: Queue,
-    @inject(TYPES.Logger)
+    @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
   ) {
     this.bindMethod()

@@ -3,7 +3,7 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { TYPES } from '@/shared/infra/ioc/types'
+import { GYM_TYPES } from '@/shared/infra/ioc/types'
 
 import {
   SearchGymUseCase,
@@ -17,7 +17,7 @@ describe('SearchGymUseCase', () => {
   beforeEach(async () => {
     container.snapshot()
     gymRepository = (await setupInMemoryRepositories()).gymRepository
-    sut = container.get(TYPES.UseCases.SearchGym)
+    sut = container.get(GYM_TYPES.UseCases.SearchGym)
   })
 
   afterEach(() => {

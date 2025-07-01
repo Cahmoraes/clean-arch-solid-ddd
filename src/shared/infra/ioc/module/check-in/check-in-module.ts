@@ -6,16 +6,16 @@ import { ValidateCheckInUseCase } from '@/check-in/application/use-case/validate
 import { CheckInController } from '@/check-in/infra/controller/check-in.controller'
 import { ValidateCheckInController } from '@/check-in/infra/controller/validate-check-in.controller'
 
-import { TYPES } from '../../types'
+import { CHECKIN_TYPES } from '../../types'
 import { CheckInRepositoryProvider } from './check-in-repository-provider'
 
 export const checkInModule = new ContainerModule(({ bind }) => {
-  bind(TYPES.Repositories.CheckIn)
+  bind(CHECKIN_TYPES.Repositories.CheckIn)
     .toDynamicValue(CheckInRepositoryProvider.provide)
     .inSingletonScope()
-  bind(TYPES.Controllers.ValidateCheckIn).to(ValidateCheckInController)
-  bind(TYPES.Controllers.CheckIn).to(CheckInController)
-  bind(TYPES.UseCases.CheckIn).to(CheckInUseCase)
-  bind(TYPES.UseCases.CheckInHistory).to(CheckInHistoryUseCase)
-  bind(TYPES.UseCases.ValidateCheckIn).to(ValidateCheckInUseCase)
+  bind(CHECKIN_TYPES.Controllers.ValidateCheckIn).to(ValidateCheckInController)
+  bind(CHECKIN_TYPES.Controllers.CheckIn).to(CheckInController)
+  bind(CHECKIN_TYPES.UseCases.CheckIn).to(CheckInUseCase)
+  bind(CHECKIN_TYPES.UseCases.CheckInHistory).to(CheckInHistoryUseCase)
+  bind(CHECKIN_TYPES.UseCases.ValidateCheckIn).to(ValidateCheckInUseCase)
 })

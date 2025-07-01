@@ -3,13 +3,13 @@ import 'reflect-metadata'
 import type { Channel } from 'amqplib'
 
 import { container } from '../ioc/container'
-import { TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import { EXCHANGES } from './exchanges'
 import { QUEUES } from './queues'
 import type { RabbitMQAdapter } from './rabbitmq-adapter'
 
 async function queueSetup() {
-  const queue = container.get<RabbitMQAdapter>(TYPES.Queue)
+  const queue = container.get<RabbitMQAdapter>(SHARED_TYPES.Queue)
   console.log(queue)
   await queue.connect()
   const channel = await queue.createChannel()
