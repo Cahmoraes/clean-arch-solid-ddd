@@ -34,7 +34,7 @@ export class AuthenticateController implements Controller {
     private readonly server: HttpServer,
     @inject(AUTH_TYPES.UseCases.Authenticate)
     private readonly authenticateUseCase: AuthenticateUseCase,
-    @inject(AUTH_TYPES.Cookies.Manager)
+    @inject(SHARED_TYPES.Cookies.Manager)
     private readonly cookieManager: CookieManager,
   ) {
     this.bindMethods()

@@ -14,7 +14,7 @@ import { ResponseFactory } from '@/shared/infra/controller/factory/response-fact
 import type { CookieManager } from '@/shared/infra/cookie/cookie-manager'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { env } from '@/shared/infra/env'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { Logger as DebugLogger } from '@/shared/infra/logger/logger'
 import type { HttpServer } from '@/shared/infra/server/http-server'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
@@ -40,9 +40,9 @@ export class RefreshTokenController implements Controller {
   constructor(
     @inject(SHARED_TYPES.Server.Fastify)
     private readonly server: HttpServer,
-    @inject(AUTH_TYPES.Tokens.Auth)
+    @inject(SHARED_TYPES.Tokens.Auth)
     private readonly authToken: AuthToken,
-    @inject(AUTH_TYPES.Cookies.Manager)
+    @inject(SHARED_TYPES.Cookies.Manager)
     private readonly cookieManager: CookieManager,
     @inject(SHARED_TYPES.Logger)
     private readonly logger: DebugLogger,

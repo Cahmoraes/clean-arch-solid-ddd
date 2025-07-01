@@ -14,7 +14,7 @@ import { NodeMailerAdapter } from '@/shared/infra/gateway/node-mailer-adapter'
 import { WinstonAdapter } from '@/shared/infra/logger/winston-adapter'
 import { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
-import { AUTH_TYPES, SHARED_TYPES, USER_TYPES } from '../../types'
+import { SHARED_TYPES } from '../../types'
 import { CacheDBProvider } from './cache-db-provider'
 import { MailerProvider } from './mailer-provider'
 import { QueueProvider } from './queue-provider'
@@ -23,9 +23,9 @@ export const infraContainer = new ContainerModule(({ bind }) => {
   bind(SHARED_TYPES.Prisma.Client).toConstantValue(prismaClient)
   bind(SHARED_TYPES.Prisma.UnitOfWork).to(PrismaUnitOfWork).inSingletonScope()
   bind(SHARED_TYPES.PG.Client).toConstantValue(new PgClient())
-  bind(AUTH_TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
+  bind(SHARED_TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
   bind(SHARED_TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
-  bind(AUTH_TYPES.Cookies.Manager).to(CookieAdapter).inRequestScope()
+  bind(SHARED_TYPES.Cookies.Manager).to(CookieAdapter).inRequestScope()
   bind(SHARED_TYPES.Redis)
     .toDynamicValue(CacheDBProvider.provide)
     .inSingletonScope()
@@ -39,5 +39,5 @@ export const infraContainer = new ContainerModule(({ bind }) => {
   bind(SHARED_TYPES.Controllers.Queue).to(QueueController).inSingletonScope()
   bind(SHARED_TYPES.UnitOfWork).toDynamicValue(UnitOfWorkProvider.provide)
   bind(SHARED_TYPES.CronJob).to(NodeCronAdapter)
-  bind(USER_TYPES.Task.UpdateUserProfileCache).to(UpdateUserProfileCacheTask)
+  bind(SHARED_TYPES.Task.UpdateUserProfileCache).to(UpdateUserProfileCacheTask)
 })
