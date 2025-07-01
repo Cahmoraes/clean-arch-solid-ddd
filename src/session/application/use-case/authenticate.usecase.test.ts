@@ -2,7 +2,7 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { env } from '@/shared/infra/env'
 import { container } from '@/shared/infra/ioc/container'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { AUTH_TYPES, SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { AuthToken } from '@/user/application/auth/auth-token'
 import { User, type UserCreate } from '@/user/domain/user'
 
@@ -31,7 +31,7 @@ describe('AuthenticateUseCase', () => {
     container.snapshot()
     userRepository = (await setupInMemoryRepositories()).userRepository
     sut = container.get(AUTH_TYPES.UseCases.Authenticate)
-    authToken = container.get(AUTH_TYPES.Tokens.Auth)
+    authToken = container.get(SHARED_TYPES.Tokens.Auth)
   })
 
   afterEach(() => {
