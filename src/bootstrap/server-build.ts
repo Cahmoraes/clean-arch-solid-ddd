@@ -16,10 +16,8 @@ export interface ModuleControllers {
 }
 
 export async function serverBuild() {
-  const fastifyServer = container.get<FastifyAdapter>(
-    SHARED_TYPES.Server.Fastify,
-  )
-  const queue = container.get<Queue>(SHARED_TYPES.Queue)
+  const server = resolve<FastifyAdapter>(SHARED_TYPES.Server.Fastify)
+  const queue = resolve<Queue>(SHARED_TYPES.Queue)
   await queue.connect()
   const queueController = resolve(SHARED_TYPES.Controllers.Queue)
   queueController.init()
@@ -33,7 +31,7 @@ export async function serverBuild() {
   queue.publish(EXCHANGES.LOG, {
     message: 'Server started',
   })
-  return fastifyServer
+  return server
 }
 
 /**
@@ -46,6 +44,6 @@ function initializeControllers(controllers: Controller[]): void {
 /**
  * Resolve a controller from the IoC container
  */
-export function resolve(serviceIdentifier: symbol): Controller {
+export function resolve<T = Controller>(serviceIdentifier: symbol): T {
   return container.get(serviceIdentifier)
 }
