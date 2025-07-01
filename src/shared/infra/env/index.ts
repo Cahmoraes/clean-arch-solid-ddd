@@ -1,7 +1,10 @@
-import 'dotenv/config'
-
+import { config } from 'dotenv'
 import { z } from 'zod'
 import { fromError } from 'zod-validation-error'
+
+config({
+  quiet: true,
+})
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['test', 'production']).default('production'),
