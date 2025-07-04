@@ -5,6 +5,7 @@ import { PgUserRepository } from '@/shared/infra/database/repository/pg/pg-user-
 import { ActiveUserUseCase } from '@/user/application/use-case/active-user.usecase'
 import { ChangePasswordUseCase } from '@/user/application/use-case/change-password.usecase'
 import { CreateUserUseCase } from '@/user/application/use-case/create-user.usecase'
+import { DeleteUserUseCase } from '@/user/application/use-case/delete-user.usecase'
 import { FetchUsersUseCase } from '@/user/application/use-case/fetch-users.usecase'
 import { SuspendUserUseCase } from '@/user/application/use-case/suspend-user.usecase'
 import { UserMetricsUseCase } from '@/user/application/use-case/user-metrics.usecase'
@@ -46,4 +47,5 @@ export const userContainer = new ContainerModule(({ bind }) => {
   bind(USER_TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
   bind(USER_TYPES.UseCases.ActivateUser).to(ActiveUserUseCase)
   bind(USER_TYPES.Controllers.ActivateUser).to(ActivateUserController)
+  bind(USER_TYPES.UseCases.DeleteUser).to(DeleteUserUseCase)
 })

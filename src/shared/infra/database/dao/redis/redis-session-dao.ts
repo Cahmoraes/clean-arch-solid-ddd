@@ -5,7 +5,7 @@ import type {
   SessionData,
 } from '@/session/application/dao/session-dao'
 import { env } from '@/shared/infra/env'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 
 import type { CacheDB } from '../../redis/cache-db'
 

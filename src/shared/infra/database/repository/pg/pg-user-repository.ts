@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import { User } from '@/user/domain/user'
 
@@ -13,6 +13,10 @@ export class PgUserRepository implements UserRepository {
     private readonly pgClient: PgClient,
   ) {
     this.pgClient.connect()
+  }
+
+  delete(): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 
   public async userOfEmail(email: string): Promise<User | null> {
