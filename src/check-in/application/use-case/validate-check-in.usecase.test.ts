@@ -7,7 +7,7 @@ import { CheckInTimeExceededError } from '@/check-in/domain/error/check-in-time-
 import { InMemoryCheckInRepository } from '@/shared/infra/database/repository/in-memory/in-memory-check-in-repository'
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { CHECKIN_TYPES, USER_TYPES } from '@/shared/infra/ioc/types'
 
 import { CheckInNotFoundError } from '../error/check-in-not-found-error'
 import {

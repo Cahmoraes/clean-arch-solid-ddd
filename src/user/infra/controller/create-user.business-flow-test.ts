@@ -3,7 +3,7 @@ import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { USER_TYPES } from '@/shared/infra/ioc/types'
 import { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 import type { UserRepository } from '@/user/application/repository/user-repository'

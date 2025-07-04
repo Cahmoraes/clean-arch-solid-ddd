@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 
 import type { CacheDB } from '@/shared/infra/database/redis/cache-db'
 import { env } from '@/shared/infra/env'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES, USER_TYPES } from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
 import type { RoleTypes } from '@/user/domain/value-object/role'
 

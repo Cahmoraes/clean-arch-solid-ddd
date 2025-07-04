@@ -10,7 +10,7 @@ export interface SetupInMemoryRepositoriesOutput {
   checkInRepository: InMemoryCheckInRepository
 }
 
-export async function setupInMemoryRepositories(): Promise<SetupInMemoryRepositoriesOutput> {
+export function setupInMemoryRepositories(): SetupInMemoryRepositoriesOutput {
   const userRepository = new InMemoryUserRepository()
   container
     .rebindSync(USER_TYPES.Repositories.User)

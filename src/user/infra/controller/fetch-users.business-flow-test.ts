@@ -3,7 +3,7 @@ import { serverBuildForTest } from 'test/factory/server-build-for-test'
 
 import { UserDAOMemory } from '@/shared/infra/database/dao/in-memory/user-dao-memory'
 import { container } from '@/shared/infra/ioc/container'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { USER_TYPES } from '@/shared/infra/ioc/types'
 import type { FastifyAdapter } from '@/shared/infra/server/fastify-adapter'
 
 import { UserRoutes } from './routes/user-routes'

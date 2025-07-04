@@ -3,7 +3,7 @@ import { InvalidLongitudeError } from '@/check-in/domain/error/invalid-longitude
 import type { Gym } from '@/gym/domain/gym'
 import { InMemoryGymRepository } from '@/shared/infra/database/repository/in-memory/in-memory-gym-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { GYM_TYPES } from '@/shared/infra/ioc/types'
 
 import { GymWithCNPJAlreadyExistsError } from '../error/gym-with-cnpj-already-exists-error'
 import {
