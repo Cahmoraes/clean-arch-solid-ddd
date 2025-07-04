@@ -6,7 +6,7 @@ import { setupInMemoryRepositories } from 'test/factory/setup-in-memory-reposito
 
 import { InMemoryUserRepository } from '@/shared/infra/database/repository/in-memory/in-memory-user-repository'
 import { container } from '@/shared/infra/ioc/container'
-import { SHARED_TYPES, USER_TYPES, GYM_TYPES, CHECKIN_TYPES, AUTH_TYPES, HEALTH_CHECK_TYPES } from '@/shared/infra/ioc/types'
+import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 import { QueueMemoryAdapter } from '@/shared/infra/queue/queue-memory-adapter'
 
 import { PasswordUnchangedError } from '../error/password-unchanged-error'

@@ -8,4 +8,5 @@ export interface UserRepository {
   userOfId(id: string): Promise<User | null>
   save(user: User): Promise<void>
   update(user: User): Promise<void>
+  delete(user: User): Promise<void>
 }
