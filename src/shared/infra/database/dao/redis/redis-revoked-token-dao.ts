@@ -1,26 +1,26 @@
 import { inject, injectable } from 'inversify'
 
 import type {
-  SessionDAO,
-  SessionData,
-} from '@/session/application/dao/session-dao'
+  RevokedTokenDAO,
+  RevokedTokenData,
+} from '@/session/application/dao/revoked-token-dao'
 import { env } from '@/shared/infra/env'
 import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 
 import type { CacheDB } from '../../redis/cache-db'
 
 @injectable()
-export class RedisSessionDAO implements SessionDAO {
+export class RedisRevokedTokenDAO implements RevokedTokenDAO {
   constructor(
     @inject(SHARED_TYPES.Redis)
     private readonly cacheDB: CacheDB,
   ) {}
 
-  public async sessionById(id: string): Promise<SessionData | null> {
+  public async revokedTokenById(id: string): Promise<RevokedTokenData | null> {
     return this.cacheDB.get(id)
   }
 
-  public async create(session: SessionData): Promise<void> {
+  public async revoke(session: RevokedTokenData): Promise<void> {
     const SEVEN_DAYS_IN_SECONDS = this.parseTimeToSeconds(
       env.JWT_REFRESH_EXPIRES_IN,
     )
@@ -43,7 +43,7 @@ export class RedisSessionDAO implements SessionDAO {
     return timeMapper[timeUnit as keyof typeof timeMapper]
   }
 
-  public async delete(session: SessionData): Promise<void> {
+  public async delete(session: RevokedTokenData): Promise<void> {
     return this.cacheDB.delete(session.jwi)
   }
 }

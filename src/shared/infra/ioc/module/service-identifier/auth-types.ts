@@ -10,6 +10,6 @@ export const AUTH_TYPES = {
     RefreshToken: Symbol.for('RefreshTokenController'),
   },
   DAO: {
-    Session: Symbol.for('SessionDAO'),
+    RevokedToken: Symbol.for('RevokedTokenDAO'),
   },
 } as const

@@ -9,7 +9,7 @@ import fastify, {
 } from 'fastify'
 import { inject, injectable } from 'inversify'
 
-import type { SessionDAO } from '@/session/application/dao/session-dao'
+import type { RevokedTokenDAO } from '@/session/application/dao/revoked-token-dao'
 import type { AuthToken } from '@/user/application/auth/auth-token'
 
 import { Logger as LoggerDecorate } from '../decorator/logger'
@@ -33,8 +33,8 @@ export class FastifyAdapter implements HttpServer {
     private readonly authToken: AuthToken,
     @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
-    @inject(AUTH_TYPES.DAO.Session)
-    private readonly sessionDAO: SessionDAO,
+    @inject(AUTH_TYPES.DAO.RevokedToken)
+    private readonly sessionDAO: RevokedTokenDAO,
   ) {
     this._server = fastify({})
     this.bindMethods()
