@@ -9,15 +9,18 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String
-  email         String     @unique
-  password_hash String
-  created_at    DateTime   @default(now())
-  role          Role       @default(MEMBER)
-  updated_at    DateTime   @updatedAt
-  checkIns      CheckIn[]
-  status        UserStatus @default(activated)
+  id                  String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String
+  email               String     @unique
+  password_hash       String
+  created_at          DateTime   @default(now())
+  role                Role       @default(MEMBER)
+  updated_at          DateTime   @updatedAt
+  status              UserStatus @default(activated)
+  billing_customer_id String?    @unique
+
+  checkIns     CheckIn[]
+  subscription Subscription[]
 
   @@map("users")
 }
@@ -52,6 +55,20 @@ model Gym {
   @@map("gyms")
 }
 
+model Subscription {
+  id                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                 String             @db.Uuid
+  billing_subscription_id String             @unique
+  status                  SubscriptionStatus @default(incomplete)
+  canceled_at             DateTime?
+  created_at              DateTime           @default(now())
+  updated_at              DateTime           @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@map("subscriptions")
+}
+
 enum Role {
   ADMIN
   MEMBER
@@ -60,4 +77,14 @@ enum Role {
 enum UserStatus {
   activated
   suspended
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  incomplete
+  incomplete_expired
+  past_due
+  trialing
+  unpaid
 }

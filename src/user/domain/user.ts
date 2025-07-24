@@ -1,6 +1,5 @@
 import { type ValidationError } from 'zod-validation-error'
 
-import { DomainEventPublisher } from '@/shared/domain/event/domain-event-publisher'
 import { Observable } from '@/shared/domain/observable'
 import { Result } from '@/shared/domain/result'
 import {
@@ -13,7 +12,6 @@ import { Id } from '@/shared/domain/value-object/id'
 import type { InvalidEmailError } from './error/invalid-email-error'
 import type { InvalidNameLengthError } from './error/invalid-name-length-error'
 import { PasswordChangedEvent } from './event/password-changed-event'
-import { UserCreatedEvent } from './event/user-created-event'
 import { UserProfileUpdatedEvent } from './event/user-profile-updated-event'
 import { Email } from './value-object/email'
 import { Name } from './value-object/name'
@@ -34,6 +32,7 @@ export interface UserConstructor {
   createdAt: Date
   updatedAt?: Date
   status: StatusTypes
+  billingCustomerId?: string
 }
 
 export interface UserCreate {
@@ -45,6 +44,7 @@ export interface UserCreate {
   createdAt?: Date
   updatedAt?: Date
   status?: StatusTypes
+  billingCustomerId?: string
 }
 
 export type UserRestore = {
@@ -56,6 +56,7 @@ export type UserRestore = {
   createdAt: Date
   updatedAt?: Date
   status: StatusTypes
+  billingCustomerId?: string
 }
 
 export type UserUpdateProps = Partial<Pick<UserCreate, 'name' | 'email'>>
@@ -79,6 +80,7 @@ export class User extends Observable {
   private _createdAt: Date
   private _updatedAt?: Date
   private _status: UserStatus
+  private _billingCustomerId?: string
 
   private constructor(props: UserConstructor) {
     super()
@@ -90,6 +92,7 @@ export class User extends Observable {
     this._createdAt = props.createdAt
     this._updatedAt = props.updatedAt
     this._status = UserStatusFactory.create(this, props.status)
+    this._billingCustomerId = props.billingCustomerId
   }
 
   public static create(
@@ -102,9 +105,6 @@ export class User extends Observable {
     const id = Id.create(userCreateProps.id)
     const createdAt = userCreateProps.createdAt ?? new Date()
     const role = Role.create(userCreateProps.role)
-    DomainEventPublisher.instance.publish(
-      this.createUserCreatedEvent(userCreateProps),
-    )
     return success(
       new User({
         id,
@@ -114,6 +114,7 @@ export class User extends Observable {
         password: validatePropsResult.value.password,
         role: role,
         status: userCreateProps.status ?? StatusTypes.ACTIVATED,
+        billingCustomerId: userCreateProps.billingCustomerId,
       }),
     )
   }
@@ -133,15 +134,6 @@ export class User extends Observable {
     })
   }
 
-  private static createUserCreatedEvent(
-    userCreateProps: Pick<UserCreate, 'name' | 'email'>,
-  ) {
-    return new UserCreatedEvent({
-      name: userCreateProps.name,
-      email: userCreateProps.email,
-    })
-  }
-
   public static restore(restoreUserProps: UserRestore) {
     return new User({
       id: Id.restore(restoreUserProps.id),
@@ -152,6 +144,7 @@ export class User extends Observable {
       createdAt: restoreUserProps.createdAt,
       updatedAt: restoreUserProps.updatedAt,
       status: restoreUserProps.status,
+      billingCustomerId: restoreUserProps.billingCustomerId,
     })
   }
 
@@ -185,6 +178,19 @@ export class User extends Observable {
 
   get updatedAt(): Date | undefined {
     return this._updatedAt
+  }
+
+  get billingCustomerId(): string | undefined {
+    return this._billingCustomerId
+  }
+
+  public setBillingCustomerId(billingCustomerId: string): void {
+    this._billingCustomerId = billingCustomerId
+    this.refreshUpdatedAt()
+  }
+
+  public get hasBillingCustomerId(): boolean {
+    return !!this._billingCustomerId
   }
 
   private refreshUpdatedAt() {

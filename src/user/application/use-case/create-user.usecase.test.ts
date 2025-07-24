@@ -18,7 +18,7 @@ describe('CreateUserUseCase', () => {
 
   beforeEach(async () => {
     container.snapshot()
-    userRepository = (await setupInMemoryRepositories()).userRepository
+    userRepository = setupInMemoryRepositories().userRepository
     queue = new QueueMemoryAdapter()
     await container.unbind(SHARED_TYPES.Queue)
     container.bind(SHARED_TYPES.Queue).toConstantValue(queue)

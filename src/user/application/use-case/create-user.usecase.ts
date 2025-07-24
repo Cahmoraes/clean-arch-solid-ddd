@@ -7,11 +7,16 @@ import {
   failure,
   success,
 } from '@/shared/domain/value-object/either'
+import type { UnitOfWork } from '@/shared/infra/database/repository/unit-of-work/unit-of-work'
 import { SHARED_TYPES, USER_TYPES } from '@/shared/infra/ioc/types'
 import type { Logger } from '@/shared/infra/logger/logger'
 import type { Queue } from '@/shared/infra/queue/queue'
 import { UserCreatedEvent } from '@/user/domain/event/user-created-event'
-import { User, type UserValidationErrors } from '@/user/domain/user'
+import {
+  User,
+  type UserCreate,
+  type UserValidationErrors,
+} from '@/user/domain/user'
 import type { RoleTypes } from '@/user/domain/value-object/role'
 
 import { UserAlreadyExistsError } from '../error/user-already-exists-error'
@@ -47,8 +52,11 @@ export class CreateUserUseCase {
     private readonly queue: Queue,
     @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
+    @inject(SHARED_TYPES.UnitOfWork)
+    private readonly unitOfWork: UnitOfWork,
   ) {
     this.bindMethod()
+    this.setupEventListener()
   }
 
   private bindMethod(): void {
@@ -56,17 +64,27 @@ export class CreateUserUseCase {
       this.createDomainEventSubscriber.bind(this)
   }
 
+  private setupEventListener(): void {
+    DomainEventPublisher.instance.subscribe(
+      'userCreated',
+      this.createDomainEventSubscriber,
+    )
+  }
+
   public async execute(
     input: CreateUserUseCaseInput,
   ): Promise<CreateUserOutput> {
     const userFound = await this.userOfEmail(input)
     if (userFound) return failure(new UserAlreadyExistsError())
-    void this.addUserCreatedEventListener()
     const createUserResult = this.createUser(input)
     if (createUserResult.isFailure()) return failure(createUserResult.value)
-    await this.userRepository.save(createUserResult.value)
+    await this.unitOfWork.performTransaction(async (tx): Promise<void> => {
+      await this.userRepository.withTransaction(tx).save(createUserResult.value)
+    })
+    const user = createUserResult.value
+    void this.publishUserCreatedEvent(user)
     return success({
-      email: createUserResult.value.email,
+      email: user.email,
     })
   }
 
@@ -75,13 +93,6 @@ export class CreateUserUseCase {
   ): Promise<User | null> {
     const userQuery = UserQuery.from(userDTO).addField('email')
     return this.userRepository.get(userQuery)
-  }
-
-  private addUserCreatedEventListener(): void {
-    DomainEventPublisher.instance.subscribe(
-      'userCreated',
-      this.createDomainEventSubscriber,
-    )
   }
 
   private async createDomainEventSubscriber(
@@ -100,5 +111,23 @@ export class CreateUserUseCase {
       password: input.rawPassword,
       role: input.role,
     })
+  }
+
+  private createUserCreatedEvent(
+    userCreateProps: Pick<UserCreate, 'name' | 'email'>,
+  ) {
+    return new UserCreatedEvent({
+      name: userCreateProps.name,
+      email: userCreateProps.email,
+    })
+  }
+
+  private publishUserCreatedEvent(anUser: User): void {
+    DomainEventPublisher.instance.publish(
+      this.createUserCreatedEvent({
+        email: anUser.email,
+        name: anUser.name,
+      }),
+    )
   }
 }

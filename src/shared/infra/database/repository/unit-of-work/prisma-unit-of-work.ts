@@ -4,11 +4,11 @@ import { inject, injectable } from 'inversify'
 
 import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 
-import type { UnitOfWork } from './unit-of-work'
+import type { Callback, UnitOfWork } from './unit-of-work'
 
-type Callback = (
-  prismaClient: Omit<PrismaClient, ITXClientDenyList>,
-) => Promise<any>
+type ValidPrismaClient = PrismaClient | Omit<PrismaClient, ITXClientDenyList>
+
+export const PRISMA_TRANSACTION_SYMBOL = Symbol('PRISMA_TRANSACTION')
 
 @injectable()
 export class PrismaUnitOfWork implements UnitOfWork {
@@ -17,11 +17,22 @@ export class PrismaUnitOfWork implements UnitOfWork {
     private readonly prismaClient: PrismaClient,
   ) {}
 
-  public async performTransaction<T extends Callback>(
-    callback: T,
-  ): Promise<ReturnType<T>> {
+  public async performTransaction<T>(callback: Callback<T>): Promise<T> {
     return this.prismaClient.$transaction(async (tx) => {
-      return callback(tx)
+      return callback(this.createTransactionWithSymbol(tx))
     })
   }
+
+  private createTransactionWithSymbol(tx: unknown) {
+    return Object.assign({}, tx, {
+      [PRISMA_TRANSACTION_SYMBOL]: true,
+    })
+  }
+}
+
+export function isPrismaTransaction(obj: any): obj is ValidPrismaClient {
+  return (
+    Reflect.has(obj, PRISMA_TRANSACTION_SYMBOL) &&
+    Boolean(obj[PRISMA_TRANSACTION_SYMBOL])
+  )
 }

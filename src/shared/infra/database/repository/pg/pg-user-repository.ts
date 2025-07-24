@@ -15,7 +15,11 @@ export class PgUserRepository implements UserRepository {
     this.pgClient.connect()
   }
 
-  delete(): Promise<void> {
+  public withTransaction(): UserRepository {
+    throw new Error('Method not implemented.')
+  }
+
+  public async delete(): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
