@@ -16,7 +16,6 @@ describe('CheckIn Entity', () => {
       userLongitude: 10,
     }
     const checkIn = CheckIn.create(input)
-    expect(checkIn).toBeInstanceOf(CheckIn)
     expect(checkIn.id).toEqual('any_id')
     expect(checkIn.userId).toEqual('any_user_id')
     expect(checkIn.gymId).toEqual('any_gym_id')

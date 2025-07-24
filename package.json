@@ -92,6 +92,7 @@
     "nodemailer": "7.0.4",
     "pg": "8.16.3",
     "reflect-metadata": "0.2.2",
+    "stripe": "18.3.0",
     "tsup": "8.5.0",
     "typescript": "5.8.3",
     "winston": "3.17.0",

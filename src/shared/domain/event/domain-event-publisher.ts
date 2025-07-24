@@ -4,7 +4,7 @@ import type { DomainEvent } from './domain-event'
 import type { EventTypes } from './events'
 
 export interface Subscriber<T> {
-  (event: DomainEvent<T>): Promise<void>
+  (event: DomainEvent<T>): void
 }
 
 export class DomainEventPublisher {
