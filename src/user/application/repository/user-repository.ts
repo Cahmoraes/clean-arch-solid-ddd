@@ -9,4 +9,5 @@ export interface UserRepository {
   save(user: User): Promise<void>
   update(user: User): Promise<void>
   delete(user: User): Promise<void>
+  withTransaction<TX extends object>(object: TX): UserRepository
 }

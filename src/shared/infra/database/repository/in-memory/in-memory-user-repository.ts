@@ -11,6 +11,10 @@ import { User } from '@/user/domain/user'
 export class InMemoryUserRepository implements UserRepository {
   public users = new ExtendedSet<User>()
 
+  public withTransaction(): UserRepository {
+    return this
+  }
+
   public async save(user: User): Promise<void> {
     const id = user.id ?? randomUUID()
     const userWithId = User.restore({
@@ -22,6 +26,7 @@ export class InMemoryUserRepository implements UserRepository {
       updatedAt: user.updatedAt,
       role: user.role,
       status: user.status,
+      billingCustomerId: user.billingCustomerId,
     })
     this.users.add(userWithId)
   }

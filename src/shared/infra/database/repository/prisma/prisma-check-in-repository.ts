@@ -7,6 +7,7 @@ import type {
   SaveResponse,
 } from '@/check-in/application/repository/check-in-repository'
 import { CheckIn } from '@/check-in/domain/check-in'
+import { isPrismaTransaction } from '@/shared/infra/database/repository/unit-of-work/prisma-unit-of-work'
 import { env } from '@/shared/infra/env'
 import { InvalidTransactionInstance } from '@/shared/infra/errors/invalid-transaction-instance-error'
 import { SHARED_TYPES } from '@/shared/infra/ioc/types'
@@ -33,7 +34,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
   public withTransaction<TX extends object>(
     prismaClient: TX,
   ): CheckInRepository {
-    if (!(prismaClient instanceof PrismaClient)) {
+    if (!isPrismaTransaction(prismaClient)) {
       throw new InvalidTransactionInstance(prismaClient)
     }
     return new PrismaCheckInRepository(prismaClient)
@@ -41,27 +42,6 @@ export class PrismaCheckInRepository implements CheckInRepository {
 
   public async save(checkIn: CheckIn): Promise<SaveResponse> {
     const result = await this.prismaClient.checkIn.create({
-      data: {
-        gym_id: checkIn.gymId,
-        user_id: checkIn.userId,
-        validated_at: checkIn.validatedAt,
-        latitude: checkIn.latitude,
-        longitude: checkIn.longitude,
-      },
-      select: {
-        gym_id: true,
-      },
-    })
-    return {
-      id: result.gym_id,
-    }
-  }
-
-  public async saveWithTransaction(
-    checkIn: CheckIn,
-    prismaClient: Omit<PrismaClient, ITXClientDenyList>,
-  ): Promise<SaveResponse> {
-    const result = await prismaClient.checkIn.create({
       data: {
         gym_id: checkIn.gymId,
         user_id: checkIn.userId,

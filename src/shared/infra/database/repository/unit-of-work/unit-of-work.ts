@@ -1,5 +1,5 @@
-export type Callback = (transaction: object) => Promise<any>
+export type Callback<T = any> = (transaction: object) => Promise<T>
 
 export interface UnitOfWork {
-  performTransaction(callback: Callback): Promise<any>
+  performTransaction<T>(callback: Callback<T>): Promise<T>
 }

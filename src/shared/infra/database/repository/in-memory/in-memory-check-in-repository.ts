@@ -16,7 +16,7 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 
   public checkIns = new ExtendedSet<CheckIn>()
 
-  withTransaction(): CheckInRepository {
+  public withTransaction(): CheckInRepository {
     return this
   }
 

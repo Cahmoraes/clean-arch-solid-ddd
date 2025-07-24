@@ -25,6 +25,8 @@ const envSchema = z.object({
   TTL: z.coerce.number().default(60),
   DIRECT_URL: z.string().optional(),
   CRON_TIME_TO_UPDATE_CACHE: z.string(),
+  STRIPE_PUBLIC_KEY: z.string(),
+  STRIPE_PRIVATE_KEY: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)

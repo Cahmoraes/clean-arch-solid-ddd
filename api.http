@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:80
 @userName = "João Silva"
-@email = "joao2s2sssssssssssssssss.silva@example.com"
+@email = "joao2s2sssssssssssssssssssssss.silva@example.com"
 @password = "senha123"
 // MEMBER ou ADMIN
 @role = "ADMIN"
@@ -71,8 +71,8 @@ Content-Type: application/json
 Authorization: Bearer {{authenticate.response.body.token}}
 
 {
-  "userId": "48fbdee1-93df-4d0a-8058-4f7b42ed61b1",
-  "gymId": "3bfa88ee-df51-40a6-a78e-eff83ea359dd",
+  "userId": "4e6e3301-304d-4333-a5b7-01e469d9b484",
+  "gymId": "54adf7d1-eed3-4416-bc0e-1cd56401cf35",
   "userLatitude": -23.563099,
   "userLongitude": -46.656571
 }

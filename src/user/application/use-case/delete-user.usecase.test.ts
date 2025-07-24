@@ -74,6 +74,5 @@ describe('DeleteUserUseCase', () => {
     }
     const result = await sut.execute(input)
     expect(result.isSuccess()).toBe(false)
-    // console.log(data)
   })
 })

@@ -1,12 +1,16 @@
-import type { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+import type { ITXClientDenyList } from '@prisma/client/runtime/library'
 import { inject, injectable } from 'inversify'
 
+import { InvalidTransactionInstance } from '@/shared/infra/errors/invalid-transaction-instance-error'
 import { SHARED_TYPES } from '@/shared/infra/ioc/types'
 import type { UserQuery } from '@/user/application/repository/user-query'
 import type { UserRepository } from '@/user/application/repository/user-repository'
 import { User } from '@/user/domain/user'
 import type { RoleTypes } from '@/user/domain/value-object/role'
 import type { StatusTypes } from '@/user/domain/value-object/status'
+
+import { isPrismaTransaction } from '../unit-of-work/prisma-unit-of-work'
 
 interface UserData {
   id: string
@@ -17,14 +21,24 @@ interface UserData {
   updated_at: Date
   role: RoleTypes
   status: StatusTypes
+  billingCustomerId?: string
 }
 
 @injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(
     @inject(SHARED_TYPES.Prisma.Client)
-    private readonly prisma: PrismaClient,
+    private readonly prisma:
+      | PrismaClient
+      | Omit<PrismaClient, ITXClientDenyList>,
   ) {}
+
+  public withTransaction<TX extends object>(prismaClient: TX): UserRepository {
+    if (!isPrismaTransaction(prismaClient)) {
+      throw new InvalidTransactionInstance(prismaClient)
+    }
+    return new PrismaUserRepository(prismaClient)
+  }
 
   public async get(userQuery: UserQuery): Promise<User | null> {
     const userDataOrNull = await this.prisma.user.findFirst({
@@ -54,7 +68,7 @@ export class PrismaUserRepository implements UserRepository {
     return this.restoreUser(userDataOrNull)
   }
 
-  private async restoreUser(userData: UserData) {
+  private async restoreUser(userData: UserData): Promise<User> {
     return User.restore({
       id: userData.id,
       email: userData.email,
@@ -64,6 +78,7 @@ export class PrismaUserRepository implements UserRepository {
       updatedAt: userData.updated_at,
       role: userData.role,
       status: userData.status,
+      billingCustomerId: userData.billingCustomerId,
     })
   }
 
@@ -75,6 +90,8 @@ export class PrismaUserRepository implements UserRepository {
         password_hash: user.password,
         created_at: user.createdAt,
         role: user.role,
+        status: user.status,
+        billing_customer_id: user.billingCustomerId,
       },
     })
   }
@@ -90,6 +107,9 @@ export class PrismaUserRepository implements UserRepository {
         password_hash: user.password,
         created_at: user.createdAt,
         role: user.role,
+        status: user.status,
+        billing_customer_id: user.billingCustomerId,
+        updated_at: user.updatedAt ? user.updatedAt : new Date(),
       },
     })
   }
