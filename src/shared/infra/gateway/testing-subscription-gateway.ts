@@ -16,7 +16,7 @@ export class TestingSubscriptionGateway implements SubscriptionGateway {
     data: CreateCustomerInput,
   ): Promise<CreateCustomerResponse> {
     const customer: CreateCustomerResponse = {
-      id: `cus_test_${this.customerIdCounter.toString().padStart(10, '0')}`,
+      id: `cus_test_${Math.random() + this.customerIdCounter.toString().padStart(10, '0')}`,
       object: 'customer',
       email: data.email,
       name: data.name ?? '',
