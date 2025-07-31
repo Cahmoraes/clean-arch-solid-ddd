@@ -1,5 +1,6 @@
 import { ContainerModule } from 'inversify'
 
+import { CreateSubscriptionController } from '@/subscription/infra/controller/create-subscription-controller'
 import { CreateCustomer } from '@/subscription/use-case/create-customer.usecase'
 
 import { SUBSCRIPTION_TYPES } from '../service-identifier/subscription-types'
@@ -10,4 +11,7 @@ export const subscriptionContainer = new ContainerModule(({ bind }): void => {
     .toDynamicValue(SubscriptionGatewayProvider.provide)
     .inSingletonScope()
   bind(SUBSCRIPTION_TYPES.USE_CASES.CreateCustomer).to(CreateCustomer)
+  bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreateSubscription).to(
+    CreateSubscriptionController,
+  )
 })

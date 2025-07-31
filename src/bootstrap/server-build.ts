@@ -9,6 +9,7 @@ import { setupCheckInModule } from './setup-check-in-module'
 import { setupGymModule } from './setup-gym-module'
 import { setupHealthCheckModule } from './setup-health-check-module'
 import { setupSessionModule } from './setup-session-module'
+import { setupSubscriptionModule } from './setup-subscription-module'
 import { setupUserModule } from './setup-user-module'
 
 export interface ModuleControllers {
@@ -27,6 +28,7 @@ export async function serverBuild() {
     ...setupCheckInModule().controllers,
     ...setupSessionModule().controllers,
     ...setupHealthCheckModule().controllers,
+    ...setupSubscriptionModule().controllers,
   ])
   queue.publish(EXCHANGES.LOG, {
     message: 'Server started',
