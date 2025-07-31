@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:80
 @userName = "João Silva"
-@email = "joao2s2sssssssssssssssssssssss.silva@example.com"
+@email = "joao2s2ssssssssssssssssssssssssssss.silva@example.com"
 @password = "senha123"
 // MEMBER ou ADMIN
 @role = "ADMIN"

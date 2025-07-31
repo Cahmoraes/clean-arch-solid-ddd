@@ -55,8 +55,8 @@ export class CreateUserUseCase {
     @inject(SHARED_TYPES.UnitOfWork)
     private readonly unitOfWork: UnitOfWork,
   ) {
-    this.bindMethod()
-    this.setupEventListener()
+    void this.bindMethod()
+    void this.setupEventListener()
   }
 
   private bindMethod(): void {
@@ -115,7 +115,7 @@ export class CreateUserUseCase {
 
   private createUserCreatedEvent(
     userCreateProps: Pick<UserCreate, 'name' | 'email'>,
-  ) {
+  ): UserCreatedEvent {
     return new UserCreatedEvent({
       name: userCreateProps.name,
       email: userCreateProps.email,
@@ -123,6 +123,7 @@ export class CreateUserUseCase {
   }
 
   private publishUserCreatedEvent(anUser: User): void {
+    console.log('** Publish user created event **')
     DomainEventPublisher.instance.publish(
       this.createUserCreatedEvent({
         email: anUser.email,
