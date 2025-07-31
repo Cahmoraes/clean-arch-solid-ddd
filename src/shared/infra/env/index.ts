@@ -27,6 +27,7 @@ const envSchema = z.object({
   CRON_TIME_TO_UPDATE_CACHE: z.string(),
   STRIPE_PUBLIC_KEY: z.string(),
   STRIPE_PRIVATE_KEY: z.string(),
+  STRIPE_PRICE_ID: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)

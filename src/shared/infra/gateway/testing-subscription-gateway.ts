@@ -2,8 +2,11 @@ import ExtendedSet from '@cahmoraes93/extended-set'
 import { injectable } from 'inversify'
 
 import type {
+  AttachPaymentMethodInput,
   CreateCustomerInput,
   CreateCustomerResponse,
+  CreateSubscriptionInput,
+  CreateSubscriptionResponse,
   SubscriptionGateway,
 } from '@/subscription/gateway/subscription-gateway'
 
@@ -45,7 +48,25 @@ export class TestingSubscriptionGateway implements SubscriptionGateway {
     this.customerIdCounter = 1
   }
 
-  public getCustomersCount(): number {
+  public get customersCount(): number {
     return this._customers.size
+  }
+
+  public async attachPaymentMethodToCustomer(
+    data: AttachPaymentMethodInput,
+  ): Promise<void> {
+    console.log(
+      `Attaching payment method ${data.paymentMethodId} to customer ${data.customerId}`,
+    )
+  }
+
+  public async createSubscription(
+    data: CreateSubscriptionInput,
+  ): Promise<CreateSubscriptionResponse> {
+    return {
+      subscriptionId: `sub_test_${Math.random().toString(36).substring(2, 15)}`,
+      customerId: data.customerId,
+      status: 'active',
+    }
   }
 }

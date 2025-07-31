@@ -6,6 +6,7 @@ export const SubscriptionStatusTypes = {
   past_due: 'past_due',
   trialing: 'trialing',
   unpaid: 'unpaid',
+  paused: 'paused',
 } as const
 
 export type SubscriptionStatusTypes =
