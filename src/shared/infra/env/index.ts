@@ -28,6 +28,7 @@ const envSchema = z.object({
   STRIPE_PUBLIC_KEY: z.string(),
   STRIPE_PRIVATE_KEY: z.string(),
   STRIPE_PRICE_ID: z.string(),
+  STRIPE_WEBHOOK_SECRET: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)
