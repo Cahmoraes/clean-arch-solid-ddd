@@ -109,10 +109,10 @@ export class User extends Observable {
       new User({
         id,
         createdAt,
+        role,
         name: validatePropsResult.value.name,
         email: validatePropsResult.value.email,
         password: validatePropsResult.value.password,
-        role: role,
         status: userCreateProps.status ?? StatusTypes.ACTIVATED,
         billingCustomerId: userCreateProps.billingCustomerId,
       }),
@@ -193,7 +193,7 @@ export class User extends Observable {
     return !!this._billingCustomerId
   }
 
-  private refreshUpdatedAt() {
+  private refreshUpdatedAt(): void {
     this._updatedAt = new Date()
   }
 
