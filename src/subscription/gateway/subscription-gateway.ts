@@ -24,7 +24,6 @@ export interface CreateSubscriptionInput {
   customerId: string
   priceId: string
   paymentMethodId?: string
-  trialPeriodDays?: number
   metadata?: Record<string, string>
 }
 
@@ -40,4 +39,5 @@ export interface SubscriptionGateway {
   createSubscription(
     data: CreateSubscriptionInput,
   ): Promise<CreateSubscriptionResponse>
+  createPaymentMethod(): Promise<string>
 }
