@@ -10,9 +10,6 @@ export interface CreateSubscriptionUseCaseInput {
   userId: string
   customerId: string
   priceId: string
-  paymentMethodId?: string
-  trialPeriodDays?: number
-  metadata?: Record<string, string>
 }
 
 @injectable()
@@ -25,8 +22,16 @@ export class CreateSubscriptionUseCase {
   ) {}
 
   public async execute(input: CreateSubscriptionUseCaseInput): Promise<void> {
+    const paymentMethodId = await this.subscriptionGateway.createPaymentMethod()
+    await this.subscriptionGateway.attachPaymentMethodToCustomer({
+      customerId: input.customerId,
+      paymentMethodId: paymentMethodId,
+    })
     const subscriptionResponse =
-      await this.subscriptionGateway.createSubscription(input)
+      await this.subscriptionGateway.createSubscription({
+        ...input,
+        paymentMethodId,
+      })
     const subscription = Subscription.create({
       status: subscriptionResponse.status,
       userId: input.userId,

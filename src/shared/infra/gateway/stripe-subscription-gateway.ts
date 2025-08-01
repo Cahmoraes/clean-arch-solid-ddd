@@ -18,7 +18,7 @@ export class StripeSubscriptionGateway implements SubscriptionGateway {
 
   constructor() {
     this.stripe = new Stripe(env.STRIPE_PRIVATE_KEY, {
-      apiVersion: '2025-06-30.basil', // Versão compatível com biblioteca 18.3.0
+      apiVersion: '2025-06-30.basil',
       maxNetworkRetries: 3,
       timeout: 10000,
     })
@@ -72,9 +72,10 @@ export class StripeSubscriptionGateway implements SubscriptionGateway {
     return {
       customer: data.customerId,
       items: [{ price: data.priceId }],
-      payment_behavior: 'default_incomplete',
+      payment_behavior: 'error_if_incomplete',
       payment_settings: {
         save_default_payment_method: 'on_subscription',
+        payment_method_types: ['card'],
       },
       metadata: data.metadata ?? {},
       expand: ['latest_invoice.payment_intent'],
@@ -82,5 +83,15 @@ export class StripeSubscriptionGateway implements SubscriptionGateway {
         default_payment_method: data.paymentMethodId,
       }),
     }
+  }
+
+  public async createPaymentMethod(): Promise<string> {
+    const paymentMethod = await this.stripe.paymentMethods.create({
+      type: 'card',
+      card: {
+        token: 'tok_visa',
+      },
+    })
+    return paymentMethod.id
   }
 }
