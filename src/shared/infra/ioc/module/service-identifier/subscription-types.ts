@@ -9,7 +9,7 @@ export const SUBSCRIPTION_TYPES = {
     CancelSubscription: Symbol.for('CancelSubscriptionUseCase'),
   },
   CONTROLLERS: {
-    CreateSubscription: Symbol.for('CreateSubscriptionController'),
+    CreateCustomer: Symbol.for('CreateSubscriptionController'),
     StripeWebhook: Symbol.for('StripeWebhookController'),
   },
   REPOSITORIES: {
