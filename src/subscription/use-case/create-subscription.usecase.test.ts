@@ -56,10 +56,11 @@ describe('CreateSubscription UseCase', () => {
       metadata: { userId: user.id! },
     }
     const response = await createCustomer.execute(createCustomerInput)
-    console.log({ customerResponse: response })
+    const createCustomerResponse = response.force.success().value
+    console.log({ createCustomerResponse })
     const createSubscriptionInput: CreateSubscriptionUseCaseInput = {
       userId: userSaved.id!,
-      customerId: response.id,
+      customerId: createCustomerResponse.id,
       priceId: env.STRIPE_PRICE_ID,
     }
     await sut.execute(createSubscriptionInput)
@@ -68,7 +69,9 @@ describe('CreateSubscription UseCase', () => {
     )
     expect(subscriptionSaved!.id).toBeDefined()
     expect(subscriptionSaved!.userId).toBe(userSaved.id)
-    expect(subscriptionSaved!.billingSubscriptionId).toBe(response.id)
+    expect(subscriptionSaved!.billingSubscriptionId).toBe(
+      createCustomerResponse.id,
+    )
     console.log('Subscription saved:', subscriptionSaved)
   })
 })

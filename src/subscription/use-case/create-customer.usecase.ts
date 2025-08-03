@@ -1,5 +1,10 @@
 import { inject, injectable } from 'inversify'
 
+import {
+  type Either,
+  failure,
+  success,
+} from '@/shared/domain/value-object/either'
 import { SUBSCRIPTION_TYPES } from '@/shared/infra/ioc/module/service-identifier/subscription-types'
 import { USER_TYPES } from '@/shared/infra/ioc/types'
 import { UserNotFoundError } from '@/user/application/error/user-not-found-error'
@@ -20,6 +25,11 @@ export interface CreateCustomerResponse {
   email: string
 }
 
+export type CreateCustomerOutput = Either<
+  UserNotFoundError,
+  CreateCustomerResponse
+>
+
 @injectable()
 export class CreateCustomer {
   constructor(
@@ -31,9 +41,9 @@ export class CreateCustomer {
 
   public async execute(
     input: CreateCustomerInput,
-  ): Promise<CreateCustomerResponse> {
+  ): Promise<CreateCustomerOutput> {
     const userFound = await this.userRepository.userOfEmail(input.email)
-    if (!userFound) throw new UserNotFoundError()
+    if (!userFound) return failure(new UserNotFoundError())
     const customer = await this.subscriptionGateway.createCustomer({
       email: userFound.email,
       name: userFound.name,
@@ -43,11 +53,11 @@ export class CreateCustomer {
     await this.userRepository.update(userFound)
     console.log('*********************** create customer')
     console.log(userFound)
-    return {
+    return success({
       id: customer.id,
       userId: userFound.id!,
       name: customer.name,
       email: customer.email,
-    }
+    })
   }
 }
