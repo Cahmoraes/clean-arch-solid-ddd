@@ -7,7 +7,7 @@ import type { CreateCustomer } from '@/subscription/use-case/create-customer.use
 import type { UserCreatedEvent } from '@/user/domain/event/user-created-event'
 
 @injectable()
-export class CreateSubscriptionController implements Controller {
+export class CreateCustomerController implements Controller {
   constructor(
     @inject(SUBSCRIPTION_TYPES.USE_CASES.CreateCustomer)
     private readonly createCustomerUseCase: CreateCustomer,

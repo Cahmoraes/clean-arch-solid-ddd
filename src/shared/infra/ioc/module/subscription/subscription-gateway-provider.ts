@@ -8,7 +8,7 @@ import type { SubscriptionGateway } from '@/subscription/gateway/subscription-ga
 export class SubscriptionGatewayProvider {
   public static provide(context: ResolutionContext): SubscriptionGateway {
     return isProduction()
-      ? context.get(TestingSubscriptionGateway, { autobind: true })
-      : context.get(StripeSubscriptionGateway, { autobind: true })
+      ? context.get(StripeSubscriptionGateway, { autobind: true })
+      : context.get(TestingSubscriptionGateway, { autobind: true })
   }
 }

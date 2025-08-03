@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import ExtendedSet from '@cahmoraes93/extended-set'
 import { injectable } from 'inversify'
+import type Stripe from 'stripe'
 
 import type {
   AttachPaymentMethodInput,
@@ -68,5 +70,16 @@ export class TestingSubscriptionGateway implements SubscriptionGateway {
       customerId: data.customerId,
       status: 'active',
     }
+  }
+
+  public async createPaymentMethod(): Promise<string> {
+    return 'fake-payment-method-id'
+  }
+
+  public async createEventWebhook(
+    _rawBody: string | Buffer,
+    _signature: string,
+  ): Promise<Stripe.Event> {
+    return {} as unknown as any
   }
 }

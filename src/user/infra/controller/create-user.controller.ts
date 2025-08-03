@@ -69,6 +69,7 @@ export class CreateUserController implements Controller {
   }
 
   private async callback(req: FastifyRequest) {
+    console.log({ raw: req.rawBody })
     const parseBodyResult = this.parseBodyOrError(req.body)
     if (parseBodyResult.isFailure()) {
       return ResponseFactory.BAD_REQUEST({

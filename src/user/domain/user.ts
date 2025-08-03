@@ -226,7 +226,8 @@ export class User extends Observable {
       password: this.password,
       role: this.role,
       createdAt: this.createdAt,
-      status: this._status.type,
+      status: this.status,
+      billingCustomerId: this.billingCustomerId,
     })
     if (userCreateResult.isFailure()) return failure(userCreateResult.value)
     this._email = userCreateResult.value._email
@@ -242,7 +243,7 @@ export class User extends Observable {
 
   private createUserProfileUpdatedEvent(
     updateUserProps: Required<UserUpdateProps>,
-  ) {
+  ): UserProfileUpdatedEvent {
     return new UserProfileUpdatedEvent({
       name: updateUserProps.name,
       email: updateUserProps.email,

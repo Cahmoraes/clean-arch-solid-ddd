@@ -94,4 +94,15 @@ export class StripeSubscriptionGateway implements SubscriptionGateway {
     })
     return paymentMethod.id
   }
+
+  public async createEventWebhook(
+    rawBody: string | Buffer,
+    signature: string,
+  ): Promise<Stripe.Event> {
+    return this.stripe.webhooks.constructEvent(
+      rawBody,
+      signature,
+      env.STRIPE_WEBHOOK_SECRET,
+    )
+  }
 }
