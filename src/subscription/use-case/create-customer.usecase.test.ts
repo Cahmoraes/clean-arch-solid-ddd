@@ -4,6 +4,7 @@ import type { InMemoryUserRepository } from '@/shared/infra/database/repository/
 import { TestingSubscriptionGateway } from '@/shared/infra/gateway/testing-subscription-gateway'
 import { container } from '@/shared/infra/ioc/container'
 import { SUBSCRIPTION_TYPES } from '@/shared/infra/ioc/module/service-identifier/subscription-types'
+import { UserNotFoundError } from '@/user/application/error/user-not-found-error'
 import { User } from '@/user/domain/user'
 
 import type {
@@ -45,7 +46,8 @@ describe('CreateCustomerUseCase', () => {
       metadata: { userId: user.id! },
     }
     const response = await sut.execute(input)
-    expect(response).toEqual({
+    const customer = response.force.success().value
+    expect(customer).toEqual({
       id: savedUser?.billingCustomerId,
       userId: savedUser?.id,
       name: user.name,
@@ -59,6 +61,7 @@ describe('CreateCustomerUseCase', () => {
       name: 'Test User',
       metadata: { key: 'value' },
     }
-    await expect(sut.execute(input)).rejects.toThrow('User not found')
+    const response = await sut.execute(input)
+    expect(response.force.failure().value).toBeInstanceOf(UserNotFoundError)
   })
 })

@@ -71,17 +71,26 @@ export class CreateUserUseCase {
     )
   }
 
+  private async createDomainEventSubscriber(
+    event: UserCreatedEvent,
+  ): Promise<void> {
+    this.logger.info(this, event)
+    this.queue.publish(event.eventName, event)
+  }
+
   public async execute(
     input: CreateUserUseCaseInput,
   ): Promise<CreateUserOutput> {
     const userFound = await this.userOfEmail(input)
     if (userFound) return failure(new UserAlreadyExistsError())
-    const createUserResult = this.createUser(input)
-    if (createUserResult.isFailure()) return failure(createUserResult.value)
+    const userCreatedResult = this.createUser(input)
+    if (userCreatedResult.isFailure()) return failure(userCreatedResult.value)
     await this.unitOfWork.performTransaction(async (tx): Promise<void> => {
-      await this.userRepository.withTransaction(tx).save(createUserResult.value)
+      await this.userRepository
+        .withTransaction(tx)
+        .save(userCreatedResult.value)
     })
-    const user = createUserResult.value
+    const user = userCreatedResult.value
     void this.publishUserCreatedEvent(user)
     return success({
       email: user.email,
@@ -93,13 +102,6 @@ export class CreateUserUseCase {
   ): Promise<User | null> {
     const userQuery = UserQuery.from(userDTO).addField('email')
     return this.userRepository.get(userQuery)
-  }
-
-  private async createDomainEventSubscriber(
-    event: UserCreatedEvent,
-  ): Promise<void> {
-    this.logger.info(this, event)
-    this.queue.publish(event.eventName, event)
   }
 
   private createUser(
