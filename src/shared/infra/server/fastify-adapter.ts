@@ -7,14 +7,14 @@ import fastify, {
   type FastifyRequest,
   type RouteHandler,
 } from 'fastify'
+import rawBody from 'fastify-raw-body'
 import { inject, injectable } from 'inversify'
 
-import type { RevokedTokenDAO } from '@/session/application/dao/revoked-token-dao'
 import type { AuthToken } from '@/user/application/auth/auth-token'
 
 import { Logger as LoggerDecorate } from '../decorator/logger'
 import { env } from '../env'
-import { AUTH_TYPES, SHARED_TYPES } from '../ioc/types'
+import { SHARED_TYPES } from '../ioc/types'
 import type { Logger } from '../logger/logger'
 import { FastifySwaggerSetupFactory } from './factories/fastify-swagger-setup-factory'
 import { FastifySwaggerUISetupFactory } from './factories/fastify-swagger-ui-setup-factory'
@@ -33,8 +33,6 @@ export class FastifyAdapter implements HttpServer {
     private readonly authToken: AuthToken,
     @inject(SHARED_TYPES.Logger)
     private readonly logger: Logger,
-    @inject(AUTH_TYPES.DAO.RevokedToken)
-    private readonly sessionDAO: RevokedTokenDAO,
   ) {
     this._server = fastify({})
     this.bindMethods()
@@ -45,13 +43,14 @@ export class FastifyAdapter implements HttpServer {
     this.setupErrorHandler()
     await this.setupCORS()
     await this.setupSwagger()
+    await this.setupRawBody()
   }
 
   private async setupCORS(): Promise<void> {
     await this._server.register(fastifyCors)
   }
 
-  private async setupSwagger() {
+  private async setupSwagger(): Promise<void> {
     await this._server.register(
       fastifySwagger,
       FastifySwaggerSetupFactory.create(),
@@ -60,6 +59,12 @@ export class FastifyAdapter implements HttpServer {
       fastifySwaggerUI,
       FastifySwaggerUISetupFactory.create(),
     )
+  }
+
+  private async setupRawBody(): Promise<void> {
+    await this._server.register(rawBody, {
+      field: 'rawBody',
+    })
   }
 
   private setupErrorHandler() {

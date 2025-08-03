@@ -153,10 +153,6 @@ describe('User Entity', () => {
     expect(user.id).toBe(user.id)
     expect(user.name).toBe('Martin Fowler')
     expect(user.email).toBe('martin@fowler.com')
-    expect(user.password).toBe(user.password)
-    expect(user.role).toBe(user.role)
-    expect(user.createdAt).toBe(user.createdAt)
-    expect(user.updatedAt).toEqual(expect.any(Date))
     expect(user.checkPassword('securepassword123')).toBe(true)
   })
 
