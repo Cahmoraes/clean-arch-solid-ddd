@@ -27,7 +27,8 @@
     "commit": "cz",
     "fit:validate-dependencies": "npx depcruise --validate .dependency-cruiser.js src",
     "dependency:metrics": "npx depcruise .dependency-cruiser.js src --include-only \"^src\" --output-type dot | dot -T svg > dependency-graph.svg",
-    "check:last-dependencies": "npx npm-check-updates -i"
+    "check:last-dependencies": "npx npm-check-updates -i",
+    "stripe webk": "stripe listen --forward-to localhost:3333/webhook/stripe"
   },
   "keywords": [],
   "author": "",
