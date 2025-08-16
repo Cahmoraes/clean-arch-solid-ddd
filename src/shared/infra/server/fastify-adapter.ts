@@ -36,14 +36,14 @@ export class FastifyAdapter implements HttpServer {
   ) {
     this._server = fastify({})
     this.bindMethods()
-    this.initialize()
+    // this.initialize()
   }
 
   private async initialize(): Promise<void> {
     this.setupErrorHandler()
     await this.setupCORS()
     await this.setupSwagger()
-    // await this.setupRawBody()
+    await this.setupRawBody()
   }
 
   private async setupCORS(): Promise<void> {
@@ -62,7 +62,7 @@ export class FastifyAdapter implements HttpServer {
   }
 
   private async setupRawBody(): Promise<void> {
-    await this._server.register(rawBody, {
+    this._server.register(rawBody, {
       field: 'rawBody',
     })
   }
@@ -176,6 +176,7 @@ export class FastifyAdapter implements HttpServer {
   }
 
   public async ready(): Promise<undefined> {
+    await this.initialize()
     await this._server.ready()
   }
 
