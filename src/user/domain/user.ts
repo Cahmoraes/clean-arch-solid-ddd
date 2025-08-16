@@ -134,7 +134,7 @@ export class User extends Observable {
     })
   }
 
-  public static restore(restoreUserProps: UserRestore) {
+  public static restore(restoreUserProps: UserRestore): User {
     return new User({
       id: Id.restore(restoreUserProps.id),
       email: Email.restore(restoreUserProps.email),
@@ -207,12 +207,12 @@ export class User extends Observable {
       return failure(passwordCreateResult.value)
     }
     this._password = passwordCreateResult.value
-    this.refreshUpdatedAt()
+    void this.refreshUpdatedAt()
     const event = new PasswordChangedEvent({
       name: this.name,
       email: this.email,
     })
-    this.notify(event)
+    void this.notify(event)
     return success(null)
   }
 
