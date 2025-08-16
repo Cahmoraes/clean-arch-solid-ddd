@@ -44,7 +44,6 @@ describe('Logout Usuário', () => {
       ...input,
     })
 
-    // First, authenticate the user to get tokens
     const authResponse = await request(fastifyServer.server)
       .post(SessionRoutes.AUTHENTICATE)
       .send({
