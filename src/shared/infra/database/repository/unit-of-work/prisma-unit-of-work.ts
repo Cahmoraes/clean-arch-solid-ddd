@@ -8,10 +8,11 @@ import type { Callback, UnitOfWork } from './unit-of-work'
 
 type ValidPrismaClient = PrismaClient | Omit<PrismaClient, ITXClientDenyList>
 
-export const PRISMA_TRANSACTION_SYMBOL = Symbol('PRISMA_TRANSACTION')
-
 @injectable()
 export class PrismaUnitOfWork implements UnitOfWork {
+  public static readonly PRISMA_TRANSACTION_SYMBOL =
+    Symbol('PRISMA_TRANSACTION')
+
   constructor(
     @inject(SHARED_TYPES.Prisma.Client)
     private readonly prismaClient: PrismaClient,
@@ -25,14 +26,14 @@ export class PrismaUnitOfWork implements UnitOfWork {
 
   private createTransactionWithSymbol(tx: unknown) {
     return Object.assign({}, tx, {
-      [PRISMA_TRANSACTION_SYMBOL]: true,
+      [PrismaUnitOfWork.PRISMA_TRANSACTION_SYMBOL]: true,
     })
   }
 }
 
 export function isPrismaTransaction(obj: any): obj is ValidPrismaClient {
   return (
-    Reflect.has(obj, PRISMA_TRANSACTION_SYMBOL) &&
-    Boolean(obj[PRISMA_TRANSACTION_SYMBOL])
+    Reflect.has(obj, PrismaUnitOfWork.PRISMA_TRANSACTION_SYMBOL) &&
+    Boolean(obj[PrismaUnitOfWork.PRISMA_TRANSACTION_SYMBOL])
   )
 }

@@ -40,7 +40,7 @@ export async function serverBuild() {
  * Initialize all controllers by calling their init method
  */
 function initializeControllers(controllers: Controller[]): void {
-  controllers.forEach((controller) => controller.init())
+  controllers.forEach((controller): Promise<void> => controller.init())
 }
 
 /**

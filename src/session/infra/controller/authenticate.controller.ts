@@ -40,14 +40,14 @@ export class AuthenticateController implements Controller {
     this.bindMethods()
   }
 
-  private bindMethods() {
+  private bindMethods(): void {
     this.callback = this.callback.bind(this)
   }
 
   @Logger({
     message: '✅',
   })
-  public async init() {
+  public async init(): Promise<void> {
     this.server.register('post', SessionRoutes.AUTHENTICATE, {
       callback: this.callback,
     })
@@ -80,7 +80,7 @@ export class AuthenticateController implements Controller {
     })
   }
 
-  private encodeRefreshTokenCookie(aString: string) {
+  private encodeRefreshTokenCookie(aString: string): string {
     return this.cookieManager.serialize(env.REFRESH_TOKEN_NAME, aString, {
       path: '/',
       httpOnly: true,
