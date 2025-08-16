@@ -43,7 +43,7 @@ export class FastifyAdapter implements HttpServer {
     this.setupErrorHandler()
     await this.setupCORS()
     await this.setupSwagger()
-    await this.setupRawBody()
+    // await this.setupRawBody()
   }
 
   private async setupCORS(): Promise<void> {

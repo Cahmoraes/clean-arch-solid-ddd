@@ -64,7 +64,7 @@ export class CheckIn {
     this._isValidated = props.isValidated
   }
 
-  public static create(props: CheckInCreateProps) {
+  public static create(props: CheckInCreateProps): CheckIn {
     const id = Id.create(props.id)
     const userId = ExistingId.restore(props.userId)
     const gymId = ExistingId.restore(props.gymId)
@@ -84,7 +84,9 @@ export class CheckIn {
     return checkIn
   }
 
-  private static createCheckInCreatedEvent(checkIn: CheckIn) {
+  private static createCheckInCreatedEvent(
+    checkIn: CheckIn,
+  ): CheckInCreatedEvent {
     return new CheckInCreatedEvent({
       checkInId: checkIn.id!,
       userId: checkIn.userId,
@@ -92,7 +94,7 @@ export class CheckIn {
     })
   }
 
-  public static restore(props: CheckInRestoreProps) {
+  public static restore(props: CheckInRestoreProps): CheckIn {
     return new CheckIn({
       id: Id.create(props.id),
       userId: ExistingId.restore(props.userId),

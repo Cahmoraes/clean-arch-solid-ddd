@@ -124,12 +124,12 @@ export class CreateUserUseCase {
     })
   }
 
-  private publishUserCreatedEvent(anUser: User): void {
+  private publishUserCreatedEvent(user: User): void {
     console.log('** Publish user created event **')
     DomainEventPublisher.instance.publish(
       this.createUserCreatedEvent({
-        email: anUser.email,
-        name: anUser.name,
+        email: user.email,
+        name: user.name,
       }),
     )
   }

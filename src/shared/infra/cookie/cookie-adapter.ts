@@ -1,7 +1,8 @@
-import { parse, serialize } from 'cookie'
+import { serialize } from 'cookie'
 import { injectable } from 'inversify'
+import setCookieParser from 'set-cookie-parser'
 
-import type { CookieManager } from './cookie-manager'
+import type { Cookie, CookieManager } from './cookie-manager'
 
 @injectable()
 export class CookieAdapter implements CookieManager {
@@ -13,8 +14,10 @@ export class CookieAdapter implements CookieManager {
     return serialize(name, value, options)
   }
 
-  public parse(cookie?: string): Record<string, string | undefined> {
+  public parse(cookie?: string): Record<string, Cookie> {
     if (!cookie) return {}
-    return parse(cookie)
+    return setCookieParser(cookie, {
+      map: true,
+    })
   }
 }

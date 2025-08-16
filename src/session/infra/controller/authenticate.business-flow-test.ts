@@ -1,3 +1,4 @@
+import setCookieParser from 'set-cookie-parser'
 import request from 'supertest'
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { serverBuildForTest } from 'test/factory/server-build-for-test'
@@ -13,6 +14,17 @@ import { HTTP_STATUS } from '@/shared/infra/server/http-status'
 import { RoleValues } from '@/user/domain/value-object/role'
 
 import { SessionRoutes } from './routes/session-routes'
+
+interface Cookie {
+  refreshToken: {
+    name: string
+    value: string
+    path: string
+    httpOnly: boolean
+    secure: boolean
+    sameSite: string
+  }
+}
 
 describe('Autenticar Usuário', () => {
   let fastifyServer: FastifyAdapter
@@ -54,7 +66,14 @@ describe('Autenticar Usuário', () => {
         email: input.email,
         password: input.password,
       })
-    expect(response.headers['set-cookie'][0]).toEqual(expect.any(String))
+    const parsedCookie = setCookieParser(response.headers['set-cookie'], {
+      map: true,
+    }) as unknown as Cookie
+    expect(parsedCookie.refreshToken.name).toBe(env.REFRESH_TOKEN_NAME)
+    expect(parsedCookie.refreshToken.httpOnly).toBe(true)
+    expect(parsedCookie.refreshToken.secure).toBe(true)
+    expect(parsedCookie.refreshToken.sameSite).toBe('Strict')
+    expect(parsedCookie.refreshToken.path).toBe('/')
     expect(response.body).toHaveProperty('token')
     expect(response.status).toBe(HTTP_STATUS.OK)
     const token = response.body.token

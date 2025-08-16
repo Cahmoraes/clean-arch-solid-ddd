@@ -11,7 +11,10 @@ import {
 } from '@/shared/domain/value-object/either'
 import type { Controller } from '@/shared/infra/controller/controller'
 import { ResponseFactory } from '@/shared/infra/controller/factory/response-factory'
-import type { CookieManager } from '@/shared/infra/cookie/cookie-manager'
+import type {
+  Cookie,
+  CookieManager,
+} from '@/shared/infra/cookie/cookie-manager'
 import { Logger } from '@/shared/infra/decorator/logger'
 import { env } from '@/shared/infra/env'
 import { SHARED_TYPES } from '@/shared/infra/ioc/types'
@@ -23,10 +26,6 @@ import type { AuthToken } from '@/user/application/auth/auth-token'
 interface Sub {
   sub: string
   email: string
-}
-
-interface Cookie {
-  refreshToken: string
 }
 
 const refreshTokenRequestSchema = z.object({
@@ -72,10 +71,7 @@ export class RefreshTokenController implements Controller {
       })
     }
     const cookie = this.cookieParse(cookieOrError.value.cookie)
-    const verified = this.authToken.verify<Sub>(
-      cookie.refreshToken,
-      env.PRIVATE_KEY,
-    )
+    const verified = this.authToken.verify<Sub>(cookie.value, env.PRIVATE_KEY)
     if (verified.isFailure()) {
       this.warnOnRefreshTokenFailure(cookie, verified.value.message)
       return ResponseFactory.create({
@@ -83,6 +79,7 @@ export class RefreshTokenController implements Controller {
         message: verified.value.message,
       })
     }
+
     const { token, refreshToken } = this.createTokens(verified.value.sub)
     res.header('set-cookie', this.encodeRefreshTokenCookie(refreshToken))
     return ResponseFactory.create({
@@ -92,7 +89,8 @@ export class RefreshTokenController implements Controller {
   }
 
   private cookieParse(cookie: string): Cookie {
-    const parsedCookie = this.cookieManager.parse(cookie)
+    const parsedCookie =
+      this.cookieManager.parse(cookie)[env.REFRESH_TOKEN_NAME]
     return parsedCookie as unknown as Cookie
   }
 
