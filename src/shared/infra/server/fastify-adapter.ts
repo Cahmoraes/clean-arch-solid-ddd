@@ -128,7 +128,10 @@ export class FastifyAdapter implements HttpServer {
   }
 
   private onlyAdminPreHandler(onlyAdmin?: boolean): RouteHandler {
-    return async (request: FastifyRequest, reply: FastifyReply) => {
+    return async (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ): Promise<void> => {
       if (!onlyAdmin) return
       const role = request.user.sub.role
       const adminRoleCheck = new AdminRoleCheck({ request, reply })
@@ -137,7 +140,10 @@ export class FastifyAdapter implements HttpServer {
   }
 
   private checkSessionRevoked(isProtected?: boolean): RouteHandler {
-    return async (request: FastifyRequest, reply: FastifyReply) => {
+    return async (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ): Promise<void> => {
       if (!isProtected) return
       const checkSessionRevoked = new CheckSessionRevokedHandler({
         reply,
