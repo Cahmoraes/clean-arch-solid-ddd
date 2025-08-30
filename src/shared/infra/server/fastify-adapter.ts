@@ -5,6 +5,7 @@ import fastify, {
   FastifyInstance,
   type FastifyReply,
   type FastifyRequest,
+  type RawServerDefault,
   type RouteHandler,
 } from 'fastify'
 import rawBody from 'fastify-raw-body'
@@ -36,7 +37,6 @@ export class FastifyAdapter implements HttpServer {
   ) {
     this._server = fastify({})
     this.bindMethods()
-    // this.initialize()
   }
 
   private async initialize(): Promise<void> {
@@ -67,11 +67,11 @@ export class FastifyAdapter implements HttpServer {
     })
   }
 
-  private setupErrorHandler() {
+  private setupErrorHandler(): void {
     this._server.setErrorHandler(GlobalErrorHandler.handle)
   }
 
-  private bindMethods() {
+  private bindMethods(): void {
     this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
   }
 
@@ -135,7 +135,7 @@ export class FastifyAdapter implements HttpServer {
       if (!onlyAdmin) return
       const role = request.user.sub.role
       const adminRoleCheck = new AdminRoleCheck({ request, reply })
-      return adminRoleCheck.execute(role)
+      void adminRoleCheck.execute(role)
     }
   }
 
@@ -177,7 +177,7 @@ export class FastifyAdapter implements HttpServer {
     await authenticateHandler.execute()
   }
 
-  get server() {
+  get server(): RawServerDefault {
     return this._server.server
   }
 
