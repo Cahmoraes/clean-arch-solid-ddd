@@ -23,23 +23,27 @@ export class DomainEventPublisher {
   }
 
   public subscribe(event: EventTypes, subscriber: Subscriber<any>): void {
-    if (!this.subscribers.has(event)) {
+    if (this.isEventNotSubscribed(event)) {
       this.subscribers.set(event, new ExtendedSet())
     }
     this.subscribers.get(event)?.add(subscriber)
   }
 
+  private isEventNotSubscribed(event: EventTypes): boolean {
+    return !this.subscribers.has(event)
+  }
+
   public unsubscribe(event: EventTypes, subscriber: Subscriber<unknown>): void {
-    if (!this.subscribers.has(event)) return
+    if (this.isEventNotSubscribed(event)) return
     const subscribers = this.subscribers.get(event)!
     subscribers.delete(subscriber)
   }
 
-  public publish<T>(event: DomainEvent<T>): void {
-    if (!this.subscribers.has(event.eventName)) return
-    const subscribers = this.subscribers.get(event.eventName)!
+  public publish<T>(domainEvent: DomainEvent<T>): void {
+    if (!this.subscribers.has(domainEvent.eventName)) return
+    const subscribers = this.subscribers.get(domainEvent.eventName)!
     for (const subscriber of subscribers) {
-      subscriber(event)
+      subscriber(domainEvent)
     }
   }
 }
