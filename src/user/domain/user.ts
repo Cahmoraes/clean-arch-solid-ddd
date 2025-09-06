@@ -134,17 +134,17 @@ export class User extends Observable {
     })
   }
 
-  public static restore(restoreUserProps: UserRestore): User {
+  public static restore(userRestoreProps: UserRestore): User {
     return new User({
-      id: Id.restore(restoreUserProps.id),
-      email: Email.restore(restoreUserProps.email),
-      name: Name.restore(restoreUserProps.name),
-      password: Password.restore(restoreUserProps.password),
-      role: Role.restore(restoreUserProps.role),
-      createdAt: restoreUserProps.createdAt,
-      updatedAt: restoreUserProps.updatedAt,
-      status: restoreUserProps.status,
-      billingCustomerId: restoreUserProps.billingCustomerId,
+      id: Id.restore(userRestoreProps.id),
+      email: Email.restore(userRestoreProps.email),
+      name: Name.restore(userRestoreProps.name),
+      password: Password.restore(userRestoreProps.password),
+      role: Role.restore(userRestoreProps.role),
+      createdAt: userRestoreProps.createdAt,
+      updatedAt: userRestoreProps.updatedAt,
+      status: userRestoreProps.status,
+      billingCustomerId: userRestoreProps.billingCustomerId,
     })
   }
 
