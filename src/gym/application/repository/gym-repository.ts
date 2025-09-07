@@ -11,4 +11,5 @@ export interface GymRepository {
   gymOfId(id: string): Promise<Gym | null>
   fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]>
   gymOfCNPJ(cnpj: string): Promise<Gym | null>
+  withTransaction<TX extends object>(object: TX): GymRepository
 }

@@ -34,10 +34,10 @@ export class PrismaUserRepository implements UserRepository {
   ) {}
 
   public withTransaction<TX extends object>(prismaClient: TX): UserRepository {
-    if (!isPrismaTransaction(prismaClient)) {
-      throw new InvalidTransactionInstance(prismaClient)
+    if (isPrismaTransaction(prismaClient)) {
+      return new PrismaUserRepository(prismaClient)
     }
-    return new PrismaUserRepository(prismaClient)
+    throw new InvalidTransactionInstance(prismaClient)
   }
 
   public async get(userQuery: UserQuery): Promise<User | null> {

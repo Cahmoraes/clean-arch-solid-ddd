@@ -34,10 +34,10 @@ export class PrismaCheckInRepository implements CheckInRepository {
   public withTransaction<TX extends object>(
     prismaClient: TX,
   ): CheckInRepository {
-    if (!isPrismaTransaction(prismaClient)) {
-      throw new InvalidTransactionInstance(prismaClient)
+    if (isPrismaTransaction(prismaClient)) {
+      return new PrismaCheckInRepository(prismaClient)
     }
-    return new PrismaCheckInRepository(prismaClient)
+    throw new InvalidTransactionInstance(prismaClient)
   }
 
   public async save(checkIn: CheckIn): Promise<SaveResponse> {
