@@ -14,8 +14,12 @@ import { env } from '@/shared/infra/env'
 
 @injectable()
 export class InMemoryGymRepository implements GymRepository {
+  public static KILOMETER = 1
   public gyms = new ExtendedSet<Gym>()
-  public KILOMETER = 1
+
+  public withTransaction(): GymRepository {
+    return this
+  }
 
   public async save(gym: Gym): Promise<SaveGymResult> {
     const id = gym.id ?? randomUUID()
@@ -51,7 +55,7 @@ export class InMemoryGymRepository implements GymRepository {
         { latitude: coordinate.latitude, longitude: coordinate.longitude },
         { latitude: gym.latitude, longitude: gym.longitude },
       )
-      return distance <= this.KILOMETER
+      return distance <= InMemoryGymRepository.KILOMETER
     })
     return nearbyGyms.toArray()
   }
