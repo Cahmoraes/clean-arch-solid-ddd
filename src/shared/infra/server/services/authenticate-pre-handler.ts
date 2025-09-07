@@ -63,7 +63,8 @@ export class AuthenticateHandler {
   }
 
   private get token(): string {
-    return this.request.headers.authorization!.split(' ')[1]
+    const [, token] = this.request.headers.authorization!.split('Bearer ')
+    return token
   }
 
   private logOnFailedTokenVerification(invalidTokenError: Error): void {
