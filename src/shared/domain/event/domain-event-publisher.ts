@@ -22,11 +22,11 @@ export class DomainEventPublisher {
     return this._instance
   }
 
-  public subscribe(event: EventTypes, subscriber: Subscriber<any>): void {
-    if (this.isEventNotSubscribed(event)) {
-      this.subscribers.set(event, new ExtendedSet())
+  public subscribe(eventType: EventTypes, subscriber: Subscriber<any>): void {
+    if (this.isEventNotSubscribed(eventType)) {
+      this.subscribers.set(eventType, new ExtendedSet())
     }
-    this.subscribers.get(event)?.add(subscriber)
+    this.subscribers.get(eventType)?.add(subscriber)
   }
 
   private isEventNotSubscribed(event: EventTypes): boolean {
