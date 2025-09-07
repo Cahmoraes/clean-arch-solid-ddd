@@ -29,13 +29,16 @@ export class DomainEventPublisher {
     this.subscribers.get(eventType)?.add(subscriber)
   }
 
-  private isEventNotSubscribed(event: EventTypes): boolean {
-    return !this.subscribers.has(event)
+  private isEventNotSubscribed(eventType: EventTypes): boolean {
+    return !this.subscribers.has(eventType)
   }
 
-  public unsubscribe(event: EventTypes, subscriber: Subscriber<unknown>): void {
-    if (this.isEventNotSubscribed(event)) return
-    const subscribers = this.subscribers.get(event)!
+  public unsubscribe(
+    eventType: EventTypes,
+    subscriber: Subscriber<unknown>,
+  ): void {
+    if (this.isEventNotSubscribed(eventType)) return
+    const subscribers = this.subscribers.get(eventType)!
     subscribers.delete(subscriber)
   }
 
