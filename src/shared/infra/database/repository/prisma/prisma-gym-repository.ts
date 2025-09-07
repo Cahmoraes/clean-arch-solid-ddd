@@ -1,5 +1,5 @@
 import type { PrismaClient } from '@prisma/client'
-import type { Decimal } from '@prisma/client/runtime/library'
+import type { Decimal, ITXClientDenyList } from '@prisma/client/runtime/library'
 import { inject, injectable } from 'inversify'
 
 import type { Coordinate } from '@/check-in/domain/value-object/coordinate'
@@ -9,7 +9,10 @@ import type {
 } from '@/gym/application/repository/gym-repository'
 import { Gym } from '@/gym/domain/gym'
 import { env } from '@/shared/infra/env'
+import { InvalidTransactionInstance } from '@/shared/infra/errors/invalid-transaction-instance-error'
 import { SHARED_TYPES } from '@/shared/infra/ioc/types'
+
+import { isPrismaTransaction } from '../unit-of-work/prisma-unit-of-work'
 
 export interface GymCreateProps {
   id: string
@@ -25,8 +28,17 @@ export interface GymCreateProps {
 export class PrismaGymRepository implements GymRepository {
   constructor(
     @inject(SHARED_TYPES.Prisma.Client)
-    private readonly prismaClient: PrismaClient,
+    private readonly prismaClient:
+      | PrismaClient
+      | Omit<PrismaClient, ITXClientDenyList>,
   ) {}
+
+  public withTransaction<TX extends object>(prismaClient: TX): GymRepository {
+    if (isPrismaTransaction(prismaClient)) {
+      return new PrismaGymRepository(prismaClient)
+    }
+    throw new InvalidTransactionInstance(prismaClient)
+  }
 
   public async save(gym: Gym): Promise<SaveGymResult> {
     const result = await this.prismaClient.gym.create({
