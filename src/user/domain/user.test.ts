@@ -216,7 +216,6 @@ describe("User Entity", () => {
 		undefined,
 		"",
 	])("Não Deve criar definir um inválido para um usuário", (invalidValue) => {
-		const BILLING_CUSTOMER_ID = "customer-billing-id"
 		const input: UserCreate = {
 			name: "John Doe",
 			email: "john.doe@example.com",
