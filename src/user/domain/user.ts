@@ -229,7 +229,9 @@ export class User extends Observable {
       status: this.status,
       billingCustomerId: this.billingCustomerId,
     })
-    if (userCreateResult.isFailure()) return failure(userCreateResult.value)
+    if (userCreateResult.isFailure()) {
+      return failure(userCreateResult.value)
+    }
     this._email = userCreateResult.value._email
     this._name = userCreateResult.value._name
     void this.refreshUpdatedAt()
