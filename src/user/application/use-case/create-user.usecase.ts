@@ -75,7 +75,7 @@ export class CreateUserUseCase {
 		event: UserCreatedEvent,
 	): Promise<void> {
 		this.logger.info(this, event)
-		this.queue.publish(event.eventName, event)
+		this.queue.publish(event.name, event)
 	}
 
 	public async execute(
