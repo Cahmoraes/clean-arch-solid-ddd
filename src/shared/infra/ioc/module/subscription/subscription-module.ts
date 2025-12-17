@@ -8,7 +8,7 @@ import { SUBSCRIPTION_TYPES } from "../service-identifier/subscription-types"
 import { SubscriptionGatewayProvider } from "./subscription-gateway-provider"
 import { SubscriptionRepositoryProvider } from "./subscription-repository-provider"
 
-export const subscriptionContainer = new ContainerModule(({ bind }): void => {
+export const subscriptionModule = new ContainerModule(({ bind }): void => {
 	bind(SUBSCRIPTION_TYPES.GATEWAYS.Stripe)
 		.toDynamicValue(SubscriptionGatewayProvider.provide)
 		.inSingletonScope()
