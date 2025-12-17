@@ -1,20 +1,20 @@
-import { Container } from 'inversify'
+import { Container } from "inversify"
 
-import { checkInModule } from './module/check-in/check-in-module'
-import { gymContainer } from './module/gym/gym-container'
-import { healthCheckContainer } from './module/health-check/heath-check-container'
-import { infraContainer } from './module/infra/infra-container'
-import { sessionContainer } from './module/session/session-container'
-import { subscriptionContainer } from './module/subscription/subscription-container'
-import { userContainer } from './module/user/user-container'
+import { checkInModule } from "./module/check-in/check-in-module"
+import { gymModule } from "./module/gym/gym-module"
+import { healthCheckModule } from "./module/health-check/heath-check-module"
+import { infraModule } from "./module/infra/infra-module"
+import { sessionModule } from "./module/session/session-module"
+import { subscriptionModule } from "./module/subscription/subscription-module"
+import { userModule } from "./module/user/user-module"
 
 export const container = new Container()
 container.load(
-  userContainer,
-  gymContainer,
-  checkInModule,
-  infraContainer,
-  sessionContainer,
-  healthCheckContainer,
-  subscriptionContainer,
+	userModule,
+	gymModule,
+	checkInModule,
+	infraModule,
+	sessionModule,
+	healthCheckModule,
+	subscriptionModule,
 )
