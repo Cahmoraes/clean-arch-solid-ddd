@@ -13,8 +13,8 @@ import type { Logger } from "@/shared/infra/logger/logger"
 import type { Queue } from "@/shared/infra/queue/queue"
 import { UserCreatedEvent } from "@/user/domain/event/user-created-event"
 import {
+	type CreateUserDto,
 	User,
-	type UserCreate,
 	type UserValidationErrors,
 } from "@/user/domain/user"
 import type { RoleTypes } from "@/user/domain/value-object/role"
@@ -83,7 +83,7 @@ export class CreateUserUseCase {
 	): Promise<CreateUserOutput> {
 		const userFound = await this.userOfEmail(input)
 		if (userFound) return failure(new UserAlreadyExistsError())
-		const userCreatedResult = this.createUser(input)
+		const userCreatedResult = await this.createUser(input)
 		if (userCreatedResult.isFailure()) return failure(userCreatedResult.value)
 		await this.unitOfWork.performTransaction(async (tx): Promise<void> => {
 			await this.userRepository
@@ -106,7 +106,7 @@ export class CreateUserUseCase {
 
 	private createUser(
 		input: CreateUserUseCaseInput,
-	): Either<UserValidationErrors[], User> {
+	): Promise<Either<UserValidationErrors[], User>> {
 		return User.create({
 			name: input.name,
 			email: input.email,
@@ -116,7 +116,7 @@ export class CreateUserUseCase {
 	}
 
 	private createUserCreatedEvent(
-		userCreateProps: Pick<UserCreate, "name" | "email">,
+		userCreateProps: Pick<CreateUserDto, "name" | "email">,
 	): UserCreatedEvent {
 		return new UserCreatedEvent({
 			name: userCreateProps.name,

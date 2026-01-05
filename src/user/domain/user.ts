@@ -35,7 +35,7 @@ export interface UserConstructor {
 	billingCustomerId?: string
 }
 
-export interface UserCreate {
+export interface CreateUserDto {
 	id?: string | null
 	name: string
 	email: string
@@ -59,7 +59,7 @@ export type UserRestore = {
 	billingCustomerId?: string
 }
 
-export type UserUpdateProps = Partial<Pick<UserCreate, "name" | "email">>
+export type UserUpdateProps = Partial<Pick<CreateUserDto, "name" | "email">>
 
 export type ValidatedUserProps = Omit<
 	UserConstructor,
@@ -95,36 +95,36 @@ export class User extends Observable {
 		this._billingCustomerId = props.billingCustomerId
 	}
 
-	public static create(
-		userCreateProps: UserCreate,
-	): Either<UserValidationErrors[], User> {
-		const validatePropsResult = User.validate(userCreateProps)
-		if (validatePropsResult.isFailure()) {
-			return failure(validatePropsResult.value)
+	public static async create(
+		createUserDto: CreateUserDto,
+	): Promise<Either<UserValidationErrors[], User>> {
+		const userValidationOutcome = await User.validate(createUserDto)
+		if (userValidationOutcome.isFailure()) {
+			return failure(userValidationOutcome.value)
 		}
-		const id = Id.create(userCreateProps.id)
-		const createdAt = userCreateProps.createdAt ?? new Date()
-		const role = Role.create(userCreateProps.role)
+		const id = Id.create(createUserDto.id)
+		const createdAt = createUserDto.createdAt ?? new Date()
+		const role = Role.create(createUserDto.role)
 		return success(
 			new User({
 				id,
 				createdAt,
 				role,
-				name: validatePropsResult.value.name,
-				email: validatePropsResult.value.email,
-				password: validatePropsResult.value.password,
-				status: userCreateProps.status ?? StatusTypes.ACTIVATED,
-				billingCustomerId: userCreateProps.billingCustomerId,
+				name: userValidationOutcome.value.name,
+				email: userValidationOutcome.value.email,
+				password: userValidationOutcome.value.password,
+				status: createUserDto.status ?? StatusTypes.ACTIVATED,
+				billingCustomerId: createUserDto.billingCustomerId,
 			}),
 		)
 	}
 
-	private static validate(
-		userCreateProps: UserCreate,
-	): Either<UserValidationErrors[], ValidatedUserProps> {
+	private static async validate(
+		userCreateProps: CreateUserDto,
+	): Promise<Either<UserValidationErrors[], ValidatedUserProps>> {
 		const nameResult = Name.create(userCreateProps.name)
 		const emailResult = Email.create(userCreateProps.email)
-		const passwordResult = Password.create(userCreateProps.password)
+		const passwordResult = await Password.create(userCreateProps.password)
 		const result = Result.combine([nameResult, emailResult, passwordResult])
 		if (!result.isValid) return failure(result.errors)
 		return success({
@@ -198,12 +198,14 @@ export class User extends Observable {
 		this._updatedAt = new Date()
 	}
 
-	public checkPassword(rawPassword: string): boolean {
-		return this._password.compare(rawPassword)
+	public checkPassword(aString: string): Promise<boolean> {
+		return this._password.compare(aString)
 	}
 
-	public changePassword(newRawPassword: string): Either<ValidationError, null> {
-		const passwordCreateResult = Password.create(newRawPassword)
+	public async changePassword(
+		newRawPassword: string,
+	): Promise<Either<ValidationError, null>> {
+		const passwordCreateResult = await Password.create(newRawPassword)
 		if (passwordCreateResult.isFailure()) {
 			return failure(passwordCreateResult.value)
 		}
@@ -217,10 +219,10 @@ export class User extends Observable {
 		return success(null)
 	}
 
-	public updateProfile(
+	public async updateProfile(
 		input: UserUpdateProps,
-	): Either<UserValidationErrors[], null> {
-		const userCreateResult = User.create({
+	): Promise<Either<UserValidationErrors[], null>> {
+		const userCreateResult = await User.create({
 			id: this.id,
 			name: input.name ?? this.name,
 			email: input.email ?? this.email,
