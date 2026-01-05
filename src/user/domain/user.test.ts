@@ -2,17 +2,17 @@ import { UserStatus } from "@prisma/client"
 
 import { InvalidEmailError } from "./error/invalid-email-error"
 import { InvalidNameLengthError } from "./error/invalid-name-length-error"
-import { User, type UserCreate, type UserRestore } from "./user"
+import { type CreateUserDto, User, type UserRestore } from "./user"
 import { RoleValues } from "./value-object/role"
 
 describe("User Entity", () => {
-	test("Deve criar um usuário", () => {
-		const input: UserCreate = {
+	test("Deve criar um usuário", async () => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 		}
-		const user = User.create(input).force.success().value
+		const user = (await User.create(input)).force.success().value
 		expect(user.name).toEqual(input.name)
 		expect(user.email).toEqual(input.email)
 		expect(user.role).toBe(RoleValues.MEMBER)
@@ -46,63 +46,63 @@ describe("User Entity", () => {
 		expect(user.isActive).toBe(true)
 	})
 
-	test("Não deve criar um usuário com nome inválido", () => {
-		const input: UserCreate = {
+	test("Não deve criar um usuário com nome inválido", async () => {
+		const input: CreateUserDto = {
 			name: "",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 		}
-		const userOrError = User.create(input)
+		const userOrError = await User.create(input)
 		expect(userOrError.forceFailure().value).toEqual([
 			expect.any(InvalidNameLengthError),
 		])
 	})
 
-	test("Não deve criar um usuário com email inválido", () => {
-		const input: UserCreate = {
+	test("Não deve criar um usuário com email inválido", async () => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "",
 			password: "securepassword123",
 		}
-		const userOrError = User.create(input)
+		const userOrError = await User.create(input)
 		expect(userOrError.forceFailure().value).toEqual([
 			expect.any(InvalidEmailError),
 		])
 	})
 
-	test("Não deve criar um usuário com nome e email inválido", () => {
-		const input: UserCreate = {
+	test("Não deve criar um usuário com nome e email inválido", async () => {
+		const input: CreateUserDto = {
 			name: "",
 			email: "",
 			password: "securepassword123",
 		}
-		const userOrError = User.create(input)
+		const userOrError = await User.create(input)
 		expect(userOrError.forceFailure().value).toEqual([
 			expect.any(InvalidNameLengthError),
 			expect.any(InvalidEmailError),
 		])
 	})
 
-	test("Deve criar um usuário com uma data de criação pré-definida", () => {
-		const input: UserCreate = {
+	test("Deve criar um usuário com uma data de criação pré-definida", async () => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 			createdAt: new Date(),
 		}
-		const userOrError = User.create(input)
+		const userOrError = await User.create(input)
 		expect(userOrError.forceSuccess().value.createdAt).toBe(input.createdAt)
 	})
 
-	test("Deve criar um usuário ADMINISTRADOR", () => {
-		const input: UserCreate = {
+	test("Deve criar um usuário ADMINISTRADOR", async () => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 			role: "ADMIN",
 			createdAt: new Date(),
 		}
-		const userOrError = User.create(input)
+		const userOrError = await User.create(input)
 		expect(userOrError.forceSuccess().value.role).toBe(RoleValues.ADMIN)
 	})
 
@@ -120,31 +120,31 @@ describe("User Entity", () => {
 		expect(user.role).toEqual(RoleValues.ADMIN)
 	})
 
-	test("Deve alterar a senha de um usuário", () => {
-		const input: UserCreate = {
+	test("Deve alterar a senha de um usuário", async () => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "123456",
 		}
-		const user = User.create(input).forceSuccess().value
+		const user = (await User.create(input)).forceSuccess().value
 		const oldPassword = user.password
 		const newRawPassword = "654321"
-		const result = user.changePassword(newRawPassword)
+		const result = await user.changePassword(newRawPassword)
 		expect(result.isSuccess()).toBe(true)
 		expect(user.password).not.toBe(oldPassword)
-		expect(user.checkPassword(newRawPassword)).toBe(true)
+		await expect(user.checkPassword(newRawPassword)).resolves.toBe(true)
 	})
 
-	test("Deve atualizar um usuário com dados alterados", () => {
-		const input: UserCreate = {
+	test("Deve atualizar um usuário com dados alterados", async () => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 		}
 		const observer = vi.fn()
-		const user = User.create(input).forceSuccess().value
+		const user = (await User.create(input)).forceSuccess().value
 		user.subscribe(observer)
-		const updateUserResult = user.updateProfile({
+		const updateUserResult = await user.updateProfile({
 			email: "martin@fowler.com",
 			name: "Martin Fowler",
 		})
@@ -154,30 +154,30 @@ describe("User Entity", () => {
 		expect(user.id).toBe(user.id)
 		expect(user.name).toBe("Martin Fowler")
 		expect(user.email).toBe("martin@fowler.com")
-		expect(user.checkPassword("securepassword123")).toBe(true)
+		await expect(user.checkPassword("securepassword123")).resolves.toBe(true)
 	})
 
-	test("Deve suspender um usuário ativo", () => {
-		const input: UserCreate = {
+	test("Deve suspender um usuário ativo", async () => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 		}
-		const user = User.create(input).forceSuccess().value
+		const user = (await User.create(input)).forceSuccess().value
 		expect(user.isSuspend).toBe(false)
 		user.suspend()
 		expect(user.isActive).toBe(false)
 		expect(user.isSuspend).toBe(true)
 	})
 
-	test("Deve ativar um usuário suspenso", () => {
-		const input: UserCreate = {
+	test("Deve ativar um usuário suspenso", async () => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 			status: "suspended",
 		}
-		const user = User.create(input).forceSuccess().value
+		const user = (await User.create(input)).forceSuccess().value
 		expect(user.isSuspend).toBe(true)
 		user.activate()
 		expect(user.isSuspend).toBe(false)
@@ -198,14 +198,14 @@ describe("User Entity", () => {
 		expect(user.isActive).toBe(false)
 	})
 
-	test("Deve criar definir um billingCustomerId para um usuário", () => {
+	test("Deve criar definir um billingCustomerId para um usuário", async () => {
 		const BILLING_CUSTOMER_ID = "customer-billing-id"
-		const input: UserCreate = {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 		}
-		const user = User.create(input).force.success().value
+		const user = (await User.create(input)).force.success().value
 		expect(user.billingCustomerId).toBeUndefined()
 		user.assignBillingCustomerId(BILLING_CUSTOMER_ID)
 		expect(user.billingCustomerId).toBe(BILLING_CUSTOMER_ID)
@@ -215,13 +215,13 @@ describe("User Entity", () => {
 		null,
 		undefined,
 		"",
-	])("Não Deve criar definir um inválido para um usuário", (invalidValue) => {
-		const input: UserCreate = {
+	])("Não Deve criar definir um inválido para um usuário", async (invalidValue) => {
+		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
 			password: "securepassword123",
 		}
-		const user = User.create(input).force.success().value
+		const user = (await User.create(input)).force.success().value
 		expect(user.billingCustomerId).toBeUndefined()
 		user.assignBillingCustomerId(invalidValue as string)
 		expect(user.billingCustomerId).toBeUndefined()
