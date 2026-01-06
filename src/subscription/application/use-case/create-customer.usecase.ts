@@ -8,7 +8,7 @@ import {
 import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
 import { UserNotFoundError } from "@/user/application/error/user-not-found-error"
-import type { UserRepository } from "@/user/application/repository/user-repository"
+import type { UserRepository } from "@/user/application/persistense/repository/user-repository"
 
 import type { SubscriptionGateway } from "../../gateway/subscription-gateway"
 

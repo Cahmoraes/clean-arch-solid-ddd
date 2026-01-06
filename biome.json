@@ -20,7 +20,13 @@
 				"noUnusedPrivateClassMembers": "off"
 			},
 			"complexity": {
-				"noStaticOnlyClass": "off"
+				"noStaticOnlyClass": "off",
+				"noExcessiveCognitiveComplexity": {
+					"level": "error",
+					"options": {
+						"maxAllowedComplexity": 5
+					}
+				}
 			},
 			"suspicious": {
 				"noExplicitAny": "off"

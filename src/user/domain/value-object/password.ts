@@ -9,8 +9,8 @@ import {
 } from "@/shared/domain/value-object/either"
 import { env } from "@/shared/infra/env"
 
-const PasswordSchema = z.string().min(6)
-export type PasswordData = z.infer<typeof PasswordSchema>
+const passwordValidationSchema = z.string().min(6)
+export type PasswordData = z.infer<typeof passwordValidationSchema>
 
 export class Password {
 	private constructor(private readonly _value: string) {}
@@ -30,7 +30,7 @@ export class Password {
 	private static validate(
 		rawPassword: string,
 	): Either<ValidationError, string> {
-		const parsedPasswordResult = PasswordSchema.safeParse(rawPassword)
+		const parsedPasswordResult = passwordValidationSchema.safeParse(rawPassword)
 		if (!parsedPasswordResult.success) {
 			return failure(fromError(parsedPasswordResult.error))
 		}

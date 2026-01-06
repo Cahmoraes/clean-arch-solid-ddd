@@ -13,7 +13,7 @@ import type { User } from "@/user/domain/user"
 
 import { PasswordUnchangedError } from "../error/password-unchanged-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
-import type { UserRepository } from "../repository/user-repository"
+import type { UserRepository } from "../persistense/repository/user-repository"
 
 export interface ChangePasswordUseCaseInput {
 	userId: string
