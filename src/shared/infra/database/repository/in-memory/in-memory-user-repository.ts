@@ -3,8 +3,8 @@ import { randomUUID } from "node:crypto"
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
 
-import type { UserQuery } from "@/user/application/persistense/repository/user-query"
-import type { UserRepository } from "@/user/application/persistense/repository/user-repository"
+import type { UserQuery } from "@/user/application/persistence/repository/user-query"
+import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
 
 @injectable()

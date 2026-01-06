@@ -6,7 +6,7 @@ import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { Logger } from "@/shared/infra/logger/logger"
 import type { RoleTypes } from "@/user/domain/value-object/role"
 
-import type { FetchUsersOutput, UserDAO } from "../persistense/dao/user-dao"
+import type { FetchUsersOutput, UserDAO } from "../persistence/dao/user-dao"
 
 export interface FetchUsersUseCaseInput {
 	page: number

@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify"
 
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
-import type { UserRepository } from "@/user/application/persistense/repository/user-repository"
+import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
 
 import type { PgClient } from "../../connection/pg-client"

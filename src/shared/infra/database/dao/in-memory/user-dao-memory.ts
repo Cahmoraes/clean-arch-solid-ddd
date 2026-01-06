@@ -7,7 +7,7 @@ import type {
 	FetchUsersInput,
 	FetchUsersOutput,
 	UserDAO,
-} from "@/user/application/persistense/dao/user-dao"
+} from "@/user/application/persistence/dao/user-dao"
 import type { RoleTypes } from "@/user/domain/value-object/role"
 
 export interface CreateUserInput {

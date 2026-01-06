@@ -5,7 +5,7 @@ import { container } from "@/shared/infra/ioc/container"
 import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { InvalidCredentialsError } from "@/user/application/error/invalid-credentials-error"
-import type { UserRepository } from "@/user/application/persistense/repository/user-repository"
+import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import {
 	type CreateUserDto,
 	User,

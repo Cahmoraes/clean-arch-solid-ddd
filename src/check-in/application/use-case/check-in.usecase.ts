@@ -25,7 +25,7 @@ import type { Logger } from "@/shared/infra/logger/logger"
 import type { Queue } from "@/shared/infra/queue/queue"
 import { UserHasAlreadyCheckedInToday } from "@/user/application/error/user-has-already-checked-in-today"
 import { UserNotFoundError } from "@/user/application/error/user-not-found-error"
-import type { UserRepository } from "@/user/application/persistense/repository/user-repository"
+import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 
 import { MaxDistanceError } from "../error/max-distance-error"
 import type { CheckInRepository } from "../repository/check-in-repository"
