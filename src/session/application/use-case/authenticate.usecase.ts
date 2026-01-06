@@ -12,7 +12,7 @@ import { env } from "@/shared/infra/env"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { InvalidCredentialsError } from "@/user/application/error/invalid-credentials-error"
-import type { UserRepository } from "@/user/application/persistense/repository/user-repository"
+import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import type { User } from "@/user/domain/user"
 
 export interface AuthenticateUseCaseInput {
