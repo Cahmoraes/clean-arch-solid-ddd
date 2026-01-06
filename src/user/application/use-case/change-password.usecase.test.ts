@@ -44,7 +44,6 @@ describe("ChangePasswordUseCase", () => {
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
-			// biome-ignore lint/style/noNonNullAssertion: for testing
 			userId: user.id!,
 			newRawPassword: "654321",
 		}

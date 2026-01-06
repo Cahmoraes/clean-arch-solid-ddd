@@ -19,6 +19,9 @@
 			"correctness": {
 				"noUnusedPrivateClassMembers": "off"
 			},
+			"complexity": {
+				"noStaticOnlyClass": "off"
+			},
 			"suspicious": {
 				"noExplicitAny": "off"
 			}
