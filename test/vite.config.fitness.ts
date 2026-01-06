@@ -6,8 +6,7 @@ export default mergeConfig(
 	setupShareConfig,
 	defineConfig({
 		test: {
-			// include: ['**/**/architecture-dependency-check.fit-test.ts'],
-			include: ["**/**/archunit.fit-test.ts"],
+			include: ["**/**/*.fit-test.ts"],
 		},
 	}),
 )

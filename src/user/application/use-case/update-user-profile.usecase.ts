@@ -9,7 +9,7 @@ import { USER_TYPES } from "@/shared/infra/ioc/types"
 import type { User, UserValidationErrors } from "@/user/domain/user"
 
 import { UserNotFoundError } from "../error/user-not-found-error"
-import type { UserRepository } from "../repository/user-repository"
+import type { UserRepository } from "../persistense/repository/user-repository"
 
 export interface UpdateUserProfileUseCaseInput {
 	userId: string
