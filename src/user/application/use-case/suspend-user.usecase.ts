@@ -8,7 +8,7 @@ import {
 import { USER_TYPES } from "@/shared/infra/ioc/types"
 
 import { UserNotFoundError } from "../error/user-not-found-error"
-import type { UserRepository } from "../persistense/repository/user-repository"
+import type { UserRepository } from "../persistence/repository/user-repository"
 
 export interface SuspendUserUseCaseInput {
 	userId: string

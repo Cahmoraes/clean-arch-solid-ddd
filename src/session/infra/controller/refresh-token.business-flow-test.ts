@@ -6,7 +6,7 @@ import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-me
 import { container } from "@/shared/infra/ioc/container"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
-import type { UserRepository } from "@/user/application/persistense/repository/user-repository"
+import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
 
 describe("Atualizar Refresh Token", () => {

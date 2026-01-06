@@ -6,7 +6,7 @@ import type {
 	FetchUsersInput,
 	FetchUsersOutput,
 	UserDAO,
-} from "@/user/application/persistense/dao/user-dao"
+} from "@/user/application/persistence/dao/user-dao"
 
 @injectable()
 export class PrismaUserDAO implements UserDAO {

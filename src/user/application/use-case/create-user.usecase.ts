@@ -20,8 +20,8 @@ import {
 import type { RoleTypes } from "@/user/domain/value-object/role"
 
 import { UserAlreadyExistsError } from "../error/user-already-exists-error"
-import { UserQuery } from "../persistense/repository/user-query"
-import type { UserRepository } from "../persistense/repository/user-repository"
+import { UserQuery } from "../persistence/repository/user-query"
+import type { UserRepository } from "../persistence/repository/user-repository"
 
 export interface CreateUserUseCaseInput {
 	name: string
