@@ -54,6 +54,7 @@ export class CreateUserUseCase {
 		private readonly logger: Logger,
 		@inject(SHARED_TYPES.UnitOfWork)
 		private readonly unitOfWork: UnitOfWork,
+		@inject(SHARED_TYPES.Worker) private readonly worker: Queue,
 	) {
 		void this.bindMethod()
 		void this.setupEventListener()
@@ -76,6 +77,7 @@ export class CreateUserUseCase {
 	): Promise<void> {
 		this.logger.info(this, event)
 		this.queue.publish(event.name, event)
+		this.worker.publish(event.name, event)
 	}
 
 	public async execute(
