@@ -29,7 +29,8 @@
 		"fit:validate-dependencies": "npx depcruise --validate .dependency-cruiser.js src",
 		"dependency:metrics": "npx depcruise .dependency-cruiser.js src --include-only \"^src\" --output-type dot | dot -T svg > dependency-graph.svg",
 		"check:last-dependencies": "npx npm-check-updates -i",
-		"stripe webk": "stripe listen --forward-to localhost:3333/webhook/stripe"
+		"stripe webk": "stripe listen --forward-to localhost:3333/webhook/stripe",
+		"worker": "npx tsx --watch src/shared/infra/worker/worker.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -85,6 +86,7 @@
 		"@prisma/client": "6.11.0",
 		"amqplib": "0.10.8",
 		"bcryptjs": "3.0.2",
+		"bullmq": "5.66.4",
 		"commitizen": "4.3.1",
 		"cookie": "1.0.2",
 		"dotenv": "17.0.1",
