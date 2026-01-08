@@ -107,7 +107,7 @@ export class RedisAdapter implements CacheDB {
 	): Promise<T | null> {
 		try {
 			if (!data) return null
-			return JSON.parse(data!)
+			return JSON.parse(data)
 		} catch {
 			this.logger.warn(this, `Failed to parse JSON for key ${key}:`)
 			await this.client.del(key)
