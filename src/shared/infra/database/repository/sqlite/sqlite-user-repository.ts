@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
+import type { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
 import type { RoleTypes } from "@/user/domain/value-object/role"
@@ -25,8 +26,18 @@ export class SQLiteUserRepository implements UserRepository {
 		private readonly sqliteConnection: SQLiteConnection,
 	) {}
 
-	public async get(): Promise<User | null> {
-		return null
+	public async get(userQuery: UserQuery): Promise<User | null> {
+		const userDataOrNull = this.sqliteConnection
+			.query(/*SQL*/ `
+        SELECT * FROM 
+          "users"
+        WHERE
+          ${userQuery.sql}  
+      `)
+			.get(...userQuery.values)
+		if (!userDataOrNull) return null
+		this.assertUserData(userDataOrNull)
+		return this.restoreUser(userDataOrNull)
 	}
 
 	public async userOfEmail(email: string): Promise<User | null> {

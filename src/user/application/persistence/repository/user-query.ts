@@ -28,6 +28,7 @@ export class UserQuery {
 	}
 
 	get fields(): UserObjectFields {
+		console.log(this._fields)
 		return Object.fromEntries(this._fields)
 	}
 
@@ -39,5 +40,21 @@ export class UserQuery {
 	public removeField(field: UserField): this {
 		this._fields.delete(field)
 		return this
+	}
+
+	public get sql(): string {
+		const sql: string[] = []
+		for (const [field] of this._fields) {
+			sql.push(`"${field}" = ?`)
+		}
+		return sql.join(" AND ")
+	}
+
+	public get values(): any {
+		const values = []
+		for (const [_, value] of this._fields) {
+			values.push(value)
+		}
+		return values
 	}
 }
