@@ -1,4 +1,4 @@
-import type { Decimal } from "@prisma/client/runtime/library"
+import type { Decimal } from "@prisma/client/runtime/client"
 import { inject, injectable } from "inversify"
 import type { Coordinate } from "@/check-in/domain/value-object/coordinate"
 import type {
@@ -13,7 +13,6 @@ import type {
 import { env } from "@/shared/infra/env"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
-
 import { isPrismaTransaction } from "../unit-of-work/prisma-unit-of-work"
 
 export interface GymCreateProps {
