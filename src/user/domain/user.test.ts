@@ -1,4 +1,4 @@
-import { UserStatus } from "@prisma/client"
+import { UserStatus } from "@/shared/infra/database/generated/prisma/client"
 
 import { InvalidEmailError } from "./error/invalid-email-error"
 import { InvalidNameLengthError } from "./error/invalid-name-length-error"

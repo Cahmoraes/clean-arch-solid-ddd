@@ -15,7 +15,7 @@
 		"test:e2e:prisma": "vitest --config ./test/vite.config.integration.ts",
 		"test:fitness": "vitest --config ./test/vite.config.fitness.ts",
 		"build": "npx tsup",
-		"prisma:studio": "npx prisma studio",
+		"prisma:studio": "npx prisma studio --url postgresql://docker:docker@localhost:5432/apisolid --browser none",
 		"prisma:generate": "npx prisma generate",
 		"prisma:migrate:dev": "npx prisma migrate dev",
 		"prisma:schema": "npx prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script >supabase-schema.sql",
