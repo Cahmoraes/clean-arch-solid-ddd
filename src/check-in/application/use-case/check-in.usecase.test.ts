@@ -24,7 +24,7 @@ describe("CheckInUseCase", () => {
 
 	beforeEach(async () => {
 		container.snapshot()
-		const repositories = await setupInMemoryRepositories()
+		const repositories = setupInMemoryRepositories()
 		gymRepository = repositories.gymRepository
 		userRepository = repositories.userRepository
 		checkInRepository = repositories.checkInRepository
