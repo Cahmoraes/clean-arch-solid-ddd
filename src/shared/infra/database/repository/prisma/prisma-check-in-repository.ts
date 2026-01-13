@@ -127,7 +127,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
 	public async checkInsOfUserIdWithTransaction(
 		userId: string,
 		page: number,
-		prismaClient: Omit<PrismaClient, ITXClientDenyList>,
+		prismaClient: Prisma.TransactionClient,
 	): Promise<CheckIn[]> {
 		const checkInData = await prismaClient.checkIn.findMany({
 			where: {
