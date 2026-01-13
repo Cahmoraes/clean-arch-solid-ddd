@@ -15,6 +15,9 @@ export const SHARED_TYPES = {
 	PG: {
 		Client: Symbol.for("PgClient"),
 	},
+	SQLite: {
+		Client: Symbol.for("SQLite"),
+	},
 	Tokens: {
 		Auth: Symbol.for("AuthToken"),
 	},

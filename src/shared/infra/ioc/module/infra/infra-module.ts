@@ -7,6 +7,7 @@ import { NodeCronAdapter } from "@/shared/infra/cron/node-cron-adapter"
 import { UpdateUserProfileCacheTask } from "@/shared/infra/cron/task/update-user-profile-cache-task"
 import { PgClient } from "@/shared/infra/database/connection/pg-client"
 import { prismaClient } from "@/shared/infra/database/connection/prisma-client"
+import { SQLiteConnection } from "@/shared/infra/database/connection/sqlite-connection"
 import { PrismaUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/prisma-unit-of-work"
 import { UnitOfWorkProvider } from "@/shared/infra/database/repository/unit-of-work/unit-of-work-provider"
 import { MailerGatewayMemory } from "@/shared/infra/gateway/mailer-gateway-memory"
@@ -23,6 +24,7 @@ export const infraModule = new ContainerModule(({ bind }) => {
 	bind(SHARED_TYPES.Prisma.Client).toConstantValue(prismaClient)
 	bind(SHARED_TYPES.Prisma.UnitOfWork).to(PrismaUnitOfWork).inSingletonScope()
 	bind(SHARED_TYPES.PG.Client).toConstantValue(new PgClient())
+	bind(SHARED_TYPES.SQLite.Client).toConstantValue(new SQLiteConnection())
 	bind(SHARED_TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
 	bind(SHARED_TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
 	bind(SHARED_TYPES.Cookies.Manager).to(CookieAdapter).inRequestScope()
