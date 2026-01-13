@@ -1,8 +1,8 @@
-const PREFIX = '/health-check'
+const PREFIX = "/health-check"
 
 export const HealthCheckRoutes = {
-  check: `${PREFIX}`,
+	check: `${PREFIX}`,
 } as const
 
 export type HealthCheckRoutes =
-  (typeof HealthCheckRoutes)[keyof typeof HealthCheckRoutes]
+	(typeof HealthCheckRoutes)[keyof typeof HealthCheckRoutes]

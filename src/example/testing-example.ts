@@ -1,7 +1,7 @@
-import { Example } from './example'
+import { Example } from "./example"
 
 export class TestingExample extends Example {
-  protected performFetch() {
-    return [{ title: 'testing' }]
-  }
+	protected performFetch() {
+		return [{ title: "testing" }]
+	}
 }
