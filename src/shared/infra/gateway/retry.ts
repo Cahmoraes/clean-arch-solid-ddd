@@ -1,57 +1,57 @@
 type GenericFunction = (...args: any[]) => any
 
 export interface RetryConstructor<Callback extends GenericFunction> {
-  callback: Callback
-  maxAttempts: number
-  time: number
+	callback: Callback
+	maxAttempts: number
+	time: number
 }
 
 export class Retry<Callback extends GenericFunction> {
-  private readonly callback: Callback
-  private readonly maxAttempts: number
-  private readonly time: number
-  private _attempts: number
+	private readonly callback: Callback
+	private readonly maxAttempts: number
+	private readonly time: number
+	private _attempts: number
 
-  private constructor(props: RetryConstructor<Callback>) {
-    this.callback = props.callback
-    this.maxAttempts = props.maxAttempts
-    this.time = props.time
-    this._attempts = 0
-  }
+	private constructor(props: RetryConstructor<Callback>) {
+		this.callback = props.callback
+		this.maxAttempts = props.maxAttempts
+		this.time = props.time
+		this._attempts = 0
+	}
 
-  public static wrap<T extends GenericFunction>(
-    props: RetryConstructor<T>,
-  ): Retry<T> {
-    return new Retry(props)
-  }
+	public static wrap<T extends GenericFunction>(
+		props: RetryConstructor<T>,
+	): Retry<T> {
+		return new Retry(props)
+	}
 
-  public async run(
-    ...args: Parameters<Callback>
-  ): Promise<ReturnType<Callback>> {
-    try {
-      return await this.callback(...args)
-    } catch (error) {
-      return this.performCatch(error, ...args)
-    }
-  }
+	public async run(
+		...args: Parameters<Callback>
+	): Promise<ReturnType<Callback>> {
+		try {
+			return await this.callback(...args)
+		} catch (error) {
+			return this.performCatch(error, ...args)
+		}
+	}
 
-  private async performCatch(
-    error: any,
-    ...args: Parameters<Callback>
-  ): Promise<ReturnType<Callback>> {
-    this.incrementAttempts()
-    if (this._attempts < this.maxAttempts) {
-      await this.sleep(this.time)
-      return this.run(...args)
-    }
-    throw error
-  }
+	private async performCatch(
+		error: any,
+		...args: Parameters<Callback>
+	): Promise<ReturnType<Callback>> {
+		this.incrementAttempts()
+		if (this._attempts < this.maxAttempts) {
+			await this.sleep(this.time)
+			return this.run(...args)
+		}
+		throw error
+	}
 
-  private incrementAttempts(): void {
-    this._attempts++
-  }
+	private incrementAttempts(): void {
+		this._attempts++
+	}
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms))
-  }
+	private sleep(ms: number): Promise<void> {
+		return new Promise((resolve) => setTimeout(resolve, ms))
+	}
 }

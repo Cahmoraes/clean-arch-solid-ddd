@@ -1,18 +1,18 @@
-import { container } from '../ioc/container'
+import { container } from "../ioc/container"
 
 export function LazyInject<Dependency = object>(
-  serviceIdentifier: string | symbol,
+	serviceIdentifier: string | symbol,
 ): Dependency {
-  const proxy = new Proxy(
-    {},
-    {
-      get(_, property): CallableFunction {
-        const dependency = container.get<any>(serviceIdentifier)
-        return function (...args: unknown[]): unknown {
-          return Reflect.apply(dependency[property], dependency, args)
-        }
-      },
-    },
-  )
-  return proxy as Dependency
+	const proxy = new Proxy(
+		{},
+		{
+			get(_, property): CallableFunction {
+				const dependency = container.get<any>(serviceIdentifier)
+				return function (...args: unknown[]): unknown {
+					return Reflect.apply(dependency[property], dependency, args)
+				}
+			},
+		},
+	)
+	return proxy as Dependency
 }

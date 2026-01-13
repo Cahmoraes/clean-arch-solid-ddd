@@ -1,3 +1,3 @@
 export interface Controller {
-  init(): Promise<void>
+	init(): Promise<void>
 }

@@ -13,7 +13,7 @@ import type {
 import { env } from "@/shared/infra/env"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
-import { isPrismaTransaction } from "../unit-of-work/prisma-unit-of-work"
+import { PrismaUnitOfWork } from "../unit-of-work/prisma-unit-of-work"
 
 export interface GymCreateProps {
 	id: string
@@ -33,7 +33,7 @@ export class PrismaGymRepository implements GymRepository {
 	) {}
 
 	public withTransaction<TX extends object>(prismaClient: TX): GymRepository {
-		if (isPrismaTransaction(prismaClient)) {
+		if (PrismaUnitOfWork.isClientTransaction(prismaClient)) {
 			return new PrismaGymRepository(prismaClient)
 		}
 		throw new InvalidTransactionInstance(prismaClient)

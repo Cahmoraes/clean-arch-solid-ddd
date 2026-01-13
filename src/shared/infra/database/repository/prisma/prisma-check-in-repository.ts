@@ -8,7 +8,7 @@ import type {
 	Prisma,
 	PrismaClient,
 } from "@/shared/infra/database/generated/prisma/client"
-import { isPrismaTransaction } from "@/shared/infra/database/repository/unit-of-work/prisma-unit-of-work"
+import { PrismaUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/prisma-unit-of-work"
 import { env } from "@/shared/infra/env"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
@@ -33,7 +33,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
 	public withTransaction<TX extends object>(
 		prismaClient: TX,
 	): CheckInRepository {
-		if (isPrismaTransaction(prismaClient)) {
+		if (PrismaUnitOfWork.isClientTransaction(prismaClient)) {
 			return new PrismaCheckInRepository(prismaClient)
 		}
 		throw new InvalidTransactionInstance(prismaClient)

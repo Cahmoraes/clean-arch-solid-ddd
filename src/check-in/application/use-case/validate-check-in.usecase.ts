@@ -1,48 +1,48 @@
-import { inject, injectable } from 'inversify'
+import { inject, injectable } from "inversify"
 
-import type { CheckInTimeExceededError } from '@/check-in/domain/error/check-in-time-exceeded-error'
+import type { CheckInTimeExceededError } from "@/check-in/domain/error/check-in-time-exceeded-error"
 import {
-  type Either,
-  failure,
-  success,
-} from '@/shared/domain/value-object/either'
-import { CHECKIN_TYPES } from '@/shared/infra/ioc/types'
+	type Either,
+	failure,
+	success,
+} from "@/shared/domain/value-object/either"
+import { CHECKIN_TYPES } from "@/shared/infra/ioc/types"
 
-import { CheckInNotFoundError } from '../error/check-in-not-found-error'
-import type { CheckInRepository } from '../repository/check-in-repository'
+import { CheckInNotFoundError } from "../error/check-in-not-found-error"
+import type { CheckInRepository } from "../repository/check-in-repository"
 
 export interface ValidateCheckInUseCaseInput {
-  checkInId: string
+	checkInId: string
 }
 
 export interface ValidateCheckInUseCaseOutput {
-  validatedAt: Date
+	validatedAt: Date
 }
 
 export type ValidateCheckInUseCaseResponse = Either<
-  CheckInNotFoundError | CheckInTimeExceededError,
-  ValidateCheckInUseCaseOutput
+	CheckInNotFoundError | CheckInTimeExceededError,
+	ValidateCheckInUseCaseOutput
 >
 
 @injectable()
 export class ValidateCheckInUseCase {
-  constructor(
-    @inject(CHECKIN_TYPES.Repositories.CheckIn)
-    private readonly checkInRepository: CheckInRepository,
-  ) {}
+	constructor(
+		@inject(CHECKIN_TYPES.Repositories.CheckIn)
+		private readonly checkInRepository: CheckInRepository,
+	) {}
 
-  public async execute(
-    input: ValidateCheckInUseCaseInput,
-  ): Promise<ValidateCheckInUseCaseResponse> {
-    const checkInOrNull = await this.checkInRepository.checkOfById(
-      input.checkInId,
-    )
-    if (!checkInOrNull) return failure(new CheckInNotFoundError())
-    const validatedOrError = checkInOrNull.validate()
-    if (validatedOrError.isFailure()) return failure(validatedOrError.value)
-    await this.checkInRepository.save(checkInOrNull)
-    return success({
-      validatedAt: new Date(),
-    })
-  }
+	public async execute(
+		input: ValidateCheckInUseCaseInput,
+	): Promise<ValidateCheckInUseCaseResponse> {
+		const checkInOrNull = await this.checkInRepository.checkOfById(
+			input.checkInId,
+		)
+		if (!checkInOrNull) return failure(new CheckInNotFoundError())
+		const validatedOrError = checkInOrNull.validate()
+		if (validatedOrError.isFailure()) return failure(validatedOrError.value)
+		await this.checkInRepository.save(checkInOrNull)
+		return success({
+			validatedAt: new Date(),
+		})
+	}
 }

@@ -12,8 +12,7 @@ import type { UserRepository } from "@/user/application/persistence/repository/u
 import { User } from "@/user/domain/user"
 import type { RoleTypes } from "@/user/domain/value-object/role"
 import type { StatusTypes } from "@/user/domain/value-object/status"
-
-import { isPrismaTransaction } from "../unit-of-work/prisma-unit-of-work"
+import { PrismaUnitOfWork } from "../unit-of-work/prisma-unit-of-work"
 
 interface UserData {
 	id: string
@@ -35,7 +34,7 @@ export class PrismaUserRepository implements UserRepository {
 	) {}
 
 	public withTransaction<TX extends object>(prismaClient: TX): UserRepository {
-		if (isPrismaTransaction(prismaClient)) {
+		if (PrismaUnitOfWork.isClientTransaction(prismaClient)) {
 			return new PrismaUserRepository(prismaClient)
 		}
 		throw new InvalidTransactionInstance(prismaClient)

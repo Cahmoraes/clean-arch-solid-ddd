@@ -1,3 +1,3 @@
 export function isAdult(aNumber: number) {
-  return aNumber >= 18
+	return aNumber >= 18
 }

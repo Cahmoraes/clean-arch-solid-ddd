@@ -1,6 +1,6 @@
 export class UserAlreadyExistsError extends Error {
-  constructor(errorOptions?: ErrorOptions) {
-    super('User already exists', errorOptions)
-    this.name = 'UserAlreadyExistsError'
-  }
+	constructor(errorOptions?: ErrorOptions) {
+		super("User already exists", errorOptions)
+		this.name = "UserAlreadyExistsError"
+	}
 }

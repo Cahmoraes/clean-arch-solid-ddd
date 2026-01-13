@@ -1,3 +1,3 @@
 export interface Specification<Entity> {
-  isSatisfiedBy(entity: Entity): boolean
+	isSatisfiedBy(entity: Entity): boolean
 }

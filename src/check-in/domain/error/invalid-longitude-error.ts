@@ -1,6 +1,6 @@
 export class InvalidLongitudeError extends Error {
-  constructor(errorOptions?: ErrorOptions) {
-    super('Invalid longitude', errorOptions)
-    this.name = 'InvalidLongitudeError'
-  }
+	constructor(errorOptions?: ErrorOptions) {
+		super("Invalid longitude", errorOptions)
+		this.name = "InvalidLongitudeError"
+	}
 }

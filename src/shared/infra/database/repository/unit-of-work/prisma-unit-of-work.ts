@@ -8,7 +8,7 @@ import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 
 import type { Callback, UnitOfWork } from "./unit-of-work"
 
-type ValidPrismaClient = PrismaClient | Prisma.TransactionClient
+type PrismaClientTransaction = PrismaClient | Prisma.TransactionClient
 
 @injectable()
 export class PrismaUnitOfWork implements UnitOfWork {
@@ -31,11 +31,11 @@ export class PrismaUnitOfWork implements UnitOfWork {
 			[PrismaUnitOfWork.PRISMA_TRANSACTION_SYMBOL]: true,
 		})
 	}
-}
 
-export function isPrismaTransaction(obj: any): obj is ValidPrismaClient {
-	return (
-		Reflect.has(obj, PrismaUnitOfWork.PRISMA_TRANSACTION_SYMBOL) &&
-		Boolean(obj[PrismaUnitOfWork.PRISMA_TRANSACTION_SYMBOL])
-	)
+	public static isClientTransaction(obj: any): obj is PrismaClientTransaction {
+		return (
+			Reflect.has(obj, PrismaUnitOfWork.PRISMA_TRANSACTION_SYMBOL) &&
+			Boolean(obj[PrismaUnitOfWork.PRISMA_TRANSACTION_SYMBOL])
+		)
+	}
 }

@@ -1,23 +1,23 @@
-import type { RoleTypes } from '@/user/domain/value-object/role'
+import type { RoleTypes } from "@/user/domain/value-object/role"
 
 export interface FetchUsersInput {
-  page: number
-  limit: number
+	page: number
+	limit: number
 }
 
 export interface FetchUsersData {
-  id: string
-  role: RoleTypes
-  createdAt: string
-  name: string
-  email: string
+	id: string
+	role: RoleTypes
+	createdAt: string
+	name: string
+	email: string
 }
 
 export interface FetchUsersOutput {
-  usersData: FetchUsersData[]
-  total: number
+	usersData: FetchUsersData[]
+	total: number
 }
 
 export interface UserDAO {
-  fetchAndCountUsers(input: FetchUsersInput): Promise<FetchUsersOutput>
+	fetchAndCountUsers(input: FetchUsersInput): Promise<FetchUsersOutput>
 }
