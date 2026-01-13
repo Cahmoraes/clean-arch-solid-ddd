@@ -1,10 +1,10 @@
-import type { Distance } from '../value-object/distance'
-import type { Specification } from './specification'
+import type { Distance } from "../value-object/distance"
+import type { Specification } from "./specification"
 
 export class MaxDistanceSpecification implements Specification<Distance> {
-  private static readonly MAX_DISTANCE_IN_KM = 0.1
+	private static readonly MAX_DISTANCE_IN_KM = 0.1
 
-  public isSatisfiedBy(distance: Distance): boolean {
-    return distance.value > MaxDistanceSpecification.MAX_DISTANCE_IN_KM
-  }
+	public isSatisfiedBy(distance: Distance): boolean {
+		return distance.value > MaxDistanceSpecification.MAX_DISTANCE_IN_KM
+	}
 }

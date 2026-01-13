@@ -24,6 +24,7 @@
 		"prisma:db:pull": "npx prisma db pull",
 		"tsc:check": "npx tsc --noEmit",
 		"eslint:fix": "npx eslint --fix src",
+		"biome:fix": "biome format --write .",
 		"promise-like": "npx tsx --watch ./test/proxy-like/index-2.ts",
 		"commit": "cz",
 		"fit:validate-dependencies": "npx depcruise --validate .dependency-cruiser.js src",

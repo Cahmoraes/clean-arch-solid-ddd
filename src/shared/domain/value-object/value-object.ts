@@ -1,3 +1,3 @@
 export interface ValueObject {
-  equals(other: unknown): boolean
+	equals(other: unknown): boolean
 }
