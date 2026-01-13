@@ -2,6 +2,7 @@ import { ContainerModule } from "inversify"
 
 import { RefreshTokenController } from "@/session/infra/controller/refresh-token.controller"
 import { PgUserRepository } from "@/shared/infra/database/repository/pg/pg-user-repository"
+import { SQLiteUserRepository } from "@/shared/infra/database/repository/sqlite/sqlite-user-repository"
 import { ActiveUserUseCase } from "@/user/application/use-case/active-user.usecase"
 import { ChangePasswordUseCase } from "@/user/application/use-case/change-password.usecase"
 import { CreateUserUseCase } from "@/user/application/use-case/create-user.usecase"
@@ -17,7 +18,6 @@ import { FetchUsersController } from "@/user/infra/controller/fetch-users.contro
 import { MyProfileController } from "@/user/infra/controller/my-profile.controller"
 import { UserMetricsController } from "@/user/infra/controller/user-metrics.controller"
 import { UserProfileController } from "@/user/infra/controller/user-profile.controller"
-
 import { AUTH_TYPES, USER_TYPES } from "../../types"
 import { UserDAOProvider } from "./user-dao-provider"
 import { UserRepositoryProvider } from "./user-repository-provider"
@@ -48,4 +48,5 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.UseCases.ActivateUser).to(ActiveUserUseCase)
 	bind(USER_TYPES.Controllers.ActivateUser).to(ActivateUserController)
 	bind(USER_TYPES.UseCases.DeleteUser).to(DeleteUserUseCase)
+	bind(SQLiteUserRepository).toSelf()
 })

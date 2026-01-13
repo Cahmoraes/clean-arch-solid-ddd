@@ -1,5 +1,5 @@
-import type { PrismaClient } from "@prisma/client"
 import { inject, injectable } from "inversify"
+import type { PrismaClient } from "@/shared/infra/database/generated/prisma/client"
 
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type {

@@ -1,6 +1,9 @@
-import type { PrismaClient } from "@prisma/client"
-import type { ITXClientDenyList } from "@prisma/client/runtime/library"
+/** biome-ignore-all lint/style/noNonNullAssertion: intentionally */
 import { inject, injectable } from "inversify"
+import type {
+	Prisma,
+	PrismaClient,
+} from "@/shared/infra/database/generated/prisma/client"
 
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
@@ -28,9 +31,7 @@ interface UserData {
 export class PrismaUserRepository implements UserRepository {
 	constructor(
 		@inject(SHARED_TYPES.Prisma.Client)
-		private readonly prisma:
-			| PrismaClient
-			| Omit<PrismaClient, ITXClientDenyList>,
+		private readonly prisma: PrismaClient | Prisma.TransactionClient,
 	) {}
 
 	public withTransaction<TX extends object>(prismaClient: TX): UserRepository {
