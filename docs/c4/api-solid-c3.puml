@@ -1,0 +1,121 @@
+@startuml api-solid-c3
+!pragma charset UTF-8
+!include <C4/C4_Component>
+
+title C3 • Component - API Solid Application
+
+LAYOUT_LEFT_RIGHT()
+
+Container_Boundary(api_boundary, "API Application") {
+  
+  Component(fastify_server, "HTTP Server", "Fastify", "Recebe requisições HTTP e roteia para controllers")
+  
+  Component(auth_middleware, "Auth Middleware", "JWT Strategy", "Valida tokens JWT e gerencia sessões")
+  
+  Boundary(user_context, "User Context") {
+    Component(user_controller, "User Controllers", "CreateUser, UserProfile, ChangePassword, FetchUsers, etc.", "Endpoints de gerenciamento de usuários")
+    Component(user_usecase, "User Use Cases", "CreateUserUseCase, UserProfileUseCase, etc.", "Lógica de negócio de usuários")
+    Component(user_domain, "User Domain", "User Entity, Email VO, Name VO", "Regras de domínio e validações")
+    Component(user_repo, "User Repository", "Interface & PgUserRepository", "Persistência de usuários")
+  }
+  
+  Boundary(session_context, "Session Context") {
+    Component(session_controller, "Session Controllers", "Authenticate, RefreshToken, Logout", "Endpoints de autenticação")
+    Component(session_usecase, "Session Use Cases", "AuthenticateUseCase, LogoutUseCase", "Lógica de autenticação e sessões")
+  }
+  
+  Boundary(gym_context, "Gym Context") {
+    Component(gym_controller, "Gym Controllers", "CreateGym, SearchGym", "Endpoints de academias")
+    Component(gym_usecase, "Gym Use Cases", "CreateGymUseCase, SearchGymUseCase", "Lógica de negócio de academias")
+    Component(gym_domain, "Gym Domain", "Gym Entity, CNPJ VO, Coordinates VO", "Regras de domínio de academias")
+    Component(gym_repo, "Gym Repository", "Interface & PgGymRepository", "Persistência de academias")
+  }
+  
+  Boundary(checkin_context, "Check-in Context") {
+    Component(checkin_controller, "Check-in Controllers", "CheckIn, ValidateCheckIn, CheckInHistory", "Endpoints de check-ins")
+    Component(checkin_usecase, "Check-in Use Cases", "CheckInUseCase, ValidateCheckInUseCase, CheckInHistoryUseCase", "Lógica de check-ins e validações")
+    Component(checkin_domain, "Check-in Domain", "CheckIn Entity, Distance Calculator", "Regras de distância e tempo")
+    Component(checkin_repo, "Check-in Repository", "Interface & PgCheckInRepository", "Persistência de check-ins")
+  }
+  
+  Boundary(subscription_context, "Subscription Context") {
+    Component(subscription_controller, "Subscription Controllers", "CreateSubscription, WebhookHandler", "Endpoints de assinaturas")
+    Component(subscription_usecase, "Subscription Use Cases", "CreateSubscriptionUseCase", "Lógica de assinaturas")
+    Component(subscription_domain, "Subscription Domain", "Subscription Entity, Status Enum", "Regras de assinatura")
+    Component(subscription_repo, "Subscription Repository", "Interface & PgSubscriptionRepository", "Persistência de assinaturas")
+  }
+  
+  Boundary(shared_infra, "Shared Infrastructure") {
+    Component(ioc_container, "IoC Container", "Inversify", "Gerencia injeção de dependências")
+    Component(database, "Database Client", "Prisma Client", "ORM e acesso ao banco")
+    Component(queue, "Queue Service", "RabbitMQ Client", "Publicação de eventos")
+    Component(logger, "Logger Service", "Winston", "Logging estruturado")
+    Component(cookie_service, "Cookie Service", "Fastify Cookie", "Gerenciamento de cookies")
+  }
+}
+
+ContainerDb(postgresql, "PostgreSQL", "Banco de dados relacional")
+Container(redis, "Redis", "Cache e sessões")
+Container(rabbitmq, "RabbitMQ", "Fila de mensagens")
+System_Ext(stripe, "Stripe API", "Pagamentos")
+
+Rel(fastify_server, auth_middleware, "Valida autenticação")
+Rel(fastify_server, user_controller, "Roteia /users")
+Rel(fastify_server, session_controller, "Roteia /sessions")
+Rel(fastify_server, gym_controller, "Roteia /gyms")
+Rel(fastify_server, checkin_controller, "Roteia /check-ins")
+Rel(fastify_server, subscription_controller, "Roteia /subscriptions")
+
+Rel(user_controller, user_usecase, "Executa caso de uso")
+Rel(user_usecase, user_domain, "Valida regras de negócio")
+Rel(user_usecase, user_repo, "Persiste dados")
+
+Rel(session_controller, session_usecase, "Autentica usuário")
+Rel(session_usecase, user_repo, "Busca usuário")
+Rel(session_usecase, cookie_service, "Gera token/cookie")
+
+Rel(gym_controller, gym_usecase, "Executa caso de uso")
+Rel(gym_usecase, gym_domain, "Valida CNPJ e coordenadas")
+Rel(gym_usecase, gym_repo, "Persiste academia")
+
+Rel(checkin_controller, checkin_usecase, "Executa caso de uso")
+Rel(checkin_usecase, checkin_domain, "Valida distância e tempo")
+Rel(checkin_usecase, checkin_repo, "Persiste check-in")
+Rel(checkin_usecase, gym_repo, "Busca coordenadas da academia")
+
+Rel(subscription_controller, subscription_usecase, "Cria assinatura")
+Rel(subscription_usecase, subscription_domain, "Valida status")
+Rel(subscription_usecase, subscription_repo, "Persiste assinatura")
+Rel(subscription_controller, stripe, "Processa webhook")
+
+Rel(user_repo, database, "Executa queries")
+Rel(gym_repo, database, "Executa queries")
+Rel(checkin_repo, database, "Executa queries")
+Rel(subscription_repo, database, "Executa queries")
+
+Rel(database, postgresql, "Conecta", "TCP/SQL")
+Rel(auth_middleware, redis, "Valida sessão", "TCP")
+Rel(user_usecase, queue, "Publica eventos", "AMQP")
+
+note right of user_domain
+  • Either<Error, Success> pattern
+  • Value Objects (Email, Name)
+  • Domain Events
+  • Factory methods com validação
+end note
+
+note right of checkin_domain
+  • Validação de distância (100m)
+  • Validação de tempo (20min)
+  • Cálculo de coordenadas
+  • Limite: 1 check-in/dia
+end note
+
+note right of ioc_container
+  • Módulos por bounded context
+  • Service Identifiers via Symbols
+  • Lifecycle: Singleton/Transient
+  • Provider pattern
+end note
+
+@enduml
