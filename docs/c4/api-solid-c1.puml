@@ -1,0 +1,29 @@
+@startuml api-solid-c1
+!pragma charset UTF-8
+!include <C4/C4_Context>
+
+title C1 • System Context - API Solid
+
+LAYOUT_LEFT_RIGHT()
+
+Person(user, "Usuário", "Membro ou administrador da academia")
+Person(admin, "Administrador", "Gerencia academias e validações")
+
+System(api_solid, "API Solid", "Sistema de gerenciamento de check-ins em academias com autenticação, controle de frequência e validação de presença")
+
+System_Ext(email_service, "Serviço de E-mail", "NodeMailer - Envio de notificações e confirmações")
+System_Ext(payment_gateway, "Gateway de Pagamento", "Stripe - Processamento de assinaturas e pagamentos")
+
+Rel(user, api_solid, "Realiza check-in, consulta métricas", "HTTPS/REST")
+Rel(admin, api_solid, "Gerencia academias, valida check-ins", "HTTPS/REST")
+Rel(api_solid, email_service, "Envia e-mails", "SMTP")
+Rel(api_solid, payment_gateway, "Processa assinaturas", "HTTPS/REST API")
+
+note right of api_solid
+  • Sistema monolítico modular
+  • Clean Architecture + DDD
+  • Bounded Contexts separados
+  • Autenticação via JWT
+end note
+
+@enduml

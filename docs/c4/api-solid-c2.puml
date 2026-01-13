@@ -1,0 +1,50 @@
+@startuml api-solid-c2
+!pragma charset UTF-8
+!include <C4/C4_Container>
+
+title C2 • Container - API Solid
+
+LAYOUT_TOP_DOWN()
+
+Person(user, "Usuário", "Membro ou administrador")
+
+System_Boundary(api_solid_boundary, "API Solid") {
+  Container(api_app, "API Application", "Node.js 20, TypeScript, Fastify", "Expõe API REST com endpoints para gerenciamento de usuários, academias, check-ins e assinaturas")
+  
+  ContainerDb(postgresql, "Database", "PostgreSQL", "Armazena usuários, academias, check-ins e assinaturas")
+  
+  Container(redis, "Cache & Session", "Redis", "Cache de sessões, tokens e dados temporários")
+  
+  Container(rabbitmq, "Message Broker", "RabbitMQ", "Fila de mensagens para processamento assíncrono")
+  
+  Container(worker, "Background Worker", "Node.js, TypeScript", "Processa jobs assíncronos: e-mails, notificações, limpeza de dados")
+}
+
+System_Ext(email_service, "Serviço de E-mail", "NodeMailer/SMTP")
+System_Ext(payment_gateway, "Stripe API", "Gateway de pagamento")
+Container(nginx, "Reverse Proxy", "Nginx", "Balanceamento e roteamento")
+
+Rel(user, nginx, "Requisições HTTPS", "HTTPS/REST")
+Rel(nginx, api_app, "Roteia requisições", "HTTP")
+Rel(api_app, postgresql, "Lê/Escreve dados", "TCP/SQL")
+Rel(api_app, redis, "Cache & sessões", "TCP/Redis Protocol")
+Rel(api_app, rabbitmq, "Publica mensagens", "AMQP")
+Rel(rabbitmq, worker, "Consome mensagens", "AMQP")
+Rel(worker, email_service, "Envia e-mails", "SMTP")
+Rel(api_app, payment_gateway, "Processa pagamentos", "HTTPS")
+
+note right of api_app
+  • Fastify Server
+  • Inversify IoC Container
+  • Prisma ORM
+  • JWT Authentication
+  • Zod Validation
+end note
+
+note right of postgresql
+  • Schemas: users, gyms
+  • check_ins, subscriptions
+  • Prisma Migrations
+end note
+
+@enduml
