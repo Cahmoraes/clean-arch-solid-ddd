@@ -30,7 +30,6 @@ const envSchema = z.object({
 	STRIPE_WEBHOOK_SECRET: z.string(),
 })
 
-console.log(process.env)
 const _env = envSchema.safeParse(process.env)
 if (!_env.success) {
 	const validationError = fromError(_env.error)
