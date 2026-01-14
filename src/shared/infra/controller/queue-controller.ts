@@ -45,7 +45,7 @@ export class QueueController implements Controller {
 				)
 				const payload = event.payload
 				await this.mailer.sendMail(
-					payload.email,
+					payload.userEmail,
 					"Password changed",
 					"Password changed successfully [Async]",
 				)

@@ -12,6 +12,7 @@ import { Id } from "@/shared/domain/value-object/id"
 import type { InvalidEmailError } from "./error/invalid-email-error"
 import type { InvalidNameLengthError } from "./error/invalid-name-length-error"
 import { PasswordChangedEvent } from "./event/password-changed-event"
+import { UserAssignedBillingCustomerIdEvent } from "./event/user-assinged-billing-customer-id-event"
 import { UserProfileUpdatedEvent } from "./event/user-profile-updated-event"
 import { Email } from "./value-object/email"
 import { Name } from "./value-object/name"
@@ -187,7 +188,11 @@ export class User extends Observable {
 	public assignBillingCustomerId(billingCustomerId: string): void {
 		if (!billingCustomerId) return
 		this._billingCustomerId = billingCustomerId
+		const event = new UserAssignedBillingCustomerIdEvent({
+			userEmail: this.email,
+		})
 		this.refreshUpdatedAt()
+		this.notify(event)
 	}
 
 	public get hasBillingCustomerId(): boolean {
@@ -212,8 +217,8 @@ export class User extends Observable {
 		this._password = passwordCreateResult.value
 		void this.refreshUpdatedAt()
 		const event = new PasswordChangedEvent({
-			name: this.name,
-			email: this.email,
+			userName: this.name,
+			userEmail: this.email,
 		})
 		void this.notify(event)
 		return success(null)
@@ -238,21 +243,12 @@ export class User extends Observable {
 		this._email = userCreateResult.value._email
 		this._name = userCreateResult.value._name
 		void this.refreshUpdatedAt()
-		const event = this.createUserProfileUpdatedEvent({
+		const event = new UserProfileUpdatedEvent({
 			email: this.email,
 			name: this.name,
 		})
 		this.notify(event)
 		return success(null)
-	}
-
-	private createUserProfileUpdatedEvent(
-		updateUserProps: Required<UserUpdateProps>,
-	): UserProfileUpdatedEvent {
-		return new UserProfileUpdatedEvent({
-			name: updateUserProps.name,
-			email: updateUserProps.email,
-		})
 	}
 
 	public changeStatus(userStatus: UserStatus): void {

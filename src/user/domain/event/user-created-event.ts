@@ -2,7 +2,6 @@ import { DomainEvent } from "@/shared/domain/event/domain-event"
 import { EVENTS } from "@/shared/domain/event/events"
 
 export interface UserCreatedEventProps {
-	name: string
 	email: string
 }
 
@@ -17,7 +16,7 @@ export class UserCreatedEvent extends DomainEvent<UserCreatedEventProps> {
 	public toJSON() {
 		return {
 			id: this.id,
-			name: this.name,
+			eventName: this.eventName,
 			date: this.date,
 			payload: this.payload,
 		}
