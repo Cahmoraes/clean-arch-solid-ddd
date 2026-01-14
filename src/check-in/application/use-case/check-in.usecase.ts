@@ -94,7 +94,7 @@ export class CheckInUseCase {
 			return failure(validateDistanceResult.value)
 		}
 		const checkIn = CheckIn.create(input)
-		const checkInId = await this.unityOfWork.performTransaction(async (tx) => {
+		const checkInId = await this.unityOfWork.runTransaction(async (tx) => {
 			const { id } = await this.checkInRepository
 				.withTransaction(tx)
 				.save(checkIn)

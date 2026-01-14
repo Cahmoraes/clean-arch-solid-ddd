@@ -44,7 +44,7 @@ export class DeleteUserUseCase {
 		)
 		if (foundCheckIns.length) return failure(new Error("CheckIns found"))
 		console.log(foundCheckIns)
-		await this.unitOfWork.performTransaction(async (tx) => {
+		await this.unitOfWork.runTransaction(async (tx) => {
 			await this.userRepository.withTransaction(tx).delete(foundUser)
 		})
 		return success(null)
