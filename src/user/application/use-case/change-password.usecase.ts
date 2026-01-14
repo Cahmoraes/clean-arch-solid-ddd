@@ -63,9 +63,8 @@ export class ChangePasswordUseCase {
 
 	private handlePasswordChangedEvent(data: PasswordChangedEvent): void {
 		const event = new PasswordChangedEvent({
-			name: data.payload.name,
-			email: data.payload.email,
+			userEmail: data.payload.userEmail,
 		})
-		this.queue.publish(event.name, event)
+		this.queue.publish(event.eventName, event)
 	}
 }

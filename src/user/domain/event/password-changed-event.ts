@@ -2,8 +2,8 @@ import { DomainEvent } from "@/shared/domain/event/domain-event"
 import { EVENTS } from "@/shared/domain/event/events"
 
 export interface PasswordChangedEventProps {
-	name: string
-	email: string
+	userName: string
+	userEmail: string
 }
 
 export class PasswordChangedEvent extends DomainEvent<PasswordChangedEventProps> {
@@ -17,7 +17,7 @@ export class PasswordChangedEvent extends DomainEvent<PasswordChangedEventProps>
 	public toJSON() {
 		return {
 			id: this.id,
-			name: this.name,
+			eventName: this.eventName,
 			date: this.date,
 			payload: this.payload,
 		}

@@ -17,7 +17,7 @@ export class UserProfileUpdatedEvent extends DomainEvent<UserProfileUpdatedEvent
 	public toJSON() {
 		return {
 			id: this.id,
-			name: this.name,
+			eventName: this.eventName,
 			date: this.date,
 			payload: this.payload,
 		}

@@ -18,7 +18,7 @@ export class CheckInCreatedEvent extends DomainEvent<CheckInCreateEventProps> {
 	public toJSON() {
 		return {
 			id: this.id,
-			name: this.name,
+			name: this.eventName,
 			date: this.date,
 			payload: this.payload,
 		}

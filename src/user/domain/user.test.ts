@@ -1,5 +1,5 @@
+import { EVENTS } from "@/shared/domain/event/events"
 import { UserStatus } from "@/shared/infra/database/generated/prisma/client"
-
 import { InvalidEmailError } from "./error/invalid-email-error"
 import { InvalidNameLengthError } from "./error/invalid-name-length-error"
 import { type CreateUserDto, User, type UserRestore } from "./user"
@@ -205,9 +205,22 @@ describe("User Entity", () => {
 			email: "john.doe@example.com",
 			password: "securepassword123",
 		}
+		const observer = vi.fn()
 		const user = (await User.create(input)).force.success().value
+		expect(observer).not.toBeCalled()
+		user.subscribe(observer)
 		expect(user.billingCustomerId).toBeUndefined()
 		user.assignBillingCustomerId(BILLING_CUSTOMER_ID)
+		expect(observer).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventName: EVENTS.USER_ASSIGNED_BILLING_CUSTOMER_ID,
+				payload: {
+					userEmail: user.email,
+				},
+				id: expect.any(String),
+				date: expect.any(Date),
+			}),
+		)
 		expect(user.billingCustomerId).toBe(BILLING_CUSTOMER_ID)
 	})
 

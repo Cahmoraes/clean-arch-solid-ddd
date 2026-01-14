@@ -146,7 +146,7 @@ export class CheckInUseCase {
 		event: CheckInCreatedEvent,
 	): Promise<void> {
 		this.logger.info(this, event)
-		this.queue.publish(event.name, event)
+		this.queue.publish(event.eventName, event)
 	}
 
 	private async hasCheckInOnSameDate(userId: string): Promise<boolean> {

@@ -20,7 +20,6 @@ export class CreateCustomerController implements Controller {
 				console.log("User created event received:", data)
 				const { payload } = data
 				await this.createCustomerUseCase.execute({
-					name: payload.name,
 					email: payload.email,
 				})
 			},

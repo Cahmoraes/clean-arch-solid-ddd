@@ -76,8 +76,8 @@ export class CreateUserUseCase {
 		event: UserCreatedEvent,
 	): Promise<void> {
 		this.logger.info(this, event)
-		this.queue.publish(event.name, event)
-		this.worker.publish(event.name, event)
+		this.queue.publish(event.eventName, event)
+		this.worker.publish(event.eventName, event)
 	}
 
 	public async execute(
@@ -118,10 +118,9 @@ export class CreateUserUseCase {
 	}
 
 	private createUserCreatedEvent(
-		userCreateProps: Pick<CreateUserDto, "name" | "email">,
+		userCreateProps: Pick<CreateUserDto, "email">,
 	): UserCreatedEvent {
 		return new UserCreatedEvent({
-			name: userCreateProps.name,
 			email: userCreateProps.email,
 		})
 	}
@@ -131,7 +130,6 @@ export class CreateUserUseCase {
 		DomainEventPublisher.instance.publish(
 			this.createUserCreatedEvent({
 				email: user.email,
-				name: user.name,
 			}),
 		)
 	}

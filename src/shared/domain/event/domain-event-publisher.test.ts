@@ -11,7 +11,6 @@ describe("DomainEventPublisher", () => {
 	test("Deve publicar um event", () => {
 		const event = new UserCreatedEvent({
 			email: "user@mail.com",
-			name: "john doe",
 		})
 		const subscriber = vi.fn()
 		DomainEventPublisher.instance.subscribe("userCreated", subscriber)
@@ -28,11 +27,10 @@ describe("DomainEventPublisher", () => {
 	test("Deve notificar um subscriber por tópico", () => {
 		const userCreatedEvent = new UserCreatedEvent({
 			email: "user@mail.com",
-			name: "john doe",
 		})
 		const passwordChangedEvent = new PasswordChangedEvent({
-			email: "user@mail.com",
-			name: "john doe",
+			userName: "any-name",
+			userEmail: "user@mail.com",
 		})
 		const subscriber1 = vi.fn()
 		const subscriber2 = vi.fn()
