@@ -33,7 +33,7 @@ describe("CreateUserUseCase", () => {
 		const input: CreateUserUseCaseInput = {
 			name: "John Doe",
 			email: "john@doe.com",
-			rawPassword: "any_password",
+			password: "any_password",
 		}
 		const result = await sut.execute(input)
 		const user = await userRepository.userOfEmail(input.email)
@@ -50,7 +50,7 @@ describe("CreateUserUseCase", () => {
 		const input: CreateUserUseCaseInput = {
 			name: "John Doe",
 			email: "john@doe.com",
-			rawPassword: "any_password",
+			password: "any_password",
 		}
 		await sut.execute(input)
 		const result = await sut.execute(input)
