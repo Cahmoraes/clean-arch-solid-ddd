@@ -4,3 +4,4 @@ onlyBuiltDependencies:
   - esbuild
   - prisma
   - unrs-resolver
+  - better-sqlite3
