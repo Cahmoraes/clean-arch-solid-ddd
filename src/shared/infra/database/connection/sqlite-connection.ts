@@ -1,7 +1,10 @@
 import { existsSync, readFileSync, unlinkSync } from "node:fs"
 import path from "node:path"
 import { cwd } from "node:process"
-import { DatabaseSync, type StatementSync } from "node:sqlite"
+import Database, {
+	type Database as BetterDB,
+	type Statement,
+} from "better-sqlite3"
 import { injectable } from "inversify"
 import { LRUCache } from "lru-cache"
 
@@ -9,20 +12,20 @@ import { LRUCache } from "lru-cache"
 export class SQLiteConnection {
 	private static readonly DB_PATH = SQLiteConnection.pathTo("app.db")
 	private static readonly SCHEMA_PATH = SQLiteConnection.pathTo("schema.sql")
-	private _db: DatabaseSync
-	private queries: LRUCache<string, StatementSync>
+	private _db: BetterDB
+	private queries: LRUCache<string, Statement>
 
 	constructor() {
 		this._db = this.createDatabase()
 		this.queries = this.createLRU()
-		void this.initialize()
+		this.initialize()
 	}
 
-	private createDatabase(): DatabaseSync {
-		return new DatabaseSync(SQLiteConnection.DB_PATH)
+	private createDatabase(): BetterDB {
+		return new Database(SQLiteConnection.DB_PATH)
 	}
 
-	private createLRU(): LRUCache<string, StatementSync> {
+	private createLRU(): LRUCache<string, Statement> {
 		return new LRUCache({
 			max: 100,
 		})
@@ -33,12 +36,10 @@ export class SQLiteConnection {
 	}
 
 	private initialize(): void {
-		this._db.exec(/*sql*/ `
-			PRAGMA journal_mode = WAL;
-			PRAGMA synchronous = NORMAL;
-			PRAGMA cache_size = 10000;
-			PRAGMA foreign_keys = ON;
-		`)
+		this._db.pragma("journal_mode = WAL")
+		this._db.pragma("synchronous = NORMAL")
+		this._db.pragma("cache_size = 10000")
+		this._db.pragma("foreign_keys = ON")
 		this._db.exec(this.loadSchema())
 	}
 
@@ -46,7 +47,7 @@ export class SQLiteConnection {
 		return readFileSync(SQLiteConnection.SCHEMA_PATH, "utf-8")
 	}
 
-	public query(sql: string): StatementSync {
+	public query(sql: string): Statement {
 		let stmt = this.queries.get(sql)
 		if (!stmt) {
 			stmt = this._db.prepare(sql)
