@@ -26,7 +26,7 @@ import type { UserRepository } from "../persistence/repository/user-repository"
 export interface CreateUserUseCaseInput {
 	name: string
 	email: string
-	rawPassword: string
+	password: string
 	role?: RoleTypes
 }
 
@@ -85,14 +85,12 @@ export class CreateUserUseCase {
 	): Promise<CreateUserOutput> {
 		const userFound = await this.userOfEmail(input)
 		if (userFound) return failure(new UserAlreadyExistsError())
-		const userCreatedResult = await this.createUser(input)
-		if (userCreatedResult.isFailure()) return failure(userCreatedResult.value)
-		await this.unitOfWork.performTransaction(async (tx): Promise<void> => {
-			await this.userRepository
-				.withTransaction(tx)
-				.save(userCreatedResult.value)
+		const userResult = await User.create(input)
+		if (userResult.isFailure()) return failure(userResult.value)
+		await this.unitOfWork.runTransaction(async (tx): Promise<void> => {
+			await this.userRepository.withTransaction(tx).save(userResult.value)
 		})
-		const user = userCreatedResult.value
+		const user = userResult.value
 		void this.publishUserCreatedEvent(user)
 		return success({
 			email: user.email,
@@ -106,15 +104,13 @@ export class CreateUserUseCase {
 		return this.userRepository.get(userQuery)
 	}
 
-	private createUser(
-		input: CreateUserUseCaseInput,
-	): Promise<Either<UserValidationErrors[], User>> {
-		return User.create({
-			name: input.name,
-			email: input.email,
-			password: input.rawPassword,
-			role: input.role,
-		})
+	private publishUserCreatedEvent(user: User): void {
+		console.log("** Publish user created event **")
+		DomainEventPublisher.instance.publish(
+			this.createUserCreatedEvent({
+				email: user.email,
+			}),
+		)
 	}
 
 	private createUserCreatedEvent(
@@ -123,14 +119,5 @@ export class CreateUserUseCase {
 		return new UserCreatedEvent({
 			email: userCreateProps.email,
 		})
-	}
-
-	private publishUserCreatedEvent(user: User): void {
-		console.log("** Publish user created event **")
-		DomainEventPublisher.instance.publish(
-			this.createUserCreatedEvent({
-				email: user.email,
-			}),
-		)
 	}
 }

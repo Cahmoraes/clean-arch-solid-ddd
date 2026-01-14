@@ -1,7 +1,7 @@
 import type { FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
 import { z } from "zod"
-import { fromError, ValidationError } from "zod-validation-error"
+import { fromError, type ValidationError } from "zod-validation-error"
 
 import {
 	type Either,
@@ -79,7 +79,7 @@ export class CreateUserController implements Controller {
 		const { password, ...rest } = parseBodyResult.value
 		const createUserResult = await this.createUser.execute({
 			...rest,
-			rawPassword: password,
+			password: password,
 		})
 		if (createUserResult.isFailure()) {
 			return this.createResponseError(createUserResult)

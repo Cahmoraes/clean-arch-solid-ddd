@@ -20,7 +20,7 @@ export class PrismaUnitOfWork implements UnitOfWork {
 		private readonly prismaClient: PrismaClient,
 	) {}
 
-	public async performTransaction<T>(callback: Callback<T>): Promise<T> {
+	public async runTransaction<T>(callback: Callback<T>): Promise<T> {
 		return this.prismaClient.$transaction(async (tx) => {
 			return callback(this.createTransactionWithSymbol(tx))
 		})
