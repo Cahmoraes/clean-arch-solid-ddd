@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import {
 	type Either,
@@ -18,7 +17,6 @@ import {
 	type UserValidationErrors,
 } from "@/user/domain/user"
 import type { RoleTypes } from "@/user/domain/value-object/role"
-
 import { UserAlreadyExistsError } from "../error/user-already-exists-error"
 import { UserQuery } from "../persistence/repository/user-query"
 import type { UserRepository } from "../persistence/repository/user-repository"
