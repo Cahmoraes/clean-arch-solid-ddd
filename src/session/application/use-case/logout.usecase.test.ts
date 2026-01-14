@@ -1,24 +1,22 @@
-import { RedisRevokedTokenDAO } from "@/shared/infra/database/dao/redis/redis-revoked-token-dao"
+import { RevokedTokenDAOMemory } from "@/shared/infra/database/dao/in-memory/revoked-token-dao-memory"
 import { env } from "@/shared/infra/env"
 import { container } from "@/shared/infra/ioc/container"
 import { AUTH_TYPES } from "@/shared/infra/ioc/types"
 
 import { TokenAlreadyRevokedError } from "../error/token-already-revoked-error"
-import { LogoutUseCase, type LogoutUseCaseInput } from "./logout.usecase"
+import type { LogoutUseCase, LogoutUseCaseInput } from "./logout.usecase"
 
 describe("LogoutUseCase", () => {
 	let sut: LogoutUseCase
-	let sessionDAO: RedisRevokedTokenDAO
+	let sessionDAO: RevokedTokenDAOMemory
 
 	beforeEach(() => {
 		container.snapshot()
+		const revokedTokenDAOMemory = new RevokedTokenDAOMemory()
 		container
 			.rebindSync(AUTH_TYPES.DAO.RevokedToken)
-			.to(RedisRevokedTokenDAO)
-			.inSingletonScope()
+			.toConstantValue(revokedTokenDAOMemory)
 		sut = container.get(AUTH_TYPES.UseCases.Logout)
-
-		// const redisSessionDAO = container.get(RedisSessionDAO, { autobind: true })
 		sessionDAO = container.get(AUTH_TYPES.DAO.RevokedToken)
 	})
 
