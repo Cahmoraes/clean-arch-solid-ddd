@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: intentionally */
 import { inject, injectable } from "inversify"
 
 import {

@@ -45,8 +45,8 @@ export class DomainEventPublisher {
 	}
 
 	public publish<T>(domainEvent: DomainEvent<T>): void {
-		if (!this.subscribers.has(domainEvent.name)) return
-		const subscribers = this.subscribers.get(domainEvent.name)!
+		if (!this.subscribers.has(domainEvent.eventName)) return
+		const subscribers = this.subscribers.get(domainEvent.eventName)!
 		for (const subscriber of subscribers) {
 			subscriber(domainEvent)
 		}
