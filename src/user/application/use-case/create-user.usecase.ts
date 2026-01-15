@@ -86,6 +86,7 @@ export class CreateUserUseCase {
 		const userResult = await User.create(input)
 		if (userResult.isFailure()) return failure(userResult.value)
 		await this.unitOfWork.runTransaction(async (tx): Promise<void> => {
+			console.log({ tx })
 			await this.userRepository.withTransaction(tx).save(userResult.value)
 		})
 		const user = userResult.value

@@ -8,6 +8,12 @@ import Database, {
 import { injectable } from "inversify"
 import { LRUCache } from "lru-cache"
 
+export interface TransactionHelper {
+	get(sql: string, params?: any[]): ReturnType<Statement["get"]>
+	run(sql: string, params?: any[]): ReturnType<Statement["run"]>
+	all(sql: string, params?: any[]): ReturnType<Statement["all"]>
+}
+
 @injectable()
 export class SQLiteConnection {
 	private static readonly DB_PATH = SQLiteConnection.pathTo("app.db")
@@ -54,6 +60,26 @@ export class SQLiteConnection {
 			this.queries.set(sql, stmt)
 		}
 		return stmt
+	}
+
+	public transaction<T>(fn: (tx: TransactionHelper) => T): T {
+		const self = this
+		return this._db.transaction(() =>
+			fn({
+				all(sql, params = []) {
+					const query = self.query(sql)
+					return query.all(params)
+				},
+				get(sql, params = []) {
+					const query = self.query(sql)
+					return query.get(params)
+				},
+				run(sql, params = []) {
+					const query = self.query(sql)
+					return query.run(params)
+				},
+			}),
+		)()
 	}
 
 	public resetDatabase(): void {

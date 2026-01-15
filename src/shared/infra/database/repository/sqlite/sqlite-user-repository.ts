@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify"
+import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
@@ -6,6 +7,7 @@ import { User } from "@/user/domain/user"
 import type { RoleTypes } from "@/user/domain/value-object/role"
 import type { StatusTypes } from "@/user/domain/value-object/status"
 import type { SQLiteConnection } from "../../connection/sqlite-connection"
+import { SQLiteUnitOfWork } from "../unit-of-work/sqlite-unit-of-work"
 
 interface UserData {
 	id: string
@@ -152,7 +154,10 @@ export class SQLiteUserRepository implements UserRepository {
 			.run(user.id)
 	}
 
-	public withTransaction(): UserRepository {
+	public withTransaction<TX extends object>(sqliteClient: TX): UserRepository {
+		if (!SQLiteUnitOfWork.isClientTransaction(sqliteClient)) {
+			throw new InvalidTransactionInstance(sqliteClient)
+		}
 		return this
 	}
 }
