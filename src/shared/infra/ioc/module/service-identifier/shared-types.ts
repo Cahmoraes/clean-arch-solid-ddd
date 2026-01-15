@@ -17,6 +17,7 @@ export const SHARED_TYPES = {
 	},
 	SQLite: {
 		Client: Symbol.for("SQLite"),
+		UnitOfWork: Symbol.for("SQLiteUnitOfWork"),
 	},
 	Tokens: {
 		Auth: Symbol.for("AuthToken"),
