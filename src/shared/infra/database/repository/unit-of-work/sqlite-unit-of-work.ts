@@ -13,10 +13,11 @@ export class SQLiteUnitOfWork implements UnitOfWork {
 		private readonly sqliteConnection: SQLiteConnection,
 	) {}
 
-	public async runTransaction<T>(callback: Callback<T>): Promise<T> {
-		return this.sqliteConnection.transaction((tx) => {
+	public runTransaction<T>(callback: Callback<T>) {
+		const result = this.sqliteConnection.transaction((tx) => {
 			return callback(this.createTransactionWithSymbol(tx))
 		})
+		return Promise.resolve(result)
 	}
 
 	private createTransactionWithSymbol(tx: unknown) {
