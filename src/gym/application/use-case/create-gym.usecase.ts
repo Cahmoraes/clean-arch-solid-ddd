@@ -9,7 +9,7 @@ import {
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 import type { InvalidNameLengthError } from "@/user/domain/error/invalid-name-length-error"
 
-import { GymAlreadyExistsError } from "../error/gym-already-exists-error"
+import type { GymAlreadyExistsError } from "../error/gym-already-exists-error"
 import { GymWithCNPJAlreadyExistsError } from "../error/gym-with-cnpj-already-exists-error"
 import type { GymRepository } from "../repository/gym-repository"
 
