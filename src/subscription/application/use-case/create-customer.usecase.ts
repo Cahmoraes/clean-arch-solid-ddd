@@ -51,6 +51,7 @@ export class CreateCustomer {
 			metadata: { userId: userFound.id! },
 		})
 		void userFound.assignBillingCustomerId(customer.id)
+		console.log({ userFound })
 		await this.userRepository.update(userFound)
 		console.log("*********************** create customer")
 		console.log(userFound)
