@@ -63,8 +63,10 @@ export class SQLiteUserRepository implements UserRepository {
 			email: userData.email,
 			name: userData.name,
 			password: userData.password_hash,
-			createdAt: userData.created_at,
-			updatedAt: userData.updated_at,
+			createdAt: new Date(userData.created_at),
+			updatedAt: userData.updated_at
+				? new Date(userData.updated_at)
+				: undefined,
 			role: userData.role,
 			status: userData.status,
 			billingCustomerId: userData.billingCustomerId,
@@ -104,7 +106,7 @@ export class SQLiteUserRepository implements UserRepository {
 				user.email,
 				user.name,
 				user.password,
-				user.createdAt.toString(),
+				user.createdAt.toISOString(),
 				user.role,
 				user.status,
 				user.billingCustomerId ?? null,
