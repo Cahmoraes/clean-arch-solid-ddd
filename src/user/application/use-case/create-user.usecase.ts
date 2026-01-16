@@ -85,10 +85,10 @@ export class CreateUserUseCase {
 		if (userFound) return failure(new UserAlreadyExistsError())
 		const userResult = await User.create(input)
 		if (userResult.isFailure()) return failure(userResult.value)
-		await this.unitOfWork.runTransaction(async (tx): Promise<void> => {
-			console.log({ tx })
-			await this.userRepository.withTransaction(tx).save(userResult.value)
-		})
+		// await this.unitOfWork.runTransaction(async (tx): Promise<void> => {
+		// console.log({ tx })
+		await this.userRepository.save(userResult.value)
+		// })
 		const user = userResult.value
 		void this.publishUserCreatedEvent(user)
 		return success({
