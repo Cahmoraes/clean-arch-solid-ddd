@@ -5,7 +5,7 @@ export class Result<Type> {
 
 	private constructor(aValue?: Type | null)
 	private constructor(aValue?: Type | null, errors?: Error[])
-	private constructor(aValue: Type | null, errors?: Error[]) {
+	private constructor(_aValue: Type | null, errors?: Error[]) {
 		this._errors = errors ?? []
 	}
 
