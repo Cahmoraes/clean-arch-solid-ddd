@@ -105,18 +105,9 @@ export class CreateUserUseCase {
 
 	private publishUserCreatedEvent(user: User): void {
 		console.log("** Publish user created event **")
-		DomainEventPublisher.instance.publish(
-			this.createUserCreatedEvent({
-				email: user.email,
-			}),
-		)
-	}
-
-	private createUserCreatedEvent(
-		userCreateProps: Pick<CreateUserDto, "email">,
-	): UserCreatedEvent {
-		return new UserCreatedEvent({
-			email: userCreateProps.email,
+		const event = new UserCreatedEvent({
+			email: user.email,
 		})
+		DomainEventPublisher.instance.publish(event)
 	}
 }
