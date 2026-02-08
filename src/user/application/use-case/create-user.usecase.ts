@@ -11,11 +11,7 @@ import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { Logger } from "@/shared/infra/logger/logger"
 import type { Queue } from "@/shared/infra/queue/queue"
 import { UserCreatedEvent } from "@/user/domain/event/user-created-event"
-import {
-	type CreateUserDto,
-	User,
-	type UserValidationErrors,
-} from "@/user/domain/user"
+import { User, type UserValidationErrors } from "@/user/domain/user"
 import type { RoleTypes } from "@/user/domain/value-object/role"
 import { UserAlreadyExistsError } from "../error/user-already-exists-error"
 import { UserQuery } from "../persistence/repository/user-query"
@@ -52,7 +48,8 @@ export class CreateUserUseCase {
 		private readonly logger: Logger,
 		@inject(SHARED_TYPES.UnitOfWork)
 		private readonly unitOfWork: UnitOfWork,
-		@inject(SHARED_TYPES.Worker) private readonly worker: Queue,
+		@inject(SHARED_TYPES.Worker)
+		private readonly worker: Queue,
 	) {
 		void this.bindMethod()
 		void this.setupEventListener()
