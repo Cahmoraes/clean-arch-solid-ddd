@@ -35,7 +35,7 @@ export class CreateSubscriptionUseCase {
 		const subscription = Subscription.create({
 			status: subscriptionResponse.status,
 			userId: input.userId,
-			billingSubscriptionId: subscriptionResponse.customerId,
+			billingSubscriptionId: subscriptionResponse.subscriptionId,
 			id: subscriptionResponse.subscriptionId,
 		})
 		await this.subscriptionRepository.save(subscription)
