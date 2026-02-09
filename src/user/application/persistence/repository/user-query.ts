@@ -52,7 +52,7 @@ export class UserQuery {
 
 	public get values(): any {
 		const values = []
-		for (const [_, value] of this._fields) {
+		for (const value of this._fields.values()) {
 			values.push(value)
 		}
 		return values
