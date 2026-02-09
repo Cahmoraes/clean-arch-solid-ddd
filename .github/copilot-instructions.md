@@ -167,6 +167,3 @@ npm run prisma:migrate:dev         # Executar migrations
 7. Adicionar types em `src/shared/infra/ioc/module/service-identifier/{domain}-types.ts`
 8. Registrar bindings em `src/shared/infra/ioc/module/{domain}/{domain}-container.ts`
 9. Registrar controller em `src/bootstrap/setup-{domain}-module.ts`
-
-## Referencias
-Documentacao detalhada das bibliotecas em `docs/libs/`: Fastify, Prisma, Inversify, Zod, Vitest, etc.
