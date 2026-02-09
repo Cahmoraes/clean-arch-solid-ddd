@@ -48,15 +48,15 @@ export interface CreateUserDto {
 	billingCustomerId?: string
 }
 
-export type UserRestore = {
+export interface UserRestore {
 	id: string
 	name: string
 	email: string
 	password: string
 	role: RoleTypes
+	status: StatusTypes
 	createdAt: Date
 	updatedAt?: Date
-	status: StatusTypes
 	billingCustomerId?: string
 }
 
