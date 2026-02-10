@@ -1,28 +1,63 @@
 # Instruções do Copilot para o Projeto API Solid
 
-## Restricoes de Comunicacao
-- Responder em portugues PT-BR preservando termos tecnicos
+## Restrições de Comunicação
+- Responder em português PT-BR preservando termos técnicos
 - Nunca utilizar emojis
-- Indentacao de 2 espacos, linha em branco ao final de arquivos
+- Indentação de 2 espaços, linha em branco ao final de arquivos
+
+## Build, Test & Lint
+
+### Comandos Essenciais
+```bash
+npm run dev                        # Desenvolvimento com hot-reload
+npm run build                      # Build para produção
+npm run tsc:check                  # Verificar tipos TypeScript
+```
+
+### Testing
+```bash
+npm run test                       # Testes de unidade (*.test.ts)
+npm run test:cov                   # Testes com cobertura
+npm run test:business-flow         # Testes HTTP de integração (*.business-flow-test.ts)
+npm run test:e2e:prisma            # Testes de integração Prisma
+npm run test:fitness               # Fitness function tests
+```
+
+### Validação de Arquitetura & Qualidade
+```bash
+npm run fit:validate-dependencies  # Validar regras de dependência (dependency-cruiser)
+npm run dependency:metrics         # Gerar visualização de dependências (SVG)
+npm run biome:fix                  # Formatar código com Biome
+npm run eslint:fix                 # Corrigir problemas ESLint
+```
+
+### Banco de Dados
+```bash
+npm run prisma:migrate:dev         # Executar migrations (dev)
+npm run prisma:generate            # Gerar cliente Prisma
+npm run prisma:studio              # UI para gerenciar banco (http://localhost:5555)
+npm run prisma:reset               # Resetar banco (force drop + migrate)
+docker compose up -d                # Iniciar PostgreSQL + Redis + RabbitMQ
+```
 
 ## Arquitetura (Clean Architecture + DDD)
 Estrutura por bounded context em `src/{domain}/`:
 ```
-domain/          # Entidades, Value Objects, Domain Events
-application/     # Use Cases, Repository interfaces, Errors
-infra/           # Controllers, implementacoes concretas
+domain/          # Entidades, Value Objects, Domain Events, Erros de negócio
+application/     # Use Cases, interfaces de Repository, Erros de aplicação
+infra/           # Controllers, implementações concretas de Repository, Providers
 ```
 
-**Dominios**: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `shared/`
+**Domínios**: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `shared/`
 
-### Regras de Dependencia (enforced por dependency-cruiser)
-- Domain: nao importa Application nem Infra
-- Application: importa Domain, nao importa Infra
-- Infra: importa Application e Domain
-- Shared: disponivel para todas as camadas
+### Regras de Dependência (enforced por dependency-cruiser)
+- **Domain**: não importa Application nem Infra (código puro do negócio)
+- **Application**: importa Domain, não importa Infra (orquestração de lógica)
+- **Infra**: importa Application e Domain (implementações técnicas)
+- **Shared**: disponível para todas as camadas (utilitários genéricos)
 
-## Padrao Either para Tratamento de Erros
-Use Cases retornam `Either<Error, Success>` de `@/shared/domain/value-object/either`:
+## Padrão Either para Tratamento de Erros
+Use Cases retornam `Either<Error, Success>` de `@/shared/domain/value-object/either`. Sem exceções para lógica de negócio:
 ```typescript
 // Retornar erro
 return failure(new UserAlreadyExistsError())
@@ -30,13 +65,17 @@ return failure(new UserAlreadyExistsError())
 // Retornar sucesso
 return success({ email: user.email })
 
-// Verificar resultado
-if (result.isFailure()) return this.handleError(result)
-const data = result.forceSuccess().value
+// Verificar resultado no controller
+if (result.isFailure()) return this.createResponseError(result)
+const { value } = result.forceSuccess()
 ```
 
-## Inversify IoC - Padrao de Registro
-**Service Identifiers** em `src/shared/infra/ioc/module/service-identifier/`:
+Exceções apenas para falhas técnicas (conexão BD, etc).
+
+## Inversify IoC - Padrão de Registro
+Três passos para adicionar novo serviço:
+
+**1. Service Identifiers** em `src/shared/infra/ioc/module/service-identifier/{domain}-types.ts`:
 ```typescript
 export const USER_TYPES = {
   Repositories: { User: Symbol.for('UserRepository') },
@@ -45,7 +84,7 @@ export const USER_TYPES = {
 }
 ```
 
-**Container Module** em `src/shared/infra/ioc/module/{domain}/`:
+**2. Container Module** em `src/shared/infra/ioc/module/{domain}/{domain}-container.ts`:
 ```typescript
 export const userContainer = new ContainerModule(({ bind }) => {
   bind(USER_TYPES.Repositories.User).toDynamicValue(UserRepositoryProvider.provide)
@@ -54,14 +93,17 @@ export const userContainer = new ContainerModule(({ bind }) => {
 })
 ```
 
-**Bootstrap** em `src/bootstrap/setup-{domain}-module.ts`:
+**3. Bootstrap** em `src/bootstrap/setup-{domain}-module.ts`:
 ```typescript
 export function setupUserModule(): ModuleControllers {
   return { controllers: [resolve(USER_TYPES.Controllers.CreateUser)] }
 }
 ```
 
-## Padrao de Controller
+Validar com: `npm run fit:validate-dependencies`
+
+## Padrão de Controller
+Controllers implementam `Controller` e usam decoradores do Inversify. Responsabilidade: parsing HTTP → resposta:
 ```typescript
 @injectable()
 export class CreateUserController implements Controller {
@@ -84,7 +126,10 @@ export class CreateUserController implements Controller {
 }
 ```
 
-## Padrao de Use Case
+Não colocar lógica de negócio aqui - tudo vai para Use Case.
+
+## Padrão de Use Case
+Use Cases orquestram lógica de negócio e publicam eventos de domínio. Sempre retornam `Either`:
 ```typescript
 @injectable()
 export class CreateUserUseCase {
@@ -95,75 +140,176 @@ export class CreateUserUseCase {
   ) {}
 
   async execute(input: CreateUserUseCaseInput): Promise<CreateUserOutput> {
-    const userFound = await this.userRepository.get(UserQuery.from(input).addField("email"))
+    const userFound = await this.userRepository.findByEmail(input.email)
     if (userFound) return failure(new UserAlreadyExistsError())
+    
     const userResult = User.create(input)
     if (userResult.isFailure()) return failure(userResult.value)
+    
+    const user = userResult.forceSuccess().value
     await this.unitOfWork.performTransaction(async (tx) => {
-      await this.userRepository.withTransaction(tx).save(userResult.value)
+      await this.userRepository.withTransaction(tx).save(user)
     })
-    DomainEventPublisher.instance.publish(new UserCreatedEvent({ email: user.email }))
+    
+    DomainEventPublisher.instance.publish(new UserCreatedEvent(user.toPrimitive()))
     return success({ email: user.email })
   }
 }
 ```
 
-## Padrao de Entidade de Dominio
-Entidades estendem `Observable` e usam factory methods com validacao:
+Transações e eventos de domínio aqui, não em controllers.
+
+## Padrão de Entidade de Domínio
+Entidades:
+- Estendem `Observable` e usam factory methods com validação
+- Não salvam a si mesmas (Repository faz isso)
+- Métodos `create()` para validação completa, `restore()` para bypass (carregando do BD)
+
 ```typescript
 export class User extends Observable {
-  private constructor(props: UserConstructor) { super(); /* assign props */ }
-  
-  static create(props: UserCreate): Either<UserValidationErrors[], User> {
-    const validationResult = Result.combine([Name.create(props.name), Email.create(props.email)])
-    if (validationResult.isFailure()) return failure(validationResult.value)
-    return success(new User({ ...validatedProps }))
+  private constructor(props: UserConstructor) { 
+    super()
+    Object.assign(this, props)
   }
   
-  static restore(props: UserRestore): User { /* bypass validation */ }
+  static create(props: UserCreate): Either<ValidationErrors[], User> {
+    const validationResult = Result.combine([
+      Name.create(props.name),
+      Email.create(props.email),
+    ])
+    if (validationResult.isFailure()) return failure(validationResult.value)
+    return success(new User({ id: generateId(), ...props }))
+  }
+  
+  static restore(props: UserRestore): User {
+    return new User(props)
+  }
+  
+  toPrimitive() { /* retornar dados para serialização */ }
 }
 ```
 
-## Estrategia de Testes
-- **`*.test.ts`**: Testes unidade (domain/application) com repositorios in-memory
-- **`*.business-flow-test.ts`**: Testes de integracao HTTP com supertest
+Value Objects são imutáveis e sempre validam no `create()`.
 
-**Setup de teste de unidade**:
+## Estratégia de Testes
+Dois tipos de testes automatizados:
+
+### 1. Testes de Unidade (`*.test.ts`)
+- Testam Domain e Application em isolamento
+- Usam repositórios in-memory
+- Arquivo config: `test/vite.config.app-domain.ts`
+
 ```typescript
-beforeEach(() => {
-  container.snapshot()
-  userRepository = setupInMemoryRepositories().userRepository
-  sut = container.get(USER_TYPES.UseCases.CreateUser)
+describe('CreateUserUseCase', () => {
+  beforeEach(() => {
+    container.snapshot()
+    userRepository = new InMemoryUserRepository()
+    sut = new CreateUserUseCase(userRepository)
+  })
+  afterEach(() => container.restore())
+
+  it('should create a user successfully', async () => {
+    const result = await sut.execute({ email: 'test@example.com', name: 'Test' })
+    expect(result.isSuccess()).toBe(true)
+  })
 })
-afterEach(() => container.restore())
 ```
 
-**Setup de business-flow**:
+**Executar único teste**: `npm run test -- --t "should create"`
+**Rodar com cobertura**: `npm run test:cov`
+
+### 2. Testes Business Flow (`*.business-flow-test.ts`)
+- Testam fluxos HTTP completos com supertest
+- Usam servidor Fastify em memória
+- Arquivo config: `test/vite.config.business-flow.ts`
+
 ```typescript
-beforeEach(async () => {
-  container.snapshot()
-  container.rebindSync(USER_TYPES.Repositories.User).toConstantValue(new InMemoryUserRepository())
-  fastifyServer = await serverBuildForTest()
+describe('POST /users', () => {
+  beforeEach(async () => {
+    container.snapshot()
+    fastifyServer = await serverBuildForTest()
+  })
+
+  it('should create user via HTTP', async () => {
+    const response = await request(fastifyServer.server)
+      .post('/users')
+      .send({ email: 'test@example.com', name: 'Test' })
+    expect(response.status).toBe(201)
+  })
 })
 ```
 
-## Comandos Essenciais
-```bash
-npm run dev                        # Desenvolvimento com hot-reload
-npm run test                       # Testes de unidade
-npm run test:business-flow         # Testes de integracao
-npm run fit:validate-dependencies  # Validar arquitetura
-docker compose up -d               # PostgreSQL + Redis + RabbitMQ
-npm run prisma:migrate:dev         # Executar migrations
-```
+**Executar único teste**: `npm run test:business-flow -- --t "should create"`
 
 ## Checklist para Nova Feature
-1. Criar entidade/value objects em `{domain}/domain/`
-2. Criar use case em `{domain}/application/use-case/{feature}.usecase.ts`
-3. Criar teste de unidade `{feature}.usecase.test.ts`
-4. Adicionar interface de repository em `{domain}/application/repository/`
-5. Criar controller em `{domain}/infra/controller/{feature}.controller.ts`
-6. Criar teste business-flow `{feature}.business-flow-test.ts`
-7. Adicionar types em `src/shared/infra/ioc/module/service-identifier/{domain}-types.ts`
-8. Registrar bindings em `src/shared/infra/ioc/module/{domain}/{domain}-container.ts`
-9. Registrar controller em `src/bootstrap/setup-{domain}-module.ts`
+Ordem recomendada:
+
+1. **Definir modelo de dados** em `{domain}/domain/`
+   - Entidade principal + Value Objects
+   - Validadores e erros de negócio
+
+2. **Criar Use Case** em `{domain}/application/use-case/{feature}.usecase.ts`
+   - Orquestração da lógica de negócio
+   - Publicar eventos de domínio
+
+3. **Teste de unidade** `{feature}.usecase.test.ts`
+   - Validar regras de negócio
+
+4. **Interface de Repository** em `{domain}/application/repository/`
+   - Definir contrato de acesso a dados
+
+5. **Controller HTTP** em `{domain}/infra/controller/{feature}.controller.ts`
+   - Parsing e resposta HTTP
+
+6. **Teste business-flow** `{feature}.business-flow-test.ts`
+   - Validar fluxo completo HTTP
+
+7. **IoC Container** em `src/shared/infra/ioc/module/{domain}/`:
+   - Adicionar types em `service-identifier/{domain}-types.ts`
+   - Registrar bindings em `{domain}-container.ts`
+
+8. **Bootstrap** em `src/bootstrap/setup-{domain}-module.ts`
+   - Adicionar controller ao array de controllers
+
+9. **Validar** com `npm run fit:validate-dependencies`
+
+## Convenções de Nomes e Arquivos
+
+- **Entidades**: PascalCase, sufixo sem palavras genéricas (ex: `User`, não `UserEntity`)
+- **Value Objects**: PascalCase (ex: `Email`, `Name`)
+- **Use Cases**: PascalCase com sufixo `UseCase` (ex: `CreateUserUseCase`)
+- **Controllers**: PascalCase com sufixo `Controller` (ex: `CreateUserController`)
+- **Repositórios**: interface PascalCase, implementação `Prisma{Entity}Repository`
+- **Erros**: PascalCase com sufixo `Error` (ex: `UserAlreadyExistsError`)
+- **Arquivos**: kebab-case (ex: `create-user.usecase.ts`, `user.repository.ts`)
+
+## Integração com BD (Prisma)
+
+- Models Prisma em `prisma/schema.prisma`
+- Gerar cliente: `npm run prisma:generate`
+- Executar migration: `npm run prisma:migrate:dev`
+- Em testes, usar `InMemory*Repository` ao invés de Prisma
+- Repositories concretos apenas em `infra/repository/`
+
+## Tratamento de Erro em Controllers
+
+Padrão ResponseFactory para respostas consistentes:
+```typescript
+// Sucesso
+return ResponseFactory.OK({ body: data })
+return ResponseFactory.CREATED({ body: data })
+
+// Erro
+return ResponseFactory.BAD_REQUEST({ message: 'Descrição' })
+return ResponseFactory.NOT_FOUND()
+return ResponseFactory.CONFLICT({ message: 'Descrição' })
+
+// Método helper para Either
+private createResponseError(result: Either<Error, unknown>) {
+  const error = result.value as any
+  if (error instanceof CustomError) return ResponseFactory.BAD_REQUEST({ message: error.message })
+  return ResponseFactory.INTERNAL_SERVER_ERROR()
+}
+```
+
+
