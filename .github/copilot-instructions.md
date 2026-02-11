@@ -283,6 +283,20 @@ Ordem recomendada:
 - **Erros**: PascalCase com sufixo `Error` (ex: `UserAlreadyExistsError`)
 - **Arquivos**: kebab-case (ex: `create-user.usecase.ts`, `user.repository.ts`)
 
+## Path Aliases e Imports
+Configurado em `tsconfig.json`:
+```typescript
+// Usar alias @/ para src/
+import { User } from '@/user/domain/entity/user'
+import { Either } from '@/shared/domain/value-object/either'
+```
+
+**Importante**: Usar extensão `.js` em imports internos (transpilado para ESM):
+```typescript
+import { UserRepository } from './user-repository.js'  // ✅ Correto
+import { UserRepository } from './user-repository'      // ❌ Evitar
+```
+
 ## Integração com BD (Prisma)
 
 - Models Prisma em `prisma/schema.prisma`
@@ -290,6 +304,26 @@ Ordem recomendada:
 - Executar migration: `npm run prisma:migrate:dev`
 - Em testes, usar `InMemory*Repository` ao invés de Prisma
 - Repositories concretos apenas em `infra/repository/`
+
+## Ambiente e Infraestrutura
+
+### Docker Compose
+Serviços disponíveis em `compose.yaml`:
+- **PostgreSQL**: porta 5432 (usuário: docker, senha: docker, database: apisolid)
+- **Redis**: porta 6379 (cache e sessões)
+- **RabbitMQ**: porta 5672 (mensageria assíncrona)
+
+Iniciar todos os serviços: `docker compose up -d`
+
+### Variáveis de Ambiente
+Configurar arquivo `.env` baseado em `.env.example`:
+- `DATABASE_PROVIDER`: "prisma" ou "sqlite"
+- `NODE_ENV`: "production" ou "development"
+- `DATABASE_URL`: string de conexão Prisma
+- Variáveis de autenticação (JWT_SECRET, etc)
+- Credenciais de serviços externos (Stripe, SMTP, etc)
+
+Variáveis validadas em `src/shared/infra/env/index.ts` com Zod.
 
 ## Tratamento de Erro em Controllers
 
@@ -311,5 +345,95 @@ private createResponseError(result: Either<Error, unknown>) {
   return ResponseFactory.INTERNAL_SERVER_ERROR()
 }
 ```
+
+## Padrão de Repository Provider
+Providers encapsulam lógica de seleção de implementação de repositório baseada em ambiente:
+```typescript
+export class UserRepositoryProvider {
+  public static provide(context: ResolutionContext): UserRepository {
+    return isProduction()
+      ? context.get(UserRepositoryProvider.selectDatabaseByProvider(), { autobind: true })
+      : context.get(InMemoryUserRepository, { autobind: true })
+  }
+
+  private static selectDatabaseByProvider() {
+    switch (env.DATABASE_PROVIDER) {
+      case "prisma": return PrismaUserRepository
+      default: return SQLiteUserRepository
+    }
+  }
+}
+```
+
+Registrar no container com `.toDynamicValue()`:
+```typescript
+bind(USER_TYPES.Repositories.User).toDynamicValue(UserRepositoryProvider.provide)
+```
+
+## Padrão de Value Object
+Value Objects validam no `create()` e retornam `Either`. Use `restore()` ao carregar do BD (sem validação):
+```typescript
+export class Email {
+  private readonly _value: string
+  private constructor(value: string) { this._value = value }
+
+  static create(aString: string): Either<InvalidEmailError, Email> {
+    const emailOrError = Email.validate(aString)
+    if (emailOrError.isFailure()) return failure(emailOrError.value)
+    return success(new Email(emailOrError.value))
+  }
+
+  static restore(aString: string): Email {
+    return new Email(aString)
+  }
+
+  get value(): string { return this._value }
+}
+```
+
+Value Objects são imutáveis - propriedades `readonly` e sem setters.
+
+## Eventos de Domínio
+Publicar eventos após persistência bem-sucedida:
+```typescript
+// No Use Case, após salvar entidade
+DomainEventPublisher.instance.publish(new UserCreatedEvent(user.toPrimitive()))
+
+// Criar evento de domínio
+export class UserCreatedEvent extends DomainEvent<UserCreatedPayload> {
+  constructor(payload: UserCreatedPayload) {
+    super(Events.USER_CREATED, payload)
+  }
+}
+
+// Subscrever em handlers
+DomainEventPublisher.instance.subscribe(Events.USER_CREATED, (event) => {
+  // Lógica assíncrona (envio de email, notificações, etc)
+})
+```
+
+Eventos são singleton - usar `DomainEventPublisher.instance`.
+
+## Estrutura de Módulo de Domínio
+Cada bounded context em `src/{domain}/` segue esta estrutura:
+```
+{domain}/
+├── domain/                    # Camada de domínio puro
+│   ├── entity/                # Entidades agregadas
+│   ├── value-object/          # Value Objects
+│   ├── event/                 # Domain Events
+│   └── error/                 # Erros de negócio
+├── application/               # Camada de aplicação
+│   ├── use-case/             # Use Cases
+│   ├── repository/           # Interfaces de Repository
+│   ├── error/                # Erros de aplicação
+│   └── dto/                  # DTOs de input/output
+└── infra/                    # Camada de infraestrutura
+    ├── controller/           # Controllers HTTP
+    ├── repository/           # Implementações de Repository
+    └── routes/               # Definição de rotas
+```
+
+Domínios atuais: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `shared/`
 
 
