@@ -38,6 +38,12 @@ export class Result<Type> {
 		return this._errors.length === 0
 	}
 
+	public get not() {
+		return {
+			valid: !this.isValid,
+		}
+	}
+
 	public get errors(): Error[] {
 		return this._errors
 	}
