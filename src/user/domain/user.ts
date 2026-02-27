@@ -127,7 +127,7 @@ export class User extends Observable {
 		const emailResult = Email.create(userCreateProps.email)
 		const passwordResult = await Password.create(userCreateProps.password)
 		const result = Result.combine([nameResult, emailResult, passwordResult])
-		if (!result.isValid) return failure(result.errors)
+		if (result.not.valid) return failure(result.errors)
 		return success({
 			email: emailResult.forceSuccess().value,
 			name: nameResult.forceSuccess().value,
