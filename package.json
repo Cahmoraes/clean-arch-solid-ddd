@@ -30,8 +30,10 @@
 		"fit:validate-dependencies": "npx depcruise --validate .dependency-cruiser.js src",
 		"dependency:metrics": "npx depcruise .dependency-cruiser.js src --include-only \"^src\" --output-type dot | dot -T svg > dependency-graph.svg",
 		"check:last-dependencies": "npx npm-check-updates -i",
-		"stripe webk": "stripe listen --forward-to localhost:3333/webhook/stripe",
-		"worker": "npx tsx --watch src/shared/infra/worker/worker.ts"
+		"stripe webhook": "stripe listen --forward-to localhost:3333/webhook/stripe",
+		"worker": "npx tsx --watch src/shared/infra/worker/worker.ts",
+		"docker:up": "docker compose -f compose.yaml up -d",
+		"docker:down": "docker compose -f compose.yaml down"
 	},
 	"keywords": [],
 	"author": "",
@@ -83,6 +85,7 @@
 		"@faker-js/faker": "9.8.0",
 		"@fastify/cors": "11.0.1",
 		"@fastify/jwt": "9.1.0",
+		"@fastify/rate-limit": "10.3.0",
 		"@fastify/swagger": "9.5.1",
 		"@fastify/swagger-ui": "5.2.3",
 		"@prisma/adapter-pg": "7.2.0",

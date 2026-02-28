@@ -1,8 +1,9 @@
 import fastifyCors from "@fastify/cors"
+import fastifyRateLimit from "@fastify/rate-limit"
 import fastifySwagger from "@fastify/swagger"
 import fastifySwaggerUI from "@fastify/swagger-ui"
 import fastify, {
-	FastifyInstance,
+	type FastifyInstance,
 	type FastifyReply,
 	type FastifyRequest,
 	type RawServerDefault,
@@ -42,12 +43,21 @@ export class FastifyAdapter implements HttpServer {
 	private async initialize(): Promise<void> {
 		void this.setupErrorHandler()
 		await this.setupCORS()
+		await this.rateLimits()
 		await this.setupSwagger()
 		await this.setupRawBody()
 	}
 
 	private async setupCORS(): Promise<void> {
 		await this._server.register(fastifyCors)
+	}
+
+	private async rateLimits(): Promise<void> {
+		await this._server.register(fastifyRateLimit, {
+			global: true,
+			max: 100,
+			timeWindow: "1 minute",
+		})
 	}
 
 	private async setupSwagger(): Promise<void> {
