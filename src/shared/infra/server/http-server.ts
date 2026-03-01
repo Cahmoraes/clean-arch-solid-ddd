@@ -5,13 +5,16 @@ export interface HandleCallbackResponse {
 	status: number
 }
 
-export interface HandleCallback {
-	(request: any, response: any): Promise<HandleCallbackResponse>
-}
+export type HandleCallback = (
+	request: any,
+	response: any,
+) => Promise<HandleCallbackResponse>
 
-export interface PreHandler {
-	(request: any, response: any, done: any): Promise<void>
-}
+export type PreHandler = (
+	request: any,
+	response: any,
+	done: any,
+) => Promise<void>
 
 export interface HandlerOptions {
 	callback: HandleCallback
@@ -30,14 +33,12 @@ export interface Schema {
 	response?: unknown
 }
 
-export interface Handler {
-	(
-		method: METHOD,
-		path: string,
-		handlerOptions: HandlerOptions,
-		schema?: Schema,
-	): Promise<void>
-}
+export type Handler = (
+	method: METHOD,
+	path: string,
+	handlerOptions: HandlerOptions,
+	schema?: Schema,
+) => Promise<void>
 
 export interface HttpServer {
 	listen(): Promise<void>
