@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "useDefineForClassFields": false,
-    "target": "es2022",
+    "target": "esnext",
     "lib": ["ES2022", "dom"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "es2022",
+    "module": "esnext",
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
