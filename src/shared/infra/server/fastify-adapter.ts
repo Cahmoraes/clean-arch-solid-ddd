@@ -38,26 +38,30 @@ export class FastifyAdapter implements HttpServer {
 	) {
 		this._server = fastify({})
 		this.bindMethods()
+		this.rateLimit()
+	}
+
+	private bindMethods(): void {
+		this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
+	}
+
+	private async rateLimit(): Promise<void> {
+		await this._server.register(fastifyRateLimit, {
+			global: true,
+			max: 100,
+			timeWindow: "1 minute",
+		})
 	}
 
 	private async initialize(): Promise<void> {
 		void this.setupErrorHandler()
 		await this.setupCORS()
-		await this.rateLimits()
 		await this.setupSwagger()
 		await this.setupRawBody()
 	}
 
 	private async setupCORS(): Promise<void> {
 		await this._server.register(fastifyCors)
-	}
-
-	private async rateLimits(): Promise<void> {
-		await this._server.register(fastifyRateLimit, {
-			global: true,
-			max: 100,
-			timeWindow: "1 minute",
-		})
 	}
 
 	private async setupSwagger(): Promise<void> {
@@ -79,10 +83,6 @@ export class FastifyAdapter implements HttpServer {
 
 	private setupErrorHandler(): void {
 		this._server.setErrorHandler(GlobalErrorHandler.handle)
-	}
-
-	private bindMethods(): void {
-		this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
 	}
 
 	@LoggerDecorate({
