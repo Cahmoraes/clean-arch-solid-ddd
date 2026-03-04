@@ -48,7 +48,7 @@ export class FastifyAdapter implements HttpServer {
 	private async rateLimit(): Promise<void> {
 		await this._server.register(fastifyRateLimit, {
 			global: true,
-			max: 100,
+			max: 1,
 			timeWindow: "1 minute",
 		})
 	}
