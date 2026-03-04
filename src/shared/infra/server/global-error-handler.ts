@@ -29,8 +29,13 @@ export class GlobalErrorHandler {
 				.status(HTTP_STATUS.BAD_REQUEST)
 				.send({ message: validationError.toString() })
 		}
+		if (GlobalErrorHandler.checkIfIsRateLimitError(error.statusCode)) {
+			return reply
+				.status(HTTP_STATUS.TO_MANY_REQUESTS)
+				.send({ message: error.message })
+		}
 		GlobalErrorHandler.publish(error)
-		GlobalErrorHandler.logger().error(error, error.message)
+		GlobalErrorHandler.logger.error(error, error.message)
 		reply
 			.status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
 			.send({ message: "Internal Server Error" })
@@ -50,10 +55,14 @@ export class GlobalErrorHandler {
 		})
 	}
 
-	private static logger(): Logger {
+	private static get logger(): Logger {
 		if (!GlobalErrorHandler._logger) {
 			GlobalErrorHandler._logger = container.get<Logger>(SHARED_TYPES.Logger)
 		}
 		return GlobalErrorHandler._logger
+	}
+
+	private static checkIfIsRateLimitError(statusCode?: number): boolean {
+		return statusCode === HTTP_STATUS.TO_MANY_REQUESTS
 	}
 }
