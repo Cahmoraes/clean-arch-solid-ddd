@@ -6,7 +6,9 @@
 	"type": "module",
 	"scripts": {
 		"start": "node ./build/main.js",
-		"dev": "npx tsx --watch src/main.ts",
+		"dev": "npm run docker:up && npm run wait:rabbit && npm run wait:db && npx tsx --watch src/main.ts",
+		"wait:db": "npx tsx src/shared/infra/database/connection/waiting-for-postgres.ts",
+		"wait:rabbit": "npx tsx src/shared/infra/queue/waiting-for-rabbitmq.ts",
 		"setup-queue": "npx tsx src/shared/infra/queue/queue-setup.ts",
 		"test": "npx vitest --config ./test/vite.config.app-domain.ts",
 		"test-create-users": "concurrently \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\"",

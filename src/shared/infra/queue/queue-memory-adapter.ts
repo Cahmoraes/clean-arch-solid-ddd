@@ -19,6 +19,7 @@ export class QueueMemoryAdapter implements Queue {
 		if (!this.queues.has(exchange)) {
 			this.queues.set(exchange, [])
 		}
+		// biome-ignore lint/style/noNonNullAssertion: verificação de null realizada antes desta instrução
 		for (const callback of this.queues.get(exchange)!) {
 			callback(data)
 		}
@@ -31,6 +32,7 @@ export class QueueMemoryAdapter implements Queue {
 		if (!this.queues.has(queue)) {
 			this.queues.set(queue, [])
 		}
+		// biome-ignore lint/style/noNonNullAssertion: verificação de null realizada antes desta instrução
 		this.queues.get(queue)!.push(callback)
 	}
 }
