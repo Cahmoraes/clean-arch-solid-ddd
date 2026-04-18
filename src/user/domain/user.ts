@@ -1,5 +1,4 @@
 import type { ValidationError } from "zod-validation-error"
-
 import { Observable } from "@/shared/domain/observable"
 import { Result } from "@/shared/domain/result"
 import {
@@ -8,7 +7,6 @@ import {
 	success,
 } from "@/shared/domain/value-object/either"
 import { Id } from "@/shared/domain/value-object/id"
-
 import type { InvalidEmailError } from "./error/invalid-email-error"
 import type { InvalidNameLengthError } from "./error/invalid-name-length-error"
 import { PasswordChangedEvent } from "./event/password-changed-event"

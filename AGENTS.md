@@ -1,4 +1,4 @@
-# Instruções do Copilot para o Projeto API Solid
+# Instruções do Agente para o Projeto API Solid
 
 ## Restrições de Comunicação
 - Responder em português PT-BR preservando termos técnicos
@@ -9,9 +9,11 @@
 
 ### Comandos Essenciais
 ```bash
+npm run start                      # Iniciar aplicação em produção
 npm run dev                        # Desenvolvimento com hot-reload
 npm run build                      # Build para produção
 npm run tsc:check                  # Verificar tipos TypeScript
+npm run worker                     # Iniciar worker de processamento de fila
 ```
 
 ### Testing
@@ -21,6 +23,7 @@ npm run test:cov                   # Testes com cobertura
 npm run test:business-flow         # Testes HTTP de integração (*.business-flow-test.ts)
 npm run test:e2e:prisma            # Testes de integração Prisma
 npm run test:fitness               # Fitness function tests
+npm run test-create-users          # Teste de carga: requisições POST concorrentes
 ```
 
 ### Validação de Arquitetura & Qualidade
@@ -29,6 +32,7 @@ npm run fit:validate-dependencies  # Validar regras de dependência (dependency-
 npm run dependency:metrics         # Gerar visualização de dependências (SVG)
 npm run biome:fix                  # Formatar código com Biome
 npm run eslint:fix                 # Corrigir problemas ESLint
+npm run check:last-dependencies    # Verificar e atualizar dependências desatualizadas
 ```
 
 ### Banco de Dados
@@ -37,7 +41,24 @@ npm run prisma:migrate:dev         # Executar migrations (dev)
 npm run prisma:generate            # Gerar cliente Prisma
 npm run prisma:studio              # UI para gerenciar banco (http://localhost:5555)
 npm run prisma:reset               # Resetar banco (force drop + migrate)
-docker compose up -d                # Iniciar PostgreSQL + Redis + RabbitMQ
+npm run prisma:deploy              # Deploy das migrations em produção
+npm run prisma:schema              # Gerar schema SQL (supabase-schema.sql)
+npm run prisma:db:pull             # Sincronizar schema com BD existente
+```
+
+### Docker
+```bash
+npm run docker:up                  # Iniciar PostgreSQL + Redis + RabbitMQ
+npm run docker:down                # Derrubar todos os containers
+```
+
+### Utilitários
+```bash
+npm run setup-queue                # Configurar filas no RabbitMQ
+npm run wait:db                    # Aguardar disponibilidade do PostgreSQL
+npm run wait:rabbit                # Aguardar disponibilidade do RabbitMQ
+npm run commit                     # Commit interativo com Commitizen (padrão convencional)
+npm run "stripe webhook"           # Iniciar listener de webhook do Stripe
 ```
 
 ## Arquitetura (Clean Architecture + DDD)
@@ -110,10 +131,15 @@ export class CreateUserController implements Controller {
   constructor(
     @inject(SHARED_TYPES.Server.Fastify) private readonly httpServer: HttpServer,
     @inject(USER_TYPES.UseCases.CreateUser) private readonly createUser: CreateUserUseCase,
-  ) { this.callback = this.callback.bind(this) }
+  ) { this.bindMethods() }
 
+  private bindMethods() {
+    this.callback = this.callback.bind(this)
+  }
+
+  @Logger({ message: '✅' })
   async init() {
-    await this.httpServer.register('post', UserRoutes.CREATE, { callback: this.callback }, swaggerSchema)
+    await this.httpServer.register('post', UserRoutes.CREATE, { callback: this.callback }, makeSwaggerSchema())
   }
 
   private async callback(req: FastifyRequest) {
@@ -124,9 +150,33 @@ export class CreateUserController implements Controller {
     return ResponseFactory.CREATED({ body: result.value })
   }
 }
+
+// Swagger schema definido como factory function local no mesmo arquivo
+function makeSwaggerSchema(): Schema { ... }
 ```
 
 Não colocar lógica de negócio aqui - tudo vai para Use Case.
+
+### Segurança de Rotas
+Rotas protegidas usam flags em `HandlerOptions`:
+```typescript
+// Rota autenticada (JWT obrigatório)
+this.httpServer.register('get', UserRoutes.ME, { callback: this.callback, isProtected: true }, schema)
+
+// Rota restrita a ADMIN
+this.httpServer.register('delete', UserRoutes.DELETE, { callback: this.callback, isProtected: true, onlyAdmin: true }, schema)
+```
+
+### Definição de Rotas
+Rotas são constantes em `{domain}/infra/controller/routes/{domain}-routes.ts`:
+```typescript
+const PREFIX = '/users'
+export const UserRoutes = {
+  CREATE: PREFIX,
+  ME: `${PREFIX}/me`,
+  PROFILE: `${PREFIX}/:userId`,
+} as const
+```
 
 ## Padrão de Use Case
 Use Cases orquestram lógica de negócio e publicam eventos de domínio. Sempre retornam `Either`:
@@ -142,15 +192,15 @@ export class CreateUserUseCase {
   async execute(input: CreateUserUseCaseInput): Promise<CreateUserOutput> {
     const userFound = await this.userRepository.findByEmail(input.email)
     if (userFound) return failure(new UserAlreadyExistsError())
-    
-    const userResult = User.create(input)
+
+    const userResult = await User.create(input)
     if (userResult.isFailure()) return failure(userResult.value)
-    
+
     const user = userResult.forceSuccess().value
     await this.unitOfWork.performTransaction(async (tx) => {
       await this.userRepository.withTransaction(tx).save(user)
     })
-    
+
     DomainEventPublisher.instance.publish(new UserCreatedEvent(user.toPrimitive()))
     return success({ email: user.email })
   }
@@ -164,30 +214,47 @@ Entidades:
 - Estendem `Observable` e usam factory methods com validação
 - Não salvam a si mesmas (Repository faz isso)
 - Métodos `create()` para validação completa, `restore()` para bypass (carregando do BD)
+- `create()` é **async** apenas quando a validação envolve operações assíncronas (ex: `User` usa bcrypt via `Password.create()`). `Gym` e `CheckIn`, por exemplo, têm `create()` síncrono
 
 ```typescript
+// create() síncrono (Gym, CheckIn, etc.)
+export class Gym extends Observable {
+  private constructor(props: GymConstructor) { super() }
+
+  static create(props: GymCreateProps): Either<ValidationError, Gym> {
+    const nameResult = Name.create(props.title)
+    if (nameResult.isFailure()) return failure(nameResult.value)
+    const result = Result.combine([nameResult, coordinateResult])
+    if (result.not.valid) return failure(result.errors)
+    return success(new Gym({ ...props, id: Id.create(props.id) }))
+  }
+
+  static restore(props: GymRestore): Gym {
+    return new Gym({ id: Id.restore(props.id), ... })
+  }
+}
+
+// create() async (User — bcrypt no Password.create())
 export class User extends Observable {
-  private constructor(props: UserConstructor) { 
-    super()
-    Object.assign(this, props)
+  static async create(props: UserCreate): Promise<Either<ValidationErrors[], User>> {
+    const passwordResult = await Password.create(props.password) // async
+    const result = Result.combine([Name.create(props.name), Email.create(props.email), passwordResult])
+    if (result.not.valid) return failure(result.errors)
+    return success(new User({ id: Id.create(props.id), ... }))
   }
-  
-  static create(props: UserCreate): Either<ValidationErrors[], User> {
-    const validationResult = Result.combine([
-      Name.create(props.name),
-      Email.create(props.email),
-    ])
-    if (validationResult.isFailure()) return failure(validationResult.value)
-    return success(new User({ id: generateId(), ...props }))
+
+  // Mutações publicam eventos via this.notify()
+  public async changePassword(newPassword: string): Promise<Either<Error, null>> {
+    const passwordResult = await Password.create(newPassword)
+    if (passwordResult.isFailure()) return failure(passwordResult.value)
+    this._password = passwordResult.value
+    this.notify(new PasswordChangedEvent({ userName: this.name, userEmail: this.email }))
+    return success(null)
   }
-  
-  static restore(props: UserRestore): User {
-    return new User(props)
-  }
-  
-  toPrimitive() { /* retornar dados para serialização */ }
 }
 ```
+
+`Result.combine()` agrega múltiplos `Either` — se qualquer um falhar, retorna todos os erros.
 
 Value Objects são imutáveis e sempre validam no `create()`.
 
@@ -225,21 +292,45 @@ describe('CreateUserUseCase', () => {
 
 ```typescript
 describe('POST /users', () => {
+  let fastifyServer: FastifyAdapter
+  let userRepository: UserRepository
+
   beforeEach(async () => {
     container.snapshot()
+    // Substituir binding por implementação in-memory
+    const inMemoryRepository = new InMemoryUserRepository()
+    container.rebindSync(USER_TYPES.Repositories.User).toConstantValue(inMemoryRepository)
+    userRepository = container.get<UserRepository>(USER_TYPES.Repositories.User)
     fastifyServer = await serverBuildForTest()
+    await fastifyServer.ready()
+  })
+
+  afterEach(async () => {
+    container.restore()
+    await fastifyServer.close()
   })
 
   it('should create user via HTTP', async () => {
     const response = await request(fastifyServer.server)
-      .post('/users')
-      .send({ email: 'test@example.com', name: 'Test' })
-    expect(response.status).toBe(201)
+      .post(UserRoutes.CREATE)
+      .send({ email: 'test@example.com', name: 'Test User', password: 'any_password' })
+    expect(response.status).toBe(HTTP_STATUS.CREATED)
   })
 })
 ```
 
 **Executar único teste**: `npm run test:business-flow -- --t "should create"`
+
+### Helpers de Teste
+Funções utilitárias em `test/factory/` para criar e persistir entidades em memória:
+```typescript
+import { createAndSaveUser } from 'test/factory/create-and-save-user'
+import { createAndSaveGym } from 'test/factory/create-and-save-gym'
+import { createAndSaveCheckIn } from 'test/factory/create-and-save-check-in'
+
+// Aceita props parciais; usa defaults para campos não informados
+const user = await createAndSaveUser({ userRepository, email: 'specific@email.com', role: 'ADMIN' })
+```
 
 ## Checklist para Nova Feature
 Ordem recomendada:
@@ -436,4 +527,14 @@ Cada bounded context em `src/{domain}/` segue esta estrutura:
 
 Domínios atuais: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `shared/`
 
+## Documentação Específica por Módulo
 
+Cada módulo possui um `AGENTS.md` próprio com especificações detalhadas de entidades, Value Objects, Use Cases, rotas, erros e exemplos de código:
+
+| Módulo          | Documentação                                     | Responsabilidade principal                          |
+|-----------------|--------------------------------------------------|-----------------------------------------------------|
+| `user/`         | [`src/user/AGENTS.md`](src/user/AGENTS.md)       | Usuários, perfil, senha, status, roles              |
+| `gym/`          | [`src/gym/AGENTS.md`](src/gym/AGENTS.md)         | Academias, busca por nome e proximidade             |
+| `check-in/`     | [`src/check-in/AGENTS.md`](src/check-in/AGENTS.md) | Check-ins, validação de distância e tempo         |
+| `session/`      | [`src/session/AGENTS.md`](src/session/AGENTS.md) | Autenticação JWT, logout, refresh token             |
+| `subscription/` | [`src/subscription/AGENTS.md`](src/subscription/AGENTS.md) | Assinaturas Stripe, webhooks              |

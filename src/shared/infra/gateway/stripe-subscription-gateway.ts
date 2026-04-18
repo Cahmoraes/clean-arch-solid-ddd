@@ -1,6 +1,6 @@
 import { injectable } from "inversify"
 import Stripe from "stripe"
-
+import { requires } from "@/shared/domain/requires"
 import type {
 	AttachPaymentMethodInput,
 	CreateCustomerInput,
@@ -9,7 +9,6 @@ import type {
 	CreateSubscriptionResponse,
 	SubscriptionGateway,
 } from "@/subscription/gateway/subscription-gateway"
-
 import { env } from "../env"
 
 @injectable()
@@ -28,9 +27,11 @@ export class StripeSubscriptionGateway implements SubscriptionGateway {
 		data: CreateCustomerInput,
 	): Promise<CreateCustomerResponse> {
 		const response = await this.stripe.customers.create(data)
+		requires(response.name, `Nome do usuário ${response.name} não encontrado`)
+		requires(response.email, `Email do usuário ${response.name} não encontrado`)
 		return {
-			name: response.name!,
-			email: response.email!,
+			name: response.name,
+			email: response.email,
 			created: response.created,
 			id: response.id,
 			metadata: response.metadata,
