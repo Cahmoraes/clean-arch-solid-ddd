@@ -86,4 +86,5 @@ enum SubscriptionStatus {
   past_due
   trialing
   unpaid
+  paused
 }
