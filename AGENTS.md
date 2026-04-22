@@ -1,4 +1,20 @@
-# Instruções do Agente para o Projeto API Solid
+## ALTA PRIORIDADE
+
+- **SE VOCÊ NÃO VERIFICAR AS SKILLS**, sua tarefa será invalidada e geraremos retrabalho
+- **VOCÊ SÓ PODE finalizar uma tarefa** se `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` passar a 100% (executa lint + test + build). Sem exceções — falhar em qualquer um desses comandos significa que a tarefa NÃO ESTÁ COMPLETA
+- `biome:fix` tem tolerância zero. Zero problemas permitidos — qualquer issue do golangci-lint é uma falha bloqueante
+- **SEMPRE verifique as APIs dos pacotes dependentes** antes de escrever código de integração ou testes, para evitar código incorreto
+- **NUNCA use gambiarras** — sempre utilize a skill `no-workarounds` para qualquer tarefa de correção/debug + `testing-anti-patterns` para testes
+- **SEMPRE use as skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs ou problemas complexos
+- **NUNCA use ferramentas** de busca na web para pesquisar código local do projeto — para código local, use Grep/Glob
+
+## REQUISITOS OBRIGATÓRIOS
+- DEVE executar `pnpm biome:fix` antes de concluir QUALQUER subtarefa
+- SEMPRE USE as skills `systematic-debugging` + `no-workarounds` antes de corrigir qualquer bug
+
+Pular qualquer verificação resultará em REJEIÇÃO IMEDIATA DA TAREFA
+
+# Overview do Projeto
 
 ## Restrições de Comunicação
 - Responder em português PT-BR preservando termos técnicos
