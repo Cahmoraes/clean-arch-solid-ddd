@@ -25,6 +25,7 @@ export class PromiseLikeProxy<T = UserResponse> {
 		return this
 	}
 
+	// biome-ignore lint/suspicious/noThenProperty: padrão promise-like intencional
 	public then<TResult1 = T, TResult2 = never>(
 		onFulfilled: (value: T) => TResult1,
 		onRejected?: (reason: any) => TResult2,

@@ -15,7 +15,7 @@ describe("Buscar Usuários", () => {
 	beforeEach(async () => {
 		container.snapshot()
 		const userDAOMemory = new UserDAOMemory()
-		container.rebindSync(USER_TYPES.DAO.User).toConstantValue(userDAOMemory)
+		container.rebind(USER_TYPES.DAO.User).toConstantValue(userDAOMemory)
 		userDAO = userDAOMemory
 		userDAO = container.get(USER_TYPES.DAO.User)
 		fastifyServer = await serverBuildForTest()

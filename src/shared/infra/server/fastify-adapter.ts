@@ -6,6 +6,8 @@ import fastify, {
 	type FastifyInstance,
 	type FastifyReply,
 	type FastifyRequest,
+	type onRequestAsyncHookHandler,
+	type preHandlerAsyncHookHandler,
 	type RawServerDefault,
 	type RouteHandler,
 } from "fastify"
@@ -133,11 +135,11 @@ export class FastifyAdapter implements HttpServer {
 
 	private authenticateOnRequestOrUndefined(
 		enableAuthenticate?: boolean,
-	): RouteHandler | undefined {
+	): onRequestAsyncHookHandler | undefined {
 		return enableAuthenticate ? this.authenticateOnRequest : undefined
 	}
 
-	private onlyAdminPreHandler(onlyAdmin?: boolean): RouteHandler {
+	private onlyAdminPreHandler(onlyAdmin?: boolean): preHandlerAsyncHookHandler {
 		return async (
 			request: FastifyRequest,
 			reply: FastifyReply,
@@ -149,7 +151,9 @@ export class FastifyAdapter implements HttpServer {
 		}
 	}
 
-	private checkSessionRevoked(isProtected?: boolean): RouteHandler {
+	private checkSessionRevoked(
+		isProtected?: boolean,
+	): preHandlerAsyncHookHandler {
 		return async (
 			request: FastifyRequest,
 			reply: FastifyReply,

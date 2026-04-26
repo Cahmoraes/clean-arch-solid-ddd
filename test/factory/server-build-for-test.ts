@@ -5,7 +5,7 @@ import { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 
 export async function serverBuildForTest(): Promise<FastifyAdapter> {
 	container
-		.rebindSync(SHARED_TYPES.Server.Fastify)
+		.rebind(SHARED_TYPES.Server.Fastify)
 		.to(FastifyAdapter)
 		.inSingletonScope()
 	return serverBuild()

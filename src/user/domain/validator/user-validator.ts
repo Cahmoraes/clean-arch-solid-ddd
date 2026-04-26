@@ -2,9 +2,9 @@ import ExtendedSet from "@cahmoraes93/extended-set"
 
 import type { Either } from "@/shared/domain/value-object/either"
 
-import { Email } from "../value-object/email"
-import { Name } from "../value-object/name"
-import { Password } from "../value-object/password"
+import type { Email } from "../value-object/email"
+import type { Name } from "../value-object/name"
+import type { Password } from "../value-object/password"
 
 export class Notification {
 	private readonly _errors: ExtendedSet<string>

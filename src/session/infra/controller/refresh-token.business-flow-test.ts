@@ -17,7 +17,7 @@ describe("Atualizar Refresh Token", () => {
 		container.snapshot()
 		const inMemoryUserRepository = new InMemoryUserRepository()
 		container
-			.rebindSync(USER_TYPES.Repositories.User)
+			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(inMemoryUserRepository)
 		userRepository = inMemoryUserRepository
 		fastifyServer = await serverBuildForTest()

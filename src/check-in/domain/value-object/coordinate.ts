@@ -29,7 +29,7 @@ export class Coordinate {
 	public static create(
 		props: CoordinateCreate,
 	): Either<InvalidLatitudeError | InvalidLongitudeError, Coordinate> {
-		const coordsOrError = this.validate(props)
+		const coordsOrError = Coordinate.validate(props)
 		if (coordsOrError.isFailure()) return failure(coordsOrError.value)
 		const coordinate = new Coordinate(coordsOrError.value)
 		return success(coordinate)

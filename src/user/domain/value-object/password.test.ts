@@ -21,7 +21,7 @@ describe("Password test unit", () => {
 		const password = await Password.create(fakePassword)
 		expect(password.forceFailure().value).instanceOf(ValidationError)
 		expect(password.forceFailure().value.message).toBe(
-			"Validation error: String must contain at least 6 character(s)",
+			"Validation error: Too small: expected string to have >=6 characters",
 		)
 	})
 
