@@ -19,7 +19,7 @@ describe("Cadastrar Usuário", () => {
 		const inMemoryRepository = new InMemoryUserRepository()
 		container.snapshot()
 		container
-			.rebindSync(USER_TYPES.Repositories.User)
+			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(inMemoryRepository)
 		userRepository = container.get<UserRepository>(USER_TYPES.Repositories.User)
 		fastifyServer = await serverBuildForTest()

@@ -1,6 +1,6 @@
 import {
-	createAndSaveCheckIn,
 	type CreateAndSaveCheckInProps,
+	createAndSaveCheckIn,
 } from "test/factory/create-and-save-check-in"
 
 import { CheckInTimeExceededError } from "@/check-in/domain/error/check-in-time-exceeded-error"
@@ -10,9 +10,9 @@ import { container } from "@/shared/infra/ioc/container"
 import { CHECKIN_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 
 import { CheckInNotFoundError } from "../error/check-in-not-found-error"
-import {
+import type {
 	ValidateCheckInUseCase,
-	type ValidateCheckInUseCaseInput,
+	ValidateCheckInUseCaseInput,
 } from "./validate-check-in.usecase"
 
 describe("ValidateCheckIn", () => {
@@ -25,10 +25,10 @@ describe("ValidateCheckIn", () => {
 		checkInRepository = new InMemoryCheckInRepository()
 		userRepository = new InMemoryUserRepository()
 		container
-			.rebindSync(CHECKIN_TYPES.Repositories.CheckIn)
+			.rebind(CHECKIN_TYPES.Repositories.CheckIn)
 			.toConstantValue(checkInRepository)
 		container
-			.rebindSync(USER_TYPES.Repositories.User)
+			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(userRepository)
 		sut = container.get(CHECKIN_TYPES.UseCases.ValidateCheckIn)
 	})

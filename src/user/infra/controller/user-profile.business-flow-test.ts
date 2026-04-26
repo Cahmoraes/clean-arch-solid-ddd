@@ -20,7 +20,7 @@ describe("Obter Perfil do usuário por ID", () => {
 		userRepository = new InMemoryUserRepository()
 		container.snapshot()
 		container
-			.rebindSync(USER_TYPES.Repositories.User)
+			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(userRepository)
 
 		authenticate = container.get<AuthenticateUseCase>(

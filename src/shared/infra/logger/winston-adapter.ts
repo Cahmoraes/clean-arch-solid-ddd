@@ -7,7 +7,7 @@ import { EXCHANGES } from "../queue/exchanges"
 import type { Queue } from "../queue/queue"
 import type { Logger } from "./logger"
 
-export const enum LoggerLevels {
+export enum LoggerLevels {
 	ERROR = "error",
 	WARN = "warn",
 	INFO = "info",

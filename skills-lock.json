@@ -1,0 +1,30 @@
+{
+	"version": 1,
+	"skills": {
+		"context7": {
+			"source": "pedronauck/skills",
+			"sourceType": "github",
+			"computedHash": "23f0178420043f01cd0f00745eb06eaac6f3eee4ef58f87f1ae353c2a408f79c"
+		},
+		"dependency-updater": {
+			"source": "softaworks/agent-toolkit",
+			"sourceType": "github",
+			"computedHash": "dc7f34bfa7a1371852fa6f640e14364c52f11fa8303d301ceeb2920623e92157"
+		},
+		"exa-web-search-free": {
+			"source": "pedronauck/skills",
+			"sourceType": "github",
+			"computedHash": "4456756ff2cf096cc7c6d2fc9d6771e2a1ea0084868f28b69f68157757ee50c8"
+		},
+		"typescript-advanced": {
+			"source": "pedronauck/skills",
+			"sourceType": "github",
+			"computedHash": "5e39d1321dd676555c39ddf873ffa2ac605a6de7841f8093f86d53314d36ef3e"
+		},
+		"zod": {
+			"source": "pedronauck/skills",
+			"sourceType": "github",
+			"computedHash": "44f1ae5e377022f537cbad603de0e3329de7afea8567e0e11eb8593e09769441"
+		}
+	}
+}

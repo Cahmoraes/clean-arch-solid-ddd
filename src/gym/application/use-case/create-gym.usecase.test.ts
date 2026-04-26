@@ -6,9 +6,9 @@ import { container } from "@/shared/infra/ioc/container"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 
 import { GymWithCNPJAlreadyExistsError } from "../error/gym-with-cnpj-already-exists-error"
-import {
+import type {
 	CreateGymUseCase,
-	type CreateGymUseCaseInput,
+	CreateGymUseCaseInput,
 } from "./create-gym.usecase"
 
 describe("CreateGymUseCase", () => {
@@ -18,7 +18,7 @@ describe("CreateGymUseCase", () => {
 	beforeEach(() => {
 		container.snapshot()
 		container
-			.rebindSync(GYM_TYPES.Repositories.Gym)
+			.rebind(GYM_TYPES.Repositories.Gym)
 			.to(InMemoryGymRepository)
 			.inSingletonScope()
 		sut = container.get(GYM_TYPES.UseCases.CreateGym)

@@ -55,6 +55,7 @@ export class FitnessFunction {
 
 			if (!moduleLayer) continue
 
+			// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: complexidade necessária para validação de arquitetura
 			dependents.forEach((dependent) => {
 				// Ignora arquivos de teste e arquivos explicitamente ignorados nas dependências
 				if (

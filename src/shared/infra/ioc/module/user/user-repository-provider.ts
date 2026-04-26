@@ -8,19 +8,12 @@ import type { UserRepository } from "@/user/application/persistence/repository/u
 
 export class UserRepositoryProvider {
 	public static provide(context: ResolutionContext): UserRepository {
-		return isProduction()
-			? context.get(UserRepositoryProvider.selectDatabaseByProvider(), {
-					autobind: true,
-				})
-			: context.get(InMemoryUserRepository, { autobind: true })
-	}
-
-	private static selectDatabaseByProvider() {
-		switch (env.DATABASE_PROVIDER) {
-			case "prisma":
-				return PrismaUserRepository
-			default:
-				return SQLiteUserRepository
+		if (!isProduction()) {
+			return context.get(InMemoryUserRepository, { autobind: true })
 		}
+		if (env.DATABASE_PROVIDER === "prisma") {
+			return context.get(PrismaUserRepository, { autobind: true })
+		}
+		return context.get(SQLiteUserRepository, { autobind: true })
 	}
 }

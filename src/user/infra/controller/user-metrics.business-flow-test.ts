@@ -23,11 +23,11 @@ describe("Obter Métricas do Usuário", () => {
 		userRepository = new InMemoryUserRepository()
 		container.snapshot()
 		container
-			.rebindSync(USER_TYPES.Repositories.User)
+			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(userRepository)
 		checkInRepository = new InMemoryCheckInRepository()
 		container
-			.rebindSync(CHECKIN_TYPES.Repositories.CheckIn)
+			.rebind(CHECKIN_TYPES.Repositories.CheckIn)
 			.toConstantValue(checkInRepository)
 		authenticate = container.get<AuthenticateUseCase>(
 			AUTH_TYPES.UseCases.Authenticate,

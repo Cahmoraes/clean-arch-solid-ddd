@@ -6,10 +6,10 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"module": "esnext",
-		"moduleResolution": "node",
-		"baseUrl": "./",
+		"moduleResolution": "bundler",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"test/*": ["./test/*"]
 		},
 		"types": ["reflect-metadata", "vitest/globals"],
 		"resolveJsonModule": true,

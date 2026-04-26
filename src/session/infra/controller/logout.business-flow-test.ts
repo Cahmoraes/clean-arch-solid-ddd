@@ -19,7 +19,7 @@ describe("Logout Usuário", () => {
 		const inMemoryRepository = new InMemoryUserRepository()
 		container.snapshot()
 		container
-			.rebindSync(USER_TYPES.Repositories.User)
+			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(inMemoryRepository)
 		userRepository = container.get<InMemoryUserRepository>(
 			USER_TYPES.Repositories.User,

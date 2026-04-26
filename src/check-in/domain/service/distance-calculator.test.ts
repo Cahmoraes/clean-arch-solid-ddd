@@ -1,4 +1,4 @@
-import { Coordinate, DistanceCalculator } from "./distance-calculator"
+import { type Coordinate, DistanceCalculator } from "./distance-calculator"
 
 describe("Classe CalculateDistance", () => {
 	test("Deve retornar 0 quando as coordenadas de origem e destino são iguais", () => {

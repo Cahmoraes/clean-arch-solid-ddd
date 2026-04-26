@@ -21,7 +21,7 @@ describe("Obter Meu Perfil", () => {
 		container.snapshot()
 
 		container
-			.rebindSync(USER_TYPES.Repositories.User)
+			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(userRepository)
 		authenticate = container.get<AuthenticateUseCase>(
 			AUTH_TYPES.UseCases.Authenticate,
