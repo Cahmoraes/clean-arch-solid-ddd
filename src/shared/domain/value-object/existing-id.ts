@@ -9,7 +9,7 @@ export class ExistingId {
 	}
 
 	public static create(aString: string): Either<InvalidIdError, ExistingId> {
-		if (!this.validateUUID(aString)) {
+		if (!ExistingId.validateUUID(aString)) {
 			return failure(new InvalidIdError())
 		}
 		return success(new ExistingId(aString))

@@ -2,13 +2,13 @@ import {
 	type CreateUserInput,
 	UserDAOMemory,
 } from "@/shared/infra/database/dao/in-memory/user-dao-memory"
-import { RedisAdapter } from "@/shared/infra/database/redis/redis-adapter"
+import type { RedisAdapter } from "@/shared/infra/database/redis/redis-adapter"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 
-import {
+import type {
 	FetchUsersUseCase,
-	type FetchUsersUseCaseInput,
+	FetchUsersUseCaseInput,
 } from "./fetch-users.usecase"
 
 describe("FetchUsersUseCase", () => {
@@ -19,7 +19,7 @@ describe("FetchUsersUseCase", () => {
 	beforeEach(async () => {
 		container.snapshot()
 		const userDAOMemory = new UserDAOMemory()
-		container.rebindSync(USER_TYPES.DAO.User).toConstantValue(userDAOMemory)
+		container.rebind(USER_TYPES.DAO.User).toConstantValue(userDAOMemory)
 		redisAdapter = container.get(SHARED_TYPES.Redis)
 		sut = container.get(USER_TYPES.UseCases.FetchUsers)
 		userDAO = container.get(USER_TYPES.DAO.User)

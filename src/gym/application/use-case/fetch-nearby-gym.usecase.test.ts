@@ -4,9 +4,9 @@ import { InMemoryGymRepository } from "@/shared/infra/database/repository/in-mem
 import { container } from "@/shared/infra/ioc/container"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 
-import {
+import type {
 	FetchNearbyGym,
-	type FetchNearbyGymInput,
+	FetchNearbyGymInput,
 } from "./fetch-nearby-gym.usecase"
 
 describe("FetchNearbyGymUsecase", () => {

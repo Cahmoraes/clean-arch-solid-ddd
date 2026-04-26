@@ -1,4 +1,4 @@
-import { type ResolutionContext } from "inversify"
+import type { ResolutionContext } from "inversify"
 
 import { RevokedTokenDAOMemory } from "@/shared/infra/database/dao/in-memory/revoked-token-dao-memory"
 import { RedisRevokedTokenDAO } from "@/shared/infra/database/dao/redis/redis-revoked-token-dao"

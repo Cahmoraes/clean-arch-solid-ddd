@@ -23,7 +23,7 @@ describe("CreateCustomerUseCase", () => {
 		userRepository = setupInMemoryRepositories().userRepository
 		subscriptionGateway = new TestingSubscriptionGateway()
 		container
-			.rebindSync(SUBSCRIPTION_TYPES.GATEWAYS.Stripe)
+			.rebind(SUBSCRIPTION_TYPES.GATEWAYS.Stripe)
 			.toConstantValue(subscriptionGateway)
 		sut = container.get(SUBSCRIPTION_TYPES.USE_CASES.CreateCustomer)
 	})

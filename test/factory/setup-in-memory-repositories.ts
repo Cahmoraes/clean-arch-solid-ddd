@@ -15,20 +15,16 @@ export interface SetupInMemoryRepositoriesOutput {
 
 export function setupInMemoryRepositories(): SetupInMemoryRepositoriesOutput {
 	const userRepository = new InMemoryUserRepository()
-	container
-		.rebindSync(USER_TYPES.Repositories.User)
-		.toConstantValue(userRepository)
+	container.rebind(USER_TYPES.Repositories.User).toConstantValue(userRepository)
 	const gymRepository = new InMemoryGymRepository()
-	container
-		.rebindSync(GYM_TYPES.Repositories.Gym)
-		.toConstantValue(gymRepository)
+	container.rebind(GYM_TYPES.Repositories.Gym).toConstantValue(gymRepository)
 	const checkInRepository = new InMemoryCheckInRepository()
 	container
-		.rebindSync(CHECKIN_TYPES.Repositories.CheckIn)
+		.rebind(CHECKIN_TYPES.Repositories.CheckIn)
 		.toConstantValue(checkInRepository)
 	const subscriptionRepository = new InMemorySubscriptionRepository()
 	container
-		.rebindSync(SUBSCRIPTION_TYPES.REPOSITORIES.Subscription)
+		.rebind(SUBSCRIPTION_TYPES.REPOSITORIES.Subscription)
 		.toConstantValue(subscriptionRepository)
 	return {
 		userRepository,

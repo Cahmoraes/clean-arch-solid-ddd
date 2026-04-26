@@ -20,7 +20,7 @@ describe("Alterar Senha", () => {
 		userRepository = new InMemoryUserRepository()
 		container.snapshot()
 		container
-			.rebindSync(USER_TYPES.Repositories.User)
+			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(userRepository)
 
 		authenticate = container.get<AuthenticateUseCase>(
@@ -96,7 +96,7 @@ describe("Alterar Senha", () => {
 		await expect(user.checkPassword(oldPassword)).resolves.toBeTruthy()
 		expect(response.body).toMatchObject({
 			message:
-				'Validation error: String must contain at least 6 character(s) at "newRawPassword"',
+				'Validation error: Too small: expected string to have >=6 characters at "newRawPassword"',
 		})
 	})
 

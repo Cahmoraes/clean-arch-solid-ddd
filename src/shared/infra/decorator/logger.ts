@@ -1,6 +1,6 @@
 import { SHARED_TYPES } from "../ioc/types"
-import type { Logger } from "../logger/logger"
-import { WinstonAdapter } from "../logger/winston-adapter"
+import type { Logger as ILogger } from "../logger/logger"
+import type { WinstonAdapter } from "../logger/winston-adapter"
 
 export async function importLoggerWithLazyLoading(): Promise<WinstonAdapter> {
 	const module = await import("../ioc/container")
@@ -10,17 +10,17 @@ export async function importLoggerWithLazyLoading(): Promise<WinstonAdapter> {
 }
 
 export interface LoggerProps {
-	type?: keyof Logger
+	type?: keyof ILogger
 	message: string
 }
 
 export function Logger({ message, type }: LoggerProps) {
 	const loggerMethod = type ?? "info"
-	return function (
+	return (
 		target: any,
 		propertyKey: PropertyKey,
 		propertyDescriptor: PropertyDescriptor,
-	) {
+	) => {
 		const originalMethod = propertyDescriptor.value
 		propertyDescriptor.value = async function (...args: any[]) {
 			const logger = await importLoggerWithLazyLoading()

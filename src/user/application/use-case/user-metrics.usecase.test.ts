@@ -1,7 +1,7 @@
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 
-import { InMemoryCheckInRepository } from "@/shared/infra/database/repository/in-memory/in-memory-check-in-repository"
+import type { InMemoryCheckInRepository } from "@/shared/infra/database/repository/in-memory/in-memory-check-in-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
 

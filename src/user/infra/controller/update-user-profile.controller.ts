@@ -1,7 +1,7 @@
 import type { FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
 import { z } from "zod"
-import { fromError, ValidationError } from "zod-validation-error"
+import { fromError, type ValidationError } from "zod-validation-error"
 
 import {
 	type Either,

@@ -26,7 +26,6 @@ console.log(
 console.log("3. Testando publicação do evento...")
 const event = new UserCreatedEvent({
 	email: "test@example.com",
-	name: "Test User",
 })
 
 // Contar quantas vezes o subscriber é chamado

@@ -14,7 +14,7 @@ describe("LogoutUseCase", () => {
 		container.snapshot()
 		const revokedTokenDAOMemory = new RevokedTokenDAOMemory()
 		container
-			.rebindSync(AUTH_TYPES.DAO.RevokedToken)
+			.rebind(AUTH_TYPES.DAO.RevokedToken)
 			.toConstantValue(revokedTokenDAOMemory)
 		sut = container.get(AUTH_TYPES.UseCases.Logout)
 		sessionDAO = container.get(AUTH_TYPES.DAO.RevokedToken)

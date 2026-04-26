@@ -1,13 +1,13 @@
 import { createAndSaveGym } from "test/factory/create-and-save-gym"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 
-import { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
+import type { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 
-import {
+import type {
 	SearchGymUseCase,
-	type SearchGymUseCaseInput,
+	SearchGymUseCaseInput,
 } from "./search-gym.usecase"
 
 describe("SearchGymUseCase", () => {
