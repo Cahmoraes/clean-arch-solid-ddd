@@ -34,9 +34,9 @@ describe("LogoutUseCase", () => {
 		const sessionResult = await sut.execute(input)
 		expect(sessionResult.isSuccess()).toBe(true)
 		const sessionData = await sessionDAO.revokedTokenById(input.jwi)
-		expect(sessionData!.jwi).toBe(input.jwi)
-		expect(sessionData!.userId).toBe(input.userId)
-		expect(sessionData!.expiresIn).toBe(env.JWT_REFRESH_EXPIRES_IN)
+		expect(sessionData?.jwi).toBe(input.jwi)
+		expect(sessionData?.userId).toBe(input.userId)
+		expect(sessionData?.expiresIn).toBe(env.JWT_REFRESH_EXPIRES_IN)
 	})
 
 	test('Deve retornar um "failure" ao tentar fazer o logout de uma sessão já existente', async () => {

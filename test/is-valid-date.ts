@@ -1,3 +1,3 @@
 export function isValidDate(aString: string) {
-	return !isNaN(new Date(aString).getTime())
+	return !Number.isNaN(new Date(aString).getTime())
 }

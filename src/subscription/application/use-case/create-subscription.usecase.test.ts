@@ -71,9 +71,9 @@ describe("CreateSubscription UseCase", () => {
 		const subscriptionSaved = await subscriptionRepository.ofUserId(
 			userSaved.id!,
 		)
-		expect(subscriptionSaved!.id).toBeDefined()
-		expect(subscriptionSaved!.userId).toBe(userSaved.id)
-		expect(subscriptionSaved!.billingSubscriptionId).toBe(
+		expect(subscriptionSaved?.id).toBeDefined()
+		expect(subscriptionSaved?.userId).toBe(userSaved.id)
+		expect(subscriptionSaved?.billingSubscriptionId).toBe(
 			createCustomerResponse.id,
 		)
 		console.log("Subscription saved:", subscriptionSaved)
