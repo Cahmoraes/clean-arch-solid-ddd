@@ -78,6 +78,7 @@ export class CircuitBreaker {
 	private get shouldEnterHalfOpenState(): boolean {
 		return (
 			Boolean(this._lastFailureTime) &&
+			// biome-ignore lint/style/noNonNullAssertion: verificação realizada
 			Date.now() - this._lastFailureTime! > this.resetTimeout
 		)
 	}

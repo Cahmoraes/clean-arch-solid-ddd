@@ -1,7 +1,5 @@
 import { inject, injectable } from "inversify"
-
 import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types"
-
 import { Subscription } from "../../domain/subscription"
 import type { SubscriptionGateway } from "../../gateway/subscription-gateway"
 import type { SubscriptionRepository } from "../../repository/subscription-repository"

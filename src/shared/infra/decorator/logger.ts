@@ -18,7 +18,7 @@ export function Logger({ message, type }: LoggerProps) {
 	const loggerMethod = type ?? "info"
 	return (
 		target: any,
-		propertyKey: PropertyKey,
+		_propertyKey: PropertyKey,
 		propertyDescriptor: PropertyDescriptor,
 	) => {
 		const originalMethod = propertyDescriptor.value
