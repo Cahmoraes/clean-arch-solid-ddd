@@ -7,8 +7,6 @@ export interface UserResponse {
 export class PromiseLikeProxy<T = UserResponse> {
 	private data: UserResponse = {}
 
-	constructor() {}
-
 	name(name: string) {
 		this.data = {
 			...this.data,

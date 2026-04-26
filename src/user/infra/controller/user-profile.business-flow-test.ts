@@ -46,7 +46,9 @@ describe("Obter Perfil do usuário por ID", () => {
 			userRepository,
 			...input,
 		})
-		const userId = user!.id!
+		// biome-ignore lint/style/noNonNullAssertion: para testes
+		// biome-ignore lint/suspicious/noNonNullAssertedOptionalChain: para testes
+		const userId = user?.id!
 		const result = await authenticate.execute({
 			email: input.email,
 			password: input.password,
