@@ -23,7 +23,7 @@ export class AdminRoleCheck {
 		this.logger = container.get<Logger>(SHARED_TYPES.Logger)
 	}
 
-	public execute(role: RoleTypes): FastifyReply | void {
+	public execute(role: RoleTypes): FastifyReply | undefined {
 		if (role !== RoleValues.ADMIN) {
 			this.logWhenRoleIsNotAdmin()
 			return this.reply

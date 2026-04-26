@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
-
+import { requires } from "@/shared/domain/requires"
 import { env } from "@/shared/infra/env"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
@@ -63,7 +63,8 @@ export class AuthenticateHandler {
 	}
 
 	private get token(): string {
-		const [, token] = this.request.headers.authorization!.split("Bearer ")
+		requires(this.request.headers.authorization, "Token não informado")
+		const [, token] = this.request.headers.authorization.split("Bearer ")
 		return token
 	}
 
