@@ -28,7 +28,7 @@ export class RedisRevokedTokenDAO implements RevokedTokenDAO {
 	}
 
 	private parseTimeToSeconds(timeString: string): number {
-		const timeValue = parseInt(timeString.slice(0, -1))
+		const timeValue = parseInt(timeString.slice(0, -1), 10)
 		const timeUnit = timeString.slice(-1).toLocaleLowerCase()
 		const timeMapper = {
 			s: timeValue, // seconds

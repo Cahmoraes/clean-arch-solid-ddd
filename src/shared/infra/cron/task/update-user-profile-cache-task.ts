@@ -54,7 +54,7 @@ export class UpdateUserProfileCacheTask implements Task {
 		this.logger.info(this, `User profile cache updated`)
 		this.logger.info(
 			this,
-			`Cache data: ${JSON.stringify(cacheResult!.data.usersData[0], null, 2)}`,
+			`Cache data: ${JSON.stringify(cacheResult?.data.usersData[0], null, 2)}`,
 		)
 	}
 

@@ -13,9 +13,7 @@ import fastify, {
 } from "fastify"
 import rawBody from "fastify-raw-body"
 import { inject, injectable } from "inversify"
-
 import type { AuthToken } from "@/user/application/auth/auth-token"
-
 import { Logger as LoggerDecorate } from "../decorator/logger"
 import { env } from "../env"
 import { SHARED_TYPES } from "../ioc/types"

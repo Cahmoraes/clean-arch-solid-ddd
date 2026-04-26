@@ -63,7 +63,7 @@ export class FetchUsersController implements Controller {
 		})
 		return ResponseFactory.OK({
 			body: {
-				users: this.presenter(req.headers["accept"]).format(result.data),
+				users: this.presenter(req.headers.accept).format(result.data),
 				pagination: result.pagination,
 			},
 		})
