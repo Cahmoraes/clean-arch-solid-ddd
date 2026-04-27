@@ -144,7 +144,7 @@ describe("User Entity", () => {
 		const observer = vi.fn()
 		const user = (await User.create(input)).forceSuccess().value
 		user.subscribe(observer)
-		const updateUserResult = await user.updateProfile({
+		const updateUserResult = user.updateProfile({
 			email: "martin@fowler.com",
 			name: "Martin Fowler",
 		})
