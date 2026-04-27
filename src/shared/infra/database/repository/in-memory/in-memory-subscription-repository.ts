@@ -1,6 +1,5 @@
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
-
 import type { Subscription } from "@/subscription/domain/subscription"
 import type { SubscriptionRepository } from "@/subscription/repository/subscription-repository"
 
@@ -22,5 +21,20 @@ export class InMemorySubscriptionRepository implements SubscriptionRepository {
 
 	public async ofUserId(userId: string): Promise<Subscription | null> {
 		return this.data.find((subscriptions) => subscriptions.userId === userId)
+	}
+
+	public async ofBillingSubscriptionId(
+		billingSubscriptionId: string,
+	): Promise<Subscription | null> {
+		return this.data.find(
+			(subscription) =>
+				subscription.billingSubscriptionId === billingSubscriptionId,
+		)
+	}
+
+	public async ofCustomerId(customerId: string): Promise<Subscription | null> {
+		return this.data.find(
+			(subscription) => subscription.customerId === customerId,
+		)
 	}
 }
