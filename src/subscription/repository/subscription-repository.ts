@@ -5,4 +5,8 @@ export interface SubscriptionRepository {
 	update(subscription: Subscription): Promise<void>
 	ofId(id: string): Promise<Subscription | null>
 	ofUserId(userId: string): Promise<Subscription | null>
+	ofBillingSubscriptionId(
+		billingSubscriptionId: string,
+	): Promise<Subscription | null>
+	ofCustomerId(customerId: string): Promise<Subscription | null>
 }

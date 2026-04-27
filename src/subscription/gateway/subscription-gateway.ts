@@ -1,3 +1,4 @@
+import type Stripe from "stripe"
 import type { SubscriptionStatusTypes } from "../domain/subscription-status-types"
 
 export interface CreateCustomerInput {
@@ -40,4 +41,8 @@ export interface SubscriptionGateway {
 		data: CreateSubscriptionInput,
 	): Promise<CreateSubscriptionResponse>
 	createPaymentMethod(): Promise<string>
+	createEventWebhook(
+		rawBody: string | Buffer,
+		signature: string,
+	): Promise<Stripe.Event>
 }
