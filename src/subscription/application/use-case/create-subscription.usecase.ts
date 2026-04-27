@@ -33,6 +33,7 @@ export class CreateSubscriptionUseCase {
 		const subscription = Subscription.create({
 			status: subscriptionResponse.status,
 			userId: input.userId,
+			customerId: input.customerId,
 			billingSubscriptionId: subscriptionResponse.subscriptionId,
 			id: subscriptionResponse.subscriptionId,
 		})

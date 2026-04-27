@@ -4,21 +4,37 @@ export interface SubscriptionConstructor {
 	id: string
 	userId: string
 	billingSubscriptionId: string
+	customerId: string
 	status: SubscriptionStatusTypes
 	createdAt: Date
+	updatedAt?: Date
+	canceledAt?: Date
 }
 
 export interface SubscriptionCreate {
 	id: string
 	userId: string
 	billingSubscriptionId: string
+	customerId: string
 	status: SubscriptionStatusTypes
+}
+
+export interface SubscriptionRestore {
+	id: string
+	userId: string
+	billingSubscriptionId: string
+	customerId: string
+	status: SubscriptionStatusTypes
+	createdAt: Date
+	updatedAt?: Date
+	canceledAt?: Date
 }
 
 export class Subscription {
 	private readonly _id: string
 	private readonly _userId: string
 	private readonly _billingSubscriptionId: string
+	private readonly _customerId: string
 	private _status: SubscriptionStatusTypes
 	private readonly _createdAt: Date
 	private _updatedAt?: Date
@@ -28,8 +44,11 @@ export class Subscription {
 		this._id = props.id
 		this._userId = props.userId
 		this._billingSubscriptionId = props.billingSubscriptionId
+		this._customerId = props.customerId
 		this._status = props.status
 		this._createdAt = props.createdAt
+		this._updatedAt = props.updatedAt
+		this._canceledAt = props.canceledAt
 	}
 
 	public static create(props: SubscriptionCreate): Subscription {
@@ -38,6 +57,10 @@ export class Subscription {
 			...props,
 			createdAt,
 		})
+	}
+
+	public static restore(props: SubscriptionRestore): Subscription {
+		return new Subscription(props)
 	}
 
 	public get id(): string {
@@ -50,6 +73,10 @@ export class Subscription {
 
 	public get billingSubscriptionId(): string {
 		return this._billingSubscriptionId
+	}
+
+	public get customerId(): string {
+		return this._customerId
 	}
 
 	public get status(): SubscriptionStatusTypes {
