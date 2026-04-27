@@ -7,6 +7,10 @@ import type { SubscriptionRepository } from "@/subscription/repository/subscript
 export class InMemorySubscriptionRepository implements SubscriptionRepository {
 	public data: ExtendedSet<Subscription> = new ExtendedSet<Subscription>()
 
+	public withTransaction<TX extends object>(_tx: TX): SubscriptionRepository {
+		return this
+	}
+
 	public async save(subscription: Subscription): Promise<void> {
 		this.data.add(subscription)
 	}
