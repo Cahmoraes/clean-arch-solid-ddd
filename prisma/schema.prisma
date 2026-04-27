@@ -58,6 +58,7 @@ model Subscription {
   id                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id                 String             @db.Uuid
   billing_subscription_id String             @unique
+  customer_id             String             @map("customer_id")
   status                  SubscriptionStatus @default(incomplete)
   canceled_at             DateTime?
   created_at              DateTime           @default(now())
@@ -65,7 +66,17 @@ model Subscription {
 
   user User @relation(fields: [user_id], references: [id], onDelete: Restrict)
 
+  @@index([customer_id])
   @@map("subscriptions")
+}
+
+model StripeWebhookEvent {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  event_id     String   @unique
+  event_type   String
+  processed_at DateTime @default(now())
+
+  @@map("stripe_webhook_events")
 }
 
 enum Role {
