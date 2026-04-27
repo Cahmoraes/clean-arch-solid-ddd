@@ -34,7 +34,7 @@ export class UpdateUserProfileUseCase {
 	): Promise<UpdateUserProfileUseCaseOutput> {
 		const user = await this.userRepository.userOfId(input.userId)
 		if (!user) return failure(new UserNotFoundError())
-		const profileUpdateResult = await user.updateProfile(input)
+		const profileUpdateResult = user.updateProfile(input)
 		if (profileUpdateResult.isFailure()) {
 			return failure(profileUpdateResult.value)
 		}

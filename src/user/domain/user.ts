@@ -133,6 +133,20 @@ export class User extends Observable {
 		})
 	}
 
+	private static validateNameAndEmail(
+		name: string,
+		email: string,
+	): Either<UserValidationErrors[], { name: Name; email: Email }> {
+		const nameResult = Name.create(name)
+		const emailResult = Email.create(email)
+		const result = Result.combine([nameResult, emailResult])
+		if (result.not.valid) return failure(result.errors)
+		return success({
+			name: nameResult.forceSuccess().value,
+			email: emailResult.forceSuccess().value,
+		})
+	}
+
 	public static restore(userRestoreProps: UserRestore): User {
 		return new User({
 			id: Id.restore(userRestoreProps.id),
@@ -222,24 +236,18 @@ export class User extends Observable {
 		return success(null)
 	}
 
-	public async updateProfile(
+	public updateProfile(
 		input: UserUpdateProps,
-	): Promise<Either<UserValidationErrors[], null>> {
-		const userCreateResult = await User.create({
-			id: this.id,
-			name: input.name ?? this.name,
-			email: input.email ?? this.email,
-			password: this.password,
-			role: this.role,
-			createdAt: this.createdAt,
-			status: this.status,
-			billingCustomerId: this.billingCustomerId,
-		})
-		if (userCreateResult.isFailure()) {
-			return failure(userCreateResult.value)
+	): Either<UserValidationErrors[], null> {
+		const validationResult = User.validateNameAndEmail(
+			input.name ?? this.name,
+			input.email ?? this.email,
+		)
+		if (validationResult.isFailure()) {
+			return failure(validationResult.value)
 		}
-		this._email = userCreateResult.value._email
-		this._name = userCreateResult.value._name
+		this._name = validationResult.value.name
+		this._email = validationResult.value.email
 		void this.refreshUpdatedAt()
 		const event = new UserProfileUpdatedEvent({
 			email: this.email,
@@ -249,7 +257,7 @@ export class User extends Observable {
 		return success(null)
 	}
 
-	public changeStatus(userStatus: UserStatus): void {
+	public _changeStatus(userStatus: UserStatus): void {
 		this._status = userStatus
 	}
 
