@@ -36,7 +36,7 @@ class ActivatedStatus extends UserStatus {
 
 	public suspend(): void {
 		const userStatus = UserStatusFactory.create(this.user, "suspended")
-		this.user.changeStatus(userStatus)
+		this.user._changeStatus(userStatus)
 	}
 }
 
@@ -45,7 +45,7 @@ class SuspendedStatus extends UserStatus {
 
 	public activate(): void {
 		const userStatus = UserStatusFactory.create(this.user, "activated")
-		this.user.changeStatus(userStatus)
+		this.user._changeStatus(userStatus)
 	}
 
 	public suspend(): void {
