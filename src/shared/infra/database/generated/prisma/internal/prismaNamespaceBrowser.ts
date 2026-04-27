@@ -16,8 +16,8 @@
 
 import * as runtime from "@prisma/client/runtime/index-browser"
 
-export type * from "../models.js"
-export type * from "./prismaNamespace.js"
+export type * from "../models"
+export type * from "./prismaNamespace"
 
 export const Decimal = runtime.Decimal
 
@@ -58,6 +58,7 @@ export const ModelName = {
 	CheckIn: "CheckIn",
 	Gym: "Gym",
 	Subscription: "Subscription",
+	StripeWebhookEvent: "StripeWebhookEvent",
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -124,6 +125,7 @@ export const SubscriptionScalarFieldEnum = {
 	id: "id",
 	user_id: "user_id",
 	billing_subscription_id: "billing_subscription_id",
+	customer_id: "customer_id",
 	status: "status",
 	canceled_at: "canceled_at",
 	created_at: "created_at",
@@ -132,6 +134,16 @@ export const SubscriptionScalarFieldEnum = {
 
 export type SubscriptionScalarFieldEnum =
 	(typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+export const StripeWebhookEventScalarFieldEnum = {
+	id: "id",
+	event_id: "event_id",
+	event_type: "event_type",
+	processed_at: "processed_at",
+} as const
+
+export type StripeWebhookEventScalarFieldEnum =
+	(typeof StripeWebhookEventScalarFieldEnum)[keyof typeof StripeWebhookEventScalarFieldEnum]
 
 export const SortOrder = {
 	asc: "asc",

@@ -8,8 +8,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums.js"
-import type * as Prisma from "../internal/prismaNamespace.js"
+import type * as $Enums from "../enums"
+import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Subscription
@@ -28,6 +28,7 @@ export type SubscriptionMinAggregateOutputType = {
 	id: string | null
 	user_id: string | null
 	billing_subscription_id: string | null
+	customer_id: string | null
 	status: $Enums.SubscriptionStatus | null
 	canceled_at: Date | null
 	created_at: Date | null
@@ -38,6 +39,7 @@ export type SubscriptionMaxAggregateOutputType = {
 	id: string | null
 	user_id: string | null
 	billing_subscription_id: string | null
+	customer_id: string | null
 	status: $Enums.SubscriptionStatus | null
 	canceled_at: Date | null
 	created_at: Date | null
@@ -48,6 +50,7 @@ export type SubscriptionCountAggregateOutputType = {
 	id: number
 	user_id: number
 	billing_subscription_id: number
+	customer_id: number
 	status: number
 	canceled_at: number
 	created_at: number
@@ -59,6 +62,7 @@ export type SubscriptionMinAggregateInputType = {
 	id?: true
 	user_id?: true
 	billing_subscription_id?: true
+	customer_id?: true
 	status?: true
 	canceled_at?: true
 	created_at?: true
@@ -69,6 +73,7 @@ export type SubscriptionMaxAggregateInputType = {
 	id?: true
 	user_id?: true
 	billing_subscription_id?: true
+	customer_id?: true
 	status?: true
 	canceled_at?: true
 	created_at?: true
@@ -79,6 +84,7 @@ export type SubscriptionCountAggregateInputType = {
 	id?: true
 	user_id?: true
 	billing_subscription_id?: true
+	customer_id?: true
 	status?: true
 	canceled_at?: true
 	created_at?: true
@@ -170,6 +176,7 @@ export type SubscriptionGroupByOutputType = {
 	id: string
 	user_id: string
 	billing_subscription_id: string
+	customer_id: string
 	status: $Enums.SubscriptionStatus
 	canceled_at: Date | null
 	created_at: Date
@@ -199,6 +206,7 @@ export type SubscriptionWhereInput = {
 	id?: Prisma.UuidFilter<"Subscription"> | string
 	user_id?: Prisma.UuidFilter<"Subscription"> | string
 	billing_subscription_id?: Prisma.StringFilter<"Subscription"> | string
+	customer_id?: Prisma.StringFilter<"Subscription"> | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFilter<"Subscription">
 		| $Enums.SubscriptionStatus
@@ -216,6 +224,7 @@ export type SubscriptionOrderByWithRelationInput = {
 	id?: Prisma.SortOrder
 	user_id?: Prisma.SortOrder
 	billing_subscription_id?: Prisma.SortOrder
+	customer_id?: Prisma.SortOrder
 	status?: Prisma.SortOrder
 	canceled_at?: Prisma.SortOrderInput | Prisma.SortOrder
 	created_at?: Prisma.SortOrder
@@ -231,6 +240,7 @@ export type SubscriptionWhereUniqueInput = Prisma.AtLeast<
 		OR?: Prisma.SubscriptionWhereInput[]
 		NOT?: Prisma.SubscriptionWhereInput | Prisma.SubscriptionWhereInput[]
 		user_id?: Prisma.UuidFilter<"Subscription"> | string
+		customer_id?: Prisma.StringFilter<"Subscription"> | string
 		status?:
 			| Prisma.EnumSubscriptionStatusFilter<"Subscription">
 			| $Enums.SubscriptionStatus
@@ -250,6 +260,7 @@ export type SubscriptionOrderByWithAggregationInput = {
 	id?: Prisma.SortOrder
 	user_id?: Prisma.SortOrder
 	billing_subscription_id?: Prisma.SortOrder
+	customer_id?: Prisma.SortOrder
 	status?: Prisma.SortOrder
 	canceled_at?: Prisma.SortOrderInput | Prisma.SortOrder
 	created_at?: Prisma.SortOrder
@@ -272,6 +283,7 @@ export type SubscriptionScalarWhereWithAggregatesInput = {
 	billing_subscription_id?:
 		| Prisma.StringWithAggregatesFilter<"Subscription">
 		| string
+	customer_id?: Prisma.StringWithAggregatesFilter<"Subscription"> | string
 	status?:
 		| Prisma.EnumSubscriptionStatusWithAggregatesFilter<"Subscription">
 		| $Enums.SubscriptionStatus
@@ -293,6 +305,7 @@ export type SubscriptionScalarWhereWithAggregatesInput = {
 export type SubscriptionCreateInput = {
 	id?: string
 	billing_subscription_id: string
+	customer_id: string
 	status?: $Enums.SubscriptionStatus
 	canceled_at?: Date | string | null
 	created_at?: Date | string
@@ -304,6 +317,7 @@ export type SubscriptionUncheckedCreateInput = {
 	id?: string
 	user_id: string
 	billing_subscription_id: string
+	customer_id: string
 	status?: $Enums.SubscriptionStatus
 	canceled_at?: Date | string | null
 	created_at?: Date | string
@@ -313,6 +327,7 @@ export type SubscriptionUncheckedCreateInput = {
 export type SubscriptionUpdateInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string
 	billing_subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
+	customer_id?: Prisma.StringFieldUpdateOperationsInput | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput
 		| $Enums.SubscriptionStatus
@@ -330,6 +345,7 @@ export type SubscriptionUncheckedUpdateInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string
 	user_id?: Prisma.StringFieldUpdateOperationsInput | string
 	billing_subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
+	customer_id?: Prisma.StringFieldUpdateOperationsInput | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput
 		| $Enums.SubscriptionStatus
@@ -346,6 +362,7 @@ export type SubscriptionCreateManyInput = {
 	id?: string
 	user_id: string
 	billing_subscription_id: string
+	customer_id: string
 	status?: $Enums.SubscriptionStatus
 	canceled_at?: Date | string | null
 	created_at?: Date | string
@@ -355,6 +372,7 @@ export type SubscriptionCreateManyInput = {
 export type SubscriptionUpdateManyMutationInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string
 	billing_subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
+	customer_id?: Prisma.StringFieldUpdateOperationsInput | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput
 		| $Enums.SubscriptionStatus
@@ -371,6 +389,7 @@ export type SubscriptionUncheckedUpdateManyInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string
 	user_id?: Prisma.StringFieldUpdateOperationsInput | string
 	billing_subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
+	customer_id?: Prisma.StringFieldUpdateOperationsInput | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput
 		| $Enums.SubscriptionStatus
@@ -397,6 +416,7 @@ export type SubscriptionCountOrderByAggregateInput = {
 	id?: Prisma.SortOrder
 	user_id?: Prisma.SortOrder
 	billing_subscription_id?: Prisma.SortOrder
+	customer_id?: Prisma.SortOrder
 	status?: Prisma.SortOrder
 	canceled_at?: Prisma.SortOrder
 	created_at?: Prisma.SortOrder
@@ -407,6 +427,7 @@ export type SubscriptionMaxOrderByAggregateInput = {
 	id?: Prisma.SortOrder
 	user_id?: Prisma.SortOrder
 	billing_subscription_id?: Prisma.SortOrder
+	customer_id?: Prisma.SortOrder
 	status?: Prisma.SortOrder
 	canceled_at?: Prisma.SortOrder
 	created_at?: Prisma.SortOrder
@@ -417,6 +438,7 @@ export type SubscriptionMinOrderByAggregateInput = {
 	id?: Prisma.SortOrder
 	user_id?: Prisma.SortOrder
 	billing_subscription_id?: Prisma.SortOrder
+	customer_id?: Prisma.SortOrder
 	status?: Prisma.SortOrder
 	canceled_at?: Prisma.SortOrder
 	created_at?: Prisma.SortOrder
@@ -540,6 +562,7 @@ export type EnumSubscriptionStatusFieldUpdateOperationsInput = {
 export type SubscriptionCreateWithoutUserInput = {
 	id?: string
 	billing_subscription_id: string
+	customer_id: string
 	status?: $Enums.SubscriptionStatus
 	canceled_at?: Date | string | null
 	created_at?: Date | string
@@ -549,6 +572,7 @@ export type SubscriptionCreateWithoutUserInput = {
 export type SubscriptionUncheckedCreateWithoutUserInput = {
 	id?: string
 	billing_subscription_id: string
+	customer_id: string
 	status?: $Enums.SubscriptionStatus
 	canceled_at?: Date | string | null
 	created_at?: Date | string
@@ -609,6 +633,7 @@ export type SubscriptionScalarWhereInput = {
 	id?: Prisma.UuidFilter<"Subscription"> | string
 	user_id?: Prisma.UuidFilter<"Subscription"> | string
 	billing_subscription_id?: Prisma.StringFilter<"Subscription"> | string
+	customer_id?: Prisma.StringFilter<"Subscription"> | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFilter<"Subscription">
 		| $Enums.SubscriptionStatus
@@ -624,6 +649,7 @@ export type SubscriptionScalarWhereInput = {
 export type SubscriptionCreateManyUserInput = {
 	id?: string
 	billing_subscription_id: string
+	customer_id: string
 	status?: $Enums.SubscriptionStatus
 	canceled_at?: Date | string | null
 	created_at?: Date | string
@@ -633,6 +659,7 @@ export type SubscriptionCreateManyUserInput = {
 export type SubscriptionUpdateWithoutUserInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string
 	billing_subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
+	customer_id?: Prisma.StringFieldUpdateOperationsInput | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput
 		| $Enums.SubscriptionStatus
@@ -648,6 +675,7 @@ export type SubscriptionUpdateWithoutUserInput = {
 export type SubscriptionUncheckedUpdateWithoutUserInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string
 	billing_subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
+	customer_id?: Prisma.StringFieldUpdateOperationsInput | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput
 		| $Enums.SubscriptionStatus
@@ -663,6 +691,7 @@ export type SubscriptionUncheckedUpdateWithoutUserInput = {
 export type SubscriptionUncheckedUpdateManyWithoutUserInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string
 	billing_subscription_id?: Prisma.StringFieldUpdateOperationsInput | string
+	customer_id?: Prisma.StringFieldUpdateOperationsInput | string
 	status?:
 		| Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput
 		| $Enums.SubscriptionStatus
@@ -683,6 +712,7 @@ export type SubscriptionSelect<
 		id?: boolean
 		user_id?: boolean
 		billing_subscription_id?: boolean
+		customer_id?: boolean
 		status?: boolean
 		canceled_at?: boolean
 		created_at?: boolean
@@ -700,6 +730,7 @@ export type SubscriptionSelectCreateManyAndReturn<
 		id?: boolean
 		user_id?: boolean
 		billing_subscription_id?: boolean
+		customer_id?: boolean
 		status?: boolean
 		canceled_at?: boolean
 		created_at?: boolean
@@ -717,6 +748,7 @@ export type SubscriptionSelectUpdateManyAndReturn<
 		id?: boolean
 		user_id?: boolean
 		billing_subscription_id?: boolean
+		customer_id?: boolean
 		status?: boolean
 		canceled_at?: boolean
 		created_at?: boolean
@@ -730,6 +762,7 @@ export type SubscriptionSelectScalar = {
 	id?: boolean
 	user_id?: boolean
 	billing_subscription_id?: boolean
+	customer_id?: boolean
 	status?: boolean
 	canceled_at?: boolean
 	created_at?: boolean
@@ -743,6 +776,7 @@ export type SubscriptionOmit<
 	| "id"
 	| "user_id"
 	| "billing_subscription_id"
+	| "customer_id"
 	| "status"
 	| "canceled_at"
 	| "created_at"
@@ -781,6 +815,7 @@ export type $SubscriptionPayload<
 			id: string
 			user_id: string
 			billing_subscription_id: string
+			customer_id: string
 			status: $Enums.SubscriptionStatus
 			canceled_at: Date | null
 			created_at: Date
@@ -1400,6 +1435,7 @@ export interface SubscriptionFieldRefs {
 	readonly id: Prisma.FieldRef<"Subscription", "String">
 	readonly user_id: Prisma.FieldRef<"Subscription", "String">
 	readonly billing_subscription_id: Prisma.FieldRef<"Subscription", "String">
+	readonly customer_id: Prisma.FieldRef<"Subscription", "String">
 	readonly status: Prisma.FieldRef<"Subscription", "SubscriptionStatus">
 	readonly canceled_at: Prisma.FieldRef<"Subscription", "DateTime">
 	readonly created_at: Prisma.FieldRef<"Subscription", "DateTime">

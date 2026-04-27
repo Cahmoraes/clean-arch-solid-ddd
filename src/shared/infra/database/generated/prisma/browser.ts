@@ -12,10 +12,10 @@
  * 🟢 You can import this file directly.
  */
 
-import * as Prisma from "./internal/prismaNamespaceBrowser.js"
+import * as Prisma from "./internal/prismaNamespaceBrowser"
 
-export * as $Enums from "./enums.js"
-export * from "./enums.js"
+export * as $Enums from "./enums"
+export * from "./enums"
 export { Prisma }
 /**
  * Model User
@@ -37,3 +37,8 @@ export type Gym = Prisma.GymModel
  *
  */
 export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model StripeWebhookEvent
+ *
+ */
+export type StripeWebhookEvent = Prisma.StripeWebhookEventModel

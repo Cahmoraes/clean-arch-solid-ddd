@@ -15,10 +15,10 @@
  */
 
 import * as runtime from "@prisma/client/runtime/client"
-import type * as Prisma from "../models.js"
-import { type PrismaClient } from "./class.js"
+import type * as Prisma from "../models"
+import { type PrismaClient } from "./class"
 
-export type * from "../models.js"
+export type * from "../models"
 
 export type DMMF = typeof runtime.DMMF
 
@@ -418,6 +418,7 @@ export const ModelName = {
 	CheckIn: "CheckIn",
 	Gym: "Gym",
 	Subscription: "Subscription",
+	StripeWebhookEvent: "StripeWebhookEvent",
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -439,7 +440,12 @@ export type TypeMap<
 		omit: GlobalOmitOptions
 	}
 	meta: {
-		modelProps: "user" | "checkIn" | "gym" | "subscription"
+		modelProps:
+			| "user"
+			| "checkIn"
+			| "gym"
+			| "subscription"
+			| "stripeWebhookEvent"
 		txIsolationLevel: TransactionIsolationLevel
 	}
 	model: {
@@ -747,6 +753,82 @@ export type TypeMap<
 				}
 			}
 		}
+		StripeWebhookEvent: {
+			payload: Prisma.$StripeWebhookEventPayload<ExtArgs>
+			fields: Prisma.StripeWebhookEventFieldRefs
+			operations: {
+				findUnique: {
+					args: Prisma.StripeWebhookEventFindUniqueArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload> | null
+				}
+				findUniqueOrThrow: {
+					args: Prisma.StripeWebhookEventFindUniqueOrThrowArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+				}
+				findFirst: {
+					args: Prisma.StripeWebhookEventFindFirstArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload> | null
+				}
+				findFirstOrThrow: {
+					args: Prisma.StripeWebhookEventFindFirstOrThrowArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+				}
+				findMany: {
+					args: Prisma.StripeWebhookEventFindManyArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>[]
+				}
+				create: {
+					args: Prisma.StripeWebhookEventCreateArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+				}
+				createMany: {
+					args: Prisma.StripeWebhookEventCreateManyArgs<ExtArgs>
+					result: BatchPayload
+				}
+				createManyAndReturn: {
+					args: Prisma.StripeWebhookEventCreateManyAndReturnArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>[]
+				}
+				delete: {
+					args: Prisma.StripeWebhookEventDeleteArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+				}
+				update: {
+					args: Prisma.StripeWebhookEventUpdateArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+				}
+				deleteMany: {
+					args: Prisma.StripeWebhookEventDeleteManyArgs<ExtArgs>
+					result: BatchPayload
+				}
+				updateMany: {
+					args: Prisma.StripeWebhookEventUpdateManyArgs<ExtArgs>
+					result: BatchPayload
+				}
+				updateManyAndReturn: {
+					args: Prisma.StripeWebhookEventUpdateManyAndReturnArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>[]
+				}
+				upsert: {
+					args: Prisma.StripeWebhookEventUpsertArgs<ExtArgs>
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$StripeWebhookEventPayload>
+				}
+				aggregate: {
+					args: Prisma.StripeWebhookEventAggregateArgs<ExtArgs>
+					result: runtime.Types.Utils.Optional<Prisma.AggregateStripeWebhookEvent>
+				}
+				groupBy: {
+					args: Prisma.StripeWebhookEventGroupByArgs<ExtArgs>
+					result: runtime.Types.Utils.Optional<Prisma.StripeWebhookEventGroupByOutputType>[]
+				}
+				count: {
+					args: Prisma.StripeWebhookEventCountArgs<ExtArgs>
+					result:
+						| runtime.Types.Utils.Optional<Prisma.StripeWebhookEventCountAggregateOutputType>
+						| number
+				}
+			}
+		}
 	}
 } & {
 	other: {
@@ -834,6 +916,7 @@ export const SubscriptionScalarFieldEnum = {
 	id: "id",
 	user_id: "user_id",
 	billing_subscription_id: "billing_subscription_id",
+	customer_id: "customer_id",
 	status: "status",
 	canceled_at: "canceled_at",
 	created_at: "created_at",
@@ -842,6 +925,16 @@ export const SubscriptionScalarFieldEnum = {
 
 export type SubscriptionScalarFieldEnum =
 	(typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+export const StripeWebhookEventScalarFieldEnum = {
+	id: "id",
+	event_id: "event_id",
+	event_type: "event_type",
+	processed_at: "processed_at",
+} as const
+
+export type StripeWebhookEventScalarFieldEnum =
+	(typeof StripeWebhookEventScalarFieldEnum)[keyof typeof StripeWebhookEventScalarFieldEnum]
 
 export const SortOrder = {
 	asc: "asc",
@@ -1098,6 +1191,7 @@ export type GlobalOmitConfig = {
 	checkIn?: Prisma.CheckInOmit
 	gym?: Prisma.GymOmit
 	subscription?: Prisma.SubscriptionOmit
+	stripeWebhookEvent?: Prisma.StripeWebhookEventOmit
 }
 
 /* Types for Logging */
