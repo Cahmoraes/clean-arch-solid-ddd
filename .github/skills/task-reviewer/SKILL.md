@@ -1,5 +1,5 @@
 ---
-name: task-review
+name: task-reviewer
 description: Reviews completed task implementations against project code standards, TypeScript compilation, and test suites. Classifies issues by severity (critical, major, minor, positive) and generates a structured review artifact. Use when a task has been completed and needs quality validation before proceeding. Do not use for full code review of branches, QA testing, or bug fixing.
 ---
 
@@ -8,7 +8,7 @@ description: Reviews completed task implementations against project code standar
 ## Procedures
 
 **Step 1: Identify the Task**
-1. Search for task files matching the pattern `*_task.md` in the project (check `tasks/`, `.claude/tasks/`, `docs/tasks/`, or the project root).
+1. Search for task files matching the pattern `*_task.md` in the project (check `tasks/`, `.claude/tasks/`, `docs/tasks/` `<rootFolder>/task/`, or the project root).
 2. If a task number is provided, find the specific `[num]_task.md` file.
 3. If no task number is provided, find the most recent task file.
 4. Read and understand the task requirements completely.
