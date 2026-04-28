@@ -45,8 +45,9 @@ argument-hint: prd techspec task
 3. Implement solutions without workarounds.
 4. Create and run all task tests before considering the task finished.
 
-**Step 6: Mark Task Complete (Mandatory)**
-1. After successful implementation and tests, mark the task as complete in `tasks.md`.
+**Step 6: Mark Task and Subtask Complete (Mandatory)**
+1. After successful implementation and tests, mark the subtask (subtarefa) as complete in `[num]_task.md`.
+2. After successful implementation and tests and marked all sub-tasks, mark the task as complete in `tasks.md`.
 
 **Step 7: Review (Mandatory)**
 1. Execute the `task-reviewer` agent to review the implementation.

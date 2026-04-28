@@ -18,5 +18,6 @@ interface User {
 declare module "fastify" {
 	interface FastifyRequest {
 		user: User
+		rawBody?: string | Buffer
 	}
 }
