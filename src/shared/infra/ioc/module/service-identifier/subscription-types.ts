@@ -15,5 +15,9 @@ export const SUBSCRIPTION_TYPES = {
 	},
 	REPOSITORIES: {
 		Subscription: Symbol.for("SubscriptionRepository"),
+		StripeWebhookEvent: Symbol.for("StripeWebhookEventRepository"),
+	},
+	WORKERS: {
+		StripeWebhook: Symbol.for("StripeWebhookWorker"),
 	},
 } as const
