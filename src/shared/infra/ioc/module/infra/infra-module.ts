@@ -1,5 +1,4 @@
 import { ContainerModule } from "inversify"
-
 import { JsonWebTokenAdapter } from "@/shared/infra/auth/json-web-token-adapter"
 import { QueueController } from "@/shared/infra/controller/queue-controller"
 import { CookieAdapter } from "@/shared/infra/cookie/cookie-adapter"
@@ -13,12 +12,12 @@ import { UnitOfWorkProvider } from "@/shared/infra/database/repository/unit-of-w
 import { MailerGatewayMemory } from "@/shared/infra/gateway/mailer-gateway-memory"
 import { NodeMailerAdapter } from "@/shared/infra/gateway/node-mailer-adapter"
 import { WinstonAdapter } from "@/shared/infra/logger/winston-adapter"
-import { BullMQAdapter } from "@/shared/infra/queue/bullmq-adapter"
 import { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 import { SHARED_TYPES } from "../../types"
 import { CacheDBProvider } from "./cache-db-provider"
 import { MailerProvider } from "./mailer-provider"
 import { QueueProvider } from "./queue-provider"
+import { WorkerProvider } from "./worker-provider"
 
 export const infraModule = new ContainerModule(({ bind }) => {
 	bind(SHARED_TYPES.Prisma.Client).toConstantValue(prismaClient)
@@ -42,5 +41,7 @@ export const infraModule = new ContainerModule(({ bind }) => {
 	bind(SHARED_TYPES.UnitOfWork).toDynamicValue(UnitOfWorkProvider.provide)
 	bind(SHARED_TYPES.CronJob).to(NodeCronAdapter)
 	bind(SHARED_TYPES.Task.UpdateUserProfileCache).to(UpdateUserProfileCacheTask)
-	bind(SHARED_TYPES.Worker).to(BullMQAdapter).inSingletonScope()
+	bind(SHARED_TYPES.Worker)
+		.toDynamicValue(WorkerProvider.provide)
+		.inSingletonScope()
 })

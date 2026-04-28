@@ -2,7 +2,6 @@ import type { FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
 import { z } from "zod"
 import { fromError, type ValidationError } from "zod-validation-error"
-
 import {
 	type Either,
 	type Failure,
@@ -24,7 +23,6 @@ import type {
 } from "@/user/application/use-case/create-user.usecase"
 import type { UserValidationErrors } from "@/user/domain/user"
 import { RoleValues } from "@/user/domain/value-object/role"
-
 import { UserRoutes } from "./routes/user-routes"
 
 const createUserRequestSchema = z.object({
@@ -69,7 +67,6 @@ export class CreateUserController implements Controller {
 	}
 
 	private async callback(req: FastifyRequest) {
-		console.log({ raw: req.rawBody })
 		const parseBodyResult = this.parseBodyOrError(req.body)
 		if (parseBodyResult.isFailure()) {
 			return ResponseFactory.BAD_REQUEST({
