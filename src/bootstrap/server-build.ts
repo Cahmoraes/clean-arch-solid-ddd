@@ -14,6 +14,7 @@ import { setupUserModule } from "./setup-user-module"
 
 export interface ModuleControllers {
 	controllers: Controller[]
+	workers?: Controller[]
 }
 
 export async function serverBuild() {
@@ -22,14 +23,19 @@ export async function serverBuild() {
 	await queue.connect()
 	const queueController = resolve(SHARED_TYPES.Controllers.Queue)
 	queueController.init()
-	initializeControllers([
-		...setupUserModule().controllers,
-		...setupGymModule().controllers,
-		...setupCheckInModule().controllers,
-		...setupSessionModule().controllers,
-		...setupHealthCheckModule().controllers,
-		...setupSubscriptionModule().controllers,
-	])
+
+	const modules = [
+		setupUserModule(),
+		setupGymModule(),
+		setupCheckInModule(),
+		setupSessionModule(),
+		setupHealthCheckModule(),
+		setupSubscriptionModule(),
+	]
+
+	initializeControllers(modules.flatMap((m) => m.controllers))
+	initializeWorkers(modules.flatMap((m) => m.workers ?? []))
+
 	queue.publish(EXCHANGES.LOG, {
 		message: "Server started",
 	})
@@ -42,6 +48,12 @@ export async function serverBuild() {
 function initializeControllers(controllers: Controller[]): void {
 	for (const controller of controllers) {
 		controller.init()
+	}
+}
+
+function initializeWorkers(workers: Controller[]): void {
+	for (const worker of workers) {
+		worker.init()
 	}
 }
 

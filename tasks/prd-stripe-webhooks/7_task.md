@@ -27,15 +27,15 @@ Registrar todos os novos componentes no container de inversão de controle (Inve
 
 ## Subtarefas
 
-- [ ] 7.1 Atualizar `src/shared/infra/ioc/module/service-identifier/subscription-types.ts` com os novos symbols
-- [ ] 7.2 Atualizar `src/shared/infra/ioc/module/subscription/subscription-module.ts` com os novos bindings
-- [ ] 7.3 Atualizar `src/shared/infra/ioc/module/subscription/subscription-repository-provider.ts` para selecionar `PrismaSubscriptionRepository` em produção
-- [ ] 7.4 Adicionar `STRIPE_WEBHOOK: "stripeWebhook"` em `src/shared/infra/queue/queues.ts`
-- [ ] 7.5 Configurar fila `stripeWebhook` no arquivo de setup de filas do RabbitMQ
-- [ ] 7.6 Atualizar bootstrap do módulo subscription para iniciar o `StripeWebhookWorker`
-- [ ] 7.7 Executar `pnpm fit:validate-dependencies` para validar regras de arquitetura
-- [ ] 7.8 Executar `pnpm build` para confirmar build completo sem erros
-- [ ] 7.9 Executar `pnpm test:run` e `pnpm test:business-flow` para confirmar que nenhum teste existente foi quebrado
+- [x] 7.1 Atualizar `src/shared/infra/ioc/module/service-identifier/subscription-types.ts` com os novos symbols
+- [x] 7.2 Atualizar `src/shared/infra/ioc/module/subscription/subscription-module.ts` com os novos bindings
+- [x] 7.3 Atualizar `src/shared/infra/ioc/module/subscription/subscription-repository-provider.ts` para selecionar `PrismaSubscriptionRepository` em produção
+- [x] 7.4 Adicionar `STRIPE_WEBHOOK: "stripeWebhook"` em `src/shared/infra/queue/queues.ts`
+- [x] 7.5 Configurar fila `stripeWebhook` no arquivo de setup de filas do RabbitMQ
+- [x] 7.6 Atualizar bootstrap do módulo subscription para iniciar o `StripeWebhookWorker`
+- [x] 7.7 Executar `pnpm fit:validate-dependencies` para validar regras de arquitetura
+- [x] 7.8 Executar `pnpm build` para confirmar build completo sem erros
+- [x] 7.9 Executar `pnpm test:run` e `pnpm test:business-flow` para confirmar que nenhum teste existente foi quebrado
 
 ## Detalhes de Implementação
 

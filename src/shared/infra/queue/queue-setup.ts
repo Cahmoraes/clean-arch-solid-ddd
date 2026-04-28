@@ -1,7 +1,5 @@
 import "reflect-metadata"
-
 import type { Channel } from "amqplib"
-
 import { container } from "../ioc/container"
 import { SHARED_TYPES } from "../ioc/types"
 import { EXCHANGES } from "./exchanges"
@@ -18,11 +16,13 @@ async function queueSetup() {
 	await createExchange(channel, EXCHANGES.LOG)
 	await createExchange(channel, EXCHANGES.PASSWORD_CHANGED)
 	await createExchange(channel, EXCHANGES.CHECK_IN_CREATED)
+	await createExchange(channel, EXCHANGES.STRIPE_WEBHOOK)
 	//  Create queues
 	await createQueue(channel, QUEUES.SEND_WELCOME_EMAIL)
 	await createQueue(channel, QUEUES.LOG)
 	await createQueue(channel, QUEUES.NOTIFY_PASSWORD_CHANGED)
 	await createQueue(channel, QUEUES.CHECK_IN)
+	await createQueue(channel, QUEUES.STRIPE_WEBHOOK)
 	// Bind queues to exchanges
 	await bindQueueToExchange(
 		channel,
@@ -34,6 +34,11 @@ async function queueSetup() {
 		channel,
 		QUEUES.CHECK_IN,
 		EXCHANGES.CHECK_IN_CREATED,
+	)
+	await bindQueueToExchange(
+		channel,
+		QUEUES.STRIPE_WEBHOOK,
+		EXCHANGES.STRIPE_WEBHOOK,
 	)
 	// Close connection
 	await channel.close()

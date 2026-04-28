@@ -8,4 +8,4 @@
 - [x] 4.0 Criar Erros de Domínio e Use Cases
 - [x] 5.0 Implementar StripeWebhookWorker
 - [x] 6.0 Completar StripeWebhookController
-- [ ] 7.0 Configurar IoC, Bootstrap e Fila
+- [x] 7.0 Configurar IoC, Bootstrap e Fila
