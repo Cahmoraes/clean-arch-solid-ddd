@@ -6,8 +6,9 @@ import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/c
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
 import { CreateCustomerController } from "@/subscription/infra/controller/create-customer-controller"
 import { StripeWebhookController } from "@/subscription/infra/controller/stripe-webhook.controller"
-
+import { StripeWebhookWorker } from "@/subscription/infra/worker/stripe-webhook-worker"
 import { SUBSCRIPTION_TYPES } from "../service-identifier/subscription-types"
+import { StripeWebhookEventRepositoryProvider } from "./stripe-webhook-event-repository-provider"
 import { SubscriptionGatewayProvider } from "./subscription-gateway-provider"
 import { SubscriptionRepositoryProvider } from "./subscription-repository-provider"
 
@@ -17,6 +18,9 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 		.inSingletonScope()
 	bind(SUBSCRIPTION_TYPES.REPOSITORIES.Subscription)
 		.toDynamicValue(SubscriptionRepositoryProvider.provide)
+		.inSingletonScope()
+	bind(SUBSCRIPTION_TYPES.REPOSITORIES.StripeWebhookEvent)
+		.toDynamicValue(StripeWebhookEventRepositoryProvider.provide)
 		.inSingletonScope()
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreateCustomer).to(
 		CreateCustomerController,
@@ -35,4 +39,7 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 		HandlePaymentFailedUseCase,
 	)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.StripeWebhook).to(StripeWebhookController)
+	bind(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)
+		.to(StripeWebhookWorker)
+		.inSingletonScope()
 })

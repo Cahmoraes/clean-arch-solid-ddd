@@ -1,11 +1,9 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: for testing */
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
-
 import type { InMemorySubscriptionRepository } from "@/shared/infra/database/repository/in-memory/in-memory-subscription-repository"
 import { TestingSubscriptionGateway } from "@/shared/infra/gateway/testing-subscription-gateway"
 import { container } from "@/shared/infra/ioc/container"
 import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types"
-
 import type {
 	CreateSubscriptionUseCase,
 	CreateSubscriptionUseCaseInput,
@@ -40,7 +38,9 @@ describe("CreateSubscription UseCase", () => {
 
 		await sut.execute(input)
 
-		const subscriptionSaved = await subscriptionRepository.ofUserId(input.userId)
+		const subscriptionSaved = await subscriptionRepository.ofUserId(
+			input.userId,
+		)
 		expect(subscriptionSaved?.id).toBeDefined()
 		expect(subscriptionSaved?.userId).toBe(input.userId)
 		expect(subscriptionSaved?.customerId).toBe(input.customerId)
