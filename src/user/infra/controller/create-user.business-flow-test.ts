@@ -1,6 +1,5 @@
 import request from "supertest"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
-
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
@@ -8,7 +7,6 @@ import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
-
 import { UserRoutes } from "./routes/user-routes"
 
 describe("Cadastrar Usuário", () => {
@@ -82,7 +80,7 @@ describe("Cadastrar Usuário", () => {
 
 		expect(result.status).toBe(HTTP_STATUS.BAD_REQUEST)
 		expect(result.body).toEqual({
-			message: 'Validation error: Invalid email at "email"',
+			message: 'Validation error: Invalid email address at "email"',
 		})
 	})
 

@@ -1,5 +1,5 @@
+import { Readable } from "node:stream"
 import fastifyCors from "@fastify/cors"
-import fastifyRateLimit from "@fastify/rate-limit"
 import fastifySwagger from "@fastify/swagger"
 import fastifySwaggerUI from "@fastify/swagger-ui"
 import fastify, {
@@ -11,7 +11,6 @@ import fastify, {
 	type RawServerDefault,
 	type RouteHandler,
 } from "fastify"
-import rawBody from "fastify-raw-body"
 import { inject, injectable } from "inversify"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { Logger as LoggerDecorate } from "../decorator/logger"
@@ -38,26 +37,17 @@ export class FastifyAdapter implements HttpServer {
 	) {
 		this._server = fastify({})
 		this.bindMethods()
-		this.rateLimit()
 	}
 
 	private bindMethods(): void {
 		this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
 	}
 
-	private async rateLimit(): Promise<void> {
-		await this._server.register(fastifyRateLimit, {
-			global: true,
-			max: 1,
-			timeWindow: "1 minute",
-		})
-	}
-
 	private async initialize(): Promise<void> {
 		void this.setupErrorHandler()
 		await this.setupCORS()
 		await this.setupSwagger()
-		await this.setupRawBody()
+		this.setupRawBody()
 	}
 
 	private async setupCORS(): Promise<void> {
@@ -75,10 +65,19 @@ export class FastifyAdapter implements HttpServer {
 		)
 	}
 
-	private async setupRawBody(): Promise<void> {
-		this._server.register(rawBody, {
-			field: "rawBody",
-		})
+	private setupRawBody(): void {
+		this._server.addHook(
+			"preParsing",
+			async (request: FastifyRequest, _reply: FastifyReply, payload) => {
+				const chunks: Buffer[] = []
+				for await (const chunk of payload as AsyncIterable<Buffer | string>) {
+					chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+				}
+				const body = Buffer.concat(chunks)
+				request.rawBody = body.toString("utf8")
+				return Readable.from(body) as NodeJS.ReadableStream
+			},
+		)
 	}
 
 	private setupErrorHandler(): void {
@@ -199,6 +198,7 @@ export class FastifyAdapter implements HttpServer {
 	}
 
 	public async close(): Promise<void> {
-		return this._server.close()
+		this._server.server.closeAllConnections?.()
+		await this._server.close()
 	}
 }
