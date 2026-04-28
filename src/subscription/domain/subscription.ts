@@ -109,4 +109,9 @@ export class Subscription {
 		this._canceledAt = new Date()
 		this._updatedAt = new Date()
 	}
+
+	public markAsPastDue(): void {
+		this._status = "past_due"
+		this._updatedAt = new Date()
+	}
 }

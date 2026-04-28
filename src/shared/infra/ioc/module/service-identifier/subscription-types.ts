@@ -7,6 +7,7 @@ export const SUBSCRIPTION_TYPES = {
 		CreateSubscription: Symbol.for("CreateSubscriptionUseCase"),
 		ActivateSubscription: Symbol.for("ActivateSubscriptionUseCase"),
 		CancelSubscription: Symbol.for("CancelSubscriptionUseCase"),
+		HandlePaymentFailed: Symbol.for("HandlePaymentFailedUseCase"),
 	},
 	CONTROLLERS: {
 		CreateCustomer: Symbol.for("CreateSubscriptionController"),
