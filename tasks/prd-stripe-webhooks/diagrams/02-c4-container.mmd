@@ -1,0 +1,23 @@
+C4Container
+    title Visão de Container — Processamento Assíncrono de Webhooks
+
+    System_Ext(stripe, "Stripe", "Dispara eventos de ciclo de vida")
+    Person(usuario, "Usuário")
+
+    Container_Boundary(plataforma, "Plataforma") {
+        Container(controller, "StripeWebhookController", "Fastify / TypeScript", "Valida stripe-signature criptograficamente. Responde 200 imediatamente. Publica evento na fila.")
+        Container(gateway, "StripeSubscriptionGateway", "Stripe SDK", "Encapsula stripe.webhooks.constructEvent(). Lança StripeSignatureVerificationError se inválida.")
+        Container(queue, "RabbitMQ", "Message Broker", "Fila: stripeWebhook. Desacopla validação HTTP do processamento de negócio.")
+        Container(worker, "StripeWebhookWorker", "Node.js / TypeScript", "Consumer da fila. Garante idempotência via INSERT-first. Roteia por event.type para os use cases.")
+        Container(usecases, "Use Cases", "TypeScript", "ActivateSubscriptionUseCase / CancelSubscriptionUseCase / HandlePaymentFailedUseCase")
+        ContainerDb(db, "PostgreSQL", "Prisma ORM", "Tabelas: subscriptions (+ customer_id), users, stripe_webhook_events")
+    }
+
+    Rel(stripe, controller, "POST /webhook/stripe", "HTTPS")
+    Rel(controller, gateway, "createEventWebhook(rawBody, sig)")
+    Rel(controller, queue, "publish(stripeWebhook, payload)", "AMQP")
+    Rel(queue, worker, "consume(stripeWebhook)", "AMQP")
+    Rel(worker, usecases, "execute(input, tx)")
+    Rel(worker, db, "INSERT stripe_webhook_events", "Prisma + tx")
+    Rel(usecases, db, "UPDATE subscriptions + users", "Prisma + tx")
+    Rel(usuario, controller, "Acessa recursos protegidos", "HTTPS")
