@@ -1,0 +1,53 @@
+sequenceDiagram
+    participant Stripe
+    participant Ctrl as StripeWebhookController
+    participant GW as StripeSubscriptionGateway
+    participant MQ as RabbitMQ
+    participant Worker as StripeWebhookWorker
+    participant IdRepo as PrismaStripeWebhookEventRepository
+    participant UC as Use Case
+    participant SubRepo as PrismaSubscriptionRepository
+    participant DB as PostgreSQL
+
+    Stripe->>Ctrl: POST /webhook/stripe (stripe-signature)
+
+    Ctrl->>GW: createEventWebhook(rawBody, signature)
+
+    alt Assinatura inválida
+        GW-->>Ctrl: StripeSignatureVerificationError
+        Ctrl-->>Stripe: 400 Bad Request
+    else Assinatura válida
+        GW-->>Ctrl: Stripe.Event
+        Ctrl->>MQ: publish("stripeWebhook", payload)
+        Ctrl-->>Stripe: 200 OK (imediato — sem aguardar negócio)
+
+        Note over MQ,DB: Processamento assíncrono desacoplado
+        MQ->>Worker: consume(payload)
+        Worker->>DB: BEGIN TRANSACTION
+
+        Worker->>IdRepo: markAsProcessed(eventId, eventType, tx)
+        alt eventId já processado (duplicata)
+            DB-->>Worker: UniqueConstraintViolation
+            Worker->>DB: ROLLBACK
+            Note over Worker: ack + ignora silenciosamente (idempotência garantida)
+        else Evento novo
+            DB-->>Worker: INSERT OK
+            Worker->>UC: execute(input, tx)
+
+            UC->>SubRepo: ofBillingSubscriptionId() ou ofCustomerId()
+            SubRepo->>DB: SELECT subscriptions
+            DB-->>SubRepo: Subscription + User
+
+            alt Subscription não encontrada
+                UC-->>Worker: failure(SubscriptionNotFoundError)
+                Worker->>DB: ROLLBACK
+                Note over Worker: loga warn, faz ack (não reenvia ao Stripe)
+            else Subscription encontrada
+                UC->>SubRepo: update(subscription, tx)
+                UC->>SubRepo: update(user, tx)
+                UC-->>Worker: success()
+                Worker->>DB: COMMIT
+                Note over DB: INSERT idempotência + UPDATE subscription + UPDATE user — atômicos
+            end
+        end
+    end

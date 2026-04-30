@@ -1,0 +1,82 @@
+classDiagram
+    direction TB
+
+    class Subscription {
+        +Id id
+        +string userId
+        +string billingSubscriptionId
+        +string customerId
+        +SubscriptionStatus status
+        +Date canceledAt
+        +static create(props) Either
+        +static restore(props) Subscription
+        +activate() void
+        +cancel() void
+        +markAsPastDue() void
+    }
+
+    class SubscriptionRepository {
+        <<interface>>
+        +save(subscription) Promise~void~
+        +update(subscription) Promise~void~
+        +ofId(id) Promise~Subscription~
+        +ofUserId(userId) Promise~Subscription~
+        +ofBillingSubscriptionId(id) Promise~Subscription~
+        +ofCustomerId(customerId) Promise~Subscription~
+        +withTransaction(tx) SubscriptionRepository
+    }
+
+    class StripeWebhookEventRepository {
+        <<interface>>
+        +markAsProcessed(eventId, eventType) Promise~void~
+        +withTransaction(tx) StripeWebhookEventRepository
+    }
+
+    class ActivateSubscriptionUseCase {
+        +execute(input, tx?) Either~Error, void~
+    }
+
+    class CancelSubscriptionUseCase {
+        +execute(input, tx?) Either~Error, void~
+    }
+
+    class HandlePaymentFailedUseCase {
+        +execute(input, tx?) Either~Error, void~
+    }
+
+    class StripeWebhookWorker {
+        +init() Promise~void~
+        -handle(payload) Promise~void~
+        -routeEvent(event, tx) Promise~void~
+    }
+
+    class PrismaSubscriptionRepository {
+        +ofBillingSubscriptionId(id) Promise
+        +ofCustomerId(id) Promise
+    }
+
+    class PrismaStripeWebhookEventRepository {
+        +markAsProcessed(eventId, type) Promise
+    }
+
+    class InMemorySubscriptionRepository {
+        +ofBillingSubscriptionId(id) Promise
+        +ofCustomerId(id) Promise
+    }
+
+    SubscriptionRepository <|.. PrismaSubscriptionRepository : implements
+    SubscriptionRepository <|.. InMemorySubscriptionRepository : implements
+    StripeWebhookEventRepository <|.. PrismaStripeWebhookEventRepository : implements
+
+    ActivateSubscriptionUseCase --> SubscriptionRepository : usa
+    CancelSubscriptionUseCase --> SubscriptionRepository : usa
+    HandlePaymentFailedUseCase --> SubscriptionRepository : usa
+
+    StripeWebhookWorker --> ActivateSubscriptionUseCase : delega
+    StripeWebhookWorker --> CancelSubscriptionUseCase : delega
+    StripeWebhookWorker --> HandlePaymentFailedUseCase : delega
+    StripeWebhookWorker --> StripeWebhookEventRepository : idempotência
+
+    ActivateSubscriptionUseCase ..> Subscription : activate()
+    CancelSubscriptionUseCase ..> Subscription : cancel()
+    HandlePaymentFailedUseCase ..> Subscription : markAsPastDue()
