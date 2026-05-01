@@ -26,16 +26,16 @@ Adicionar schemas OpenAPI completos nos 6 controllers dos domínios Session (3),
 
 ## Subtarefas
 
-- [ ] 5.1 Adicionar schema em `AuthenticateController` (POST /sessions — público)
-- [ ] 5.2 Adicionar schema em `RefreshTokenController` (POST /sessions/refresh — público)
-- [ ] 5.3 Adicionar schema em `LogoutController` (POST /sessions/logout — protegido)
-- [ ] 5.4 Adicionar schema em `CreateGymController` (POST /gyms — protegido, ADMIN)
-- [ ] 5.5 Adicionar schema em `SearchGymController` (GET /gyms/search/:name — protegido)
-- [ ] 5.6 Adicionar schema em `CheckInController` (POST /check-ins — protegido, ADMIN)
-- [ ] 5.7 Adicionar schema em `ValidateCheckInController` (POST /check-ins/validate — protegido, ADMIN)
-- [ ] 5.8 Adicionar schema em `MetricsController` (GET /check-ins/metrics/:userId — protegido)
-- [ ] 5.9 Verificar que `/documentation` exibe todos os endpoints desses domínios
-- [ ] 5.10 Executar `pnpm tsc:check`, `pnpm biome:fix` e `pnpm test:run`
+- [x] 5.1 Adicionar schema em `AuthenticateController` (POST /sessions — público)
+- [x] 5.2 Adicionar schema em `RefreshTokenController` (POST /sessions/refresh — público)
+- [x] 5.3 Adicionar schema em `LogoutController` (POST /sessions/logout — protegido)
+- [x] 5.4 Adicionar schema em `CreateGymController` (POST /gyms — protegido, ADMIN)
+- [x] 5.5 Adicionar schema em `SearchGymController` (GET /gyms/search/:name — protegido)
+- [x] 5.6 Adicionar schema em `CheckInController` (POST /check-ins — protegido, ADMIN)
+- [x] 5.7 Adicionar schema em `ValidateCheckInController` (POST /check-ins/validate — protegido, ADMIN)
+- [x] 5.8 Adicionar schema em `MetricsController` (GET /check-ins/metrics/:userId — protegido)
+- [x] 5.9 Verificar que `/documentation` exibe todos os endpoints desses domínios
+- [x] 5.10 Executar `pnpm tsc:check`, `pnpm biome:fix` e `pnpm test:run`
 
 ## Detalhes de Implementação
 
