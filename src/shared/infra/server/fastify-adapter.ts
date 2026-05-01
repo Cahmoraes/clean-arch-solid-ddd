@@ -36,35 +36,38 @@ export class FastifyAdapter implements HttpServer {
 		@inject(SHARED_TYPES.Logger)
 		private readonly logger: Logger,
 	) {
-		this._server = fastify({})
+		this._server = fastify({
+			ajv: {
+				customOptions: {
+					keywords: ["example"],
+				},
+			},
+		})
 		this.bindMethods()
+		this.registerSwaggerEarly()
 	}
 
 	private bindMethods(): void {
 		this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
 	}
 
+	private registerSwaggerEarly(): void {
+		this._server.register(fastifySwagger, FastifySwaggerSetupFactory.create())
+		this._server.register(
+			fastifySwaggerUI,
+			FastifySwaggerUISetupFactory.create(),
+		)
+	}
+
 	private async initialize(): Promise<void> {
 		void this.setupErrorHandler()
 		await this.setupCORS()
-		await this.setupSwagger()
 		this.setupRawBody()
 		this.setupResponseValidation()
 	}
 
 	private async setupCORS(): Promise<void> {
 		await this._server.register(fastifyCors)
-	}
-
-	private async setupSwagger(): Promise<void> {
-		await this._server.register(
-			fastifySwagger,
-			FastifySwaggerSetupFactory.create(),
-		)
-		await this._server.register(
-			fastifySwaggerUI,
-			FastifySwaggerUISetupFactory.create(),
-		)
 	}
 
 	private setupRawBody(): void {
@@ -198,9 +201,22 @@ export class FastifyAdapter implements HttpServer {
 		return this._server.server
 	}
 
-	public async ready(): Promise<undefined> {
+	private _initialized = false
+
+	public async prepare(): Promise<void> {
+		if (this._initialized) return
+		this._initialized = true
 		await this.initialize()
+		await this._server.after()
+	}
+
+	public async ready(): Promise<undefined> {
+		await this.prepare()
 		await this._server.ready()
+	}
+
+	public swagger(): unknown {
+		return this._server.swagger()
 	}
 
 	public async close(): Promise<void> {
