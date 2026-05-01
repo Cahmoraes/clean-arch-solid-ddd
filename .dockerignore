@@ -1,0 +1,58 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnpm-store
+
+# Build artifacts
+build
+dist
+coverage
+*.tsbuildinfo
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+*.swp
+
+# Tests
+test
+**/*.test.ts
+**/*.business-flow-test.ts
+**/*.spec.ts
+
+# Documentation
+docs
+reports
+tasks
+*.md
+!README.md
+
+# Misc
+dependency-graph.svg
+supabase-schema.sql
+api.http
+.dependency-cruiser.js
+
+# Docker (não precisa entrar no contexto)
+Dockerfile
+.dockerignore
+compose.yaml
+
+# Prisma local data
+prisma/dev.db
+prisma/*.db
+prisma/*.db-journal
