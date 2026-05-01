@@ -7,7 +7,7 @@ import ExtendedSet from "@cahmoraes93/extended-set"
 import type { DomainEvent } from "./domain-event"
 import type { EventTypes } from "./events"
 
-export type Subscriber<T> = (event: DomainEvent<T>) => void
+export type Subscriber<T> = (event: DomainEvent<T>) => void | Promise<void>
 
 export class DomainEventPublisher {
 	private static _instance: DomainEventPublisher
@@ -44,11 +44,18 @@ export class DomainEventPublisher {
 		subscribers.delete(subscriber)
 	}
 
-	public publish<T>(domainEvent: DomainEvent<T>): void {
+	public async publish<T>(domainEvent: DomainEvent<T>): Promise<void> {
 		if (!this.subscribers.has(domainEvent.eventName)) return
 		const subscribers = this.subscribers.get(domainEvent.eventName)!
 		for (const subscriber of subscribers) {
-			subscriber(domainEvent)
+			try {
+				await subscriber(domainEvent)
+			} catch (error) {
+				console.error(
+					`[DomainEventPublisher] Subscriber failed for event "${domainEvent.eventName}":`,
+					error,
+				)
+			}
 		}
 	}
 }
