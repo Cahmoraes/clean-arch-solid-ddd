@@ -12,6 +12,7 @@ import { ResponseFactory } from "@/shared/infra/controller/factory/response-fact
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { BillingCustomerNotProvisionedError } from "@/subscription/application/error/billing-customer-not-provisioned-error"
 import type { CreateSubscriptionUseCase } from "@/subscription/application/use-case/create-subscription.usecase"
@@ -19,8 +20,27 @@ import type { UserRepository } from "@/user/application/persistence/repository/u
 import { SubscriptionRoutes } from "./routes/subscription-routes.js"
 
 const createSubscriptionRequestSchema = z.object({
-	priceId: z.string().min(1),
-	paymentMethodId: z.string().min(1),
+	priceId: z
+		.string()
+		.min(1)
+		.meta({ description: "Stripe Price ID", example: "price_1abc123" }),
+	paymentMethodId: z.string().min(1).meta({
+		description: "Stripe Payment Method ID",
+		example: "pm_1xyz789",
+	}),
+})
+
+const createSubscriptionResponseSchema = z.object({
+	subscriptionId: z
+		.string()
+		.meta({ description: "Created subscription ID", example: "sub_1abc123" }),
+	status: z
+		.string()
+		.meta({ description: "Subscription status", example: "active" }),
+})
+
+const errorResponseSchema = z.object({
+	message: z.string().meta({ description: "Error message" }),
 })
 
 type CreateSubscriptionPayload = z.infer<typeof createSubscriptionRequestSchema>
@@ -98,42 +118,24 @@ export class CreateSubscriptionController implements Controller {
 }
 
 function makeSwaggerSchema(): Schema {
-	return {
+	return OpenApiSchemaBuilder.build({
 		tags: ["subscriptions"],
 		summary: "Create a Stripe subscription for the authenticated user",
 		description:
 			"Creates a Stripe subscription using a Payment Method tokenized on the frontend.",
-		body: {
-			type: "object",
-			properties: {
-				priceId: { type: "string" },
-				paymentMethodId: { type: "string" },
-			},
-		},
-		response: {
+		body: createSubscriptionRequestSchema,
+		security: true,
+		responses: {
 			201: {
 				description: "Subscription created",
-				type: "object",
-				properties: {
-					subscriptionId: { type: "string" },
-					status: { type: "string" },
-				},
+				schema: createSubscriptionResponseSchema,
 			},
-			400: {
-				description: "Invalid body",
-				type: "object",
-				properties: { message: { type: "string" } },
-			},
-			401: {
-				description: "Unauthorized",
-				type: "object",
-				properties: { message: { type: "string" } },
-			},
+			400: { description: "Invalid body", schema: errorResponseSchema },
+			401: { description: "Unauthorized", schema: errorResponseSchema },
 			409: {
 				description: "Billing customer not provisioned",
-				type: "object",
-				properties: { message: { type: "string" } },
+				schema: errorResponseSchema,
 			},
 		},
-	}
+	})
 }

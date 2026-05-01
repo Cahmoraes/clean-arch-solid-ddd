@@ -12,13 +12,17 @@ import type { Controller } from "@/shared/infra/controller/controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import type { ActiveUserUseCase } from "@/user/application/use-case/active-user.usecase"
 
 import { UserRoutes } from "./routes/user-routes"
 
 const activateUserSchema = z.object({
-	userId: z.string().uuid(),
+	userId: z.string().uuid().meta({
+		description: "User ID to activate",
+		example: "550e8400-e29b-41d4-a716-446655440000",
+	}),
 })
 
 type ActivateUserPayload = z.infer<typeof activateUserSchema>
@@ -42,9 +46,15 @@ export class ActivateUserController implements Controller {
 		message: "✅",
 	})
 	public async init(): Promise<void> {
-		this.httpServer.register("patch", UserRoutes.ACTIVATE_USER, {
-			callback: this.callback,
-		})
+		this.httpServer.register(
+			"patch",
+			UserRoutes.ACTIVATE_USER,
+			{
+				callback: this.callback,
+				isProtected: true,
+			},
+			makeActivateUserSwaggerSchema(),
+		)
 	}
 
 	public async callback(req: FastifyRequest) {
@@ -72,4 +82,27 @@ export class ActivateUserController implements Controller {
 		if (!parseBody.success) return failure(fromError(parseBody.error))
 		return success(parseBody.data)
 	}
+}
+
+const errorResponseSchema = z.object({
+	message: z.string().meta({ description: "Error message" }),
+})
+
+function makeActivateUserSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["users"],
+		summary: "Activate a user",
+		description: "Activate a user account by ID. Requires authentication.",
+		security: true,
+		body: activateUserSchema,
+		responses: {
+			200: { description: "User activated successfully" },
+			400: { description: "Bad Request", schema: errorResponseSchema },
+			401: { description: "Unauthorized" },
+			422: {
+				description: "Unprocessable Entity",
+				schema: errorResponseSchema,
+			},
+		},
+	})
 }

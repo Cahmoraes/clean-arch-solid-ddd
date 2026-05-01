@@ -5,8 +5,10 @@ export class FastifySwaggerUISetupFactory {
 		return {
 			routePrefix: "/documentation",
 			uiConfig: {
-				docExpansion: "full",
-				deepLinking: false,
+				docExpansion: "list",
+				deepLinking: true,
+				tagsSorter: "alpha",
+				operationsSorter: "alpha",
 			},
 			staticCSP: true,
 			transformStaticCSP: (header: string) => header,

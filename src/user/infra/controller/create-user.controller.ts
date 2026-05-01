@@ -15,6 +15,7 @@ import {
 } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { UserAlreadyExistsError } from "@/user/application/error/user-already-exists-error"
 import type {
@@ -26,13 +27,33 @@ import { RoleValues } from "@/user/domain/value-object/role"
 import { UserRoutes } from "./routes/user-routes"
 
 const createUserRequestSchema = z.object({
-	name: z.string(),
-	email: z.string().email(),
-	password: z.string().min(6),
+	name: z.string().meta({ description: "User full name", example: "John Doe" }),
+	email: z
+		.string()
+		.email()
+		.meta({ description: "User email address", example: "john@example.com" }),
+	password: z.string().min(6).meta({
+		description: "User password (min 6 characters)",
+		example: "secret123",
+	}),
 	role: z
 		.enum([RoleValues.ADMIN, RoleValues.MEMBER])
 		.optional()
-		.default("MEMBER"),
+		.default("MEMBER")
+		.meta({ description: "User role", example: "MEMBER" }),
+})
+
+const createUserResponseSchema = z.object({
+	message: z
+		.string()
+		.meta({ description: "Success message", example: "User created" }),
+	email: z
+		.string()
+		.meta({ description: "Created user email", example: "john@example.com" }),
+})
+
+const errorResponseSchema = z.object({
+	message: z.string().meta({ description: "Error message" }),
 })
 
 type CreateUserPayload = z.infer<typeof createUserRequestSchema>
@@ -118,54 +139,22 @@ export class CreateUserController implements Controller {
 }
 
 function makeCreateUserControllerSwaggerSchema(): Schema {
-	return {
+	return OpenApiSchemaBuilder.build({
 		tags: ["users"],
 		summary: "Create a new user",
 		description: "Endpoint to create a new user with role and credentials.",
-		body: {
-			type: "object",
-			properties: {
-				name: { type: "string" },
-				email: { type: "string" },
-				password: { type: "string", minLength: 6 },
-				role: {
-					type: "string",
-					enum: ["ADMIN", "MEMBER"],
-					default: "MEMBER",
-				},
-			},
-			required: ["name", "email", "password"],
-		},
-		response: {
+		body: createUserRequestSchema,
+		responses: {
 			201: {
 				description: "User created successfully",
-				type: "object",
-				properties: {
-					message: { type: "string" },
-					email: { type: "string" },
-				},
+				schema: createUserResponseSchema,
 			},
-			400: {
-				description: "Bad Request",
-				type: "object",
-				properties: {
-					message: { type: "string" },
-				},
-			},
+			400: { description: "Bad Request", schema: errorResponseSchema },
 			409: {
 				description: "Conflict - User already exists",
-				type: "object",
-				properties: {
-					message: { type: "string" },
-				},
+				schema: errorResponseSchema,
 			},
-			422: {
-				description: "Unprocessable Entity",
-				type: "object",
-				properties: {
-					message: { type: "string" },
-				},
-			},
+			422: { description: "Unprocessable Entity", schema: errorResponseSchema },
 		},
-	}
+	})
 }

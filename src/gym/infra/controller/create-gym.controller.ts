@@ -13,17 +13,26 @@ import type { Controller } from "@/shared/infra/controller/controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { GYM_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 
 import { GymRoutes } from "./routes/gym-routes"
 
 const createGymSchema = z.object({
-	cnpj: z.string(),
-	title: z.string(),
-	description: z.string().optional(),
-	phone: z.string().optional(),
-	latitude: z.number(),
-	longitude: z.number(),
+	cnpj: z.string().meta({ description: "Gym CNPJ", example: "12345678000100" }),
+	title: z.string().meta({ description: "Gym name", example: "Iron Gym" }),
+	description: z
+		.string()
+		.optional()
+		.meta({ description: "Gym description", example: "A great gym" }),
+	phone: z
+		.string()
+		.optional()
+		.meta({ description: "Gym phone number", example: "11999999999" }),
+	latitude: z.number().meta({ description: "Gym latitude", example: -23.5505 }),
+	longitude: z
+		.number()
+		.meta({ description: "Gym longitude", example: -46.6333 }),
 })
 
 export type CreateGymPayload = z.infer<typeof createGymSchema>
@@ -47,11 +56,16 @@ export class CreateGymController implements Controller {
 		message: "✅",
 	})
 	public async init(): Promise<void> {
-		this.server.register("post", GymRoutes.CREATE, {
-			callback: this.callback,
-			isProtected: true,
-			onlyAdmin: true,
-		})
+		this.server.register(
+			"post",
+			GymRoutes.CREATE,
+			{
+				callback: this.callback,
+				isProtected: true,
+				onlyAdmin: true,
+			},
+			makeCreateGymSwaggerSchema(),
+		)
 	}
 
 	private async callback(req: FastifyRequest) {
@@ -80,4 +94,41 @@ export class CreateGymController implements Controller {
 		if (!parsedBody.success) return failure(fromError(parsedBody.error))
 		return success(parsedBody.data)
 	}
+}
+
+function makeCreateGymSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["gyms"],
+		summary: "Create a new gym",
+		description:
+			"Create a new gym with location coordinates. Requires ADMIN role",
+		security: true,
+		body: createGymSchema,
+		responses: {
+			201: {
+				description: "Gym created successfully",
+				schema: z.object({
+					message: z
+						.string()
+						.meta({ description: "Success message", example: "Gym created" }),
+					id: z.string().meta({
+						description: "Created gym ID",
+						example: "550e8400-e29b-41d4-a716-446655440000",
+					}),
+				}),
+			},
+			400: {
+				description: "Invalid request body",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+			409: {
+				description: "Conflict - Gym already exists",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+		},
+	})
 }

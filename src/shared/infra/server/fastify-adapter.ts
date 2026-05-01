@@ -20,6 +20,7 @@ import type { Logger } from "../logger/logger"
 import { FastifySwaggerSetupFactory } from "./factories/fastify-swagger-setup-factory"
 import { FastifySwaggerUISetupFactory } from "./factories/fastify-swagger-ui-setup-factory"
 import { GlobalErrorHandler } from "./global-error-handler"
+import { ResponseValidationHook } from "./hooks/response-validation-hook.js"
 import type { HandlerOptions, HttpServer, METHOD, Schema } from "./http-server"
 import { AdminRoleCheck } from "./services/admin-role-check"
 import { AuthenticateHandler } from "./services/authenticate-pre-handler"
@@ -48,6 +49,7 @@ export class FastifyAdapter implements HttpServer {
 		await this.setupCORS()
 		await this.setupSwagger()
 		this.setupRawBody()
+		this.setupResponseValidation()
 	}
 
 	private async setupCORS(): Promise<void> {
@@ -78,6 +80,10 @@ export class FastifyAdapter implements HttpServer {
 				return Readable.from(body) as NodeJS.ReadableStream
 			},
 		)
+	}
+
+	private setupResponseValidation(): void {
+		ResponseValidationHook.register(this._server)
 	}
 
 	private setupErrorHandler(): void {
