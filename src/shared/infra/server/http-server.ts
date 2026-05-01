@@ -31,6 +31,7 @@ export interface Schema {
 	params?: unknown
 	headers?: unknown
 	response?: unknown
+	security?: Array<Record<string, string[]>>
 }
 
 export type Handler = (

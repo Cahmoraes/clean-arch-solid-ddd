@@ -12,18 +12,22 @@ import type { Controller } from "@/shared/infra/controller/controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import type { UpdateUserProfileUseCase } from "@/user/application/use-case/update-user-profile.usecase"
 
 import { UserRoutes } from "./routes/user-routes"
 
 const updateUserProfileRequestSchema = z.object({
-	userId: z.string(),
+	userId: z.string().meta({ description: "User ID", example: "uuid-1234" }),
 })
 
 const updateUserProfileBodySchema = z.object({
-	name: z.string(),
-	email: z.string().email(),
+	name: z.string().meta({ description: "User name", example: "John Doe" }),
+	email: z
+		.string()
+		.email()
+		.meta({ description: "User email", example: "john@example.com" }),
 })
 
 type UpdateUserProfileRequest = z.infer<typeof updateUserProfileRequestSchema>
@@ -48,9 +52,15 @@ export class UpdateUserProfileController implements Controller {
 		message: "✅",
 	})
 	public async init() {
-		this.httpServer.register("patch", UserRoutes.PROFILE, {
-			callback: this.callback,
-		})
+		this.httpServer.register(
+			"patch",
+			UserRoutes.PROFILE,
+			{
+				callback: this.callback,
+				isProtected: true,
+			},
+			makeUpdateUserProfileSwaggerSchema(),
+		)
 	}
 
 	private async callback(req: FastifyRequest) {
@@ -99,4 +109,40 @@ export class UpdateUserProfileController implements Controller {
 		if (!parsedBody.success) return failure(fromError(parsedBody.error))
 		return success(parsedBody.data)
 	}
+}
+
+const updateUserProfileResponseSchema = z.object({
+	message: z
+		.string()
+		.meta({ description: "Success message", example: "User created" }),
+	email: z
+		.string()
+		.meta({ description: "Updated user email", example: "john@example.com" }),
+})
+
+const errorResponseSchema = z.object({
+	message: z.string().meta({ description: "Error message" }),
+})
+
+function makeUpdateUserProfileSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["users"],
+		summary: "Update user profile",
+		description: "Update name and email of a specific user.",
+		security: true,
+		params: updateUserProfileRequestSchema,
+		body: updateUserProfileBodySchema,
+		responses: {
+			201: {
+				description: "User profile updated successfully",
+				schema: updateUserProfileResponseSchema,
+			},
+			400: { description: "Bad Request", schema: errorResponseSchema },
+			401: { description: "Unauthorized" },
+			422: {
+				description: "Unprocessable Entity",
+				schema: errorResponseSchema,
+			},
+		},
+	})
 }

@@ -13,13 +13,17 @@ import type { Controller } from "@/shared/infra/controller/controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { CHECKIN_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 
 import { CheckInRoutes } from "./routes/check-in-routes"
 
 const validateCheckInRequestSchema = z.object({
-	checkInId: z.string(),
+	checkInId: z.string().meta({
+		description: "Check-in ID to validate",
+		example: "550e8400-e29b-41d4-a716-446655440000",
+	}),
 })
 
 type ValidateCheckInPayload = z.infer<typeof validateCheckInRequestSchema>
@@ -43,9 +47,16 @@ export class ValidateCheckInController implements Controller {
 		message: "✅",
 	})
 	public async init(): Promise<void> {
-		this.server.register("post", CheckInRoutes.VALIDATE, {
-			callback: this.callback,
-		})
+		this.server.register(
+			"post",
+			CheckInRoutes.VALIDATE,
+			{
+				callback: this.callback,
+				isProtected: true,
+				onlyAdmin: true,
+			},
+			makeValidateCheckInSwaggerSchema(),
+		)
 	}
 
 	private async callback(req: FastifyRequest) {
@@ -78,4 +89,37 @@ export class ValidateCheckInController implements Controller {
 		if (!parsedBody.success) return failure(fromError(parsedBody.error))
 		return success(parsedBody.data)
 	}
+}
+
+function makeValidateCheckInSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["check-ins"],
+		summary: "Validate a check-in",
+		description: "Validate (confirm) an existing check-in. Requires ADMIN role",
+		security: true,
+		body: validateCheckInRequestSchema,
+		responses: {
+			200: {
+				description: "Check-in validated successfully",
+				schema: z.object({
+					checkInId: z.string().meta({
+						description: "Validated check-in ID",
+						example: "550e8400-e29b-41d4-a716-446655440000",
+					}),
+				}),
+			},
+			400: {
+				description: "Invalid request body",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+			409: {
+				description: "Conflict - Check-in already validated or expired",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+		},
+	})
 }

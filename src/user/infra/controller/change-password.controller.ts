@@ -12,13 +12,17 @@ import type { Controller } from "@/shared/infra/controller/controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import type { ChangePasswordUseCase } from "@/user/application/use-case/change-password.usecase"
 
 import { UserRoutes } from "./routes/user-routes"
 
 const changePasswordSchema = z.object({
-	newRawPassword: z.string().min(6),
+	newRawPassword: z.string().min(6).meta({
+		description: "New password (min 6 characters)",
+		example: "newpass123",
+	}),
 })
 
 type ChangePasswordPayload = z.infer<typeof changePasswordSchema>
@@ -42,10 +46,15 @@ export class ChangePasswordController implements Controller {
 		message: "✅ | 🔒",
 	})
 	public async init() {
-		this.server.register("patch", UserRoutes.CHANGE_PASSWORD, {
-			callback: this.callback,
-			isProtected: true,
-		})
+		this.server.register(
+			"patch",
+			UserRoutes.CHANGE_PASSWORD,
+			{
+				callback: this.callback,
+				isProtected: true,
+			},
+			makeChangePasswordSwaggerSchema(),
+		)
 	}
 
 	private async callback(req: FastifyRequest) {
@@ -78,4 +87,24 @@ export class ChangePasswordController implements Controller {
 	private extractUserId(req: FastifyRequest): string {
 		return req.user.sub.id
 	}
+}
+
+const errorResponseSchema = z.object({
+	message: z.string().meta({ description: "Error message" }),
+})
+
+function makeChangePasswordSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["users"],
+		summary: "Change user password",
+		description: "Change the password of the currently authenticated user.",
+		security: true,
+		body: changePasswordSchema,
+		responses: {
+			204: { description: "Password changed successfully" },
+			400: { description: "Bad Request", schema: errorResponseSchema },
+			401: { description: "Unauthorized" },
+			409: { description: "Conflict", schema: errorResponseSchema },
+		},
+	})
 }

@@ -1,11 +1,13 @@
 import type { FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
+import { z } from "zod"
 
 import type { Controller } from "@/shared/infra/controller/controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import type { UserMetricsUseCase } from "@/user/application/use-case/user-metrics.usecase"
 
@@ -30,10 +32,15 @@ export class UserMetricsController implements Controller {
 		message: "✅ | 🔒",
 	})
 	public async init(): Promise<void> {
-		this.server.register("get", UserRoutes.METRICS, {
-			callback: this.callback,
-			isProtected: true,
-		})
+		this.server.register(
+			"get",
+			UserRoutes.METRICS,
+			{
+				callback: this.callback,
+				isProtected: true,
+			},
+			makeUserMetricsSwaggerSchema(),
+		)
 	}
 
 	private async callback(req: FastifyRequest) {
@@ -46,4 +53,26 @@ export class UserMetricsController implements Controller {
 			body: metrics,
 		})
 	}
+}
+
+const metricsResponseSchema = z.object({
+	checkInsCount: z
+		.number()
+		.meta({ description: "Total check-ins count", example: 42 }),
+})
+
+function makeUserMetricsSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["users"],
+		summary: "Get user metrics",
+		description: "Get metrics for the currently authenticated user.",
+		security: true,
+		responses: {
+			200: {
+				description: "User metrics retrieved successfully",
+				schema: metricsResponseSchema,
+			},
+			401: { description: "Unauthorized" },
+		},
+	})
 }
