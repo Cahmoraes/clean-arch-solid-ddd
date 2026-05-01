@@ -11,9 +11,12 @@ import { DuplicateWebhookEventError } from "@/subscription/application/error/dup
 import type { ActivateSubscriptionUseCase } from "@/subscription/application/use-case/activate-subscription.usecase.js"
 import type { CancelSubscriptionUseCase } from "@/subscription/application/use-case/cancel-subscription.usecase.js"
 import type { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase.js"
+import { Subscription } from "@/subscription/domain/subscription.js"
 import type { StripeWebhookEventRepository } from "@/subscription/repository/stripe-webhook-event-repository.js"
+import type { SubscriptionRepository } from "@/subscription/repository/subscription-repository.js"
 
 export type EVENT_TYPE =
+	| "customer.subscription.created"
 	| "customer.subscription.updated"
 	| "customer.subscription.deleted"
 	| "invoice.payment_failed"
@@ -31,6 +34,8 @@ export class StripeWebhookWorker {
 		@inject(SHARED_TYPES.UnitOfWork) private readonly unitOfWork: UnitOfWork,
 		@inject(SUBSCRIPTION_TYPES.REPOSITORIES.StripeWebhookEvent)
 		private readonly stripeWebhookEventRepository: StripeWebhookEventRepository,
+		@inject(SUBSCRIPTION_TYPES.REPOSITORIES.Subscription)
+		private readonly subscriptionRepository: SubscriptionRepository,
 		@inject(SUBSCRIPTION_TYPES.USE_CASES.ActivateSubscription)
 		private readonly activateSubscription: ActivateSubscriptionUseCase,
 		@inject(SUBSCRIPTION_TYPES.USE_CASES.CancelSubscription)
@@ -72,6 +77,8 @@ export class StripeWebhookWorker {
 		tx: object,
 	): Promise<void> {
 		switch (eventType) {
+			case "customer.subscription.created":
+				return this.handleCreated(eventType, eventData, tx)
 			case "customer.subscription.updated":
 				return this.handleUpdate(eventType, eventData, tx)
 			case "customer.subscription.deleted":
@@ -82,6 +89,45 @@ export class StripeWebhookWorker {
 				this.logger.info(this, `Unknown event type ${eventType} ignored`)
 				break
 		}
+	}
+
+	private async handleCreated(
+		eventType: EVENT_TYPE,
+		eventData: Stripe.Event,
+		tx: object,
+	): Promise<void> {
+		const stripeSubscription = this.subscriptionFor(eventData)
+		const subscriptionRepo = this.subscriptionRepository.withTransaction(tx)
+		const existing = await subscriptionRepo.ofBillingSubscriptionId(
+			stripeSubscription.id,
+		)
+		if (existing) {
+			this.logger.info(this, {
+				eventId: eventData.id,
+				eventType,
+				status: "subscription_already_exists",
+			})
+			return
+		}
+		const customer = stripeSubscription.customer
+		const customerId = typeof customer === "string" ? customer : customer?.id
+		const userId = stripeSubscription.metadata?.userId
+		if (!customerId || !userId) {
+			this.logger.warn(this, {
+				eventId: eventData.id,
+				eventType,
+				error: "Missing customerId or metadata.userId in subscription event",
+			})
+			return
+		}
+		const subscription = Subscription.create({
+			id: stripeSubscription.id,
+			userId,
+			customerId,
+			billingSubscriptionId: stripeSubscription.id,
+			status: stripeSubscription.status,
+		})
+		await subscriptionRepo.save(subscription)
 	}
 
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Complexidade do domínio

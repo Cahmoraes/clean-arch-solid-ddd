@@ -74,6 +74,7 @@ describe("StripeWebhookWorker", () => {
 			queue,
 			unitOfWork,
 			webhookEventRepo,
+			subscriptionRepository,
 			activateSubscription,
 			cancelSubscription,
 			handlePaymentFailed,
@@ -315,5 +316,100 @@ describe("StripeWebhookWorker", () => {
 
 		await expect(triggerHandler(payload)).resolves.not.toThrow()
 		expect(executeActivateSpy).toHaveBeenCalledOnce()
+	})
+
+	describe("customer.subscription.created (reconciliação)", () => {
+		it("deve criar nova Subscription localmente quando ainda não existe", async () => {
+			const userOrError = await User.create({
+				id: "user-created-1",
+				name: "User Created 1",
+				email: "created1@test.com",
+				password: "any_password",
+			})
+			await userRepository.save(userOrError.forceSuccess().value)
+
+			const payload = makePayload(
+				"evt_created_001",
+				"customer.subscription.created",
+				{
+					id: "sub_stripe_created",
+					customer: "cus_created_1",
+					status: "incomplete",
+					metadata: { userId: "user-created-1" },
+				},
+			)
+
+			await triggerHandler(payload)
+
+			const saved =
+				await subscriptionRepository.ofBillingSubscriptionId(
+					"sub_stripe_created",
+				)
+			expect(saved).not.toBeNull()
+			expect(saved?.userId).toBe("user-created-1")
+			expect(saved?.customerId).toBe("cus_created_1")
+			expect(saved?.billingSubscriptionId).toBe("sub_stripe_created")
+			expect(saved?.status).toBe("incomplete")
+		})
+
+		it("deve ignorar silenciosamente quando a Subscription já existe localmente (idempotência)", async () => {
+			await createUserAndSubscription({
+				userId: "user-created-2",
+				email: "created2@test.com",
+				billingSubscriptionId: "sub_stripe_existing",
+				customerId: "cus_existing",
+				userStatus: "activated",
+				subscriptionStatus: "active",
+			})
+			const beforeCount = subscriptionRepository.data.size
+
+			const payload = makePayload(
+				"evt_created_002",
+				"customer.subscription.created",
+				{
+					id: "sub_stripe_existing",
+					customer: "cus_existing_other",
+					status: "incomplete",
+					metadata: { userId: "user-created-2" },
+				},
+			)
+
+			await triggerHandler(payload)
+
+			expect(subscriptionRepository.data.size).toBe(beforeCount)
+			const saved = await subscriptionRepository.ofBillingSubscriptionId(
+				"sub_stripe_existing",
+			)
+			expect(saved?.customerId).toBe("cus_existing")
+			expect(saved?.status).toBe("active")
+		})
+
+		it("deve extrair customerId quando customer é objeto expandido", async () => {
+			const userOrError = await User.create({
+				id: "user-created-3",
+				name: "User Created 3",
+				email: "created3@test.com",
+				password: "any_password",
+			})
+			await userRepository.save(userOrError.forceSuccess().value)
+
+			const payload = makePayload(
+				"evt_created_003",
+				"customer.subscription.created",
+				{
+					id: "sub_stripe_created_3",
+					customer: { id: "cus_created_3" },
+					status: "incomplete",
+					metadata: { userId: "user-created-3" },
+				},
+			)
+
+			await triggerHandler(payload)
+
+			const saved = await subscriptionRepository.ofBillingSubscriptionId(
+				"sub_stripe_created_3",
+			)
+			expect(saved?.customerId).toBe("cus_created_3")
+		})
 	})
 })

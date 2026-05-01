@@ -24,7 +24,7 @@ export interface AttachPaymentMethodInput {
 export interface CreateSubscriptionInput {
 	customerId: string
 	priceId: string
-	paymentMethodId?: string
+	paymentMethodId: string
 	metadata?: Record<string, string>
 }
 
@@ -40,7 +40,6 @@ export interface SubscriptionGateway {
 	createSubscription(
 		data: CreateSubscriptionInput,
 	): Promise<CreateSubscriptionResponse>
-	createPaymentMethod(): Promise<string>
 	createEventWebhook(
 		rawBody: string | Buffer,
 		signature: string,

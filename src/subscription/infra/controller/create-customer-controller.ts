@@ -17,7 +17,6 @@ export class CreateCustomerController implements Controller {
 		DomainEventPublisher.instance.subscribe(
 			"userCreated",
 			async (data: UserCreatedEvent): Promise<void> => {
-				console.log("User created event received:", data)
 				const { payload } = data
 				await this.createCustomerUseCase.execute({
 					email: payload.email,

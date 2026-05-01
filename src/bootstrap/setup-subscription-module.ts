@@ -5,6 +5,7 @@ import { type ModuleControllers, resolve } from "./server-build"
 export function setupSubscriptionModule(): ModuleControllers {
 	const controllers = [
 		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.CreateCustomer),
+		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.CreateSubscription),
 		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.StripeWebhook),
 	]
 	const workers = [resolve(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)]

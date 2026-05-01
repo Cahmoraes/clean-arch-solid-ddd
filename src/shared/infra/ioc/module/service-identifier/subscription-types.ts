@@ -10,7 +10,8 @@ export const SUBSCRIPTION_TYPES = {
 		HandlePaymentFailed: Symbol.for("HandlePaymentFailedUseCase"),
 	},
 	CONTROLLERS: {
-		CreateCustomer: Symbol.for("CreateSubscriptionController"),
+		CreateCustomer: Symbol.for("CreateCustomerController"),
+		CreateSubscription: Symbol.for("CreateSubscriptionController"),
 		StripeWebhook: Symbol.for("StripeWebhookController"),
 	},
 	REPOSITORIES: {
