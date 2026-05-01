@@ -104,3 +104,39 @@ Content-Type: application/json
 {
   
 }
+
+### Criar Assinatura (Stripe)
+# @name createSubscription
+POST {{baseUrl}}/subscriptions
+Content-Type: application/json
+Authorization: Bearer {{authenticate.response.body.token}}
+
+{
+  "priceId": "price_1NXXXXXXXXXXXXXXXXXXXXXX",
+  "paymentMethodId": "pm_card_visa"
+}
+
+### Stripe Webhook
+# Em desenvolvimento, encaminhe eventos reais com:
+#   npm run "stripe webhook"
+# A requisição abaixo serve como referência do contrato (header obrigatório
+# stripe-signature e payload bruto do evento). Sem assinatura válida calculada
+# pelo Stripe CLI, a resposta esperada é 400.
+# @name stripeWebhook
+POST {{baseUrl}}/webhook/stripe
+Content-Type: application/json
+stripe-signature: t=0,v1=0000000000000000000000000000000000000000000000000000000000000000
+
+{
+  "id": "evt_test_webhook",
+  "object": "event",
+  "type": "checkout.session.completed",
+  "data": {
+    "object": {
+      "id": "cs_test_123",
+      "object": "checkout.session",
+      "customer": "cus_test_123",
+      "subscription": "sub_test_123"
+    }
+  }
+}
