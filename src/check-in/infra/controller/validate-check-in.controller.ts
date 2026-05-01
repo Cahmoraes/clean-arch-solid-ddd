@@ -78,7 +78,7 @@ export class ValidateCheckInController implements Controller {
 		}
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
-			body: result.value,
+			body: { checkInId: parsedRequest.value.checkInId },
 		})
 	}
 

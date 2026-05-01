@@ -18,6 +18,7 @@ interface UserProfileUseCaseOutputDTO {
 	id: string | null
 	name: string
 	email: string
+	role: string
 }
 
 export type UserProfileUseCaseOutput = Either<
@@ -41,6 +42,7 @@ export class UserProfileUseCase {
 			email: userOrNull.email,
 			id: userOrNull.id,
 			name: userOrNull.name,
+			role: userOrNull.role,
 		})
 	}
 }

@@ -29,6 +29,11 @@ export class GlobalErrorHandler {
 				.status(HTTP_STATUS.BAD_REQUEST)
 				.send({ message: validationError.toString() })
 		}
+		if (error.code === "FST_ERR_VALIDATION") {
+			return reply
+				.status(HTTP_STATUS.BAD_REQUEST)
+				.send({ message: error.message })
+		}
 		if (GlobalErrorHandler.checkIfIsRateLimitError(error.statusCode)) {
 			return reply
 				.status(HTTP_STATUS.TO_MANY_REQUESTS)

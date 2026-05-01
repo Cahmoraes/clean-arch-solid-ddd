@@ -19,6 +19,7 @@ export interface ModuleControllers {
 
 export async function serverBuild() {
 	const server = resolve<FastifyAdapter>(SHARED_TYPES.Server.Fastify)
+	await server.prepare()
 	const queue = resolve<Queue>(SHARED_TYPES.Queue)
 	await queue.connect()
 	const queueController = resolve(SHARED_TYPES.Controllers.Queue)

@@ -15,6 +15,7 @@
 		"test-create-users": "concurrently \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\"",
 		"test:cov": "npx vitest --coverage --config ./test/vite.config.app-domain.ts",
 		"test:business-flow": "npx vitest run --config ./test/vite.config.business-flow.ts",
+		"test:contract": "vitest run --config ./test/vite.config.contract.ts",
 		"test:e2e:prisma": "vitest --config ./test/vite.config.integration.ts",
 		"test:fitness": "vitest --config ./test/vite.config.fitness.ts",
 		"build": "pnpm tsup",
@@ -38,7 +39,9 @@
 		"docker:down": "docker compose -f compose.yaml down",
 		"docker:build": "docker build --pull --tag clean-arch-solid-ddd:latest --tag clean-arch-solid-ddd:$npm_package_version .",
 		"docker:build:nocache": "docker build --pull --no-cache --tag clean-arch-solid-ddd:latest --tag clean-arch-solid-ddd:$npm_package_version .",
-		"docker:run": "docker run --rm -p 3333:3333 --env-file .env --name clean-arch-solid-ddd clean-arch-solid-ddd:latest"
+		"docker:run": "docker run --rm -p 3333:3333 --env-file .env --name clean-arch-solid-ddd clean-arch-solid-ddd:latest",
+		"openapi:export": "tsx scripts/export-openapi-spec.ts",
+		"openapi:generate-client": "tsx scripts/generate-client.ts"
 	},
 	"keywords": [],
 	"author": "",
