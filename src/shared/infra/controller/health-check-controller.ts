@@ -38,7 +38,7 @@ export class HealthCheckController implements Controller {
 	private async callback() {
 		const healthStatus = await this.healthCheckService.check()
 		return ResponseFactory.OK({
-			healthStatus,
+			body: { status: healthStatus.status },
 		})
 	}
 }

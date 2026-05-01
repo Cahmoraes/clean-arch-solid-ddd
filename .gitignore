@@ -123,6 +123,12 @@ dist
 .vscode-test
 .vscode
 
+# Generated OpenAPI spec
+docs/openapi-spec.json
+
+# Generated OpenAPI client types
+src/shared/infra/openapi/generated/
+
 # yarn v2
 .yarn/cache
 .yarn/unplugged

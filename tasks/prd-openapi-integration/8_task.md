@@ -24,14 +24,14 @@ Criar script npm que inicializa o servidor Fastify, extrai a spec OpenAPI comple
 
 ## Subtarefas
 
-- [ ] 8.1 Criar `scripts/export-openapi-spec.ts` com lógica de inicialização do servidor
-- [ ] 8.2 Implementar extração da spec via `fastify.swagger()` após ready
-- [ ] 8.3 Implementar persistência como JSON formatado
-- [ ] 8.4 Adicionar validação de completude (contar endpoints na spec)
-- [ ] 8.5 Adicionar script npm no `package.json`
-- [ ] 8.6 Executar script e verificar output
-- [ ] 8.7 Adicionar `docs/openapi-spec.json` ao `.gitignore` (artefato gerado)
-- [ ] 8.8 Executar `pnpm tsc:check` e `pnpm biome:fix`
+- [x] 8.1 Criar `scripts/export-openapi-spec.ts` com lógica de inicialização do servidor
+- [x] 8.2 Implementar extração da spec via `fastify.swagger()` após ready
+- [x] 8.3 Implementar persistência como JSON formatado
+- [x] 8.4 Adicionar validação de completude (contar endpoints na spec)
+- [x] 8.5 Adicionar script npm no `package.json`
+- [x] 8.6 Executar script e verificar output
+- [x] 8.7 Adicionar `docs/openapi-spec.json` ao `.gitignore` (artefato gerado)
+- [x] 8.8 Executar `pnpm tsc:check` e `pnpm biome:fix`
 
 ## Detalhes de Implementação
 
