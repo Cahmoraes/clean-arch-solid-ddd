@@ -8,13 +8,13 @@ describe("DomainEventPublisher", () => {
 		DomainEventPublisher.instance["subscribers"].clear()
 	})
 
-	test("Deve publicar um event", () => {
+	test("Deve publicar um event", async () => {
 		const event = new UserCreatedEvent({
 			email: "user@mail.com",
 		})
 		const subscriber = vi.fn()
 		DomainEventPublisher.instance.subscribe("userCreated", subscriber)
-		DomainEventPublisher.instance.publish(event)
+		await DomainEventPublisher.instance.publish(event)
 		expect(subscriber).toHaveBeenCalledWith(event)
 	})
 
@@ -24,7 +24,7 @@ describe("DomainEventPublisher", () => {
 		DomainEventPublisher.instance.unsubscribe("userCreated", subscriber)
 	})
 
-	test("Deve notificar um subscriber por tópico", () => {
+	test("Deve notificar um subscriber por tópico", async () => {
 		const userCreatedEvent = new UserCreatedEvent({
 			email: "user@mail.com",
 		})
@@ -37,8 +37,8 @@ describe("DomainEventPublisher", () => {
 		DomainEventPublisher.instance.subscribe("userCreated", subscriber1)
 		DomainEventPublisher.instance.subscribe("passwordChanged", subscriber2)
 		expect(DomainEventPublisher.instance["subscribers"].size).toBe(2)
-		DomainEventPublisher.instance.publish(userCreatedEvent)
-		DomainEventPublisher.instance.publish(passwordChangedEvent)
+		await DomainEventPublisher.instance.publish(userCreatedEvent)
+		await DomainEventPublisher.instance.publish(passwordChangedEvent)
 		expect(subscriber1).toHaveBeenCalledWith(userCreatedEvent)
 		expect(subscriber1).toHaveBeenCalledTimes(1)
 		expect(subscriber1).not.toHaveBeenCalledWith(passwordChangedEvent)
@@ -46,5 +46,28 @@ describe("DomainEventPublisher", () => {
 		expect(subscriber2).toHaveBeenCalledWith(passwordChangedEvent)
 		expect(subscriber2).toHaveBeenCalledTimes(1)
 		expect(subscriber2).not.toHaveBeenCalledWith(userCreatedEvent)
+	})
+
+	test("Deve isolar erro de um subscriber sem afetar os demais nem propagar", async () => {
+		const event = new UserCreatedEvent({ email: "user@mail.com" })
+		const failingSubscriber = vi
+			.fn()
+			.mockRejectedValue(new Error("integração externa falhou"))
+		const succeedingSubscriber = vi.fn()
+		const consoleErrorSpy = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => {})
+
+		DomainEventPublisher.instance.subscribe("userCreated", failingSubscriber)
+		DomainEventPublisher.instance.subscribe("userCreated", succeedingSubscriber)
+
+		await expect(
+			DomainEventPublisher.instance.publish(event),
+		).resolves.toBeUndefined()
+		expect(failingSubscriber).toHaveBeenCalledWith(event)
+		expect(succeedingSubscriber).toHaveBeenCalledWith(event)
+		expect(consoleErrorSpy).toHaveBeenCalled()
+
+		consoleErrorSpy.mockRestore()
 	})
 })

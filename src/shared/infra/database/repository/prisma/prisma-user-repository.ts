@@ -23,7 +23,7 @@ interface UserData {
 	updated_at: Date
 	role: RoleTypes
 	status: StatusTypes
-	billingCustomerId?: string
+	billing_customer_id?: string | null
 }
 
 @injectable()
@@ -78,7 +78,7 @@ export class PrismaUserRepository implements UserRepository {
 			updatedAt: new Date(userData.updated_at),
 			role: userData.role,
 			status: userData.status,
-			billingCustomerId: userData.billingCustomerId,
+			billingCustomerId: userData.billing_customer_id ?? undefined,
 		})
 	}
 
