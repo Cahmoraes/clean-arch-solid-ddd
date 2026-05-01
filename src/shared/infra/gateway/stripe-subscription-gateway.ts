@@ -86,16 +86,6 @@ export class StripeSubscriptionGateway implements SubscriptionGateway {
 		}
 	}
 
-	public async createPaymentMethod(): Promise<string> {
-		const paymentMethod = await this.stripe.paymentMethods.create({
-			type: "card",
-			card: {
-				token: "tok_visa",
-			},
-		})
-		return paymentMethod.id
-	}
-
 	public async createEventWebhook(
 		rawBody: string | Buffer,
 		signature: string,

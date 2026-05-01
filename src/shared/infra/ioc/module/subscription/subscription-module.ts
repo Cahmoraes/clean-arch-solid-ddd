@@ -5,6 +5,7 @@ import { CreateCustomer } from "@/subscription/application/use-case/create-custo
 import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/create-subscription.usecase"
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
 import { CreateCustomerController } from "@/subscription/infra/controller/create-customer-controller"
+import { CreateSubscriptionController } from "@/subscription/infra/controller/create-subscription.controller"
 import { StripeWebhookController } from "@/subscription/infra/controller/stripe-webhook.controller"
 import { StripeWebhookWorker } from "@/subscription/infra/worker/stripe-webhook-worker"
 import { SUBSCRIPTION_TYPES } from "../service-identifier/subscription-types"
@@ -24,6 +25,9 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 		.inSingletonScope()
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreateCustomer).to(
 		CreateCustomerController,
+	)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreateSubscription).to(
+		CreateSubscriptionController,
 	)
 	bind(SUBSCRIPTION_TYPES.USE_CASES.CreateCustomer).to(CreateCustomer)
 	bind(SUBSCRIPTION_TYPES.USE_CASES.CreateSubscription).to(

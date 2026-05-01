@@ -43,27 +43,23 @@ export class StripeWebhookController implements Controller {
 		if (!signature || !req.rawBody) {
 			return { status: 400, body: { message: "Missing stripe-signature" } }
 		}
-
-		let event: Stripe.Event
 		try {
-			event = await this.subscriptionGateway.createEventWebhook(
+			const event = await this.subscriptionGateway.createEventWebhook(
 				req.rawBody,
 				signature,
 			)
+			this.queue.publish(QUEUES.STRIPE_WEBHOOK, {
+				eventId: event.id,
+				eventType: event.type,
+				eventData: event,
+			})
+			return { status: 200, body: null }
 		} catch (error) {
 			if (error instanceof Stripe.errors.StripeSignatureVerificationError) {
 				return { status: 400, body: { message: "Invalid stripe signature" } }
 			}
 			throw error
 		}
-
-		void this.queue.publish(QUEUES.STRIPE_WEBHOOK, {
-			eventId: event.id,
-			eventType: event.type,
-			eventData: event,
-		})
-
-		return { status: 200, body: null }
 	}
 
 	private signatureFromHeaders(

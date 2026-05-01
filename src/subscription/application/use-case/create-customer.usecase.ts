@@ -43,21 +43,18 @@ export class CreateCustomer {
 	public async execute(
 		input: CreateCustomerInput,
 	): Promise<CreateCustomerOutput> {
-		const userFound = await this.userRepository.userOfEmail(input.email)
-		if (!userFound) return failure(new UserNotFoundError())
+		const user = await this.userRepository.userOfEmail(input.email)
+		if (!user) return failure(new UserNotFoundError())
 		const customer = await this.subscriptionGateway.createCustomer({
-			email: userFound.email,
-			name: userFound.name,
-			metadata: { userId: userFound.id! },
+			email: user.email,
+			name: user.name,
+			metadata: { userId: user.id! },
 		})
-		void userFound.assignBillingCustomerId(customer.id)
-		console.log({ userFound })
-		await this.userRepository.update(userFound)
-		console.log("*********************** create customer")
-		console.log(userFound)
+		user.assignBillingCustomerId(customer.id)
+		await this.userRepository.update(user)
 		return success({
 			id: customer.id,
-			userId: userFound.id!,
+			userId: user.id!,
 			name: customer.name,
 			email: customer.email,
 		})

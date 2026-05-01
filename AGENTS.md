@@ -12,7 +12,17 @@
 - DEVE executar `pnpm biome:fix` antes de concluir QUALQUER subtarefa
 - SEMPRE USE as skills `systematic-debugging` + `no-workarounds` antes de corrigir qualquer bug
 
-Pular qualquer verificação resultará em REJEIÇÃO IMEDIATA DA TAREFA
+Pular qualquer verificação resultará em REJEIÇÃO IMEDIATA DA TAREFA.
+
+<MOST_CRITICAL>
+
+- ABSOLUTAMENTE OBRIGATÓRIO: No modo Plan, após o usuário aceitar um plano, SEMPRE escreva o plano aceito em um arquivo Markdown dentro de docs/plans/.
+
+- OBRIGATÓRIO: Se o plano aceito for atualizado posteriormente, atualize ou acrescente o conteúdo no arquivo Markdown correspondente dentro de docs/plans/.
+
+- VIOLAÇÃO: Não persistir planos aceitos no modo Plan dentro de docs/plans/ é uma não conformidade com esta política do workspace.
+
+</MOST_CRITICAL>
 
 # Overview do Projeto
 
