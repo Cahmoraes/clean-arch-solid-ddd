@@ -1,11 +1,13 @@
 import type { FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
+import { z } from "zod"
 
 import type { Controller } from "@/shared/infra/controller/controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import type { UserProfileUseCase } from "@/user/application/use-case/user-profile.usecase"
 
@@ -37,28 +39,7 @@ export class MyProfileController implements Controller {
 				callback: this.callback,
 				isProtected: true,
 			},
-			{
-				tags: ["user"],
-				description: "Get the profile of the authenticated user",
-				response: {
-					200: {
-						description: "Successful response",
-						type: "object",
-						properties: {
-							id: { type: "string" },
-							name: { type: "string" },
-							email: { type: "string" },
-						},
-					},
-					404: {
-						description: "User not found",
-						type: "object",
-						properties: {
-							message: { type: "string" },
-						},
-					},
-				},
-			},
+			makeMyProfileSwaggerSchema(),
 		)
 	}
 
@@ -76,4 +57,33 @@ export class MyProfileController implements Controller {
 			body: result.value,
 		})
 	}
+}
+
+const myProfileResponseSchema = z.object({
+	id: z.string().meta({ description: "User ID", example: "uuid-1234" }),
+	name: z.string().meta({ description: "User name", example: "John Doe" }),
+	email: z
+		.string()
+		.meta({ description: "User email", example: "john@example.com" }),
+})
+
+const errorResponseSchema = z.object({
+	message: z.string().meta({ description: "Error message" }),
+})
+
+function makeMyProfileSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["users"],
+		summary: "Get authenticated user profile",
+		description: "Get the profile of the currently authenticated user.",
+		security: true,
+		responses: {
+			200: {
+				description: "Successful response",
+				schema: myProfileResponseSchema,
+			},
+			401: { description: "Unauthorized" },
+			404: { description: "User not found", schema: errorResponseSchema },
+		},
+	})
 }

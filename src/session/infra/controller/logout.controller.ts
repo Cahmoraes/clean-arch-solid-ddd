@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
+import { z } from "zod"
 
 import type { LogoutUseCase } from "@/session/application/use-case/logout.usecase"
 import type { Controller } from "@/shared/infra/controller/controller"
@@ -8,7 +9,8 @@ import type { CookieManager } from "@/shared/infra/cookie/cookie-manager"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { env } from "@/shared/infra/env"
 import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 
 import { SessionRoutes } from "./routes/session-routes"
@@ -41,23 +43,7 @@ export class LogoutController implements Controller {
 				callback: this.callback,
 				isProtected: true,
 			},
-			{
-				tags: ["session"],
-				description: "Logout user and revoke session",
-				response: {
-					204: {
-						description: "Logout successful",
-						type: "null",
-					},
-					401: {
-						description: "Session already revoked",
-						type: "object",
-						properties: {
-							message: { type: "string" },
-						},
-					},
-				},
-			},
+			makeLogoutSwaggerSchema(),
 		)
 	}
 
@@ -92,4 +78,22 @@ export class LogoutController implements Controller {
 			expires: new Date(0), // Set expiry to past date to clear cookie
 		})
 	}
+}
+
+function makeLogoutSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["sessions"],
+		summary: "Logout user",
+		description: "Logout user, revoke session and clear refresh token cookie",
+		security: true,
+		responses: {
+			204: { description: "Logout successful" },
+			401: {
+				description: "Session already revoked or unauthorized",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+		},
+	})
 }

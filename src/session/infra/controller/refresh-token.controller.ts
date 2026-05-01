@@ -19,7 +19,8 @@ import { Logger } from "@/shared/infra/decorator/logger"
 import { env } from "@/shared/infra/env"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { Logger as DebugLogger } from "@/shared/infra/logger/logger"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 
@@ -57,9 +58,14 @@ export class RefreshTokenController implements Controller {
 		message: "✅",
 	})
 	public async init(): Promise<void> {
-		this.server.register("patch", SessionRoutes.REFRESH, {
-			callback: this.callback,
-		})
+		this.server.register(
+			"patch",
+			SessionRoutes.REFRESH,
+			{
+				callback: this.callback,
+			},
+			makeRefreshTokenSwaggerSchema(),
+		)
 	}
 
 	private async callback(req: FastifyRequest, res: FastifyReply) {
@@ -123,4 +129,36 @@ export class RefreshTokenController implements Controller {
 		if (!parsedBody.success) return failure(fromError(parsedBody.error))
 		return success(parsedBody.data)
 	}
+}
+
+function makeRefreshTokenSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["sessions"],
+		summary: "Refresh access token",
+		description:
+			"Use the refresh token cookie to obtain a new access token and rotate the refresh token",
+		responses: {
+			200: {
+				description: "Token refreshed successfully",
+				schema: z.object({
+					message: z.string().meta({
+						description: "New JWT access token",
+						example: "eyJhbG...",
+					}),
+				}),
+			},
+			400: {
+				description: "Missing cookie header",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+			403: {
+				description: "Invalid or expired refresh token",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+		},
+	})
 }

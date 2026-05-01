@@ -15,14 +15,21 @@ import type { CookieManager } from "@/shared/infra/cookie/cookie-manager"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { env } from "@/shared/infra/env"
 import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 
 import { SessionRoutes } from "./routes/session-routes"
 
 const authenticateRequestSchema = z.object({
-	email: z.string().email(),
-	password: z.string().min(6),
+	email: z
+		.string()
+		.email()
+		.meta({ description: "User email address", example: "john@example.com" }),
+	password: z
+		.string()
+		.min(6)
+		.meta({ description: "User password", example: "secret123" }),
 })
 
 type AuthenticatePayload = z.infer<typeof authenticateRequestSchema>
@@ -48,9 +55,14 @@ export class AuthenticateController implements Controller {
 		message: "✅",
 	})
 	public async init(): Promise<void> {
-		this.server.register("post", SessionRoutes.AUTHENTICATE, {
-			callback: this.callback,
-		})
+		this.server.register(
+			"post",
+			SessionRoutes.AUTHENTICATE,
+			{
+				callback: this.callback,
+			},
+			makeAuthenticateSwaggerSchema(),
+		)
 	}
 
 	private async callback(req: FastifyRequest, res: FastifyReply) {
@@ -96,4 +108,39 @@ export class AuthenticateController implements Controller {
 		if (!parsedBody.success) return failure(fromError(parsedBody.error))
 		return success(parsedBody.data)
 	}
+}
+
+function makeAuthenticateSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["sessions"],
+		summary: "Authenticate user",
+		description:
+			"Authenticate with email and password to obtain JWT token and refresh token cookie",
+		body: authenticateRequestSchema,
+		responses: {
+			200: {
+				description: "Authentication successful",
+				schema: z.object({
+					token: z
+						.string()
+						.meta({ description: "JWT access token", example: "eyJhbG..." }),
+					refreshToken: z
+						.string()
+						.meta({ description: "Refresh token", example: "eyJhbG..." }),
+				}),
+			},
+			400: {
+				description: "Invalid request body",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+			401: {
+				description: "Invalid credentials",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+		},
+	})
 }
