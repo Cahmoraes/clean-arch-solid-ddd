@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: for testing */
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 import type { InMemorySubscriptionRepository } from "@/shared/infra/database/repository/in-memory/in-memory-subscription-repository"
 import { TestingSubscriptionGateway } from "@/shared/infra/gateway/testing-subscription-gateway"
@@ -29,22 +28,56 @@ describe("CreateSubscription UseCase", () => {
 		container.restore()
 	})
 
-	test("Deve criar uma Subscription", async () => {
-		const input: CreateSubscriptionUseCaseInput = {
-			userId: "user-id-123",
-			customerId: "cus_test_123",
-			priceId: "price_test_123",
-		}
+	const baseInput = (): CreateSubscriptionUseCaseInput => ({
+		userId: "user-id-123",
+		customerId: "cus_test_123",
+		priceId: "price_test_123",
+		paymentMethodId: "pm_test_visa_123",
+	})
 
-		await sut.execute(input)
+	test("Deve criar uma Subscription e retornar { subscriptionId, status }", async () => {
+		const input = baseInput()
+
+		const result = await sut.execute(input)
+
+		expect(result.isSuccess()).toBe(true)
+		const value = result.forceSuccess().value
+		expect(value.subscriptionId).toMatch(/^sub_test_/)
+		expect(value.status).toBe("active")
 
 		const subscriptionSaved = await subscriptionRepository.ofUserId(
 			input.userId,
 		)
-		expect(subscriptionSaved?.id).toBeDefined()
+		expect(subscriptionSaved?.id).toBe(value.subscriptionId)
 		expect(subscriptionSaved?.userId).toBe(input.userId)
 		expect(subscriptionSaved?.customerId).toBe(input.customerId)
-		expect(subscriptionSaved?.billingSubscriptionId).toMatch(/^sub_test_/)
+		expect(subscriptionSaved?.billingSubscriptionId).toBe(value.subscriptionId)
 		expect(subscriptionSaved?.status).toBe("active")
+	})
+
+	test("Deve falhar quando o gateway falhar no attachPaymentMethodToCustomer", async () => {
+		const error = new Error("attach failed")
+		subscriptionGateway.attachPaymentMethodToCustomer = async () => {
+			throw error
+		}
+
+		const result = await sut.execute(baseInput())
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBe(error)
+		expect(subscriptionRepository.data.size).toBe(0)
+	})
+
+	test("Deve falhar quando o gateway falhar no createSubscription", async () => {
+		const error = new Error("create failed")
+		subscriptionGateway.createSubscription = async () => {
+			throw error
+		}
+
+		const result = await sut.execute(baseInput())
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBe(error)
+		expect(subscriptionRepository.data.size).toBe(0)
 	})
 })

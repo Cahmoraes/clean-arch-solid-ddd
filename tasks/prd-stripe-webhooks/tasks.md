@@ -9,3 +9,4 @@
 - [x] 5.0 Implementar StripeWebhookWorker
 - [x] 6.0 Completar StripeWebhookController
 - [x] 7.0 Configurar IoC, Bootstrap e Fila
+- [x] 8.0 Completar Fluxo Backend-Driven de Criação de Assinaturas

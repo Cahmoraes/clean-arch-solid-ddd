@@ -1,0 +1,4 @@
+interface:
+  display_name: "Persistent Memory"
+  short_description: "Always-on local workspace memory system"
+  default_prompt: "Use $persistent-memory to initialize, sync, search, and store durable workspace memories."
