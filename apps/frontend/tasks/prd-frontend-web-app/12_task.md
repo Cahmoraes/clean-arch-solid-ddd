@@ -25,14 +25,14 @@ Implementar os testes E2E críticos com Playwright rodando contra o backend real
 
 ## Subtarefas
 
-- [ ] 12.1 Finalizar/validar `playwright.config.ts` com `webServer` para frontend + backend, `baseURL`, `retries: 1`, timeout adequado
-- [ ] 12.2 Instalar `@axe-core/playwright` como devDependency
-- [ ] 12.3 Criar `apps/frontend/e2e/onboarding.spec.ts` cobrindo fluxo completo: cadastro → ativação → login → check-in
-- [ ] 12.4 Criar `apps/frontend/e2e/admin-validate-checkin.spec.ts` cobrindo fluxo admin de validação
-- [ ] 12.5 Criar `apps/frontend/e2e/session-refresh.spec.ts` cobrindo renovação transparente de sessão
-- [ ] 12.6 Criar `apps/frontend/e2e/accessibility.spec.ts` com varredura axe-core nas telas críticas
-- [ ] 12.7 Criar helper `apps/frontend/e2e/helpers/auth.ts` com funções `loginAs(page, role)` para reutilização entre specs
-- [ ] 12.8 Adicionar script `e2e` no `package.json` executando `PLAYWRIGHT_HTML_OPEN=never npx playwright test`
+- [x] 12.1 Finalizar/validar `playwright.config.ts` com `webServer` para frontend + backend, `baseURL`, `retries: 1`, timeout adequado
+- [x] 12.2 Instalar `@axe-core/playwright` como devDependency
+- [x] 12.3 Criar `apps/frontend/e2e/onboarding.spec.ts` cobrindo fluxo completo: cadastro → ativação → login → check-in
+- [x] 12.4 Criar `apps/frontend/e2e/admin-validate-checkin.spec.ts` cobrindo fluxo admin de validação
+- [x] 12.5 Criar `apps/frontend/e2e/session-refresh.spec.ts` cobrindo renovação transparente de sessão
+- [x] 12.6 Criar `apps/frontend/e2e/accessibility.spec.ts` com varredura axe-core nas telas críticas
+- [x] 12.7 Criar helper `apps/frontend/e2e/helpers/auth.ts` com funções `loginAs(page, role)` para reutilização entre specs
+- [x] 12.8 Adicionar script `e2e` no `package.json` executando `PLAYWRIGHT_HTML_OPEN=never npx playwright test`
 
 ## Detalhes de Implementação
 
@@ -62,11 +62,11 @@ Cada ação executada via `playwright-cli` gera código TypeScript correspondent
 
 ## Testes da Tarefa
 
-- [ ] E2E: `onboarding.spec.ts` — cadastro → ativação → login → check-in passa
-- [ ] E2E: `admin-validate-checkin.spec.ts` — admin valida check-in e vê confirmação
-- [ ] E2E: `session-refresh.spec.ts` — sessão renovada sem interrupção visível
-- [ ] E2E: `accessibility.spec.ts` — zero violações críticas/sérias nas telas auditadas
-- [ ] Checklist manual: navegar pelas telas principais usando apenas teclado (Tab, Enter, Esc) e confirmar foco sempre visível
+- [x] E2E: `onboarding.spec.ts` — cadastro → ativação → login → check-in passa
+- [x] E2E: `admin-validate-checkin.spec.ts` — admin valida check-in e vê confirmação
+- [x] E2E: `session-refresh.spec.ts` — sessão renovada sem interrupção visível
+- [x] E2E: `accessibility.spec.ts` — zero violações críticas/sérias nas telas auditadas
+- [x] Checklist manual: navegar pelas telas principais usando apenas teclado (Tab, Enter, Esc) e confirmar foco sempre visível
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
