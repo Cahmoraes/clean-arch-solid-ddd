@@ -30,17 +30,17 @@ Construir toda a infraestrutura de dados e autenticação que sustenta as featur
 
 ## Subtarefas
 
-- [ ] 3.1 Instalar `zustand`
-- [ ] 3.2 Criar `src/lib/auth/auth-store.ts` com interface `AuthState` e implementação Zustand
-- [ ] 3.3 Criar `src/lib/jwt.ts` com função `decodeJwt(token): { sub, role, exp }` sem verificação de assinatura
-- [ ] 3.4 Criar `src/lib/errors.ts` com classe `ApiError` e função `mapStatusToMessage(status): string`
-- [ ] 3.5 Criar `src/lib/auth/token-refresh.ts` com `TokenRefreshScheduler` (start, stop, refreshNow); implementar singleton promise para deduplicar refreshes concorrentes
-- [ ] 3.6 Criar `src/lib/auth/auth-fetch-middleware.ts`: middleware para `openapi-fetch` que injeta Bearer e faz retry-on-401 usando o singleton de refresh
-- [ ] 3.7 Evoluir `src/lib/api.ts` para instanciar `openapi-fetch` com `@repo/api-types` e registrar middleware de auth e de normalização de erros
-- [ ] 3.8 Criar `src/lib/query-client.ts` com fábrica do `QueryClient` e defaults conforme spec
-- [ ] 3.9 Criar `src/middleware.ts` (Edge Next.js) que protege matcher `/(authenticated)/**` verificando cookie de refresh
-- [ ] 3.10 Atualizar `src/app/providers.tsx`: extrair QueryClient para `query-client.ts`, adicionar `AuthProvider` que executa boot refresh
-- [ ] 3.11 Adicionar handlers MSW em `src/test/msw/handlers.ts` para: `POST /sessions`, `POST /sessions/refresh`, `POST /sessions/logout`
+- [x] 3.1 Instalar `zustand`
+- [x] 3.2 Criar `src/lib/auth/auth-store.ts` com interface `AuthState` e implementação Zustand
+- [x] 3.3 Criar `src/lib/jwt.ts` com função `decodeJwt(token): { sub, role, exp }` sem verificação de assinatura
+- [x] 3.4 Criar `src/lib/errors.ts` com classe `ApiError` e função `mapStatusToMessage(status): string`
+- [x] 3.5 Criar `src/lib/auth/token-refresh.ts` com `TokenRefreshScheduler` (start, stop, refreshNow); implementar singleton promise para deduplicar refreshes concorrentes
+- [x] 3.6 Criar `src/lib/auth/auth-fetch-middleware.ts`: middleware para `openapi-fetch` que injeta Bearer e faz retry-on-401 usando o singleton de refresh
+- [x] 3.7 Evoluir `src/lib/api.ts` para instanciar `openapi-fetch` com `@repo/api-types` e registrar middleware de auth e de normalização de erros
+- [x] 3.8 Criar `src/lib/query-client.ts` com fábrica do `QueryClient` e defaults conforme spec
+- [x] 3.9 Criar `src/middleware.ts` (Edge Next.js) que protege matcher `/(authenticated)/**` verificando cookie de refresh
+- [x] 3.10 Atualizar `src/app/providers.tsx`: extrair QueryClient para `query-client.ts`, adicionar `AuthProvider` que executa boot refresh
+- [x] 3.11 Adicionar handlers MSW em `src/test/msw/handlers.ts` para: `POST /sessions`, `POST /sessions/refresh`, `POST /sessions/logout`
 
 ## Detalhes de Implementação
 
@@ -57,12 +57,12 @@ Ver `techspec.md` → seções **Interfaces Principais**, **Fluxo de dados**, **
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: `auth-store` — `setSession` armazena token e claims; `clear` zera tudo
-- [ ] Teste de unidade: `jwt.ts` — decodifica corretamente um JWT fake; retorna null para token inválido
-- [ ] Teste de unidade: `errors.ts` — `mapStatusToMessage` retorna mensagem amigável para 401, 403, 404, 422, 500
-- [ ] Teste de unidade: `token-refresh.ts` — timer dispara refresh 60s antes de `expiresAt`; múltiplas chamadas simultâneas a `refreshNow` resultam em apenas uma requisição (mock MSW)
-- [ ] Teste de unidade: `auth-fetch-middleware.ts` — injeta Bearer; em 401 faz refresh e replay; em 401 definitivo chama `auth-store.clear`
-- [ ] Teste de integração: `middleware.ts` Edge — requisição sem cookie redireciona para `/login`; com cookie passa adiante
+- [x] Teste de unidade: `auth-store` — `setSession` armazena token e claims; `clear` zera tudo
+- [x] Teste de unidade: `jwt.ts` — decodifica corretamente um JWT fake; retorna null para token inválido
+- [x] Teste de unidade: `errors.ts` — `mapStatusToMessage` retorna mensagem amigável para 401, 403, 404, 422, 500
+- [x] Teste de unidade: `token-refresh.ts` — timer dispara refresh 60s antes de `expiresAt`; múltiplas chamadas simultâneas a `refreshNow` resultam em apenas uma requisição (mock MSW)
+- [x] Teste de unidade: `auth-fetch-middleware.ts` — injeta Bearer; em 401 faz refresh e replay; em 401 definitivo chama `auth-store.clear`
+- [x] Teste de integração: `middleware.ts` Edge — requisição sem cookie redireciona para `/login`; com cookie passa adiante
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
