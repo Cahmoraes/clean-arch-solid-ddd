@@ -25,11 +25,11 @@ Implementar a tela de assinatura premium no modo demonstrativo (sem cobrança re
 
 ## Subtarefas
 
-- [ ] 9.1 Criar `src/features/subscriptions/api/useCreateSubscription.ts` (POST /subscriptions, retry: 0)
-- [ ] 9.2 Criar `src/app/(authenticated)/assinatura/page.tsx` com descrição do plano, aviso de demo e botão de assinatura
-- [ ] 9.3 Exibir confirmação com dados retornados pelo backend após sucesso
-- [ ] 9.4 Exibir mensagem amigável em caso de erro
-- [ ] 9.5 Adicionar handler MSW: `POST /subscriptions`
+- [x] 9.1 Criar `src/features/subscriptions/api/useCreateSubscription.ts` (POST /subscriptions, retry: 0)
+- [x] 9.2 Criar `src/app/(authenticated)/assinatura/page.tsx` com descrição do plano, aviso de demo e botão de assinatura
+- [x] 9.3 Exibir confirmação com dados retornados pelo backend após sucesso
+- [x] 9.4 Exibir mensagem amigável em caso de erro
+- [x] 9.5 Adicionar handler MSW: `POST /subscriptions`
 
 ## Detalhes de Implementação
 
@@ -45,10 +45,10 @@ Ver `techspec.md` → seção **Endpoints de API** (RF-19, RF-20) e `prd.md` →
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: `useCreateSubscription` tem `retry: 0` configurado
-- [ ] Teste de integração: botão "Assinar" exibe loading e confirmação após resposta MSW de sucesso
-- [ ] Teste de integração: erro em `/subscriptions` exibe mensagem amigável
-- [ ] Teste de integração: aviso de demo está visível na página sem interação do usuário
+- [x] Teste de unidade: `useCreateSubscription` tem `retry: 0` configurado
+- [x] Teste de integração: botão "Assinar" exibe loading e confirmação após resposta MSW de sucesso
+- [x] Teste de integração: erro em `/subscriptions` exibe mensagem amigável
+- [x] Teste de integração: aviso de demo está visível na página sem interação do usuário
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
