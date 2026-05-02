@@ -25,12 +25,12 @@ Consolidar o dashboard administrativo com a listagem paginada de todos os usuár
 
 ## Subtarefas
 
-- [ ] 10.1 Criar `src/features/admin/api/useUsers.ts` (GET /users paginado)
-- [ ] 10.2 Criar `src/app/(authenticated)/admin/usuarios/page.tsx` com listagem e paginação
-- [ ] 10.3 Criar componente `src/features/admin/components/UserRow.tsx` para cada item da lista
-- [ ] 10.4 Aplicar Skeleton no loading e EmptyState na lista vazia
-- [ ] 10.5 Confirmar que link `/admin/usuarios` está no `AuthenticatedShell` e visível apenas para ADMIN
-- [ ] 10.6 Adicionar handler MSW: `GET /users` com suporte a query params de paginação
+- [x] 10.1 Criar `src/features/admin/api/useUsers.ts` (GET /users paginado)
+- [x] 10.2 Criar `src/app/(authenticated)/admin/usuarios/page.tsx` com listagem e paginação
+- [x] 10.3 Criar componente `src/features/admin/components/UserRow.tsx` para cada item da lista
+- [x] 10.4 Aplicar Skeleton no loading e EmptyState na lista vazia
+- [x] 10.5 Confirmar que link `/admin/usuarios` está no `AuthenticatedShell` e visível apenas para ADMIN
+- [x] 10.6 Adicionar handler MSW: `GET /users` com suporte a query params de paginação
 
 ## Detalhes de Implementação
 
@@ -46,11 +46,11 @@ Ver `techspec.md` → seção **Endpoints de API** (RF-21, RF-22) e **Sequenciam
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: `useUsers` retorna lista tipada do MSW com paginação
-- [ ] Teste de integração: tela `/admin/usuarios` exibe Skeleton e depois lista após resposta MSW
-- [ ] Teste de integração: paginação navega corretamente entre páginas
-- [ ] Teste de integração: EmptyState exibido quando MSW retorna lista vazia
-- [ ] Teste de integração: MEMBER redirecionado ao tentar acessar a rota admin
+- [x] Teste de unidade: `useUsers` retorna lista tipada do MSW com paginação
+- [x] Teste de integração: tela `/admin/usuarios` exibe Skeleton e depois lista após resposta MSW
+- [x] Teste de integração: paginação navega corretamente entre páginas
+- [x] Teste de integração: EmptyState exibido quando MSW retorna lista vazia
+- [x] Teste de integração: MEMBER redirecionado ao tentar acessar a rota admin
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
