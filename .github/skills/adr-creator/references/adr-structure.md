@@ -3,7 +3,7 @@
 ## Template completo
 
 ```markdown
-ADR{ID} — {Título Descritivo e Afirmativo}
+# ADR{ID} — {Título Descritivo e Afirmativo}
 
 - Status: {Rascunho | Proposto | Aceito | Desativado}
 - Data: {dd/mm/aaaa}
