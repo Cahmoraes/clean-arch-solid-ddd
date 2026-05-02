@@ -30,15 +30,15 @@ Implementar todas as telas e fluxos de autenticação: cadastro, ativação de c
 
 ## Subtarefas
 
-- [ ] 5.1 Criar `src/features/auth/schemas/` com `loginSchema`, `signupSchema`, `activateSchema`, `changePasswordSchema`
-- [ ] 5.2 Criar `src/features/auth/api/` com mutations: `useLogin`, `useSignup`, `useActivateAccount`, `useLogout`, `useChangePassword`
-- [ ] 5.3 Criar tela `src/app/(public)/login/page.tsx` com formulário React Hook Form + Zod
-- [ ] 5.4 Criar tela `src/app/(public)/cadastro/page.tsx` com formulário e feedback pós-cadastro
-- [ ] 5.5 Criar tela `src/app/(public)/ativar/[token]/page.tsx` que lê o token da URL e aciona a mutation de ativação
-- [ ] 5.6 Criar tela `src/app/(authenticated)/perfil/senha/page.tsx` com formulário de alteração de senha
-- [ ] 5.7 Integrar ação de logout no `AuthenticatedShell` (via `useLogout` mutation)
-- [ ] 5.8 Adicionar toast de "sessão expirada" disparado pelo `auth-fetch-middleware` ao redirecionar para `/login`
-- [ ] 5.9 Adicionar handlers MSW em `src/test/msw/handlers.ts` para: `POST /users`, `PATCH /users/activate`, `PATCH /users/me/change-password`
+- [x] 5.1 Criar `src/features/auth/schemas/` com `loginSchema`, `signupSchema`, `activateSchema`, `changePasswordSchema`
+- [x] 5.2 Criar `src/features/auth/api/` com mutations: `useLogin`, `useSignup`, `useActivateAccount`, `useLogout`, `useChangePassword`
+- [x] 5.3 Criar tela `src/app/(public)/login/page.tsx` com formulário React Hook Form + Zod
+- [x] 5.4 Criar tela `src/app/(public)/cadastro/page.tsx` com formulário e feedback pós-cadastro
+- [x] 5.5 Criar tela `src/app/(public)/ativar/[token]/page.tsx` que lê o token da URL e aciona a mutation de ativação
+- [x] 5.6 Criar tela `src/app/(authenticated)/perfil/senha/page.tsx` com formulário de alteração de senha
+- [x] 5.7 Integrar ação de logout no `AuthenticatedShell` (via `useLogout` mutation)
+- [x] 5.8 Adicionar toast de "sessão expirada" disparado pelo `auth-fetch-middleware` ao redirecionar para `/login`
+- [x] 5.9 Adicionar handlers MSW em `src/test/msw/handlers.ts` para: `POST /users`, `PATCH /users/activate`, `PATCH /users/me/change-password`
 
 ## Detalhes de Implementação
 
@@ -56,13 +56,13 @@ Ver `techspec.md` → seção **Endpoints de API** (RF-01 a RF-08), **Design de 
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: `loginSchema` rejeita email inválido e senha abaixo do mínimo
-- [ ] Teste de unidade: `signupSchema` valida nome, email e força de senha
-- [ ] Teste de unidade: `useLogin` atualiza `auth-store` ao receber token do MSW
-- [ ] Teste de integração: tela de login — submit feliz redireciona; erro 401 mostra mensagem amigável
-- [ ] Teste de integração: tela de cadastro — submit feliz exibe instrução de ativação
-- [ ] Teste de integração: tela de ativação — token válido exibe sucesso; token inválido exibe erro
-- [ ] Teste de integração: logout — clique no botão limpa store e navega para `/login`
+- [x] Teste de unidade: `loginSchema` rejeita email inválido e senha abaixo do mínimo
+- [x] Teste de unidade: `signupSchema` valida nome, email e força de senha
+- [x] Teste de unidade: `useLogin` atualiza `auth-store` ao receber token do MSW
+- [x] Teste de integração: tela de login — submit feliz redireciona; erro 401 mostra mensagem amigável
+- [x] Teste de integração: tela de cadastro — submit feliz exibe instrução de ativação
+- [x] Teste de integração: tela de ativação — token válido exibe sucesso; token inválido exibe erro
+- [x] Teste de integração: logout — clique no botão limpa store e navega para `/login`
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 

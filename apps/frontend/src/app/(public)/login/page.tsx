@@ -1,0 +1,120 @@
+"use client"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense, useId } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { FormField } from "@/components/ui/form-field"
+import { useLogin } from "@/features/auth/api"
+import { type LoginInput, loginSchema } from "@/features/auth/schemas"
+import { ApiError } from "@/lib/errors"
+
+const DEFAULT_REDIRECT = "/academias"
+
+function loginErrorMessage(error: unknown): string {
+	if (error instanceof ApiError) {
+		if (error.status === 401) return "E-mail ou senha incorretos."
+		return error.userMessage
+	}
+	return "Não foi possível concluir o login. Tente novamente."
+}
+
+function LoginForm() {
+	const router = useRouter()
+	const searchParams = useSearchParams()
+	const emailId = useId()
+	const passwordId = useId()
+	const { mutateAsync, isPending, error } = useLogin()
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<LoginInput>({
+		resolver: zodResolver(loginSchema),
+		defaultValues: { email: "", password: "" },
+	})
+
+	async function onSubmit(values: LoginInput) {
+		try {
+			await mutateAsync(values)
+			const redirect = searchParams?.get("redirect") ?? DEFAULT_REDIRECT
+			router.replace(redirect)
+		} catch (submitError) {
+			toast.error(loginErrorMessage(submitError))
+		}
+	}
+
+	const submissionMessage = error ? loginErrorMessage(error) : null
+
+	return (
+		<section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6">
+			<header className="flex flex-col gap-2">
+				<h1 className="font-display text-3xl font-medium tracking-tight text-pure-black">
+					Entrar
+				</h1>
+				<p className="text-sm text-stone">
+					Use suas credenciais para acessar a plataforma.
+				</p>
+			</header>
+
+			<form
+				noValidate
+				className="flex flex-col gap-4"
+				onSubmit={handleSubmit(onSubmit)}
+				aria-busy={isPending}
+			>
+				<FormField
+					id={emailId}
+					label="E-mail"
+					type="email"
+					autoComplete="email"
+					error={errors.email?.message}
+					{...register("email")}
+				/>
+				<FormField
+					id={passwordId}
+					label="Senha"
+					type="password"
+					autoComplete="current-password"
+					error={errors.password?.message}
+					{...register("password")}
+				/>
+
+				{submissionMessage ? (
+					<p
+						role="alert"
+						data-testid="login-submit-error"
+						className="rounded-[12px] border border-light-gray bg-snow px-4 py-3 text-sm text-near-black"
+					>
+						{submissionMessage}
+					</p>
+				) : null}
+
+				<Button type="submit" disabled={isPending} data-testid="login-submit">
+					{isPending ? "Entrando…" : "Entrar"}
+				</Button>
+			</form>
+
+			<p className="text-sm text-stone">
+				Não tem conta?{" "}
+				<Link
+					href="/cadastro"
+					className="font-medium text-near-black underline underline-offset-4"
+				>
+					Crie agora
+				</Link>
+			</p>
+		</section>
+	)
+}
+
+export default function LoginPage() {
+	return (
+		<Suspense fallback={<div data-testid="login-loading" aria-busy="true" />}>
+			<LoginForm />
+		</Suspense>
+	)
+}
