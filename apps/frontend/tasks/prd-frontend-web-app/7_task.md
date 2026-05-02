@@ -27,14 +27,14 @@ Implementar busca paginada de academias por nome, listagem, tela de detalhes e, 
 
 ## Subtarefas
 
-- [ ] 7.1 Criar `src/features/gyms/api/` com: `useGymsByName` (GET /gyms/search/{name} paginado), `useGymById` (GET /gyms/{id}), `useCreateGym` (POST /gyms)
-- [ ] 7.2 Criar `src/features/gyms/schemas/createGymSchema.ts` com validação Zod
-- [ ] 7.3 Criar `src/app/(authenticated)/academias/page.tsx` com campo de busca e listagem paginada
-- [ ] 7.4 Criar `src/app/(authenticated)/academias/[id]/page.tsx` com detalhes da academia e botão de check-in
-- [ ] 7.5 Criar `src/app/(authenticated)/admin/academias/nova/page.tsx` com formulário React Hook Form + Zod
-- [ ] 7.6 Garantir que a rota admin é bloqueada para MEMBER (via layout admin da task 4.0)
-- [ ] 7.7 Aplicar `EmptyState` quando busca não retorna resultados
-- [ ] 7.8 Adicionar handlers MSW: `GET /gyms`, `GET /gyms/search/:name`, `GET /gyms/:id`, `POST /gyms`
+- [x] 7.1 Criar `src/features/gyms/api/` com: `useGymsByName` (GET /gyms/search/{name} paginado), `useGymById` (GET /gyms/{id}), `useCreateGym` (POST /gyms)
+- [x] 7.2 Criar `src/features/gyms/schemas/createGymSchema.ts` com validação Zod
+- [x] 7.3 Criar `src/app/(authenticated)/academias/page.tsx` com campo de busca e listagem paginada
+- [x] 7.4 Criar `src/app/(authenticated)/academias/[id]/page.tsx` com detalhes da academia e botão de check-in
+- [x] 7.5 Criar `src/app/(authenticated)/admin/academias/nova/page.tsx` com formulário React Hook Form + Zod
+- [x] 7.6 Garantir que a rota admin é bloqueada para MEMBER (via layout admin da task 4.0)
+- [x] 7.7 Aplicar `EmptyState` quando busca não retorna resultados
+- [x] 7.8 Adicionar handlers MSW: `GET /gyms`, `GET /gyms/search/:name`, `GET /gyms/:id`, `POST /gyms`
 
 ## Detalhes de Implementação
 
@@ -52,12 +52,12 @@ Ver `techspec.md` → seção **Endpoints de API** (RF-13 a RF-15), **Modelos de
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: `createGymSchema` rejeita nome vazio e telefone com formato inválido
-- [ ] Teste de integração: tela `/academias` exibe Skeleton durante loading e lista após resposta MSW
-- [ ] Teste de integração: busca vazia exibe `EmptyState`
-- [ ] Teste de integração: tela `/academias/[id]` exibe nome e detalhes da academia mockada
-- [ ] Teste de integração: formulário admin cria academia e exibe confirmação
-- [ ] Teste de integração: paginação navega entre páginas de resultados
+- [x] Teste de unidade: `createGymSchema` rejeita nome vazio e telefone com formato inválido
+- [x] Teste de integração: tela `/academias` exibe Skeleton durante loading e lista após resposta MSW
+- [x] Teste de integração: busca vazia exibe `EmptyState`
+- [x] Teste de integração: tela `/academias/[id]` exibe nome e detalhes da academia mockada
+- [x] Teste de integração: formulário admin cria academia e exibe confirmação
+- [x] Teste de integração: paginação navega entre páginas de resultados
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
