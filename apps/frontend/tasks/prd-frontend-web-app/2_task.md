@@ -27,16 +27,16 @@ Instalar e configurar Tailwind CSS v4 com os tokens do `DESIGN.md`, e gerar os p
 
 ## Subtarefas
 
-- [ ] 2.1 Instalar `tailwindcss@^4`, `@tailwindcss/postcss`, `clsx`, `tailwind-merge`, `lucide-react`, `sonner`
-- [ ] 2.2 Atualizar `globals.css` com `@import "tailwindcss"`, variáveis CSS da paleta monocromática e tipografia do `DESIGN.md`
-- [ ] 2.3 Atualizar `postcss.config.js` (ou equivalente) para usar `@tailwindcss/postcss`
-- [ ] 2.4 Inicializar shadcn/ui (`npx shadcn@latest init`) validando que os templates gerados são compatíveis com Tailwind v4; ajustar manualmente se necessário
-- [ ] 2.5 Gerar primitivos: `Button`, `Input`, `Dialog`, `Skeleton`, `Tabs`, `DropdownMenu`, `Pagination` via shadcn CLI
-- [ ] 2.6 Customizar cada primitivo para respeitar o design system: border-radius pill em interativos, sem sombras, paleta monocromática
-- [ ] 2.7 Criar componente `EmptyState` em `src/components/ui/empty-state.tsx` com slot de ícone, título, descrição e ação opcional
-- [ ] 2.8 Integrar `Toaster` do Sonner em `src/app/layout.tsx`
-- [ ] 2.9 Atualizar `tsconfig.json` com path aliases `@/components/*`, `@/lib/*`, `@/features/*`
-- [ ] 2.10 Criar utilitário `src/lib/cn.ts` exportando função `cn` (clsx + tailwind-merge)
+- [x] 2.1 Instalar `tailwindcss@^4`, `@tailwindcss/postcss`, `clsx`, `tailwind-merge`, `lucide-react`, `sonner`
+- [x] 2.2 Atualizar `globals.css` com `@import "tailwindcss"`, variáveis CSS da paleta monocromática e tipografia do `DESIGN.md`
+- [x] 2.3 Atualizar `postcss.config.js` (ou equivalente) para usar `@tailwindcss/postcss`
+- [x] 2.4 Inicializar shadcn/ui (`npx shadcn@latest init`) validando que os templates gerados são compatíveis com Tailwind v4; ajustar manualmente se necessário
+- [x] 2.5 Gerar primitivos: `Button`, `Input`, `Dialog`, `Skeleton`, `Tabs`, `DropdownMenu`, `Pagination` via shadcn CLI
+- [x] 2.6 Customizar cada primitivo para respeitar o design system: border-radius pill em interativos, sem sombras, paleta monocromática
+- [x] 2.7 Criar componente `EmptyState` em `src/components/ui/empty-state.tsx` com slot de ícone, título, descrição e ação opcional
+- [x] 2.8 Integrar `Toaster` do Sonner em `src/app/layout.tsx`
+- [x] 2.9 Atualizar `tsconfig.json` com path aliases `@/components/*`, `@/lib/*`, `@/features/*`
+- [x] 2.10 Criar utilitário `src/lib/cn.ts` exportando função `cn` (clsx + tailwind-merge)
 
 ## Detalhes de Implementação
 
@@ -52,11 +52,11 @@ Ver `techspec.md` → seção **Sequenciamento de Desenvolvimento** item 1, **Ri
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: `Button` renderiza com as classes corretas para cada variante
-- [ ] Teste de unidade: `EmptyState` renderiza título, descrição e botão de ação quando fornecidos
-- [ ] Teste de unidade: `Skeleton` renderiza com animação de pulse
-- [ ] Teste de unidade: função `cn` combina classes corretamente e resolve conflitos Tailwind
-- [ ] Teste de integração: `Dialog` abre e fecha via interação de usuário com `userEvent`
+- [x] Teste de unidade: `Button` renderiza com as classes corretas para cada variante
+- [x] Teste de unidade: `EmptyState` renderiza título, descrição e botão de ação quando fornecidos
+- [x] Teste de unidade: `Skeleton` renderiza com animação de pulse
+- [x] Teste de unidade: função `cn` combina classes corretamente e resolve conflitos Tailwind
+- [x] Teste de integração: `Dialog` abre e fecha via interação de usuário com `userEvent`
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
