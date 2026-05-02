@@ -88,8 +88,8 @@ digraph brainstorming {
 
 **Implementation:**
 
-- Invoke the writing-plans skill to create a detailed implementation plan
-- Do NOT invoke any other skill. writing-plans is the next step.
+- Invoke the `criar-prd` e depois `criar-techspec` skill to create a detailed implementation plan
+- Do NOT invoke any other skill. `criar-prd` e `criar-techspec`  is the next step.
 
 ## Key Principles
 
