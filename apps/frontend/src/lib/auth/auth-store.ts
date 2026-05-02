@@ -39,12 +39,17 @@ function emit(type: AuthEventType, user: AuthUser | null): void {
 const SESSION_FLAG_COOKIE = "has_session"
 
 function writeSessionFlag(active: boolean): void {
-	if (typeof document === "undefined") return
+	if (typeof cookieStore === "undefined") return
 	if (active) {
-		document.cookie = `${SESSION_FLAG_COOKIE}=1; Path=/; SameSite=Lax`
+		cookieStore.set({
+			name: SESSION_FLAG_COOKIE,
+			value: "1",
+			path: "/",
+			sameSite: "lax",
+		})
 		return
 	}
-	document.cookie = `${SESSION_FLAG_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`
+	cookieStore.delete({ name: SESSION_FLAG_COOKIE, path: "/" })
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
