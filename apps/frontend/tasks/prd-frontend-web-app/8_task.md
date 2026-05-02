@@ -27,14 +27,14 @@ Implementar a funcionalidade central do produto: criação de check-in a partir 
 
 ## Subtarefas
 
-- [ ] 8.1 Criar `src/features/check-ins/api/` com: `useCreateCheckIn` (POST /check-ins), `useCheckIns` (GET /check-ins paginado), `useValidateCheckIn` (PATCH /check-ins/validate)
-- [ ] 8.2 Integrar botão "Fazer Check-in" na tela `/academias/[id]` (task 7.0) com `useCreateCheckIn`
-- [ ] 8.3 Criar `src/app/(authenticated)/check-ins/page.tsx` com lista paginada e componente de item de check-in
-- [ ] 8.4 Criar `src/app/(authenticated)/admin/check-ins/page.tsx` com lista de check-ins pendentes e ação de validação
-- [ ] 8.5 Aplicar `EmptyState` no histórico quando não há check-ins
-- [ ] 8.6 Garantir que mutation de `useCreateCheckIn` tem `retry: 0`
-- [ ] 8.7 Invalidar query de check-ins após validação admin para atualizar lista em tempo real
-- [ ] 8.8 Adicionar handlers MSW: `POST /check-ins`, `GET /check-ins`, `PATCH /check-ins/validate`
+- [x] 8.1 Criar `src/features/check-ins/api/` com: `useCreateCheckIn` (POST /check-ins), `useCheckIns` (GET /check-ins paginado), `useValidateCheckIn` (PATCH /check-ins/validate)
+- [x] 8.2 Integrar botão "Fazer Check-in" na tela `/academias/[id]` (task 7.0) com `useCreateCheckIn`
+- [x] 8.3 Criar `src/app/(authenticated)/check-ins/page.tsx` com lista paginada e componente de item de check-in
+- [x] 8.4 Criar `src/app/(authenticated)/admin/check-ins/page.tsx` com lista de check-ins pendentes e ação de validação
+- [x] 8.5 Aplicar `EmptyState` no histórico quando não há check-ins
+- [x] 8.6 Garantir que mutation de `useCreateCheckIn` tem `retry: 0`
+- [x] 8.7 Invalidar query de check-ins após validação admin para atualizar lista em tempo real
+- [x] 8.8 Adicionar handlers MSW: `POST /check-ins`, `GET /check-ins`, `PATCH /check-ins/validate`
 
 ## Detalhes de Implementação
 
@@ -51,13 +51,13 @@ Ver `techspec.md` → seção **Endpoints de API** (RF-16 a RF-18), **Pontos de 
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: `useCreateCheckIn` chama `POST /check-ins` com gymId correto (MSW)
-- [ ] Teste de unidade: `useCreateCheckIn` tem `retry: 0` configurado
-- [ ] Teste de integração: botão "Fazer Check-in" exibe loading e toast de sucesso após resposta MSW
-- [ ] Teste de integração: erro no check-in exibe mensagem amigável (não código HTTP)
-- [ ] Teste de integração: tela `/check-ins` exibe histórico paginado com Skeleton no loading
-- [ ] Teste de integração: `EmptyState` exibido quando histórico vazio
-- [ ] Teste de integração: admin valida check-in e lista é atualizada
+- [x] Teste de unidade: `useCreateCheckIn` chama `POST /check-ins` com gymId correto (MSW)
+- [x] Teste de unidade: `useCreateCheckIn` tem `retry: 0` configurado
+- [x] Teste de integração: botão "Fazer Check-in" exibe loading e toast de sucesso após resposta MSW
+- [x] Teste de integração: erro no check-in exibe mensagem amigável (não código HTTP)
+- [x] Teste de integração: tela `/check-ins` exibe histórico paginado com Skeleton no loading
+- [x] Teste de integração: `EmptyState` exibido quando histórico vazio
+- [x] Teste de integração: admin valida check-in e lista é atualizada
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
