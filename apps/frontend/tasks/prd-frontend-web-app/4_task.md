@@ -27,15 +27,15 @@ Criar os shells de página (`PublicShell` e `AuthenticatedShell`), os route grou
 
 ## Subtarefas
 
-- [ ] 4.1 Criar estrutura de pastas: `src/app/(public)/` e `src/app/(authenticated)/`
-- [ ] 4.2 Criar `src/components/layout/PublicShell.tsx` com header mínimo e slot de conteúdo
-- [ ] 4.3 Criar `src/components/layout/AuthenticatedShell.tsx` com header, navegação responsiva e menu de usuário
-- [ ] 4.4 Implementar guarda visual de role no `AuthenticatedShell` (itens admin visíveis apenas para ADMIN)
-- [ ] 4.5 Criar `src/app/(public)/layout.tsx` usando `PublicShell`
-- [ ] 4.6 Criar `src/app/(authenticated)/layout.tsx` usando `AuthenticatedShell`
-- [ ] 4.7 Criar `src/app/(authenticated)/admin/layout.tsx` com guarda de role ADMIN (redirect para `/` se MEMBER)
-- [ ] 4.8 Criar `src/app/(public)/page.tsx` como RSC com conteúdo da landing (hero, CTA de cadastro/login)
-- [ ] 4.9 Atualizar `src/app/layout.tsx` com fonte SF Pro Rounded (fallback system), Toaster e classes base Tailwind
+- [x] 4.1 Criar estrutura de pastas: `src/app/(public)/` e `src/app/(authenticated)/`
+- [x] 4.2 Criar `src/components/layout/PublicShell.tsx` com header mínimo e slot de conteúdo
+- [x] 4.3 Criar `src/components/layout/AuthenticatedShell.tsx` com header, navegação responsiva e menu de usuário
+- [x] 4.4 Implementar guarda visual de role no `AuthenticatedShell` (itens admin visíveis apenas para ADMIN)
+- [x] 4.5 Criar `src/app/(public)/layout.tsx` usando `PublicShell`
+- [x] 4.6 Criar `src/app/(authenticated)/layout.tsx` usando `AuthenticatedShell`
+- [x] 4.7 Criar `src/app/(authenticated)/admin/layout.tsx` com guarda de role ADMIN (redirect para `/` se MEMBER)
+- [x] 4.8 Criar `src/app/(public)/page.tsx` como RSC com conteúdo da landing (hero, CTA de cadastro/login)
+- [x] 4.9 Atualizar `src/app/layout.tsx` com fonte SF Pro Rounded (fallback system), Toaster e classes base Tailwind
 
 ## Detalhes de Implementação
 
@@ -52,11 +52,11 @@ Ver `techspec.md` → seção **Rotas do App Router**, **Sequenciamento de Desen
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: `AuthenticatedShell` exibe links de admin quando role é ADMIN
-- [ ] Teste de unidade: `AuthenticatedShell` oculta links de admin quando role é MEMBER
-- [ ] Teste de integração: layout admin com role MEMBER redireciona para `/`
-- [ ] Teste de integração: landing renderiza CTA de cadastro e login
-- [ ] Teste de integração: navegação mobile exibe/oculta menu ao clicar no botão de hambúrguer
+- [x] Teste de unidade: `AuthenticatedShell` exibe links de admin quando role é ADMIN
+- [x] Teste de unidade: `AuthenticatedShell` oculta links de admin quando role é MEMBER
+- [x] Teste de integração: layout admin com role MEMBER redireciona para `/`
+- [x] Teste de integração: landing renderiza CTA de cadastro e login
+- [x] Teste de integração: navegação mobile exibe/oculta menu ao clicar no botão de hambúrguer
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
