@@ -26,29 +26,23 @@ export class OpenApiSchemaBuilder {
 			summary: input.summary,
 			description: input.description,
 		}
-
 		if (input.body) {
 			schema.body = OpenApiSchemaBuilder.convertZodToJsonSchema(input.body)
 		}
-
 		if (input.querystring) {
 			schema.querystring = OpenApiSchemaBuilder.convertZodToJsonSchema(
 				input.querystring,
 			)
 		}
-
 		if (input.params) {
 			schema.params = OpenApiSchemaBuilder.convertZodToJsonSchema(input.params)
 		}
-
 		if (input.responses) {
 			schema.response = OpenApiSchemaBuilder.buildResponses(input.responses)
 		}
-
 		if (input.security) {
 			schema.security = [{ bearerAuth: [] }]
 		}
-
 		return schema
 	}
 
@@ -67,12 +61,12 @@ export class OpenApiSchemaBuilder {
 					description: definition.description,
 					...OpenApiSchemaBuilder.convertZodToJsonSchema(definition.schema),
 				}
-			} else {
-				result[Number(statusCode)] = {
-					description: definition.description,
-					type: "object",
-					properties: {},
-				}
+				continue
+			}
+			result[Number(statusCode)] = {
+				description: definition.description,
+				type: "object",
+				properties: {},
 			}
 		}
 		return result

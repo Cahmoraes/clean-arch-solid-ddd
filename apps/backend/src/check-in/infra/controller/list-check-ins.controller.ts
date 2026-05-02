@@ -3,7 +3,6 @@ import { inject, injectable } from "inversify"
 import { z } from "zod"
 import type { ValidationError } from "zod-validation-error"
 import { fromError } from "zod-validation-error"
-
 import type { FetchCheckInsUseCase } from "@/check-in/application/use-case/fetch-check-ins.usecase"
 import {
 	type Either,
@@ -17,7 +16,6 @@ import { CHECKIN_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
-
 import { CheckInRoutes } from "./routes/check-in-routes"
 
 const listCheckInsQuerySchema = z.object({
@@ -25,13 +23,10 @@ const listCheckInsQuerySchema = z.object({
 		description: "Page number",
 		example: 1,
 	}),
-	status: z
-		.enum(["pending", "validated"])
-		.optional()
-		.meta({
-			description: "Filter by status",
-			example: "pending",
-		}),
+	status: z.enum(["pending", "validated"]).optional().meta({
+		description: "Filter by status",
+		example: "pending",
+	}),
 })
 
 type ListCheckInsQuery = z.infer<typeof listCheckInsQuerySchema>
@@ -85,7 +80,9 @@ export class ListCheckInsController implements Controller {
 		})
 	}
 
-	private parseQuery(query: unknown): Either<ValidationError, ListCheckInsQuery> {
+	private parseQuery(
+		query: unknown,
+	): Either<ValidationError, ListCheckInsQuery> {
 		const parsed = listCheckInsQuerySchema.safeParse(query)
 		if (!parsed.success) return failure(fromError(parsed.error))
 		return success(parsed.data)
@@ -109,7 +106,9 @@ function makeListCheckInsSwaggerSchema(): Schema {
 							id: z.string().meta({ description: "Check-in ID" }),
 							userId: z.string().meta({ description: "User ID" }),
 							gymId: z.string().meta({ description: "Gym ID" }),
-							createdAt: z.string().meta({ description: "Creation date (ISO)" }),
+							createdAt: z
+								.string()
+								.meta({ description: "Creation date (ISO)" }),
 							validatedAt: z
 								.string()
 								.nullable()

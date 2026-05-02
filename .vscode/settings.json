@@ -4,9 +4,9 @@
 	"editor.codeActionsOnSave": {
 		"source.organizeImports.biome": "explicit"
 	},
-	"biome.lsp.bin": "./apps/backend/node_modules/@biomejs/biome/bin/biome",
-	"typescript.tsdk": "apps/backend/node_modules/typescript/lib",
-	"typescript.enablePromptUseWorkspaceTsdk": true,
+	// "biome.lsp.bin": "./apps/backend/node_modules/@biomejs/biome/bin/biome",
+	// "typescript.tsdk": "apps/backend/node_modules/typescript/lib",
+	// "typescript.enablePromptUseWorkspaceTsdk": true,
 	"[sql]": {
 		"editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
 	}
