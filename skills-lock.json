@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-browser": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/agent-browser/SKILL.md",
+      "computedHash": "9f085be33df8039cc24b0fdf9758e47d1b241f473610101a869e221dc2879f0a"
+    },
+    "architectural-analysis": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/architectural-analysis/SKILL.md",
+      "computedHash": "d9599934bcf249166bdc5d28a06042380cfb03d1850c2fc00a66e9741b665a1f"
+    },
+    "architecture-diagram": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/architecture-diagram/SKILL.md",
+      "computedHash": "39886b0992c1b94b6500f6c998bd35ed9286b16fd3cb8317ca63996f580ed90f"
+    },
+    "brainstorming": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/brainstorming/SKILL.md",
+      "computedHash": "3d898aa741852ad3f01954ba69c3b5b5e132931a570ca6319138bb610747f9c4"
+    },
+    "qa-execution": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/qa-execution/SKILL.md",
+      "computedHash": "1e0d0aa6fea29d814d62ea5513a8f2411a560bb62acc499aa411c72eb537c8ec"
+    },
+    "qa-report": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/qa-report/SKILL.md",
+      "computedHash": "231866d5f491bb0f4dcc3c999362a942bd2e26b5b9289c1ced66bc8433a3e2c4"
+    },
+    "tanstack-query-best-practices": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-query-best-practices/SKILL.md",
+      "computedHash": "21d2e8b7468a81d772b6527ad8ca178cc2f3f08af777bb9061333013ee88a0c9"
+    },
+    "tanstack-router-best-practices": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-router-best-practices/SKILL.md",
+      "computedHash": "5f01567a457b2a992c8ae7d615689c2b1c248fe27a690b58bf9af7d09f4d2f3f"
+    },
+    "tanstack-start-best-practices": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-start-best-practices/SKILL.md",
+      "computedHash": "c0ac310303f766a20017decf2cbe3ab8b80f1210943d5ec1c6cfe11c0d4d5a5b"
+    },
+    "to-prompt": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/to-prompt/SKILL.md",
+      "computedHash": "8b211cbc89c668e081db0a499d70098ac702e723cc879a6cc69a47327e01c2b1"
+    },
+    "ui-ux-pro-max": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "ec90b96361a8c1c59ee642cde483398d07c1a884fcaa5850945181f8a08f9a26"
+    },
+    "vercel-composition-patterns": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vercel-composition-patterns/SKILL.md",
+      "computedHash": "1aa8cc5a812ffcb991f8d9528d2aefc85158cddfdf3c4a810c597f0c9c7bfc89"
+    },
+    "vercel-react-best-practices": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vercel-react-best-practices/SKILL.md",
+      "computedHash": "0c40488a357b638d7eb188086f93d166128b8c5ca54d6e0d04ac1bca4062e5c1"
+    },
+    "vitest": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vitest/SKILL.md",
+      "computedHash": "669c7275f7e1379b06b2bcfa593603aead4c983b951c7e8edbc09640aa38d0a1"
+    },
+    "zustand": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zustand/SKILL.md",
+      "computedHash": "5602a430065cace096abfee888b3e58f096ac01eff541dce7ee59bd18342ca10"
+    }
+  }
+}
