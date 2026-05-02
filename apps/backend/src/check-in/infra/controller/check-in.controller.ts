@@ -4,6 +4,7 @@ import type { ValidationError } from "zod-validation-error"
 import { fromError } from "zod-validation-error"
 
 import type { CheckInUseCase } from "@/check-in/application/use-case/check-in.usecase"
+import { requires } from "@/shared/domain/requires"
 import {
 	type Either,
 	failure,
@@ -16,7 +17,6 @@ import { CHECKIN_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
-
 import { CheckInRoutes } from "./routes/check-in-routes"
 
 const checkInRequestSchema = z.object({

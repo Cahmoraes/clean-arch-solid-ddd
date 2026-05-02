@@ -1,6 +1,8 @@
 import { inject, injectable } from "inversify"
 import type {
 	CheckInRepository,
+	FindManyInput,
+	FindManyOutput,
 	SaveResponse,
 } from "@/check-in/application/repository/check-in-repository"
 import { CheckIn } from "@/check-in/domain/check-in"
@@ -151,5 +153,38 @@ export class PrismaCheckInRepository implements CheckInRepository {
 				user_id: userId,
 			},
 		})
+	}
+
+	public async findMany(input: FindManyInput): Promise<FindManyOutput> {
+		const where = this.buildStatusFilter(input.status)
+		const [checkInData, total] = await Promise.all([
+			this.prismaClient.checkIn.findMany({
+				where,
+				skip: (input.page - 1) * env.ITEMS_PER_PAGE,
+				take: env.ITEMS_PER_PAGE,
+				orderBy: { created_at: "desc" },
+			}),
+			this.prismaClient.checkIn.count({ where }),
+		])
+		const items = checkInData.map((data) =>
+			this.createCheckIn({
+				...data,
+				latitude: data.latitude.toNumber(),
+				longitude: data.longitude.toNumber(),
+			}),
+		)
+		return { items, total }
+	}
+
+	private buildStatusFilter(
+		status?: string,
+	): Record<string, unknown> {
+		if (status === "pending") {
+			return { validated_at: null }
+		}
+		if (status === "validated") {
+			return { validated_at: { not: null } }
+		}
+		return {}
 	}
 }

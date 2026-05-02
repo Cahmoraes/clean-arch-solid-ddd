@@ -25,8 +25,12 @@ import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 
 interface Sub {
-	sub: string
-	email: string
+	sub: {
+		id: string
+		email: string
+		role: string
+		jwi: string
+	}
 }
 
 const refreshTokenRequestSchema = z.object({
@@ -107,9 +111,9 @@ export class RefreshTokenController implements Controller {
 		})
 	}
 
-	private createTokens(sub: string) {
-		const token = this.authToken.sign(sub, env.PRIVATE_KEY)
-		const refreshToken = this.authToken.refreshToken(sub, env.PRIVATE_KEY)
+	private createTokens(sub: object) {
+		const token = this.authToken.sign({ sub }, env.PRIVATE_KEY)
+		const refreshToken = this.authToken.refreshToken({ sub }, env.PRIVATE_KEY)
 		return { token, refreshToken }
 	}
 

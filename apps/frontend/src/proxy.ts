@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 const REFRESH_COOKIE_NAMES = ["refreshToken", "refresh_token"]
 
-export function middleware(request: NextRequest): NextResponse {
+export function proxy(request: NextRequest): NextResponse {
 	const hasRefresh = REFRESH_COOKIE_NAMES.some(
 		(name) => request.cookies.get(name)?.value,
 	)

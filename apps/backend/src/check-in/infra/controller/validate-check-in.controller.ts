@@ -57,6 +57,16 @@ export class ValidateCheckInController implements Controller {
 			},
 			makeValidateCheckInSwaggerSchema(),
 		)
+		this.server.register(
+			"patch",
+			CheckInRoutes.VALIDATE,
+			{
+				callback: this.callback,
+				isProtected: true,
+				onlyAdmin: true,
+			},
+			makeValidateCheckInSwaggerSchema(),
+		)
 	}
 
 	private async callback(req: FastifyRequest) {

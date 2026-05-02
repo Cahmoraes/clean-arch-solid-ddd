@@ -5,6 +5,8 @@ import { injectable } from "inversify"
 
 import type {
 	CheckInRepository,
+	FindManyInput,
+	FindManyOutput,
 	SaveResponse,
 } from "@/check-in/application/repository/check-in-repository"
 import { CheckIn } from "@/check-in/domain/check-in"
@@ -70,5 +72,18 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 
 	public async countOfUserId(userId: string): Promise<number> {
 		return this.checkIns.filter((checkIn) => checkIn.userId === userId).size
+	}
+
+	public async findMany(input: FindManyInput): Promise<FindManyOutput> {
+		let filtered = this.checkIns.toArray()
+		if (input.status === "pending") {
+			filtered = filtered.filter((checkIn) => !checkIn.isValidated)
+		} else if (input.status === "validated") {
+			filtered = filtered.filter((checkIn) => checkIn.isValidated)
+		}
+		const total = filtered.length
+		const start = (input.page - 1) * env.ITEMS_PER_PAGE
+		const items = filtered.slice(start, start + env.ITEMS_PER_PAGE)
+		return { items, total }
 	}
 }
