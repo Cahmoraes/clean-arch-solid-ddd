@@ -7,7 +7,15 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!!**/.github"]
+		"includes": [
+			"**",
+			"!!**/.github",
+			"!**/playwright-report",
+			"!**/test-results",
+			"!**/coverage",
+			"!**/.next",
+			"!**/node_modules"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -49,6 +57,12 @@
 			"source": {
 				"organizeImports": "on"
 			}
+		}
+	},
+	"css": {
+		"parser": {
+			"cssModules": true,
+			"tailwindDirectives": true
 		}
 	}
 }

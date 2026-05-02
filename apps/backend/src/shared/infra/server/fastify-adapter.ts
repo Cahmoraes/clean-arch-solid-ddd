@@ -67,7 +67,11 @@ export class FastifyAdapter implements HttpServer {
 	}
 
 	private async setupCORS(): Promise<void> {
-		await this._server.register(fastifyCors)
+		await this._server.register(fastifyCors, {
+			origin: true,
+			credentials: true,
+			methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+		})
 	}
 
 	private setupRawBody(): void {

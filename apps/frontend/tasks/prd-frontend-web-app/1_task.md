@@ -27,14 +27,14 @@ Configurar toda a infraestrutura de testes do projeto: Vitest (unit/integration)
 
 ## Subtarefas
 
-- [ ] 1.1 Instalar dependências de dev: `vitest`, `@vitejs/plugin-react`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom`, `msw`, `@playwright/test`
-- [ ] 1.2 Criar `apps/frontend/vitest.config.ts` com ambiente jsdom, setup file, aliases e coverage
-- [ ] 1.3 Criar `apps/frontend/src/test/setup.ts` com `@testing-library/jest-dom` e configuração do MSW server
-- [ ] 1.4 Criar `apps/frontend/src/test/msw/handlers.ts` com handlers base (stubs vazios para cada endpoint do backend)
-- [ ] 1.5 Criar `apps/frontend/src/test/render.tsx` com função `renderWithProviders` que envolve o componente em `QueryClientProvider` + roteamento mock
-- [ ] 1.6 Criar `apps/frontend/playwright.config.ts` com `webServer` levantando frontend e backend, baseURL e configurações de retry
-- [ ] 1.7 Adicionar scripts `test`, `test:ui`, `test:coverage`, `e2e` ao `package.json` do frontend
-- [ ] 1.8 Atualizar `biome.json` para ignorar `playwright-report/`, `test-results/` e arquivos gerados
+- [x] 1.1 Instalar dependências de dev: `vitest`, `@vitejs/plugin-react`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom`, `msw`, `@playwright/test`
+- [x] 1.2 Criar `apps/frontend/vitest.config.ts` com ambiente jsdom, setup file, aliases e coverage
+- [x] 1.3 Criar `apps/frontend/src/test/setup.ts` com `@testing-library/jest-dom` e configuração do MSW server
+- [x] 1.4 Criar `apps/frontend/src/test/msw/handlers.ts` com handlers base (stubs vazios para cada endpoint do backend)
+- [x] 1.5 Criar `apps/frontend/src/test/render.tsx` com função `renderWithProviders` que envolve o componente em `QueryClientProvider` + roteamento mock
+- [x] 1.6 Criar `apps/frontend/playwright.config.ts` com `webServer` levantando frontend e backend, baseURL e configurações de retry
+- [x] 1.7 Adicionar scripts `test`, `test:ui`, `test:coverage`, `e2e` ao `package.json` do frontend
+- [x] 1.8 Atualizar `biome.json` para ignorar `playwright-report/`, `test-results/` e arquivos gerados
 
 ## Detalhes de Implementação
 
@@ -50,9 +50,9 @@ Ver `techspec.md` → seção **Abordagem de Testes** (Testes Unidade, Testes de
 
 ## Testes da Tarefa
 
-- [ ] Teste de unidade: criar um teste dummy que usa `renderWithProviders` e confirma que o componente renderiza dentro do `QueryClientProvider`
-- [ ] Teste de integração: handler MSW responde corretamente a uma requisição fake e o helper de render captura o resultado
-- [ ] E2E: `playwright.config.ts` válido — `npx playwright test --list` lista testes sem erro de configuração
+- [x] Teste de unidade: criar um teste dummy que usa `renderWithProviders` e confirma que o componente renderiza dentro do `QueryClientProvider`
+- [x] Teste de integração: handler MSW responde corretamente a uma requisição fake e o helper de render captura o resultado
+- [x] E2E: `playwright.config.ts` válido — `npx playwright test --list` lista testes sem erro de configuração
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
