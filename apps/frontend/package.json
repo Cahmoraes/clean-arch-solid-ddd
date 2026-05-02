@@ -1,0 +1,28 @@
+{
+	"name": "frontend",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"tsc:check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@repo/api-types": "workspace:*",
+		"@tanstack/react-query": "^5.59.0",
+		"next": "16.2.4",
+		"openapi-fetch": "^0.13.0",
+		"react": "19.2.4",
+		"react-dom": "19.2.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.4.13",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"typescript": "^5"
+	}
+}

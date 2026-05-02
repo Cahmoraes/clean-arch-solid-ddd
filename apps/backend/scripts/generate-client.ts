@@ -1,17 +1,19 @@
 import { mkdirSync, writeFileSync } from "node:fs"
-import { resolve } from "node:path"
+import { dirname, resolve } from "node:path"
 import openapiTS, { astToString } from "openapi-typescript"
 
 const SPEC_PATH = resolve(process.cwd(), "docs/openapi-spec.json")
-const OUTPUT_DIR = resolve(process.cwd(), "src/shared/infra/openapi/generated")
-const OUTPUT_FILE = resolve(OUTPUT_DIR, "api-types.d.ts")
+const OUTPUT_FILE = resolve(
+	import.meta.dirname,
+	"../../../packages/api-types/index.d.ts",
+)
 
 async function generateClient(): Promise<void> {
 	const specUrl = new URL(`file://${SPEC_PATH}`)
 	const ast = await openapiTS(specUrl)
 	const output = astToString(ast)
 
-	mkdirSync(OUTPUT_DIR, { recursive: true })
+	mkdirSync(dirname(OUTPUT_FILE), { recursive: true })
 	writeFileSync(OUTPUT_FILE, output)
 
 	console.log(`Types gerados com sucesso: ${OUTPUT_FILE}`)
