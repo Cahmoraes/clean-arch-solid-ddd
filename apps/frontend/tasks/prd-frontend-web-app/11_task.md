@@ -26,12 +26,12 @@ Auditar e garantir que todos os estados de loading, vazio e erro estão cobertos
 
 ## Subtarefas
 
-- [ ] 11.1 Criar `src/app/(public)/error.tsx` e `src/app/(authenticated)/error.tsx` com UI amigável e botão "Tentar novamente"
-- [ ] 11.2 Auditar todas as telas das tasks 5.0 a 10.0: confirmar Skeleton em cada query, EmptyState em cada lista
-- [ ] 11.3 Padronizar disparo de toasts Sonner nas mutations de sucesso e erro (centralizar em helper se necessário)
-- [ ] 11.4 Criar `src/lib/observability.ts` com `reportWebVitals` e suporte a `NEXT_PUBLIC_LOG_LEVEL`
-- [ ] 11.5 Evoluir `auth-store.ts` para emitir eventos `login`, `refresh`, `logout`, `forced-logout` em `EventTarget` interno
-- [ ] 11.6 Adicionar `reportWebVitals` em `next.config.ts` ou no layout raiz, delegando para `observability.ts`
+- [x] 11.1 Criar `src/app/(public)/error.tsx` e `src/app/(authenticated)/error.tsx` com UI amigável e botão "Tentar novamente"
+- [x] 11.2 Auditar todas as telas das tasks 5.0 a 10.0: confirmar Skeleton em cada query, EmptyState em cada lista
+- [x] 11.3 Padronizar disparo de toasts Sonner nas mutations de sucesso e erro (centralizar em helper se necessário)
+- [x] 11.4 Criar `src/lib/observability.ts` com `reportWebVitals` e suporte a `NEXT_PUBLIC_LOG_LEVEL`
+- [x] 11.5 Evoluir `auth-store.ts` para emitir eventos `login`, `refresh`, `logout`, `forced-logout` em `EventTarget` interno
+- [x] 11.6 Adicionar `reportWebVitals` em `next.config.ts` ou no layout raiz, delegando para `observability.ts`
 
 ## Detalhes de Implementação
 
@@ -48,11 +48,11 @@ Ver `techspec.md` → seção **Monitoramento e Observabilidade**, **Abordagem d
 
 ## Testes da Tarefa
 
-- [ ] Teste de integração: error boundary captura exceção lançada por componente filho e exibe UI de fallback
-- [ ] Teste de integração: query com erro de rede exibe toast amigável
-- [ ] Teste de unidade: auth-store dispara evento `login` após `setSession` e `logout` após `clear`
-- [ ] Teste de unidade: `observability.ts` chama `console.debug` quando `LOG_LEVEL=debug`
-- [ ] Auditoria manual: percorrer todas as telas e confirmar Skeleton + EmptyState presentes
+- [x] Teste de integração: error boundary captura exceção lançada por componente filho e exibe UI de fallback
+- [x] Teste de integração: query com erro de rede exibe toast amigável
+- [x] Teste de unidade: auth-store dispara evento `login` após `setSession` e `logout` após `clear`
+- [x] Teste de unidade: `observability.ts` chama `console.debug` quando `LOG_LEVEL=debug`
+- [x] Auditoria manual: percorrer todas as telas e confirmar Skeleton + EmptyState presentes
 
 <critical>SEMPRE CRIE E EXECUTE OS TESTES DA TAREFA ANTES DE CONSIDERÁ-LA FINALIZADA</critical>
 
