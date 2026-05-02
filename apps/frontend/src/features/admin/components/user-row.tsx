@@ -1,4 +1,4 @@
-import type { AdminUser } from "@/features/admin/api/useUsers"
+import type { AdminUser } from "@/features/admin/api/use-users"
 import { cn } from "@/lib/cn"
 
 export interface UserRowProps {

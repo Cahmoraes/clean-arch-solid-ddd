@@ -11,7 +11,7 @@ import {
 	useCheckIns,
 	useValidateCheckIn,
 } from "@/features/check-ins/api"
-import { CheckInItem } from "@/features/check-ins/components/CheckInItem"
+import { CheckInItem } from "@/features/check-ins/components/check-in-item"
 import { ApiError } from "@/lib/errors"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3"]

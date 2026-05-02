@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
-import { PublicShell } from "./PublicShell"
+import { PublicShell } from "./public-shell"
 
 describe("PublicShell", () => {
 	it("renderiza header com CTAs de login e cadastro", () => {

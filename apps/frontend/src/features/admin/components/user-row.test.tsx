@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
-import { UserRow } from "./UserRow"
+import { UserRow } from "./user-row"
 
 function row(role: string) {
 	return {

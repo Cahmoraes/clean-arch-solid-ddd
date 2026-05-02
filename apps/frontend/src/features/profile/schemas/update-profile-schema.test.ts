@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { updateProfileSchema } from "./updateProfileSchema"
+import { updateProfileSchema } from "./update-profile-schema"
 
 describe("updateProfileSchema", () => {
 	it("aceita um nome válido", () => {

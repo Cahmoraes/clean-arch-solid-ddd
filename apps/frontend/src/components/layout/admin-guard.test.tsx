@@ -15,7 +15,7 @@ vi.mock("next/navigation", () => ({
 }))
 
 import { useAuthStore } from "@/lib/auth/auth-store"
-import { AdminGuard } from "./AdminGuard"
+import { AdminGuard } from "./admin-guard"
 
 function setUser(role: "MEMBER" | "ADMIN") {
 	useAuthStore.setState({

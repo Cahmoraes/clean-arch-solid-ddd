@@ -14,9 +14,9 @@ import {
 	type CheckInsListQuery,
 	getCheckInsExtendedClient,
 	type PaginatedCheckIns,
-} from "./extendedPaths"
+} from "./extended-paths"
 
-export type { CheckIn, PaginatedCheckIns } from "./extendedPaths"
+export type { CheckIn, PaginatedCheckIns } from "./extended-paths"
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 	if (error instanceof ApiError) return error

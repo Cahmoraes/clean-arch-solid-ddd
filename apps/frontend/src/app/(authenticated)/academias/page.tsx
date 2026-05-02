@@ -5,8 +5,8 @@ import { useId, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useGymsByName } from "@/features/gyms/api"
-import { GymPagination } from "@/features/gyms/components/GymPagination"
-import { GymResults } from "@/features/gyms/components/GymResults"
+import { GymPagination } from "@/features/gyms/components/gym-pagination"
+import { GymResults } from "@/features/gyms/components/gym-results"
 
 const RESULTS_PER_PAGE = 20
 

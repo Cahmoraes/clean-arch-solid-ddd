@@ -3,7 +3,7 @@
 import { AlertTriangle, BadgeCheck, Check } from "lucide-react"
 import { useId, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { useCreateSubscription } from "@/features/subscriptions/api/useCreateSubscription"
+import { useCreateSubscription } from "@/features/subscriptions/api/use-create-subscription"
 import {
 	type CreateSubscriptionResponse,
 	DEMO_PAYMENT_METHOD_ID,

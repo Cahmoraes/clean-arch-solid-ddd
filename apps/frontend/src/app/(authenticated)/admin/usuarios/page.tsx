@@ -17,8 +17,8 @@ import {
 	ADMIN_USERS_DEFAULT_LIMIT,
 	type AdminUser,
 	useUsers,
-} from "@/features/admin/api/useUsers"
-import { UserRow } from "@/features/admin/components/UserRow"
+} from "@/features/admin/api/use-users"
+import { UserRow } from "@/features/admin/components/user-row"
 import type { ApiError } from "@/lib/errors"
 
 const SKELETON_ROWS = 5

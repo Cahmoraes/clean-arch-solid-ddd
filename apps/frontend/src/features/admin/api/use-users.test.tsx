@@ -4,7 +4,7 @@ import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
 import { server } from "@/test/msw/server"
-import { useUsers } from "./useUsers"
+import { useUsers } from "./use-users"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 

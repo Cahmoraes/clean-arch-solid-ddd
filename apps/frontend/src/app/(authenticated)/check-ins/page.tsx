@@ -17,7 +17,7 @@ import {
 	CHECK_INS_DEFAULT_PAGE_SIZE,
 	useCheckIns,
 } from "@/features/check-ins/api"
-import { CheckInItem } from "@/features/check-ins/components/CheckInItem"
+import { CheckInItem } from "@/features/check-ins/components/check-in-item"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3", "sk-4"]
 

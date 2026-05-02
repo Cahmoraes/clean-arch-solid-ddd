@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { Gym } from "@/features/gyms/api"
-import { GymCard } from "@/features/gyms/components/GymCard"
+import { GymCard } from "@/features/gyms/components/gym-card"
 
 const SKELETON_COUNT = 6
 

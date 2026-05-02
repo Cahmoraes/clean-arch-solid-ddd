@@ -18,7 +18,7 @@ vi.mock("next/navigation", () => ({
 }))
 
 import { useAuthStore } from "@/lib/auth/auth-store"
-import { AuthenticatedShell } from "./AuthenticatedShell"
+import { AuthenticatedShell } from "./authenticated-shell"
 
 function setUser(role: "MEMBER" | "ADMIN" | null) {
 	const store = useAuthStore.getState()

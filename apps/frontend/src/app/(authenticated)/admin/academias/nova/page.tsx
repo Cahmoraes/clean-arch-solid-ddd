@@ -11,7 +11,7 @@ import { useCreateGym } from "@/features/gyms/api"
 import {
 	type CreateGymInput,
 	createGymSchema,
-} from "@/features/gyms/schemas/createGymSchema"
+} from "@/features/gyms/schemas/create-gym-schema"
 import { ApiError } from "@/lib/errors"
 
 function createGymErrorMessage(error: unknown): string {

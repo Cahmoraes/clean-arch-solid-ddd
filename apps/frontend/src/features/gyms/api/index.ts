@@ -7,10 +7,10 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query"
-import type { CreateGymInput } from "@/features/gyms/schemas/createGymSchema"
+import type { CreateGymInput } from "@/features/gyms/schemas/create-gym-schema"
 import { api } from "@/lib/api"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
-import { type GymSummary, getGymsExtendedClient } from "./extendedPaths"
+import { type GymSummary, getGymsExtendedClient } from "./extended-paths"
 
 export type Gym = GymSummary
 

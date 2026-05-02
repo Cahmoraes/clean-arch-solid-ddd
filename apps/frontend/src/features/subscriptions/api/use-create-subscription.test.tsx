@@ -7,7 +7,7 @@ import { server } from "@/test/msw/server"
 import {
 	SUBSCRIPTIONS_MUTATION_KEY,
 	useCreateSubscription,
-} from "./useCreateSubscription"
+} from "./use-create-subscription"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 

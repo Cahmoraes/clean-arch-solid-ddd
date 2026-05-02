@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { createGymSchema } from "./createGymSchema"
+import { createGymSchema } from "./create-gym-schema"
 
 const validInput = {
 	title: "Iron Gym",
