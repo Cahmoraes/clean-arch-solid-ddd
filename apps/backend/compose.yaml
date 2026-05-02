@@ -2,6 +2,7 @@ services:
   postgresql:
     container_name: "postgresql-dev"
     image: bitnami/postgresql:latest
+    restart: unless-stopped
     volumes:
       - postgresql_data:/bitnami/postgresql
     environment:
@@ -14,6 +15,7 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-management
+    restart: unless-stopped
     ports:
       - 5672:5672
       - 15672:15672
@@ -31,6 +33,7 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx-proxy
+    restart: unless-stopped
     ports:
       - "80:80"
     volumes:
