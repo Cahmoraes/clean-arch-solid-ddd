@@ -1,4 +1,5 @@
 import type { z } from "zod"
+import type { RateLimitRouteConfig } from "./plugins/rate-limit-config.js"
 
 export type METHOD = "get" | "post" | "put" | "delete" | "patch" | "options"
 
@@ -22,6 +23,7 @@ export interface HandlerOptions {
 	callback: HandleCallback
 	isProtected?: boolean
 	onlyAdmin?: boolean
+	rateLimit?: RateLimitRouteConfig | false
 }
 
 export interface ZodValidationSchemas {

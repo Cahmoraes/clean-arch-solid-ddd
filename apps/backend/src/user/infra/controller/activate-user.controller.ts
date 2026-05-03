@@ -14,6 +14,7 @@ import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
+import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
 import type { ActiveUserUseCase } from "@/user/application/use-case/active-user.usecase"
 
 import { UserRoutes } from "./routes/user-routes"
@@ -52,6 +53,10 @@ export class ActivateUserController implements Controller {
 			{
 				callback: this.callback,
 				isProtected: true,
+				rateLimit: {
+					max: RATE_LIMIT_CONFIG.AUTH.MAX_MEMBER,
+					timeWindow: RATE_LIMIT_CONFIG.AUTH.TIME_WINDOW,
+				},
 			},
 			makeActivateUserSwaggerSchema(),
 		)

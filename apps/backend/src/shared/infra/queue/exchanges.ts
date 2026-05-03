@@ -4,6 +4,7 @@ export const EXCHANGES = {
 	PASSWORD_CHANGED: "passwordChanged",
 	CHECK_IN_CREATED: "checkInCreated",
 	STRIPE_WEBHOOK: "stripeWebhook",
+	RATE_LIMIT_EXCEEDED: "rateLimitExceeded",
 } as const
 
 export type ExchangeTypes = (typeof EXCHANGES)[keyof typeof EXCHANGES]

@@ -42,6 +42,7 @@ export class StripeWebhookController implements Controller {
 			SubscriptionRoutes.STRIPE_WEBHOOK,
 			{
 				callback: this.handler,
+				rateLimit: false,
 			},
 			makeStripeWebhookSwaggerSchema(),
 		)

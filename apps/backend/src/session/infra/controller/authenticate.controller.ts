@@ -18,7 +18,7 @@ import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
-
+import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config"
 import { SessionRoutes } from "./routes/session-routes"
 
 const authenticateRequestSchema = z.object({
@@ -60,6 +60,10 @@ export class AuthenticateController implements Controller {
 			SessionRoutes.AUTHENTICATE,
 			{
 				callback: this.callback,
+				rateLimit: {
+					max: RATE_LIMIT_CONFIG.AUTH.MAX_MEMBER,
+					timeWindow: RATE_LIMIT_CONFIG.AUTH.TIME_WINDOW,
+				},
 			},
 			makeAuthenticateSwaggerSchema(),
 		)

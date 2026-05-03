@@ -17,6 +17,7 @@ import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
+import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
 import { UserAlreadyExistsError } from "@/user/application/error/user-already-exists-error"
 import type {
 	CreateUserError,
@@ -82,6 +83,10 @@ export class CreateUserController implements Controller {
 			UserRoutes.CREATE,
 			{
 				callback: this.callback,
+				rateLimit: {
+					max: RATE_LIMIT_CONFIG.AUTH.MAX_MEMBER,
+					timeWindow: RATE_LIMIT_CONFIG.AUTH.TIME_WINDOW,
+				},
 			},
 			makeCreateUserControllerSwaggerSchema(),
 		)

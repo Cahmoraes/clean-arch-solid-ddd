@@ -2,7 +2,6 @@ import type { FastifyReply, FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
 import { z } from "zod"
 import { fromError, type ValidationError } from "zod-validation-error"
-
 import { SessionRoutes } from "@/session/infra/controller/routes/session-routes"
 import {
 	type Either,
@@ -22,6 +21,7 @@ import type { Logger as DebugLogger } from "@/shared/infra/logger/logger"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 
 interface Sub {
@@ -67,6 +67,10 @@ export class RefreshTokenController implements Controller {
 			SessionRoutes.REFRESH,
 			{
 				callback: this.callback,
+				rateLimit: {
+					max: RATE_LIMIT_CONFIG.AUTH.MAX_MEMBER,
+					timeWindow: RATE_LIMIT_CONFIG.AUTH.TIME_WINDOW,
+				},
 			},
 			makeRefreshTokenSwaggerSchema(),
 		)

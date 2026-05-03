@@ -30,6 +30,7 @@ export class HealthCheckController implements Controller {
 			HealthCheckRoutes.check,
 			{
 				callback: this.callback,
+				rateLimit: false,
 			},
 			makeHealthCheckSwaggerSchema(),
 		)

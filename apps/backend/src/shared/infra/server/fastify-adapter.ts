@@ -18,6 +18,7 @@ import { Logger as LoggerDecorate } from "../decorator/logger"
 import { env } from "../env"
 import { SHARED_TYPES } from "../ioc/types"
 import type { Logger } from "../logger/logger"
+import type { Queue } from "../queue/queue"
 import { FastifySwaggerSetupFactory } from "./factories/fastify-swagger-setup-factory"
 import { FastifySwaggerUISetupFactory } from "./factories/fastify-swagger-ui-setup-factory"
 import { GlobalErrorHandler } from "./global-error-handler"
@@ -29,6 +30,8 @@ import type {
 	Schema,
 	ZodValidationSchemas,
 } from "./http-server"
+import { RATE_LIMIT_CONFIG } from "./plugins/rate-limit-config.js"
+import { RateLimitPlugin } from "./plugins/rate-limit-plugin.js"
 import { AdminRoleCheck } from "./services/admin-role-check"
 import { AuthenticateHandler } from "./services/authenticate-pre-handler"
 import { CheckSessionRevokedHandler } from "./services/check-session-revoked"
@@ -42,6 +45,8 @@ export class FastifyAdapter implements HttpServer {
 		private readonly authToken: AuthToken,
 		@inject(SHARED_TYPES.Logger)
 		private readonly logger: Logger,
+		@inject(SHARED_TYPES.Queue)
+		private readonly queue: Queue,
 	) {
 		this._server = fastify({
 			ajv: {
@@ -71,6 +76,11 @@ export class FastifyAdapter implements HttpServer {
 		await this.setupCORS()
 		this.setupRawBody()
 		this.setupResponseValidation()
+		await this.setupRateLimit()
+	}
+
+	private async setupRateLimit(): Promise<void> {
+		await RateLimitPlugin.register(this._server, this.logger, this.queue)
 	}
 
 	private async setupCORS(): Promise<void> {
@@ -138,6 +148,9 @@ export class FastifyAdapter implements HttpServer {
 						this.onlyAdminPreHandler(handlerOptions.onlyAdmin),
 						this.checkSessionRevoked(handlerOptions.isProtected),
 					],
+					config: {
+						rateLimit: this.resolveRateLimitConfig(handlerOptions.rateLimit),
+					},
 				},
 				this.routeHandler(handlerOptions),
 			)
@@ -277,7 +290,38 @@ export class FastifyAdapter implements HttpServer {
 		return this._server.swagger()
 	}
 
+	private resolveRateLimitConfig(
+		rateLimit: HandlerOptions["rateLimit"],
+	): object | false | undefined {
+		if (rateLimit === false) return false
+		if (!rateLimit) return undefined
+		const baseMax = rateLimit.max
+		if (typeof baseMax === "number") {
+			return {
+				...rateLimit,
+				max: FastifyAdapter.createAdminAwareMaxFunction(baseMax),
+			}
+		}
+		return rateLimit
+	}
+
+	private static createAdminAwareMaxFunction(
+		baseMax: number,
+	): (request: FastifyRequest) => number {
+		return (request: FastifyRequest): number => {
+			try {
+				if (request.user?.sub?.role === "ADMIN") {
+					return baseMax * RATE_LIMIT_CONFIG.ADMIN_MULTIPLIER
+				}
+			} catch {
+				// request.user may not exist for unauthenticated routes
+			}
+			return baseMax
+		}
+	}
+
 	public async close(): Promise<void> {
+		await RateLimitPlugin.disconnect()
 		this._server.server.closeAllConnections?.()
 		await this._server.close()
 	}
