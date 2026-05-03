@@ -9,7 +9,6 @@ const AUTH_FREE_OPERATIONS = new Set([
 	"POST:/sessions",
 	"PATCH:/sessions/refresh",
 	"POST:/users",
-	"PATCH:/users/activate",
 ])
 
 function shouldAttachToken(request: Request): boolean {
