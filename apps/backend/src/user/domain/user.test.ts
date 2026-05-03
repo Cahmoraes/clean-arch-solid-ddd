@@ -19,7 +19,7 @@ describe("User Entity", () => {
 		expect(user.password).toEqual(expect.any(String))
 		expect(user.createdAt).toEqual(expect.any(Date))
 		expect(user.updatedAt).toBeUndefined()
-		expect(user.id).toBeNull()
+		expect(user.id).toEqual(expect.any(String))
 		expect(user.isActive).toBe(true)
 		expect(user.status).toBe(UserStatus.activated)
 		expect(user.billingCustomerId).toBeUndefined()

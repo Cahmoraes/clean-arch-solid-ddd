@@ -42,7 +42,7 @@ export class PrismaGymRepository implements GymRepository {
 	public async save(gym: Gym): Promise<SaveGymResult> {
 		const result = await this.prismaClient.gym.create({
 			data: {
-				id: gym.id ?? undefined,
+				id: gym.id,
 				title: gym.title,
 				description: gym.description,
 				phone: gym.phone ? gym.phone.toString() : undefined,

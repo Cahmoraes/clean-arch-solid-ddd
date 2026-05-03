@@ -56,7 +56,7 @@ export class CheckInHistoryUseCase {
 
 	private createCheckInsDTO(checkIns: CheckIn[]): CheckInsDTO[] {
 		return checkIns.map((checkIn) => ({
-			id: checkIn.id!,
+			id: checkIn.id,
 			checkInAt: checkIn.createdAt,
 			location: {
 				latitude: checkIn.latitude,

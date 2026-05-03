@@ -108,7 +108,7 @@ export class Gym {
 		return new Gym({ ...gymProps, id, coordinate, title, phone, cnpj })
 	}
 
-	get id(): string | null {
+	get id(): string {
 		return this._id.value
 	}
 

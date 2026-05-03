@@ -161,7 +161,7 @@ export class User extends Observable {
 		})
 	}
 
-	get id(): string | null {
+	get id(): string {
 		return this._id.value
 	}
 

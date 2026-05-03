@@ -1,9 +1,11 @@
 import { Id } from "./id"
 
 describe("Id", () => {
-	test("Teve criar um ID", () => {
+	test("Deve criar um ID gerando UUID quando nenhum valor for informado", () => {
 		const id = Id.create()
-		expect(id.value).toBeNull()
+		const uuidRegex =
+			/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+		expect(id.value).toMatch(uuidRegex)
 	})
 
 	test("Deve criar um ID com um valor definido", () => {

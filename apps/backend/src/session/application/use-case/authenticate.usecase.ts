@@ -78,7 +78,6 @@ export class AuthenticateUseCase {
 		return this.authToken.refreshToken(
 			{
 				sub: {
-					// biome-ignore lint/style/noNonNullAssertion: intentionally
 					id: user.id!,
 					email: user.email,
 					role: user.role,

@@ -53,7 +53,7 @@ export class FetchNearbyGym {
 
 	private createGymsDTO(gym: Gym[]): FetchNearbyGymOutput[] {
 		return gym.map((gym) => ({
-			id: gym.id!,
+			id: gym.id,
 			title: gym.title,
 			description: gym.description,
 			latitude: gym.latitude,

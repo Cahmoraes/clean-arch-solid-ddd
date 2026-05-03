@@ -88,8 +88,7 @@ export class CheckIn {
 		checkIn: CheckIn,
 	): CheckInCreatedEvent {
 		return new CheckInCreatedEvent({
-			// biome-ignore lint/style/noNonNullAssertion: Neste ponto o id existe
-			checkInId: checkIn.id!,
+			checkInId: checkIn.id,
 			userId: checkIn.userId,
 			gymId: checkIn.gymId,
 		})
@@ -108,7 +107,7 @@ export class CheckIn {
 		})
 	}
 
-	get id(): string | null {
+	get id(): string {
 		return this._id.value
 	}
 

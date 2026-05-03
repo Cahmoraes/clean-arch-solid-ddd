@@ -50,11 +50,9 @@ export class FetchCheckInsUseCase {
 		}
 	}
 
-	private toDTO(
-		items: FindManyOutput["items"],
-	): CheckInDTO[] {
+	private toDTO(items: FindManyOutput["items"]): CheckInDTO[] {
 		return items.map((checkIn) => ({
-			id: checkIn.id!,
+			id: checkIn.id,
 			userId: checkIn.userId,
 			gymId: checkIn.gymId,
 			createdAt: checkIn.createdAt.toISOString(),

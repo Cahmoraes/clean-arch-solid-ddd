@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
 
@@ -23,13 +21,10 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 	}
 
 	public async save(checkIn: CheckIn): Promise<SaveResponse> {
-		const checkInId = checkIn.id ?? randomUUID()
-		const userId = checkIn.userId ?? randomUUID()
-		const gymId = checkIn.gymId ?? randomUUID()
 		const checkInWithId = CheckIn.restore({
-			id: checkInId,
-			userId,
-			gymId,
+			id: checkIn.id,
+			userId: checkIn.userId,
+			gymId: checkIn.gymId,
 			createdAt: new Date(),
 			validatedAt: checkIn.validatedAt,
 			userLatitude: checkIn.latitude,
@@ -38,7 +33,7 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 		})
 		this.checkIns.add(checkInWithId)
 		return {
-			id: checkInId,
+			id: checkIn.id,
 		}
 	}
 

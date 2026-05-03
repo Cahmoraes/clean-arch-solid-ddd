@@ -1,8 +1,5 @@
-import { randomUUID } from "node:crypto"
-
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
-
 import { DistanceCalculator } from "@/check-in/domain/service/distance-calculator"
 import type { Coordinate } from "@/check-in/domain/value-object/coordinate"
 import type {
@@ -22,9 +19,8 @@ export class InMemoryGymRepository implements GymRepository {
 	}
 
 	public async save(gym: Gym): Promise<SaveGymResult> {
-		const id = gym.id ?? randomUUID()
 		const gymWithId = Gym.restore({
-			id,
+			id: gym.id,
 			title: gym.title,
 			description: gym.description,
 			latitude: gym.latitude,
@@ -33,7 +29,7 @@ export class InMemoryGymRepository implements GymRepository {
 			cnpj: gym.cnpj,
 		})
 		this.gyms.add(gymWithId)
-		return { id }
+		return { id: gym.id }
 	}
 
 	public async gymOfId(id: string): Promise<Gym | null> {

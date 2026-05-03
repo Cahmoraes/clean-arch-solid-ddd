@@ -1,8 +1,5 @@
-import { randomUUID } from "node:crypto"
-
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
-
 import type { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
@@ -16,9 +13,8 @@ export class InMemoryUserRepository implements UserRepository {
 	}
 
 	public async save(user: User): Promise<void> {
-		const id = user.id ?? randomUUID()
 		const userWithId = User.restore({
-			id,
+			id: user.id,
 			email: user.email,
 			name: user.name,
 			password: user.password,

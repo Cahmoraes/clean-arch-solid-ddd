@@ -1,20 +1,21 @@
+import { randomUUID } from "node:crypto"
 import type { ValueObject } from "./value-object"
 
 type StringOrNullable = string | null | undefined
 
 export class Id implements ValueObject {
-	private readonly _value: null | string
+	private readonly _value: string
 
-	private constructor(aString: StringOrNullable) {
-		this._value = aString ?? null
+	private constructor(aString: string) {
+		this._value = aString
 	}
 
-	get value(): null | string {
+	get value(): string {
 		return this._value
 	}
 
 	public static create(aString?: StringOrNullable) {
-		return new Id(aString)
+		return new Id(aString ?? randomUUID())
 	}
 
 	public static restore(aString: string) {

@@ -176,9 +176,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
 		return { items, total }
 	}
 
-	private buildStatusFilter(
-		status?: string,
-	): Record<string, unknown> {
+	private buildStatusFilter(status?: string): Record<string, unknown> {
 		if (status === "pending") {
 			return { validated_at: null }
 		}
