@@ -45,10 +45,11 @@ describe("Atualizar Refresh Token", () => {
 				email: input.email,
 				password: input.password,
 			})
-		const refreshToken = responseAuthenticate.headers["set-cookie"][0]
+		const setCookieHeader = responseAuthenticate.headers["set-cookie"][0]
+		const cookieValue = setCookieHeader.split(";")[0]
 		const responseRefreshToken = await request(fastifyServer.server)
 			.patch(SessionRoutes.REFRESH)
-			.set("Cookie", refreshToken)
+			.set("Cookie", cookieValue)
 			.send()
 		expect(responseRefreshToken.status).toBe(200)
 		expect(responseRefreshToken.body.message).toEqual(expect.any(String))

@@ -85,6 +85,12 @@ export class RefreshTokenController implements Controller {
 			})
 		}
 		const cookie = this.cookieParse(cookieOrError.value.cookie)
+		if (!cookie) {
+			return ResponseFactory.create({
+				status: HTTP_STATUS.BAD_REQUEST,
+				message: `Missing ${env.REFRESH_TOKEN_NAME} cookie`,
+			})
+		}
 		const verified = this.authToken.verify<Sub>(cookie.value, env.PRIVATE_KEY)
 		if (verified.isFailure()) {
 			this.warnOnRefreshTokenFailure(cookie, verified.value.message)
@@ -102,10 +108,10 @@ export class RefreshTokenController implements Controller {
 		})
 	}
 
-	private cookieParse(cookie: string): Cookie {
+	private cookieParse(cookie: string): Cookie | null {
 		const parsedCookie =
 			this.cookieManager.parse(cookie)[env.REFRESH_TOKEN_NAME]
-		return parsedCookie as unknown as Cookie
+		return parsedCookie ?? null
 	}
 
 	private warnOnRefreshTokenFailure(cookie: Cookie, message: string) {
