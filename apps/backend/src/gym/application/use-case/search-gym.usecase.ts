@@ -15,10 +15,8 @@ export interface SearchGymUseCaseOutput {
 	title: string
 	description: string | null
 	phone: string | null
-	coordinate: {
-		latitude: number
-		longitude: number
-	}
+	latitude: number
+	longitude: number
 }
 
 @injectable()
@@ -48,10 +46,8 @@ export class SearchGymUseCase {
 			title: g.title,
 			description: g.description ?? null,
 			phone: g.phone ?? null,
-			coordinate: {
-				latitude: g.latitude,
-				longitude: g.longitude,
-			},
+			latitude: g.latitude,
+			longitude: g.longitude,
 		}))
 	}
 }

@@ -53,10 +53,8 @@ describe("Buscar Academia", () => {
 				title: gym.title,
 				description: gym.description,
 				phone: gym.phone,
-				coordinate: {
-					latitude: gym.latitude,
-					longitude: gym.longitude,
-				},
+				latitude: gym.latitude,
+				longitude: gym.longitude,
 			},
 		])
 	})
