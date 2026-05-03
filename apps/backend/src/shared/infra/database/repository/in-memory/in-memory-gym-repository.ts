@@ -59,4 +59,10 @@ export class InMemoryGymRepository implements GymRepository {
 	public async gymOfCNPJ(cnpj: string): Promise<Gym | null> {
 		return this.gyms.find((gym) => gym.cnpj === cnpj)
 	}
+
+	public async fetchAll(page: number): Promise<Gym[]> {
+		return this.gyms
+			.toArray()
+			.slice((page - 1) * env.ITEMS_PER_PAGE, page * env.ITEMS_PER_PAGE)
+	}
 }

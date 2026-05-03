@@ -104,4 +104,12 @@ export class PrismaGymRepository implements GymRepository {
 		if (!gymDataOrNull) return null
 		return this.createGym(gymDataOrNull)
 	}
+
+	public async fetchAll(page: number): Promise<Gym[]> {
+		const gymData = await this.prismaClient.gym.findMany({
+			skip: (page - 1) * env.ITEMS_PER_PAGE,
+			take: env.ITEMS_PER_PAGE,
+		})
+		return gymData.map(this.createGym)
+	}
 }
