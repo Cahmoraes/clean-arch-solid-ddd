@@ -4,7 +4,7 @@ import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
 import { server } from "@/test/msw/server"
-import { useCreateGym, useGymById, useGymsByName } from "./index"
+import { useAllGyms, useCreateGym, useGymById, useGymsByName } from "./index"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -71,6 +71,46 @@ describe("useGymsByName", () => {
 		)
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
 		expect(result.current.data).toEqual([])
+	})
+})
+
+describe("useAllGyms", () => {
+	it("retorna lista de academias do MSW", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/gyms`, () =>
+				HttpResponse.json(
+					[
+						{
+							id: "gym-1",
+							title: "Iron Gym",
+							description: null,
+							phone: null,
+							latitude: -23.5,
+							longitude: -46.6,
+						},
+					],
+					{ status: 200 },
+				),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useAllGyms({ page: 1 }), {
+			wrapper: Wrapper,
+		})
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data).toHaveLength(1)
+		expect(result.current.data?.[0]?.title).toBe("Iron Gym")
+	})
+
+	it("desabilita query quando enabled é false", () => {
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(
+			() => useAllGyms({ page: 1, enabled: false }),
+			{
+				wrapper: Wrapper,
+			},
+		)
+		expect(result.current.fetchStatus).toBe("idle")
 	})
 })
 

@@ -11,6 +11,7 @@ const SKELETON_COUNT = 6
 
 export interface GymResultsProps {
 	query: string
+	isBrowseMode?: boolean
 	isLoading: boolean
 	isError: boolean
 	errorMessage?: string
@@ -69,6 +70,16 @@ function ResultsEmpty({ query }: { query: string }) {
 	)
 }
 
+function ResultsEmptyBrowse() {
+	return (
+		<EmptyState
+			icon={Search}
+			title="Nenhuma academia cadastrada"
+			description="Ainda não há academias disponíveis no sistema."
+		/>
+	)
+}
+
 function ResultsList({ items }: { items: Gym[] }) {
 	return (
 		<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -81,25 +92,35 @@ function ResultsList({ items }: { items: Gym[] }) {
 	)
 }
 
-export function GymResults({
-	query,
+function ResultsNoQuery() {
+	return (
+		<EmptyState
+			icon={Search}
+			title="Comece pela busca"
+			description="Digite o nome de uma academia e pressione Buscar."
+		/>
+	)
+}
+
+function GymContents({
 	isLoading,
 	isError,
 	errorMessage,
 	onRetry,
 	items,
-}: GymResultsProps) {
-	if (!query) {
-		return (
-			<EmptyState
-				icon={Search}
-				title="Comece pela busca"
-				description="Digite o nome de uma academia e pressione Buscar."
-			/>
-		)
-	}
+	query,
+}: Omit<GymResultsProps, "isBrowseMode">) {
 	if (isLoading) return <ResultsLoading />
 	if (isError) return <ResultsError message={errorMessage} onRetry={onRetry} />
-	if (items.length === 0) return <ResultsEmpty query={query} />
-	return <ResultsList items={items} />
+	if (items.length > 0) return <ResultsList items={items} />
+	return query ? <ResultsEmpty query={query} /> : <ResultsEmptyBrowse />
+}
+
+export function GymResults({
+	query,
+	isBrowseMode = false,
+	...rest
+}: GymResultsProps) {
+	if (!isBrowseMode && !query) return <ResultsNoQuery />
+	return <GymContents query={query} {...rest} />
 }

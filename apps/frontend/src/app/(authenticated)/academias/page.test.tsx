@@ -65,9 +65,16 @@ describe("AcademiasPage", () => {
 		expect(screen.queryByTestId("gym-create-link")).not.toBeInTheDocument()
 	})
 
-	it("exibe estado inicial 'comece pela busca' quando não há query", () => {
+	it("exibe lista de academias no load inicial (modo browse)", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/gyms`, () =>
+				HttpResponse.json(fakeGyms(3), { status: 200 }),
+			),
+		)
 		renderWithProviders(<AcademiasPage />)
-		expect(screen.getByText(/comece pela busca/i)).toBeInTheDocument()
+
+		expect(await screen.findByTestId("gym-card-gym-1")).toBeInTheDocument()
+		expect(screen.getByTestId("gym-card-gym-3")).toBeInTheDocument()
 	})
 
 	it("exibe Skeleton durante loading e lista após resposta MSW", async () => {

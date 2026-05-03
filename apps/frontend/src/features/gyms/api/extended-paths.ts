@@ -26,7 +26,7 @@ export interface GymExtendedPaths {
 		get: {
 			parameters: { query?: { page?: number } }
 			responses: {
-				200: { content: { "application/json": PaginatedGyms } }
+				200: { content: { "application/json": GymSummary[] } }
 			}
 		}
 	}

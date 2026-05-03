@@ -28,6 +28,7 @@ export interface GymsByNameParams {
 
 export const gymsKeys = {
 	all: ["gyms"] as const,
+	list: (page: number) => [...gymsKeys.all, "list", page] as const,
 	search: (name: string, page: number) =>
 		[...gymsKeys.all, "search", name.toLowerCase(), page] as const,
 	detail: (id: string) => [...gymsKeys.all, "detail", id] as const,
@@ -97,6 +98,32 @@ export function useGymsByName({
 		queryKey: gymsKeys.search(trimmed, page),
 		enabled: trimmed.length > 0,
 		queryFn: () => searchGymsByName(trimmed, page),
+	})
+}
+
+async function fetchAllGyms(page: number): Promise<Gym[]> {
+	const client = getGymsExtendedClient()
+	const { data, error } = await client.GET("/gyms", {
+		params: { query: { page } },
+	})
+	if (error || !data) throw toApiError(error)
+	return data
+}
+
+export interface AllGymsParams {
+	page: number
+	enabled?: boolean
+}
+
+/** List all gyms with pagination. Pass `enabled: false` to suspend fetching. */
+export function useAllGyms({
+	page,
+	enabled = true,
+}: AllGymsParams): UseQueryResult<Gym[], ApiError> {
+	return useQuery<Gym[], ApiError>({
+		queryKey: gymsKeys.list(page),
+		enabled,
+		queryFn: () => fetchAllGyms(page),
 	})
 }
 

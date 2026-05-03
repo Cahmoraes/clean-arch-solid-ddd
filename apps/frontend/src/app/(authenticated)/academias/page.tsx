@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useId, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useGymsByName } from "@/features/gyms/api"
+import { useAllGyms, useGymsByName } from "@/features/gyms/api"
 import { GymPagination } from "@/features/gyms/components/gym-pagination"
 import { GymResults } from "@/features/gyms/components/gym-results"
 import { useAuthStore } from "@/lib/auth/auth-store"
@@ -20,10 +20,14 @@ export default function AcademiasPage() {
 	const [page, setPage] = useState(1)
 
 	const trimmed = submittedQuery.trim()
-	const query = useGymsByName({ name: trimmed, page })
-	const items = query.data ?? []
+	const isBrowseMode = trimmed.length === 0
+
+	const allGymsQuery = useAllGyms({ page, enabled: isBrowseMode })
+	const searchQuery = useGymsByName({ name: trimmed, page })
+	const activeQuery = isBrowseMode ? allGymsQuery : searchQuery
+	const items = activeQuery.data ?? []
 	const showPagination =
-		Boolean(trimmed) && !query.isLoading && !query.isError && items.length > 0
+		!activeQuery.isLoading && !activeQuery.isError && items.length > 0
 
 	function onSearch(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
@@ -45,7 +49,7 @@ export default function AcademiasPage() {
 						Academias
 					</h1>
 					<p className="text-sm text-mid-gray">
-						Busque por nome para encontrar uma academia próxima.
+						Busque por nome ou navegue pelas academias disponíveis.
 					</p>
 				</div>
 				{user?.role === "ADMIN" ? (
@@ -82,10 +86,11 @@ export default function AcademiasPage() {
 			<div data-testid="gym-results" className="flex flex-col gap-4">
 				<GymResults
 					query={trimmed}
-					isLoading={query.isLoading}
-					isError={query.isError}
-					errorMessage={query.error?.userMessage}
-					onRetry={() => query.refetch()}
+					isBrowseMode={isBrowseMode}
+					isLoading={activeQuery.isLoading}
+					isError={activeQuery.isError}
+					errorMessage={activeQuery.error?.userMessage}
+					onRetry={() => activeQuery.refetch()}
 					items={items}
 				/>
 			</div>

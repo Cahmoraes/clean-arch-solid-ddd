@@ -56,9 +56,7 @@ export const handlers = [
 			{ status: 200 },
 		)
 	}),
-	http.get(endpoint("/gyms"), () =>
-		HttpResponse.json({ items: [], page: 1, total: 0 }, { status: 200 }),
-	),
+	http.get(endpoint("/gyms"), () => HttpResponse.json([], { status: 200 })),
 	http.get(endpoint("/gyms/search/:name"), () =>
 		HttpResponse.json([], { status: 200 }),
 	),
