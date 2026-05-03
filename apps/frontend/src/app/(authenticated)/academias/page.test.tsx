@@ -1,8 +1,9 @@
 import { screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 
+import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import AcademiasPage from "./page"
@@ -32,7 +33,38 @@ const fakeGyms = (count: number, prefix = "gym") =>
 		longitude: -46.6,
 	}))
 
+function setUser(role: "MEMBER" | "ADMIN") {
+	useAuthStore.setState({
+		accessToken: "token",
+		expiresAt: Date.now() + 60_000,
+		user: { id: "u1", role },
+	})
+}
+
 describe("AcademiasPage", () => {
+	beforeEach(() => {
+		useAuthStore.getState().clear()
+	})
+
+	it("exibe botão 'Cadastrar Academia' para usuário ADMIN", () => {
+		setUser("ADMIN")
+		renderWithProviders(<AcademiasPage />)
+		const link = screen.getByTestId("gym-create-link")
+		expect(link).toBeInTheDocument()
+		expect(link).toHaveAttribute("href", "/admin/academias/nova")
+	})
+
+	it("não exibe botão 'Cadastrar Academia' para usuário MEMBER", () => {
+		setUser("MEMBER")
+		renderWithProviders(<AcademiasPage />)
+		expect(screen.queryByTestId("gym-create-link")).not.toBeInTheDocument()
+	})
+
+	it("não exibe botão quando usuário não está autenticado", () => {
+		renderWithProviders(<AcademiasPage />)
+		expect(screen.queryByTestId("gym-create-link")).not.toBeInTheDocument()
+	})
+
 	it("exibe estado inicial 'comece pela busca' quando não há query", () => {
 		renderWithProviders(<AcademiasPage />)
 		expect(screen.getByText(/comece pela busca/i)).toBeInTheDocument()
