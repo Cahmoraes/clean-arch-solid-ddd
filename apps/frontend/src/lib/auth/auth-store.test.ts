@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { authEvents, useAuthStore } from "./auth-store"
 
 function makeJwt(payload: Record<string, unknown>): string {
@@ -95,5 +95,37 @@ describe("useAuthStore", () => {
 
 		expect(handler).toHaveBeenCalledOnce()
 		authEvents.removeEventListener("forced-logout", handler)
+	})
+})
+
+describe("writeSessionFlag via document.cookie", () => {
+	afterEach(() => {
+		// Limpa o cookie has_session entre testes via store (que usa document.cookie internamente)
+		useAuthStore.getState().clear()
+	})
+
+	it("escreve has_session=1 ao chamar setSession com JWT válido", () => {
+		const exp = Math.floor(Date.now() / 1000) + 60
+		const token = makeJwt({ sub: "u", role: "MEMBER", exp })
+
+		useAuthStore.getState().setSession(token)
+
+		expect(document.cookie).toContain("has_session=1")
+	})
+
+	it("remove has_session ao chamar clear", () => {
+		const exp = Math.floor(Date.now() / 1000) + 60
+		const token = makeJwt({ sub: "u", role: "MEMBER", exp })
+		useAuthStore.getState().setSession(token) // escreve has_session=1 internamente
+
+		useAuthStore.getState().clear()
+
+		expect(document.cookie).not.toContain("has_session=1")
+	})
+
+	it("não escreve has_session ao chamar setSession com JWT inválido", () => {
+		useAuthStore.getState().setSession("token-invalido-sem-payload")
+
+		expect(document.cookie).not.toContain("has_session=1")
 	})
 })

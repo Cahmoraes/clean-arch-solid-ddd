@@ -39,17 +39,14 @@ function emit(type: AuthEventType, user: AuthUser | null): void {
 const SESSION_FLAG_COOKIE = "has_session"
 
 function writeSessionFlag(active: boolean): void {
-	if (typeof cookieStore === "undefined") return
+	if (typeof document === "undefined") return
 	if (active) {
-		cookieStore.set({
-			name: SESSION_FLAG_COOKIE,
-			value: "1",
-			path: "/",
-			sameSite: "lax",
-		})
+		// biome-ignore lint/suspicious/noDocumentCookie: cookieStore não está disponível no Firefox e Safari <17; document.cookie é o fallback compatível
+		document.cookie = `${SESSION_FLAG_COOKIE}=1; path=/; SameSite=Lax`
 		return
 	}
-	cookieStore.delete({ name: SESSION_FLAG_COOKIE, path: "/" })
+	// biome-ignore lint/suspicious/noDocumentCookie: cookieStore não está disponível no Firefox e Safari <17; document.cookie é o fallback compatível
+	document.cookie = `${SESSION_FLAG_COOKIE}=; path=/; max-age=0; SameSite=Lax`
 }
 
 export const useAuthStore = create<AuthState>((set) => ({

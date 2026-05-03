@@ -37,4 +37,28 @@ describe("Edge proxy", () => {
 		const res = proxy(req)
 		expect(res.headers.get("location")).toBeNull()
 	})
+
+	it("passes through quando has_session=1 está presente sem refresh cookie (fallback cross-port)", () => {
+		const req = makeRequest("/academias", { has_session: "1" })
+		const res = proxy(req)
+
+		expect(res.headers.get("location")).toBeNull()
+		expect(res.status).toBe(200)
+	})
+
+	it("redireciona quando has_session tem valor inválido e não há refresh cookie", () => {
+		const req = makeRequest("/academias", { has_session: "true" })
+		const res = proxy(req)
+
+		expect(res.status).toBeGreaterThanOrEqual(300)
+		expect(res.headers.get("location")).toContain("/login")
+	})
+
+	it("redireciona quando has_session está ausente e não há refresh cookie", () => {
+		const req = makeRequest("/check-ins")
+		const res = proxy(req)
+
+		expect(res.status).toBeGreaterThanOrEqual(300)
+		expect(res.headers.get("location")).toContain("/login")
+	})
 })

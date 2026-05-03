@@ -1,7 +1,7 @@
+import fastifyRateLimit from "@fastify/rate-limit"
 import type { FastifyInstance, FastifyRequest } from "fastify"
 import IORedis from "ioredis"
-
-import { env } from "@/shared/infra/env/index.js"
+import { env, isDevelopment } from "@/shared/infra/env/index.js"
 import type { Logger } from "@/shared/infra/logger/logger.js"
 import { EXCHANGES } from "@/shared/infra/queue/exchanges.js"
 import type { Queue } from "@/shared/infra/queue/queue.js"
@@ -19,25 +19,9 @@ export class RateLimitPlugin {
 		logger: Logger,
 		queue: Queue,
 	): Promise<void> {
-		const isTestEnv = env.NODE_ENV === "test"
-
-		const { default: fastifyRateLimit } = await import("@fastify/rate-limit")
-
-		const redisOptions = isTestEnv
-			? undefined
-			: (() => {
-					RateLimitPlugin.redisClient = new IORedis({
-						host: env.REDIS_HOST,
-						port: env.REDIS_PORT,
-						enableOfflineQueue: false,
-						maxRetriesPerRequest: null,
-					})
-					return RateLimitPlugin.redisClient
-				})()
-
 		await server.register(fastifyRateLimit, {
 			global: true,
-			max: isTestEnv
+			max: isDevelopment()
 				? Number.POSITIVE_INFINITY
 				: RateLimitPlugin.createMaxFunction(),
 			timeWindow: RATE_LIMIT_CONFIG.GENERAL.TIME_WINDOW,
@@ -45,19 +29,26 @@ export class RateLimitPlugin {
 			keyGenerator: RateLimitPlugin.createKeyGenerator(),
 			skipOnError: true,
 			nameSpace: RATE_LIMIT_CONFIG.REDIS_NAMESPACE,
-			...(redisOptions ? { redis: redisOptions } : {}),
+			redis: RateLimitPlugin.createRedisClientOrUndefined(),
 			onExceeded: RateLimitPlugin.createOnExceededCallback(logger, queue),
 		})
 	}
 
+	private static createRedisClientOrUndefined(): IORedis | undefined {
+		if (isDevelopment()) return undefined
+		RateLimitPlugin.redisClient = new IORedis({
+			host: env.REDIS_HOST,
+			port: env.REDIS_PORT,
+			enableOfflineQueue: false,
+			maxRetriesPerRequest: null,
+		})
+		return RateLimitPlugin.redisClient
+	}
+
 	public static createKeyGenerator(): (request: FastifyRequest) => string {
 		return (request: FastifyRequest): string => {
-			try {
-				if (request.user?.sub?.id) {
-					return request.user.sub.id
-				}
-			} catch {
-				// request.user may not exist for unauthenticated routes
+			if (request.user?.sub?.id) {
+				return request.user.sub.id
 			}
 			return request.ip
 		}
@@ -68,12 +59,8 @@ export class RateLimitPlugin {
 		key: string,
 	) => number {
 		return (request: FastifyRequest, _key: string): number => {
-			try {
-				if (request.user?.sub?.role === "ADMIN") {
-					return RATE_LIMIT_CONFIG.GENERAL.MAX_ADMIN
-				}
-			} catch {
-				// request.user may not exist
+			if (request.user?.sub?.role === "ADMIN") {
+				return RATE_LIMIT_CONFIG.GENERAL.MAX_ADMIN
 			}
 			return RATE_LIMIT_CONFIG.GENERAL.MAX_MEMBER
 		}
@@ -84,14 +71,8 @@ export class RateLimitPlugin {
 		queue: Queue,
 	): (request: FastifyRequest, key: string) => void {
 		return (request: FastifyRequest, _key: string): void => {
-			let userId: string | undefined
-			let role: string | undefined
-			try {
-				userId = request.user?.sub?.id
-				role = request.user?.sub?.role
-			} catch {
-				// may not exist
-			}
+			const userId = request.user?.sub?.id
+			const role = request.user?.sub?.role
 			const event: RateLimitExceededEvent = {
 				ip: request.ip,
 				route: request.url,
