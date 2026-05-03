@@ -7,55 +7,125 @@ interface SchemaProperty {
 	items?: SchemaProperty
 }
 
+const NUMERIC_TYPES = new Set(["integer", "number"])
+
+function getActualType(value: unknown): string {
+	return Array.isArray(value) ? "array" : typeof value
+}
+
+function isTypeMismatch(value: unknown, expectedType: string): boolean {
+	if (NUMERIC_TYPES.has(expectedType)) {
+		return typeof value !== "number"
+	}
+	return getActualType(value) !== expectedType
+}
+
+function formatTypeError(
+	key: string,
+	expectedType: string,
+	value: unknown,
+): string {
+	return `Field "${key}" expected type "${expectedType}" but got "${getActualType(value)}"`
+}
+
+function validateArraySchema(body: unknown): string[] {
+	return Array.isArray(body) ? [] : ["Expected array but got object"]
+}
+
+function collectMissingRequiredFields(
+	body: object,
+	required: string[],
+): string[] {
+	return required
+		.filter((field) => !(field in body))
+		.map((field) => `Missing required field: "${field}"`)
+}
+
+function validateProperty(
+	key: string,
+	value: unknown,
+	propSchema: SchemaProperty,
+): string | null {
+	if (!propSchema.type || value === undefined || value === null) return null
+	if (!isTypeMismatch(value, propSchema.type)) return null
+	return formatTypeError(key, propSchema.type, value)
+}
+
+function validateProperties(
+	body: object,
+	properties: Record<string, SchemaProperty>,
+): string[] {
+	const errors: string[] = []
+	for (const [key, propSchema] of Object.entries(properties)) {
+		if (!(key in body)) continue
+		const value = (body as Record<string, unknown>)[key]
+		const error = validateProperty(key, value, propSchema)
+		if (error) errors.push(error)
+	}
+	return errors
+}
+
 function validateAgainstSchema(
 	body: unknown,
 	schema: SchemaProperty,
 ): string[] {
-	const errors: string[] = []
-	if (!schema || typeof body !== "object" || body === null) return errors
+	if (!schema || typeof body !== "object" || body === null) return []
+	if (schema.type === "array") return validateArraySchema(body)
+	if (!schema.properties) return []
 
-	if (schema.type === "array") {
-		if (!Array.isArray(body)) {
-			errors.push("Expected array but got object")
-		}
-		return errors
+	return [
+		...collectMissingRequiredFields(body, schema.required ?? []),
+		...validateProperties(body, schema.properties),
+	]
+}
+
+function getResponseSchema(
+	request: FastifyRequest,
+	statusCode: number,
+): SchemaProperty | undefined {
+	const routeSchema = request.routeOptions?.schema?.response
+	if (!routeSchema) return undefined
+	return (routeSchema as Record<string, unknown>)[String(statusCode)] as
+		| SchemaProperty
+		| undefined
+}
+
+function logValidationErrors(
+	request: FastifyRequest,
+	statusCode: number,
+	errors: string[],
+): void {
+	console.warn(
+		`[ResponseValidation] ${request.method} ${request.url} (${statusCode}): Response does not match schema`,
+		{ errors },
+	)
+}
+
+function validatePayload(
+	request: FastifyRequest,
+	statusCode: number,
+	schema: SchemaProperty,
+	payload: unknown,
+): void {
+	try {
+		const body = JSON.parse(payload as string)
+		const errors = validateAgainstSchema(body, schema)
+		if (errors.length > 0) logValidationErrors(request, statusCode, errors)
+	} catch {
+		// Non-JSON responses are skipped
 	}
+}
 
-	if (schema.properties) {
-		const requiredFields = schema.required ?? []
-		for (const field of requiredFields) {
-			if (!(field in body)) {
-				errors.push(`Missing required field: "${field}"`)
-			}
-		}
-
-		for (const [key, propSchema] of Object.entries(schema.properties)) {
-			if (!(key in body)) continue
-			const value = (body as Record<string, unknown>)[key]
-			if (propSchema.type && value !== undefined && value !== null) {
-				const actualType = Array.isArray(value) ? "array" : typeof value
-				if (propSchema.type === "integer" || propSchema.type === "number") {
-					if (typeof value !== "number") {
-						errors.push(
-							`Field "${key}" expected type "${propSchema.type}" but got "${actualType}"`,
-						)
-					}
-				} else if (actualType !== propSchema.type) {
-					errors.push(
-						`Field "${key}" expected type "${propSchema.type}" but got "${actualType}"`,
-					)
-				}
-			}
-		}
-	}
-
-	return errors
+function isValidationDisabled(): boolean {
+	return (
+		process.env.NODE_ENV === "production" ||
+		process.env.RESPONSE_VALIDATION_ENABLED === "false"
+	)
 }
 
 export class ResponseValidationHook {
 	static register(server: FastifyInstance): void {
-		if (process.env.NODE_ENV === "production") return
-		if (process.env.RESPONSE_VALIDATION_ENABLED === "false") return
+		if (isValidationDisabled()) return
 
 		server.addHook(
 			"onSend",
@@ -64,28 +134,8 @@ export class ResponseValidationHook {
 				reply: FastifyReply,
 				payload: unknown,
 			) => {
-				const routeSchema = request.routeOptions?.schema?.response
-				if (!routeSchema) return payload
-
-				const statusCode = reply.statusCode
-				const responseSchema = (routeSchema as Record<string, unknown>)[
-					String(statusCode)
-				] as SchemaProperty | undefined
-				if (!responseSchema) return payload
-
-				try {
-					const body = JSON.parse(payload as string)
-					const errors = validateAgainstSchema(body, responseSchema)
-					if (errors.length > 0) {
-						console.warn(
-							`[ResponseValidation] ${request.method} ${request.url} (${statusCode}): Response does not match schema`,
-							{ errors },
-						)
-					}
-				} catch {
-					// Non-JSON responses are skipped
-				}
-
+				const schema = getResponseSchema(request, reply.statusCode)
+				if (schema) validatePayload(request, reply.statusCode, schema, payload)
 				return payload
 			},
 		)

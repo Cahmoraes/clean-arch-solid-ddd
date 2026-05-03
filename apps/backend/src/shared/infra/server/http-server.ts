@@ -1,3 +1,5 @@
+import type { z } from "zod"
+
 export type METHOD = "get" | "post" | "put" | "delete" | "patch" | "options"
 
 export interface HandleCallbackResponse {
@@ -22,6 +24,13 @@ export interface HandlerOptions {
 	onlyAdmin?: boolean
 }
 
+export interface ZodValidationSchemas {
+	body?: z.ZodType
+	querystring?: z.ZodType
+	params?: z.ZodType
+	headers?: z.ZodType
+}
+
 export interface Schema {
 	tags?: string[]
 	summary?: string
@@ -32,6 +41,7 @@ export interface Schema {
 	headers?: unknown
 	response?: unknown
 	security?: Array<Record<string, string[]>>
+	zodValidation?: ZodValidationSchemas
 }
 
 export type Handler = (

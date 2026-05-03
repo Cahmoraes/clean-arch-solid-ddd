@@ -12,6 +12,7 @@ import fastify, {
 	type RouteHandler,
 } from "fastify"
 import { inject, injectable } from "inversify"
+import type { z } from "zod"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { Logger as LoggerDecorate } from "../decorator/logger"
 import { env } from "../env"
@@ -21,7 +22,13 @@ import { FastifySwaggerSetupFactory } from "./factories/fastify-swagger-setup-fa
 import { FastifySwaggerUISetupFactory } from "./factories/fastify-swagger-ui-setup-factory"
 import { GlobalErrorHandler } from "./global-error-handler"
 import { ResponseValidationHook } from "./hooks/response-validation-hook.js"
-import type { HandlerOptions, HttpServer, METHOD, Schema } from "./http-server"
+import type {
+	HandlerOptions,
+	HttpServer,
+	METHOD,
+	Schema,
+	ZodValidationSchemas,
+} from "./http-server"
 import { AdminRoleCheck } from "./services/admin-role-check"
 import { AuthenticateHandler } from "./services/authenticate-pre-handler"
 import { CheckSessionRevokedHandler } from "./services/check-session-revoked"
@@ -116,10 +123,14 @@ export class FastifyAdapter implements HttpServer {
 		schema?: Schema,
 	): Promise<void> {
 		try {
+			const { fastifySchema, zodValidation } =
+				FastifyAdapter.splitSchema(schema)
 			this._server[method](
 				path,
 				{
-					schema,
+					schema: fastifySchema,
+					validatorCompiler:
+						FastifyAdapter.makeValidatorCompiler(zodValidation),
 					onRequest: this.authenticateOnRequestOrUndefined(
 						handlerOptions.isProtected,
 					),
@@ -141,6 +152,49 @@ export class FastifyAdapter implements HttpServer {
 			)
 			this.logger.error(this, error as object)
 		}
+	}
+
+	private static splitSchema(schema?: Schema): {
+		fastifySchema: object | undefined
+		zodValidation?: ZodValidationSchemas
+	} {
+		if (!schema) return { fastifySchema: undefined }
+		const { zodValidation, ...fastifySchema } = schema
+		return { fastifySchema, zodValidation }
+	}
+
+	private static makeValidatorCompiler(zodValidation?: ZodValidationSchemas) {
+		return ({ httpPart }: { httpPart?: string }) => {
+			const zodSchema = FastifyAdapter.pickZodSchema(zodValidation, httpPart)
+			if (zodSchema) {
+				return (data: unknown) => {
+					const result = zodSchema.safeParse(data)
+					if (result.success) return { value: result.data }
+					return { error: result.error }
+				}
+			}
+			return () => ({ value: true })
+		}
+	}
+
+	private static pickZodSchema(
+		zodValidation: ZodValidationSchemas | undefined,
+		httpPart: string | undefined,
+	): z.ZodType | undefined {
+		if (!zodValidation || !httpPart) return undefined
+		if (!FastifyAdapter.isZodValidationKey(httpPart)) return undefined
+		return zodValidation[httpPart]
+	}
+
+	private static isZodValidationKey(
+		key: string,
+	): key is keyof ZodValidationSchemas {
+		return (
+			key === "body" ||
+			key === "querystring" ||
+			key === "params" ||
+			key === "headers"
+		)
 	}
 
 	private authenticateOnRequestOrUndefined(
