@@ -21,9 +21,7 @@ export interface UsersData {
 }
 
 export interface CacheUsersData {
-	data: {
-		usersData: UsersData[]
-	}
+	data: UsersData[]
 }
 
 @injectable()
@@ -54,7 +52,7 @@ export class UpdateUserProfileCacheTask implements Task {
 		this.logger.info(this, `User profile cache updated`)
 		this.logger.info(
 			this,
-			`Cache data: ${JSON.stringify(cacheResult?.data.usersData[0], null, 2)}`,
+			`Cache data: ${JSON.stringify(cacheResult?.data[0], null, 2)}`,
 		)
 	}
 
@@ -64,7 +62,7 @@ export class UpdateUserProfileCacheTask implements Task {
 		this.cacheDB.set(
 			this.createCacheKey(),
 			{
-				data: usersData,
+				data: usersData.usersData,
 				pagination: {
 					total: usersData.total,
 					page: 1,

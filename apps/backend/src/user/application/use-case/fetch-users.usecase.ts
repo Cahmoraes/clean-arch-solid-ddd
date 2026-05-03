@@ -80,7 +80,7 @@ export class FetchUsersUseCase {
 		this.cacheDB.set(
 			this.createCacheKey(input),
 			{
-				data: usersData,
+				data: usersData.usersData,
 				pagination: {
 					total: usersData.total,
 					page: input.page,
