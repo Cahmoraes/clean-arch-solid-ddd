@@ -87,6 +87,23 @@ npm run commit                     # Commit interativo com Commitizen (padrão c
 npm run "stripe webhook"           # Iniciar listener de webhook do Stripe
 ```
 
+## Skills Obrigatórias por Tipo de Tarefa
+
+| Tarefa | Skills Obrigatórias |
+|--------|-------------------|
+| Correção de bug / debug | `systematic-debugging` + `no-workarounds` |
+| Escrita/alteração de testes | `test-antipatterns` + `tdd` |
+| Criação de feature nova (domínio, use case, controller) | `brainstorming` (antes de implementar) |
+| Análise arquitetural / dead code / violações de camada | `architectural-analysis` |
+| Consulta de docs de libs externas | `context7` |
+| QA e validação de fluxos | `qa-execution` ou `qa-report` |
+| Decisões arquiteturais de alto impacto / trade-offs | `council` |
+| Rebase e resolução de conflitos de merge | `git-rebase` |
+| Escrita/configuração de testes unitários e business-flow | `vitest` |
+| Validação de schemas (env, DTOs, inputs) | `zod` |
+| Fluxos de estado complexos com máquinas de estado | `xstate` |
+| Pesquisa na web por documentação e referências técnicas | `exa-web-search-free` |
+
 ## Arquitetura (Clean Architecture + DDD)
 Estrutura por bounded context em `src/{domain}/`:
 ```

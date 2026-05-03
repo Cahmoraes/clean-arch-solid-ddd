@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "skills": {
+    "council": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/council/SKILL.md",
+      "computedHash": "d4f069a475431390f46fb826fdfc1dd1e68183136f8fe58ebe252f2b90e0a8c4"
+    },
+    "git-rebase": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/git-rebase/SKILL.md",
+      "computedHash": "9533aaf0356fdfebe23a5f3d962383b06e25b11973c08b3e4f873c0ea5fb8953"
+    },
+    "react": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/react/SKILL.md",
+      "computedHash": "b6c437811d0858840e11b0d79ee44d51e804cbd829dde852ff185353adf62bf4"
+    },
+    "shadcn": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "b36f61bf889daf6a19593293377649a10d4ac9484215f8a3312d3ce386aab584"
+    },
+    "sync-provider": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/sync-provider/SKILL.md",
+      "computedHash": "028062ff1b423a527e297a305d7e72e76996e9f0a7ed86e6ad469d317c164861"
+    },
+    "tailwindcss": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/tailwindcss/SKILL.md",
+      "computedHash": "a10b5a63d3cb998b926b588cf383f6836034304cedd88b6092ec32824d48b475"
+    },
+    "web-design-guidelines": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "2b4252a346243aa696da2d021a7a2f747259567cd3ca51308ee86ca24ab60d86"
+    },
+    "xstate": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/xstate/SKILL.md",
+      "computedHash": "c4f8f138b52427d22fa9db83663f629aca8813eabcc6714025d9fba39407de57"
+    }
+  }
+}

@@ -58,9 +58,13 @@ pnpm e2e:ui             # Testes E2E com UI interativa
 |--------|-------------------|
 | Correcao de bug / debug | `systematic-debugging` + `no-workarounds` |
 | Escrita/alteracao de testes | `test-antipatterns` + `vitest` |
-| Componentes UI / styling | `ui-ux-pro-max` |
+| Componentes UI / styling | `ui-ux-pro-max` + `web-design-guidelines` |
+| Componentes React (hooks, state, TypeScript) | `react` |
+| Componentes shadcn/ui | `shadcn` |
+| Estilizacao com Tailwind CSS v4 | `tailwindcss` |
 | Data fetching / server state | `tanstack-query-best-practices` |
 | Gerenciamento de estado global | `zustand` |
+| Gerenciamento de estados complexos (maquinas de estado) | `xstate` |
 | Validacao de schemas | `zod` |
 | Tipos avancados TypeScript | `typescript-advanced` |
 | Testes E2E com Playwright | `playwright-cli` |
@@ -69,6 +73,8 @@ pnpm e2e:ui             # Testes E2E com UI interativa
 | Criacao de feature nova | `brainstorming` (antes de implementar) |
 | TDD | `tdd` |
 | QA e validacao | `qa-execution` ou `qa-report` |
+| Decisoes arquiteturais de alto impacto / trade-offs | `council` |
+| Rebase e resolucao de conflitos de merge | `git-rebase` |
 
 ## Arquitetura
 
@@ -121,37 +127,6 @@ Cada feature segue a estrutura:
 - **Testes unitarios**: Vitest + Testing Library + MSW
 - **Testes E2E**: Playwright
 - **Lint/Format**: Biome
-
-### Padrao de API Hooks (TanStack Query)
-Hooks de data fetching vivem em `features/{feature}/api/index.ts`:
-```typescript
-// Query keys centralizadas
-export const gymsKeys = {
-  all: ["gyms"] as const,
-  search: (name: string, page: number) => [...gymsKeys.all, "search", name, page] as const,
-  detail: (id: string) => [...gymsKeys.all, "detail", id] as const,
-}
-
-// Query hook
-export function useGymsByName({ name, page }: GymsByNameParams): UseQueryResult<Gym[], ApiError> {
-  return useQuery<Gym[], ApiError>({
-    queryKey: gymsKeys.search(name, page),
-    enabled: name.trim().length > 0,
-    queryFn: () => searchGymsByName(name, page),
-  })
-}
-
-// Mutation hook com invalidacao
-export function useCreateGym(): UseMutationResult<CreateGymResult, ApiError, CreateGymInput> {
-  const queryClient = useQueryClient()
-  return useMutation<CreateGymResult, ApiError, CreateGymInput>({
-    mutationFn: createGymRequest,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: gymsKeys.all })
-    },
-  })
-}
-```
 
 ### Padrao de Autenticacao
 - Auth state em Zustand (`lib/auth/auth-store.ts`)
@@ -240,13 +215,3 @@ function toApiError(error: unknown, fallbackStatus = 500): ApiError {
   return new ApiError(fallbackStatus, "network_error", message)
 }
 ```
-
-### Checklist para Nova Feature
-
-1. Criar schema Zod em `features/{feature}/schemas/`
-2. Criar hooks de API em `features/{feature}/api/index.ts` (query keys + hooks)
-3. Criar componentes em `features/{feature}/components/`
-4. Criar pagina em `app/(authenticated)/{feature}/page.tsx` ou `app/(public)/...`
-5. Adicionar handlers MSW em `src/test/msw/handlers.ts` para os endpoints usados
-6. Escrever testes unitarios dos hooks e componentes
-7. Validar com `pnpm lint:fix && pnpm tsc:check && pnpm test && pnpm build`
