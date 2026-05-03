@@ -2,7 +2,6 @@ import type { FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
 import { z } from "zod"
 import { fromError, type ValidationError } from "zod-validation-error"
-
 import {
 	type Either,
 	failure,
@@ -16,7 +15,6 @@ import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-buil
 import { PresenterFactory } from "@/shared/infra/presenter/presenter-factory"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import type { FetchUsersUseCase } from "@/user/application/use-case/fetch-users.usecase"
-
 import { UserRoutes } from "./routes/user-routes"
 
 const fetchUsersRequestSchema = z.object({
@@ -94,21 +92,6 @@ export class FetchUsersController implements Controller {
 	}
 }
 
-const userSchema = z.object({
-	id: z.string().meta({ description: "User ID", example: "uuid-1234" }),
-	name: z.string().meta({ description: "User name", example: "John Doe" }),
-	email: z
-		.string()
-		.meta({ description: "User email", example: "john@example.com" }),
-	role: z.string().meta({ description: "User role", example: "MEMBER" }),
-})
-
-const paginationSchema = z.object({
-	page: z.number().meta({ description: "Current page", example: 1 }),
-	limit: z.number().meta({ description: "Items per page", example: 10 }),
-	total: z.number().meta({ description: "Total items", example: 50 }),
-})
-
 const errorResponseSchema = z.object({
 	message: z.string().meta({ description: "Error message" }),
 })
@@ -123,10 +106,6 @@ function makeFetchUsersSwaggerSchema(): Schema {
 		responses: {
 			200: {
 				description: "Users list retrieved successfully",
-				schema: z.object({
-					users: z.array(userSchema),
-					pagination: paginationSchema,
-				}),
 			},
 			400: { description: "Bad Request", schema: errorResponseSchema },
 			401: { description: "Unauthorized" },

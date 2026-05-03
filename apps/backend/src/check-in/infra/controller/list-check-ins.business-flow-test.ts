@@ -60,7 +60,7 @@ describe("Listar Check-Ins (GET /check-ins)", () => {
 		await createAndSaveCheckIn({
 			checkInRepository,
 			id: "ci-1",
-			userId: adminUser.id!,
+			userId: adminUser.id,
 			gymId: "gym-1",
 			userLatitude: -23.5,
 			userLongitude: -46.6,

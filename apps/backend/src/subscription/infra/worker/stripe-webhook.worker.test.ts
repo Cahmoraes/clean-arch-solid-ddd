@@ -90,7 +90,8 @@ describe("StripeWebhookWorker", () => {
 	async function triggerHandler(payload: StripeWebhookQueuePayload) {
 		const handlers = queue.queues.get(QUEUES.STRIPE_WEBHOOK)
 		expect(handlers).toBeDefined()
-		await handlers![0](payload)
+		if (!handlers) throw new Error("Stripe webhook handler not registered")
+		await handlers[0](payload)
 	}
 
 	async function createUserAndSubscription(opts: {

@@ -43,8 +43,8 @@ describe("SearchGymUseCase", () => {
 		expect(gym.title).toBe("Academia Teste")
 		expect(gym.description).toBe("Academia Teste descrição")
 		expect(gym.phone).toBe("999999999")
-		expect(gym.latitude).toBe(-23.563099)
-		expect(gym.longitude).toBe(-46.656571)
+		expect(gym.coordinate.latitude).toBe(-23.563099)
+		expect(gym.coordinate.longitude).toBe(-46.656571)
 	})
 
 	test("Deve paginar academias", async () => {

@@ -135,12 +135,14 @@ function makeSearchGymSwaggerSchema(): Schema {
 							.string()
 							.nullable()
 							.meta({ description: "Gym phone number" }),
-						latitude: z
-							.number()
-							.meta({ description: "Latitude", example: -23.5505 }),
-						longitude: z
-							.number()
-							.meta({ description: "Longitude", example: -46.6333 }),
+						coordinate: z.object({
+							latitude: z
+								.number()
+								.meta({ description: "Latitude", example: -23.5505 }),
+							longitude: z
+								.number()
+								.meta({ description: "Longitude", example: -46.6333 }),
+						}),
 					}),
 				),
 			},

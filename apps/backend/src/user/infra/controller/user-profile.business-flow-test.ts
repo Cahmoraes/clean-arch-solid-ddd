@@ -1,14 +1,12 @@
 import request from "supertest"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
-
 import type { AuthenticateUseCase } from "@/session/application/use-case/authenticate.usecase"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { AUTH_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
-
 import { UserRoutes } from "./routes/user-routes"
 
 describe("Obter Perfil do usuário por ID", () => {
@@ -67,6 +65,7 @@ describe("Obter Perfil do usuário por ID", () => {
 			id: userId,
 			name: input.name,
 			email: input.email,
+			role: "MEMBER",
 		})
 	})
 

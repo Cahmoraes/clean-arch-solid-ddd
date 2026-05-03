@@ -15,8 +15,10 @@ export interface SearchGymUseCaseOutput {
 	title: string
 	description: string | null
 	phone: string | null
-	latitude: number
-	longitude: number
+	coordinate: {
+		latitude: number
+		longitude: number
+	}
 }
 
 @injectable()
@@ -42,12 +44,14 @@ export class SearchGymUseCase {
 
 	private createGymDTO(gym: Gym[]): SearchGymUseCaseOutput[] {
 		return gym.map((g) => ({
-			id: g.id!,
+			id: g.id,
 			title: g.title,
 			description: g.description ?? null,
 			phone: g.phone ?? null,
-			latitude: g.latitude,
-			longitude: g.longitude,
+			coordinate: {
+				latitude: g.latitude,
+				longitude: g.longitude,
+			},
 		}))
 	}
 }

@@ -88,7 +88,7 @@ export class ValidateCheckInController implements Controller {
 		}
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
-			body: { checkInId: parsedRequest.value.checkInId },
+			body: { validatedAt: result.value.validatedAt },
 		})
 	}
 
@@ -112,9 +112,9 @@ function makeValidateCheckInSwaggerSchema(): Schema {
 			200: {
 				description: "Check-in validated successfully",
 				schema: z.object({
-					checkInId: z.string().meta({
-						description: "Validated check-in ID",
-						example: "550e8400-e29b-41d4-a716-446655440000",
+					validatedAt: z.iso.datetime().meta({
+						description: "ISO timestamp of when the check-in was validated",
+						example: "2025-01-15T12:34:56.000Z",
 					}),
 				}),
 			},

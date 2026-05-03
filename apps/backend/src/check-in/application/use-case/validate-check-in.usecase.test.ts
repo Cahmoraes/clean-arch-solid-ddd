@@ -46,7 +46,7 @@ describe("ValidateCheckIn", () => {
 		}
 		const checkIn = await createAndSaveCheckIn(createCheckInProps)
 		const input: ValidateCheckInUseCaseInput = {
-			checkInId: checkIn.id!,
+			checkInId: checkIn.id,
 		}
 		const result = await sut.execute(input)
 		const right = result.force.success().value
@@ -65,7 +65,7 @@ describe("ValidateCheckIn", () => {
 		}
 		const checkIn = await createAndSaveCheckIn(createCheckInProps)
 		const input: ValidateCheckInUseCaseInput = {
-			checkInId: checkIn.id!,
+			checkInId: checkIn.id,
 		}
 		const TWENTY_ON_MINUTES = 1000 * 60 * 21
 		vi.advanceTimersByTime(TWENTY_ON_MINUTES)
