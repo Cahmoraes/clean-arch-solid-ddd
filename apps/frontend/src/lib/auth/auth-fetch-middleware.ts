@@ -5,16 +5,17 @@ import {
 	type TokenRefreshScheduler,
 } from "./token-refresh"
 
-const AUTH_FREE_PATHS = new Set([
-	"/sessions",
-	"/sessions/refresh",
-	"/users",
-	"/users/activate",
+const AUTH_FREE_OPERATIONS = new Set([
+	"POST:/sessions",
+	"PATCH:/sessions/refresh",
+	"POST:/users",
+	"PATCH:/users/activate",
 ])
 
 function shouldAttachToken(request: Request): boolean {
 	const url = new URL(request.url)
-	return !AUTH_FREE_PATHS.has(url.pathname)
+	const key = `${request.method.toUpperCase()}:${url.pathname}`
+	return !AUTH_FREE_OPERATIONS.has(key)
 }
 
 function safeClone(request: Request): Request | null {

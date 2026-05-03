@@ -139,6 +139,120 @@ describe("createAuthFetchMiddleware", () => {
 		scheduler.stop()
 	})
 
+	it("attaches Authorization header on GET /users (protected admin route)", async () => {
+		useAuthStore.getState().setSession(
+			makeJwt({
+				sub: "u",
+				role: "ADMIN",
+				exp: Math.floor((Date.now() + 60_000) / 1000),
+			}),
+		)
+		let received: string | null = null
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				received = request.headers.get("authorization")
+				return HttpResponse.json({
+					users: [],
+					pagination: { total: 0, page: 1, limit: 10 },
+				})
+			}),
+		)
+		const scheduler = new TokenRefreshScheduler({
+			refreshFn: async () => ({ accessToken: "noop" }),
+		})
+		const client = buildClient(scheduler)
+
+		await (
+			client as unknown as {
+				GET: (
+					path: string,
+					init: { params: unknown },
+				) => Promise<{ data?: unknown }>
+			}
+		).GET("/users", { params: { query: { page: 1, limit: 10 } } })
+
+		expect(received).toMatch(/^Bearer /)
+		scheduler.stop()
+	})
+
+	it("does not attach Authorization to POST /users (public signup)", async () => {
+		useAuthStore.getState().setSession(
+			makeJwt({
+				sub: "u",
+				role: "MEMBER",
+				exp: Math.floor((Date.now() + 60_000) / 1000),
+			}),
+		)
+		let header: string | null = "set"
+		server.use(
+			http.post(`${apiBaseUrl}/users`, ({ request }) => {
+				header = request.headers.get("authorization")
+				return HttpResponse.json({ email: "new@example.com" })
+			}),
+		)
+		const scheduler = new TokenRefreshScheduler({
+			refreshFn: async () => ({ accessToken: "noop" }),
+		})
+		const client = buildClient(scheduler)
+
+		await (
+			client as unknown as {
+				POST: (path: string, init: { body: unknown }) => Promise<unknown>
+			}
+		).POST("/users", {
+			body: { name: "Test", email: "new@example.com", password: "secret123" },
+		})
+
+		expect(header).toBeNull()
+		scheduler.stop()
+	})
+
+	it("attempts refresh on GET /users 401 (protected route)", async () => {
+		useAuthStore.getState().setSession(
+			makeJwt({
+				sub: "u",
+				role: "ADMIN",
+				exp: Math.floor((Date.now() + 60_000) / 1000),
+			}),
+		)
+		let attempts = 0
+		server.use(
+			http.get(`${apiBaseUrl}/users`, () => {
+				attempts += 1
+				if (attempts === 1) {
+					return new HttpResponse(JSON.stringify({ message: "expired" }), {
+						status: 401,
+					})
+				}
+				return HttpResponse.json({
+					users: [],
+					pagination: { total: 0, page: 1, limit: 10 },
+				})
+			}),
+		)
+		const newToken = makeJwt({
+			sub: "u",
+			role: "ADMIN",
+			exp: Math.floor((Date.now() + 600_000) / 1000),
+		})
+		const refreshFn = vi.fn(async () => ({ accessToken: newToken }))
+		const scheduler = new TokenRefreshScheduler({ refreshFn })
+		const client = buildClient(scheduler)
+
+		await (
+			client as unknown as {
+				GET: (
+					path: string,
+					init: { params: unknown },
+				) => Promise<{ data?: unknown }>
+			}
+		).GET("/users", { params: { query: { page: 1, limit: 10 } } })
+
+		expect(refreshFn).toHaveBeenCalledTimes(1)
+		expect(attempts).toBe(2)
+		scheduler.stop()
+	})
+
 	it("on definitive 401 clears auth store and calls onForcedLogout", async () => {
 		useAuthStore.getState().setSession(
 			makeJwt({
