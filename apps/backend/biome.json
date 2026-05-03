@@ -3,7 +3,7 @@
 	"extends": "//",
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!!**/.github"]
+		"includes": ["**", "!!**/.github", "!src/shared/infra/database/generated"]
 	},
 	"javascript": {
 		"parser": {
