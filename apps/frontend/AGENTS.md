@@ -7,6 +7,7 @@
 - **NUNCA use gambiarras** — sempre utilize a skill `no-workarounds` para qualquer tarefa de correcao/debug + `test-antipatterns` para testes
 - **SEMPRE use as skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs ou problemas complexos
 - **NUNCA use ferramentas** de busca na web para pesquisar codigo local do projeto — para codigo local, use Grep/Glob
+- **NUNCA FAÇA COMMITS sem pedir permissão** sempre pergunte se o usuário deseja realizar commit
 
 ## REQUISITOS OBRIGATORIOS
 - DEVE executar `pnpm lint:fix` antes de concluir QUALQUER subtarefa

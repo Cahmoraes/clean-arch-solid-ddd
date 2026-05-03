@@ -7,7 +7,7 @@
 - **NUNCA use gambiarras** — sempre utilize a skill `no-workarounds` para qualquer tarefa de correção/debug + `testing-anti-patterns` para testes
 - **SEMPRE use as skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs ou problemas complexos
 - **NUNCA use ferramentas** de busca na web para pesquisar código local do projeto — para código local, use Grep/Glob
-- **NUNCA FAÇA COMMITS sem pedir permissão**
+- **NUNCA FAÇA COMMITS sem pedir permissão** sempre pergunte se o usuário deseja realizar commit
 
 ## Monorepo Structure
 
