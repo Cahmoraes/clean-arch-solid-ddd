@@ -1,20 +1,6 @@
 ---
 name: architectural-analyzer
-description: >
-  Realiza análise arquitetural abrangente e auditoria de saúde de codebases. Ative quando o usuário:
-  (1) disser frases como "preciso entender a arquitetura", "me explica como o sistema funciona",
-  "quero um relatório da arquitetura", "analyze the architecture", "quero uma auditoria do código",
-  "qual a saúde do codebase"; (2) mencionar as palavras: coupling, acoplamento, dívida técnica,
-  refatoração, bounded contexts, DDD, subdomínios, pontos de falha, riscos arquiteturais, auditoria
-  de código, variáveis de ambiente, segurança arquitetural, integrações externas, código morto,
-  dead code, duplicação, duplicated code, métricas, metrics, code smells, anti-patterns,
-  anti-padrões, tipagem, type issues, codebase health; (3) precisar entender um projeto herdado,
-  planejar uma refatoração major, obter análise de coupling e dependências, identificar riscos e
-  pontos únicos de falha, gerar relatório arquitetural para documentação, encontrar código morto
-  ou duplicado, avaliar saúde geral do codebase; (4) abrir ou referenciar um projeto sem pergunta
-  específica e aparentemente querer uma visão geral da base de código. Ative esta skill mesmo que
-  o usuário não use termos técnicos exatos — se a intenção é avaliar, auditar ou entender a
-  qualidade estrutural do código, esta skill é a certa.
+description: Análise arquitetural abrangente e auditoria de saúde de codebase. Ative quando o usuário quiser entender arquitetura, identificar coupling, dívida técnica, código morto, anti-padrões, riscos arquiteturais, DDD, refatoração major ou pedir relatório arquitetural e visão geral do projeto.
 argument-hint: Analisa a arquitetura completa do codebase e gera relatório detalhado
 ---
 
