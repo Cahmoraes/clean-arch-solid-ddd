@@ -16,5 +16,6 @@ export const CHECKIN_TYPES = {
 		CheckIn: Symbol.for("CheckInController"),
 		ValidateCheckIn: Symbol.for("ValidateCheckInController"),
 		ListCheckIns: Symbol.for("ListCheckInsController"),
+		Metrics: Symbol.for("CheckInMetricsController"),
 	},
 } as const

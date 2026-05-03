@@ -61,7 +61,7 @@ export class ActivateUserController implements Controller {
 		const parseBodyResult = this.parseBodyResult(req.body)
 		if (parseBodyResult.isFailure()) {
 			return ResponseFactory.BAD_REQUEST({
-				body: parseBodyResult.value.message,
+				message: parseBodyResult.value.message,
 			})
 		}
 		const result = await this.activeUser.execute({
@@ -69,7 +69,7 @@ export class ActivateUserController implements Controller {
 		})
 		if (result.isFailure()) {
 			return ResponseFactory.UNPROCESSABLE_ENTITY({
-				body: result.value.message,
+				message: result.value.message,
 			})
 		}
 		return ResponseFactory.OK()

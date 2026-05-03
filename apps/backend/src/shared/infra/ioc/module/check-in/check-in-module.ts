@@ -6,6 +6,7 @@ import { FetchCheckInsUseCase } from "@/check-in/application/use-case/fetch-chec
 import { ValidateCheckInUseCase } from "@/check-in/application/use-case/validate-check-in.usecase"
 import { CheckInController } from "@/check-in/infra/controller/check-in.controller"
 import { ListCheckInsController } from "@/check-in/infra/controller/list-check-ins.controller"
+import { MetricsController } from "@/check-in/infra/controller/metrics.controller"
 import { ValidateCheckInController } from "@/check-in/infra/controller/validate-check-in.controller"
 
 import { CHECKIN_TYPES } from "../../types"
@@ -18,6 +19,7 @@ export const checkInModule = new ContainerModule(({ bind }) => {
 	bind(CHECKIN_TYPES.Controllers.ValidateCheckIn).to(ValidateCheckInController)
 	bind(CHECKIN_TYPES.Controllers.CheckIn).to(CheckInController)
 	bind(CHECKIN_TYPES.Controllers.ListCheckIns).to(ListCheckInsController)
+	bind(CHECKIN_TYPES.Controllers.Metrics).to(MetricsController)
 	bind(CHECKIN_TYPES.UseCases.CheckIn).to(CheckInUseCase)
 	bind(CHECKIN_TYPES.UseCases.CheckInHistory).to(CheckInHistoryUseCase)
 	bind(CHECKIN_TYPES.UseCases.FetchCheckIns).to(FetchCheckInsUseCase)

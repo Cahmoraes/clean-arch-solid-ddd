@@ -9,6 +9,7 @@ import { CreateUserUseCase } from "@/user/application/use-case/create-user.useca
 import { DeleteUserUseCase } from "@/user/application/use-case/delete-user.usecase"
 import { FetchUsersUseCase } from "@/user/application/use-case/fetch-users.usecase"
 import { SuspendUserUseCase } from "@/user/application/use-case/suspend-user.usecase"
+import { UpdateUserProfileUseCase } from "@/user/application/use-case/update-user-profile.usecase"
 import { UserMetricsUseCase } from "@/user/application/use-case/user-metrics.usecase"
 import { UserProfileUseCase } from "@/user/application/use-case/user-profile.usecase"
 import { ActivateUserController } from "@/user/infra/controller/activate-user.controller"
@@ -16,6 +17,7 @@ import { ChangePasswordController } from "@/user/infra/controller/change-passwor
 import { CreateUserController } from "@/user/infra/controller/create-user.controller"
 import { FetchUsersController } from "@/user/infra/controller/fetch-users.controller"
 import { MyProfileController } from "@/user/infra/controller/my-profile.controller"
+import { UpdateUserProfileController } from "@/user/infra/controller/update-user-profile.controller"
 import { UserMetricsController } from "@/user/infra/controller/user-metrics.controller"
 import { UserProfileController } from "@/user/infra/controller/user-profile.controller"
 import { AUTH_TYPES, USER_TYPES } from "../../types"
@@ -37,13 +39,13 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(AUTH_TYPES.Controllers.RefreshToken).to(RefreshTokenController)
 	bind(USER_TYPES.Controllers.ChangePassword).to(ChangePasswordController)
 	bind(USER_TYPES.Controllers.FetchUsers).to(FetchUsersController)
-	bind(USER_TYPES.Controllers.UpdateUserProfile).to(UserProfileController)
+	bind(USER_TYPES.Controllers.UpdateUserProfile).to(UpdateUserProfileController)
 	bind(USER_TYPES.UseCases.CreateUser).to(CreateUserUseCase)
 	bind(USER_TYPES.UseCases.UserProfile).to(UserProfileUseCase)
 	bind(USER_TYPES.UseCases.UserMetrics).to(UserMetricsUseCase)
 	bind(USER_TYPES.UseCases.ChangePassword).to(ChangePasswordUseCase)
 	bind(USER_TYPES.UseCases.FetchUsers).to(FetchUsersUseCase)
-	bind(USER_TYPES.UseCases.UpdateUserProfile).to(UserProfileUseCase)
+	bind(USER_TYPES.UseCases.UpdateUserProfile).to(UpdateUserProfileUseCase)
 	bind(USER_TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
 	bind(USER_TYPES.UseCases.ActivateUser).to(ActiveUserUseCase)
 	bind(USER_TYPES.Controllers.ActivateUser).to(ActivateUserController)

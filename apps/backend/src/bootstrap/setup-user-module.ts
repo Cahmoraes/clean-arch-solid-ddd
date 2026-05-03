@@ -11,6 +11,7 @@ export function setupUserModule(): ModuleControllers {
 	const controllers = [
 		resolve(USER_TYPES.Controllers.CreateUser),
 		resolve(USER_TYPES.Controllers.UserProfile),
+		resolve(USER_TYPES.Controllers.UpdateUserProfile),
 		resolve(USER_TYPES.Controllers.MyProfile),
 		resolve(USER_TYPES.Controllers.UserMetrics),
 		resolve(AUTH_TYPES.Controllers.RefreshToken),
