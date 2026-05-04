@@ -5,12 +5,16 @@ export interface SaveGymResult {
 	id: string
 }
 
+export interface FetchGymsInput {
+	title?: string
+	page: number
+}
+
 export interface GymRepository {
 	save(gym: Gym): Promise<SaveGymResult>
-	gymOfTitle(title: string, page: number): Promise<Gym[]>
 	gymOfId(id: string): Promise<Gym | null>
 	fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]>
 	gymOfCNPJ(cnpj: string): Promise<Gym | null>
-	fetchAll(page: number): Promise<Gym[]>
+	fetchGyms(input: FetchGymsInput): Promise<Gym[]>
 	withTransaction<TX extends object>(object: TX): GymRepository
 }

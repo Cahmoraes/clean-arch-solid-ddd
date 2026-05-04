@@ -11,6 +11,7 @@
 		"wait:rabbit": "npx tsx src/shared/infra/queue/waiting-for-rabbitmq.ts",
 		"setup-queue": "npx tsx src/shared/infra/queue/queue-setup.ts",
 		"test": "npx vitest --run --config ./test/vite.config.app-domain.ts",
+		"test:run": "npx vitest --run --config ./test/vite.config.app-domain.ts",
 		"test:watch": "npx vitest --config ./test/vite.config.app-domain.ts",
 		"test-create-users": "concurrently \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\" \"npx tsx ./test/test.post.ts\"",
 		"test:cov": "npx vitest --coverage --config ./test/vite.config.app-domain.ts",

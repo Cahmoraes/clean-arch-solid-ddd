@@ -3,6 +3,7 @@ import { injectable } from "inversify"
 import { DistanceCalculator } from "@/check-in/domain/service/distance-calculator"
 import type { Coordinate } from "@/check-in/domain/value-object/coordinate"
 import type {
+	FetchGymsInput,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
@@ -36,13 +37,18 @@ export class InMemoryGymRepository implements GymRepository {
 		return this.gyms.find((gym) => gym.id === id)
 	}
 
-	public async gymOfTitle(title: string, page: number): Promise<Gym[]> {
-		return this.gyms
-			.filter((gym) =>
-				gym.title.toLocaleLowerCase().includes(title.toLocaleLowerCase()),
-			)
+	public async fetchGyms(input: FetchGymsInput): Promise<Gym[]> {
+		const title = input.title?.toLocaleLowerCase()
+		const filteredGyms = title
+			? this.gyms.filter((gym) => gym.title.toLocaleLowerCase().includes(title))
+			: this.gyms
+
+		return filteredGyms
 			.toArray()
-			.slice((page - 1) * env.ITEMS_PER_PAGE, page * env.ITEMS_PER_PAGE)
+			.slice(
+				(input.page - 1) * env.ITEMS_PER_PAGE,
+				input.page * env.ITEMS_PER_PAGE,
+			)
 	}
 
 	public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {
@@ -58,11 +64,5 @@ export class InMemoryGymRepository implements GymRepository {
 
 	public async gymOfCNPJ(cnpj: string): Promise<Gym | null> {
 		return this.gyms.find((gym) => gym.cnpj === cnpj)
-	}
-
-	public async fetchAll(page: number): Promise<Gym[]> {
-		return this.gyms
-			.toArray()
-			.slice((page - 1) * env.ITEMS_PER_PAGE, page * env.ITEMS_PER_PAGE)
 	}
 }

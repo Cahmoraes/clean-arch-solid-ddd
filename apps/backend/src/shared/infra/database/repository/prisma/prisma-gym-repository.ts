@@ -2,6 +2,7 @@ import type { Decimal } from "@prisma/client/runtime/client"
 import { inject, injectable } from "inversify"
 import type { Coordinate } from "@/check-in/domain/value-object/coordinate"
 import type {
+	FetchGymsInput,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
@@ -55,10 +56,17 @@ export class PrismaGymRepository implements GymRepository {
 		return { id: result.id }
 	}
 
-	public async gymOfTitle(title: string, page: number): Promise<Gym[]> {
+	public async fetchGyms(input: FetchGymsInput): Promise<Gym[]> {
 		const gymData = await this.prismaClient.gym.findMany({
-			where: { title },
-			skip: page * env.ITEMS_PER_PAGE,
+			where: input.title
+				? {
+						title: {
+							contains: input.title,
+							mode: "insensitive",
+						},
+					}
+				: undefined,
+			skip: (input.page - 1) * env.ITEMS_PER_PAGE,
 			take: env.ITEMS_PER_PAGE,
 		})
 		return gymData.map(this.createGym)
@@ -103,13 +111,5 @@ export class PrismaGymRepository implements GymRepository {
 		})
 		if (!gymDataOrNull) return null
 		return this.createGym(gymDataOrNull)
-	}
-
-	public async fetchAll(page: number): Promise<Gym[]> {
-		const gymData = await this.prismaClient.gym.findMany({
-			skip: (page - 1) * env.ITEMS_PER_PAGE,
-			take: env.ITEMS_PER_PAGE,
-		})
-		return gymData.map(this.createGym)
 	}
 }

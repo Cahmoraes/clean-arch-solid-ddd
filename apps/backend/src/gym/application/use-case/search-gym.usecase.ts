@@ -29,10 +29,10 @@ export class SearchGymUseCase {
 	public async execute(
 		input: SearchGymUseCaseInput,
 	): Promise<SearchGymUseCaseOutput[]> {
-		const gyms = await this.gymRepository.gymOfTitle(
-			input.name,
-			this.pageNumberOrDefault(input.page),
-		)
+		const gyms = await this.gymRepository.fetchGyms({
+			title: input.name,
+			page: this.pageNumberOrDefault(input.page),
+		})
 		return this.createGymDTO(gyms)
 	}
 

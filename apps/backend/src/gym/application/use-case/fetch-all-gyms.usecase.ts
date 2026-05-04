@@ -28,7 +28,9 @@ export class FetchAllGymsUseCase {
 	public async execute(
 		input: FetchAllGymsUseCaseInput,
 	): Promise<FetchAllGymsUseCaseOutput[]> {
-		const gyms = await this.gymRepository.fetchAll(input.page ?? 1)
+		const gyms = await this.gymRepository.fetchGyms({
+			page: input.page ?? 1,
+		})
 		return this.toDTO(gyms)
 	}
 
