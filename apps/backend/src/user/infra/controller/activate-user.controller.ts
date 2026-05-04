@@ -1,22 +1,18 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
-import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { inject } from "inversify"
+import { ZodError, z } from "zod"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
+import type {
+	HandleCallbackResponse,
+	HttpServer,
+	Schema,
+} from "@/shared/infra/server/http-server"
 import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
 import type { ActiveUserUseCase } from "@/user/application/use-case/active-user.usecase"
-
 import { UserRoutes } from "./routes/user-routes"
 
 const activateUserSchema = z.object({
@@ -26,16 +22,14 @@ const activateUserSchema = z.object({
 	}),
 })
 
-type ActivateUserPayload = z.infer<typeof activateUserSchema>
-
-@injectable()
-export class ActivateUserController implements Controller {
+export class ActivateUserController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly httpServer: HttpServer,
 		@inject(USER_TYPES.UseCases.ActivateUser)
 		private readonly activeUser: ActiveUserUseCase,
 	) {
+		super()
 		this.bindMethod()
 	}
 
@@ -62,30 +56,37 @@ export class ActivateUserController implements Controller {
 		)
 	}
 
-	public async callback(req: FastifyRequest) {
-		const parseBodyResult = this.parseBodyResult(req.body)
-		if (parseBodyResult.isFailure()) {
-			return ResponseFactory.BAD_REQUEST({
-				message: parseBodyResult.value.message,
+	protected override mapResponseError(
+		error: Error | Error[],
+	): HandleCallbackResponse | undefined {
+		if (Array.isArray(error) || error instanceof ZodError) {
+			return undefined
+		}
+
+		if (error.name.endsWith("NotFoundError")) {
+			return ResponseFactory.UNPROCESSABLE_ENTITY({
+				message: error.message,
 			})
 		}
+
+		return undefined
+	}
+
+	public async callback(req: FastifyRequest) {
+		const parseBodyResult = this.parseRequest(activateUserSchema, req.body)
+		if (parseBodyResult.isFailure()) {
+			return this.createResponseError(parseBodyResult)
+		}
+
 		const result = await this.activeUser.execute({
 			userId: parseBodyResult.value.userId,
 		})
-		if (result.isFailure()) {
-			return ResponseFactory.UNPROCESSABLE_ENTITY({
-				message: result.value.message,
-			})
-		}
-		return ResponseFactory.OK()
-	}
 
-	private parseBodyResult(
-		body: unknown,
-	): Either<ValidationError, ActivateUserPayload> {
-		const parseBody = activateUserSchema.safeParse(body)
-		if (!parseBody.success) return failure(fromError(parseBody.error))
-		return success(parseBody.data)
+		if (result.isFailure()) {
+			return this.createResponseError(result)
+		}
+
+		return ResponseFactory.OK()
 	}
 }
 

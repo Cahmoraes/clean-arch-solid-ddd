@@ -1,23 +1,19 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-
 import type { AuthenticateUseCase } from "@/session/application/use-case/authenticate.usecase"
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import type { CookieManager } from "@/shared/infra/cookie/cookie-manager"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { env } from "@/shared/infra/env"
 import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
-import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import type {
+	HandleCallbackResponse,
+	HttpServer,
+	Schema,
+} from "@/shared/infra/server/http-server"
 import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config"
 import { SessionRoutes } from "./routes/session-routes"
 
@@ -32,10 +28,7 @@ const authenticateRequestSchema = z.object({
 		.meta({ description: "User password", example: "secret123" }),
 })
 
-type AuthenticatePayload = z.infer<typeof authenticateRequestSchema>
-
-@injectable()
-export class AuthenticateController implements Controller {
+export class AuthenticateController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
@@ -44,6 +37,7 @@ export class AuthenticateController implements Controller {
 		@inject(SHARED_TYPES.Cookies.Manager)
 		private readonly cookieManager: CookieManager,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -69,29 +63,44 @@ export class AuthenticateController implements Controller {
 		)
 	}
 
-	private async callback(req: FastifyRequest, res: FastifyReply) {
-		const parsedBodyResult = this.parseBodyResult(req.body)
-		if (parsedBodyResult.isFailure())
-			return ResponseFactory.create({
-				status: HTTP_STATUS.BAD_REQUEST,
-				message: parsedBodyResult.value.message,
+	protected override mapResponseError(
+		error: Error | Error[],
+	): HandleCallbackResponse | undefined {
+		if (Array.isArray(error)) {
+			return undefined
+		}
+
+		if (error.name === "InvalidCredentialsError") {
+			return ResponseFactory.UNAUTHORIZED({
+				message: "Invalid credentials",
 			})
+		}
+
+		return undefined
+	}
+
+	private async callback(req: FastifyRequest, res: FastifyReply) {
+		const parsedBodyResult = this.parseRequest(
+			authenticateRequestSchema,
+			req.body,
+		)
+		if (parsedBodyResult.isFailure()) {
+			return this.createResponseError(parsedBodyResult)
+		}
+
 		const result = await this.authenticateUseCase.execute({
 			email: parsedBodyResult.value.email,
 			password: parsedBodyResult.value.password,
 		})
 		if (result.isFailure()) {
-			return ResponseFactory.create({
-				status: HTTP_STATUS.UNAUTHORIZED,
-				message: "Invalid credentials",
-			})
+			return this.createResponseError(result)
 		}
+
 		res.header(
 			"set-cookie",
 			this.encodeRefreshTokenCookie(result.value.refreshToken),
 		)
-		return ResponseFactory.create({
-			status: HTTP_STATUS.OK,
+		return ResponseFactory.OK({
 			body: result.value,
 		})
 	}
@@ -103,14 +112,6 @@ export class AuthenticateController implements Controller {
 			secure: true,
 			sameSite: "strict",
 		})
-	}
-
-	private parseBodyResult(
-		body: unknown,
-	): Either<ValidationError, AuthenticatePayload> {
-		const parsedBody = authenticateRequestSchema.safeParse(body)
-		if (!parsedBody.success) return failure(fromError(parsedBody.error))
-		return success(parsedBody.data)
 	}
 }
 

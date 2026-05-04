@@ -1,21 +1,17 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
-import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { inject } from "inversify"
+import { ZodError, z } from "zod"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
+import type {
+	HandleCallbackResponse,
+	HttpServer,
+	Schema,
+} from "@/shared/infra/server/http-server"
 import type { ChangePasswordUseCase } from "@/user/application/use-case/change-password.usecase"
-
 import { UserRoutes } from "./routes/user-routes"
 
 const changePasswordSchema = z.object({
@@ -25,16 +21,14 @@ const changePasswordSchema = z.object({
 	}),
 })
 
-type ChangePasswordPayload = z.infer<typeof changePasswordSchema>
-
-@injectable()
-export class ChangePasswordController implements Controller {
+export class ChangePasswordController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
 		@inject(USER_TYPES.UseCases.ChangePassword)
 		private readonly changePassword: ChangePasswordUseCase,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -57,31 +51,34 @@ export class ChangePasswordController implements Controller {
 		)
 	}
 
-	private async callback(req: FastifyRequest) {
-		const parsedBodyOrError = this.parseBodyOrError(req.body)
-		if (parsedBodyOrError.isFailure()) {
-			return ResponseFactory.BAD_REQUEST({
-				message: parsedBodyOrError.value.message,
-			})
+	protected override mapResponseError(
+		error: Error | Error[],
+	): HandleCallbackResponse | undefined {
+		if (Array.isArray(error) || error instanceof ZodError) {
+			return undefined
 		}
+
+		return ResponseFactory.CONFLICT({
+			message: error.message,
+		})
+	}
+
+	private async callback(req: FastifyRequest) {
+		const parsedBodyOrError = this.parseRequest(changePasswordSchema, req.body)
+		if (parsedBodyOrError.isFailure()) {
+			return this.createResponseError(parsedBodyOrError)
+		}
+
 		const result = await this.changePassword.execute({
 			userId: this.extractUserId(req),
 			newRawPassword: parsedBodyOrError.value.newRawPassword,
 		})
-		if (result.isFailure()) {
-			return ResponseFactory.CONFLICT({
-				message: result.value.message,
-			})
-		}
-		return ResponseFactory.NO_CONTENT()
-	}
 
-	private parseBodyOrError(
-		body: unknown,
-	): Either<ValidationError, ChangePasswordPayload> {
-		const parsedBody = changePasswordSchema.safeParse(body)
-		if (!parsedBody.success) return failure(fromError(parsedBody.error))
-		return success(parsedBody.data)
+		if (result.isFailure()) {
+			return this.createResponseError(result)
+		}
+
+		return ResponseFactory.NO_CONTENT()
 	}
 
 	private extractUserId(req: FastifyRequest): string {

@@ -1,21 +1,16 @@
-import { inject, injectable } from "inversify"
-import { z } from "zod"
-import type { ValidationError } from "zod-validation-error"
-import { fromError } from "zod-validation-error"
-
+import { inject } from "inversify"
+import { ZodError, z } from "zod"
 import type { CheckInUseCase } from "@/check-in/application/use-case/check-in.usecase"
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { CHECKIN_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
-import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import type {
+	HandleCallbackResponse,
+	HttpServer,
+	Schema,
+} from "@/shared/infra/server/http-server"
 import { CheckInRoutes } from "./routes/check-in-routes"
 
 const checkInRequestSchema = z.object({
@@ -35,16 +30,14 @@ const checkInRequestSchema = z.object({
 		.meta({ description: "User current longitude", example: -46.6333 }),
 })
 
-type CheckInPayload = z.infer<typeof checkInRequestSchema>
-
-@injectable()
-export class CheckInController implements Controller {
+export class CheckInController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
 		@inject(CHECKIN_TYPES.UseCases.CheckIn)
 		private readonly checkIn: CheckInUseCase,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -68,14 +61,24 @@ export class CheckInController implements Controller {
 		)
 	}
 
-	private async callback(req: any) {
-		const parsedBodyOrError = this.parseBody(req.body)
-		if (parsedBodyOrError.isFailure()) {
-			return ResponseFactory.create({
-				status: HTTP_STATUS.BAD_REQUEST,
-				message: parsedBodyOrError.value.message,
-			})
+	protected override mapResponseError(
+		error: Error | Error[],
+	): HandleCallbackResponse | undefined {
+		if (Array.isArray(error) || error instanceof ZodError) {
+			return undefined
 		}
+
+		return ResponseFactory.CONFLICT({
+			message: error.message,
+		})
+	}
+
+	private async callback(req: any) {
+		const parsedBodyOrError = this.parseRequest(checkInRequestSchema, req.body)
+		if (parsedBodyOrError.isFailure()) {
+			return this.createResponseError(parsedBodyOrError)
+		}
+
 		const result = await this.checkIn.execute({
 			userId: parsedBodyOrError.value.userId,
 			gymId: parsedBodyOrError.value.gymId,
@@ -83,25 +86,17 @@ export class CheckInController implements Controller {
 			userLongitude: parsedBodyOrError.value.userLongitude,
 		})
 		if (result.isFailure()) {
-			return ResponseFactory.create({
-				status: HTTP_STATUS.CONFLICT,
-				message: result.value.message,
-			})
+			return this.createResponseError(result)
 		}
+
 		return ResponseFactory.create({
-			status: HTTP_STATUS.CREATED,
+			status: 201,
 			body: {
 				message: "Check-in created",
 				id: result.value.checkInId,
 				date: result.value.date,
 			},
 		})
-	}
-
-	private parseBody(body: unknown): Either<ValidationError, CheckInPayload> {
-		const parsedBody = checkInRequestSchema.safeParse(body)
-		if (!parsedBody.success) return failure(fromError(parsedBody.error))
-		return success(parsedBody.data)
 	}
 }
 

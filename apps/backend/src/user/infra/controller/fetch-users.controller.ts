@@ -1,13 +1,7 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
@@ -24,16 +18,14 @@ const fetchUsersRequestSchema = z.object({
 	page: z.coerce.number().meta({ description: "Page number", example: 1 }),
 })
 
-type FetchUsersRequest = z.infer<typeof fetchUsersRequestSchema>
-
-@injectable()
-export class FetchUsersController implements Controller {
+export class FetchUsersController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly httpServer: HttpServer,
 		@inject(USER_TYPES.UseCases.FetchUsers)
 		private readonly fetchUsers: FetchUsersUseCase,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -57,33 +49,26 @@ export class FetchUsersController implements Controller {
 	}
 
 	private async callback(req: FastifyRequest) {
-		const parsedQueryParamsOrError = this.parseQueryOrError(req.query)
+		const parsedQueryParamsOrError = this.parseRequest(
+			fetchUsersRequestSchema,
+			req.query,
+		)
 		if (parsedQueryParamsOrError.isFailure()) {
-			return ResponseFactory.BAD_REQUEST({
-				message: parsedQueryParamsOrError.value.message,
-			})
+			return this.createResponseError(parsedQueryParamsOrError)
 		}
+
 		const { limit, page } = parsedQueryParamsOrError.value
 		const result = await this.fetchUsers.execute({
 			limit,
 			page,
 		})
+
 		return ResponseFactory.OK({
 			body: {
 				users: this.presenter(req.headers.accept).format(result.data),
 				pagination: result.pagination,
 			},
 		})
-	}
-
-	private parseQueryOrError(
-		body: unknown,
-	): Either<ValidationError, FetchUsersRequest> {
-		const parsedQueryParams = fetchUsersRequestSchema.safeParse(body)
-		if (!parsedQueryParams.success) {
-			return failure(fromError(parsedQueryParams.error))
-		}
-		return success(parsedQueryParams.data)
 	}
 
 	private presenter(header?: string) {

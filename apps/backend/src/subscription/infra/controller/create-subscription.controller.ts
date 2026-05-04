@@ -1,13 +1,8 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { failure } from "@/shared/domain/value-object/either"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types"
@@ -43,10 +38,7 @@ const errorResponseSchema = z.object({
 	message: z.string().meta({ description: "Error message" }),
 })
 
-type CreateSubscriptionPayload = z.infer<typeof createSubscriptionRequestSchema>
-
-@injectable()
-export class CreateSubscriptionController implements Controller {
+export class CreateSubscriptionController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly httpServer: HttpServer,
@@ -55,6 +47,7 @@ export class CreateSubscriptionController implements Controller {
 		@inject(USER_TYPES.Repositories.User)
 		private readonly userRepository: UserRepository,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -76,44 +69,33 @@ export class CreateSubscriptionController implements Controller {
 	}
 
 	private async callback(req: FastifyRequest) {
-		const parseResult = this.parseBodyOrError(req.body)
+		const parseResult = this.parseRequest(
+			createSubscriptionRequestSchema,
+			req.body,
+		)
 		if (parseResult.isFailure()) {
-			return ResponseFactory.BAD_REQUEST({
-				message: parseResult.value.message,
-			})
+			return this.createResponseError(parseResult)
 		}
+
 		const userId = req.user.sub.id
 		const user = await this.userRepository.userOfId(userId)
 		if (!user?.billingCustomerId) {
-			return ResponseFactory.CONFLICT({
-				message: new BillingCustomerNotProvisionedError(userId).message,
-			})
+			return this.createResponseError(
+				failure(new BillingCustomerNotProvisionedError(userId)),
+			)
 		}
+
 		const result = await this.createSubscription.execute({
 			userId,
 			customerId: user.billingCustomerId,
 			priceId: parseResult.value.priceId,
 			paymentMethodId: parseResult.value.paymentMethodId,
 		})
-		if (result.isFailure()) return this.createResponseError(result.value)
-		return ResponseFactory.CREATED({ body: result.value })
-	}
-
-	private createResponseError(
-		error: BillingCustomerNotProvisionedError | Error,
-	) {
-		if (error instanceof BillingCustomerNotProvisionedError) {
-			return ResponseFactory.CONFLICT({ message: error.message })
+		if (result.isFailure()) {
+			return this.createResponseError(result)
 		}
-		return ResponseFactory.INTERNAL_SERVER_ERROR({ message: error.message })
-	}
 
-	private parseBodyOrError(
-		body: unknown,
-	): Either<ValidationError, CreateSubscriptionPayload> {
-		const parsed = createSubscriptionRequestSchema.safeParse(body)
-		if (!parsed.success) return failure(fromError(parsed.error))
-		return success(parsed.data)
+		return ResponseFactory.CREATED({ body: result.value })
 	}
 }
 

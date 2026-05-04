@@ -1,22 +1,22 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-
 import type { LogoutUseCase } from "@/session/application/use-case/logout.usecase"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import type { CookieManager } from "@/shared/infra/cookie/cookie-manager"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { env } from "@/shared/infra/env"
 import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
-import { HTTP_STATUS } from "@/shared/infra/server/http-status"
-
+import type {
+	HandleCallbackResponse,
+	HttpServer,
+	Schema,
+} from "@/shared/infra/server/http-server"
 import { SessionRoutes } from "./routes/session-routes"
 
-@injectable()
-export class LogoutController implements Controller {
+export class LogoutController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
@@ -25,6 +25,7 @@ export class LogoutController implements Controller {
 		@inject(SHARED_TYPES.Cookies.Manager)
 		private readonly cookieManager: CookieManager,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -47,6 +48,22 @@ export class LogoutController implements Controller {
 		)
 	}
 
+	protected override mapResponseError(
+		error: Error | Error[],
+	): HandleCallbackResponse | undefined {
+		if (Array.isArray(error)) {
+			return undefined
+		}
+
+		if (error.name === "TokenAlreadyRevokedError") {
+			return ResponseFactory.UNAUTHORIZED({
+				message: "Session already revoked",
+			})
+		}
+
+		return undefined
+	}
+
 	private async callback(req: FastifyRequest, res: FastifyReply) {
 		const user = req.user
 		const result = await this.logout.execute({
@@ -55,18 +72,12 @@ export class LogoutController implements Controller {
 		})
 
 		if (result.isFailure()) {
-			return ResponseFactory.create({
-				status: HTTP_STATUS.UNAUTHORIZED,
-				message: "Session already revoked",
-			})
+			return this.createResponseError(result)
 		}
 
-		// Clear the refresh token cookie
 		res.header("set-cookie", this.clearRefreshTokenCookie())
 
-		return ResponseFactory.create({
-			status: HTTP_STATUS.NO_CONTENT,
-		})
+		return ResponseFactory.NO_CONTENT()
 	}
 
 	private clearRefreshTokenCookie(): string {
@@ -75,7 +86,7 @@ export class LogoutController implements Controller {
 			httpOnly: true,
 			secure: true,
 			sameSite: "strict",
-			expires: new Date(0), // Set expiry to past date to clear cookie
+			expires: new Date(0),
 		})
 	}
 }

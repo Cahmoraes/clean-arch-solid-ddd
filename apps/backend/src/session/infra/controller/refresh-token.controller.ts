@@ -1,14 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-import { SessionRoutes } from "@/session/infra/controller/routes/session-routes"
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import type {
 	Cookie,
@@ -23,6 +16,7 @@ import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
 import type { AuthToken } from "@/user/application/auth/auth-token"
+import { SessionRoutes } from "./routes/session-routes"
 
 interface Sub {
 	sub: {
@@ -37,10 +31,7 @@ const refreshTokenRequestSchema = z.object({
 	cookie: z.string(),
 })
 
-type RefreshPayload = z.infer<typeof refreshTokenRequestSchema>
-
-@injectable()
-export class RefreshTokenController implements Controller {
+export class RefreshTokenController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
@@ -51,6 +42,7 @@ export class RefreshTokenController implements Controller {
 		@inject(SHARED_TYPES.Logger)
 		private readonly logger: DebugLogger,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -77,13 +69,14 @@ export class RefreshTokenController implements Controller {
 	}
 
 	private async callback(req: FastifyRequest, res: FastifyReply) {
-		const cookieOrError = this.parseHeaderResult(req.headers)
+		const cookieOrError = this.parseRequest(
+			refreshTokenRequestSchema,
+			req.headers,
+		)
 		if (cookieOrError.isFailure()) {
-			return ResponseFactory.create({
-				status: HTTP_STATUS.BAD_REQUEST,
-				message: cookieOrError.value.message,
-			})
+			return this.createResponseError(cookieOrError)
 		}
+
 		const cookie = this.cookieParse(cookieOrError.value.cookie)
 		if (!cookie) {
 			return ResponseFactory.create({
@@ -91,6 +84,7 @@ export class RefreshTokenController implements Controller {
 				message: `Missing ${env.REFRESH_TOKEN_NAME} cookie`,
 			})
 		}
+
 		const verified = this.authToken.verify<Sub>(cookie.value, env.PRIVATE_KEY)
 		if (verified.isFailure()) {
 			this.warnOnRefreshTokenFailure(cookie, verified.value.message)
@@ -134,14 +128,6 @@ export class RefreshTokenController implements Controller {
 			secure: true,
 			sameSite: "strict",
 		})
-	}
-
-	private parseHeaderResult(
-		headers: unknown,
-	): Either<ValidationError, RefreshPayload> {
-		const parsedBody = refreshTokenRequestSchema.safeParse(headers)
-		if (!parsedBody.success) return failure(fromError(parsedBody.error))
-		return success(parsedBody.data)
 	}
 }
 

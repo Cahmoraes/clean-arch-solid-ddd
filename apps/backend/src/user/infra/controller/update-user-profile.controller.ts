@@ -1,21 +1,17 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
-import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { inject } from "inversify"
+import { ZodError, z } from "zod"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
+import type {
+	HandleCallbackResponse,
+	HttpServer,
+	Schema,
+} from "@/shared/infra/server/http-server"
 import type { UpdateUserProfileUseCase } from "@/user/application/use-case/update-user-profile.usecase"
-
 import { UserRoutes } from "./routes/user-routes"
 
 const updateUserProfileRequestSchema = z.object({
@@ -30,17 +26,14 @@ const updateUserProfileBodySchema = z.object({
 		.meta({ description: "User email", example: "john@example.com" }),
 })
 
-type UpdateUserProfileRequest = z.infer<typeof updateUserProfileRequestSchema>
-type UpdateUserProfilePayload = z.infer<typeof updateUserProfileBodySchema>
-
-@injectable()
-export class UpdateUserProfileController implements Controller {
+export class UpdateUserProfileController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly httpServer: HttpServer,
 		@inject(USER_TYPES.UseCases.UpdateUserProfile)
 		private readonly updateUserProfile: UpdateUserProfileUseCase,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -63,51 +56,55 @@ export class UpdateUserProfileController implements Controller {
 		)
 	}
 
+	protected override mapResponseError(
+		error: Error | Error[],
+	): HandleCallbackResponse | undefined {
+		if (Array.isArray(error) || error instanceof ZodError) {
+			return undefined
+		}
+
+		if (error.name.endsWith("NotFoundError")) {
+			return ResponseFactory.UNPROCESSABLE_ENTITY({
+				message: error.message,
+			})
+		}
+
+		return undefined
+	}
+
 	private async callback(req: FastifyRequest) {
-		const parseRequestResult = this.parseRequestOrError(req.params)
+		const parseRequestResult = this.parseRequest(
+			updateUserProfileRequestSchema,
+			req.params,
+		)
 		if (parseRequestResult.isFailure()) {
-			return ResponseFactory.BAD_REQUEST({
-				message: parseRequestResult.value.message,
-			})
+			return this.createResponseError(parseRequestResult)
 		}
-		const parseBodyResult = this.parseBodyOrError(req.body)
+
+		const parseBodyResult = this.parseRequest(
+			updateUserProfileBodySchema,
+			req.body,
+		)
 		if (parseBodyResult.isFailure()) {
-			return ResponseFactory.BAD_REQUEST({
-				message: parseBodyResult.value.message,
-			})
+			return this.createResponseError(parseBodyResult)
 		}
+
 		const profileUpdateResult = await this.updateUserProfile.execute({
 			userId: parseRequestResult.value.userId,
 			email: parseBodyResult.value.email,
 			name: parseBodyResult.value.name,
 		})
+
 		if (profileUpdateResult.isFailure()) {
-			return ResponseFactory.UNPROCESSABLE_ENTITY({
-				message: profileUpdateResult.value.toString(),
-			})
+			return this.createResponseError(profileUpdateResult)
 		}
+
 		return ResponseFactory.CREATED({
 			body: {
 				message: "User created",
 				email: profileUpdateResult.value.email,
 			},
 		})
-	}
-
-	private parseRequestOrError(
-		request: unknown,
-	): Either<ValidationError, UpdateUserProfileRequest> {
-		const parsedRequest = updateUserProfileRequestSchema.safeParse(request)
-		if (!parsedRequest.success) return failure(fromError(parsedRequest.error))
-		return success(parsedRequest.data)
-	}
-
-	private parseBodyOrError(
-		body: unknown,
-	): Either<ValidationError, UpdateUserProfilePayload> {
-		const parsedBody = updateUserProfileBodySchema.safeParse(body)
-		if (!parsedBody.success) return failure(fromError(parsedBody.error))
-		return success(parsedBody.data)
 	}
 }
 

@@ -1,21 +1,17 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
-import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-
+import { inject } from "inversify"
+import { ZodError, z } from "zod"
 import type { CreateGymUseCase } from "@/gym/application/use-case/create-gym.usecase"
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { GYM_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
-
+import type {
+	HandleCallbackResponse,
+	HttpServer,
+	Schema,
+} from "@/shared/infra/server/http-server"
 import { GymRoutes } from "./routes/gym-routes"
 
 const createGymSchema = z.object({
@@ -37,14 +33,14 @@ const createGymSchema = z.object({
 
 export type CreateGymPayload = z.infer<typeof createGymSchema>
 
-@injectable()
-export class CreateGymController implements Controller {
+export class CreateGymController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
 		@inject(GYM_TYPES.UseCases.CreateGym)
 		private readonly createGymUseCase: CreateGymUseCase,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -68,31 +64,35 @@ export class CreateGymController implements Controller {
 		)
 	}
 
-	private async callback(req: FastifyRequest) {
-		const parsedBodyOrError = this.parseBody(req.body)
-		if (parsedBodyOrError.isFailure()) {
-			return ResponseFactory.BAD_REQUEST({
-				message: parsedBodyOrError.value.message,
-			})
+	protected override mapResponseError(
+		error: Error | Error[],
+	): HandleCallbackResponse | undefined {
+		if (Array.isArray(error) || error instanceof ZodError) {
+			return undefined
 		}
+
+		return ResponseFactory.CONFLICT({
+			message: error.message,
+		})
+	}
+
+	private async callback(req: FastifyRequest) {
+		const parsedBodyOrError = this.parseRequest(createGymSchema, req.body)
+		if (parsedBodyOrError.isFailure()) {
+			return this.createResponseError(parsedBodyOrError)
+		}
+
 		const result = await this.createGymUseCase.execute(parsedBodyOrError.value)
 		if (result.isFailure()) {
-			return ResponseFactory.CONFLICT({
-				message: result.value.message,
-			})
+			return this.createResponseError(result)
 		}
+
 		return ResponseFactory.CREATED({
 			body: {
 				message: "Gym created",
 				id: result.value.gymId,
 			},
 		})
-	}
-
-	private parseBody(body: unknown): Either<ValidationError, CreateGymPayload> {
-		const parsedBody = createGymSchema.safeParse(body)
-		if (!parsedBody.success) return failure(fromError(parsedBody.error))
-		return success(parsedBody.data)
 	}
 }
 

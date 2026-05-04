@@ -1,15 +1,8 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-import type { ValidationError } from "zod-validation-error"
-import { fromError } from "zod-validation-error"
 import type { FetchCheckInsUseCase } from "@/check-in/application/use-case/fetch-check-ins.usecase"
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { CHECKIN_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
@@ -29,16 +22,14 @@ const listCheckInsQuerySchema = z.object({
 	}),
 })
 
-type ListCheckInsQuery = z.infer<typeof listCheckInsQuerySchema>
-
-@injectable()
-export class ListCheckInsController implements Controller {
+export class ListCheckInsController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
 		@inject(CHECKIN_TYPES.UseCases.FetchCheckIns)
 		private readonly fetchCheckIns: FetchCheckInsUseCase,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -63,13 +54,11 @@ export class ListCheckInsController implements Controller {
 	}
 
 	private async callback(req: FastifyRequest) {
-		const parsedQuery = this.parseQuery(req.query)
+		const parsedQuery = this.parseRequest(listCheckInsQuerySchema, req.query)
 		if (parsedQuery.isFailure()) {
-			return ResponseFactory.create({
-				status: HTTP_STATUS.BAD_REQUEST,
-				message: parsedQuery.value.message,
-			})
+			return this.createResponseError(parsedQuery)
 		}
+
 		const result = await this.fetchCheckIns.execute({
 			page: parsedQuery.value.page,
 			status: parsedQuery.value.status,
@@ -78,14 +67,6 @@ export class ListCheckInsController implements Controller {
 			status: HTTP_STATUS.OK,
 			body: result,
 		})
-	}
-
-	private parseQuery(
-		query: unknown,
-	): Either<ValidationError, ListCheckInsQuery> {
-		const parsed = listCheckInsQuerySchema.safeParse(query)
-		if (!parsed.success) return failure(fromError(parsed.error))
-		return success(parsed.data)
 	}
 }
 

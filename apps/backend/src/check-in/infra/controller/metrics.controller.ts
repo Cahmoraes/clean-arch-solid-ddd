@@ -1,14 +1,7 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
@@ -16,7 +9,6 @@ import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-buil
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import type { UserMetricsUseCase } from "@/user/application/use-case/user-metrics.usecase"
-
 import { CheckInRoutes } from "./routes/check-in-routes"
 
 const metricsRequestSchema = z.object({
@@ -26,16 +18,14 @@ const metricsRequestSchema = z.object({
 	}),
 })
 
-type MetricsRequestPayload = z.infer<typeof metricsRequestSchema>
-
-@injectable()
-export class MetricsController implements Controller {
+export class MetricsController extends BaseController {
 	constructor(
 		@inject(USER_TYPES.UseCases.UserMetrics)
 		private readonly userMetricsUseCase: UserMetricsUseCase,
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -59,26 +49,16 @@ export class MetricsController implements Controller {
 	}
 
 	private async callback(req: FastifyRequest) {
-		const parsedRequest = this.parseParamsPayload(req.params)
+		const parsedRequest = this.parseRequest(metricsRequestSchema, req.params)
 		if (parsedRequest.isFailure()) {
-			return ResponseFactory.create({
-				status: HTTP_STATUS.BAD_REQUEST,
-				message: parsedRequest.value.message,
-			})
+			return this.createResponseError(parsedRequest)
 		}
+
 		const metrics = await this.userMetricsUseCase.execute(parsedRequest.value)
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
 			body: metrics,
 		})
-	}
-
-	private parseParamsPayload(
-		params: unknown,
-	): Either<ValidationError, MetricsRequestPayload> {
-		const result = metricsRequestSchema.safeParse(params)
-		if (!result.success) return failure(fromError(result.error))
-		return success(result.data)
 	}
 }
 

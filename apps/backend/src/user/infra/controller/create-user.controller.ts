@@ -1,29 +1,14 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-import { fromError, type ValidationError } from "zod-validation-error"
-import {
-	type Either,
-	type Failure,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-import type { Controller } from "@/shared/infra/controller/controller"
-import {
-	ResponseFactory,
-	type ResponseOutput,
-} from "@/shared/infra/controller/factory/response-factory"
+import { BaseController } from "@/shared/infra/controller/base-controller"
+import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
-import { UserAlreadyExistsError } from "@/user/application/error/user-already-exists-error"
-import type {
-	CreateUserError,
-	CreateUserUseCase,
-} from "@/user/application/use-case/create-user.usecase"
-import type { UserValidationErrors } from "@/user/domain/user"
+import type { CreateUserUseCase } from "@/user/application/use-case/create-user.usecase"
 import { RoleValues } from "@/user/domain/value-object/role"
 import { UserRoutes } from "./routes/user-routes"
 
@@ -57,16 +42,14 @@ const errorResponseSchema = z.object({
 	message: z.string().meta({ description: "Error message" }),
 })
 
-type CreateUserPayload = z.infer<typeof createUserRequestSchema>
-
-@injectable()
-export class CreateUserController implements Controller {
+export class CreateUserController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly httpServer: HttpServer,
 		@inject(USER_TYPES.UseCases.CreateUser)
 		private readonly createUser: CreateUserUseCase,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -93,16 +76,14 @@ export class CreateUserController implements Controller {
 	}
 
 	private async callback(req: FastifyRequest) {
-		const parseBodyResult = this.parseBodyOrError(req.body)
+		const parseBodyResult = this.parseRequest(createUserRequestSchema, req.body)
 		if (parseBodyResult.isFailure()) {
-			return ResponseFactory.BAD_REQUEST({
-				message: parseBodyResult.value.message,
-			})
+			return this.createResponseError(parseBodyResult)
 		}
 		const { password, ...rest } = parseBodyResult.value
 		const createUserResult = await this.createUser.execute({
 			...rest,
-			password: password,
+			password,
 		})
 		if (createUserResult.isFailure()) {
 			return this.createResponseError(createUserResult)
@@ -113,33 +94,6 @@ export class CreateUserController implements Controller {
 				email: createUserResult.value.email,
 			},
 		})
-	}
-
-	private parseBodyOrError(
-		body: unknown,
-	): Either<ValidationError, CreateUserPayload> {
-		const createUserValidationResult = createUserRequestSchema.safeParse(body)
-		if (!createUserValidationResult.success) {
-			return failure(fromError(createUserValidationResult.error))
-		}
-		return success(createUserValidationResult.data)
-	}
-
-	private createResponseError(
-		result: Failure<CreateUserError, unknown>,
-	): ResponseOutput {
-		if (result.value instanceof UserAlreadyExistsError) {
-			return ResponseFactory.CONFLICT({
-				message: result.value.message,
-			})
-		}
-		return ResponseFactory.UNPROCESSABLE_ENTITY({
-			message: this.extractErrorMessages(result.value),
-		})
-	}
-
-	private extractErrorMessages(errors: UserValidationErrors[]): string {
-		return errors.flatMap((error) => error.message).join(", ")
 	}
 }
 

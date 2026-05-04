@@ -1,16 +1,14 @@
 import type { FastifyRequest } from "fastify"
-import { inject, injectable } from "inversify"
+import { inject } from "inversify"
 import { z } from "zod"
-
 import type { FetchAllGymsUseCase } from "@/gym/application/use-case/fetch-all-gyms.usecase"
-import type { Controller } from "@/shared/infra/controller/controller"
+import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { GYM_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
-
 import { GymRoutes } from "./routes/gym-routes"
 
 const fetchAllGymsQuerySchema = z.object({
@@ -21,14 +19,14 @@ const fetchAllGymsQuerySchema = z.object({
 		.meta({ description: "Page number for pagination", example: 1 }),
 })
 
-@injectable()
-export class FetchAllGymsController implements Controller {
+export class FetchAllGymsController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
 		private readonly server: HttpServer,
 		@inject(GYM_TYPES.UseCases.FetchAllGyms)
 		private readonly fetchAllGymsUseCase: FetchAllGymsUseCase,
 	) {
+		super()
 		this.bindMethods()
 	}
 
@@ -47,16 +45,21 @@ export class FetchAllGymsController implements Controller {
 	}
 
 	private async callback(req: FastifyRequest) {
-		const page = this.parsePage(req.query)
-		const result = await this.fetchAllGymsUseCase.execute({ page })
+		const parsedQueryOrError = this.parseRequest(
+			fetchAllGymsQuerySchema,
+			req.query,
+		)
+		if (parsedQueryOrError.isFailure()) {
+			return this.createResponseError(parsedQueryOrError)
+		}
+
+		const result = await this.fetchAllGymsUseCase.execute({
+			page: parsedQueryOrError.value.page ?? 1,
+		})
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
 			body: result,
 		})
-	}
-
-	private parsePage(query: unknown): number {
-		return fetchAllGymsQuerySchema.parse(query).page ?? 1
 	}
 }
 
