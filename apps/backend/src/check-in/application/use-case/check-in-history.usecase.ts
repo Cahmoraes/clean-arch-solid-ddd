@@ -44,13 +44,13 @@ export class CheckInHistoryUseCase {
 				checkIns: [],
 			}
 		}
-		const checkIns = await this.checkInRepository.checkInsOfUserId(
-			input.userId,
-			this.pageNumberOrDefault(input.page),
-		)
+		const { items } = await this.checkInRepository.findMany({
+			userId: input.userId,
+			page: this.pageNumberOrDefault(input.page),
+		})
 		return {
 			userId: input.userId,
-			checkIns: this.createCheckInsDTO(checkIns),
+			checkIns: this.createCheckInsDTO(items),
 		}
 	}
 

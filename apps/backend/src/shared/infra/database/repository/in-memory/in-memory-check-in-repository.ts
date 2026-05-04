@@ -58,19 +58,11 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 		})
 	}
 
-	public async checkInsOfUserId(userId: string, page = 0): Promise<CheckIn[]> {
-		return this.checkIns
-			.filter((checkIn) => checkIn.userId === userId)
-			.toArray()
-			.slice((page - 1) * env.ITEMS_PER_PAGE, page * env.ITEMS_PER_PAGE)
-	}
-
-	public async countOfUserId(userId: string): Promise<number> {
-		return this.checkIns.filter((checkIn) => checkIn.userId === userId).size
-	}
-
 	public async findMany(input: FindManyInput): Promise<FindManyOutput> {
 		let filtered = this.checkIns.toArray()
+		if (input.userId) {
+			filtered = filtered.filter((checkIn) => checkIn.userId === input.userId)
+		}
 		if (input.status === "pending") {
 			filtered = filtered.filter((checkIn) => !checkIn.isValidated)
 		} else if (input.status === "validated") {

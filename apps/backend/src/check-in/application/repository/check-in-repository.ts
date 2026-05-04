@@ -9,6 +9,7 @@ export type CheckInStatus = "pending" | "validated"
 export interface FindManyInput {
 	page: number
 	status?: CheckInStatus
+	userId?: string
 }
 
 export interface FindManyOutput {
@@ -20,8 +21,6 @@ export interface CheckInRepository {
 	save(checkIn: CheckIn): Promise<SaveResponse>
 	checkOfById(id: string): Promise<CheckIn | null>
 	onSameDateOfUserId(userId: string, date: Date): Promise<boolean>
-	checkInsOfUserId(userId: string, page: number): Promise<CheckIn[]>
-	countOfUserId(userId: string): Promise<number>
 	findMany(input: FindManyInput): Promise<FindManyOutput>
 	withTransaction<TX extends object>(object: TX): CheckInRepository
 }

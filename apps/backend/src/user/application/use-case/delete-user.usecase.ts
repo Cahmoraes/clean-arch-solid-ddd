@@ -38,12 +38,11 @@ export class DeleteUserUseCase {
 	): Promise<DeleteUserUseCaseOutput> {
 		const foundUser = await this.userRepository.userOfId(input.userId)
 		if (!foundUser) return failure(new UserNotFoundError())
-		const foundCheckIns = await this.checkInRepository.checkInsOfUserId(
-			input.userId,
-			DeleteUserUseCase.PAGE_NUMBER,
-		)
+		const { items: foundCheckIns } = await this.checkInRepository.findMany({
+			userId: input.userId,
+			page: DeleteUserUseCase.PAGE_NUMBER,
+		})
 		if (foundCheckIns.length) return failure(new Error("CheckIns found"))
-		console.log(foundCheckIns)
 		await this.unitOfWork.runTransaction(async (tx) => {
 			await this.userRepository.withTransaction(tx).delete(foundUser)
 		})

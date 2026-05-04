@@ -21,11 +21,12 @@ export class UserMetricsUseCase {
 	public async execute(
 		input: UserMetricsUseCaseInput,
 	): Promise<UserMetricsUseCaseOutput> {
-		const checkInsCount = await this.checkInRepository.countOfUserId(
-			input.userId,
-		)
+		const { total } = await this.checkInRepository.findMany({
+			userId: input.userId,
+			page: 1,
+		})
 		return {
-			checkInsCount,
+			checkInsCount: total,
 		}
 	}
 }

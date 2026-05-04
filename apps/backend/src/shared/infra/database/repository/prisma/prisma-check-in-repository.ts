@@ -106,57 +106,8 @@ export class PrismaCheckInRepository implements CheckInRepository {
 		return checkInOnSameDate > 0
 	}
 
-	public async checkInsOfUserId(
-		userId: string,
-		page: number,
-	): Promise<CheckIn[]> {
-		const checkInData = await this.prismaClient.checkIn.findMany({
-			where: {
-				user_id: userId,
-			},
-			skip: page * env.ITEMS_PER_PAGE,
-			take: env.ITEMS_PER_PAGE,
-		})
-		return checkInData.map((data) =>
-			this.createCheckIn({
-				...data,
-				latitude: data.latitude.toNumber(),
-				longitude: data.longitude.toNumber(),
-			}),
-		)
-	}
-
-	public async checkInsOfUserIdWithTransaction(
-		userId: string,
-		page: number,
-		prismaClient: Prisma.TransactionClient,
-	): Promise<CheckIn[]> {
-		const checkInData = await prismaClient.checkIn.findMany({
-			where: {
-				user_id: userId,
-			},
-			skip: page * env.ITEMS_PER_PAGE,
-			take: env.ITEMS_PER_PAGE,
-		})
-		return checkInData.map((data) =>
-			this.createCheckIn({
-				...data,
-				latitude: data.latitude.toNumber(),
-				longitude: data.longitude.toNumber(),
-			}),
-		)
-	}
-
-	public async countOfUserId(userId: string): Promise<number> {
-		return await this.prismaClient.checkIn.count({
-			where: {
-				user_id: userId,
-			},
-		})
-	}
-
 	public async findMany(input: FindManyInput): Promise<FindManyOutput> {
-		const where = this.buildStatusFilter(input.status)
+		const where = this.buildWhere(input)
 		const [checkInData, total] = await Promise.all([
 			this.prismaClient.checkIn.findMany({
 				where,
@@ -176,13 +127,17 @@ export class PrismaCheckInRepository implements CheckInRepository {
 		return { items, total }
 	}
 
-	private buildStatusFilter(status?: string): Record<string, unknown> {
-		if (status === "pending") {
-			return { validated_at: null }
+	private buildWhere(input: FindManyInput): Prisma.CheckInWhereInput {
+		const where: Prisma.CheckInWhereInput = {}
+		if (input.userId) {
+			where.user_id = input.userId
 		}
-		if (status === "validated") {
-			return { validated_at: { not: null } }
+		if (input.status === "pending") {
+			where.validated_at = null
 		}
-		return {}
+		if (input.status === "validated") {
+			where.validated_at = { not: null }
+		}
+		return where
 	}
 }
