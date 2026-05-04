@@ -1,4 +1,5 @@
 import { ContainerModule } from "inversify"
+import { SubscriptionLifecycleServiceImpl } from "@/subscription/application/service/subscription-lifecycle.service"
 import { ActivateSubscriptionUseCase } from "@/subscription/application/use-case/activate-subscription.usecase"
 import { CancelSubscriptionUseCase } from "@/subscription/application/use-case/cancel-subscription.usecase"
 import { CreateCustomer } from "@/subscription/application/use-case/create-customer.usecase"
@@ -22,6 +23,9 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 		.inSingletonScope()
 	bind(SUBSCRIPTION_TYPES.REPOSITORIES.StripeWebhookEvent)
 		.toDynamicValue(StripeWebhookEventRepositoryProvider.provide)
+		.inSingletonScope()
+	bind(SUBSCRIPTION_TYPES.SERVICES.Lifecycle)
+		.to(SubscriptionLifecycleServiceImpl)
 		.inSingletonScope()
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreateCustomer).to(
 		CreateCustomerController,

@@ -18,6 +18,9 @@ export const SUBSCRIPTION_TYPES = {
 		Subscription: Symbol.for("SubscriptionRepository"),
 		StripeWebhookEvent: Symbol.for("StripeWebhookEventRepository"),
 	},
+	SERVICES: {
+		Lifecycle: Symbol.for("SubscriptionLifecycleService"),
+	},
 	WORKERS: {
 		StripeWebhook: Symbol.for("StripeWebhookWorker"),
 	},
