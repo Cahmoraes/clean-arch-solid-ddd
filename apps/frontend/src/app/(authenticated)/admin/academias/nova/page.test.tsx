@@ -40,6 +40,10 @@ describe("AdminNovaAcademiaPage", () => {
 		await user.type(screen.getByTestId("gym-form-cnpj"), "12345678000100")
 		await user.type(screen.getByTestId("gym-form-description"), "Top gym")
 		await user.type(screen.getByTestId("gym-form-phone"), "11999999999")
+		await user.type(
+			screen.getByTestId("gym-form-address"),
+			"Av. Paulista, 1578, São Paulo - SP",
+		)
 
 		const lat = screen.getByTestId("gym-form-latitude") as HTMLInputElement
 		const lng = screen.getByTestId("gym-form-longitude") as HTMLInputElement

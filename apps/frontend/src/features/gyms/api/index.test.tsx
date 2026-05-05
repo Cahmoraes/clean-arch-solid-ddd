@@ -166,8 +166,11 @@ describe("useCreateGym", () => {
 			cnpj: "12345678000100",
 			description: "ok",
 			phone: "11999999999",
-			latitude: -23.5,
-			longitude: -46.6,
+			location: {
+				address: "Av. Paulista, 1578, São Paulo - SP",
+				latitude: -23.5,
+				longitude: -46.6,
+			},
 		})
 		expect(created.id).toBe("new-gym-id")
 	})
@@ -186,8 +189,11 @@ describe("useCreateGym", () => {
 				cnpj: "12345678000100",
 				description: "",
 				phone: "",
-				latitude: -23.5,
-				longitude: -46.6,
+				location: {
+					address: "Av. Paulista, 1578, São Paulo - SP",
+					latitude: -23.5,
+					longitude: -46.6,
+				},
 			}),
 		).rejects.toMatchObject({ status: 409 })
 	})

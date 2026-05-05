@@ -6,12 +6,30 @@ const PHONE_MAX = 11
 const TITLE_MIN = 2
 const TITLE_MAX = 120
 const DESCRIPTION_MAX = 500
+const ADDRESS_MIN = 5
 const LAT_MIN = -90
 const LAT_MAX = 90
 const LNG_MIN = -180
 const LNG_MAX = 180
 
 const numericOnly = /^\d+$/u
+
+const gymLocationSchema = z
+	.object({
+		address: z.string().trim().min(ADDRESS_MIN, "Informe o endereço completo."),
+		latitude: z
+			.number()
+			.min(LAT_MIN, `Latitude deve ser >= ${LAT_MIN}.`)
+			.max(LAT_MAX, `Latitude deve ser <= ${LAT_MAX}.`),
+		longitude: z
+			.number()
+			.min(LNG_MIN, `Longitude deve ser >= ${LNG_MIN}.`)
+			.max(LNG_MAX, `Longitude deve ser <= ${LNG_MAX}.`),
+	})
+	.refine((val) => !(val.latitude === 0 && val.longitude === 0), {
+		message: "Busque o endereço no mapa antes de cadastrar.",
+		path: ["latitude"],
+	})
 
 export const createGymSchema = z.object({
 	title: z
@@ -38,14 +56,7 @@ export const createGymSchema = z.object({
 		.max(PHONE_MAX, `Telefone deve ter no máximo ${PHONE_MAX} dígitos.`)
 		.optional()
 		.or(z.literal("")),
-	latitude: z
-		.number({ error: "Informe a latitude." })
-		.min(LAT_MIN, `Latitude deve ser >= ${LAT_MIN}.`)
-		.max(LAT_MAX, `Latitude deve ser <= ${LAT_MAX}.`),
-	longitude: z
-		.number({ error: "Informe a longitude." })
-		.min(LNG_MIN, `Longitude deve ser >= ${LNG_MIN}.`)
-		.max(LNG_MAX, `Longitude deve ser <= ${LNG_MAX}.`),
+	location: gymLocationSchema,
 })
 
 export type CreateGymInput = z.infer<typeof createGymSchema>

@@ -28,6 +28,7 @@ export default function AdminNovaAcademiaPage() {
 	const cnpjId = useId()
 	const descriptionId = useId()
 	const phoneId = useId()
+	const addressId = useId()
 	const latitudeId = useId()
 	const longitudeId = useId()
 
@@ -43,8 +44,11 @@ export default function AdminNovaAcademiaPage() {
 			cnpj: "",
 			description: "",
 			phone: "",
-			latitude: 0,
-			longitude: 0,
+			location: {
+				address: "",
+				latitude: 0,
+				longitude: 0,
+			},
 		},
 	})
 
@@ -111,6 +115,13 @@ export default function AdminNovaAcademiaPage() {
 					error={errors.phone?.message}
 					{...register("phone")}
 				/>
+				<FormField
+					id={addressId}
+					label="Endereço"
+					data-testid="gym-form-address"
+					error={errors.location?.address?.message}
+					{...register("location.address")}
+				/>
 				<div className="grid gap-4 sm:grid-cols-2">
 					<FormField
 						id={latitudeId}
@@ -118,8 +129,8 @@ export default function AdminNovaAcademiaPage() {
 						type="number"
 						step="any"
 						data-testid="gym-form-latitude"
-						error={errors.latitude?.message}
-						{...register("latitude", { valueAsNumber: true })}
+						error={errors.location?.latitude?.message}
+						{...register("location.latitude", { valueAsNumber: true })}
 					/>
 					<FormField
 						id={longitudeId}
@@ -127,8 +138,8 @@ export default function AdminNovaAcademiaPage() {
 						type="number"
 						step="any"
 						data-testid="gym-form-longitude"
-						error={errors.longitude?.message}
-						{...register("longitude", { valueAsNumber: true })}
+						error={errors.location?.longitude?.message}
+						{...register("location.longitude", { valueAsNumber: true })}
 					/>
 				</div>
 
