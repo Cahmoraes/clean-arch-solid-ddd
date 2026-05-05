@@ -44,7 +44,8 @@ O endereço completo é persistido no banco de dados junto com as coordenadas.
 ```
 apps/frontend/src/features/gyms/
 ├── components/
-│   └── gym-location-picker.tsx       ← componente principal (React + Leaflet)
+│   ├── gym-location-picker.tsx       ← componente principal (React + Leaflet)
+│   └── leaflet-map.tsx               ← sub-componente isolado para dynamic import (ssr: false)
 └── hooks/
     └── use-gym-location-picker.ts    ← lógica: geocoding, estado do mapa
 ```
@@ -147,6 +148,8 @@ location: z.object({
 
 O `onSubmit` extrai `values.location.address`, `values.location.latitude`, `values.location.longitude` para montar o body da API.
 
+Os `defaultValues` do formulário mudam de `{ latitude: 0, longitude: 0 }` para `{ location: { address: "", latitude: 0, longitude: 0 } }`.
+
 **Leaflet — SSR:**
 
 ```typescript
@@ -240,10 +243,10 @@ class Gym {
 |---|---|
 | Endereço não encontrado no Nominatim | Exibe mensagem abaixo do input: "Endereço não encontrado. Tente ser mais específico." |
 | Falha de rede na geocodificação | Exibe: "Erro ao buscar endereço. Verifique sua conexão." |
-| Submit sem lat/lng definidos (mapa nunca buscado) | Validação Zod bloqueia: `latitude` é 0 (valor default), mas coordenada (0,0) é válida — solução: validação customizada que exige busca prévia |
+| Submit sem lat/lng definidos (mapa nunca buscado) | Validação Zod bloqueia: `latitude` é 0 (valor default), mas coordenada (0,0) é válida — solução: validação com `.refine()` que rejeita `{ latitude: 0, longitude: 0 }` (coordenada padrão nunca gerada por geocoding real), exigindo que o admin faça a busca antes de submeter.
 | Erro de conflito CNPJ (409) | Comportamento existente mantido |
 
-> **Nota sobre validação de coordenadas (0,0):** Para evitar submit acidental sem geocodificação, o schema pode usar `.refine()` para rejeitar `{ latitude: 0, longitude: 0 }` como inválido, exigindo que o admin faça a busca.
+> **Nota sobre validação de coordenadas (0,0):** O schema usa `.refine()` para rejeitar `{ latitude: 0, longitude: 0 }` como inválido, exigindo que o admin realize a busca antes de submeter o formulário.
 
 ---
 
