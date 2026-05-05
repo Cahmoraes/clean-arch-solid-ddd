@@ -45,6 +45,7 @@ model Gym {
   title       String
   description String?
   phone       String?
+  address     String?
   latitude    Decimal
   longitude   Decimal
   created_at  DateTime  @default(now())
