@@ -68,6 +68,7 @@ function buildCreateGymBody(input: CreateGymInput) {
 	return {
 		title: input.title,
 		cnpj: input.cnpj,
+		address: input.location.address,
 		latitude: input.location.latitude,
 		longitude: input.location.longitude,
 		...(input.description ? { description: input.description } : {}),

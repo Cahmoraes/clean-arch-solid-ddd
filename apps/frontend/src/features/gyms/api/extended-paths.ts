@@ -11,6 +11,7 @@ export interface GymSummary {
 	title: string
 	description: string | null
 	phone: string | null
+	address: string | null
 	latitude: number
 	longitude: number
 }
