@@ -20,7 +20,7 @@ export async function createAndSaveGym(props: CreateAndSaveGym) {
 		latitude: props.latitude ?? 0,
 		longitude: props.longitude ?? 0,
 		cnpj: "11.222.333/0001-81",
-		address: props.address ?? "Rua Test, 123",
+		address: props.address ?? "Rua Padrão, 1, São Paulo - SP",
 		...props,
 	}).forceSuccess().value
 	await props.gymRepository.save(gym)

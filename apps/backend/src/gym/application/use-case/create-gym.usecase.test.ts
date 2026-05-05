@@ -50,6 +50,7 @@ describe("CreateGymUseCase", () => {
 		expect(gym.longitude).toBe(input.longitude)
 		expect(gym.cnpj).toBe(input.cnpj)
 		expect(gym.phone).toBe(input.phone)
+		expect(gym.address).toBe(input.address)
 	})
 
 	test("Deve falhar ao criar uma Academia sem título", async () => {

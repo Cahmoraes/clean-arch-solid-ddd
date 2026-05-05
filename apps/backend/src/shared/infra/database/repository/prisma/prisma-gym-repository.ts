@@ -21,6 +21,7 @@ export interface GymCreateProps {
 	title: string
 	description: string | null
 	phone?: string | null
+	address?: string | null
 	latitude: Decimal
 	longitude: Decimal
 	cnpj: string
@@ -47,6 +48,7 @@ export class PrismaGymRepository implements GymRepository {
 				title: gym.title,
 				description: gym.description,
 				phone: gym.phone ? gym.phone.toString() : undefined,
+				address: gym.address,
 				latitude: gym.latitude,
 				longitude: gym.longitude,
 				cnpj: gym.cnpj,
@@ -78,6 +80,7 @@ export class PrismaGymRepository implements GymRepository {
 			title: props.title,
 			description: props.description ?? undefined,
 			phone: props.phone ? props.phone : undefined,
+			address: props.address ?? undefined,
 			latitude: props.latitude.toNumber(),
 			longitude: props.longitude.toNumber(),
 			cnpj: props.cnpj,

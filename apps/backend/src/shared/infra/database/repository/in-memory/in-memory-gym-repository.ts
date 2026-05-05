@@ -28,6 +28,7 @@ export class InMemoryGymRepository implements GymRepository {
 			longitude: gym.longitude,
 			phone: gym.phone,
 			cnpj: gym.cnpj,
+			address: gym.address,
 		})
 		this.gyms.add(gymWithId)
 		return { id: gym.id }
