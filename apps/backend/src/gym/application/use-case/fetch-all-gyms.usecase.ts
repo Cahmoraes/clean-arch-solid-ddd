@@ -14,6 +14,7 @@ export interface FetchAllGymsUseCaseOutput {
 	title: string
 	description: string | null
 	phone: string | null
+	address: string | null
 	latitude: number
 	longitude: number
 }
@@ -40,6 +41,7 @@ export class FetchAllGymsUseCase {
 			title: g.title,
 			description: g.description ?? null,
 			phone: g.phone ?? null,
+			address: g.address ?? null,
 			latitude: g.latitude,
 			longitude: g.longitude,
 		}))

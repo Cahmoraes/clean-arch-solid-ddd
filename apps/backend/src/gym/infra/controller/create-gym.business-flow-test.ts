@@ -61,7 +61,7 @@ describe("Cadastrar Academia", () => {
 			phone: "123456789",
 			latitude: 0,
 			longitude: 0,
-			address: "Rua Test, 123",
+			address: "Rua das Flores, 123, São Paulo - SP",
 		}
 		const response = await request(fastifyServer.server)
 			.post(GymRoutes.CREATE)

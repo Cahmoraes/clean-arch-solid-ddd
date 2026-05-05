@@ -29,9 +29,10 @@ const createGymSchema = z.object({
 	longitude: z
 		.number()
 		.meta({ description: "Gym longitude", example: -46.6333 }),
-	address: z
-		.string()
-		.meta({ description: "Gym address", example: "Rua Test, 123" }),
+	address: z.string().meta({
+		description: "Full gym address",
+		example: "Rua das Flores, 123, São Paulo - SP",
+	}),
 })
 
 export type CreateGymPayload = z.infer<typeof createGymSchema>
@@ -104,7 +105,7 @@ function makeCreateGymSwaggerSchema(): Schema {
 		tags: ["gyms"],
 		summary: "Create a new gym",
 		description:
-			"Create a new gym with location coordinates. Requires ADMIN role",
+			"Create a new gym with address and location coordinates. Requires ADMIN role",
 		security: true,
 		body: createGymSchema,
 		responses: {
