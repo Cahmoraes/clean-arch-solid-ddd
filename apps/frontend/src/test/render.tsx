@@ -4,7 +4,7 @@ import {
 	type RenderResult,
 	render,
 } from "@testing-library/react"
-import type { ReactElement, ReactNode } from "react"
+import { Suspense, type ReactElement, type ReactNode } from "react"
 
 interface ProviderProps {
 	children: ReactNode
@@ -34,7 +34,9 @@ export function renderWithProviders(
 	const { queryClient = createTestQueryClient(), ...renderOptions } = options
 	function Wrapper({ children }: ProviderProps): ReactElement {
 		return (
-			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+			<QueryClientProvider client={queryClient}>
+				<Suspense fallback={null}>{children}</Suspense>
+			</QueryClientProvider>
 		)
 	}
 	const result = render(ui, { wrapper: Wrapper, ...renderOptions })
