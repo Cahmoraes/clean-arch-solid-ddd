@@ -4,7 +4,7 @@ import {
 	type RenderResult,
 	render,
 } from "@testing-library/react"
-import { Suspense, type ReactElement, type ReactNode } from "react"
+import { type ReactElement, type ReactNode, Suspense } from "react"
 
 interface ProviderProps {
 	children: ReactNode

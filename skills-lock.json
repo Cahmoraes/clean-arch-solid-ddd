@@ -115,6 +115,12 @@
       "skillPath": "skills/web-design-guidelines/SKILL.md",
       "computedHash": "2b4252a346243aa696da2d021a7a2f747259567cd3ca51308ee86ca24ab60d86"
     },
+    "writing-clearly-and-concisely": {
+      "source": "obra/the-elements-of-style",
+      "sourceType": "github",
+      "skillPath": "skills/writing-clearly-and-concisely/SKILL.md",
+      "computedHash": "c702d9db967bc320da26630c1bb2b6794ec7d058bc535818f72e2d3301c2448a"
+    },
     "writing-plans": {
       "source": "obra/superpowers",
       "sourceType": "github",
