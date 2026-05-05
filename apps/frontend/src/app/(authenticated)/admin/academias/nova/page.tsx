@@ -3,11 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { useId } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { useCreateGym } from "@/features/gyms/api"
+import { GymLocationPicker } from "@/features/gyms/components/gym-location-picker"
 import {
 	type CreateGymInput,
 	createGymSchema,
@@ -28,14 +29,12 @@ export default function AdminNovaAcademiaPage() {
 	const cnpjId = useId()
 	const descriptionId = useId()
 	const phoneId = useId()
-	const addressId = useId()
-	const latitudeId = useId()
-	const longitudeId = useId()
 
 	const { mutateAsync, isPending } = useCreateGym()
 	const {
 		register,
 		handleSubmit,
+		control,
 		formState: { errors },
 	} = useForm<CreateGymInput>({
 		resolver: zodResolver(createGymSchema),
@@ -100,6 +99,21 @@ export default function AdminNovaAcademiaPage() {
 					error={errors.cnpj?.message}
 					{...register("cnpj")}
 				/>
+
+				<Controller
+					control={control}
+					name="location"
+					render={({ field, fieldState }) => (
+						<GymLocationPicker
+							value={field.value}
+							onChange={field.onChange}
+							error={
+								fieldState.error?.message ?? errors.location?.latitude?.message
+							}
+						/>
+					)}
+				/>
+
 				<FormField
 					id={descriptionId}
 					label="Descrição (opcional)"
@@ -115,33 +129,6 @@ export default function AdminNovaAcademiaPage() {
 					error={errors.phone?.message}
 					{...register("phone")}
 				/>
-				<FormField
-					id={addressId}
-					label="Endereço"
-					data-testid="gym-form-address"
-					error={errors.location?.address?.message}
-					{...register("location.address")}
-				/>
-				<div className="grid gap-4 sm:grid-cols-2">
-					<FormField
-						id={latitudeId}
-						label="Latitude"
-						type="number"
-						step="any"
-						data-testid="gym-form-latitude"
-						error={errors.location?.latitude?.message}
-						{...register("location.latitude", { valueAsNumber: true })}
-					/>
-					<FormField
-						id={longitudeId}
-						label="Longitude"
-						type="number"
-						step="any"
-						data-testid="gym-form-longitude"
-						error={errors.location?.longitude?.message}
-						{...register("location.longitude", { valueAsNumber: true })}
-					/>
-				</div>
 
 				<div className="flex justify-end">
 					<Button

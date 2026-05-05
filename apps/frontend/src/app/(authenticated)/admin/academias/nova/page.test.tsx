@@ -15,16 +15,51 @@ vi.mock("next/navigation", () => ({
 	}),
 }))
 
+// Mock do componente de mapa para evitar problemas com Leaflet em jsdom
+vi.mock("@/features/gyms/components/leaflet-map", () => ({
+	default: ({
+		onMapClick,
+	}: {
+		latitude: number | null
+		longitude: number | null
+		onMapClick: (lat: number, lng: number) => void
+	}) => (
+		<div data-testid="mock-map">
+			<button
+				type="button"
+				data-testid="simulate-map-click"
+				onClick={() => onMapClick(-23.5505, -46.6333)}
+			>
+				Simular clique
+			</button>
+		</div>
+	),
+}))
+
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import AdminNovaAcademiaPage from "./page"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
+// Nominatim retorna lat/lng para o endereço buscado
+const NOMINATIM_SEARCH_RESULT = [
+	{
+		lat: "-23.5505",
+		lon: "-46.6333",
+		display_name: "Av. Paulista, 1578, São Paulo",
+	},
+]
+
 describe("AdminNovaAcademiaPage", () => {
-	it("envia formulário válido e redireciona para detalhe da academia criada", async () => {
+	it("envia formulário válido com endereço e coordenadas e redireciona", async () => {
 		let received: Record<string, unknown> | null = null
+
+		// MSW intercepta tanto o Nominatim quanto a API backend
 		server.use(
+			http.get("https://nominatim.openstreetmap.org/search", () => {
+				return HttpResponse.json(NOMINATIM_SEARCH_RESULT)
+			}),
 			http.post(`${apiBaseUrl}/gyms`, async ({ request }) => {
 				received = (await request.json()) as Record<string, unknown>
 				return HttpResponse.json(
@@ -33,6 +68,7 @@ describe("AdminNovaAcademiaPage", () => {
 				)
 			}),
 		)
+
 		const user = userEvent.setup()
 		renderWithProviders(<AdminNovaAcademiaPage />)
 
@@ -40,17 +76,20 @@ describe("AdminNovaAcademiaPage", () => {
 		await user.type(screen.getByTestId("gym-form-cnpj"), "12345678000100")
 		await user.type(screen.getByTestId("gym-form-description"), "Top gym")
 		await user.type(screen.getByTestId("gym-form-phone"), "11999999999")
-		await user.type(
-			screen.getByTestId("gym-form-address"),
-			"Av. Paulista, 1578, São Paulo - SP",
-		)
 
-		const lat = screen.getByTestId("gym-form-latitude") as HTMLInputElement
-		const lng = screen.getByTestId("gym-form-longitude") as HTMLInputElement
-		await user.clear(lat)
-		await user.type(lat, "-23.5505")
-		await user.clear(lng)
-		await user.type(lng, "-46.6333")
+		// Busca o endereço no mapa (address = o que o usuário digitou)
+		await user.type(
+			screen.getByTestId("gym-location-address"),
+			"Av. Paulista, 1578",
+		)
+		await user.click(screen.getByTestId("gym-location-search"))
+
+		// Aguarda geocodificação completar (lat/lng ficam visíveis)
+		await waitFor(() => {
+			expect(screen.getByTestId("gym-location-lat-display")).toHaveTextContent(
+				"-23.5505",
+			)
+		})
 
 		await user.click(screen.getByTestId("gym-form-submit"))
 
@@ -60,6 +99,8 @@ describe("AdminNovaAcademiaPage", () => {
 				cnpj: "12345678000100",
 				description: "Top gym",
 				phone: "11999999999",
+				// address = o que o usuário digitou (handleSearch não altera o campo address)
+				address: "Av. Paulista, 1578",
 				latitude: -23.5505,
 				longitude: -46.6333,
 			})
