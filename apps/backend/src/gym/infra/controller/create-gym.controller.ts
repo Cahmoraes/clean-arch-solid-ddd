@@ -29,6 +29,9 @@ const createGymSchema = z.object({
 	longitude: z
 		.number()
 		.meta({ description: "Gym longitude", example: -46.6333 }),
+	address: z
+		.string()
+		.meta({ description: "Gym address", example: "Rua Test, 123" }),
 })
 
 export type CreateGymPayload = z.infer<typeof createGymSchema>

@@ -37,6 +37,7 @@ describe("CreateGymUseCase", () => {
 			longitude: -46.633308,
 			phone: "11971457899",
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}
 		const result = await sut.execute(input)
 		const gymId = result.forceSuccess().value.gymId
@@ -59,6 +60,7 @@ describe("CreateGymUseCase", () => {
 			longitude: -46.633308,
 			phone: "11971457899",
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBe(true)
@@ -72,6 +74,7 @@ describe("CreateGymUseCase", () => {
 			longitude: -46.633308,
 			phone: "11971457899",
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBe(true)
@@ -85,6 +88,7 @@ describe("CreateGymUseCase", () => {
 			longitude: 999,
 			phone: "11971457899",
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBe(true)
@@ -99,6 +103,7 @@ describe("CreateGymUseCase", () => {
 			longitude: -23.55052,
 			phone: "11971457899",
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBe(true)
@@ -113,6 +118,7 @@ describe("CreateGymUseCase", () => {
 			longitude: -46.633308,
 			phone: "invalid-phone",
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBe(true)
@@ -126,6 +132,7 @@ describe("CreateGymUseCase", () => {
 			longitude: -46.633308,
 			phone: "invalid-phone",
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBe(true)
@@ -139,6 +146,7 @@ describe("CreateGymUseCase", () => {
 			longitude: -46.633308,
 			phone: "111111111",
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}
 		await sut.execute(input)
 		const result = await sut.execute(input)

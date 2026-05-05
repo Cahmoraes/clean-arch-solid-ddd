@@ -9,6 +9,7 @@ function makeGym(overrides?: Partial<Parameters<typeof Gym.create>[0]>): Gym {
 		cnpj: "11.222.333/0001-81",
 		latitude: 0,
 		longitude: 0,
+		address: "Rua Test, 123",
 		...overrides,
 	}).forceSuccess().value
 }

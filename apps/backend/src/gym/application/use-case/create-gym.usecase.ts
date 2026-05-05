@@ -20,6 +20,7 @@ export interface CreateGymUseCaseInput {
 	phone?: string
 	latitude: number
 	longitude: number
+	address: string
 }
 
 export interface CreateGymResponse {

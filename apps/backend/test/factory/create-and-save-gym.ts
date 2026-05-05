@@ -9,6 +9,7 @@ export interface CreateAndSaveGym {
 	title?: string
 	description?: string
 	phone?: string
+	address?: string
 }
 
 export async function createAndSaveGym(props: CreateAndSaveGym) {
@@ -19,6 +20,7 @@ export async function createAndSaveGym(props: CreateAndSaveGym) {
 		latitude: props.latitude ?? 0,
 		longitude: props.longitude ?? 0,
 		cnpj: "11.222.333/0001-81",
+		address: props.address ?? "Rua Test, 123",
 		...props,
 	}).forceSuccess().value
 	await props.gymRepository.save(gym)

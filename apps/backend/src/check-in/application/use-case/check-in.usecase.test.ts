@@ -164,6 +164,7 @@ describe("CheckInUseCase", () => {
 			latitude,
 			longitude,
 			cnpj: "11.222.333/0001-81",
+			address: "Rua Test, 123",
 		}).forceSuccess().value
 		await gymRepository.save(gym)
 		return gymRepository.gyms.toArray()[0]
