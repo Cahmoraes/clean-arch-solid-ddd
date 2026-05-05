@@ -124,12 +124,17 @@ export class CreateGymUseCase {
 Interface `GymRepository` em `application/repository/gym-repository.ts`:
 
 ```typescript
+export interface FetchGymsInput {
+  title?: string
+  page: number
+}
+
 export interface GymRepository {
   save(gym: Gym): Promise<SaveGymResult>          // { id: string }
-  gymOfTitle(title: string, page: number): Promise<Gym[]>
   gymOfId(id: string): Promise<Gym | null>
   fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]>
   gymOfCNPJ(cnpj: string): Promise<Gym | null>
+  fetchGyms(input: FetchGymsInput): Promise<Gym[]>
   withTransaction<TX extends object>(object: TX): GymRepository
 }
 ```

@@ -5,6 +5,7 @@ import {
 import type { RedisAdapter } from "@/shared/infra/database/redis/redis-adapter"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { StatusTypes } from "@/user/domain/value-object/status"
 
 import type {
 	FetchUsersUseCase,
@@ -46,6 +47,7 @@ describe("FetchUsersUseCase", () => {
 		expect(userData.createdAt).toBeDefined()
 		expect(userData.name).toBeDefined()
 		expect(userData.email).toBeDefined()
+		expect(userData.status).toBeDefined()
 	})
 
 	test("Deve buscar 20 usuários cadastrados na segunda página", async () => {
@@ -70,11 +72,32 @@ describe("FetchUsersUseCase", () => {
 		expect(result.pagination.total).toBe(totalItems)
 	})
 
+	test("Deve retornar o campo status no output de cada usuário", async () => {
+		userDAO.createFakeUser({
+			id: "user-activated",
+			status: StatusTypes.ACTIVATED,
+		})
+		userDAO.createFakeUser({
+			id: "user-suspended",
+			status: StatusTypes.SUSPENDED,
+		})
+		const input: FetchUsersUseCaseInput = {
+			page: 1,
+			limit: 10,
+		}
+		const result = await sut.execute(input)
+		const activatedUser = result.data.find((u) => u.id === "user-activated")
+		const suspendedUser = result.data.find((u) => u.id === "user-suspended")
+		expect(activatedUser?.status).toBe(StatusTypes.ACTIVATED)
+		expect(suspendedUser?.status).toBe(StatusTypes.SUSPENDED)
+	})
+
 	test("Deve retornar uma lista contendo apenas um usuário", async () => {
 		const totalItems = 1
 		const fakeUser: CreateUserInput = {
 			id: "any_id",
 			role: "ADMIN",
+			status: StatusTypes.ACTIVATED,
 			createdAt: "2021-08-01T00:00:00.000Z",
 			name: "any_name",
 			email: "any_email",

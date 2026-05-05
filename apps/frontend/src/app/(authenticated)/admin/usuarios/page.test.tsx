@@ -3,7 +3,7 @@ import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, test } from "vitest"
 import { server } from "@/test/msw/server"
 import AdminUsersPage from "./page"
 
@@ -30,11 +30,13 @@ function userFixture(id: string, idx: number) {
 		name: `User ${idx}`,
 		email: `user${idx}@example.com`,
 		role: idx % 2 === 0 ? "ADMIN" : "MEMBER",
+		status: idx % 2 === 0 ? "activated" : "suspended",
+		createdAt: "2024-01-01T00:00:00.000Z",
 	}
 }
 
 describe("AdminUsersPage", () => {
-	it("exibe Skeleton durante o carregamento e depois lista", async () => {
+	test("exibe Skeleton durante o carregamento e depois lista", async () => {
 		let resolveResponse: () => void = () => {}
 		const responseGate = new Promise<void>((resolve) => {
 			resolveResponse = resolve
@@ -63,7 +65,7 @@ describe("AdminUsersPage", () => {
 		expect(screen.getByText("user1@example.com")).toBeInTheDocument()
 	})
 
-	it("exibe EmptyState quando lista está vazia", async () => {
+	test("exibe EmptyState quando lista está vazia", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users`, () =>
 				HttpResponse.json(
@@ -82,7 +84,7 @@ describe("AdminUsersPage", () => {
 		)
 	})
 
-	it("navega entre páginas via paginação", async () => {
+	test("navega entre páginas via paginação", async () => {
 		const requestedPages: string[] = []
 		server.use(
 			http.get(`${apiBaseUrl}/users`, ({ request }) => {
@@ -118,7 +120,7 @@ describe("AdminUsersPage", () => {
 		await waitFor(() => expect(requestedPages).toContain("3"))
 	})
 
-	it("exibe mensagem de erro amigável em falha de rede", async () => {
+	test("exibe mensagem de erro amigável em falha de rede", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users`, () =>
 				HttpResponse.json({ message: "boom" }, { status: 500 }),

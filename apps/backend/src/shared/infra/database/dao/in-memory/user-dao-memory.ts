@@ -9,12 +9,17 @@ import type {
 	UserDAO,
 } from "@/user/application/persistence/dao/user-dao"
 import type { RoleTypes } from "@/user/domain/value-object/role"
+import {
+	type StatusTypes,
+	StatusTypes as UserStatusTypes,
+} from "@/user/domain/value-object/status"
 
 export interface CreateUserInput {
 	id?: string
 	email?: string
 	name?: string
 	role?: RoleTypes
+	status?: StatusTypes
 	createdAt?: string
 }
 
@@ -36,6 +41,10 @@ export class UserDAOMemory implements UserDAO {
 		const fakeUser = {
 			id: faker.string.uuid(),
 			role: faker.helpers.arrayElement(["ADMIN", "MEMBER"]),
+			status: faker.helpers.arrayElement([
+				UserStatusTypes.ACTIVATED,
+				UserStatusTypes.SUSPENDED,
+			]),
 			createdAt: faker.date.recent().toISOString(),
 			name: faker.person.fullName(),
 			email: faker.internet.email(),

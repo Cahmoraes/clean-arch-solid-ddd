@@ -1,4 +1,5 @@
 import type { RoleTypes } from "@/user/domain/value-object/role"
+import type { StatusTypes } from "@/user/domain/value-object/status"
 
 export interface FetchUsersInput {
 	page: number
@@ -8,6 +9,7 @@ export interface FetchUsersInput {
 export interface FetchUsersData {
 	id: string
 	role: RoleTypes
+	status: StatusTypes
 	createdAt: string
 	name: string
 	email: string

@@ -135,6 +135,17 @@ export class RedisAdapter implements CacheDB {
 		await this.client.del(key)
 	}
 
+	public async deleteByPattern(pattern: string): Promise<void> {
+		if (this.useFallback) {
+			await this.cacheMemory.deleteByPattern(pattern)
+			return
+		}
+		const keys = await this.client.keys(pattern)
+		if (keys.length > 0) {
+			await this.client.del(keys)
+		}
+	}
+
 	public async clear(): Promise<void> {
 		if (this.useFallback) {
 			await this.cacheMemory.clear()

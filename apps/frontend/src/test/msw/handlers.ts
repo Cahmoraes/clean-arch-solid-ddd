@@ -11,6 +11,9 @@ export const handlers = [
 	http.patch(endpoint("/users/activate"), () =>
 		HttpResponse.json({}, { status: 204 }),
 	),
+	http.patch(endpoint("/users/suspend"), () =>
+		HttpResponse.json({}, { status: 200 }),
+	),
 	http.post(endpoint("/sessions"), () =>
 		HttpResponse.json(
 			{ token: "stub-token", refreshToken: "stub-refresh" },

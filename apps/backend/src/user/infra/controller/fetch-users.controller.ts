@@ -81,6 +81,28 @@ const errorResponseSchema = z.object({
 	message: z.string().meta({ description: "Error message" }),
 })
 
+const userItemSchema = z.object({
+	id: z.uuid().meta({ description: "User ID" }),
+	name: z.string().meta({ description: "User full name" }),
+	email: z.email().meta({ description: "User email" }),
+	role: z.enum(["ADMIN", "MEMBER"]).meta({ description: "User role" }),
+	status: z
+		.enum(["activated", "suspended"])
+		.meta({ description: "User status" }),
+	createdAt: z.string().meta({ description: "User creation date" }),
+})
+
+const fetchUsersResponseSchema = z.object({
+	users: z.array(userItemSchema).meta({ description: "List of users" }),
+	pagination: z
+		.object({
+			total: z.number().meta({ description: "Total number of users" }),
+			page: z.number().meta({ description: "Current page" }),
+			limit: z.number().meta({ description: "Users per page" }),
+		})
+		.meta({ description: "Pagination metadata" }),
+})
+
 function makeFetchUsersSwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
 		tags: ["users"],
@@ -91,6 +113,7 @@ function makeFetchUsersSwaggerSchema(): Schema {
 		responses: {
 			200: {
 				description: "Users list retrieved successfully",
+				schema: fetchUsersResponseSchema,
 			},
 			400: { description: "Bad Request", schema: errorResponseSchema },
 			401: { description: "Unauthorized" },

@@ -18,6 +18,7 @@ import {
 	type AdminUser,
 	useUsers,
 } from "@/features/admin/api/use-users"
+import { UserDetailModal } from "@/features/admin/components/user-detail-modal"
 import { UserRow } from "@/features/admin/components/user-row"
 import type { ApiError } from "@/lib/errors"
 
@@ -137,14 +138,21 @@ interface UsersListProps {
 	page: number
 	totalPages: number
 	onPageChange: (target: number) => void
+	onSelect: (user: AdminUser) => void
 }
 
-function UsersList({ users, page, totalPages, onPageChange }: UsersListProps) {
+function UsersList({
+	users,
+	page,
+	totalPages,
+	onPageChange,
+	onSelect,
+}: UsersListProps) {
 	return (
 		<>
 			<ul data-testid="admin-users-list" className="flex flex-col gap-2">
 				{users.map((user) => (
-					<UserRow key={user.id} user={user} />
+					<UserRow key={user.id} user={user} onSelect={onSelect} />
 				))}
 			</ul>
 			{totalPages > 1 ? (
@@ -166,6 +174,7 @@ interface UsersContentProps {
 	page: number
 	totalPages: number
 	onPageChange: (target: number) => void
+	onSelect: (user: AdminUser) => void
 }
 
 function UsersContent({
@@ -176,6 +185,7 @@ function UsersContent({
 	page,
 	totalPages,
 	onPageChange,
+	onSelect,
 }: UsersContentProps) {
 	if (isLoading) return <LoadingState />
 	if (isError) return <ErrorState error={error} />
@@ -187,12 +197,14 @@ function UsersContent({
 			page={page}
 			totalPages={totalPages}
 			onPageChange={onPageChange}
+			onSelect={onSelect}
 		/>
 	)
 }
 
 export default function AdminUsersPage() {
 	const [page, setPage] = useState(1)
+	const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
 	const limit = ADMIN_USERS_DEFAULT_LIMIT
 
 	const { data, isLoading, isError, error, isFetching } = useUsers({
@@ -204,9 +216,24 @@ export default function AdminUsersPage() {
 		if (!data) return 0
 		return Math.max(1, Math.ceil(data.pagination.total / data.pagination.limit))
 	}, [data])
+	const activeSelectedUser = useMemo(() => {
+		if (!selectedUser) return null
+		return (
+			data?.users.find((user) => user.id === selectedUser.id) ?? selectedUser
+		)
+	}, [data?.users, selectedUser])
 
 	function handlePageChange(target: number) {
 		setPage((current) => clampPage(target, Math.max(totalPages, current)))
+		setSelectedUser(null)
+	}
+
+	function handleUserSelect(user: AdminUser) {
+		setSelectedUser(user)
+	}
+
+	function handleModalClose() {
+		setSelectedUser(null)
 	}
 
 	return (
@@ -232,7 +259,16 @@ export default function AdminUsersPage() {
 				page={page}
 				totalPages={totalPages}
 				onPageChange={handlePageChange}
+				onSelect={handleUserSelect}
 			/>
+
+			{activeSelectedUser ? (
+				<UserDetailModal
+					user={activeSelectedUser}
+					open={activeSelectedUser !== null}
+					onClose={handleModalClose}
+				/>
+			) : null}
 		</section>
 	)
 }

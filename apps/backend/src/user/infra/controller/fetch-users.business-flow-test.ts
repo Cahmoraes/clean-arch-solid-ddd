@@ -7,6 +7,7 @@ import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-me
 import { container } from "@/shared/infra/ioc/container"
 import { AUTH_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
+import { StatusTypes } from "@/user/domain/value-object/status"
 import { UserRoutes } from "./routes/user-routes"
 
 describe("Buscar Usuários", () => {
@@ -53,6 +54,7 @@ describe("Buscar Usuários", () => {
 			name: "any_name",
 			email: "any_email",
 			id: fakeId,
+			status: StatusTypes.SUSPENDED,
 		})
 		userDAO.bulkCreateFakeUsers(19)
 		const response = await request(fastifyServer.server)
@@ -71,6 +73,7 @@ describe("Buscar Usuários", () => {
 			total: 20,
 		})
 		expect(response.body.users[0].id).toBe(fakeId)
+		expect(response.body.users[0].status).toBe(StatusTypes.SUSPENDED)
 		expect(response.status).toBe(200)
 	})
 

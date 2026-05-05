@@ -47,6 +47,7 @@ export class ActivateUserController extends BaseController {
 			{
 				callback: this.callback,
 				isProtected: true,
+				onlyAdmin: true,
 				rateLimit: {
 					max: RATE_LIMIT_CONFIG.AUTH.MAX_MEMBER,
 					timeWindow: RATE_LIMIT_CONFIG.AUTH.TIME_WINDOW,

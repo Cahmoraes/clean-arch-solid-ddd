@@ -34,6 +34,7 @@ describe("Ativar Usuário", () => {
 			id: randomUUID(),
 			email: "auth@activate.test",
 			password: "any_password",
+			role: "ADMIN",
 		})
 		const result = await authenticate.execute({
 			email: "auth@activate.test",
@@ -94,5 +95,27 @@ describe("Ativar Usuário", () => {
 
 		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
 		expect(response.body).toHaveProperty("message")
+	})
+
+	test("Deve retornar 403 quando o solicitante não é admin", async () => {
+		await createAndSaveUser({
+			userRepository,
+			id: randomUUID(),
+			email: "member@activate.test",
+			password: "member_password",
+			role: "MEMBER",
+		})
+		const memberResult = await authenticate.execute({
+			email: "member@activate.test",
+			password: "member_password",
+		})
+		const memberToken = memberResult.force.success().value.token
+
+		const response = await request(fastifyServer.server)
+			.patch(UserRoutes.ACTIVATE_USER)
+			.set("Authorization", `Bearer ${memberToken}`)
+			.send({ userId: randomUUID() })
+
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
 	})
 })

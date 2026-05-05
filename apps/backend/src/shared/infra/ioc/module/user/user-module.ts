@@ -17,6 +17,7 @@ import { ChangePasswordController } from "@/user/infra/controller/change-passwor
 import { CreateUserController } from "@/user/infra/controller/create-user.controller"
 import { FetchUsersController } from "@/user/infra/controller/fetch-users.controller"
 import { MyProfileController } from "@/user/infra/controller/my-profile.controller"
+import { SuspendUserController } from "@/user/infra/controller/suspend-user.controller"
 import { UpdateUserProfileController } from "@/user/infra/controller/update-user-profile.controller"
 import { UserMetricsController } from "@/user/infra/controller/user-metrics.controller"
 import { UserProfileController } from "@/user/infra/controller/user-profile.controller"
@@ -49,6 +50,7 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
 	bind(USER_TYPES.UseCases.ActivateUser).to(ActiveUserUseCase)
 	bind(USER_TYPES.Controllers.ActivateUser).to(ActivateUserController)
+	bind(USER_TYPES.Controllers.SuspendUser).to(SuspendUserController)
 	bind(USER_TYPES.UseCases.DeleteUser).to(DeleteUserUseCase)
 	bind(SQLiteUserRepository).toSelf()
 })

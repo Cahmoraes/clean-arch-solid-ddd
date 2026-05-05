@@ -1,8 +1,10 @@
+import type { KeyboardEvent } from "react"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { cn } from "@/lib/cn"
 
 export interface UserRowProps {
 	user: AdminUser
+	onSelect?: (user: AdminUser) => void
 	className?: string
 }
 
@@ -12,16 +14,46 @@ function roleLabel(role: string): string {
 	return role
 }
 
-/**
- * UserRow — exibe os dados de um usuário na listagem admin.
- * Estilo monocromático, container radius 12px, sem sombras (DESIGN.md).
- */
-export function UserRow({ user, className }: UserRowProps) {
+function statusLabel(status: string): string {
+	if (status === "activated") return "Ativo"
+	if (status === "suspended") return "Inativo"
+	return status
+}
+
+function statusBadgeClassName(status: string): string {
+	if (status === "activated") {
+		return "border-green-200 bg-green-50 text-green-700"
+	}
+	if (status === "suspended") {
+		return "border-red-200 bg-red-50 text-red-700"
+	}
+	return "border-light-gray bg-pure-white text-mid-gray"
+}
+
+export function UserRow({ user, onSelect, className }: UserRowProps) {
+	const isInteractive = typeof onSelect === "function"
+
+	function handleSelect() {
+		onSelect?.(user)
+	}
+
+	function handleKeyDown(event: KeyboardEvent<HTMLLIElement>) {
+		if (!isInteractive) return
+		if (event.key !== "Enter" && event.key !== " ") return
+		event.preventDefault()
+		handleSelect()
+	}
+
 	return (
 		<li
 			data-testid={`user-row-${user.id}`}
+			onClick={isInteractive ? handleSelect : undefined}
+			onKeyDown={isInteractive ? handleKeyDown : undefined}
+			role={isInteractive ? "button" : undefined}
+			tabIndex={isInteractive ? 0 : undefined}
 			className={cn(
 				"flex flex-col gap-1 rounded-[12px] border border-light-gray bg-pure-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between",
+				isInteractive && "cursor-pointer",
 				className,
 			)}
 		>
@@ -29,12 +61,23 @@ export function UserRow({ user, className }: UserRowProps) {
 				<span className="font-medium text-near-black">{user.name}</span>
 				<span className="text-sm text-stone">{user.email}</span>
 			</div>
-			<span
-				data-testid={`user-row-${user.id}-role`}
-				className="inline-flex w-fit items-center rounded-full border border-light-gray px-2 py-0.5 text-xs font-medium text-mid-gray"
-			>
-				{roleLabel(user.role)}
-			</span>
+			<div className="flex flex-wrap items-center gap-2">
+				<span
+					data-testid={`user-row-${user.id}-role`}
+					className="inline-flex w-fit items-center rounded-full border border-light-gray px-2 py-0.5 text-xs font-medium text-mid-gray"
+				>
+					{roleLabel(user.role)}
+				</span>
+				<span
+					data-testid={`user-row-${user.id}-status`}
+					className={cn(
+						"inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-xs font-medium",
+						statusBadgeClassName(user.status),
+					)}
+				>
+					{statusLabel(user.status)}
+				</span>
+			</div>
 		</li>
 	)
 }

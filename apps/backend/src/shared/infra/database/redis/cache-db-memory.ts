@@ -16,12 +16,22 @@ export class CacheDBMemory implements CacheDB {
 		return this._cache.get(key) ?? null
 	}
 
-	public async set<T>(key: string, value: T): Promise<void> {
+	public async set<T>(
+		key: string,
+		value: T,
+		_ttlSeconds?: number,
+	): Promise<void> {
 		this._cache.set(key, value)
 	}
 
 	public async delete(key: string): Promise<void> {
 		this._cache.del(key)
+	}
+
+	public async deleteByPattern(pattern: string): Promise<void> {
+		const regex = new RegExp(`^${pattern.replace(/\*/g, ".*")}$`)
+		const matchingKeys = this._cache.keys().filter((key) => regex.test(key))
+		this._cache.del(matchingKeys)
 	}
 
 	public async clear(): Promise<void> {

@@ -24,6 +24,7 @@ export class PrismaUserDAO implements UserDAO {
 				id: true,
 				name: true,
 				role: true,
+				status: true,
 				created_at: true,
 			},
 			take: input.limit,
@@ -36,6 +37,7 @@ export class PrismaUserDAO implements UserDAO {
 				email: userData.email,
 				name: userData.name,
 				role: userData.role,
+				status: userData.status,
 				createdAt: userData.created_at.toISOString(),
 			})),
 		}
