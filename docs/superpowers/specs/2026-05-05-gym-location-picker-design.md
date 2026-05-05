@@ -81,11 +81,12 @@ interface UseGymLocationPickerReturn {
   address: string
   latitude: number | null
   longitude: number | null
-  isSearching: boolean
+  isSearching: boolean        // geocoding direto (busca por endereço)
+  isReverseGeocoding: boolean // geocoding reverso (clique no mapa)
   searchError: string | null
   handleAddressChange: (value: string) => void
-  handleSearch: () => Promise<void>       // chama Nominatim
-  handleMapClick: (lat: number, lng: number) => void  // clique no mapa
+  handleSearch: () => Promise<void>                    // chama Nominatim forward
+  handleMapClick: (lat: number, lng: number) => void   // clique no mapa → reverse geocoding
 }
 ```
 
@@ -93,8 +94,10 @@ interface UseGymLocationPickerReturn {
 - `handleSearch()`: GET `https://nominatim.openstreetmap.org/search?q={address}&format=json&limit=1`  
   - Em sucesso: atualiza `latitude`, `longitude`; centraliza mapa no resultado  
   - Em falha (sem resultados): `searchError = "Endereço não encontrado"`
-- `handleMapClick()`: atualiza `latitude` e `longitude` com o ponto clicado
-- Campo `address` não é sincronizado de volta ao clicar no mapa (o texto digitado permanece)
+- `handleMapClick()`: atualiza `latitude` e `longitude` com o ponto clicado **e** chama geocodificação reversa
+  - GET `https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lng}&format=json`
+  - Em sucesso: atualiza `address` com o endereço retornado pelo Nominatim (ex.: `"Av. Paulista, 1578, São Paulo"`)
+  - Em falha: mantém `address` atual sem erro bloqueante (as coordenadas já foram atualizadas com sucesso)
 
 ### `GymLocationPicker` component
 
@@ -227,7 +230,7 @@ class Gym {
    c. Hook chama Nominatim → obtém lat/lng
    d. Mapa centraliza e exibe marcador
    e. Campos read-only atualizam com coordenadas
-   f. (opcional) Admin clica em outro ponto do mapa → marcador e coords atualizam
+   f. (opcional) Admin clica em outro ponto do mapa → marcador e coords atualizam, Nominatim reverse geocoding atualiza automaticamente o campo de endereço
 4. Preenche Descrição e Telefone (opcionais)
 5. Clica "Cadastrar academia"
 6. API recebe { title, cnpj, address, latitude, longitude, description?, phone? }
@@ -244,7 +247,7 @@ class Gym {
 | Endereço não encontrado no Nominatim | Exibe mensagem abaixo do input: "Endereço não encontrado. Tente ser mais específico." |
 | Falha de rede na geocodificação | Exibe: "Erro ao buscar endereço. Verifique sua conexão." |
 | Submit sem lat/lng definidos (mapa nunca buscado) | Validação Zod bloqueia: `latitude` é 0 (valor default), mas coordenada (0,0) é válida — solução: validação com `.refine()` que rejeita `{ latitude: 0, longitude: 0 }` (coordenada padrão nunca gerada por geocoding real), exigindo que o admin faça a busca antes de submeter.
-| Erro de conflito CNPJ (409) | Comportamento existente mantido |
+| Falha de rede na geocodificação reversa (clique no mapa) | Coordenadas atualizam normalmente; campo `address` mantém valor anterior sem exibir erro (a ação principal — mover o marcador — já foi concluída) |
 
 > **Nota sobre validação de coordenadas (0,0):** O schema usa `.refine()` para rejeitar `{ latitude: 0, longitude: 0 }` como inválido, exigindo que o admin realize a busca antes de submeter o formulário.
 
@@ -264,7 +267,7 @@ Leaflet requer import de CSS via `next.config.ts` ou import direto no componente
 ## Testes
 
 ### Unit tests (frontend)
-- `use-gym-location-picker.test.ts`: mock do `fetch` global para Nominatim; testa `handleSearch` (sucesso, sem resultados, erro de rede), `handleMapClick`
+- `use-gym-location-picker.test.ts`: mock do `fetch` global para Nominatim; testa `handleSearch` (sucesso, sem resultados, erro de rede), `handleMapClick` (sucesso de reverse geocoding, falha silenciosa de reverse geocoding)
 - `gym-location-picker.test.tsx`: renderização, interação do input, estado de loading durante busca
 
 ### Unit tests (backend)
@@ -278,7 +281,6 @@ Leaflet requer import de CSS via `next.config.ts` ou import direto no componente
 
 ## Fora do Escopo
 
-- Geocodificação reversa (clicar no mapa → preencher campo de endereço automaticamente)
 - Autocomplete de endereço enquanto digita
 - Exibição do mapa na página de detalhes da academia (`/academias/[id]`)
 - Uso do campo `address` na funcionalidade de check-in por proximidade
