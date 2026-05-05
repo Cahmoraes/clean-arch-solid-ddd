@@ -21,6 +21,7 @@ interface GymConstructor {
 	description?: string
 	phone: Phone
 	coordinate: Coordinate
+	address?: string
 }
 
 export type GymCreateProps = Omit<
@@ -33,6 +34,7 @@ export type GymCreateProps = Omit<
 	latitude: number
 	longitude: number
 	cnpj: string
+	address: string
 }
 
 export type GymRestoreProps = Omit<
@@ -45,6 +47,7 @@ export type GymRestoreProps = Omit<
 	latitude: number
 	longitude: number
 	cnpj: string
+	address?: string
 }
 
 export class Gym {
@@ -54,6 +57,7 @@ export class Gym {
 	private readonly _phone?: Phone
 	private readonly _coordinate: Coordinate
 	private readonly _cnpj: CNPJ
+	private readonly _address?: string
 
 	private constructor(gymProps: GymConstructor) {
 		this._id = gymProps.id
@@ -62,6 +66,7 @@ export class Gym {
 		this._phone = gymProps.phone
 		this._coordinate = gymProps.coordinate
 		this._cnpj = gymProps.cnpj
+		this._address = gymProps.address
 	}
 
 	public static create(
@@ -134,5 +139,9 @@ export class Gym {
 
 	get cnpj(): string {
 		return this._cnpj.value
+	}
+
+	get address(): string | undefined {
+		return this._address
 	}
 }
