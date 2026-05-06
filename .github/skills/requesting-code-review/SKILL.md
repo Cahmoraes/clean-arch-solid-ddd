@@ -1,103 +1,103 @@
 ---
 name: requesting-code-review
-description: Use ao concluir tarefas, implementar recursos importantes ou antes de fazer merge para verificar se o trabalho atende aos requisitos
+description: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
 ---
 
-# Solicitando Revisão de Código
+# Requesting Code Review
 
-Despache um subagente revisor de código para capturar problemas antes que eles se agravem. O revisor recebe contexto precisamente elaborado para avaliação — nunca o histórico da sua sessão. Isso mantém o revisor focado no produto do trabalho, não no seu processo de pensamento, e preserva seu próprio contexto para o trabalho contínuo.
+Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
 
-**Princípio fundamental:** Revise cedo, revise com frequência.
+**Core principle:** Review early, review often.
 
-## Quando Solicitar Revisão
+## When to Request Review
 
-**Obrigatório:**
-- Após cada tarefa em desenvolvimento orientado por subagentes
-- Após concluir um recurso importante
-- Antes de merge para o main
+**Mandatory:**
+- After each task in subagent-driven development
+- After completing major feature
+- Before merge to main
 
-**Opcional, mas valioso:**
-- Quando travado (perspectiva fresca)
-- Antes de refatorar (verificação da linha de base)
-- Após corrigir bug complexo
+**Optional but valuable:**
+- When stuck (fresh perspective)
+- Before refactoring (baseline check)
+- After fixing complex bug
 
-## Como Solicitar
+## How to Request
 
-**1. Obtenha os SHAs do git:**
+**1. Get git SHAs:**
 ```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # ou origin/main
+BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
 HEAD_SHA=$(git rev-parse HEAD)
 ```
 
-**2. Despache o subagente revisor de código:**
+**2. Dispatch code reviewer subagent:**
 
-Use a ferramenta Task com tipo `general-purpose`, preencha o template em `code-reviewer.md`
+Use Task tool with `general-purpose` type, fill template at `code-reviewer.md`
 
-**Marcadores de posição:**
-- `{DESCRIPTION}` — Breve resumo do que você construiu
-- `{PLAN_OR_REQUIREMENTS}` — O que deve fazer
-- `{BASE_SHA}` — Commit inicial
-- `{HEAD_SHA}` — Commit final
+**Placeholders:**
+- `{DESCRIPTION}` - Brief summary of what you built
+- `{PLAN_OR_REQUIREMENTS}` - What it should do
+- `{BASE_SHA}` - Starting commit
+- `{HEAD_SHA}` - Ending commit
 
-**3. Aja com base no feedback:**
-- Corrija problemas Críticos imediatamente
-- Corrija problemas Importantes antes de prosseguir
-- Anote problemas Menores para depois
-- Discorde se o revisor estiver errado (com raciocínio)
+**3. Act on feedback:**
+- Fix Critical issues immediately
+- Fix Important issues before proceeding
+- Note Minor issues for later
+- Push back if reviewer is wrong (with reasoning)
 
-## Exemplo
+## Example
 
 ```
-[Acabei de concluir a Tarefa 2: Adicionar função de verificação]
+[Just completed Task 2: Add verification function]
 
-Você: Vou solicitar revisão de código antes de prosseguir.
+You: Let me request code review before proceeding.
 
 BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
 HEAD_SHA=$(git rev-parse HEAD)
 
-[Despache subagente revisor de código]
-  DESCRIPTION: Adicionou verifyIndex() e repairIndex() com 4 tipos de problema
-  PLAN_OR_REQUIREMENTS: Tarefa 2 de docs/superpowers/plans/deployment-plan.md
+[Dispatch code reviewer subagent]
+  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
+  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md
   BASE_SHA: a7981ec
   HEAD_SHA: 3df7661
 
-[Subagente retorna]:
-  Pontos fortes: Arquitetura limpa, testes reais
-  Problemas:
-    Importante: Indicadores de progresso ausentes
-    Menor: Número mágico (100) para intervalo de relatório
-  Avaliação: Pronto para prosseguir
+[Subagent returns]:
+  Strengths: Clean architecture, real tests
+  Issues:
+    Important: Missing progress indicators
+    Minor: Magic number (100) for reporting interval
+  Assessment: Ready to proceed
 
-Você: [Corrija indicadores de progresso]
-[Continue para a Tarefa 3]
+You: [Fix progress indicators]
+[Continue to Task 3]
 ```
 
-## Integração com Workflows
+## Integration with Workflows
 
-**Desenvolvimento Orientado por Subagentes:**
-- Revise após CADA tarefa
-- Capture problemas antes que se agravem
-- Corrija antes de passar para a próxima tarefa
+**Subagent-Driven Development:**
+- Review after EACH task
+- Catch issues before they compound
+- Fix before moving to next task
 
-**Executando Planos:**
-- Revise após cada tarefa ou em checkpoints naturais
-- Obtenha feedback, aplique, continue
+**Executing Plans:**
+- Review after each task or at natural checkpoints
+- Get feedback, apply, continue
 
-**Desenvolvimento Ad-Hoc:**
-- Revise antes do merge
-- Revise quando travado
+**Ad-Hoc Development:**
+- Review before merge
+- Review when stuck
 
-## Sinais de Alerta
+## Red Flags
 
-**Nunca:**
-- Pule a revisão porque "é simples"
-- Ignore problemas Críticos
-- Prossiga com problemas Importantes não corrigidos
-- Discuta com feedback técnico válido
+**Never:**
+- Skip review because "it's simple"
+- Ignore Critical issues
+- Proceed with unfixed Important issues
+- Argue with valid technical feedback
 
-**Se o revisor estiver errado:**
-- Discorde com raciocínio técnico
-- Mostre código/testes que provam que funciona
-- Solicite esclarecimento
+**If reviewer wrong:**
+- Push back with technical reasoning
+- Show code/tests that prove it works
+- Request clarification
 
-Veja o template em: requesting-code-review/code-reviewer.md
+See template at: requesting-code-review/code-reviewer.md

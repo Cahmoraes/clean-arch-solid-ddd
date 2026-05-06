@@ -52,10 +52,10 @@ function LoginForm() {
 	return (
 		<section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-pure-black">
+				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Entrar
 				</h1>
-				<p className="text-sm text-stone">
+				<p className="text-sm text-muted-foreground">
 					Use suas credenciais para acessar a plataforma.
 				</p>
 			</header>
@@ -87,7 +87,7 @@ function LoginForm() {
 					<p
 						role="alert"
 						data-testid="login-submit-error"
-						className="rounded-[12px] border border-light-gray bg-snow px-4 py-3 text-sm text-near-black"
+						className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-foreground"
 					>
 						{submissionMessage}
 					</p>
@@ -98,11 +98,11 @@ function LoginForm() {
 				</Button>
 			</form>
 
-			<p className="text-sm text-stone">
+			<p className="text-sm text-muted-foreground">
 				Não tem conta?{" "}
 				<Link
 					href="/cadastro"
-					className="font-medium text-near-black underline underline-offset-4"
+					className="font-medium text-foreground underline underline-offset-4"
 				>
 					Crie agora
 				</Link>

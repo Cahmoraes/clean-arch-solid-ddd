@@ -16,26 +16,26 @@ describe("Button", () => {
 		expect(btn.className).toContain("rounded-full")
 	})
 
-	it("applies primary variant classes (black bg, white text)", () => {
+	it("applies primary variant classes (semantic primary bg and text)", () => {
 		render(<Button variant="primary">Primary</Button>)
 		const btn = screen.getByRole("button", { name: "Primary" })
-		expect(btn.className).toContain("bg-pure-black")
-		expect(btn.className).toContain("text-pure-white")
+		expect(btn.className).toContain("bg-primary")
+		expect(btn.className).toContain("text-primary-foreground")
 	})
 
-	it("applies secondary variant classes (light gray bg, near black text)", () => {
+	it("applies secondary variant classes (semantic secondary bg and text)", () => {
 		render(<Button variant="secondary">Secondary</Button>)
 		const btn = screen.getByRole("button", { name: "Secondary" })
-		expect(btn.className).toContain("bg-light-gray")
-		expect(btn.className).toContain("text-near-black")
+		expect(btn.className).toContain("bg-secondary")
+		expect(btn.className).toContain("text-secondary-foreground")
 	})
 
-	it("applies outline variant classes (white bg, dark text, light border)", () => {
+	it("applies outline variant classes (card surface, border, accent hover)", () => {
 		render(<Button variant="outline">Outline</Button>)
 		const btn = screen.getByRole("button", { name: "Outline" })
-		expect(btn.className).toContain("bg-pure-white")
-		expect(btn.className).toContain("text-button-text-dark")
-		expect(btn.className).toContain("border-border-light")
+		expect(btn.className).toContain("bg-card")
+		expect(btn.className).toContain("text-card-foreground")
+		expect(btn.className).toContain("border-border")
 	})
 
 	it("does not apply any shadow utility", () => {

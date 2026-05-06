@@ -27,7 +27,7 @@ function statusBadgeClassName(status: string): string {
 	if (status === "suspended") {
 		return "border-red-200 bg-red-50 text-red-700"
 	}
-	return "border-light-gray bg-pure-white text-mid-gray"
+	return "border-border bg-card text-muted-foreground"
 }
 
 export function UserRow({ user, onSelect, className }: UserRowProps) {
@@ -52,19 +52,19 @@ export function UserRow({ user, onSelect, className }: UserRowProps) {
 			role={isInteractive ? "button" : undefined}
 			tabIndex={isInteractive ? 0 : undefined}
 			className={cn(
-				"flex flex-col gap-1 rounded-[12px] border border-light-gray bg-pure-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between",
+				"flex flex-col gap-1 rounded-[12px] border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between",
 				isInteractive && "cursor-pointer",
 				className,
 			)}
 		>
 			<div className="flex flex-col gap-0.5">
-				<span className="font-medium text-near-black">{user.name}</span>
-				<span className="text-sm text-stone">{user.email}</span>
+				<span className="font-medium text-card-foreground">{user.name}</span>
+				<span className="text-sm text-muted-foreground">{user.email}</span>
 			</div>
 			<div className="flex flex-wrap items-center gap-2">
 				<span
 					data-testid={`user-row-${user.id}-role`}
-					className="inline-flex w-fit items-center rounded-full border border-light-gray px-2 py-0.5 text-xs font-medium text-mid-gray"
+					className="inline-flex w-fit items-center rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground"
 				>
 					{roleLabel(user.role)}
 				</span>

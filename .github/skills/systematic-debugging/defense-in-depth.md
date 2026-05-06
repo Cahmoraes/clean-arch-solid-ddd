@@ -1,122 +1,122 @@
-# Validação em Profundidade de Defesa
+# Defense-in-Depth Validation
 
-## Visão Geral
+## Overview
 
-Quando você corrige um bug causado por dados inválidos, adicionar validação em um lugar parece suficiente. Mas essa única verificação pode ser contornada por caminhos de código diferentes, refatoração ou mocks.
+When you fix a bug caused by invalid data, adding validation at one place feels sufficient. But that single check can be bypassed by different code paths, refactoring, or mocks.
 
-**Princípio fundamental:** Valide em CADA camada pela qual os dados passam. Torne o bug estruturalmente impossível.
+**Core principle:** Validate at EVERY layer data passes through. Make the bug structurally impossible.
 
-## Por Que Múltiplas Camadas
+## Why Multiple Layers
 
-Validação única: "Corrigimos o bug"
-Múltiplas camadas: "Tornamos o bug impossível"
+Single validation: "We fixed the bug"
+Multiple layers: "We made the bug impossible"
 
-Camadas diferentes capturam casos diferentes:
-- Validação de entrada captura a maioria dos bugs
-- Lógica de negócio captura casos extremos
-- Guards de ambiente evitam perigos específicos de contexto
-- Logging de debug ajuda quando outras camadas falham
+Different layers catch different cases:
+- Entry validation catches most bugs
+- Business logic catches edge cases
+- Environment guards prevent context-specific dangers
+- Debug logging helps when other layers fail
 
-## As Quatro Camadas
+## The Four Layers
 
-### Camada 1: Validação no Ponto de Entrada
-**Propósito:** Rejeitar entrada obviamente inválida na fronteira da API
+### Layer 1: Entry Point Validation
+**Purpose:** Reject obviously invalid input at API boundary
 
 ```typescript
 function createProject(name: string, workingDirectory: string) {
   if (!workingDirectory || workingDirectory.trim() === '') {
-    throw new Error('workingDirectory não pode estar vazio');
+    throw new Error('workingDirectory cannot be empty');
   }
   if (!existsSync(workingDirectory)) {
-    throw new Error(`workingDirectory não existe: ${workingDirectory}`);
+    throw new Error(`workingDirectory does not exist: ${workingDirectory}`);
   }
   if (!statSync(workingDirectory).isDirectory()) {
-    throw new Error(`workingDirectory não é um diretório: ${workingDirectory}`);
+    throw new Error(`workingDirectory is not a directory: ${workingDirectory}`);
   }
-  // ... prossiga
+  // ... proceed
 }
 ```
 
-### Camada 2: Validação da Lógica de Negócio
-**Propósito:** Garantir que os dados fazem sentido para esta operação
+### Layer 2: Business Logic Validation
+**Purpose:** Ensure data makes sense for this operation
 
 ```typescript
 function initializeWorkspace(projectDir: string, sessionId: string) {
   if (!projectDir) {
-    throw new Error('projectDir obrigatório para inicialização do workspace');
+    throw new Error('projectDir required for workspace initialization');
   }
-  // ... prossiga
+  // ... proceed
 }
 ```
 
-### Camada 3: Guards de Ambiente
-**Propósito:** Evitar operações perigosas em contextos específicos
+### Layer 3: Environment Guards
+**Purpose:** Prevent dangerous operations in specific contexts
 
 ```typescript
 async function gitInit(directory: string) {
-  // Em testes, recuse git init fora de diretórios temporários
+  // In tests, refuse git init outside temp directories
   if (process.env.NODE_ENV === 'test') {
     const normalized = normalize(resolve(directory));
     const tmpDir = normalize(resolve(tmpdir()));
 
     if (!normalized.startsWith(tmpDir)) {
       throw new Error(
-        `Recusando git init fora do diretório temp durante os testes: ${directory}`
+        `Refusing git init outside temp dir during tests: ${directory}`
       );
     }
   }
-  // ... prossiga
+  // ... proceed
 }
 ```
 
-### Camada 4: Instrumentação de Debug
-**Propósito:** Capturar contexto para análise forense
+### Layer 4: Debug Instrumentation
+**Purpose:** Capture context for forensics
 
 ```typescript
 async function gitInit(directory: string) {
   const stack = new Error().stack;
-  logger.debug('Prestes a fazer git init', {
+  logger.debug('About to git init', {
     directory,
     cwd: process.cwd(),
     stack,
   });
-  // ... prossiga
+  // ... proceed
 }
 ```
 
-## Aplicando o Padrão
+## Applying the Pattern
 
-Quando você encontra um bug:
+When you find a bug:
 
-1. **Rastreie o fluxo de dados** — Onde o valor ruim se origina? Onde é usado?
-2. **Mapeie todos os checkpoints** — Liste cada ponto pelo qual os dados passam
-3. **Adicione validação em cada camada** — Entrada, negócio, ambiente, debug
-4. **Teste cada camada** — Tente contornar a camada 1, verifique se a camada 2 captura
+1. **Trace the data flow** - Where does bad value originate? Where used?
+2. **Map all checkpoints** - List every point data passes through
+3. **Add validation at each layer** - Entry, business, environment, debug
+4. **Test each layer** - Try to bypass layer 1, verify layer 2 catches it
 
-## Exemplo da Sessão
+## Example from Session
 
-Bug: `projectDir` vazio causou `git init` no código-fonte
+Bug: Empty `projectDir` caused `git init` in source code
 
-**Fluxo de dados:**
-1. Configuração do teste → string vazia
+**Data flow:**
+1. Test setup → empty string
 2. `Project.create(name, '')`
 3. `WorkspaceManager.createWorkspace('')`
-4. `git init` executa em `process.cwd()`
+4. `git init` runs in `process.cwd()`
 
-**Quatro camadas adicionadas:**
-- Camada 1: `Project.create()` valida não vazio/existe/gravável
-- Camada 2: `WorkspaceManager` valida projectDir não vazio
-- Camada 3: `WorktreeManager` recusa git init fora de tmpdir em testes
-- Camada 4: Logging de stack trace antes de git init
+**Four layers added:**
+- Layer 1: `Project.create()` validates not empty/exists/writable
+- Layer 2: `WorkspaceManager` validates projectDir not empty
+- Layer 3: `WorktreeManager` refuses git init outside tmpdir in tests
+- Layer 4: Stack trace logging before git init
 
-**Resultado:** Todos os 1847 testes passaram, bug impossível de reproduzir
+**Result:** All 1847 tests passed, bug impossible to reproduce
 
-## Insight Principal
+## Key Insight
 
-Todas as quatro camadas foram necessárias. Durante os testes, cada camada capturou bugs que as outras perderam:
-- Caminhos de código diferentes contornaram a validação de entrada
-- Mocks contornaram as verificações de lógica de negócio
-- Casos extremos em plataformas diferentes precisaram de guards de ambiente
-- Logging de debug identificou mau uso estrutural
+All four layers were necessary. During testing, each layer caught bugs the others missed:
+- Different code paths bypassed entry validation
+- Mocks bypassed business logic checks
+- Edge cases on different platforms needed environment guards
+- Debug logging identified structural misuse
 
-**Não pare em um único ponto de validação.** Adicione verificações em cada camada.
+**Don't stop at one validation point.** Add checks at every layer.

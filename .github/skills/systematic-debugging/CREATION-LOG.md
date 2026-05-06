@@ -1,119 +1,119 @@
-# Log de Criação: Skill de Depuração Sistemática
+# Creation Log: Systematic Debugging Skill
 
-Exemplo de referência de extração, estruturação e blindagem de uma skill crítica.
+Reference example of extracting, structuring, and bulletproofing a critical skill.
 
-## Material de Origem
+## Source Material
 
-Framework de depuração extraído de `~/.claude/CLAUDE.md`:
-- Processo sistemático de 4 fases (Investigação → Análise de Padrão → Hipótese → Implementação)
-- Mandato central: SEMPRE encontrar a causa raiz, NUNCA corrija sintomas
-- Regras projetadas para resistir à pressão do tempo e racionalização
+Extracted debugging framework from `~/.claude/CLAUDE.md`:
+- 4-phase systematic process (Investigation → Pattern Analysis → Hypothesis → Implementation)
+- Core mandate: ALWAYS find root cause, NEVER fix symptoms
+- Rules designed to resist time pressure and rationalization
 
-## Decisões de Extração
+## Extraction Decisions
 
-**O que incluir:**
-- Framework completo de 4 fases com todas as regras
-- Proibições de atalhos ("NUNCA corrija o sintoma", "PARE e reanalize")
-- Linguagem resistente à pressão ("mesmo que seja mais rápido", "mesmo que eu pareça estar com pressa")
-- Passos concretos para cada fase
+**What to include:**
+- Complete 4-phase framework with all rules
+- Anti-shortcuts ("NEVER fix symptom", "STOP and re-analyze")
+- Pressure-resistant language ("even if faster", "even if I seem in a hurry")
+- Concrete steps for each phase
 
-**O que deixar de fora:**
-- Contexto específico do projeto
-- Variações repetitivas da mesma regra
-- Explicações narrativas (condensadas em princípios)
+**What to leave out:**
+- Project-specific context
+- Repetitive variations of same rule
+- Narrative explanations (condensed to principles)
 
-## Estrutura Seguindo skill-creation/SKILL.md
+## Structure Following skill-creation/SKILL.md
 
-1. **when_to_use rico** — Incluiu sintomas e anti-padrões
-2. **Tipo: técnica** — Processo concreto com passos
-3. **Palavras-chave** — "causa raiz", "sintoma", "solução paliativa", "depuração", "investigação"
-4. **Fluxograma** — Ponto de decisão para "correção falhou" → reanalisar vs. adicionar mais correções
-5. **Detalhamento fase a fase** — Formato de lista verificável
-6. **Seção de anti-padrões** — O que NÃO fazer (crítico para esta skill)
+1. **Rich when_to_use** - Included symptoms and anti-patterns
+2. **Type: technique** - Concrete process with steps
+3. **Keywords** - "root cause", "symptom", "workaround", "debugging", "investigation"
+4. **Flowchart** - Decision point for "fix failed" → re-analyze vs add more fixes
+5. **Phase-by-phase breakdown** - Scannable checklist format
+6. **Anti-patterns section** - What NOT to do (critical for this skill)
 
-## Elementos de Blindagem
+## Bulletproofing Elements
 
-Framework projetado para resistir à racionalização sob pressão:
+Framework designed to resist rationalization under pressure:
 
-### Escolhas de Linguagem
-- "SEMPRE" / "NUNCA" (não "deveria" / "tente")
-- "mesmo que seja mais rápido" / "mesmo que eu pareça estar com pressa"
-- "PARE e reanalize" (pausa explícita)
-- "Não passe por cima" (captura o comportamento real)
+### Language Choices
+- "ALWAYS" / "NEVER" (not "should" / "try to")
+- "even if faster" / "even if I seem in a hurry"
+- "STOP and re-analyze" (explicit pause)
+- "Don't skip past" (catches the actual behavior)
 
-### Defesas Estruturais
-- **Fase 1 obrigatória** — Não é possível pular para a implementação
-- **Regra de hipótese única** — Força o pensamento, evita correções aleatórias
-- **Modo de falha explícito** — "SE sua primeira correção não funcionar" com ação obrigatória
-- **Seção de anti-padrões** — Mostra exatamente como os atalhos parecem
+### Structural Defenses
+- **Phase 1 required** - Can't skip to implementation
+- **Single hypothesis rule** - Forces thinking, prevents shotgun fixes
+- **Explicit failure mode** - "IF your first fix doesn't work" with mandatory action
+- **Anti-patterns section** - Shows exactly what shortcuts look like
 
-### Redundância
-- Mandato de causa raiz em visão geral + when_to_use + Fase 1 + regras de implementação
-- "NUNCA corrija o sintoma" aparece 4 vezes em contextos diferentes
-- Cada fase tem orientação explícita "não pule"
+### Redundancy
+- Root cause mandate in overview + when_to_use + Phase 1 + implementation rules
+- "NEVER fix symptom" appears 4 times in different contexts
+- Each phase has explicit "don't skip" guidance
 
-## Abordagem de Testes
+## Testing Approach
 
-Criados 4 testes de validação seguindo skills/meta/testing-skills-with-subagents:
+Created 4 validation tests following skills/meta/testing-skills-with-subagents:
 
-### Teste 1: Contexto Acadêmico (Sem Pressão)
-- Bug simples, sem pressão de tempo
-- **Resultado:** Conformidade perfeita, investigação completa
+### Test 1: Academic Context (No Pressure)
+- Simple bug, no time pressure
+- **Result:** Perfect compliance, complete investigation
 
-### Teste 2: Pressão de Tempo + Correção Rápida Óbvia
-- Usuário "com pressa", correção de sintoma parece fácil
-- **Resultado:** Resistiu ao atalho, seguiu o processo completo, encontrou a causa raiz real
+### Test 2: Time Pressure + Obvious Quick Fix
+- User "in a hurry", symptom fix looks easy
+- **Result:** Resisted shortcut, followed full process, found real root cause
 
-### Teste 3: Sistema Complexo + Incerteza
-- Falha em múltiplas camadas, não está claro se consegue encontrar a causa raiz
-- **Resultado:** Investigação sistemática, rastreou por todas as camadas, encontrou a fonte
+### Test 3: Complex System + Uncertainty
+- Multi-layer failure, unclear if can find root cause
+- **Result:** Systematic investigation, traced through all layers, found source
 
-### Teste 4: Primeira Correção Falhou
-- Hipótese não funciona, tentação de adicionar mais correções
-- **Resultado:** Parou, reanalisou, formou nova hipótese (sem atirar no escuro)
+### Test 4: Failed First Fix
+- Hypothesis doesn't work, temptation to add more fixes
+- **Result:** Stopped, re-analyzed, formed new hypothesis (no shotgun)
 
-**Todos os testes passaram.** Sem racionalizações encontradas.
+**All tests passed.** No rationalizations found.
 
-## Iterações
+## Iterations
 
-### Versão Inicial
-- Framework completo de 4 fases
-- Seção de anti-padrões
-- Fluxograma para decisão de "correção falhou"
+### Initial Version
+- Complete 4-phase framework
+- Anti-patterns section
+- Flowchart for "fix failed" decision
 
-### Aprimoramento 1: Referência a TDD
-- Adicionado link para skills/testing/test-driven-development
-- Nota explicando que o "código mais simples" do TDD ≠ "causa raiz" da depuração
-- Evita confusão entre as metodologias
+### Enhancement 1: TDD Reference
+- Added link to skills/testing/test-driven-development
+- Note explaining TDD's "simplest code" ≠ debugging's "root cause"
+- Prevents confusion between methodologies
 
-## Resultado Final
+## Final Outcome
 
-Skill blindada que:
-- ✅ Manda claramente investigar a causa raiz
-- ✅ Resiste à racionalização sob pressão de tempo
-- ✅ Fornece passos concretos para cada fase
-- ✅ Mostra anti-padrões explicitamente
-- ✅ Testada sob múltiplos cenários de pressão
-- ✅ Esclarece relação com TDD
-- ✅ Pronta para uso
+Bulletproof skill that:
+- ✅ Clearly mandates root cause investigation
+- ✅ Resists time pressure rationalization
+- ✅ Provides concrete steps for each phase
+- ✅ Shows anti-patterns explicitly
+- ✅ Tested under multiple pressure scenarios
+- ✅ Clarifies relationship to TDD
+- ✅ Ready for use
 
-## Insight Principal
+## Key Insight
 
-**Blindagem mais importante:** Seção de anti-padrões mostrando exatamente os atalhos que parecem justificados no momento. Quando o Claude pensa "vou apenas adicionar essa correção rápida", ver exatamente esse padrão listado como errado cria fricção cognitiva.
+**Most important bulletproofing:** Anti-patterns section showing exact shortcuts that feel justified in the moment. When Claude thinks "I'll just add this one quick fix", seeing that exact pattern listed as wrong creates cognitive friction.
 
-## Exemplo de Uso
+## Usage Example
 
-Ao encontrar um bug:
-1. Carregue a skill: skills/debugging/systematic-debugging
-2. Leia a visão geral (10 seg) — lembrado do mandato
-3. Siga a lista de verificação da Fase 1 — investigação forçada
-4. Se tentado a pular — veja o anti-padrão, pare
-5. Conclua todas as fases — causa raiz encontrada
+When encountering a bug:
+1. Load skill: skills/debugging/systematic-debugging
+2. Read overview (10 sec) - reminded of mandate
+3. Follow Phase 1 checklist - forced investigation
+4. If tempted to skip - see anti-pattern, stop
+5. Complete all phases - root cause found
 
-**Investimento de tempo:** 5-10 minutos
-**Tempo economizado:** Horas de "whack-a-mole" de sintomas
+**Time investment:** 5-10 minutes
+**Time saved:** Hours of symptom-whack-a-mole
 
 ---
 
-*Criado: 2025-10-03*
-*Propósito: Exemplo de referência para extração de skill e blindagem*
+*Created: 2025-10-03*
+*Purpose: Reference example for skill extraction and bulletproofing*

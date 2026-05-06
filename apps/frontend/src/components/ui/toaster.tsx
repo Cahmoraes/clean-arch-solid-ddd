@@ -12,13 +12,13 @@ export function Toaster(props: ToasterProps) {
 			toastOptions={{
 				classNames: {
 					toast:
-						"rounded-[12px] border border-light-gray bg-pure-white text-near-black shadow-none",
-					title: "text-near-black font-medium",
-					description: "text-stone",
+						"rounded-[12px] border border-border bg-card text-card-foreground shadow-none",
+					title: "text-card-foreground font-medium",
+					description: "text-muted-foreground",
 					actionButton:
-						"rounded-full bg-pure-black text-pure-white px-3 py-1 text-sm",
+						"rounded-full bg-primary text-primary-foreground px-3 py-1 text-sm",
 					cancelButton:
-						"rounded-full bg-light-gray text-near-black px-3 py-1 text-sm",
+						"rounded-full bg-secondary text-secondary-foreground px-3 py-1 text-sm",
 				},
 			}}
 			{...props}

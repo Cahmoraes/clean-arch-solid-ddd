@@ -22,20 +22,20 @@ export function CheckInItem({ checkIn, action }: CheckInItemProps) {
 	return (
 		<li
 			data-testid={`checkin-item-${checkIn.id}`}
-			className="flex flex-col gap-3 rounded-[12px] border border-light-gray bg-pure-white p-4 sm:flex-row sm:items-center sm:justify-between"
+			className="flex flex-col gap-3 rounded-[12px] border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
 		>
 			<div className="flex flex-col gap-1">
-				<p className="text-sm font-medium text-near-black">
+				<p className="text-sm font-medium text-card-foreground">
 					{checkIn.gymTitle ?? `Academia ${checkIn.gymId}`}
 				</p>
-				<p className="text-xs text-mid-gray">
+				<p className="text-xs text-muted-foreground">
 					Realizado em {formatDate(checkIn.createdAt)}
 				</p>
 			</div>
 			<div className="flex items-center gap-3">
 				<span
 					data-testid={`checkin-status-${checkIn.id}`}
-					className="inline-flex items-center gap-1 text-xs text-stone"
+					className="inline-flex items-center gap-1 text-xs text-muted-foreground"
 				>
 					{validated ? (
 						<>

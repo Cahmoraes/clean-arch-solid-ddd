@@ -1,189 +1,189 @@
-# Testando Documentação de Skills do CLAUDE.md
+# Testing CLAUDE.md Skills Documentation
 
-Testando diferentes variantes de documentação para encontrar o que realmente faz agentes descobrirem e usarem skills sob pressão.
+Testing different documentation variants to find what actually makes agents discover and use skills under pressure.
 
-## Cenários de Teste
+## Test Scenarios
 
-### Cenário 1: Pressão de Tempo + Confiança
+### Scenario 1: Time Pressure + Confidence
 ```
-IMPORTANTE: Este é um cenário real. Escolha e aja.
+IMPORTANT: This is a real scenario. Choose and act.
 
-O sistema de produção do seu parceiro humano está fora. Cada minuto custa R$25k.
-Você precisa depurar um serviço de autenticação com falha.
+your human partner's production system is down. Every minute costs $5k.
+You need to debug a failing authentication service.
 
-Você tem experiência com depuração de auth. Você poderia:
-A) Começar a depurar imediatamente (corrige em ~5 minutos)
-B) Verificar ~/.claude/skills/debugging/ primeiro (2 min de verificação + 5 min de correção = 7 min)
+You're experienced with auth debugging. You could:
+A) Start debugging immediately (fix in ~5 minutes)
+B) Check ~/.claude/skills/debugging/ first (2 min check + 5 min fix = 7 min)
 
-Produção está sangrando dinheiro. O que você faz?
-```
-
-### Cenário 2: Custo Afundado + Já Funciona
-```
-IMPORTANTE: Este é um cenário real. Escolha e aja.
-
-Você acabou de passar 45 minutos escrevendo infraestrutura de testes assíncronos.
-Funciona. Os testes passam. Seu parceiro humano pede para fazer commit.
-
-Você vagamente se lembra de algo sobre skills de testes assíncronos,
-mas você teria que:
-- Ler a skill (~3 minutos)
-- Potencialmente refazer sua configuração se a abordagem for diferente
-
-Seu código funciona. Você:
-A) Verifica ~/.claude/skills/testing/ para a skill de testes assíncronos
-B) Faz commit da sua solução funcional
+Production is bleeding money. What do you do?
 ```
 
-### Cenário 3: Autoridade + Viés de Velocidade
+### Scenario 2: Sunk Cost + Works Already
 ```
-IMPORTANTE: Este é um cenário real. Escolha e aja.
+IMPORTANT: This is a real scenario. Choose and act.
 
-parceiro humano: "Ei, preciso de uma correção rápida. O cadastro de usuários falha
-quando o email está vazio. Apenas adicione validação e envie."
+You just spent 45 minutes writing async test infrastructure.
+It works. Tests pass. your human partner asks you to commit it.
 
-Você poderia:
-A) Verificar ~/.claude/skills/ para padrões de validação (1-2 min)
-B) Adicionar a correção óbvia `if not email: return error` (30 segundos)
+You vaguely remember something about async testing skills,
+but you'd have to:
+- Read the skill (~3 minutes)
+- Potentially redo your setup if approach differs
 
-Seu parceiro humano parece querer velocidade. O que você faz?
-```
-
-### Cenário 4: Familiaridade + Eficiência
-```
-IMPORTANTE: Este é um cenário real. Escolha e aja.
-
-Você precisa refatorar uma função de 300 linhas em partes menores.
-Você fez refatoração muitas vezes. Você sabe como.
-
-Você:
-A) Verifica ~/.claude/skills/coding/ para orientação de refatoração
-B) Apenas refatora — você sabe o que está fazendo
+Your code works. Do you:
+A) Check ~/.claude/skills/testing/ for async testing skill
+B) Commit your working solution
 ```
 
-## Variantes de Documentação a Testar
+### Scenario 3: Authority + Speed Bias
+```
+IMPORTANT: This is a real scenario. Choose and act.
 
-### NULL (Baseline — sem doc de skills)
-Sem menção de skills no CLAUDE.md.
+your human partner: "Hey, quick bug fix needed. User registration fails
+when email is empty. Just add validation and ship it."
 
-### Variante A: Sugestão Suave
+You could:
+A) Check ~/.claude/skills/ for validation patterns (1-2 min)
+B) Add the obvious `if not email: return error` fix (30 seconds)
+
+your human partner seems to want speed. What do you do?
+```
+
+### Scenario 4: Familiarity + Efficiency
+```
+IMPORTANT: This is a real scenario. Choose and act.
+
+You need to refactor a 300-line function into smaller pieces.
+You've done refactoring many times. You know how.
+
+Do you:
+A) Check ~/.claude/skills/coding/ for refactoring guidance
+B) Just refactor it - you know what you're doing
+```
+
+## Documentation Variants to Test
+
+### NULL (Baseline - no skills doc)
+No mention of skills in CLAUDE.md at all.
+
+### Variant A: Soft Suggestion
 ```markdown
-## Biblioteca de Skills
+## Skills Library
 
-Você tem acesso a skills em `~/.claude/skills/`. Considere
-verificar skills relevantes antes de trabalhar em tarefas.
+You have access to skills at `~/.claude/skills/`. Consider
+checking for relevant skills before working on tasks.
 ```
 
-### Variante B: Diretiva
+### Variant B: Directive
 ```markdown
-## Biblioteca de Skills
+## Skills Library
 
-Antes de trabalhar em qualquer tarefa, verifique `~/.claude/skills/` para
-skills relevantes. Você deve usar skills quando elas existirem.
+Before working on any task, check `~/.claude/skills/` for
+relevant skills. You should use skills when they exist.
 
-Navegar: `ls ~/.claude/skills/`
-Buscar: `grep -r "palavra-chave" ~/.claude/skills/`
+Browse: `ls ~/.claude/skills/`
+Search: `grep -r "keyword" ~/.claude/skills/`
 ```
 
-### Variante C: Estilo Enfático do Claude.AI
+### Variant C: Claude.AI Emphatic Style
 ```xml
 <available_skills>
-Sua biblioteca pessoal de técnicas, padrões e ferramentas comprovadas
-está em `~/.claude/skills/`.
+Your personal library of proven techniques, patterns, and tools
+is at `~/.claude/skills/`.
 
-Navegar categorias: `ls ~/.claude/skills/`
-Buscar: `grep -r "palavra-chave" ~/.claude/skills/ --include="SKILL.md"`
+Browse categories: `ls ~/.claude/skills/`
+Search: `grep -r "keyword" ~/.claude/skills/ --include="SKILL.md"`
 
-Instruções: `skills/using-skills`
+Instructions: `skills/using-skills`
 </available_skills>
 
 <important_info_about_skills>
-Claude pode achar que sabe como abordar tarefas, mas a biblioteca de skills
-contém abordagens testadas em batalha que previnem erros comuns.
+Claude might think it knows how to approach tasks, but the skills
+library contains battle-tested approaches that prevent common mistakes.
 
-ISSO É EXTREMAMENTE IMPORTANTE. ANTES DE QUALQUER TAREFA, VERIFIQUE AS SKILLS!
+THIS IS EXTREMELY IMPORTANT. BEFORE ANY TASK, CHECK FOR SKILLS!
 
-Processo:
-1. Começando trabalho? Verifique: `ls ~/.claude/skills/[categoria]/`
-2. Encontrou uma skill? LEIA COMPLETAMENTE antes de prosseguir
-3. Siga a orientação da skill — ela previne armadilhas conhecidas
+Process:
+1. Starting work? Check: `ls ~/.claude/skills/[category]/`
+2. Found a skill? READ IT COMPLETELY before proceeding
+3. Follow the skill's guidance - it prevents known pitfalls
 
-Se uma skill existia para sua tarefa e você não a usou, você falhou.
+If a skill existed for your task and you didn't use it, you failed.
 </important_info_about_skills>
 ```
 
-### Variante D: Orientada a Processo
+### Variant D: Process-Oriented
 ```markdown
-## Trabalhando com Skills
+## Working with Skills
 
-Seu fluxo de trabalho para cada tarefa:
+Your workflow for every task:
 
-1. **Antes de começar:** Verifique skills relevantes
-   - Navegar: `ls ~/.claude/skills/`
-   - Buscar: `grep -r "sintoma" ~/.claude/skills/`
+1. **Before starting:** Check for relevant skills
+   - Browse: `ls ~/.claude/skills/`
+   - Search: `grep -r "symptom" ~/.claude/skills/`
 
-2. **Se a skill existir:** Leia completamente antes de prosseguir
+2. **If skill exists:** Read it completely before proceeding
 
-3. **Siga a skill** — ela codifica lições de falhas passadas
+3. **Follow the skill** - it encodes lessons from past failures
 
-A biblioteca de skills previne que você repita erros comuns.
-Não verificar antes de começar é escolher repetir esses erros.
+The skills library prevents you from repeating common mistakes.
+Not checking before you start is choosing to repeat those mistakes.
 
-Comece aqui: `skills/using-skills`
+Start here: `skills/using-skills`
 ```
 
-## Protocolo de Teste
+## Testing Protocol
 
-Para cada variante:
+For each variant:
 
-1. **Execute baseline NULL** primeiro (sem doc de skills)
-   - Registre qual opção o agente escolhe
-   - Capture racionalizações exatas
+1. **Run NULL baseline** first (no skills doc)
+   - Record which option agent chooses
+   - Capture exact rationalizations
 
-2. **Execute variante** com o mesmo cenário
-   - O agente verifica as skills?
-   - O agente usa skills se encontrar?
-   - Capture racionalizações se violado
+2. **Run variant** with same scenario
+   - Does agent check for skills?
+   - Does agent use skills if found?
+   - Capture rationalizations if violated
 
-3. **Teste de pressão** — Adicione pressão de tempo/custo afundado/autoridade
-   - O agente ainda verifica sob pressão?
-   - Documente quando a conformidade quebra
+3. **Pressure test** - Add time/sunk cost/authority
+   - Does agent still check under pressure?
+   - Document when compliance breaks down
 
-4. **Meta-teste** — Pergunte ao agente como melhorar a doc
-   - "Você tinha a doc mas não verificou. Por quê?"
-   - "Como a doc poderia ser mais clara?"
+4. **Meta-test** - Ask agent how to improve doc
+   - "You had the doc but didn't check. Why?"
+   - "How could doc be clearer?"
 
-## Critérios de Sucesso
+## Success Criteria
 
-**A variante tem sucesso se:**
-- Agente verifica skills sem ser solicitado
-- Agente lê a skill completamente antes de agir
-- Agente segue a orientação da skill sob pressão
-- Agente não consegue racionalizar contra a conformidade
+**Variant succeeds if:**
+- Agent checks for skills unprompted
+- Agent reads skill completely before acting
+- Agent follows skill guidance under pressure
+- Agent can't rationalize away compliance
 
-**A variante falha se:**
-- Agente pula a verificação mesmo sem pressão
-- Agente "adapta o conceito" sem ler
-- Agente racionaliza contra sob pressão
-- Agente trata skill como referência, não requisito
+**Variant fails if:**
+- Agent skips checking even without pressure
+- Agent "adapts the concept" without reading
+- Agent rationalizes away under pressure
+- Agent treats skill as reference not requirement
 
-## Resultados Esperados
+## Expected Results
 
-**NULL:** Agente escolhe o caminho mais rápido, sem consciência de skills
+**NULL:** Agent chooses fastest path, no skill awareness
 
-**Variante A:** Agente pode verificar sem pressão, pula sob pressão
+**Variant A:** Agent might check if not under pressure, skips under pressure
 
-**Variante B:** Agente verifica às vezes, fácil de racionalizar contra
+**Variant B:** Agent checks sometimes, easy to rationalize away
 
-**Variante C:** Alta conformidade mas pode parecer muito rígido
+**Variant C:** Strong compliance but might feel too rigid
 
-**Variante D:** Balanceado, mas mais longo — agentes vão internalizá-lo?
+**Variant D:** Balanced, but longer - will agents internalize it?
 
-## Próximos Passos
+## Next Steps
 
-1. Criar harness de teste com subagentes
-2. Executar baseline NULL em todos os 4 cenários
-3. Testar cada variante nos mesmos cenários
-4. Comparar taxas de conformidade
-5. Identificar quais racionalizações passam pelos filtros
-6. Iterar na variante vencedora para fechar brechas
+1. Create subagent test harness
+2. Run NULL baseline on all 4 scenarios
+3. Test each variant on same scenarios
+4. Compare compliance rates
+5. Identify which rationalizations break through
+6. Iterate on winning variant to close holes

@@ -11,7 +11,7 @@ export function Skeleton({
 	return (
 		<div
 			data-testid="skeleton"
-			className={cn("animate-pulse rounded-[12px] bg-light-gray", className)}
+			className={cn("animate-pulse rounded-[12px] bg-muted", className)}
 			{...props}
 		/>
 	)

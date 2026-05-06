@@ -1,25 +1,25 @@
-# Template de Prompt para Revisor de Qualidade de Código
+# Code Quality Reviewer Prompt Template
 
-Use este template ao despachar um subagente revisor de qualidade de código.
+Use this template when dispatching a code quality reviewer subagent.
 
-**Propósito:** Verificar se a implementação está bem construída (limpa, testada, manutenível)
+**Purpose:** Verify implementation is well-built (clean, tested, maintainable)
 
-**Despache apenas após a revisão de conformidade com a spec passar.**
+**Only dispatch after spec compliance review passes.**
 
 ```
-Ferramenta Task (general-purpose):
-  Use o template em requesting-code-review/code-reviewer.md
+Task tool (general-purpose):
+  Use template at requesting-code-review/code-reviewer.md
 
-  DESCRIPTION: [resumo da tarefa, do relatório do implementador]
-  PLAN_OR_REQUIREMENTS: Tarefa N de [arquivo-do-plano]
-  BASE_SHA: [commit antes da tarefa]
-  HEAD_SHA: [commit atual]
+  DESCRIPTION: [task summary, from implementer's report]
+  PLAN_OR_REQUIREMENTS: Task N from [plan-file]
+  BASE_SHA: [commit before task]
+  HEAD_SHA: [current commit]
 ```
 
-**Além das preocupações padrão de qualidade de código, o revisor deve verificar:**
-- Cada arquivo tem uma responsabilidade clara com uma interface bem definida?
-- As unidades são decompostas de forma que possam ser entendidas e testadas independentemente?
-- A implementação está seguindo a estrutura de arquivos do plano?
-- Esta implementação criou novos arquivos que já estão grandes, ou fez crescer significativamente arquivos existentes? (Não sinalize tamanhos de arquivos pré-existentes — foque no que esta mudança contribuiu.)
+**In addition to standard code quality concerns, the reviewer should check:**
+- Does each file have one clear responsibility with a well-defined interface?
+- Are units decomposed so they can be understood and tested independently?
+- Is the implementation following the file structure from the plan?
+- Did this implementation create new files that are already large, or significantly grow existing files? (Don't flag pre-existing file sizes — focus on what this change contributed.)
 
-**O revisor de código retorna:** Pontos Fortes, Problemas (Críticos/Importantes/Menores), Avaliação
+**Code reviewer returns:** Strengths, Issues (Critical/Important/Minor), Assessment

@@ -1,296 +1,296 @@
 ---
 name: systematic-debugging
-description: Use ao encontrar qualquer bug, falha de teste ou comportamento inesperado, antes de propor correções
+description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
 ---
 
-# Depuração Sistemática
+# Systematic Debugging
 
-## Visão Geral
+## Overview
 
-Correções aleatórias desperdiçam tempo e criam novos bugs. Patches rápidos mascaram problemas subjacentes.
+Random fixes waste time and create new bugs. Quick patches mask underlying issues.
 
-**Princípio fundamental:** SEMPRE encontre a causa raiz antes de tentar correções. Correções de sintomas são uma falha.
+**Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.
 
-**Violar a letra deste processo é violar o espírito da depuração.**
+**Violating the letter of this process is violating the spirit of debugging.**
 
-## A Lei de Ferro
+## The Iron Law
 
 ```
-SEM CORREÇÕES SEM INVESTIGAÇÃO DA CAUSA RAIZ PRIMEIRO
+NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 ```
 
-Se você não completou a Fase 1, não pode propor correções.
+If you haven't completed Phase 1, you cannot propose fixes.
 
-## Quando Usar
+## When to Use
 
-Use para QUALQUER problema técnico:
-- Falhas de teste
-- Bugs em produção
-- Comportamento inesperado
-- Problemas de desempenho
-- Falhas de build
-- Problemas de integração
+Use for ANY technical issue:
+- Test failures
+- Bugs in production
+- Unexpected behavior
+- Performance problems
+- Build failures
+- Integration issues
 
-**Use ESPECIALMENTE quando:**
-- Sob pressão de tempo (emergências tornam a tentativa de adivinhar tentadora)
-- Uma "correção rápida" parece óbvia
-- Você já tentou múltiplas correções
-- A correção anterior não funcionou
-- Você não entende totalmente o problema
+**Use this ESPECIALLY when:**
+- Under time pressure (emergencies make guessing tempting)
+- "Just one quick fix" seems obvious
+- You've already tried multiple fixes
+- Previous fix didn't work
+- You don't fully understand the issue
 
-**Não pule quando:**
-- O problema parece simples (bugs simples têm causas raiz também)
-- Você está com pressa (apressar-se garante retrabalho)
-- O gerente quer corrigido AGORA (sistemático é mais rápido que thrashing)
+**Don't skip when:**
+- Issue seems simple (simple bugs have root causes too)
+- You're in a hurry (rushing guarantees rework)
+- Manager wants it fixed NOW (systematic is faster than thrashing)
 
-## As Quatro Fases
+## The Four Phases
 
-Você DEVE completar cada fase antes de prosseguir para a próxima.
+You MUST complete each phase before proceeding to the next.
 
-### Fase 1: Investigação da Causa Raiz
+### Phase 1: Root Cause Investigation
 
-**ANTES de tentar QUALQUER correção:**
+**BEFORE attempting ANY fix:**
 
-1. **Leia as Mensagens de Erro Cuidadosamente**
-   - Não passe por erros ou avisos
-   - Eles geralmente contêm a solução exata
-   - Leia os stack traces completamente
-   - Anote números de linha, caminhos de arquivo, códigos de erro
+1. **Read Error Messages Carefully**
+   - Don't skip past errors or warnings
+   - They often contain the exact solution
+   - Read stack traces completely
+   - Note line numbers, file paths, error codes
 
-2. **Reproduza Consistentemente**
-   - Você consegue disparar de forma confiável?
-   - Quais são os passos exatos?
-   - Acontece sempre?
-   - Se não reproduzível → colete mais dados, não adivinhe
+2. **Reproduce Consistently**
+   - Can you trigger it reliably?
+   - What are the exact steps?
+   - Does it happen every time?
+   - If not reproducible → gather more data, don't guess
 
-3. **Verifique Mudanças Recentes**
-   - O que mudou que poderia causar isso?
-   - Git diff, commits recentes
-   - Novas dependências, mudanças de configuração
-   - Diferenças ambientais
+3. **Check Recent Changes**
+   - What changed that could cause this?
+   - Git diff, recent commits
+   - New dependencies, config changes
+   - Environmental differences
 
-4. **Colete Evidências em Sistemas Multi-Componente**
+4. **Gather Evidence in Multi-Component Systems**
 
-   **QUANDO o sistema tem múltiplos componentes (CI → build → assinatura, API → serviço → banco de dados):**
+   **WHEN system has multiple components (CI → build → signing, API → service → database):**
 
-   **ANTES de propor correções, adicione instrumentação de diagnóstico:**
+   **BEFORE proposing fixes, add diagnostic instrumentation:**
    ```
-   Para CADA fronteira de componente:
-     - Log o que os dados entram no componente
-     - Log o que os dados saem do componente
-     - Verifique a propagação de ambiente/configuração
-     - Verifique o estado em cada camada
+   For EACH component boundary:
+     - Log what data enters component
+     - Log what data exits component
+     - Verify environment/config propagation
+     - Check state at each layer
 
-   Execute uma vez para coletar evidências mostrando ONDE quebra
-   ENTÃO analise as evidências para identificar o componente com falha
-   ENTÃO investigue esse componente específico
+   Run once to gather evidence showing WHERE it breaks
+   THEN analyze evidence to identify failing component
+   THEN investigate that specific component
    ```
 
-   **Exemplo (sistema multi-camada):**
+   **Example (multi-layer system):**
    ```bash
-   # Camada 1: Workflow
-   echo "=== Secrets disponíveis no workflow: ==="
+   # Layer 1: Workflow
+   echo "=== Secrets available in workflow: ==="
    echo "IDENTITY: ${IDENTITY:+SET}${IDENTITY:-UNSET}"
 
-   # Camada 2: Script de build
-   echo "=== Variáveis de ambiente no script de build: ==="
-   env | grep IDENTITY || echo "IDENTITY não está no ambiente"
+   # Layer 2: Build script
+   echo "=== Env vars in build script: ==="
+   env | grep IDENTITY || echo "IDENTITY not in environment"
 
-   # Camada 3: Script de assinatura
-   echo "=== Estado do Keychain: ==="
+   # Layer 3: Signing script
+   echo "=== Keychain state: ==="
    security list-keychains
    security find-identity -v
 
-   # Camada 4: Assinatura real
+   # Layer 4: Actual signing
    codesign --sign "$IDENTITY" --verbose=4 "$APP"
    ```
 
-   **Isso revela:** Qual camada falha (secrets → workflow ✓, workflow → build ✗)
+   **This reveals:** Which layer fails (secrets → workflow ✓, workflow → build ✗)
 
-5. **Rastreie o Fluxo de Dados**
+5. **Trace Data Flow**
 
-   **QUANDO o erro está profundo no call stack:**
+   **WHEN error is deep in call stack:**
 
-   Veja `root-cause-tracing.md` neste diretório para a técnica completa de rastreamento reverso.
+   See `root-cause-tracing.md` in this directory for the complete backward tracing technique.
 
-   **Versão rápida:**
-   - Onde o valor ruim se origina?
-   - O que chamou isso com valor ruim?
-   - Continue rastreando até encontrar a fonte
-   - Corrija na fonte, não no sintoma
+   **Quick version:**
+   - Where does bad value originate?
+   - What called this with bad value?
+   - Keep tracing up until you find the source
+   - Fix at source, not at symptom
 
-### Fase 2: Análise de Padrão
+### Phase 2: Pattern Analysis
 
-**Encontre o padrão antes de corrigir:**
+**Find the pattern before fixing:**
 
-1. **Encontre Exemplos Funcionando**
-   - Localize código similar funcionando na mesma base de código
-   - O que funciona que é similar ao que está quebrado?
+1. **Find Working Examples**
+   - Locate similar working code in same codebase
+   - What works that's similar to what's broken?
 
-2. **Compare com Referências**
-   - Se estiver implementando um padrão, leia a implementação de referência COMPLETAMENTE
-   - Não passe por cima — leia cada linha
-   - Entenda o padrão totalmente antes de aplicar
+2. **Compare Against References**
+   - If implementing pattern, read reference implementation COMPLETELY
+   - Don't skim - read every line
+   - Understand the pattern fully before applying
 
-3. **Identifique Diferenças**
-   - O que é diferente entre o que funciona e o que está quebrado?
-   - Liste cada diferença, por menor que seja
-   - Não assuma "isso não pode importar"
+3. **Identify Differences**
+   - What's different between working and broken?
+   - List every difference, however small
+   - Don't assume "that can't matter"
 
-4. **Entenda as Dependências**
-   - Quais outros componentes isso precisa?
-   - Quais configurações, config, ambiente?
-   - Quais premissas isso faz?
+4. **Understand Dependencies**
+   - What other components does this need?
+   - What settings, config, environment?
+   - What assumptions does it make?
 
-### Fase 3: Hipótese e Testes
+### Phase 3: Hypothesis and Testing
 
-**Método científico:**
+**Scientific method:**
 
-1. **Forme uma Hipótese Única**
-   - Declare claramente: "Acredito que X é a causa raiz porque Y"
-   - Anote-a
-   - Seja específico, não vago
+1. **Form Single Hypothesis**
+   - State clearly: "I think X is the root cause because Y"
+   - Write it down
+   - Be specific, not vague
 
-2. **Teste Minimamente**
-   - Faça a MENOR mudança possível para testar a hipótese
-   - Uma variável de cada vez
-   - Não corrija múltiplas coisas de uma vez
+2. **Test Minimally**
+   - Make the SMALLEST possible change to test hypothesis
+   - One variable at a time
+   - Don't fix multiple things at once
 
-3. **Verifique Antes de Continuar**
-   - Funcionou? Sim → Fase 4
-   - Não funcionou? Forme UMA NOVA hipótese
-   - NÃO adicione mais correções por cima
+3. **Verify Before Continuing**
+   - Did it work? Yes → Phase 4
+   - Didn't work? Form NEW hypothesis
+   - DON'T add more fixes on top
 
-4. **Quando Você Não Sabe**
-   - Diga "Não entendo X"
-   - Não finja saber
-   - Peça ajuda
-   - Pesquise mais
+4. **When You Don't Know**
+   - Say "I don't understand X"
+   - Don't pretend to know
+   - Ask for help
+   - Research more
 
-### Fase 4: Implementação
+### Phase 4: Implementation
 
-**Corrija a causa raiz, não o sintoma:**
+**Fix the root cause, not the symptom:**
 
-1. **Crie um Caso de Teste Falhando**
-   - Reprodução mais simples possível
-   - Teste automatizado se possível
-   - Script de teste único se não houver framework
-   - DEVE existir antes de corrigir
-   - Use a skill `superpowers:test-driven-development` para escrever testes falhando adequados
+1. **Create Failing Test Case**
+   - Simplest possible reproduction
+   - Automated test if possible
+   - One-off test script if no framework
+   - MUST have before fixing
+   - Use the `superpowers:test-driven-development` skill for writing proper failing tests
 
-2. **Implemente uma Correção Única**
-   - Endereça a causa raiz identificada
-   - UMA mudança de cada vez
-   - Sem melhorias "já que estou aqui"
-   - Sem refatoração incluída
+2. **Implement Single Fix**
+   - Address the root cause identified
+   - ONE change at a time
+   - No "while I'm here" improvements
+   - No bundled refactoring
 
-3. **Verifique a Correção**
-   - O teste passa agora?
-   - Nenhum outro teste quebrou?
-   - Problema realmente resolvido?
+3. **Verify Fix**
+   - Test passes now?
+   - No other tests broken?
+   - Issue actually resolved?
 
-4. **Se a Correção Não Funcionar**
-   - PARE
-   - Conte: Quantas correções você tentou?
-   - Se < 3: Retorne à Fase 1, reanalize com novas informações
-   - **Se ≥ 3: PARE e questione a arquitetura (passo 5 abaixo)**
-   - NÃO tente a Correção nº 4 sem discussão arquitetural
+4. **If Fix Doesn't Work**
+   - STOP
+   - Count: How many fixes have you tried?
+   - If < 3: Return to Phase 1, re-analyze with new information
+   - **If ≥ 3: STOP and question the architecture (step 5 below)**
+   - DON'T attempt Fix #4 without architectural discussion
 
-5. **Se 3+ Correções Falharam: Questione a Arquitetura**
+5. **If 3+ Fixes Failed: Question Architecture**
 
-   **Padrão indicando problema arquitetural:**
-   - Cada correção revela novo estado compartilhado/acoplamento/problema em lugar diferente
-   - Correções requerem "refatoração massiva" para implementar
-   - Cada correção cria novos sintomas em outro lugar
+   **Pattern indicating architectural problem:**
+   - Each fix reveals new shared state/coupling/problem in different place
+   - Fixes require "massive refactoring" to implement
+   - Each fix creates new symptoms elsewhere
 
-   **PARE e questione os fundamentos:**
-   - Este padrão é fundamentalmente sólido?
-   - Estamos "nos apegando a ele por pura inércia"?
-   - Deveríamos refatorar a arquitetura vs. continuar corrigindo sintomas?
+   **STOP and question fundamentals:**
+   - Is this pattern fundamentally sound?
+   - Are we "sticking with it through sheer inertia"?
+   - Should we refactor architecture vs. continue fixing symptoms?
 
-   **Discuta com seu parceiro humano antes de tentar mais correções**
+   **Discuss with your human partner before attempting more fixes**
 
-   Isso NÃO é uma hipótese falha — é uma arquitetura errada.
+   This is NOT a failed hypothesis - this is a wrong architecture.
 
-## Sinais de Alerta — PARE e Siga o Processo
+## Red Flags - STOP and Follow Process
 
-Se você se pegar pensando:
-- "Correção rápida por agora, investigo depois"
-- "Apenas tente mudar X e veja se funciona"
-- "Adicione múltiplas mudanças, execute os testes"
-- "Pule o teste, vou verificar manualmente"
-- "Provavelmente é X, deixa eu corrigir isso"
-- "Não entendo totalmente, mas isso pode funcionar"
-- "O padrão diz X mas vou adaptar diferentemente"
-- "Aqui estão os principais problemas: [lista correções sem investigação]"
-- Propondo soluções antes de rastrear o fluxo de dados
-- **"Mais uma tentativa de correção" (quando já tentou 2+)**
-- **Cada correção revela novo problema em lugar diferente**
+If you catch yourself thinking:
+- "Quick fix for now, investigate later"
+- "Just try changing X and see if it works"
+- "Add multiple changes, run tests"
+- "Skip the test, I'll manually verify"
+- "It's probably X, let me fix that"
+- "I don't fully understand but this might work"
+- "Pattern says X but I'll adapt it differently"
+- "Here are the main problems: [lists fixes without investigation]"
+- Proposing solutions before tracing data flow
+- **"One more fix attempt" (when already tried 2+)**
+- **Each fix reveals new problem in different place**
 
-**TODOS esses significam: PARE. Retorne à Fase 1.**
+**ALL of these mean: STOP. Return to Phase 1.**
 
-**Se 3+ correções falharam:** Questione a arquitetura (veja Fase 4.5)
+**If 3+ fixes failed:** Question the architecture (see Phase 4.5)
 
-## Sinais do Seu Parceiro Humano de Que Você Está Errando
+## your human partner's Signals You're Doing It Wrong
 
-**Fique atento a essas redireções:**
-- "Isso não está acontecendo?" — Você assumiu sem verificar
-- "Isso vai nos mostrar...?" — Você deveria ter adicionado coleta de evidências
-- "Pare de adivinhar" — Você está propondo correções sem entender
-- "Pense profundamente sobre isso" — Questione fundamentos, não apenas sintomas
-- "Estamos travados?" (frustrado) — Sua abordagem não está funcionando
+**Watch for these redirections:**
+- "Is that not happening?" - You assumed without verifying
+- "Will it show us...?" - You should have added evidence gathering
+- "Stop guessing" - You're proposing fixes without understanding
+- "Ultrathink this" - Question fundamentals, not just symptoms
+- "We're stuck?" (frustrated) - Your approach isn't working
 
-**Quando vir esses:** PARE. Retorne à Fase 1.
+**When you see these:** STOP. Return to Phase 1.
 
-## Racionalizações Comuns
+## Common Rationalizations
 
-| Desculpa | Realidade |
-|----------|-----------|
-| "Problema simples, não precisa de processo" | Problemas simples têm causas raiz também. O processo é rápido para bugs simples. |
-| "Emergência, sem tempo para o processo" | Depuração sistemática é MAIS RÁPIDA que thrashing de tentativa e erro. |
-| "Apenas tente isso primeiro, depois investigue" | A primeira correção define o padrão. Faça certo desde o início. |
-| "Vou escrever o teste depois de confirmar que a correção funciona" | Correções não testadas não persistem. Testar primeiro prova isso. |
-| "Múltiplas correções de uma vez economizam tempo" | Não é possível isolar o que funcionou. Causa novos bugs. |
-| "Referência muito longa, vou adaptar o padrão" | Entendimento parcial garante bugs. Leia completamente. |
-| "Vejo o problema, deixa eu corrigir" | Ver sintomas ≠ entender a causa raiz. |
-| "Mais uma tentativa de correção" (após 2+ falhas) | 3+ falhas = problema arquitetural. Questione o padrão, não corrija novamente. |
+| Excuse | Reality |
+|--------|---------|
+| "Issue is simple, don't need process" | Simple issues have root causes too. Process is fast for simple bugs. |
+| "Emergency, no time for process" | Systematic debugging is FASTER than guess-and-check thrashing. |
+| "Just try this first, then investigate" | First fix sets the pattern. Do it right from the start. |
+| "I'll write test after confirming fix works" | Untested fixes don't stick. Test first proves it. |
+| "Multiple fixes at once saves time" | Can't isolate what worked. Causes new bugs. |
+| "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
+| "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
+| "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. Question pattern, don't fix again. |
 
-## Referência Rápida
+## Quick Reference
 
-| Fase | Atividades Principais | Critério de Sucesso |
-|------|-----------------------|---------------------|
-| **1. Causa Raiz** | Leia erros, reproduza, verifique mudanças, colete evidências | Entenda O QUE e POR QUÊ |
-| **2. Padrão** | Encontre exemplos funcionando, compare | Identifique diferenças |
-| **3. Hipótese** | Forme teoria, teste minimamente | Confirmada ou nova hipótese |
-| **4. Implementação** | Crie teste, corrija, verifique | Bug resolvido, testes passam |
+| Phase | Key Activities | Success Criteria |
+|-------|---------------|------------------|
+| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
+| **2. Pattern** | Find working examples, compare | Identify differences |
+| **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
+| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
 
-## Quando o Processo Revela "Sem Causa Raiz"
+## When Process Reveals "No Root Cause"
 
-Se a investigação sistemática revelar que o problema é verdadeiramente ambiental, dependente de tempo ou externo:
+If systematic investigation reveals issue is truly environmental, timing-dependent, or external:
 
-1. Você completou o processo
-2. Documente o que investigou
-3. Implemente o tratamento adequado (retry, timeout, mensagem de erro)
-4. Adicione monitoramento/logging para investigação futura
+1. You've completed the process
+2. Document what you investigated
+3. Implement appropriate handling (retry, timeout, error message)
+4. Add monitoring/logging for future investigation
 
-**Mas:** 95% dos casos de "sem causa raiz" são investigação incompleta.
+**But:** 95% of "no root cause" cases are incomplete investigation.
 
-## Técnicas de Suporte
+## Supporting Techniques
 
-Essas técnicas fazem parte da depuração sistemática e estão disponíveis neste diretório:
+These techniques are part of systematic debugging and available in this directory:
 
-- **`root-cause-tracing.md`** — Rastreie bugs de volta pelo call stack para encontrar o gatilho original
-- **`defense-in-depth.md`** — Adicione validação em múltiplas camadas após encontrar a causa raiz
-- **`condition-based-waiting.md`** — Substitua timeouts arbitrários por polling de condição
+- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
+- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
+- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
 
-**Skills relacionadas:**
-- **superpowers:test-driven-development** — Para criar caso de teste falhando (Fase 4, Passo 1)
-- **superpowers:verification-before-completion** — Verifique se a correção funcionou antes de afirmar sucesso
+**Related skills:**
+- **superpowers:test-driven-development** - For creating failing test case (Phase 4, Step 1)
+- **superpowers:verification-before-completion** - Verify fix worked before claiming success
 
-## Impacto no Mundo Real
+## Real-World Impact
 
-De sessões de depuração:
-- Abordagem sistemática: 15-30 minutos para corrigir
-- Abordagem de correções aleatórias: 2-3 horas de thrashing
-- Taxa de correção na primeira tentativa: 95% vs 40%
-- Novos bugs introduzidos: Próximo de zero vs. comum
+From debugging sessions:
+- Systematic approach: 15-30 minutes to fix
+- Random fixes approach: 2-3 hours of thrashing
+- First-time fix rate: 95% vs 40%
+- New bugs introduced: Near zero vs common

@@ -44,11 +44,11 @@ export default function AcademiasPage() {
 				<div className="flex flex-col gap-2">
 					<h1
 						id="academias-title"
-						className="font-display text-3xl font-medium text-pure-black"
+						className="font-display text-3xl font-medium text-foreground"
 					>
 						Academias
 					</h1>
-					<p className="text-sm text-mid-gray">
+					<p className="text-sm text-muted-foreground">
 						Busque por nome ou navegue pelas academias disponíveis.
 					</p>
 				</div>

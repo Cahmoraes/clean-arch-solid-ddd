@@ -11,6 +11,7 @@ export function setupGymModule(): ModuleControllers {
 		resolve(GYM_TYPES.Controllers.CreateGym),
 		resolve(GYM_TYPES.Controllers.SearchGym),
 		resolve(GYM_TYPES.Controllers.FetchAllGyms),
+		resolve(GYM_TYPES.Controllers.FetchGymById),
 	]
 	return { controllers }
 }

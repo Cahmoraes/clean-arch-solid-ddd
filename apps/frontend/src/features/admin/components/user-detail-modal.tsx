@@ -51,7 +51,7 @@ function statusBadgeClassName(status: string): string {
 	if (status === "suspended") {
 		return "border-red-200 bg-red-50 text-red-700"
 	}
-	return "border-light-gray bg-snow text-stone"
+	return "border-border bg-muted text-muted-foreground"
 }
 
 function formatCreatedAt(iso: string): string {
@@ -67,10 +67,10 @@ function formatCreatedAt(iso: string): string {
 function InfoItem({ label, value }: { label: string; value: ReactNode }) {
 	return (
 		<div className="flex flex-col gap-1">
-			<dt className="text-xs font-medium uppercase tracking-[0.08em] text-mid-gray">
+			<dt className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
 				{label}
 			</dt>
-			<dd className="text-sm text-near-black">{value}</dd>
+			<dd className="text-sm text-foreground">{value}</dd>
 		</div>
 	)
 }
@@ -131,7 +131,7 @@ function ActivateActionButton({
 			onClick={onActivate}
 			disabled={isPending}
 			aria-busy={isActivating}
-			className="bg-green-600 text-pure-white hover:bg-green-700"
+			className="bg-green-600 text-white hover:bg-green-700"
 		>
 			{isActivating ? "Ativando..." : "Ativar"}
 		</Button>

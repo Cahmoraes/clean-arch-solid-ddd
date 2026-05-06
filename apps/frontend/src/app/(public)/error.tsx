@@ -26,11 +26,11 @@ export default function PublicError({ error, reset }: PublicErrorProps) {
 		>
 			<h1
 				id="public-error-title"
-				className="font-display text-2xl font-medium text-pure-black"
+				className="font-display text-2xl font-medium text-foreground"
 			>
 				Algo deu errado
 			</h1>
-			<p className="text-sm text-stone">
+			<p className="text-sm text-muted-foreground">
 				Não foi possível carregar esta página. Tente novamente em instantes.
 			</p>
 			<Button

@@ -1,135 +1,139 @@
 ---
 name: test-driven-development
-description: Use quando implementar qualquer funcionalidade ou correção de bug, antes de escrever código de implementação
+description: Use when implementing any feature or bugfix, before writing implementation code
 ---
 
-# Desenvolvimento Orientado a Testes (TDD)
+# Test-Driven Development (TDD)
 
-## Visão Geral
+## Overview
 
-Escreva o teste primeiro. Observe-o falhar. Escreva o código mínimo para passar.
+Write the test first. Watch it fail. Write minimal code to pass.
 
-**Princípio fundamental:** Se você não observou o teste falhar, você não sabe se ele testa a coisa certa.
+**Core principle:** If you didn't watch the test fail, you don't know if it tests the right thing.
 
-**Violar a letra das regras é violar o espírito das regras.**
+**Violating the letter of the rules is violating the spirit of the rules.**
 
-## Quando Usar
+## When to Use
 
-**Sempre:**
-- Novas funcionalidades
-- Correções de bugs
-- Refatorações
-- Mudanças de comportamento
+**Always:**
+- New features
+- Bug fixes
+- Refactoring
+- Behavior changes
 
-**Exceções (pergunte ao seu parceiro humano):**
-- Protótipos descartáveis
-- Código gerado
-- Arquivos de configuração
+**Exceptions (ask your human partner):**
+- Throwaway prototypes
+- Generated code
+- Configuration files
 
-Pensando "pular TDD só dessa vez"? Pare. Isso é racionalização.
+Thinking "skip TDD just this once"? Stop. That's rationalization.
 
-## A Lei de Ferro
+## The Iron Law
 
 ```
-SEM CÓDIGO DE PRODUÇÃO SEM UM TESTE QUE FALHA PRIMEIRO
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 ```
 
-Escreveu código antes do teste? Delete-o. Comece de novo.
+Write code before the test? Delete it. Start over.
 
-**Sem exceções:**
-- Não mantenha como "referência"
-- Não o "adapte" enquanto escreve testes
-- Não o olhe
-- Deletar significa deletar
+**No exceptions:**
+- Don't keep it as "reference"
+- Don't "adapt" it while writing tests
+- Don't look at it
+- Delete means delete
 
-Implemente do zero a partir dos testes. Ponto final.
+Implement fresh from tests. Period.
 
-## Vermelho-Verde-Refatorar
+## Red-Green-Refactor
 
-```mermaid
-flowchart LR
-    red["VERMELHO\nEscrever teste que falha"]
-    verify_red{"Verificar falha\ncorretamente"}
-    green["VERDE\nCódigo mínimo"]
-    verify_green{"Verificar que passa\nTudo verde"}
-    refactor["REFATORAR\nLimpar"]
-    next["Próximo"]
+```dot
+digraph tdd_cycle {
+    rankdir=LR;
+    red [label="RED\nWrite failing test", shape=box, style=filled, fillcolor="#ffcccc"];
+    verify_red [label="Verify fails\ncorrectly", shape=diamond];
+    green [label="GREEN\nMinimal code", shape=box, style=filled, fillcolor="#ccffcc"];
+    verify_green [label="Verify passes\nAll green", shape=diamond];
+    refactor [label="REFACTOR\nClean up", shape=box, style=filled, fillcolor="#ccccff"];
+    next [label="Next", shape=ellipse];
 
-    red --> verify_red
-    verify_red -->|sim| green
-    verify_red -->|"falha\nerrada"| red
-    green --> verify_green
-    verify_green -->|sim| refactor
-    verify_green -->|não| green
-    refactor -->|"manter\nverde"| verify_green
-    verify_green --> next
-    next --> red
+    red -> verify_red;
+    verify_red -> green [label="yes"];
+    verify_red -> red [label="wrong\nfailure"];
+    green -> verify_green;
+    verify_green -> refactor [label="yes"];
+    verify_green -> green [label="no"];
+    refactor -> verify_green [label="stay\ngreen"];
+    verify_green -> next;
+    next -> red;
+}
 ```
 
-### VERMELHO - Escrever Teste que Falha
+### RED - Write Failing Test
 
-Escreva um teste mínimo mostrando o que deve acontecer.
+Write one minimal test showing what should happen.
 
-**Bom:**
+<Good>
 ```typescript
-test('tenta operações com falha 3 vezes', async () => {
-  let tentativas = 0;
-  const operacao = () => {
-    tentativas++;
-    if (tentativas < 3) throw new Error('falha');
-    return 'sucesso';
+test('retries failed operations 3 times', async () => {
+  let attempts = 0;
+  const operation = () => {
+    attempts++;
+    if (attempts < 3) throw new Error('fail');
+    return 'success';
   };
 
-  const resultado = await tentarOperacao(operacao);
+  const result = await retryOperation(operation);
 
-  expect(resultado).toBe('sucesso');
-  expect(tentativas).toBe(3);
+  expect(result).toBe('success');
+  expect(attempts).toBe(3);
 });
 ```
-Nome claro, testa comportamento real, uma coisa
+Clear name, tests real behavior, one thing
+</Good>
 
-**Ruim:**
+<Bad>
 ```typescript
-test('retry funciona', async () => {
+test('retry works', async () => {
   const mock = jest.fn()
     .mockRejectedValueOnce(new Error())
     .mockRejectedValueOnce(new Error())
-    .mockResolvedValueOnce('sucesso');
-  await tentarOperacao(mock);
+    .mockResolvedValueOnce('success');
+  await retryOperation(mock);
   expect(mock).toHaveBeenCalledTimes(3);
 });
 ```
-Nome vago, testa mock não código
+Vague name, tests mock not code
+</Bad>
 
-**Requisitos:**
-- Um comportamento
-- Nome claro
-- Código real (sem mocks a menos que inevitável)
+**Requirements:**
+- One behavior
+- Clear name
+- Real code (no mocks unless unavoidable)
 
-### Verificar VERMELHO - Observe Falhar
+### Verify RED - Watch It Fail
 
-**OBRIGATÓRIO. Nunca pule.**
+**MANDATORY. Never skip.**
 
 ```bash
-npm test caminho/para/test.test.ts
+npm test path/to/test.test.ts
 ```
 
-Confirme:
-- O teste falha (não gera erros)
-- A mensagem de falha é esperada
-- Falha porque a funcionalidade está ausente (não por erros de digitação)
+Confirm:
+- Test fails (not errors)
+- Failure message is expected
+- Fails because feature missing (not typos)
 
-**Teste passa?** Você está testando comportamento existente. Corrija o teste.
+**Test passes?** You're testing existing behavior. Fix test.
 
-**Teste gera erros?** Corrija o erro, re-execute até falhar corretamente.
+**Test errors?** Fix error, re-run until it fails correctly.
 
-### VERDE - Código Mínimo
+### GREEN - Minimal Code
 
-Escreva o código mais simples para passar o teste.
+Write simplest code to pass the test.
 
-**Bom:**
+<Good>
 ```typescript
-async function tentarOperacao<T>(fn: () => Promise<T>): Promise<T> {
+async function retryOperation<T>(fn: () => Promise<T>): Promise<T> {
   for (let i = 0; i < 3; i++) {
     try {
       return await fn();
@@ -137,229 +141,231 @@ async function tentarOperacao<T>(fn: () => Promise<T>): Promise<T> {
       if (i === 2) throw e;
     }
   }
-  throw new Error('inatingível');
+  throw new Error('unreachable');
 }
 ```
-Apenas o suficiente para passar
+Just enough to pass
+</Good>
 
-**Ruim:**
+<Bad>
 ```typescript
-async function tentarOperacao<T>(
+async function retryOperation<T>(
   fn: () => Promise<T>,
-  opcoes?: {
-    maxTentativas?: number;
-    backoff?: 'linear' | 'exponencial';
-    aoTentar?: (tentativa: number) => void;
+  options?: {
+    maxRetries?: number;
+    backoff?: 'linear' | 'exponential';
+    onRetry?: (attempt: number) => void;
   }
 ): Promise<T> {
   // YAGNI
 }
 ```
 Over-engineered
+</Bad>
 
-Não adicione funcionalidades, refatore outro código ou "melhore" além do teste.
+Don't add features, refactor other code, or "improve" beyond the test.
 
-### Verificar VERDE - Observe Passar
+### Verify GREEN - Watch It Pass
 
-**OBRIGATÓRIO.**
+**MANDATORY.**
 
 ```bash
-npm test caminho/para/test.test.ts
+npm test path/to/test.test.ts
 ```
 
-Confirme:
-- O teste passa
-- Outros testes ainda passam
-- Saída limpa (sem erros, avisos)
+Confirm:
+- Test passes
+- Other tests still pass
+- Output pristine (no errors, warnings)
 
-**Teste falha?** Corrija o código, não o teste.
+**Test fails?** Fix code, not test.
 
-**Outros testes falham?** Corrija agora.
+**Other tests fail?** Fix now.
 
-### REFATORAR - Limpar
+### REFACTOR - Clean Up
 
-Após o verde apenas:
-- Remova duplicação
-- Melhore nomes
-- Extraia helpers
+After green only:
+- Remove duplication
+- Improve names
+- Extract helpers
 
-Mantenha os testes verdes. Não adicione comportamento.
+Keep tests green. Don't add behavior.
 
-### Repita
+### Repeat
 
-Próximo teste com falha para a próxima funcionalidade.
+Next failing test for next feature.
 
-## Bons Testes
+## Good Tests
 
-| Qualidade | Bom | Ruim |
-|-----------|-----|------|
-| **Mínimo** | Uma coisa. "e" no nome? Divida. | `test('valida email e domínio e espaços em branco')` |
-| **Claro** | Nome descreve comportamento | `test('test1')` |
-| **Mostra intenção** | Demonstra a API desejada | Obscurece o que o código deve fazer |
+| Quality | Good | Bad |
+|---------|------|-----|
+| **Minimal** | One thing. "and" in name? Split it. | `test('validates email and domain and whitespace')` |
+| **Clear** | Name describes behavior | `test('test1')` |
+| **Shows intent** | Demonstrates desired API | Obscures what code should do |
 
-## Por Que a Ordem Importa
+## Why Order Matters
 
-**"Vou escrever testes depois para verificar que funciona"**
+**"I'll write tests after to verify it works"**
 
-Testes escritos após o código passam imediatamente. Passar imediatamente não prova nada:
-- Pode testar a coisa errada
-- Pode testar implementação, não comportamento
-- Pode perder casos extremos que você esqueceu
-- Você nunca viu capturar o bug
+Tests written after code pass immediately. Passing immediately proves nothing:
+- Might test wrong thing
+- Might test implementation, not behavior
+- Might miss edge cases you forgot
+- You never saw it catch the bug
 
-Testar primeiro força você a ver o teste falhar, provando que realmente testa algo.
+Test-first forces you to see the test fail, proving it actually tests something.
 
-**"Já testei manualmente todos os casos extremos"**
+**"I already manually tested all the edge cases"**
 
-Testes manuais são ad-hoc. Você acha que testou tudo, mas:
-- Sem registro do que foi testado
-- Não pode re-executar quando o código muda
-- Fácil esquecer casos sob pressão
-- "Funcionou quando tentei" ≠ abrangente
+Manual testing is ad-hoc. You think you tested everything but:
+- No record of what you tested
+- Can't re-run when code changes
+- Easy to forget cases under pressure
+- "It worked when I tried it" ≠ comprehensive
 
-Testes automatizados são sistemáticos. Executam da mesma forma toda vez.
+Automated tests are systematic. They run the same way every time.
 
-**"Deletar X horas de trabalho é desperdício"**
+**"Deleting X hours of work is wasteful"**
 
-Falácia do custo irrecuperável. O tempo já foi embora. Sua escolha agora:
-- Deletar e reescrever com TDD (X horas a mais, alta confiança)
-- Manter e adicionar testes depois (30 min, baixa confiança, bugs prováveis)
+Sunk cost fallacy. The time is already gone. Your choice now:
+- Delete and rewrite with TDD (X more hours, high confidence)
+- Keep it and add tests after (30 min, low confidence, likely bugs)
 
-O "desperdício" é manter código em que não pode confiar. Código funcionando sem testes reais é dívida técnica.
+The "waste" is keeping code you can't trust. Working code without real tests is technical debt.
 
-**"TDD é dogmático, ser pragmático significa adaptar"**
+**"TDD is dogmatic, being pragmatic means adapting"**
 
-TDD É pragmático:
-- Encontra bugs antes do commit (mais rápido do que depurar depois)
-- Previne regressões (testes capturam quebras imediatamente)
-- Documenta comportamento (testes mostram como usar o código)
-- Permite refatoração (mude livremente, testes capturam quebras)
+TDD IS pragmatic:
+- Finds bugs before commit (faster than debugging after)
+- Prevents regressions (tests catch breaks immediately)
+- Documents behavior (tests show how to use code)
+- Enables refactoring (change freely, tests catch breaks)
 
-Atalhos "pragmáticos" = depuração em produção = mais lento.
+"Pragmatic" shortcuts = debugging in production = slower.
 
-**"Testes depois alcançam os mesmos objetivos — é o espírito não o ritual"**
+**"Tests after achieve the same goals - it's spirit not ritual"**
 
-Não. Testes-depois respondem "O que isso faz?" Testes-primeiro respondem "O que isso deve fazer?"
+No. Tests-after answer "What does this do?" Tests-first answer "What should this do?"
 
-Testes-depois são tendenciosos pela sua implementação. Você testa o que construiu, não o que é exigido. Você verifica casos extremos lembrados, não descobertos.
+Tests-after are biased by your implementation. You test what you built, not what's required. You verify remembered edge cases, not discovered ones.
 
-Testes-primeiro forçam a descoberta de casos extremos antes de implementar. Testes-depois verificam se você se lembrou de tudo (não se lembrou).
+Tests-first force edge case discovery before implementing. Tests-after verify you remembered everything (you didn't).
 
-30 minutos de testes depois ≠ TDD. Você obtém cobertura, perde prova de que os testes funcionam.
+30 minutes of tests after ≠ TDD. You get coverage, lose proof tests work.
 
-## Racionalizações Comuns
+## Common Rationalizations
 
-| Desculpa | Realidade |
-|----------|-----------|
-| "Simples demais para testar" | Código simples quebra. Teste leva 30 segundos. |
-| "Vou testar depois" | Testes passando imediatamente não provam nada. |
-| "Testes depois alcançam os mesmos objetivos" | Testes-depois = "o que isso faz?" Testes-primeiro = "o que isso deve fazer?" |
-| "Já testei manualmente" | Ad-hoc ≠ sistemático. Sem registro, não pode re-executar. |
-| "Deletar X horas é desperdício" | Falácia do custo irrecuperável. Manter código não verificado é dívida técnica. |
-| "Manter como referência, escrever testes primeiro" | Você vai adaptá-lo. Isso é testar depois. Deletar significa deletar. |
-| "Preciso explorar primeiro" | Tudo bem. Jogue fora a exploração, comece com TDD. |
-| "Teste difícil = design pouco claro" | Ouça o teste. Difícil de testar = difícil de usar. |
-| "TDD vai me atrasar" | TDD mais rápido do que depurar. Pragmático = test-first. |
-| "Teste manual mais rápido" | Manual não prova casos extremos. Vai re-testar a cada mudança. |
-| "Código existente não tem testes" | Você está melhorando-o. Adicione testes para código existente. |
+| Excuse | Reality |
+|--------|---------|
+| "Too simple to test" | Simple code breaks. Test takes 30 seconds. |
+| "I'll test after" | Tests passing immediately prove nothing. |
+| "Tests after achieve same goals" | Tests-after = "what does this do?" Tests-first = "what should this do?" |
+| "Already manually tested" | Ad-hoc ≠ systematic. No record, can't re-run. |
+| "Deleting X hours is wasteful" | Sunk cost fallacy. Keeping unverified code is technical debt. |
+| "Keep as reference, write tests first" | You'll adapt it. That's testing after. Delete means delete. |
+| "Need to explore first" | Fine. Throw away exploration, start with TDD. |
+| "Test hard = design unclear" | Listen to test. Hard to test = hard to use. |
+| "TDD will slow me down" | TDD faster than debugging. Pragmatic = test-first. |
+| "Manual test faster" | Manual doesn't prove edge cases. You'll re-test every change. |
+| "Existing code has no tests" | You're improving it. Add tests for existing code. |
 
-## Sinais de Alerta — PARE e Recomece
+## Red Flags - STOP and Start Over
 
-- Código antes do teste
-- Teste após a implementação
-- Teste passa imediatamente
-- Não consegue explicar por que o teste falhou
-- Testes adicionados "depois"
-- Racionalizando "só dessa vez"
-- "Já testei manualmente"
-- "Testes depois alcançam o mesmo propósito"
-- "É sobre o espírito não o ritual"
-- "Manter como referência" ou "adaptar código existente"
-- "Já gastei X horas, deletar é desperdício"
-- "TDD é dogmático, estou sendo pragmático"
-- "Isso é diferente porque..."
+- Code before test
+- Test after implementation
+- Test passes immediately
+- Can't explain why test failed
+- Tests added "later"
+- Rationalizing "just this once"
+- "I already manually tested it"
+- "Tests after achieve the same purpose"
+- "It's about spirit not ritual"
+- "Keep as reference" or "adapt existing code"
+- "Already spent X hours, deleting is wasteful"
+- "TDD is dogmatic, I'm being pragmatic"
+- "This is different because..."
 
-**Todos esses significam: Delete o código. Recomece com TDD.**
+**All of these mean: Delete code. Start over with TDD.**
 
-## Exemplo: Correção de Bug
+## Example: Bug Fix
 
-**Bug:** Email vazio aceito
+**Bug:** Empty email accepted
 
-**VERMELHO**
+**RED**
 ```typescript
-test('rejeita email vazio', async () => {
-  const resultado = await enviarFormulario({ email: '' });
-  expect(resultado.error).toBe('Email obrigatório');
+test('rejects empty email', async () => {
+  const result = await submitForm({ email: '' });
+  expect(result.error).toBe('Email required');
 });
 ```
 
-**Verificar VERMELHO**
+**Verify RED**
 ```bash
 $ npm test
-FAIL: expected 'Email obrigatório', got undefined
+FAIL: expected 'Email required', got undefined
 ```
 
-**VERDE**
+**GREEN**
 ```typescript
-function enviarFormulario(dados: DadosFormulario) {
-  if (!dados.email?.trim()) {
-    return { error: 'Email obrigatório' };
+function submitForm(data: FormData) {
+  if (!data.email?.trim()) {
+    return { error: 'Email required' };
   }
   // ...
 }
 ```
 
-**Verificar VERDE**
+**Verify GREEN**
 ```bash
 $ npm test
 PASS
 ```
 
-**REFATORAR**
-Extraia validação para múltiplos campos se necessário.
+**REFACTOR**
+Extract validation for multiple fields if needed.
 
-## Checklist de Verificação
+## Verification Checklist
 
-Antes de marcar o trabalho como completo:
+Before marking work complete:
 
-- [ ] Toda nova função/método tem um teste
-- [ ] Observei cada teste falhar antes de implementar
-- [ ] Cada teste falhou pelo motivo esperado (funcionalidade ausente, não erro de digitação)
-- [ ] Escrevi código mínimo para passar cada teste
-- [ ] Todos os testes passam
-- [ ] Saída limpa (sem erros, avisos)
-- [ ] Testes usam código real (mocks apenas se inevitável)
-- [ ] Casos extremos e erros cobertos
+- [ ] Every new function/method has a test
+- [ ] Watched each test fail before implementing
+- [ ] Each test failed for expected reason (feature missing, not typo)
+- [ ] Wrote minimal code to pass each test
+- [ ] All tests pass
+- [ ] Output pristine (no errors, warnings)
+- [ ] Tests use real code (mocks only if unavoidable)
+- [ ] Edge cases and errors covered
 
-Não consegue marcar todas as caixas? Você pulou TDD. Recomece.
+Can't check all boxes? You skipped TDD. Start over.
 
-## Quando Travado
+## When Stuck
 
-| Problema | Solução |
-|----------|---------|
-| Não sabe como testar | Escreva a API desejada. Escreva a assertion primeiro. Pergunte ao seu parceiro humano. |
-| Teste muito complicado | Design muito complicado. Simplifique a interface. |
-| Deve mockar tudo | Código muito acoplado. Use injeção de dependência. |
-| Setup do teste enorme | Extraia helpers. Ainda complexo? Simplifique o design. |
+| Problem | Solution |
+|---------|----------|
+| Don't know how to test | Write wished-for API. Write assertion first. Ask your human partner. |
+| Test too complicated | Design too complicated. Simplify interface. |
+| Must mock everything | Code too coupled. Use dependency injection. |
+| Test setup huge | Extract helpers. Still complex? Simplify design. |
 
-## Integração com Depuração
+## Debugging Integration
 
-Bug encontrado? Escreva um teste com falha reproduzindo-o. Siga o ciclo TDD. O teste prova a correção e previne regressão.
+Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.
 
-Nunca corrija bugs sem um teste.
+Never fix bugs without a test.
 
-## Anti-Padrões de Teste
+## Testing Anti-Patterns
 
-Ao adicionar mocks ou utilitários de teste, leia @testing-anti-patterns.md para evitar armadilhas comuns:
-- Testar comportamento do mock em vez do comportamento real
-- Adicionar métodos apenas para teste em classes de produção
-- Mockar sem entender dependências
+When adding mocks or test utilities, read @testing-anti-patterns.md to avoid common pitfalls:
+- Testing mock behavior instead of real behavior
+- Adding test-only methods to production classes
+- Mocking without understanding dependencies
 
-## Regra Final
+## Final Rule
 
 ```
-Código de produção → teste existe e falhou primeiro
-Caso contrário → não é TDD
+Production code → test exists and failed first
+Otherwise → not TDD
 ```
 
-Sem exceções sem permissão do seu parceiro humano.
+No exceptions without your human partner's permission.

@@ -1,57 +1,63 @@
-# Espera Baseada em Condição
+# Condition-Based Waiting
 
-## Visão Geral
+## Overview
 
-Testes instáveis geralmente tentam adivinhar o tempo com atrasos arbitrários. Isso cria condições de corrida onde os testes passam em máquinas rápidas, mas falham sob carga ou no CI.
+Flaky tests often guess at timing with arbitrary delays. This creates race conditions where tests pass on fast machines but fail under load or in CI.
 
-**Princípio fundamental:** Espere pela condição real que você se importa, não uma estimativa de quanto tempo leva.
+**Core principle:** Wait for the actual condition you care about, not a guess about how long it takes.
 
-## Quando Usar
+## When to Use
 
-```mermaid
-flowchart TD
-    A{Teste usa setTimeout/sleep?} -->|sim| B{Testando comportamento de tempo?}
-    B -->|sim| C[Documente POR QUÊ o timeout é necessário]
-    B -->|não| D[Use espera baseada em condição]
+```dot
+digraph when_to_use {
+    "Test uses setTimeout/sleep?" [shape=diamond];
+    "Testing timing behavior?" [shape=diamond];
+    "Document WHY timeout needed" [shape=box];
+    "Use condition-based waiting" [shape=box];
+
+    "Test uses setTimeout/sleep?" -> "Testing timing behavior?" [label="yes"];
+    "Testing timing behavior?" -> "Document WHY timeout needed" [label="yes"];
+    "Testing timing behavior?" -> "Use condition-based waiting" [label="no"];
+}
 ```
 
-**Use quando:**
-- Testes têm atrasos arbitrários (`setTimeout`, `sleep`, `time.sleep()`)
-- Testes são instáveis (passam às vezes, falham sob carga)
-- Testes fazem timeout quando executados em paralelo
-- Aguardando operações assíncronas completarem
+**Use when:**
+- Tests have arbitrary delays (`setTimeout`, `sleep`, `time.sleep()`)
+- Tests are flaky (pass sometimes, fail under load)
+- Tests timeout when run in parallel
+- Waiting for async operations to complete
 
-**Não use quando:**
-- Testando comportamento de tempo real (debounce, intervalos de throttle)
-- Sempre documente POR QUÊ se usar timeout arbitrário
+**Don't use when:**
+- Testing actual timing behavior (debounce, throttle intervals)
+- Always document WHY if using arbitrary timeout
 
-## Padrão Principal
+## Core Pattern
 
 ```typescript
-// ❌ ANTES: Adivinhando o tempo
+// ❌ BEFORE: Guessing at timing
 await new Promise(r => setTimeout(r, 50));
 const result = getResult();
 expect(result).toBeDefined();
 
-// ✅ DEPOIS: Esperando a condição
+// ✅ AFTER: Waiting for condition
 await waitFor(() => getResult() !== undefined);
 const result = getResult();
 expect(result).toBeDefined();
 ```
 
-## Padrões Rápidos
+## Quick Patterns
 
-| Cenário | Padrão |
-|---------|---------|
-| Espere por evento | `waitFor(() => events.find(e => e.type === 'DONE'))` |
-| Espere por estado | `waitFor(() => machine.state === 'ready')` |
-| Espere por contagem | `waitFor(() => items.length >= 5)` |
-| Espere por arquivo | `waitFor(() => fs.existsSync(path))` |
-| Condição complexa | `waitFor(() => obj.ready && obj.value > 10)` |
+| Scenario | Pattern |
+|----------|---------|
+| Wait for event | `waitFor(() => events.find(e => e.type === 'DONE'))` |
+| Wait for state | `waitFor(() => machine.state === 'ready')` |
+| Wait for count | `waitFor(() => items.length >= 5)` |
+| Wait for file | `waitFor(() => fs.existsSync(path))` |
+| Complex condition | `waitFor(() => obj.ready && obj.value > 10)` |
 
-## Implementação
+## Implementation
 
-Função de polling genérica:
+Generic polling function:
 ```typescript
 async function waitFor<T>(
   condition: () => T | undefined | null | false,
@@ -65,45 +71,45 @@ async function waitFor<T>(
     if (result) return result;
 
     if (Date.now() - startTime > timeoutMs) {
-      throw new Error(`Timeout aguardando ${description} após ${timeoutMs}ms`);
+      throw new Error(`Timeout waiting for ${description} after ${timeoutMs}ms`);
     }
 
-    await new Promise(r => setTimeout(r, 10)); // Faz polling a cada 10ms
+    await new Promise(r => setTimeout(r, 10)); // Poll every 10ms
   }
 }
 ```
 
-Veja `condition-based-waiting-example.ts` neste diretório para implementação completa com helpers específicos de domínio (`waitForEvent`, `waitForEventCount`, `waitForEventMatch`) de sessão de depuração real.
+See `condition-based-waiting-example.ts` in this directory for complete implementation with domain-specific helpers (`waitForEvent`, `waitForEventCount`, `waitForEventMatch`) from actual debugging session.
 
-## Erros Comuns
+## Common Mistakes
 
-**❌ Polling muito rápido:** `setTimeout(check, 1)` — desperdiça CPU
-**✅ Correção:** Faça polling a cada 10ms
+**❌ Polling too fast:** `setTimeout(check, 1)` - wastes CPU
+**✅ Fix:** Poll every 10ms
 
-**❌ Sem timeout:** Loop infinito se a condição nunca for atendida
-**✅ Correção:** Sempre inclua timeout com erro claro
+**❌ No timeout:** Loop forever if condition never met
+**✅ Fix:** Always include timeout with clear error
 
-**❌ Dados antigos:** Armazena estado em cache antes do loop
-**✅ Correção:** Chame o getter dentro do loop para dados frescos
+**❌ Stale data:** Cache state before loop
+**✅ Fix:** Call getter inside loop for fresh data
 
-## Quando Timeout Arbitrário É CORRETO
+## When Arbitrary Timeout IS Correct
 
 ```typescript
-// Ferramenta faz tick a cada 100ms — precisa de 2 ticks para verificar saída parcial
-await waitForEvent(manager, 'TOOL_STARTED'); // Primeiro: aguarde a condição
-await new Promise(r => setTimeout(r, 200));   // Depois: aguarde comportamento temporizado
-// 200ms = 2 ticks a 100ms de intervalo — documentado e justificado
+// Tool ticks every 100ms - need 2 ticks to verify partial output
+await waitForEvent(manager, 'TOOL_STARTED'); // First: wait for condition
+await new Promise(r => setTimeout(r, 200));   // Then: wait for timed behavior
+// 200ms = 2 ticks at 100ms intervals - documented and justified
 ```
 
-**Requisitos:**
-1. Primeiro aguarde a condição de gatilho
-2. Baseado em timing conhecido (não adivinhando)
-3. Comentário explicando POR QUÊ
+**Requirements:**
+1. First wait for triggering condition
+2. Based on known timing (not guessing)
+3. Comment explaining WHY
 
-## Impacto no Mundo Real
+## Real-World Impact
 
-De sessão de depuração (2025-10-03):
-- Corrigidos 15 testes instáveis em 3 arquivos
-- Taxa de aprovação: 60% → 100%
-- Tempo de execução: 40% mais rápido
-- Zero condições de corrida
+From debugging session (2025-10-03):
+- Fixed 15 flaky tests across 3 files
+- Pass rate: 60% → 100%
+- Execution time: 40% faster
+- No more race conditions

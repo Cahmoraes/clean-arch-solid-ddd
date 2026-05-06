@@ -139,11 +139,11 @@ export default function AdminCheckInsPage() {
 			<header className="flex flex-col gap-1">
 				<h1
 					id="admin-checkins-title"
-					className="font-display text-3xl font-medium text-pure-black"
+					className="font-display text-3xl font-medium text-foreground"
 				>
 					Check-ins pendentes
 				</h1>
-				<p className="text-sm text-mid-gray">
+				<p className="text-sm text-muted-foreground">
 					Valide as presenças registradas pelos membros.
 				</p>
 			</header>

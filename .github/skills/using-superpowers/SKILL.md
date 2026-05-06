@@ -1,116 +1,126 @@
 ---
 name: using-superpowers
-description: Use quando iniciar qualquer conversa — estabelece como encontrar e usar skills, exigindo invocação da ferramenta Skill antes de QUALQUER resposta incluindo perguntas de esclarecimento
+description: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions
 ---
 
 <SUBAGENT-STOP>
-Se você foi despachado como um subagente para executar uma tarefa específica, pule esta skill.
+If you were dispatched as a subagent to execute a specific task, skip this skill.
 </SUBAGENT-STOP>
 
-<EXTREMAMENTE-IMPORTANTE>
-Se você acha que há mesmo 1% de chance de que uma skill possa se aplicar ao que você está fazendo, você ABSOLUTAMENTE DEVE invocar a skill.
+<EXTREMELY-IMPORTANT>
+If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
 
-SE UMA SKILL SE APLICA À SUA TAREFA, VOCÊ NÃO TEM ESCOLHA. VOCÊ DEVE USÁ-LA.
+IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
 
-Isso não é negociável. Isso não é opcional. Você não pode racionalizar para sair disso.
-</EXTREMAMENTE-IMPORTANTE>
+This is not negotiable. This is not optional. You cannot rationalize your way out of this.
+</EXTREMELY-IMPORTANT>
 
-## Prioridade de Instruções
+## Workflow Preferences
 
-Skills do Superpowers sobrepõem o comportamento padrão do system prompt, mas **instruções do usuário sempre têm precedência**:
+On every session start, check for `.superpowers/preferences.yml` in the user's repository root.
 
-1. **Instruções explícitas do usuário** (CLAUDE.md, GEMINI.md, AGENTS.md, solicitações diretas) — maior prioridade
-2. **Skills do Superpowers** — sobrepõem comportamento padrão do sistema onde conflitam
-3. **System prompt padrão** — menor prioridade
+- **If it exists:** Read it and keep the preferences in context. Inject relevant preferences when dispatching subagents (include them in the subagent prompt context).
+- **If it does NOT exist:** Follow the onboarding wizard in `onboarding-preferences.md` (read that file and execute the wizard before proceeding with the user's task).
 
-Se CLAUDE.md, GEMINI.md ou AGENTS.md diz "não use TDD" e uma skill diz "sempre use TDD," siga as instruções do usuário. O usuário está no controle.
+These preferences govern agent behavior throughout the workflow (auto-commit, language, destructive action confirmation). Skills that execute tasks (subagent-driven-development, executing-plans) also read the file directly, but the entry point ensures onboarding happens.
 
-## Como Acessar Skills
+## Instruction Priority
 
-**No Claude Code:** Use a ferramenta `Skill`. Quando você invoca uma skill, seu conteúdo é carregado e apresentado a você — siga-o diretamente. Nunca use a ferramenta Read em arquivos de skill.
+Superpowers skills override default system prompt behavior, but **user instructions always take precedence**:
 
-**No Copilot CLI:** Use a ferramenta `skill`. Skills são auto-descobertas a partir de plugins instalados. A ferramenta `skill` funciona da mesma forma que a ferramenta `Skill` do Claude Code.
+1. **User's explicit instructions** (CLAUDE.md, GEMINI.md, AGENTS.md, direct requests) — highest priority
+2. **Superpowers skills** — override default system behavior where they conflict
+3. **Default system prompt** — lowest priority
 
-**No Gemini CLI:** Skills são ativadas via ferramenta `activate_skill`. O Gemini carrega metadados de skill no início da sessão e ativa o conteúdo completo sob demanda.
+If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "always use TDD," follow the user's instructions. The user is in control.
 
-**Em outros ambientes:** Verifique a documentação da sua plataforma sobre como skills são carregadas.
+## How to Access Skills
 
-## Adaptação de Plataforma
+**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you—follow it directly. Never use the Read tool on skill files.
 
-Skills usam nomes de ferramentas do Claude Code. Plataformas não-CC: veja `references/copilot-tools.md` (Copilot CLI), `references/codex-tools.md` (Codex) para equivalentes de ferramentas. Usuários do Gemini CLI obtêm o mapeamento de ferramentas carregado automaticamente via GEMINI.md.
+**In Copilot CLI:** Use the `skill` tool. Skills are auto-discovered from installed plugins. The `skill` tool works the same as Claude Code's `Skill` tool.
 
-# Usando Skills
+**In Gemini CLI:** Skills activate via the `activate_skill` tool. Gemini loads skill metadata at session start and activates the full content on demand.
 
-## A Regra
+**In other environments:** Check your platform's documentation for how skills are loaded.
 
-**Invoque skills relevantes ou solicitadas ANTES de qualquer resposta ou ação.** Mesmo uma chance de 1% de que uma skill possa se aplicar significa que você deve invocar a skill para verificar. Se uma skill invocada acabar sendo errada para a situação, você não precisa usá-la.
+## Platform Adaptation
 
-```mermaid
-flowchart TD
-    A(["Mensagem do usuário recebida"])
-    B(["Prestes a entrar no PlanMode?"])
-    C{"Já fez brainstorming?"}
-    D["Invocar skill de brainstorming"]
-    E{"Alguma skill pode se aplicar?"}
-    F["Invocar ferramenta Skill"]
-    G["Anunciar: 'Usando [skill] para [propósito]'"]
-    H{"Tem checklist?"}
-    I["Criar todo no TodoWrite por item"]
-    J["Seguir skill exatamente"]
-    K(["Responder (incluindo esclarecimentos)"])
+Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-tools.md` (Copilot CLI), `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.
 
-    B --> C
-    C -->|não| D
-    C -->|sim| E
-    D --> E
+# Using Skills
 
-    A --> E
-    E -->|"sim, mesmo 1%"| F
-    E -->|"definitivamente não"| K
-    F --> G
-    G --> H
-    H -->|sim| I
-    H -->|não| J
-    I --> J
+## The Rule
+
+**Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
+
+```dot
+digraph skill_flow {
+    "User message received" [shape=doublecircle];
+    "About to EnterPlanMode?" [shape=doublecircle];
+    "Already brainstormed?" [shape=diamond];
+    "Invoke brainstorming skill" [shape=box];
+    "Might any skill apply?" [shape=diamond];
+    "Invoke Skill tool" [shape=box];
+    "Announce: 'Using [skill] to [purpose]'" [shape=box];
+    "Has checklist?" [shape=diamond];
+    "Create TodoWrite todo per item" [shape=box];
+    "Follow skill exactly" [shape=box];
+    "Respond (including clarifications)" [shape=doublecircle];
+
+    "About to EnterPlanMode?" -> "Already brainstormed?";
+    "Already brainstormed?" -> "Invoke brainstorming skill" [label="no"];
+    "Already brainstormed?" -> "Might any skill apply?" [label="yes"];
+    "Invoke brainstorming skill" -> "Might any skill apply?";
+
+    "User message received" -> "Might any skill apply?";
+    "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
+    "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
+    "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";
+    "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
+    "Has checklist?" -> "Create TodoWrite todo per item" [label="yes"];
+    "Has checklist?" -> "Follow skill exactly" [label="no"];
+    "Create TodoWrite todo per item" -> "Follow skill exactly";
+}
 ```
 
-## Sinais de Alerta
+## Red Flags
 
-Esses pensamentos significam PARE — você está racionalizando:
+These thoughts mean STOP—you're rationalizing:
 
-| Pensamento | Realidade |
-|------------|-----------|
-| "Esta é apenas uma pergunta simples" | Perguntas são tarefas. Verifique skills. |
-| "Preciso de mais contexto primeiro" | Verificação de skill vem ANTES das perguntas de esclarecimento. |
-| "Deixa eu explorar o codebase primeiro" | Skills dizem COMO explorar. Verifique primeiro. |
-| "Posso verificar git/arquivos rapidamente" | Arquivos carecem de contexto de conversa. Verifique skills. |
-| "Deixa eu reunir informações primeiro" | Skills dizem COMO reunir informações. |
-| "Isso não precisa de uma skill formal" | Se uma skill existe, use-a. |
-| "Lembro desta skill" | Skills evoluem. Leia a versão atual. |
-| "Isso não conta como uma tarefa" | Ação = tarefa. Verifique skills. |
-| "A skill é exagero" | Coisas simples ficam complexas. Use-a. |
-| "Vou fazer só essa coisa primeiro" | Verifique ANTES de fazer qualquer coisa. |
-| "Isso parece produtivo" | Ação indisciplinada desperdiça tempo. Skills previnem isso. |
-| "Sei o que isso significa" | Conhecer o conceito ≠ usar a skill. Invoque-a. |
+| Thought | Reality |
+|---------|---------|
+| "This is just a simple question" | Questions are tasks. Check for skills. |
+| "I need more context first" | Skill check comes BEFORE clarifying questions. |
+| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
+| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
+| "Let me gather information first" | Skills tell you HOW to gather information. |
+| "This doesn't need a formal skill" | If a skill exists, use it. |
+| "I remember this skill" | Skills evolve. Read current version. |
+| "This doesn't count as a task" | Action = task. Check for skills. |
+| "The skill is overkill" | Simple things become complex. Use it. |
+| "I'll just do this one thing first" | Check BEFORE doing anything. |
+| "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
+| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
 
-## Prioridade de Skills
+## Skill Priority
 
-Quando múltiplas skills podem se aplicar, use esta ordem:
+When multiple skills could apply, use this order:
 
-1. **Skills de processo primeiro** (brainstorming, debugging) — determinam COMO abordar a tarefa
-2. **Skills de implementação depois** (frontend-design, mcp-builder) — guiam a execução
+1. **Process skills first** (brainstorming, debugging) - these determine HOW to approach the task
+2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution
 
-"Vamos construir X" → brainstorming primeiro, depois skills de implementação.
-"Corrija este bug" → debugging primeiro, depois skills específicas de domínio.
+"Let's build X" → brainstorming first, then implementation skills.
+"Fix this bug" → debugging first, then domain-specific skills.
 
-## Tipos de Skills
+## Skill Types
 
-**Rígidas** (TDD, debugging): Siga exatamente. Não adapte eliminando a disciplina.
+**Rigid** (TDD, debugging): Follow exactly. Don't adapt away discipline.
 
-**Flexíveis** (padrões): Adapte princípios ao contexto.
+**Flexible** (patterns): Adapt principles to context.
 
-A própria skill diz qual é.
+The skill itself tells you which.
 
-## Instruções do Usuário
+## User Instructions
 
-Instruções dizem O QUÊ, não COMO. "Adicione X" ou "Corrija Y" não significa pular workflows.
+Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.

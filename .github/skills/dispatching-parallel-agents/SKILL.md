@@ -1,173 +1,182 @@
 ---
 name: dispatching-parallel-agents
-description: Use quando há 2+ tarefas independentes que podem ser realizadas sem estado compartilhado ou dependências sequenciais
+description: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
 ---
 
-# Despachando Agentes em Paralelo
+# Dispatching Parallel Agents
 
-## Visão Geral
+## Overview
 
-Você delega tarefas a agentes especializados com contexto isolado. Ao elaborar com precisão suas instruções e contexto, você garante que eles permaneçam focados e tenham sucesso na tarefa. Eles nunca devem herdar o contexto ou o histórico da sua sessão — você constrói exatamente o que eles precisam. Isso também preserva seu próprio contexto para o trabalho de coordenação.
+You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
-Quando você tem múltiplas falhas não relacionadas (arquivos de teste diferentes, subsistemas diferentes, bugs diferentes), investigá-las sequencialmente é desperdício de tempo. Cada investigação é independente e pode acontecer em paralelo.
+When you have multiple unrelated failures (different test files, different subsystems, different bugs), investigating them sequentially wastes time. Each investigation is independent and can happen in parallel.
 
-**Princípio fundamental:** Despache um agente por domínio de problema independente. Deixe-os trabalhar de forma concorrente.
+**Core principle:** Dispatch one agent per independent problem domain. Let them work concurrently.
 
-## Quando Usar
+## When to Use
 
-```mermaid
-flowchart TD
-    A{Múltiplas falhas?} -->|sim| B{São independentes?}
-    B -->|não - relacionadas| C[Um único agente investiga tudo]
-    B -->|sim| D{Podem trabalhar em paralelo?}
-    D -->|sim| E[Despacho em paralelo]
-    D -->|não - estado compartilhado| F[Agentes sequenciais]
+```dot
+digraph when_to_use {
+    "Multiple failures?" [shape=diamond];
+    "Are they independent?" [shape=diamond];
+    "Single agent investigates all" [shape=box];
+    "One agent per problem domain" [shape=box];
+    "Can they work in parallel?" [shape=diamond];
+    "Sequential agents" [shape=box];
+    "Parallel dispatch" [shape=box];
+
+    "Multiple failures?" -> "Are they independent?" [label="yes"];
+    "Are they independent?" -> "Single agent investigates all" [label="no - related"];
+    "Are they independent?" -> "Can they work in parallel?" [label="yes"];
+    "Can they work in parallel?" -> "Parallel dispatch" [label="yes"];
+    "Can they work in parallel?" -> "Sequential agents" [label="no - shared state"];
+}
 ```
 
-**Use quando:**
-- 3+ arquivos de teste falhando com diferentes causas raiz
-- Múltiplos subsistemas quebrados de forma independente
-- Cada problema pode ser entendido sem contexto dos outros
-- Sem estado compartilhado entre as investigações
+**Use when:**
+- 3+ test files failing with different root causes
+- Multiple subsystems broken independently
+- Each problem can be understood without context from others
+- No shared state between investigations
 
-**Não use quando:**
-- Falhas estão relacionadas (consertar uma pode consertar outras)
-- Precisar entender o estado completo do sistema
-- Agentes interferirem entre si
+**Don't use when:**
+- Failures are related (fix one might fix others)
+- Need to understand full system state
+- Agents would interfere with each other
 
-## O Padrão
+## The Pattern
 
-### 1. Identificar Domínios Independentes
+### 1. Identify Independent Domains
 
-Agrupe as falhas pelo que está quebrado:
-- Arquivo A de testes: Fluxo de aprovação de ferramenta
-- Arquivo B de testes: Comportamento de conclusão em lote
-- Arquivo C de testes: Funcionalidade de aborto
+Group failures by what's broken:
+- File A tests: Tool approval flow
+- File B tests: Batch completion behavior
+- File C tests: Abort functionality
 
-Cada domínio é independente — corrigir a aprovação de ferramenta não afeta os testes de aborto.
+Each domain is independent - fixing tool approval doesn't affect abort tests.
 
-### 2. Criar Tarefas Focadas para os Agentes
+### 2. Create Focused Agent Tasks
 
-Cada agente recebe:
-- **Escopo específico:** Um arquivo de teste ou subsistema
-- **Objetivo claro:** Fazer esses testes passarem
-- **Restrições:** Não alterar outros códigos
-- **Saída esperada:** Resumo do que foi encontrado e corrigido
+Each agent gets:
+- **Specific scope:** One test file or subsystem
+- **Clear goal:** Make these tests pass
+- **Constraints:** Don't change other code
+- **Expected output:** Summary of what you found and fixed
 
-### 3. Despachar em Paralelo
+### 3. Dispatch in Parallel
 
 ```typescript
-// No ambiente Claude Code / IA
-Task("Corrigir falhas em agent-tool-abort.test.ts")
-Task("Corrigir falhas em batch-completion-behavior.test.ts")
-Task("Corrigir falhas em tool-approval-race-conditions.test.ts")
-// Os três rodam de forma concorrente
+// In Claude Code / AI environment
+Task("Fix agent-tool-abort.test.ts failures")
+Task("Fix batch-completion-behavior.test.ts failures")
+Task("Fix tool-approval-race-conditions.test.ts failures")
+// All three run concurrently
 ```
 
-### 4. Revisar e Integrar
+### 4. Review and Integrate
 
-Quando os agentes retornarem:
-- Leia cada resumo
-- Verifique se as correções não conflitam
-- Execute a suite de testes completa
-- Integre todas as mudanças
+When agents return:
+- Read each summary
+- Verify fixes don't conflict
+- Run full test suite
+- Integrate all changes
 
-## Estrutura do Prompt do Agente
+## Agent Prompt Structure
 
-Bons prompts de agente são:
-1. **Focados** — Um domínio de problema claro
-2. **Auto-contidos** — Todo o contexto necessário para entender o problema
-3. **Específicos sobre a saída** — O que o agente deve retornar?
+Good agent prompts are:
+1. **Focused** - One clear problem domain
+2. **Self-contained** - All context needed to understand the problem
+3. **Specific about output** - What should the agent return?
 
 ```markdown
-Corrija os 3 testes falhando em src/agents/agent-tool-abort.test.ts:
+Fix the 3 failing tests in src/agents/agent-tool-abort.test.ts:
 
-1. "should abort tool with partial output capture" - espera 'interrupted at' na mensagem
-2. "should handle mixed completed and aborted tools" - ferramenta rápida abortada em vez de concluída
-3. "should properly track pendingToolCount" - espera 3 resultados, recebe 0
+1. "should abort tool with partial output capture" - expects 'interrupted at' in message
+2. "should handle mixed completed and aborted tools" - fast tool aborted instead of completed
+3. "should properly track pendingToolCount" - expects 3 results but gets 0
 
-Esses são problemas de temporização/condição de corrida. Sua tarefa:
+These are timing/race condition issues. Your task:
 
-1. Leia o arquivo de teste e entenda o que cada teste verifica
-2. Identifique a causa raiz — problemas de tempo ou bugs reais?
-3. Corrija:
-   - Substituindo timeouts arbitrários por espera baseada em eventos
-   - Corrigindo bugs na implementação de aborto, se encontrados
-   - Ajustando expectativas do teste se o comportamento mudou
+1. Read the test file and understand what each test verifies
+2. Identify root cause - timing issues or actual bugs?
+3. Fix by:
+   - Replacing arbitrary timeouts with event-based waiting
+   - Fixing bugs in abort implementation if found
+   - Adjusting test expectations if testing changed behavior
 
-NÃO apenas aumente os timeouts — encontre o problema real.
+Do NOT just increase timeouts - find the real issue.
 
-Retorne: Resumo do que encontrou e o que corrigiu.
+Return: Summary of what you found and what you fixed.
 ```
 
-## Erros Comuns
+## Common Mistakes
 
-**❌ Muito amplo:** "Corrija todos os testes" — agente se perde
-**✅ Específico:** "Corrija agent-tool-abort.test.ts" — escopo focado
+**❌ Too broad:** "Fix all the tests" - agent gets lost
+**✅ Specific:** "Fix agent-tool-abort.test.ts" - focused scope
 
-**❌ Sem contexto:** "Corrija a condição de corrida" — agente não sabe onde
-**✅ Com contexto:** Cole as mensagens de erro e nomes dos testes
+**❌ No context:** "Fix the race condition" - agent doesn't know where
+**✅ Context:** Paste the error messages and test names
 
-**❌ Sem restrições:** Agente pode refatorar tudo
-**✅ Com restrições:** "NÃO altere o código de produção" ou "Corrija apenas os testes"
+**❌ No constraints:** Agent might refactor everything
+**✅ Constraints:** "Do NOT change production code" or "Fix tests only"
 
-**❌ Saída vaga:** "Corrija" — você não sabe o que mudou
-**✅ Específico:** "Retorne resumo da causa raiz e das mudanças"
+**❌ Vague output:** "Fix it" - you don't know what changed
+**✅ Specific:** "Return summary of root cause and changes"
 
-## Quando NÃO Usar
+## When NOT to Use
 
-**Falhas relacionadas:** Corrigir uma pode corrigir outras — investigue juntas primeiro
-**Precisar de contexto completo:** Entender requer ver o sistema inteiro
-**Depuração exploratória:** Você ainda não sabe o que está quebrado
-**Estado compartilhado:** Agentes interfeririam (editando os mesmos arquivos, usando os mesmos recursos)
+**Related failures:** Fixing one might fix others - investigate together first
+**Need full context:** Understanding requires seeing entire system
+**Exploratory debugging:** You don't know what's broken yet
+**Shared state:** Agents would interfere (editing same files, using same resources)
 
-## Exemplo Real da Sessão
+## Real Example from Session
 
-**Cenário:** 6 falhas de teste em 3 arquivos após refatoração maior
+**Scenario:** 6 test failures across 3 files after major refactoring
 
-**Falhas:**
-- agent-tool-abort.test.ts: 3 falhas (problemas de temporização)
-- batch-completion-behavior.test.ts: 2 falhas (ferramentas não executando)
-- tool-approval-race-conditions.test.ts: 1 falha (contagem de execução = 0)
+**Failures:**
+- agent-tool-abort.test.ts: 3 failures (timing issues)
+- batch-completion-behavior.test.ts: 2 failures (tools not executing)
+- tool-approval-race-conditions.test.ts: 1 failure (execution count = 0)
 
-**Decisão:** Domínios independentes — lógica de aborto separada de conclusão em lote separada de condições de corrida
+**Decision:** Independent domains - abort logic separate from batch completion separate from race conditions
 
-**Despacho:**
+**Dispatch:**
 ```
-Agente 1 → Corrigir agent-tool-abort.test.ts
-Agente 2 → Corrigir batch-completion-behavior.test.ts
-Agente 3 → Corrigir tool-approval-race-conditions.test.ts
+Agent 1 → Fix agent-tool-abort.test.ts
+Agent 2 → Fix batch-completion-behavior.test.ts
+Agent 3 → Fix tool-approval-race-conditions.test.ts
 ```
 
-**Resultados:**
-- Agente 1: Substituiu timeouts por espera baseada em eventos
-- Agente 2: Corrigiu bug na estrutura de eventos (threadId no lugar errado)
-- Agente 3: Adicionou espera para a execução assíncrona de ferramenta concluir
+**Results:**
+- Agent 1: Replaced timeouts with event-based waiting
+- Agent 2: Fixed event structure bug (threadId in wrong place)
+- Agent 3: Added wait for async tool execution to complete
 
-**Integração:** Todas as correções independentes, sem conflitos, suite completa verde
+**Integration:** All fixes independent, no conflicts, full suite green
 
-**Tempo economizado:** 3 problemas resolvidos em paralelo vs. sequencialmente
+**Time saved:** 3 problems solved in parallel vs sequentially
 
-## Benefícios Principais
+## Key Benefits
 
-1. **Paralelização** — Múltiplas investigações acontecem simultaneamente
-2. **Foco** — Cada agente tem escopo estreito, menos contexto para rastrear
-3. **Independência** — Agentes não interferem entre si
-4. **Velocidade** — 3 problemas resolvidos no tempo de 1
+1. **Parallelization** - Multiple investigations happen simultaneously
+2. **Focus** - Each agent has narrow scope, less context to track
+3. **Independence** - Agents don't interfere with each other
+4. **Speed** - 3 problems solved in time of 1
 
-## Verificação
+## Verification
 
-Após os agentes retornarem:
-1. **Revise cada resumo** — Entenda o que mudou
-2. **Verifique conflitos** — Os agentes editaram o mesmo código?
-3. **Execute a suite completa** — Verifique se todas as correções funcionam juntas
-4. **Inspeção pontual** — Agentes podem cometer erros sistemáticos
+After agents return:
+1. **Review each summary** - Understand what changed
+2. **Check for conflicts** - Did agents edit same code?
+3. **Run full suite** - Verify all fixes work together
+4. **Spot check** - Agents can make systematic errors
 
-## Impacto no Mundo Real
+## Real-World Impact
 
-De sessão de depuração (2025-10-03):
-- 6 falhas em 3 arquivos
-- 3 agentes despachados em paralelo
-- Todas as investigações concluídas de forma concorrente
-- Todas as correções integradas com sucesso
-- Zero conflitos entre mudanças dos agentes
+From debugging session (2025-10-03):
+- 6 failures across 3 files
+- 3 agents dispatched in parallel
+- All investigations completed concurrently
+- All fixes integrated successfully
+- Zero conflicts between agent changes

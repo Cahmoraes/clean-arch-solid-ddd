@@ -23,20 +23,20 @@ const buttonVariants = cva(
 	{
 		variants: {
 			variant: {
-				// Black Pill (CTA)
+				// Black Pill (CTA) — inverts to light in dark mode for contrast
 				primary:
-					"bg-pure-black text-pure-white border border-pure-black hover:bg-near-black",
+					"bg-primary text-primary-foreground border border-primary hover:bg-primary/90",
 				// Gray Pill
 				secondary:
-					"bg-light-gray text-near-black border border-light-gray hover:bg-border-light",
-				// White Pill
+					"bg-secondary text-secondary-foreground border border-secondary hover:bg-secondary/80",
+				// Surface Pill
 				outline:
-					"bg-pure-white text-button-text-dark border border-border-light hover:bg-snow",
+					"bg-card text-card-foreground border border-border hover:bg-accent",
 				ghost:
-					"bg-transparent text-near-black border border-transparent hover:bg-snow",
-				link: "bg-transparent text-pure-black underline-offset-4 hover:underline border border-transparent px-0",
+					"bg-transparent text-foreground border border-transparent hover:bg-accent",
+				link: "bg-transparent text-foreground underline-offset-4 hover:underline border border-transparent px-0",
 				destructive:
-					"bg-near-black text-pure-white border border-near-black hover:bg-pure-black",
+					"bg-destructive text-destructive-foreground border border-destructive hover:bg-destructive/90",
 			},
 			size: {
 				sm: "h-8 px-4 text-sm",

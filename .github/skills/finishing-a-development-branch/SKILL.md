@@ -1,176 +1,200 @@
 ---
 name: finishing-a-development-branch
-description: Use quando a implementação está completa, todos os testes passam e você precisa decidir como integrar o trabalho - guia a conclusão do trabalho de desenvolvimento apresentando opções estruturadas para merge, PR ou limpeza
+description: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup
 ---
 
-# Finalizando um Branch de Desenvolvimento
+# Finishing a Development Branch
 
-## Visão Geral
+## Overview
 
-Guie a conclusão do trabalho de desenvolvimento apresentando opções claras e lidando com o workflow escolhido.
+Guide completion of development work by presenting clear options and handling chosen workflow.
 
-**Princípio fundamental:** Verificar testes → Detectar ambiente → Apresentar opções → Executar escolha → Limpar.
+**Core principle:** Verify tests → Detect environment → Present options → Execute choice → Clean up.
 
-**Anuncie no início:** "Estou usando a skill finishing-a-development-branch para concluir este trabalho."
+**Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
-## O Processo
+## The Process
 
-### Passo 1: Verificar Testes
+### Step 1: Verify Task Completion
 
-**Antes de apresentar opções, verifique se os testes passam:**
+**If a tasks index path was provided** (from SDD or EP), read the `*-tasks.md` file and verify all tasks are `[x]`:
+
+```
+All tasks completed:
+- [x] 1. Setup project structure
+- [x] 2. User login flow
+- [x] 3. Token refresh
+```
+
+**If any tasks are still `[ ]`:**
+```
+Warning: N task(s) still incomplete:
+- [ ] 4. Session management
+
+Cannot proceed with merge/PR until all tasks are complete.
+Fix incomplete tasks first, or override with explicit confirmation.
+```
+
+Stop. Don't proceed to Step 2 unless the user explicitly overrides.
+
+**If no tasks index was provided:** Skip this check — proceed to test verification.
+
+### Step 2: Verify Tests
+
+**Before presenting options, verify tests pass:**
 
 ```bash
-# Execute a suite de testes do projeto
+# Run project's test suite
 npm test / cargo test / pytest / go test ./...
 ```
 
-**Se os testes falharem:**
+**If tests fail:**
 ```
-Testes falhando (<N> falhas). É necessário corrigir antes de concluir:
+Tests failing (<N> failures). Must fix before completing:
 
-[Mostre as falhas]
+[Show failures]
 
-Não é possível prosseguir com merge/PR até que os testes passem.
+Cannot proceed with merge/PR until tests pass.
 ```
 
-Pare. Não prossiga para o Passo 2.
+Stop. Don't proceed to Step 3.
 
-**Se os testes passarem:** Continue para o Passo 2.
+**If tests pass:** Continue to Step 3.
 
-### Passo 2: Detectar Ambiente
+### Step 3: Detect Environment
 
-**Determine o estado do workspace antes de apresentar opções:**
+**Determine workspace state before presenting options:**
 
 ```bash
 GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
 GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
 ```
 
-Isso determina qual menu mostrar e como a limpeza funciona:
+This determines which menu to show and how cleanup works:
 
-| Estado | Menu | Limpeza |
-|--------|------|---------|
-| `GIT_DIR == GIT_COMMON` (repositório normal) | 4 opções padrão | Sem worktree para limpar |
-| `GIT_DIR != GIT_COMMON`, branch nomeado | 4 opções padrão | Baseado em proveniência (ver Passo 6) |
-| `GIT_DIR != GIT_COMMON`, HEAD desanexado | 3 opções reduzidas (sem merge) | Sem limpeza (gerenciado externamente) |
+| State | Menu | Cleanup |
+|-------|------|---------|
+| `GIT_DIR == GIT_COMMON` (normal repo) | Standard 4 options | No worktree to clean up |
+| `GIT_DIR != GIT_COMMON`, named branch | Standard 4 options | Provenance-based (see Step 7) |
+| `GIT_DIR != GIT_COMMON`, detached HEAD | Reduced 3 options (no merge) | No cleanup (externally managed) |
 
-### Passo 3: Determinar Branch Base
+### Step 4: Determine Base Branch
 
 ```bash
-# Tente branches base comuns
+# Try common base branches
 git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
 ```
 
-Ou pergunte: "Este branch derivou de main — isso está correto?"
+Or ask: "This branch split from main - is that correct?"
 
-### Passo 4: Apresentar Opções
+### Step 5: Present Options
 
-**Repositório normal e worktree com branch nomeado — apresente exatamente estas 4 opções:**
-
-```
-Implementação completa. O que você gostaria de fazer?
-
-1. Fazer merge de volta para <branch-base> localmente
-2. Enviar (push) e criar um Pull Request
-3. Manter o branch como está (vou cuidar depois)
-4. Descartar este trabalho
-
-Qual opção?
-```
-
-**HEAD desanexado — apresente exatamente estas 3 opções:**
+**Normal repo and named-branch worktree — present exactly these 4 options:**
 
 ```
-Implementação completa. Você está em um HEAD desanexado (workspace gerenciado externamente).
+Implementation complete. What would you like to do?
 
-1. Enviar como novo branch e criar um Pull Request
-2. Manter como está (vou cuidar depois)
-3. Descartar este trabalho
+1. Merge back to <base-branch> locally
+2. Push and create a Pull Request
+3. Keep the branch as-is (I'll handle it later)
+4. Discard this work
 
-Qual opção?
+Which option?
 ```
 
-**Não adicione explicações** — mantenha as opções concisas.
+**Detached HEAD — present exactly these 3 options:**
 
-### Passo 5: Executar Escolha
+```
+Implementation complete. You're on a detached HEAD (externally managed workspace).
 
-#### Opção 1: Merge Local
+1. Push as new branch and create a Pull Request
+2. Keep as-is (I'll handle it later)
+3. Discard this work
+
+Which option?
+```
+
+**Don't add explanation** - keep options concise.
+
+### Step 6: Execute Choice
+
+#### Option 1: Merge Locally
 
 ```bash
-# Obtenha a raiz do repositório principal para segurança do CWD
+# Get main repo root for CWD safety
 MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
 cd "$MAIN_ROOT"
 
-# Faça o merge primeiro — verifique o sucesso antes de remover qualquer coisa
-git checkout <branch-base>
+# Merge first — verify success before removing anything
+git checkout <base-branch>
 git pull
 git merge <feature-branch>
 
-# Verifique os testes no resultado do merge
-<comando de teste>
+# Verify tests on merged result
+<test command>
 
-# Apenas após o merge bem-sucedido: limpe o worktree (Passo 6), depois delete o branch
+# Only after merge succeeds: cleanup worktree (Step 7), then delete branch
 ```
 
-Em seguida: Limpe o worktree (Passo 6), depois delete o branch:
+Then: Cleanup worktree (Step 7), then delete branch:
 
 ```bash
 git branch -d <feature-branch>
 ```
 
-#### Opção 2: Push e Criar PR
+#### Option 2: Push and Create PR
 
 ```bash
-# Envie o branch
+# Push branch
 git push -u origin <feature-branch>
 
-# Crie o PR
-gh pr create --title "<título>" --body "$(cat <<'EOF'
-## Resumo
-<2-3 pontos do que mudou>
+# Create PR
+gh pr create --title "<title>" --body "$(cat <<'EOF'
+## Summary
+<2-3 bullets of what changed>
 
-## Plano de Testes
-- [ ] <passos de verificação>
+## Test Plan
+- [ ] <verification steps>
 EOF
 )"
 ```
 
-**NÃO limpe o worktree** — o usuário precisa dele para iterar no feedback do PR.
+**Do NOT clean up worktree** — user needs it alive to iterate on PR feedback.
 
-#### Opção 3: Manter Como Está
+#### Option 3: Keep As-Is
 
-Reporte: "Mantendo branch <nome>. Worktree preservado em <caminho>."
+Report: "Keeping branch <name>. Worktree preserved at <path>."
 
-**Não limpe o worktree.**
+**Don't cleanup worktree.**
 
-#### Opção 4: Descartar
+#### Option 4: Discard
 
-**Confirme primeiro:**
+**Confirm first:**
 ```
-Isso excluirá permanentemente:
-- Branch <nome>
-- Todos os commits: <lista-de-commits>
-- Worktree em <caminho>
+This will permanently delete:
+- Branch <name>
+- All commits: <commit-list>
+- Worktree at <path>
 
-Digite 'descartar' para confirmar.
+Type 'discard' to confirm.
 ```
 
-Aguarde a confirmação exata.
+Wait for exact confirmation.
 
-Se confirmado:
+If confirmed:
 ```bash
 MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
 cd "$MAIN_ROOT"
 ```
 
-Em seguida: Limpe o worktree (Passo 6), depois force-delete o branch:
+Then: Cleanup worktree (Step 7), then force-delete branch:
 ```bash
 git branch -D <feature-branch>
 ```
 
-### Passo 6: Limpar Workspace
+### Step 7: Cleanup Workspace
 
-**Executa apenas para as Opções 1 e 4.** As Opções 2 e 3 sempre preservam o worktree.
+**Only runs for Options 1 and 4.** Options 2 and 3 always preserve the worktree.
 
 ```bash
 GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
@@ -178,74 +202,74 @@ GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
 WORKTREE_PATH=$(git rev-parse --show-toplevel)
 ```
 
-**Se `GIT_DIR == GIT_COMMON`:** Repositório normal, sem worktree para limpar. Pronto.
+**If `GIT_DIR == GIT_COMMON`:** Normal repo, no worktree to clean up. Done.
 
-**Se o caminho do worktree estiver sob `.worktrees/`, `worktrees/` ou `~/.config/superpowers/worktrees/`:** O Superpowers criou este worktree — nós somos responsáveis pela limpeza.
+**If worktree path is under `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`:** Superpowers created this worktree — we own cleanup.
 
 ```bash
 MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
 cd "$MAIN_ROOT"
 git worktree remove "$WORKTREE_PATH"
-git worktree prune  # Auto-recuperação: limpa registros obsoletos
+git worktree prune  # Self-healing: clean up any stale registrations
 ```
 
-**Caso contrário:** O ambiente host (harness) é dono deste workspace. NÃO o remova. Se sua plataforma fornecer uma ferramenta de saída de workspace, use-a. Caso contrário, deixe o workspace no lugar.
+**Otherwise:** The host environment (harness) owns this workspace. Do NOT remove it. If your platform provides a workspace-exit tool, use it. Otherwise, leave the workspace in place.
 
-## Referência Rápida
+## Quick Reference
 
-| Opção | Merge | Push | Manter Worktree | Limpar Branch |
-|-------|-------|------|-----------------|---------------|
-| 1. Merge local | sim | - | - | sim |
-| 2. Criar PR | - | sim | sim | - |
-| 3. Manter | - | - | sim | - |
-| 4. Descartar | - | - | - | sim (forçado) |
+| Option | Merge | Push | Keep Worktree | Cleanup Branch |
+|--------|-------|------|---------------|----------------|
+| 1. Merge locally | yes | - | - | yes |
+| 2. Create PR | - | yes | yes | - |
+| 3. Keep as-is | - | - | yes | - |
+| 4. Discard | - | - | - | yes (force) |
 
-## Erros Comuns
+## Common Mistakes
 
-**Pular verificação de testes**
-- **Problema:** Fazer merge de código quebrado, criar PR com falhas
-- **Correção:** Sempre verifique os testes antes de oferecer opções
+**Skipping test verification**
+- **Problem:** Merge broken code, create failing PR
+- **Fix:** Always verify tests before offering options
 
-**Perguntas abertas**
-- **Problema:** "O que devo fazer a seguir?" é ambíguo
-- **Correção:** Apresente exatamente 4 opções estruturadas (ou 3 para HEAD desanexado)
+**Open-ended questions**
+- **Problem:** "What should I do next?" is ambiguous
+- **Fix:** Present exactly 4 structured options (or 3 for detached HEAD)
 
-**Limpar worktree para a Opção 2**
-- **Problema:** Remover worktree que o usuário precisa para iterar no PR
-- **Correção:** Limpe apenas para as Opções 1 e 4
+**Cleaning up worktree for Option 2**
+- **Problem:** Remove worktree user needs for PR iteration
+- **Fix:** Only cleanup for Options 1 and 4
 
-**Deletar branch antes de remover worktree**
-- **Problema:** `git branch -d` falha porque o worktree ainda referencia o branch
-- **Correção:** Faça o merge primeiro, remova o worktree, então delete o branch
+**Deleting branch before removing worktree**
+- **Problem:** `git branch -d` fails because worktree still references the branch
+- **Fix:** Merge first, remove worktree, then delete branch
 
-**Executar git worktree remove de dentro do worktree**
-- **Problema:** Comando falha silenciosamente quando o CWD está dentro do worktree sendo removido
-- **Correção:** Sempre faça `cd` para a raiz do repositório principal antes de `git worktree remove`
+**Running git worktree remove from inside the worktree**
+- **Problem:** Command fails silently when CWD is inside the worktree being removed
+- **Fix:** Always `cd` to main repo root before `git worktree remove`
 
-**Limpar worktrees de propriedade do harness**
-- **Problema:** Remover um worktree que o harness criou causa estado fantasma
-- **Correção:** Limpe apenas worktrees sob `.worktrees/`, `worktrees/` ou `~/.config/superpowers/worktrees/`
+**Cleaning up harness-owned worktrees**
+- **Problem:** Removing a worktree the harness created causes phantom state
+- **Fix:** Only clean up worktrees under `.worktrees/`, `worktrees/`, or `~/.config/superpowers/worktrees/`
 
-**Sem confirmação para descartar**
-- **Problema:** Excluir acidentalmente trabalho
-- **Correção:** Exija confirmação digitada "descartar"
+**No confirmation for discard**
+- **Problem:** Accidentally delete work
+- **Fix:** Require typed "discard" confirmation
 
-## Sinais de Alerta
+## Red Flags
 
-**Nunca:**
-- Prosseguir com testes falhando
-- Fazer merge sem verificar os testes no resultado
-- Deletar trabalho sem confirmação
-- Force-push sem solicitação explícita
-- Remover um worktree antes de confirmar o sucesso do merge
-- Limpar worktrees que você não criou (verificação de proveniência)
-- Executar `git worktree remove` de dentro do worktree
+**Never:**
+- Proceed with failing tests
+- Merge without verifying tests on result
+- Delete work without confirmation
+- Force-push without explicit request
+- Remove a worktree before confirming merge success
+- Clean up worktrees you didn't create (provenance check)
+- Run `git worktree remove` from inside the worktree
 
-**Sempre:**
-- Verificar testes antes de oferecer opções
-- Detectar o ambiente antes de apresentar o menu
-- Apresentar exatamente 4 opções (ou 3 para HEAD desanexado)
-- Obter confirmação digitada para a Opção 4
-- Limpar worktree apenas para as Opções 1 e 4
-- Fazer `cd` para a raiz do repositório antes de remover worktree
-- Executar `git worktree prune` após a remoção
+**Always:**
+- Verify tests before offering options
+- Detect environment before presenting menu
+- Present exactly 4 options (or 3 for detached HEAD)
+- Get typed confirmation for Option 4
+- Clean up worktree for Options 1 & 4 only
+- `cd` to main repo root before worktree removal
+- Run `git worktree prune` after removal

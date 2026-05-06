@@ -12,11 +12,13 @@ export const GYM_TYPES = {
 		SearchGym: Symbol.for("SearchGymUseCase"),
 		FetchNearbyGym: Symbol.for("FetchNearbyGymUseCase"),
 		FetchAllGyms: Symbol.for("FetchAllGymsUseCase"),
+		FetchGymById: Symbol.for("FetchGymByIdUseCase"),
 	},
 	Controllers: {
 		CreateGym: Symbol.for("CreateGymController"),
 		SearchGym: Symbol.for("SearchGymController"),
 		FetchNearbyGym: Symbol.for("FetchNearbyGymController"),
 		FetchAllGyms: Symbol.for("FetchAllGymsController"),
+		FetchGymById: Symbol.for("FetchGymByIdController"),
 	},
 } as const

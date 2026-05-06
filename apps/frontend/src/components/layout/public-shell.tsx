@@ -18,11 +18,11 @@ export function PublicShell({ children, className }: PublicShellProps) {
 		<div
 			data-testid="public-shell"
 			className={cn(
-				"flex min-h-screen flex-col bg-pure-white text-pure-black",
+				"flex min-h-screen flex-col bg-background text-foreground",
 				className,
 			)}
 		>
-			<header className="border-b border-light-gray">
+			<header className="border-b border-border">
 				<div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
 					<Link
 						href="/"
@@ -37,13 +37,13 @@ export function PublicShell({ children, className }: PublicShellProps) {
 					>
 						<Link
 							href="/login"
-							className="rounded-full border border-transparent px-4 py-2 text-sm font-medium text-near-black hover:bg-snow"
+							className="rounded-full border border-transparent px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
 						>
 							Entrar
 						</Link>
 						<Link
 							href="/cadastro"
-							className="rounded-full border border-pure-black bg-pure-black px-4 py-2 text-sm font-medium text-pure-white hover:bg-near-black"
+							className="rounded-full border border-primary bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
 						>
 							Criar conta
 						</Link>
@@ -51,8 +51,8 @@ export function PublicShell({ children, className }: PublicShellProps) {
 				</div>
 			</header>
 			<main className="flex-1">{children}</main>
-			<footer className="border-t border-light-gray">
-				<div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-1 px-4 py-6 text-sm text-stone sm:flex-row sm:items-center sm:justify-between sm:px-6">
+			<footer className="border-t border-border">
+				<div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-1 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
 					<span>© {new Date().getFullYear()} GymPass</span>
 					<span>Frontend monocromático inspirado em Ollama</span>
 				</div>

@@ -1,61 +1,61 @@
-# Template de Prompt para Revisor de Conformidade com a Spec
+# Spec Compliance Reviewer Prompt Template
 
-Use este template ao despachar um subagente revisor de conformidade com a spec.
+Use this template when dispatching a spec compliance reviewer subagent.
 
-**Propósito:** Verificar se o implementador construiu o que foi solicitado (nem mais, nem menos)
+**Purpose:** Verify implementer built what was requested (nothing more, nothing less)
 
 ```
-Ferramenta Task (general-purpose):
-  description: "Revisar conformidade com a spec para a Tarefa N"
+Task tool (general-purpose):
+  description: "Review spec compliance for Task N"
   prompt: |
-    Você está revisando se uma implementação corresponde à sua especificação.
+    You are reviewing whether an implementation matches its specification.
 
-    ## O Que Foi Solicitado
+    ## What Was Requested
 
-    [TEXTO COMPLETO dos requisitos da tarefa]
+    [FULL TEXT of task requirements]
 
-    ## O Que o Implementador Afirma Ter Construído
+    ## What Implementer Claims They Built
 
-    [Do relatório do implementador]
+    [From implementer's report]
 
-    ## CRÍTICO: Não Confie no Relatório
+    ## CRITICAL: Do Not Trust the Report
 
-    O implementador terminou suspeitosamente rápido. O relatório pode estar incompleto,
-    impreciso ou otimista. Você DEVE verificar tudo de forma independente.
+    The implementer finished suspiciously quickly. Their report may be incomplete,
+    inaccurate, or optimistic. You MUST verify everything independently.
 
-    **NÃO FAÇA:**
-    - Acredite na palavra deles sobre o que implementaram
-    - Confie nas afirmações sobre completude
-    - Aceite a interpretação deles dos requisitos
+    **DO NOT:**
+    - Take their word for what they implemented
+    - Trust their claims about completeness
+    - Accept their interpretation of requirements
 
-    **FAÇA:**
-    - Leia o código real que eles escreveram
-    - Compare a implementação real com os requisitos linha por linha
-    - Verifique peças ausentes que afirmaram ter implementado
-    - Procure por recursos extras que não mencionaram
+    **DO:**
+    - Read the actual code they wrote
+    - Compare actual implementation to requirements line by line
+    - Check for missing pieces they claimed to implement
+    - Look for extra features they didn't mention
 
-    ## Seu Trabalho
+    ## Your Job
 
-    Leia o código de implementação e verifique:
+    Read the implementation code and verify:
 
-    **Requisitos ausentes:**
-    - Eles implementaram tudo que foi solicitado?
-    - Há requisitos que pularam ou perderam?
-    - Eles afirmaram que algo funciona mas não implementaram de fato?
+    **Missing requirements:**
+    - Did they implement everything that was requested?
+    - Are there requirements they skipped or missed?
+    - Did they claim something works but didn't actually implement it?
 
-    **Trabalho extra/desnecessário:**
-    - Eles construíram coisas que não foram solicitadas?
-    - Eles over-engineered ou adicionaram recursos desnecessários?
-    - Eles adicionaram "bom ter" que não estava na spec?
+    **Extra/unneeded work:**
+    - Did they build things that weren't requested?
+    - Did they over-engineer or add unnecessary features?
+    - Did they add "nice to haves" that weren't in spec?
 
-    **Mal-entendidos:**
-    - Eles interpretaram os requisitos de forma diferente do pretendido?
-    - Eles resolveram o problema errado?
-    - Eles implementaram o recurso correto mas da forma errada?
+    **Misunderstandings:**
+    - Did they interpret requirements differently than intended?
+    - Did they solve the wrong problem?
+    - Did they implement the right feature but wrong way?
 
-    **Verifique lendo o código, não confiando no relatório.**
+    **Verify by reading code, not by trusting report.**
 
-    Reporte:
-    - ✅ Conforme com a spec (se tudo corresponder após inspeção do código)
-    - ❌ Problemas encontrados: [liste especificamente o que está ausente ou extra, com referências arquivo:linha]
+    Report:
+    - ✅ Spec compliant (if everything matches after code inspection)
+    - ❌ Issues found: [list specifically what's missing or extra, with file:line references]
 ```

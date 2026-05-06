@@ -1,14 +1,14 @@
-# Teste Acadêmico: Skill de Depuração Sistemática
+# Academic Test: Systematic Debugging Skill
 
-Você tem acesso à skill de depuração sistemática em skills/debugging/systematic-debugging
+You have access to the systematic debugging skill at skills/debugging/systematic-debugging
 
-Leia a skill e responda estas perguntas com base EXCLUSIVAMENTE no que a skill diz:
+Read the skill and answer these questions based SOLELY on what the skill says:
 
-1. Quais são as quatro fases da depuração sistemática?
-2. O que você deve fazer ANTES de tentar qualquer correção?
-3. Na Fase 3, o que você deve fazer se sua primeira hipótese não funcionar?
-4. O que a skill diz sobre corrigir múltiplas coisas ao mesmo tempo?
-5. O que você deve fazer se não entender completamente o problema?
-6. É aceitável pular o processo para bugs simples?
+1. What are the four phases of systematic debugging?
+2. What must you do BEFORE attempting any fix?
+3. In Phase 3, what should you do if your first hypothesis doesn't work?
+4. What does the skill say about fixing multiple things at once?
+5. What should you do if you don't fully understand the issue?
+6. Is it ever acceptable to skip the process for simple bugs?
 
-Retorne suas respostas com citações diretas da skill onde aplicável.
+Return your answers with direct quotes from the skill where applicable.

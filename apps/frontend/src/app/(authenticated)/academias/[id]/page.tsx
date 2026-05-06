@@ -133,36 +133,36 @@ function DetailCard({ gym }: { gym: Gym }) {
 	return (
 		<article
 			data-testid="gym-detail-card"
-			className="flex flex-col gap-6 rounded-[12px] border border-light-gray bg-pure-white p-6"
+			className="flex flex-col gap-6 rounded-[12px] border border-border bg-card p-6"
 		>
 			<header className="flex flex-col gap-2">
 				<h1
 					id="gym-detail-title"
 					data-testid="gym-detail-title"
-					className="font-display text-3xl font-medium text-pure-black"
+					className="font-display text-3xl font-medium text-foreground"
 				>
 					{gym.title}
 				</h1>
 				{gym.description ? (
 					<p
 						data-testid="gym-detail-description"
-						className="text-base text-stone"
+						className="text-base text-muted-foreground"
 					>
 						{gym.description}
 					</p>
 				) : null}
 			</header>
 
-			<dl className="grid gap-3 text-sm text-near-black sm:grid-cols-2">
+			<dl className="grid gap-3 text-sm text-foreground sm:grid-cols-2">
 				{gym.phone ? (
 					<div className="flex items-center gap-2">
-						<Phone aria-hidden className="h-4 w-4 text-stone" />
+						<Phone aria-hidden className="h-4 w-4 text-muted-foreground" />
 						<dt className="sr-only">Telefone</dt>
 						<dd data-testid="gym-detail-phone">{gym.phone}</dd>
 					</div>
 				) : null}
 				<div className="flex items-center gap-2">
-					<MapPin aria-hidden className="h-4 w-4 text-stone" />
+					<MapPin aria-hidden className="h-4 w-4 text-muted-foreground" />
 					<dt className="sr-only">Localização</dt>
 					<dd data-testid="gym-detail-location">
 						{gym.latitude.toFixed(4)}, {gym.longitude.toFixed(4)}
@@ -212,7 +212,7 @@ export default function GymDetailPage() {
 				<Link
 					href="/academias"
 					data-testid="gym-back-link"
-					className="inline-flex items-center gap-2 text-sm text-mid-gray hover:text-near-black"
+					className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
 				>
 					<ArrowLeft aria-hidden className="h-4 w-4" />
 					Voltar para a busca

@@ -1,51 +1,51 @@
-# Mapeamento de Ferramentas do Gemini CLI
+# Gemini CLI Tool Mapping
 
-Skills usam nomes de ferramentas do Claude Code. Quando você encontrar esses em uma skill, use o equivalente da sua plataforma:
+Skills use Claude Code tool names. When you encounter these in a skill, use your platform equivalent:
 
-| Referência na Skill | Equivalente no Gemini CLI |
-|--------------------|--------------------------|
-| `Read` (leitura de arquivo) | `read_file` |
-| `Write` (criação de arquivo) | `write_file` |
-| `Edit` (edição de arquivo) | `replace` |
-| `Bash` (executar comandos) | `run_shell_command` |
-| `Grep` (buscar conteúdo de arquivo) | `grep_search` |
-| `Glob` (buscar arquivos por nome) | `glob` |
-| `TodoWrite` (rastreamento de tarefas) | `write_todos` |
-| `Skill` tool (invocar uma skill) | `activate_skill` |
+| Skill references | Gemini CLI equivalent |
+|-----------------|----------------------|
+| `Read` (file reading) | `read_file` |
+| `Write` (file creation) | `write_file` |
+| `Edit` (file editing) | `replace` |
+| `Bash` (run commands) | `run_shell_command` |
+| `Grep` (search file content) | `grep_search` |
+| `Glob` (search files by name) | `glob` |
+| `TodoWrite` (task tracking) | `write_todos` |
+| `Skill` tool (invoke a skill) | `activate_skill` |
 | `WebSearch` | `google_web_search` |
 | `WebFetch` | `web_fetch` |
-| `Task` tool (despachar subagente) | `@agent-name` (veja [Suporte a subagentes](#suporte-a-subagentes)) |
+| `Task` tool (dispatch subagent) | `@agent-name` (see [Subagent support](#subagent-support)) |
 
-## Suporte a subagentes
+## Subagent support
 
-O Gemini CLI suporta subagentes nativamente via sintaxe `@`. Use o agente integrado `@generalist` para despachar qualquer tarefa — ele tem acesso a todas as ferramentas e segue o prompt que você fornece.
+Gemini CLI supports subagents natively via the `@` syntax. Use the built-in `@generalist` agent to dispatch any task — it has access to all tools and follows the prompt you provide.
 
-Quando uma skill diz para despachar um tipo de agente nomeado, use `@generalist` com o prompt completo do template de prompt da skill:
+When a skill says to dispatch a named agent type, use `@generalist` with the full prompt from the skill's prompt template:
 
-| Instrução da skill | Equivalente no Gemini CLI |
-|-------------------|--------------------------|
-| `Task tool (superpowers:implementer)` | `@generalist` com o template `implementer-prompt.md` preenchido |
-| `Task tool (superpowers:spec-reviewer)` | `@generalist` com o template `spec-reviewer-prompt.md` preenchido |
-| `Task tool (superpowers:code-reviewer)` | `@code-reviewer` (agente integrado) ou `@generalist` com o prompt de revisão preenchido |
-| `Task tool (superpowers:code-quality-reviewer)` | `@generalist` com o template `code-quality-reviewer-prompt.md` preenchido |
-| `Task tool (general-purpose)` com prompt inline | `@generalist` com seu prompt inline |
+| Skill instruction | Gemini CLI equivalent |
+|-------------------|----------------------|
+| `Task tool (superpowers:implementer)` | `@generalist` with the filled `implementer-prompt.md` template |
+| `Task tool (superpowers:spec-reviewer)` | `@generalist` with the filled `spec-reviewer-prompt.md` template |
+| `Task tool (superpowers:code-reviewer)` | `@code-reviewer` (bundled agent) or `@generalist` with the filled review prompt |
+| `Task tool (superpowers:code-quality-reviewer)` | `@generalist` with the filled `code-quality-reviewer-prompt.md` template |
+| `Task tool (general-purpose)` with inline prompt | `@generalist` with your inline prompt |
 
-### Preenchimento de prompt
+### Prompt filling
 
-Skills fornecem templates de prompt com placeholders como `{O_QUE_FOI_IMPLEMENTADO}` ou `[TEXTO COMPLETO da tarefa]`. Preencha todos os placeholders e passe o prompt completo como mensagem para `@generalist`. O próprio template de prompt contém o papel do agente, critérios de revisão e formato de saída esperado — `@generalist` seguirá isso.
+Skills provide prompt templates with placeholders like `{WHAT_WAS_IMPLEMENTED}` or `[FULL TEXT of task]`. Fill all placeholders and pass the complete prompt as the message to `@generalist`. The prompt template itself contains the agent's role, review criteria, and expected output format — `@generalist` will follow it.
 
-### Despacho paralelo
+### Parallel dispatch
 
-O Gemini CLI suporta despacho paralelo de subagentes. Quando uma skill pede para despachar múltiplas tarefas de subagentes independentes em paralelo, solicite todas essas tasks `@generalist` ou subagentes nomeados juntos no mesmo prompt. Mantenha tasks dependentes sequenciais, mas não serialize tasks de subagentes independentes apenas para preservar um histórico mais simples.
+Gemini CLI supports parallel subagent dispatch. When a skill asks you to dispatch multiple independent subagent tasks in parallel, request all of those `@generalist` or named subagent tasks together in the same prompt. Keep dependent tasks sequential, but do not serialize independent subagent tasks just to preserve a simpler history.
 
-## Ferramentas adicionais do Gemini CLI
+## Additional Gemini CLI tools
 
-Estas ferramentas estão disponíveis no Gemini CLI mas não têm equivalente no Claude Code:
+These tools are available in Gemini CLI but have no Claude Code equivalent:
 
-| Ferramenta | Propósito |
-|------------|-----------|
-| `list_directory` | Listar arquivos e subdiretórios |
-| `save_memory` | Persistir fatos em GEMINI.md entre sessões |
-| `ask_user` | Solicitar entrada estruturada do usuário |
-| `tracker_create_task` | Gerenciamento rico de tarefas (criar, atualizar, listar, visualizar) |
-| `enter_plan_mode` / `exit_plan_mode` | Mudar para modo de pesquisa somente leitura antes de fazer mudanças |
+| Tool | Purpose |
+|------|---------|
+| `list_directory` | List files and subdirectories |
+| `save_memory` | Persist facts to GEMINI.md across sessions |
+| `ask_user` | Request structured input from the user |
+| `tracker_create_task` | Rich task management (create, update, list, visualize) |
+| `enter_plan_mode` / `exit_plan_mode` | Switch to read-only research mode before making changes |

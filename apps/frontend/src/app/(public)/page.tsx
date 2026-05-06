@@ -11,18 +11,18 @@ export default function LandingPage() {
 				aria-labelledby="hero-title"
 				className="flex flex-col items-start gap-8"
 			>
-				<span className="rounded-full border border-light-gray bg-snow px-3 py-1 text-xs font-medium text-stone">
+				<span className="rounded-full border border-border bg-accent px-3 py-1 text-xs font-medium text-muted-foreground">
 					Demo monocromática
 				</span>
 				<h1
 					id="hero-title"
-					className="font-display text-4xl font-medium leading-[1.05] tracking-tight text-pure-black sm:text-5xl md:text-6xl"
+					className="font-display text-4xl font-medium leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl"
 				>
 					Acesso a academias,
 					<br />
 					sem fricção.
 				</h1>
-				<p className="max-w-2xl text-lg text-mid-gray">
+				<p className="max-w-2xl text-lg text-muted-foreground">
 					Encontre academias próximas, faça check-in e acompanhe sua frequência
 					em uma interface despida do supérfluo. Inspirado em Ollama: puro,
 					silencioso, focado.
@@ -31,14 +31,14 @@ export default function LandingPage() {
 					<Link
 						href="/cadastro"
 						data-testid="cta-signup"
-						className="inline-flex items-center justify-center rounded-full border border-pure-black bg-pure-black px-6 py-3 text-base font-medium text-pure-white hover:bg-near-black"
+						className="inline-flex items-center justify-center rounded-full border border-primary bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:bg-primary/90"
 					>
 						Criar conta
 					</Link>
 					<Link
 						href="/login"
 						data-testid="cta-login"
-						className="inline-flex items-center justify-center rounded-full border border-border-light bg-pure-white px-6 py-3 text-base font-medium text-button-text-dark hover:bg-snow"
+						className="inline-flex items-center justify-center rounded-full border border-border bg-card px-6 py-3 text-base font-medium text-card-foreground hover:bg-accent"
 					>
 						Entrar
 					</Link>
@@ -48,32 +48,32 @@ export default function LandingPage() {
 			<section aria-labelledby="features-title" className="flex flex-col gap-8">
 				<h2
 					id="features-title"
-					className="font-display text-3xl font-medium tracking-tight text-pure-black"
+					className="font-display text-3xl font-medium tracking-tight text-foreground"
 				>
 					Pensado para o essencial.
 				</h2>
 				<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-					<li className="rounded-[12px] border border-light-gray bg-pure-white p-6">
-						<h3 className="font-display text-xl font-medium text-near-black">
+					<li className="rounded-[12px] border border-border bg-card p-6">
+						<h3 className="font-display text-xl font-medium text-foreground">
 							Check-in em segundos
 						</h3>
-						<p className="mt-2 text-sm text-stone">
+						<p className="mt-2 text-sm text-muted-foreground">
 							Encontre a academia, confirme presença, siga seu treino.
 						</p>
 					</li>
-					<li className="rounded-[12px] border border-light-gray bg-pure-white p-6">
-						<h3 className="font-display text-xl font-medium text-near-black">
+					<li className="rounded-[12px] border border-border bg-card p-6">
+						<h3 className="font-display text-xl font-medium text-foreground">
 							Histórico transparente
 						</h3>
-						<p className="mt-2 text-sm text-stone">
+						<p className="mt-2 text-sm text-muted-foreground">
 							Veja sua frequência, métricas e evolução em um único lugar.
 						</p>
 					</li>
-					<li className="rounded-[12px] border border-light-gray bg-pure-white p-6">
-						<h3 className="font-display text-xl font-medium text-near-black">
+					<li className="rounded-[12px] border border-border bg-card p-6">
+						<h3 className="font-display text-xl font-medium text-foreground">
 							Administração simples
 						</h3>
-						<p className="mt-2 text-sm text-stone">
+						<p className="mt-2 text-sm text-muted-foreground">
 							Operadores validam check-ins e cadastram academias rapidamente.
 						</p>
 					</li>

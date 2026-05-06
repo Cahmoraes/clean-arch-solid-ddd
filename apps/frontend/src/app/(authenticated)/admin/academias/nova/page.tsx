@@ -69,11 +69,11 @@ export default function AdminNovaAcademiaPage() {
 			<header className="flex flex-col gap-2">
 				<h1
 					id="nova-academia-title"
-					className="font-display text-3xl font-medium text-pure-black"
+					className="font-display text-3xl font-medium text-foreground"
 				>
 					Cadastrar academia
 				</h1>
-				<p className="text-sm text-mid-gray">
+				<p className="text-sm text-muted-foreground">
 					Disponível apenas para administradores.
 				</p>
 			</header>

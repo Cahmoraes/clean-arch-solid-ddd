@@ -58,8 +58,8 @@ function DesktopNav({ items, pathname }: DesktopNavProps) {
 						className={cn(
 							"rounded-full px-3 py-2 text-sm font-medium",
 							active
-								? "bg-light-gray text-near-black"
-								: "text-mid-gray hover:bg-snow hover:text-near-black",
+								? "bg-muted text-foreground"
+								: "text-muted-foreground hover:bg-accent hover:text-foreground",
 						)}
 					>
 						{item.label}
@@ -83,7 +83,7 @@ function MobileNav({ id, items, pathname, onNavigate }: MobileNavProps) {
 			id={id}
 			data-testid="mobile-nav"
 			aria-label="Navegação móvel"
-			className="border-t border-light-gray md:hidden"
+			className="border-t border-border md:hidden"
 		>
 			<ul className="mx-auto flex w-full max-w-6xl flex-col gap-1 px-4 py-3 sm:px-6">
 				{items.map((item) => {
@@ -97,8 +97,8 @@ function MobileNav({ id, items, pathname, onNavigate }: MobileNavProps) {
 								className={cn(
 									"block rounded-full px-3 py-2 text-sm font-medium",
 									active
-										? "bg-light-gray text-near-black"
-										: "text-mid-gray hover:bg-snow hover:text-near-black",
+										? "bg-muted text-foreground"
+										: "text-muted-foreground hover:bg-accent hover:text-foreground",
 								)}
 							>
 								{item.label}
@@ -121,7 +121,7 @@ function UserMenu({ role, onLogout }: UserMenuProps) {
 		<DropdownMenu>
 			<DropdownMenuTrigger
 				aria-label="Menu de usuário"
-				className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-light-gray bg-pure-white text-near-black hover:bg-snow"
+				className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-card-foreground hover:bg-accent"
 			>
 				<User className="h-4 w-4" />
 			</DropdownMenuTrigger>
@@ -187,11 +187,11 @@ export function AuthenticatedShell({
 		<div
 			data-testid="authenticated-shell"
 			className={cn(
-				"flex min-h-screen flex-col bg-pure-white text-pure-black",
+				"flex min-h-screen flex-col bg-background text-foreground",
 				className,
 			)}
 		>
-			<header className="border-b border-light-gray">
+			<header className="border-b border-border">
 				<div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
 					<div className="flex items-center gap-4">
 						<button
@@ -202,7 +202,7 @@ export function AuthenticatedShell({
 							aria-expanded={mobileOpen}
 							aria-controls={mobileNavId}
 							onClick={() => setMobileOpen((open) => !open)}
-							className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-near-black hover:bg-snow md:hidden"
+							className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-foreground hover:bg-accent md:hidden"
 						>
 							{mobileOpen ? (
 								<X className="h-5 w-5" />

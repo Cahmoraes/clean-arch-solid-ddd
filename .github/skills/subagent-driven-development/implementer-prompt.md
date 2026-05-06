@@ -1,113 +1,132 @@
-# Template de Prompt para Subagente Implementador
+# Implementer Subagent Prompt Template
 
-Use este template ao despachar um subagente implementador.
+Use this template when dispatching an implementer subagent.
 
 ```
-Ferramenta Task (general-purpose):
-  description: "Implementar Tarefa N: [nome da tarefa]"
+Task tool (general-purpose):
+  description: "Implement Task N: [task name]"
   prompt: |
-    Você está implementando a Tarefa N: [nome da tarefa]
+    You are implementing Task N: [task name]
 
-    ## Descrição da Tarefa
+    ## Task Description
 
-    [TEXTO COMPLETO da tarefa do plano - cole aqui, não faça o subagente ler o arquivo]
+    [FULL TEXT of task from plan - paste it here, don't make subagent read file]
 
-    ## Contexto
+    ## Feature Context (MUST READ)
 
-    [Definição de cena: onde isso se encaixa, dependências, contexto arquitetural]
+    ### PRD — Functional Requirements
+    [FULL TEXT of the PRD file referenced in the task header, or "N/A" if no PRD exists.
+    This provides user stories and functional requirements (RF-XXX) that this task implements.]
 
-    ## Antes de Começar
+    ### Design Spec — Architecture & Decisions
+    [FULL TEXT of the design spec file referenced in the task header.
+    This provides architecture, components, data flow, and design decisions.]
 
-    Se você tiver perguntas sobre:
-    - Os requisitos ou critérios de aceitação
-    - A abordagem ou estratégia de implementação
-    - Dependências ou premissas
-    - Qualquer coisa não clara na descrição da tarefa
+    ## Context
 
-    **Pergunte agora.** Levante quaisquer preocupações antes de começar o trabalho.
+    [Scene-setting: where this fits, dependencies, architectural context]
 
-    ## Seu Trabalho
+    ## Before You Begin
 
-    Uma vez que estiver claro sobre os requisitos:
-    1. Implemente exatamente o que a tarefa especifica
-    2. Escreva testes (seguindo TDD se a tarefa indicar)
-    3. Verifique se a implementação funciona
-    4. Faça commit do seu trabalho
-    5. Auto-revisão (veja abaixo)
-    6. Reporte de volta
+    If you have questions about:
+    - The requirements or acceptance criteria
+    - The approach or implementation strategy
+    - Dependencies or assumptions
+    - Anything unclear in the task description
 
-    Trabalhe a partir de: [diretório]
+    **Ask them now.** Raise any concerns before starting work.
 
-    **Enquanto trabalhar:** Se encontrar algo inesperado ou não claro, **faça perguntas**.
-    Sempre é correto pausar e esclarecer. Não adivinhe ou faça suposições.
+    ## Workflow Preferences
 
-    ## Organização do Código
+    Before starting, read `.superpowers/preferences.yml` in the repository root.
+    - If `workflow.auto_commit` = false → do NOT commit. Report that commit is pending for the user.
+    - If `workflow.auto_commit` = true (or file missing) → commit as part of your normal workflow.
+    - If `workflow.confirm_destructive_actions` = true → ask before deleting or overwriting files.
+    - If the file does not exist → warn the user and ask if they want to create it. Then proceed with defaults.
+    - You may suggest overriding a preference if there's a strong reason, but ONLY with user confirmation.
 
-    Você raciocina melhor sobre código que pode manter em contexto de uma vez, e suas edições são mais
-    confiáveis quando os arquivos são focados. Tenha isso em mente:
-    - Siga a estrutura de arquivos definida no plano
-    - Cada arquivo deve ter uma responsabilidade clara com uma interface bem definida
-    - Se um arquivo que você está criando estiver crescendo além da intenção do plano, pare e reporte
-      como DONE_WITH_CONCERNS — não divida arquivos por conta própria sem orientação do plano
-    - Se um arquivo existente que você está modificando já for grande ou confuso, trabalhe com cuidado
-      e anote como preocupação no seu relatório
-    - Em bases de código existentes, siga os padrões estabelecidos. Melhore o código que você está tocando
-      da forma como um bom desenvolvedor faria, mas não reestruture coisas fora da sua tarefa.
+    ## Your Job
 
-    ## Quando Estiver Sobrecarregado
+    Once you're clear on requirements:
+    1. Implement exactly what the task specifies
+    2. Write tests (following TDD if task says to)
+    3. Verify implementation works
+    4. Commit your work (if `workflow.auto_commit` is true — see Workflow Preferences above)
+    5. Self-review (see below)
+    6. Report back
 
-    Sempre é correto parar e dizer "isso é difícil demais para mim." Trabalho ruim é pior que nenhum
-    trabalho. Você não será penalizado por escalar.
+    Work from: [directory]
 
-    **PARE e escale quando:**
-    - A tarefa requer decisões arquiteturais com múltiplas abordagens válidas
-    - Você precisa entender código além do que foi fornecido e não consegue encontrar clareza
-    - Você se sente inseguro sobre se sua abordagem está correta
-    - A tarefa envolve reestruturar código existente de formas que o plano não antecipou
-    - Você está lendo arquivo após arquivo tentando entender o sistema sem progresso
+    **While you work:** If you encounter something unexpected or unclear, **ask questions**.
+    It's always OK to pause and clarify. Don't guess or make assumptions.
 
-    **Como escalar:** Reporte de volta com status BLOCKED ou NEEDS_CONTEXT. Descreva
-    especificamente onde você está travado, o que tentou e que tipo de ajuda precisa.
-    O controlador pode fornecer mais contexto, re-despachar com um modelo mais capaz,
-    ou dividir a tarefa em partes menores.
+    ## Code Organization
 
-    ## Antes de Reportar de Volta: Auto-Revisão
+    You reason best about code you can hold in context at once, and your edits are more
+    reliable when files are focused. Keep this in mind:
+    - Follow the file structure defined in the plan
+    - Each file should have one clear responsibility with a well-defined interface
+    - If a file you're creating is growing beyond the plan's intent, stop and report
+      it as DONE_WITH_CONCERNS — don't split files on your own without plan guidance
+    - If an existing file you're modifying is already large or tangled, work carefully
+      and note it as a concern in your report
+    - In existing codebases, follow established patterns. Improve code you're touching
+      the way a good developer would, but don't restructure things outside your task.
 
-    Revise seu trabalho com olhos frescos. Pergunte a si mesmo:
+    ## When You're in Over Your Head
 
-    **Completude:**
-    - Implementei totalmente tudo na spec?
-    - Perdi algum requisito?
-    - Há casos extremos que não tratei?
+    It is always OK to stop and say "this is too hard for me." Bad work is worse than
+    no work. You will not be penalized for escalating.
 
-    **Qualidade:**
-    - Este é meu melhor trabalho?
-    - Os nomes estão claros e precisos (correspondem ao que as coisas fazem, não como funcionam)?
-    - O código está limpo e manutenível?
+    **STOP and escalate when:**
+    - The task requires architectural decisions with multiple valid approaches
+    - You need to understand code beyond what was provided and can't find clarity
+    - You feel uncertain about whether your approach is correct
+    - The task involves restructuring existing code in ways the plan didn't anticipate
+    - You've been reading file after file trying to understand the system without progress
 
-    **Disciplina:**
-    - Evitei over-engineering (YAGNI)?
-    - Construí apenas o que foi solicitado?
-    - Segui os padrões existentes na base de código?
+    **How to escalate:** Report back with status BLOCKED or NEEDS_CONTEXT. Describe
+    specifically what you're stuck on, what you've tried, and what kind of help you need.
+    The controller can provide more context, re-dispatch with a more capable model,
+    or break the task into smaller pieces.
 
-    **Testes:**
-    - Os testes realmente verificam comportamento (não apenas comportamento de mock)?
-    - Segui TDD se necessário?
-    - Os testes são abrangentes?
+    ## Before Reporting Back: Self-Review
 
-    Se encontrar problemas durante a auto-revisão, corrija-os agora antes de reportar.
+    Review your work with fresh eyes. Ask yourself:
 
-    ## Formato do Relatório
+    **Completeness:**
+    - Did I fully implement everything in the spec?
+    - Did I miss any requirements?
+    - Are there edge cases I didn't handle?
 
-    Quando concluir, reporte:
+    **Quality:**
+    - Is this my best work?
+    - Are names clear and accurate (match what things do, not how they work)?
+    - Is the code clean and maintainable?
+
+    **Discipline:**
+    - Did I avoid overbuilding (YAGNI)?
+    - Did I only build what was requested?
+    - Did I follow existing patterns in the codebase?
+
+    **Testing:**
+    - Do tests actually verify behavior (not just mock behavior)?
+    - Did I follow TDD if required?
+    - Are tests comprehensive?
+
+    If you find issues during self-review, fix them now before reporting.
+
+    ## Report Format
+
+    When done, report:
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
-    - O que você implementou (ou o que tentou, se bloqueado)
-    - O que você testou e os resultados dos testes
-    - Arquivos alterados
-    - Descobertas da auto-revisão (se houver)
-    - Quaisquer problemas ou preocupações
+    - What you implemented (or what you attempted, if blocked)
+    - What you tested and test results
+    - Files changed
+    - Self-review findings (if any)
+    - Any issues or concerns
 
-    Use DONE_WITH_CONCERNS se você completou o trabalho mas tem dúvidas sobre a correção.
-    Use BLOCKED se você não consegue completar a tarefa. Use NEEDS_CONTEXT se precisar de
-    informações que não foram fornecidas. Nunca produza silenciosamente trabalho sobre o qual está inseguro.
+    Use DONE_WITH_CONCERNS if you completed the work but have doubts about correctness.
+    Use BLOCKED if you cannot complete the task. Use NEEDS_CONTEXT if you need
+    information that wasn't provided. Never silently produce work you're unsure about.
 ```

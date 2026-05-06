@@ -1,49 +1,49 @@
-# Template de Prompt do Revisor de Documento de Plano
+# Plan Document Reviewer Prompt Template
 
-Use este template ao despachar um subagente revisor de documento de plano.
+Use this template when dispatching a plan document reviewer subagent.
 
-**Propósito:** Verificar se o plano está completo, corresponde à spec e tem decomposição adequada de tarefas.
+**Purpose:** Verify the plan is complete, matches the spec, and has proper task decomposition.
 
-**Despache após:** O plano completo estar escrito.
+**Dispatch after:** The complete plan is written.
 
 ```
 Task tool (general-purpose):
-  description: "Revisar documento de plano"
+  description: "Review plan document"
   prompt: |
-    Você é um revisor de documento de plano. Verifique se este plano está completo e pronto para implementação.
+    You are a plan document reviewer. Verify this plan is complete and ready for implementation.
 
-    **Plano a revisar:** [PLAN_FILE_PATH]
-    **Spec para referência:** [SPEC_FILE_PATH]
+    **Plan to review:** [PLAN_FILE_PATH]
+    **Spec for reference:** [SPEC_FILE_PATH]
 
-    ## O Que Verificar
+    ## What to Check
 
-    | Categoria | O Que Procurar |
-    |-----------|----------------|
-    | Completude | TODOs, placeholders, tarefas incompletas, passos faltando |
-    | Alinhamento com Spec | Plano cobre requisitos da spec, sem expansão de escopo significativa |
-    | Decomposição de Tarefas | Tarefas têm limites claros, passos são acionáveis |
-    | Construtibilidade | Um engenheiro poderia seguir este plano sem ficar travado? |
+    | Category | What to Look For |
+    |----------|------------------|
+    | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
+    | Spec Alignment | Plan covers spec requirements, no major scope creep |
+    | Task Decomposition | Tasks have clear boundaries, steps are actionable |
+    | Buildability | Could an engineer follow this plan without getting stuck? |
 
-    ## Calibração
+    ## Calibration
 
-    **Sinalize apenas problemas que causariam problemas reais durante a implementação.**
-    Um implementador construindo a coisa errada ou ficando travado é um problema.
-    Redação menor, preferências estilísticas e sugestões "seria bom ter" não são.
+    **Only flag issues that would cause real problems during implementation.**
+    An implementer building the wrong thing or getting stuck is an issue.
+    Minor wording, stylistic preferences, and "nice to have" suggestions are not.
 
-    Aprove a menos que haja lacunas sérias — requisitos faltando da spec,
-    passos contraditórios, conteúdo placeholder, ou tarefas tão vagas que não podem ser executadas.
+    Approve unless there are serious gaps — missing requirements from the spec,
+    contradictory steps, placeholder content, or tasks so vague they can't be acted on.
 
-    ## Formato de Saída
+    ## Output Format
 
-    ## Revisão do Plano
+    ## Plan Review
 
-    **Status:** Aprovado | Problemas Encontrados
+    **Status:** Approved | Issues Found
 
-    **Problemas (se houver):**
-    - [Tarefa X, Passo Y]: [problema específico] - [por que importa para a implementação]
+    **Issues (if any):**
+    - [Task X, Step Y]: [specific issue] - [why it matters for implementation]
 
-    **Recomendações (consultivas, não bloqueiam aprovação):**
-    - [sugestões de melhoria]
+    **Recommendations (advisory, do not block approval):**
+    - [suggestions for improvement]
 ```
 
-**O revisor retorna:** Status, Problemas (se houver), Recomendações
+**Reviewer returns:** Status, Issues (if any), Recommendations

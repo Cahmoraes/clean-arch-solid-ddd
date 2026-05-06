@@ -1,21 +1,21 @@
 ---
 name: using-git-worktrees
-description: Use quando começar trabalho em uma funcionalidade que precisa de isolamento do workspace atual ou antes de executar planos de implementação — garante que um workspace isolado exista via ferramentas nativas ou fallback para git worktree
+description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback
 ---
 
-# Usando Git Worktrees
+# Using Git Worktrees
 
-## Visão Geral
+## Overview
 
-Garanta que o trabalho aconteça em um workspace isolado. Prefira as ferramentas nativas de worktree da sua plataforma. Recorra a git worktrees manuais apenas quando nenhuma ferramenta nativa estiver disponível.
+Ensure work happens in an isolated workspace. Prefer your platform's native worktree tools. Fall back to manual git worktrees only when no native tool is available.
 
-**Princípio fundamental:** Detecte isolamento existente primeiro. Então use ferramentas nativas. Então recorra ao git. Nunca lute contra o harness.
+**Core principle:** Detect existing isolation first. Then use native tools. Then fall back to git. Never fight the harness.
 
-**Anuncie no início:** "Estou usando a skill using-git-worktrees para configurar um workspace isolado."
+**Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
 
-## Passo 0: Detectar Isolamento Existente
+## Step 0: Detect Existing Isolation
 
-**Antes de criar qualquer coisa, verifique se você já está em um workspace isolado.**
+**Before creating anything, check if you are already in an isolated workspace.**
 
 ```bash
 GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
@@ -23,97 +23,97 @@ GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
 BRANCH=$(git branch --show-current)
 ```
 
-**Guard de submódulo:** `GIT_DIR != GIT_COMMON` também é verdadeiro dentro de submódulos git. Antes de concluir "já estou em um worktree", verifique que não está em um submódulo:
+**Submodule guard:** `GIT_DIR != GIT_COMMON` is also true inside git submodules. Before concluding "already in a worktree," verify you are not in a submodule:
 
 ```bash
-# Se isso retornar um caminho, você está em um submódulo, não em um worktree — trate como repo normal
+# If this returns a path, you're in a submodule, not a worktree — treat as normal repo
 git rev-parse --show-superproject-working-tree 2>/dev/null
 ```
 
-**Se `GIT_DIR != GIT_COMMON` (e não é submódulo):** Você já está em um worktree vinculado. Pule para o Passo 3 (Configuração do Projeto). NÃO crie outro worktree.
+**If `GIT_DIR != GIT_COMMON` (and not a submodule):** You are already in a linked worktree. Skip to Step 3 (Project Setup). Do NOT create another worktree.
 
-Reporte com estado da branch:
-- Em uma branch: "Já estou em workspace isolado em `<caminho>` na branch `<nome>`."
-- HEAD desanexado: "Já estou em workspace isolado em `<caminho>` (HEAD desanexado, gerenciado externamente). Criação de branch necessária no momento de finalização."
+Report with branch state:
+- On a branch: "Already in isolated workspace at `<path>` on branch `<name>`."
+- Detached HEAD: "Already in isolated workspace at `<path>` (detached HEAD, externally managed). Branch creation needed at finish time."
 
-**Se `GIT_DIR == GIT_COMMON` (ou em submódulo):** Você está em um checkout normal do repositório.
+**If `GIT_DIR == GIT_COMMON` (or in a submodule):** You are in a normal repo checkout.
 
-O usuário já indicou sua preferência de worktree nas suas instruções? Se não, peça consentimento antes de criar um worktree:
+Has the user already indicated their worktree preference in your instructions? If not, ask for consent before creating a worktree:
 
-> "Gostaria que eu configurasse um worktree isolado? Protege sua branch atual de mudanças."
+> "Would you like me to set up an isolated worktree? It protects your current branch from changes."
 
-Respeite qualquer preferência declarada existente sem perguntar. Se o usuário recusar o consentimento, trabalhe no lugar e pule para o Passo 3.
+Honor any existing declared preference without asking. If the user declines consent, work in place and skip to Step 3.
 
-## Passo 1: Criar Workspace Isolado
+## Step 1: Create Isolated Workspace
 
-**Você tem dois mecanismos. Tente-os nesta ordem.**
+**You have two mechanisms. Try them in this order.**
 
-### 1a. Ferramentas Nativas de Worktree (preferido)
+### 1a. Native Worktree Tools (preferred)
 
-O usuário pediu um workspace isolado (consentimento do Passo 0). Você já tem uma forma de criar um worktree? Pode ser uma ferramenta com nome como `EnterWorktree`, `WorktreeCreate`, um comando `/worktree`, ou uma flag `--worktree`. Se tiver, use-a e pule para o Passo 3.
+The user has asked for an isolated workspace (Step 0 consent). Do you already have a way to create a worktree? It might be a tool with a name like `EnterWorktree`, `WorktreeCreate`, a `/worktree` command, or a `--worktree` flag. If you do, use it and skip to Step 3.
 
-Ferramentas nativas tratam de posicionamento de diretório, criação de branch e limpeza automaticamente. Usar `git worktree add` quando você tem uma ferramenta nativa cria estado fantasma que o seu harness não pode ver ou gerenciar.
+Native tools handle directory placement, branch creation, and cleanup automatically. Using `git worktree add` when you have a native tool creates phantom state your harness can't see or manage.
 
-Só prossiga para o Passo 1b se não tiver nenhuma ferramenta nativa de worktree disponível.
+Only proceed to Step 1b if you have no native worktree tool available.
 
-### 1b. Fallback para Git Worktree
+### 1b. Git Worktree Fallback
 
-**Use isso apenas se o Passo 1a não se aplicar** — você não tem ferramenta nativa de worktree disponível. Crie um worktree manualmente usando git.
+**Only use this if Step 1a does not apply** — you have no native worktree tool available. Create a worktree manually using git.
 
-#### Seleção de Diretório
+#### Directory Selection
 
-Siga esta ordem de prioridade. Preferência explícita do usuário sempre supera estado observado do filesystem.
+Follow this priority order. Explicit user preference always beats observed filesystem state.
 
-1. **Verifique suas instruções por uma preferência de diretório de worktree declarada.** Se o usuário já especificou uma, use-a sem perguntar.
+1. **Check your instructions for a declared worktree directory preference.** If the user has already specified one, use it without asking.
 
-2. **Verifique um diretório de worktree local ao projeto existente:**
+2. **Check for an existing project-local worktree directory:**
    ```bash
-   ls -d .worktrees 2>/dev/null     # Preferido (oculto)
-   ls -d worktrees 2>/dev/null      # Alternativo
+   ls -d .worktrees 2>/dev/null     # Preferred (hidden)
+   ls -d worktrees 2>/dev/null      # Alternative
    ```
-   Se encontrado, use-o. Se ambos existirem, `.worktrees` vence.
+   If found, use it. If both exist, `.worktrees` wins.
 
-3. **Verifique um diretório global existente:**
+3. **Check for an existing global directory:**
    ```bash
    project=$(basename "$(git rev-parse --show-toplevel)")
    ls -d ~/.config/superpowers/worktrees/$project 2>/dev/null
    ```
-   Se encontrado, use-o (compatibilidade retroativa com caminho global legado).
+   If found, use it (backward compatibility with legacy global path).
 
-4. **Se não houver outra orientação disponível**, padrão para `.worktrees/` na raiz do projeto.
+4. **If there is no other guidance available**, default to `.worktrees/` at the project root.
 
-#### Verificação de Segurança (apenas diretórios locais ao projeto)
+#### Safety Verification (project-local directories only)
 
-**DEVE verificar que o diretório está ignorado antes de criar o worktree:**
+**MUST verify directory is ignored before creating worktree:**
 
 ```bash
 git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
 ```
 
-**Se NÃO estiver ignorado:** Adicione ao .gitignore, commit a mudança, depois prossiga.
+**If NOT ignored:** Add to .gitignore, commit the change, then proceed.
 
-**Por que é crítico:** Previne commitar acidentalmente conteúdo do worktree no repositório.
+**Why critical:** Prevents accidentally committing worktree contents to repository.
 
-Diretórios globais (`~/.config/superpowers/worktrees/`) não precisam de verificação.
+Global directories (`~/.config/superpowers/worktrees/`) need no verification.
 
-#### Criar o Worktree
+#### Create the Worktree
 
 ```bash
 project=$(basename "$(git rev-parse --show-toplevel)")
 
-# Determine o caminho baseado na localização escolhida
-# Para local ao projeto: path="$LOCATION/$BRANCH_NAME"
-# Para global: path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
+# Determine path based on chosen location
+# For project-local: path="$LOCATION/$BRANCH_NAME"
+# For global: path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
 
 git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
 ```
 
-**Fallback de sandbox:** Se `git worktree add` falhar com erro de permissão (negação do sandbox), informe ao usuário que o sandbox bloqueou a criação do worktree e que você está trabalhando no diretório atual em vez disso. Então execute setup e testes de baseline no lugar.
+**Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), tell the user the sandbox blocked worktree creation and you're working in the current directory instead. Then run setup and baseline tests in place.
 
-## Passo 3: Configuração do Projeto
+## Step 3: Project Setup
 
-Detecte automaticamente e execute setup apropriado:
+Auto-detect and run appropriate setup:
 
 ```bash
 # Node.js
@@ -130,86 +130,86 @@ if [ -f pyproject.toml ]; then poetry install; fi
 if [ -f go.mod ]; then go mod download; fi
 ```
 
-## Passo 4: Verificar Baseline Limpo
+## Step 4: Verify Clean Baseline
 
-Execute testes para garantir que o workspace começa limpo:
+Run tests to ensure workspace starts clean:
 
 ```bash
-# Use o comando apropriado para o projeto
+# Use project-appropriate command
 npm test / cargo test / pytest / go test ./...
 ```
 
-**Se os testes falharem:** Reporte as falhas, pergunte se deve prosseguir ou investigar.
+**If tests fail:** Report failures, ask whether to proceed or investigate.
 
-**Se os testes passarem:** Reporte que está pronto.
+**If tests pass:** Report ready.
 
-### Relatório
+### Report
 
 ```
-Worktree pronto em <caminho-completo>
-Testes passando (<N> testes, 0 falhas)
-Pronto para implementar <nome-da-funcionalidade>
+Worktree ready at <full-path>
+Tests passing (<N> tests, 0 failures)
+Ready to implement <feature-name>
 ```
 
-## Referência Rápida
+## Quick Reference
 
-| Situação | Ação |
-|----------|------|
-| Já em worktree vinculado | Pule a criação (Passo 0) |
-| Em um submódulo | Trate como repo normal (guard do Passo 0) |
-| Ferramenta nativa de worktree disponível | Use-a (Passo 1a) |
-| Sem ferramenta nativa | Fallback para git worktree (Passo 1b) |
-| `.worktrees/` existe | Use-o (verifique se está ignorado) |
-| `worktrees/` existe | Use-o (verifique se está ignorado) |
-| Ambos existem | Use `.worktrees/` |
-| Nenhum existe | Verifique arquivo de instruções, depois padrão `.worktrees/` |
-| Caminho global existe | Use-o (compatibilidade retroativa) |
-| Diretório não está ignorado | Adicione ao .gitignore + commit |
-| Erro de permissão ao criar | Fallback de sandbox, trabalhe no lugar |
-| Testes falham no baseline | Reporte falhas + pergunte |
-| Sem package.json/Cargo.toml | Pule instalação de dependências |
+| Situation | Action |
+|-----------|--------|
+| Already in linked worktree | Skip creation (Step 0) |
+| In a submodule | Treat as normal repo (Step 0 guard) |
+| Native worktree tool available | Use it (Step 1a) |
+| No native tool | Git worktree fallback (Step 1b) |
+| `.worktrees/` exists | Use it (verify ignored) |
+| `worktrees/` exists | Use it (verify ignored) |
+| Both exist | Use `.worktrees/` |
+| Neither exists | Check instruction file, then default `.worktrees/` |
+| Global path exists | Use it (backward compat) |
+| Directory not ignored | Add to .gitignore + commit |
+| Permission error on create | Sandbox fallback, work in place |
+| Tests fail during baseline | Report failures + ask |
+| No package.json/Cargo.toml | Skip dependency install |
 
-## Erros Comuns
+## Common Mistakes
 
-### Lutando contra o harness
+### Fighting the harness
 
-- **Problema:** Usar `git worktree add` quando a plataforma já fornece isolamento
-- **Correção:** Passo 0 detecta isolamento existente. Passo 1a defere para ferramentas nativas.
+- **Problem:** Using `git worktree add` when the platform already provides isolation
+- **Fix:** Step 0 detects existing isolation. Step 1a defers to native tools.
 
-### Pular a detecção
+### Skipping detection
 
-- **Problema:** Criar um worktree aninhado dentro de um existente
-- **Correção:** Sempre execute o Passo 0 antes de criar qualquer coisa
+- **Problem:** Creating a nested worktree inside an existing one
+- **Fix:** Always run Step 0 before creating anything
 
-### Pular verificação de ignorar
+### Skipping ignore verification
 
-- **Problema:** Conteúdo do worktree fica rastreado, polui git status
-- **Correção:** Sempre use `git check-ignore` antes de criar worktree local ao projeto
+- **Problem:** Worktree contents get tracked, pollute git status
+- **Fix:** Always use `git check-ignore` before creating project-local worktree
 
-### Assumir localização do diretório
+### Assuming directory location
 
-- **Problema:** Cria inconsistência, viola convenções do projeto
-- **Correção:** Siga a prioridade: existente > global legado > arquivo de instruções > padrão
+- **Problem:** Creates inconsistency, violates project conventions
+- **Fix:** Follow priority: existing > global legacy > instruction file > default
 
-### Prosseguir com testes falhando
+### Proceeding with failing tests
 
-- **Problema:** Não consegue distinguir novos bugs de problemas pré-existentes
-- **Correção:** Reporte falhas, obtenha permissão explícita para prosseguir
+- **Problem:** Can't distinguish new bugs from pre-existing issues
+- **Fix:** Report failures, get explicit permission to proceed
 
-## Sinais de Alerta
+## Red Flags
 
-**Nunca:**
-- Crie um worktree quando o Passo 0 detecta isolamento existente
-- Use `git worktree add` quando você tem uma ferramenta nativa de worktree (ex.: `EnterWorktree`). Este é o erro #1 — se você a tem, use-a.
-- Pule o Passo 1a indo direto para os comandos git do Passo 1b
-- Crie worktree sem verificar se está ignorado (local ao projeto)
-- Pule a verificação do teste de baseline
-- Prossiga com testes falhando sem perguntar
+**Never:**
+- Create a worktree when Step 0 detects existing isolation
+- Use `git worktree add` when you have a native worktree tool (e.g., `EnterWorktree`). This is the #1 mistake — if you have it, use it.
+- Skip Step 1a by jumping straight to Step 1b's git commands
+- Create worktree without verifying it's ignored (project-local)
+- Skip baseline test verification
+- Proceed with failing tests without asking
 
-**Sempre:**
-- Execute a detecção do Passo 0 primeiro
-- Prefira ferramentas nativas ao fallback git
-- Siga a prioridade de diretório: existente > global legado > arquivo de instruções > padrão
-- Verifique se o diretório está ignorado para local ao projeto
-- Detecte automaticamente e execute setup do projeto
-- Verifique o baseline limpo dos testes
+**Always:**
+- Run Step 0 detection first
+- Prefer native tools over git fallback
+- Follow directory priority: existing > global legacy > instruction file > default
+- Verify directory is ignored for project-local
+- Auto-detect and run project setup
+- Verify clean test baseline

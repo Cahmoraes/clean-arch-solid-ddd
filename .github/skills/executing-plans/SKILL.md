@@ -1,70 +1,86 @@
 ---
 name: executing-plans
-description: Use quando você tem um plano de implementação escrito para executar em uma sessão separada com pontos de revisão
+description: Use when you have a written implementation plan to execute in a separate session with review checkpoints
 ---
 
-# Executando Planos
+# Executing Plans
 
-## Visão Geral
+## Overview
 
-Carregue o plano, revise criticamente, execute todas as tarefas, reporte quando concluído.
+Load plan, review critically, execute all tasks, report when complete.
 
-**Anuncie no início:** "Estou usando a skill executing-plans para implementar este plano."
+**Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
-**Observação:** Diga ao seu parceiro humano que o Superpowers funciona muito melhor com acesso a subagentes. A qualidade do trabalho será significativamente maior se executado em uma plataforma com suporte a subagentes (como Claude Code ou Codex). Se subagentes estiverem disponíveis, use superpowers:subagent-driven-development em vez desta skill.
+**Note:** Tell your human partner that Superpowers works much better with access to subagents. The quality of its work will be significantly higher if run on a platform with subagent support (such as Claude Code or Codex). If subagents are available, use superpowers:subagent-driven-development instead of this skill.
 
-## O Processo
+## Workflow Preferences
 
-### Passo 1: Carregar e Revisar o Plano
-1. Leia o arquivo do plano
-2. Revise criticamente — identifique quaisquer dúvidas ou preocupações sobre o plano
-3. Se houver preocupações: Levante-as com seu parceiro humano antes de começar
-4. Se não houver preocupações: Crie o TodoWrite e prossiga
+Before executing any task, read `.superpowers/preferences.yml` in the user's repository root.
 
-### Passo 2: Executar as Tarefas
+- If `workflow.auto_commit` = false → do NOT commit after tasks. Inform the user that commits are pending.
+- If `workflow.auto_commit` = true (or file missing) → commit normally after each completed task.
+- If `workflow.confirm_destructive_actions` = true → ask before deleting or overwriting files.
+- If the file does not exist → warn the user and ask if they want to create it. Then proceed with defaults.
+- You may suggest overriding a preference with justification, but ONLY execute with user confirmation.
 
-Para cada tarefa:
-1. Marque como em_progresso
-2. Siga cada passo exatamente (o plano tem passos em tamanho de mordida)
-3. Execute as verificações conforme especificado
-4. Marque como concluída
+## The Process
 
-### Passo 3: Concluir o Desenvolvimento
+### Step 1: Load Tasks Index
 
-Após todas as tarefas concluídas e verificadas:
-- Anuncie: "Estou usando a skill finishing-a-development-branch para concluir este trabalho."
-- **SUB-SKILL OBRIGATÓRIA:** Use superpowers:finishing-a-development-branch
-- Siga essa skill para verificar os testes, apresentar opções, executar a escolha
+1. Read the tasks index file (`tasks-<feature-name>.md`) — passed explicitly in context or discovered in the feature's `plans/` directory
+2. If tracker exists: skip tasks already marked `[x]` (session resume), note which tasks remain
+3. For each remaining `[ ]` task, read the individual task file for full context
+4. **Read PRD and Spec:** Before executing any task, read the `**PRD:**` and `**Spec:**` paths from the task file header to understand the full feature context — especially functional requirements (RF-XXX) and architectural decisions that inform implementation choices
+5. Review critically — identify any questions or concerns about the tasks
+6. If concerns: Raise them with your human partner before starting
+7. If no concerns: Create TodoWrite and proceed
 
-## Quando Parar e Pedir Ajuda
+### Step 2: Execute Tasks
 
-**PARE de executar imediatamente quando:**
-- Encontrar um bloqueio (dependência faltando, teste falha, instrução não está clara)
-- O plano tiver lacunas críticas que impedem o início
-- Você não entender uma instrução
-- A verificação falhar repetidamente
+For each task:
+1. Update task file status: `PENDING` → `IN_PROGRESS` (if tracker exists)
+2. Follow each step exactly (plan has bite-sized steps)
+3. Run verifications as specified (use verification-before-completion)
+4. After verification passes: update task tracker — mark `[x]` in `*-tasks.md` and `Status: DONE` in individual task file
+5. Mark as completed in TodoWrite
 
-**Peça esclarecimento em vez de adivinhar.**
+### Step 3: Complete Development
 
-## Quando Revisitar Etapas Anteriores
+After all tasks complete and verified:
+- Announce: "I'm using the finishing-a-development-branch skill to complete this work."
+- **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
+- Pass the tasks index path so it can verify all tasks are `[x]`
+- Follow that skill to verify tests, present options, execute choice
 
-**Retorne à Revisão (Passo 1) quando:**
-- O parceiro atualizar o plano com base no seu feedback
-- A abordagem fundamental precisar ser repensada
+## When to Stop and Ask for Help
 
-**Não force através de bloqueios** — pare e peça.
+**STOP executing immediately when:**
+- Hit a blocker (missing dependency, test fails, instruction unclear)
+- Plan has critical gaps preventing starting
+- You don't understand an instruction
+- Verification fails repeatedly
 
-## Lembre-se
-- Revise o plano criticamente primeiro
-- Siga os passos do plano exatamente
-- Não pule verificações
-- Referencie skills quando o plano indicar
-- Pare quando bloqueado, não adivinhe
-- Nunca comece a implementação no branch main/master sem consentimento explícito do usuário
+**Ask for clarification rather than guessing.**
 
-## Integração
+## When to Revisit Earlier Steps
 
-**Skills de workflow obrigatórias:**
-- **superpowers:using-git-worktrees** — Garante workspace isolado (cria um ou verifica existente)
-- **superpowers:writing-plans** — Cria o plano que esta skill executa
-- **superpowers:finishing-a-development-branch** — Conclui o desenvolvimento após todas as tarefas
+**Return to Review (Step 1) when:**
+- Partner updates the plan based on your feedback
+- Fundamental approach needs rethinking
+
+**Don't force through blockers** - stop and ask.
+
+## Remember
+- Review plan critically first
+- Follow plan steps exactly
+- Don't skip verifications
+- Reference skills when plan says to
+- Stop when blocked, don't guess
+- Never start implementation on main/master branch without explicit user consent
+
+## Integration
+
+**Required workflow skills:**
+- **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
+- **superpowers:writing-plans** - Creates the plan this skill executes
+- **superpowers:finishing-a-development-branch** - Complete development after all tasks

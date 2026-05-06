@@ -1,299 +1,299 @@
-# Anti-Padrões de Teste
+# Testing Anti-Patterns
 
-**Carregue esta referência quando:** escrever ou mudar testes, adicionar mocks, ou sentir tentação de adicionar métodos apenas para teste em código de produção.
+**Load this reference when:** writing or changing tests, adding mocks, or tempted to add test-only methods to production code.
 
-## Visão Geral
+## Overview
 
-Testes devem verificar comportamento real, não comportamento de mock. Mocks são um meio de isolar, não a coisa sendo testada.
+Tests must verify real behavior, not mock behavior. Mocks are a means to isolate, not the thing being tested.
 
-**Princípio fundamental:** Teste o que o código faz, não o que os mocks fazem.
+**Core principle:** Test what the code does, not what the mocks do.
 
-**Seguir TDD estrito previne esses anti-padrões.**
+**Following strict TDD prevents these anti-patterns.**
 
-## As Leis de Ferro
+## The Iron Laws
 
 ```
-1. NUNCA teste comportamento de mock
-2. NUNCA adicione métodos apenas para teste em classes de produção
-3. NUNCA mocke sem entender dependências
+1. NEVER test mock behavior
+2. NEVER add test-only methods to production classes
+3. NEVER mock without understanding dependencies
 ```
 
-## Anti-Padrão 1: Testar Comportamento de Mock
+## Anti-Pattern 1: Testing Mock Behavior
 
-**A violação:**
+**The violation:**
 ```typescript
-// ❌ RUIM: Testando que o mock existe
-test('renderiza sidebar', () => {
+// ❌ BAD: Testing that the mock exists
+test('renders sidebar', () => {
   render(<Page />);
   expect(screen.getByTestId('sidebar-mock')).toBeInTheDocument();
 });
 ```
 
-**Por que está errado:**
-- Você está verificando que o mock funciona, não que o componente funciona
-- Teste passa quando o mock está presente, falha quando não está
-- Não informa nada sobre comportamento real
+**Why this is wrong:**
+- You're verifying the mock works, not that the component works
+- Test passes when mock is present, fails when it's not
+- Tells you nothing about real behavior
 
-**Correção do parceiro humano:** "Estamos testando o comportamento de um mock?"
+**your human partner's correction:** "Are we testing the behavior of a mock?"
 
-**A correção:**
+**The fix:**
 ```typescript
-// ✅ BOM: Teste o componente real ou não o mocke
-test('renderiza sidebar', () => {
-  render(<Page />);  // Não mockar sidebar
+// ✅ GOOD: Test real component or don't mock it
+test('renders sidebar', () => {
+  render(<Page />);  // Don't mock sidebar
   expect(screen.getByRole('navigation')).toBeInTheDocument();
 });
 
-// OU se a sidebar deve ser mockada para isolamento:
-// Não assertar no mock - teste o comportamento de Page com a sidebar presente
+// OR if sidebar must be mocked for isolation:
+// Don't assert on the mock - test Page's behavior with sidebar present
 ```
 
-### Função de Portão
+### Gate Function
 
 ```
-ANTES de assertar em qualquer elemento de mock:
-  Pergunte: "Estou testando comportamento real do componente ou apenas a existência do mock?"
+BEFORE asserting on any mock element:
+  Ask: "Am I testing real component behavior or just mock existence?"
 
-  SE testando existência do mock:
-    PARE - Delete a assertion ou desmocke o componente
+  IF testing mock existence:
+    STOP - Delete the assertion or unmock the component
 
-  Teste comportamento real em vez disso
+  Test real behavior instead
 ```
 
-## Anti-Padrão 2: Métodos Apenas para Teste na Produção
+## Anti-Pattern 2: Test-Only Methods in Production
 
-**A violação:**
+**The violation:**
 ```typescript
-// ❌ RUIM: destroy() só usada em testes
+// ❌ BAD: destroy() only used in tests
 class Session {
-  async destroy() {  // Parece API de produção!
+  async destroy() {  // Looks like production API!
     await this._workspaceManager?.destroyWorkspace(this.id);
-    // ... limpeza
+    // ... cleanup
   }
 }
 
-// Nos testes
+// In tests
 afterEach(() => session.destroy());
 ```
 
-**Por que está errado:**
-- Classe de produção poluída com código apenas para teste
-- Perigoso se chamado acidentalmente em produção
-- Viola YAGNI e separação de responsabilidades
-- Confunde ciclo de vida do objeto com ciclo de vida da entidade
+**Why this is wrong:**
+- Production class polluted with test-only code
+- Dangerous if accidentally called in production
+- Violates YAGNI and separation of concerns
+- Confuses object lifecycle with entity lifecycle
 
-**A correção:**
+**The fix:**
 ```typescript
-// ✅ BOM: Utilitários de teste tratam a limpeza de testes
-// Session não tem destroy() - é stateless em produção
+// ✅ GOOD: Test utilities handle test cleanup
+// Session has no destroy() - it's stateless in production
 
-// Em test-utils/
-export async function limparSession(session: Session) {
+// In test-utils/
+export async function cleanupSession(session: Session) {
   const workspace = session.getWorkspaceInfo();
   if (workspace) {
     await workspaceManager.destroyWorkspace(workspace.id);
   }
 }
 
-// Nos testes
-afterEach(() => limparSession(session));
+// In tests
+afterEach(() => cleanupSession(session));
 ```
 
-### Função de Portão
+### Gate Function
 
 ```
-ANTES de adicionar qualquer método à classe de produção:
-  Pergunte: "Isso só é usado por testes?"
+BEFORE adding any method to production class:
+  Ask: "Is this only used by tests?"
 
-  SE sim:
-    PARE - Não adicione
-    Coloque nos utilitários de teste em vez disso
+  IF yes:
+    STOP - Don't add it
+    Put it in test utilities instead
 
-  Pergunte: "Esta classe é dona do ciclo de vida deste recurso?"
+  Ask: "Does this class own this resource's lifecycle?"
 
-  SE não:
-    PARE - Classe errada para este método
+  IF no:
+    STOP - Wrong class for this method
 ```
 
-## Anti-Padrão 3: Mockar Sem Entender
+## Anti-Pattern 3: Mocking Without Understanding
 
-**A violação:**
+**The violation:**
 ```typescript
-// ❌ RUIM: Mock quebra lógica do teste
-test('detecta servidor duplicado', () => {
-  // Mock impede escrita de config de que o teste depende!
+// ❌ BAD: Mock breaks test logic
+test('detects duplicate server', () => {
+  // Mock prevents config write that test depends on!
   vi.mock('ToolCatalog', () => ({
     discoverAndCacheTools: vi.fn().mockResolvedValue(undefined)
   }));
 
   await addServer(config);
-  await addServer(config);  // Deveria lançar - mas não vai!
+  await addServer(config);  // Should throw - but won't!
 });
 ```
 
-**Por que está errado:**
-- Método mockado tinha efeito colateral do qual o teste dependia (escrever config)
-- Over-mocking para "ser seguro" quebra o comportamento real
-- Teste passa pelo motivo errado ou falha misteriosamente
+**Why this is wrong:**
+- Mocked method had side effect test depended on (writing config)
+- Over-mocking to "be safe" breaks actual behavior
+- Test passes for wrong reason or fails mysteriously
 
-**A correção:**
+**The fix:**
 ```typescript
-// ✅ BOM: Mocke no nível correto
-test('detecta servidor duplicado', () => {
-  // Mocke a parte lenta, preserve o comportamento que o teste precisa
-  vi.mock('MCPServerManager'); // Apenas mocke a inicialização lenta do servidor
+// ✅ GOOD: Mock at correct level
+test('detects duplicate server', () => {
+  // Mock the slow part, preserve behavior test needs
+  vi.mock('MCPServerManager'); // Just mock slow server startup
 
-  await addServer(config);  // Config escrito
-  await addServer(config);  // Duplicado detectado ✓
+  await addServer(config);  // Config written
+  await addServer(config);  // Duplicate detected ✓
 });
 ```
 
-### Função de Portão
+### Gate Function
 
 ```
-ANTES de mockar qualquer método:
-  PARE - Não mocke ainda
+BEFORE mocking any method:
+  STOP - Don't mock yet
 
-  1. Pergunte: "Que efeitos colaterais o método real tem?"
-  2. Pergunte: "Este teste depende de algum desses efeitos colaterais?"
-  3. Pergunte: "Entendo completamente do que este teste precisa?"
+  1. Ask: "What side effects does the real method have?"
+  2. Ask: "Does this test depend on any of those side effects?"
+  3. Ask: "Do I fully understand what this test needs?"
 
-  SE depende de efeitos colaterais:
-    Mocke em nível mais baixo (a operação realmente lenta/externa)
-    OU use test doubles que preservam o comportamento necessário
-    NÃO o método de alto nível do qual o teste depende
+  IF depends on side effects:
+    Mock at lower level (the actual slow/external operation)
+    OR use test doubles that preserve necessary behavior
+    NOT the high-level method the test depends on
 
-  SE não tem certeza do que o teste depende:
-    Execute o teste com implementação real PRIMEIRO
-    Observe o que realmente precisa acontecer
-    ENTÃO adicione mocking mínimo no nível correto
+  IF unsure what test depends on:
+    Run test with real implementation FIRST
+    Observe what actually needs to happen
+    THEN add minimal mocking at the right level
 
-  Sinais de alerta:
-    - "Vou mockar isso para ser seguro"
-    - "Isso pode ser lento, melhor mockar"
-    - Mockar sem entender a cadeia de dependências
+  Red flags:
+    - "I'll mock this to be safe"
+    - "This might be slow, better mock it"
+    - Mocking without understanding the dependency chain
 ```
 
-## Anti-Padrão 4: Mocks Incompletos
+## Anti-Pattern 4: Incomplete Mocks
 
-**A violação:**
+**The violation:**
 ```typescript
-// ❌ RUIM: Mock parcial - apenas campos que você acha que precisa
+// ❌ BAD: Partial mock - only fields you think you need
 const mockResponse = {
   status: 'success',
   data: { userId: '123', name: 'Alice' }
-  // Faltando: metadata que código downstream usa
+  // Missing: metadata that downstream code uses
 };
 
-// Depois: quebra quando código acessa response.metadata.requestId
+// Later: breaks when code accesses response.metadata.requestId
 ```
 
-**Por que está errado:**
-- **Mocks parciais escondem suposições estruturais** — Você só mockei os campos que conhece
-- **Código downstream pode depender de campos não incluídos** — Falhas silenciosas
-- **Testes passam mas integração falha** — Mock incompleto, API real completa
-- **Falsa confiança** — Teste não prova nada sobre comportamento real
+**Why this is wrong:**
+- **Partial mocks hide structural assumptions** - You only mocked fields you know about
+- **Downstream code may depend on fields you didn't include** - Silent failures
+- **Tests pass but integration fails** - Mock incomplete, real API complete
+- **False confidence** - Test proves nothing about real behavior
 
-**A Regra de Ferro:** Mocke a estrutura de dados COMPLETA como existe na realidade, não apenas os campos que seu teste imediato usa.
+**The Iron Rule:** Mock the COMPLETE data structure as it exists in reality, not just fields your immediate test uses.
 
-**A correção:**
+**The fix:**
 ```typescript
-// ✅ BOM: Espelhe a completude da API real
+// ✅ GOOD: Mirror real API completeness
 const mockResponse = {
   status: 'success',
   data: { userId: '123', name: 'Alice' },
   metadata: { requestId: 'req-789', timestamp: 1234567890 }
-  // Todos os campos que a API real retorna
+  // All fields real API returns
 };
 ```
 
-### Função de Portão
+### Gate Function
 
 ```
-ANTES de criar respostas de mock:
-  Verifique: "Que campos a resposta real da API contém?"
+BEFORE creating mock responses:
+  Check: "What fields does the real API response contain?"
 
-  Ações:
-    1. Examine resposta real da API em docs/exemplos
-    2. Inclua TODOS os campos que o sistema pode consumir downstream
-    3. Verifique que o mock corresponde completamente ao schema de resposta real
+  Actions:
+    1. Examine actual API response from docs/examples
+    2. Include ALL fields system might consume downstream
+    3. Verify mock matches real response schema completely
 
-  Crítico:
-    Se você está criando um mock, deve entender a estrutura COMPLETA
-    Mocks parciais falham silenciosamente quando código depende de campos omitidos
+  Critical:
+    If you're creating a mock, you must understand the ENTIRE structure
+    Partial mocks fail silently when code depends on omitted fields
 
-  Se não tiver certeza: Inclua todos os campos documentados
+  If uncertain: Include all documented fields
 ```
 
-## Anti-Padrão 5: Testes de Integração como Reflexão Tardia
+## Anti-Pattern 5: Integration Tests as Afterthought
 
-**A violação:**
+**The violation:**
 ```
-✅ Implementação completa
-❌ Sem testes escritos
-"Pronto para testes"
-```
-
-**Por que está errado:**
-- Testes fazem parte da implementação, não seguimento opcional
-- TDD teria capturado isso
-- Não pode afirmar que está completo sem testes
-
-**A correção:**
-```
-Ciclo TDD:
-1. Escreva teste com falha
-2. Implemente para passar
-3. Refatore
-4. AÍ sim afirme que está completo
+✅ Implementation complete
+❌ No tests written
+"Ready for testing"
 ```
 
-## Quando Mocks Ficam Muito Complexos
+**Why this is wrong:**
+- Testing is part of implementation, not optional follow-up
+- TDD would have caught this
+- Can't claim complete without tests
 
-**Sinais de alerta:**
-- Setup do mock mais longo que a lógica do teste
-- Mockando tudo para fazer o teste passar
-- Mocks sem métodos que componentes reais têm
-- Teste quebra quando o mock muda
+**The fix:**
+```
+TDD cycle:
+1. Write failing test
+2. Implement to pass
+3. Refactor
+4. THEN claim complete
+```
 
-**Pergunta do parceiro humano:** "Precisamos estar usando um mock aqui?"
+## When Mocks Become Too Complex
 
-**Considere:** Testes de integração com componentes reais geralmente mais simples do que mocks complexos
+**Warning signs:**
+- Mock setup longer than test logic
+- Mocking everything to make test pass
+- Mocks missing methods real components have
+- Test breaks when mock changes
 
-## TDD Previne Esses Anti-Padrões
+**your human partner's question:** "Do we need to be using a mock here?"
 
-**Por que TDD ajuda:**
-1. **Escreva o teste primeiro** → Força você a pensar no que está realmente testando
-2. **Observe falhar** → Confirma que o teste testa comportamento real, não mocks
-3. **Implementação mínima** → Nenhum método apenas para teste se infiltra
-4. **Dependências reais** → Você vê do que o teste realmente precisa antes de mockar
+**Consider:** Integration tests with real components often simpler than complex mocks
 
-**Se você está testando comportamento de mock, violou TDD** — você adicionou mocks sem observar o teste falhar contra código real primeiro.
+## TDD Prevents These Anti-Patterns
 
-## Referência Rápida
+**Why TDD helps:**
+1. **Write test first** → Forces you to think about what you're actually testing
+2. **Watch it fail** → Confirms test tests real behavior, not mocks
+3. **Minimal implementation** → No test-only methods creep in
+4. **Real dependencies** → You see what the test actually needs before mocking
 
-| Anti-Padrão | Correção |
-|-------------|---------|
-| Assertar em elementos de mock | Testar componente real ou desmockê-lo |
-| Métodos apenas para teste na produção | Mover para utilitários de teste |
-| Mockar sem entender | Entender dependências primeiro, mockar minimamente |
-| Mocks incompletos | Espelhar a API real completamente |
-| Testes como reflexão tardia | TDD — testes primeiro |
-| Mocks super complexos | Considerar testes de integração |
+**If you're testing mock behavior, you violated TDD** - you added mocks without watching test fail against real code first.
 
-## Sinais de Alerta
+## Quick Reference
 
-- Assertion verifica test IDs com `*-mock`
-- Métodos apenas chamados em arquivos de teste
-- Setup do mock é >50% do teste
-- Teste falha quando você remove o mock
-- Não consegue explicar por que o mock é necessário
-- Mockando "apenas para ser seguro"
+| Anti-Pattern | Fix |
+|--------------|-----|
+| Assert on mock elements | Test real component or unmock it |
+| Test-only methods in production | Move to test utilities |
+| Mock without understanding | Understand dependencies first, mock minimally |
+| Incomplete mocks | Mirror real API completely |
+| Tests as afterthought | TDD - tests first |
+| Over-complex mocks | Consider integration tests |
 
-## O Resumo Final
+## Red Flags
 
-**Mocks são ferramentas para isolar, não coisas para testar.**
+- Assertion checks for `*-mock` test IDs
+- Methods only called in test files
+- Mock setup is >50% of test
+- Test fails when you remove mock
+- Can't explain why mock is needed
+- Mocking "just to be safe"
 
-Se TDD revela que você está testando comportamento de mock, você errou o caminho.
+## The Bottom Line
 
-Correção: Teste comportamento real ou questione por que está mockando.
+**Mocks are tools to isolate, not things to test.**
+
+If TDD reveals you're testing mock behavior, you've gone wrong.
+
+Fix: Test real behavior or question why you're mocking at all.

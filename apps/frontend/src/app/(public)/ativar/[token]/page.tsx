@@ -39,10 +39,10 @@ function StatusSection({
 			aria-busy={ariaBusy}
 			className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-16 sm:px-6"
 		>
-			<h1 className="font-display text-3xl font-medium tracking-tight text-pure-black">
+			<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 				{title}
 			</h1>
-			<p className="text-base text-mid-gray">{description}</p>
+			<p className="text-base text-muted-foreground">{description}</p>
 			{cta}
 		</section>
 	)

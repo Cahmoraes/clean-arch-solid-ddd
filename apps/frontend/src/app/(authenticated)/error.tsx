@@ -29,11 +29,11 @@ export default function AuthenticatedError({
 		>
 			<h1
 				id="auth-error-title"
-				className="font-display text-2xl font-medium text-pure-black"
+				className="font-display text-2xl font-medium text-foreground"
 			>
 				Não foi possível carregar esta página
 			</h1>
-			<p className="text-sm text-stone">
+			<p className="text-sm text-muted-foreground">
 				Algo inesperado aconteceu. Tente novamente — se o problema persistir,
 				atualize a página.
 			</p>

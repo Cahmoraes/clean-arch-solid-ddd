@@ -55,10 +55,10 @@ export default function ChangePasswordPage() {
 	return (
 		<section className="mx-auto flex w-full max-w-md flex-col gap-8">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-pure-black">
+				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Alterar senha
 				</h1>
-				<p className="text-sm text-stone">
+				<p className="text-sm text-muted-foreground">
 					Use uma senha forte e diferente da atual.
 				</p>
 			</header>
@@ -98,7 +98,7 @@ export default function ChangePasswordPage() {
 					<p
 						role="alert"
 						data-testid="change-password-submit-error"
-						className="rounded-[12px] border border-light-gray bg-snow px-4 py-3 text-sm text-near-black"
+						className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-foreground"
 					>
 						{submissionMessage}
 					</p>

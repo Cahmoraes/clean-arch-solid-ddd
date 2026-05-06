@@ -155,11 +155,11 @@ export default function CheckInsPage() {
 			<header className="flex flex-col gap-1">
 				<h1
 					id="checkins-title"
-					className="font-display text-3xl font-medium text-pure-black"
+					className="font-display text-3xl font-medium text-foreground"
 				>
 					Histórico de check-ins
 				</h1>
-				<p className="text-sm text-mid-gray">
+				<p className="text-sm text-muted-foreground">
 					Acompanhe sua frequência nas academias.
 				</p>
 			</header>

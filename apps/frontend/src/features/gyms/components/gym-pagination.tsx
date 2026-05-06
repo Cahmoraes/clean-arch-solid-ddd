@@ -43,7 +43,7 @@ export function GymPagination({
 				<PaginationItem>
 					<span
 						data-testid="gym-pagination-page"
-						className="px-3 text-sm text-stone"
+						className="px-3 text-sm text-muted-foreground"
 					>
 						Página {page}
 					</span>

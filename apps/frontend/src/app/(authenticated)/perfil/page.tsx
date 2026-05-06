@@ -44,28 +44,28 @@ function ProfileSection() {
 	return (
 		<dl data-testid="profile-data" className="grid gap-4 sm:grid-cols-2">
 			<div className="flex flex-col gap-1">
-				<dt className="text-sm text-stone">Nome</dt>
+				<dt className="text-sm text-muted-foreground">Nome</dt>
 				<dd
 					data-testid="profile-name"
-					className="text-base font-medium text-near-black"
+					className="text-base font-medium text-foreground"
 				>
 					{data.name}
 				</dd>
 			</div>
 			<div className="flex flex-col gap-1">
-				<dt className="text-sm text-stone">E-mail</dt>
+				<dt className="text-sm text-muted-foreground">E-mail</dt>
 				<dd
 					data-testid="profile-email"
-					className="text-base font-medium text-near-black"
+					className="text-base font-medium text-foreground"
 				>
 					{data.email}
 				</dd>
 			</div>
 			<div className="flex flex-col gap-1">
-				<dt className="text-sm text-stone">ID</dt>
+				<dt className="text-sm text-muted-foreground">ID</dt>
 				<dd
 					data-testid="profile-id"
-					className="text-base font-mono text-near-black"
+					className="text-base font-mono text-foreground"
 				>
 					{data.id}
 				</dd>
@@ -110,10 +110,12 @@ function MetricsSection() {
 		<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			<div
 				data-testid="metric-checkins"
-				className="flex flex-col gap-2 rounded-[12px] border border-light-gray bg-pure-white p-5"
+				className="flex flex-col gap-2 rounded-[12px] border border-border bg-card p-5"
 			>
-				<span className="text-sm text-stone">Total de check-ins</span>
-				<span className="font-display text-3xl font-semibold text-near-black">
+				<span className="text-sm text-muted-foreground">
+					Total de check-ins
+				</span>
+				<span className="font-display text-3xl font-semibold text-foreground">
 					{data.checkInsCount}
 				</span>
 			</div>
@@ -125,22 +127,22 @@ export default function ProfilePage() {
 	return (
 		<main className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 py-10 sm:px-6">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-semibold text-near-black">
+				<h1 className="font-display text-3xl font-semibold text-foreground">
 					Meu perfil
 				</h1>
-				<p className="text-sm text-stone">
+				<p className="text-sm text-muted-foreground">
 					Visualize e mantenha seus dados de acesso e acompanhe suas métricas.
 				</p>
 			</header>
 
 			<section
 				aria-labelledby="profile-section-title"
-				className="flex flex-col gap-4 rounded-[12px] border border-light-gray bg-pure-white p-6"
+				className="flex flex-col gap-4 rounded-[12px] border border-border bg-card p-6"
 			>
 				<div className="flex items-center justify-between gap-4">
 					<h2
 						id="profile-section-title"
-						className="font-display text-xl font-medium text-near-black"
+						className="font-display text-xl font-medium text-foreground"
 					>
 						Dados pessoais
 					</h2>
@@ -164,7 +166,7 @@ export default function ProfilePage() {
 			>
 				<h2
 					id="metrics-section-title"
-					className="font-display text-xl font-medium text-near-black"
+					className="font-display text-xl font-medium text-foreground"
 				>
 					Métricas
 				</h2>

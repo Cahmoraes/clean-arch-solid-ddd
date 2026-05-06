@@ -63,7 +63,7 @@ function ErrorState({ error }: { error: ApiError | null }) {
 		<div
 			data-testid="admin-users-error"
 			role="alert"
-			className="rounded-[12px] border border-light-gray bg-snow px-4 py-6 text-sm text-near-black"
+			className="rounded-[12px] border border-border bg-accent px-4 py-6 text-sm text-foreground"
 		>
 			{error?.userMessage ??
 				"Não foi possível carregar a lista de usuários. Tente novamente."}
@@ -243,10 +243,10 @@ export default function AdminUsersPage() {
 			aria-busy={isFetching}
 		>
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-pure-black">
+				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Usuários
 				</h1>
-				<p className="text-sm text-stone">
+				<p className="text-sm text-muted-foreground">
 					Visualize todas as contas cadastradas na plataforma.
 				</p>
 			</header>

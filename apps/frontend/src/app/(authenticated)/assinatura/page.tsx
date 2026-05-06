@@ -29,7 +29,7 @@ function DemoBanner({ className }: DemoBannerProps) {
 			aria-label="Aviso de demonstração"
 			data-testid="subscription-demo-banner"
 			className={cn(
-				"flex items-start gap-3 rounded-[12px] border border-pure-black bg-snow px-4 py-3 text-sm text-near-black",
+				"flex items-start gap-3 rounded-[12px] border border-primary bg-accent px-4 py-3 text-sm text-foreground",
 				className,
 			)}
 		>
@@ -38,7 +38,7 @@ function DemoBanner({ className }: DemoBannerProps) {
 				<strong className="font-medium">
 					Demonstração — sem cobrança real.
 				</strong>
-				<span className="text-mid-gray">
+				<span className="text-muted-foreground">
 					Esta tela simula o fluxo de assinatura. Nenhum pagamento será
 					processado e nenhum cartão será cobrado.
 				</span>
@@ -69,12 +69,10 @@ function PlanCard({
 			data-testid={`subscription-plan-${plan.id}`}
 			data-selected={selected ? "true" : "false"}
 			className={cn(
-				"flex cursor-pointer flex-col gap-3 rounded-[16px] border bg-pure-white p-5 text-left transition-colors",
+				"flex cursor-pointer flex-col gap-3 rounded-[16px] border bg-card p-5 text-left transition-colors",
 				"focus-within:outline-none focus-within:ring-2 focus-within:ring-ring/50 focus-within:ring-offset-2",
 				disabled ? "cursor-not-allowed opacity-60" : "",
-				selected
-					? "border-pure-black"
-					: "border-light-gray hover:border-mid-gray",
+				selected ? "border-primary" : "border-border hover:border-mid-gray",
 			)}
 		>
 			<input
@@ -88,18 +86,18 @@ function PlanCard({
 				className="sr-only"
 			/>
 			<div className="flex items-center justify-between">
-				<h3 className="font-display text-lg font-medium text-pure-black">
+				<h3 className="font-display text-lg font-medium text-foreground">
 					{plan.name}
 				</h3>
 				{selected ? (
-					<BadgeCheck className="h-5 w-5 text-pure-black" aria-hidden="true" />
+					<BadgeCheck className="h-5 w-5 text-foreground" aria-hidden="true" />
 				) : null}
 			</div>
-			<p className="text-sm text-stone">{plan.tagline}</p>
-			<p className="font-display text-2xl font-medium text-near-black">
+			<p className="text-sm text-muted-foreground">{plan.tagline}</p>
+			<p className="font-display text-2xl font-medium text-foreground">
 				{plan.priceLabel}
 			</p>
-			<ul className="flex flex-col gap-1.5 text-sm text-near-black">
+			<ul className="flex flex-col gap-1.5 text-sm text-foreground">
 				{plan.features.map((feature) => (
 					<li key={feature} className="flex items-start gap-2">
 						<Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -121,38 +119,38 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 		<section
 			data-testid="subscription-confirmation"
 			aria-live="polite"
-			className="flex flex-col gap-3 rounded-[16px] border border-pure-black bg-pure-white p-5"
+			className="flex flex-col gap-3 rounded-[16px] border border-primary bg-card p-5"
 		>
 			<div className="flex items-center gap-2">
-				<BadgeCheck className="h-5 w-5 text-pure-black" aria-hidden="true" />
-				<h2 className="font-display text-xl font-medium text-pure-black">
+				<BadgeCheck className="h-5 w-5 text-foreground" aria-hidden="true" />
+				<h2 className="font-display text-xl font-medium text-foreground">
 					Assinatura demonstrativa criada
 				</h2>
 			</div>
-			<p className="text-sm text-near-black">
+			<p className="text-sm text-foreground">
 				Plano: <strong>{plan.name}</strong>
 			</p>
-			<dl className="grid grid-cols-1 gap-2 text-sm text-near-black sm:grid-cols-2">
+			<dl className="grid grid-cols-1 gap-2 text-sm text-foreground sm:grid-cols-2">
 				<div className="flex flex-col">
-					<dt className="text-mid-gray">ID da subscription</dt>
+					<dt className="text-muted-foreground">ID da subscription</dt>
 					<dd
 						data-testid="subscription-confirmation-id"
-						className="font-mono text-near-black"
+						className="font-mono text-foreground"
 					>
 						{subscription.subscriptionId}
 					</dd>
 				</div>
 				<div className="flex flex-col">
-					<dt className="text-mid-gray">Status</dt>
+					<dt className="text-muted-foreground">Status</dt>
 					<dd
 						data-testid="subscription-confirmation-status"
-						className="font-mono text-near-black"
+						className="font-mono text-foreground"
 					>
 						{subscription.status}
 					</dd>
 				</div>
 			</dl>
-			<p className="text-xs text-mid-gray">
+			<p className="text-xs text-muted-foreground">
 				Lembrete: nenhum valor foi cobrado — este é um fluxo demonstrativo.
 			</p>
 		</section>
@@ -201,7 +199,7 @@ function ErrorAlert({ message }: ErrorAlertProps) {
 		<p
 			role="alert"
 			data-testid="subscription-error"
-			className="rounded-[12px] border border-light-gray bg-snow px-4 py-3 text-sm text-near-black"
+			className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-foreground"
 		>
 			{message}
 		</p>
@@ -230,7 +228,7 @@ function SubscribeActions({
 			>
 				{isPending ? "Processando…" : "Assinar plano demo"}
 			</Button>
-			<DemoBanner className="border-light-gray" />
+			<DemoBanner className="border-border" />
 		</div>
 	)
 }
@@ -290,10 +288,10 @@ export default function SubscriptionPage() {
 	return (
 		<section className="mx-auto flex w-full max-w-3xl flex-col gap-8">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-pure-black">
+				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Assinatura Premium
 				</h1>
-				<p className="text-sm text-stone">
+				<p className="text-sm text-muted-foreground">
 					Escolha um plano para experimentar o fluxo de assinatura.
 				</p>
 			</header>

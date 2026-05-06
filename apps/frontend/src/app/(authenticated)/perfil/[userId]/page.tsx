@@ -83,37 +83,37 @@ function PublicProfileBody({
 	return (
 		<dl data-testid="public-profile-data" className="grid gap-4 sm:grid-cols-2">
 			<div className="flex flex-col gap-1">
-				<dt className="text-sm text-stone">Nome</dt>
+				<dt className="text-sm text-muted-foreground">Nome</dt>
 				<dd
 					data-testid="public-profile-name"
-					className="text-base font-medium text-near-black"
+					className="text-base font-medium text-foreground"
 				>
 					{data.name}
 				</dd>
 			</div>
 			<div className="flex flex-col gap-1">
-				<dt className="text-sm text-stone">E-mail</dt>
+				<dt className="text-sm text-muted-foreground">E-mail</dt>
 				<dd
 					data-testid="public-profile-email"
-					className="text-base font-medium text-near-black"
+					className="text-base font-medium text-foreground"
 				>
 					{data.email}
 				</dd>
 			</div>
 			<div className="flex flex-col gap-1">
-				<dt className="text-sm text-stone">Função</dt>
+				<dt className="text-sm text-muted-foreground">Função</dt>
 				<dd
 					data-testid="public-profile-role"
-					className="text-base font-medium text-near-black"
+					className="text-base font-medium text-foreground"
 				>
 					{formatRole(data.role)}
 				</dd>
 			</div>
 			<div className="flex flex-col gap-1">
-				<dt className="text-sm text-stone">ID</dt>
+				<dt className="text-sm text-muted-foreground">ID</dt>
 				<dd
 					data-testid="public-profile-id"
-					className="text-base font-mono text-near-black"
+					className="text-base font-mono text-foreground"
 				>
 					{data.id}
 				</dd>
@@ -133,22 +133,22 @@ export function PublicProfileView({ userId }: PublicProfileViewProps) {
 			<header className="flex flex-col gap-2">
 				<Link
 					href="/perfil"
-					className="text-sm text-stone underline-offset-4 hover:underline"
+					className="text-sm text-muted-foreground underline-offset-4 hover:underline"
 					data-testid="public-profile-back"
 				>
 					← Voltar ao meu perfil
 				</Link>
-				<h1 className="font-display text-3xl font-semibold text-near-black">
+				<h1 className="font-display text-3xl font-semibold text-foreground">
 					Perfil público
 				</h1>
-				<p className="text-sm text-stone">
+				<p className="text-sm text-muted-foreground">
 					Informações públicas do usuário consultado.
 				</p>
 			</header>
 
 			<section
 				aria-labelledby="public-profile-section-title"
-				className="flex flex-col gap-4 rounded-[12px] border border-light-gray bg-pure-white p-6"
+				className="flex flex-col gap-4 rounded-[12px] border border-border bg-card p-6"
 			>
 				<h2 id="public-profile-section-title" className="sr-only">
 					Dados públicos

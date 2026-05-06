@@ -32,12 +32,12 @@ function SuccessView({ email, onAnother }: SuccessViewProps) {
 			data-testid="signup-success"
 			className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-16 sm:px-6"
 		>
-			<h1 className="font-display text-3xl font-medium tracking-tight text-pure-black">
+			<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 				Cadastro recebido
 			</h1>
-			<p className="text-base text-mid-gray">
+			<p className="text-base text-muted-foreground">
 				Enviamos instruções de ativação para{" "}
-				<strong className="text-near-black">{email}</strong>. Acesse sua caixa
+				<strong className="text-foreground">{email}</strong>. Acesse sua caixa
 				de entrada e clique no link para ativar sua conta.
 			</p>
 			<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -93,10 +93,10 @@ export default function SignupPage() {
 	return (
 		<section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-pure-black">
+				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Criar conta
 				</h1>
-				<p className="text-sm text-stone">
+				<p className="text-sm text-muted-foreground">
 					Cadastre-se para começar a registrar seus check-ins.
 				</p>
 			</header>
@@ -136,7 +136,7 @@ export default function SignupPage() {
 					<p
 						role="alert"
 						data-testid="signup-submit-error"
-						className="rounded-[12px] border border-light-gray bg-snow px-4 py-3 text-sm text-near-black"
+						className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-foreground"
 					>
 						{submissionMessage}
 					</p>
@@ -147,11 +147,11 @@ export default function SignupPage() {
 				</Button>
 			</form>
 
-			<p className="text-sm text-stone">
+			<p className="text-sm text-muted-foreground">
 				Já tem conta?{" "}
 				<Link
 					href="/login"
-					className="font-medium text-near-black underline underline-offset-4"
+					className="font-medium text-foreground underline underline-offset-4"
 				>
 					Faça login
 				</Link>

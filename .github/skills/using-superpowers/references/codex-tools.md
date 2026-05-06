@@ -1,34 +1,38 @@
-# Mapeamento de Ferramentas do Codex
+# Codex Tool Mapping
 
-Skills usam nomes de ferramentas do Claude Code. Quando você encontrar esses em uma skill, use o equivalente da sua plataforma:
+Skills use Claude Code tool names. When you encounter these in a skill, use your platform equivalent:
 
-| Referência na Skill | Equivalente no Codex |
-|--------------------|---------------------|
-| `Task` tool (despachar subagente) | `spawn_agent` (veja [Despacho de subagente requer suporte multi-agente](#despacho-de-subagente-requer-suporte-multi-agente)) |
-| Múltiplas chamadas `Task` (paralelo) | Múltiplas chamadas `spawn_agent` |
-| Task retorna resultado | `wait_agent` |
-| Task completa automaticamente | `close_agent` para liberar slot |
-| `TodoWrite` (rastreamento de tarefas) | `update_plan` |
-| `Skill` tool (invocar uma skill) | Skills carregam nativamente — apenas siga as instruções |
-| `Read`, `Write`, `Edit` (arquivos) | Use suas ferramentas nativas de arquivo |
-| `Bash` (executar comandos) | Use suas ferramentas nativas de shell |
+| Skill references | Codex equivalent |
+|-----------------|------------------|
+| `Task` tool (dispatch subagent) | `spawn_agent` (see [Subagent dispatch requires multi-agent support](#subagent-dispatch-requires-multi-agent-support)) |
+| Multiple `Task` calls (parallel) | Multiple `spawn_agent` calls |
+| Task returns result | `wait_agent` |
+| Task completes automatically | `close_agent` to free slot |
+| `TodoWrite` (task tracking) | `update_plan` |
+| `Skill` tool (invoke a skill) | Skills load natively — just follow the instructions |
+| `Read`, `Write`, `Edit` (files) | Use your native file tools |
+| `Bash` (run commands) | Use your native shell tools |
 
-## Despacho de subagente requer suporte multi-agente
+## Subagent dispatch requires multi-agent support
 
-Adicione à sua configuração do Codex (`~/.codex/config.toml`):
+Add to your Codex config (`~/.codex/config.toml`):
 
 ```toml
 [features]
 multi_agent = true
 ```
 
-Isso habilita `spawn_agent`, `wait_agent` e `close_agent` para skills como `dispatching-parallel-agents` e `subagent-driven-development`.
+This enables `spawn_agent`, `wait_agent`, and `close_agent` for skills like `dispatching-parallel-agents` and `subagent-driven-development`.
 
-Nota legada: Builds do Codex anteriores a `rust-v0.115.0` expunham a espera de agente gerado como `wait`. O Codex atual usa `wait_agent` para agentes gerados. O nome `wait` agora pertence ao `exec/wait` do modo código, que retoma uma célula exec pausada por `cell_id`; não é a ferramenta de resultado de agente gerado.
+Legacy note: Codex builds before `rust-v0.115.0` exposed spawned-agent
+waiting as `wait`. Current Codex uses `wait_agent` for spawned agents. The
+`wait` name now belongs to code-mode `exec/wait`, which resumes a yielded exec
+cell by `cell_id`; it is not the spawned-agent result tool.
 
-## Detecção de Ambiente
+## Environment Detection
 
-Skills que criam worktrees ou finalizam branches devem detectar seu ambiente com comandos git somente de leitura antes de prosseguir:
+Skills that create worktrees or finish branches should detect their
+environment with read-only git commands before proceeding:
 
 ```bash
 GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
@@ -36,16 +40,20 @@ GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
 BRANCH=$(git branch --show-current)
 ```
 
-- `GIT_DIR != GIT_COMMON` → já em um worktree vinculado (pule a criação)
-- `BRANCH` vazio → HEAD desanexado (não pode fazer branch/push/PR do sandbox)
+- `GIT_DIR != GIT_COMMON` → already in a linked worktree (skip creation)
+- `BRANCH` empty → detached HEAD (cannot branch/push/PR from sandbox)
 
-Veja `using-git-worktrees` Passo 0 e `finishing-a-development-branch` Passo 1 para como cada skill usa esses sinais.
+See `using-git-worktrees` Step 0 and `finishing-a-development-branch`
+Step 1 for how each skill uses these signals.
 
-## Finalização no App Codex
+## Codex App Finishing
 
-Quando o sandbox bloqueia operações de branch/push (HEAD desanexado em um worktree gerenciado externamente), o agente commita todo o trabalho e informa ao usuário para usar os controles nativos do App:
+When the sandbox blocks branch/push operations (detached HEAD in an
+externally managed worktree), the agent commits all work and informs
+the user to use the App's native controls:
 
-- **"Create branch"** — nomeia a branch, depois commit/push/PR via UI do App
-- **"Hand off to local"** — transfere trabalho para o checkout local do usuário
+- **"Create branch"** — names the branch, then commit/push/PR via App UI
+- **"Hand off to local"** — transfers work to the user's local checkout
 
-O agente ainda pode executar testes, preparar arquivos e fornecer nomes de branch sugeridos, mensagens de commit e descrições de PR para o usuário copiar.
+The agent can still run tests, stage files, and output suggested branch
+names, commit messages, and PR descriptions for the user to copy.

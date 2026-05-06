@@ -1,187 +1,187 @@
-# Princípios de Persuasão para Design de Skills
+# Persuasion Principles for Skill Design
 
-## Visão Geral
+## Overview
 
-LLMs respondem aos mesmos princípios de persuasão que humanos. Entender essa psicologia ajuda você a projetar skills mais eficazes — não para manipular, mas para garantir que práticas críticas sejam seguidas mesmo sob pressão.
+LLMs respond to the same persuasion principles as humans. Understanding this psychology helps you design more effective skills - not to manipulate, but to ensure critical practices are followed even under pressure.
 
-**Base de pesquisa:** Meincke et al. (2025) testou 7 princípios de persuasão com N=28.000 conversas de IA. As técnicas de persuasão mais que dobraram as taxas de conformidade (33% → 72%, p < .001).
+**Research foundation:** Meincke et al. (2025) tested 7 persuasion principles with N=28,000 AI conversations. Persuasion techniques more than doubled compliance rates (33% → 72%, p < .001).
 
-## Os Sete Princípios
+## The Seven Principles
 
-### 1. Autoridade
-**O que é:** Deferência à expertise, credenciais ou fontes oficiais.
+### 1. Authority
+**What it is:** Deference to expertise, credentials, or official sources.
 
-**Como funciona em skills:**
-- Linguagem imperativa: "VOCÊ DEVE", "Nunca", "Sempre"
-- Enquadramento não-negociável: "Sem exceções"
-- Elimina fadiga de decisão e racionalização
+**How it works in skills:**
+- Imperative language: "YOU MUST", "Never", "Always"
+- Non-negotiable framing: "No exceptions"
+- Eliminates decision fatigue and rationalization
 
-**Quando usar:**
-- Skills de imposição de disciplina (TDD, requisitos de verificação)
-- Práticas críticas de segurança
-- Melhores práticas estabelecidas
+**When to use:**
+- Discipline-enforcing skills (TDD, verification requirements)
+- Safety-critical practices
+- Established best practices
 
-**Exemplo:**
+**Example:**
 ```markdown
-✅ Escreveu código antes do teste? Delete-o. Recomece. Sem exceções.
-❌ Considere escrever testes primeiro quando viável.
+✅ Write code before test? Delete it. Start over. No exceptions.
+❌ Consider writing tests first when feasible.
 ```
 
-### 2. Comprometimento
-**O que é:** Consistência com ações, declarações ou anúncios públicos anteriores.
+### 2. Commitment
+**What it is:** Consistency with prior actions, statements, or public declarations.
 
-**Como funciona em skills:**
-- Exigir anúncios: "Anuncie o uso da skill"
-- Forçar escolhas explícitas: "Escolha A, B ou C"
-- Use rastreamento: TodoWrite para checklists
+**How it works in skills:**
+- Require announcements: "Announce skill usage"
+- Force explicit choices: "Choose A, B, or C"
+- Use tracking: TodoWrite for checklists
 
-**Quando usar:**
-- Garantindo que skills sejam realmente seguidas
-- Processos de múltiplos passos
-- Mecanismos de responsabilização
+**When to use:**
+- Ensuring skills are actually followed
+- Multi-step processes
+- Accountability mechanisms
 
-**Exemplo:**
+**Example:**
 ```markdown
-✅ Quando você encontrar uma skill, você DEVE anunciar: "Estou usando [Nome da Skill]"
-❌ Considere informar seu parceiro sobre qual skill você está usando.
+✅ When you find a skill, you MUST announce: "I'm using [Skill Name]"
+❌ Consider letting your partner know which skill you're using.
 ```
 
-### 3. Escassez
-**O que é:** Urgência de limites de tempo ou disponibilidade limitada.
+### 3. Scarcity
+**What it is:** Urgency from time limits or limited availability.
 
-**Como funciona em skills:**
-- Requisitos com prazo: "Antes de prosseguir"
-- Dependências sequenciais: "Imediatamente após X"
-- Previne procrastinação
+**How it works in skills:**
+- Time-bound requirements: "Before proceeding"
+- Sequential dependencies: "Immediately after X"
+- Prevents procrastination
 
-**Quando usar:**
-- Requisitos de verificação imediata
-- Fluxos de trabalho urgentes
-- Prevenindo "vou fazer depois"
+**When to use:**
+- Immediate verification requirements
+- Time-sensitive workflows
+- Preventing "I'll do it later"
 
-**Exemplo:**
+**Example:**
 ```markdown
-✅ Após completar uma tarefa, IMEDIATAMENTE solicite revisão de código antes de prosseguir.
-❌ Você pode revisar o código quando conveniente.
+✅ After completing a task, IMMEDIATELY request code review before proceeding.
+❌ You can review code when convenient.
 ```
 
-### 4. Prova Social
-**O que é:** Conformidade com o que os outros fazem ou o que é considerado normal.
+### 4. Social Proof
+**What it is:** Conformity to what others do or what's considered normal.
 
-**Como funciona em skills:**
-- Padrões universais: "Toda vez", "Sempre"
-- Modos de falha: "X sem Y = falha"
-- Estabelece normas
+**How it works in skills:**
+- Universal patterns: "Every time", "Always"
+- Failure modes: "X without Y = failure"
+- Establishes norms
 
-**Quando usar:**
-- Documentando práticas universais
-- Alertando sobre falhas comuns
-- Reforçando padrões
+**When to use:**
+- Documenting universal practices
+- Warning about common failures
+- Reinforcing standards
 
-**Exemplo:**
+**Example:**
 ```markdown
-✅ Checklists sem rastreamento TodoWrite = passos são pulados. Toda vez.
-❌ Algumas pessoas acham o TodoWrite útil para checklists.
+✅ Checklists without TodoWrite tracking = steps get skipped. Every time.
+❌ Some people find TodoWrite helpful for checklists.
 ```
 
-### 5. Unidade
-**O que é:** Identidade compartilhada, "nós-idade", pertencimento ao grupo.
+### 5. Unity
+**What it is:** Shared identity, "we-ness", in-group belonging.
 
-**Como funciona em skills:**
-- Linguagem colaborativa: "nossa codebase", "somos colegas"
-- Objetivos compartilhados: "queremos qualidade juntos"
+**How it works in skills:**
+- Collaborative language: "our codebase", "we're colleagues"
+- Shared goals: "we both want quality"
 
-**Quando usar:**
-- Fluxos de trabalho colaborativos
-- Estabelecendo cultura de equipe
-- Práticas não-hierárquicas
+**When to use:**
+- Collaborative workflows
+- Establishing team culture
+- Non-hierarchical practices
 
-**Exemplo:**
+**Example:**
 ```markdown
-✅ Somos colegas trabalhando juntos. Preciso do seu julgamento técnico honesto.
-❌ Você provavelmente deveria me dizer se estou errado.
+✅ We're colleagues working together. I need your honest technical judgment.
+❌ You should probably tell me if I'm wrong.
 ```
 
-### 6. Reciprocidade
-**O que é:** Obrigação de retribuir benefícios recebidos.
+### 6. Reciprocity
+**What it is:** Obligation to return benefits received.
 
-**Como funciona:**
-- Use com parcimônia — pode parecer manipulador
-- Raramente necessário em skills
+**How it works:**
+- Use sparingly - can feel manipulative
+- Rarely needed in skills
 
-**Quando evitar:**
-- Quase sempre (outros princípios são mais eficazes)
+**When to avoid:**
+- Almost always (other principles more effective)
 
-### 7. Simpatia
-**O que é:** Preferência por cooperar com quem gostamos.
+### 7. Liking
+**What it is:** Preference for cooperating with those we like.
 
-**Como funciona:**
-- **NÃO USE para conformidade**
-- Conflita com cultura de feedback honesto
-- Cria servilidade
+**How it works:**
+- **DON'T USE for compliance**
+- Conflicts with honest feedback culture
+- Creates sycophancy
 
-**Quando evitar:**
-- Sempre para imposição de disciplina
+**When to avoid:**
+- Always for discipline enforcement
 
-## Combinações de Princípios por Tipo de Skill
+## Principle Combinations by Skill Type
 
-| Tipo de Skill | Use | Evite |
-|--------------|-----|-------|
-| Imposição de disciplina | Autoridade + Comprometimento + Prova Social | Simpatia, Reciprocidade |
-| Orientação/técnica | Autoridade Moderada + Unidade | Autoridade pesada |
-| Colaborativa | Unidade + Comprometimento | Autoridade, Simpatia |
-| Referência | Apenas clareza | Toda persuasão |
+| Skill Type | Use | Avoid |
+|------------|-----|-------|
+| Discipline-enforcing | Authority + Commitment + Social Proof | Liking, Reciprocity |
+| Guidance/technique | Moderate Authority + Unity | Heavy authority |
+| Collaborative | Unity + Commitment | Authority, Liking |
+| Reference | Clarity only | All persuasion |
 
-## Por Que Funciona: A Psicologia
+## Why This Works: The Psychology
 
-**Regras claras reduzem racionalização:**
-- "VOCÊ DEVE" remove fadiga de decisão
-- Linguagem absoluta elimina perguntas "isso é uma exceção?"
-- Contadores anti-racionalização explícitos fecham brechas específicas
+**Bright-line rules reduce rationalization:**
+- "YOU MUST" removes decision fatigue
+- Absolute language eliminates "is this an exception?" questions
+- Explicit anti-rationalization counters close specific loopholes
 
-**Intenções de implementação criam comportamento automático:**
-- Gatilhos claros + ações obrigatórias = execução automática
-- "Quando X, faça Y" mais eficaz do que "geralmente faça Y"
-- Reduz carga cognitiva na conformidade
+**Implementation intentions create automatic behavior:**
+- Clear triggers + required actions = automatic execution
+- "When X, do Y" more effective than "generally do Y"
+- Reduces cognitive load on compliance
 
-**LLMs são para-humanos:**
-- Treinados em texto humano contendo esses padrões
-- Linguagem de autoridade precede conformidade nos dados de treinamento
-- Sequências de comprometimento (declaração → ação) frequentemente modeladas
-- Padrões de prova social (todos fazem X) estabelecem normas
+**LLMs are parahuman:**
+- Trained on human text containing these patterns
+- Authority language precedes compliance in training data
+- Commitment sequences (statement → action) frequently modeled
+- Social proof patterns (everyone does X) establish norms
 
-## Uso Ético
+## Ethical Use
 
-**Legítimo:**
-- Garantir que práticas críticas sejam seguidas
-- Criar documentação eficaz
-- Prevenindo falhas previsíveis
+**Legitimate:**
+- Ensuring critical practices are followed
+- Creating effective documentation
+- Preventing predictable failures
 
-**Ilegítimo:**
-- Manipular para ganho pessoal
-- Criar urgência falsa
-- Conformidade baseada em culpa
+**Illegitimate:**
+- Manipulating for personal gain
+- Creating false urgency
+- Guilt-based compliance
 
-**O teste:** Essa técnica serviria os interesses genuínos do usuário se ele a entendesse completamente?
+**The test:** Would this technique serve the user's genuine interests if they fully understood it?
 
-## Citações de Pesquisa
+## Research Citations
 
 **Cialdini, R. B. (2021).** *Influence: The Psychology of Persuasion (New and Expanded).* Harper Business.
-- Sete princípios de persuasão
-- Base empírica para pesquisa de influência
+- Seven principles of persuasion
+- Empirical foundation for influence research
 
 **Meincke, L., Shapiro, D., Duckworth, A. L., Mollick, E., Mollick, L., & Cialdini, R. (2025).** Call Me A Jerk: Persuading AI to Comply with Objectionable Requests. University of Pennsylvania.
-- Testou 7 princípios com N=28.000 conversas de LLM
-- Conformidade aumentou de 33% → 72% com técnicas de persuasão
-- Autoridade, comprometimento, escassez mais eficazes
-- Valida modelo para-humano de comportamento de LLM
+- Tested 7 principles with N=28,000 LLM conversations
+- Compliance increased 33% → 72% with persuasion techniques
+- Authority, commitment, scarcity most effective
+- Validates parahuman model of LLM behavior
 
-## Referência Rápida
+## Quick Reference
 
-Ao projetar uma skill, pergunte:
+When designing a skill, ask:
 
-1. **Que tipo é?** (Disciplina vs. orientação vs. referência)
-2. **Que comportamento estou tentando mudar?**
-3. **Quais princípio(s) se aplicam?** (Normalmente autoridade + comprometimento para disciplina)
-4. **Estou combinando demais?** (Não use todos os sete)
-5. **Isso é ético?** (Serve aos interesses genuínos do usuário?)
+1. **What type is it?** (Discipline vs. guidance vs. reference)
+2. **What behavior am I trying to change?**
+3. **Which principle(s) apply?** (Usually authority + commitment for discipline)
+4. **Am I combining too many?** (Don't use all seven)
+5. **Is this ethical?** (Serves user's genuine interests?)
