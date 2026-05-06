@@ -19,13 +19,12 @@ describe("ThemeToggleFAB", () => {
 		vi.clearAllMocks()
 	})
 
-	it("não renderiza antes do mount (proteção SSR)", async () => {
+	it("renderiza o botão após o mount", async () => {
 		const useTheme = await importUseTheme()
 		useTheme.mockReturnValue({ theme: "light", setTheme: mockSetTheme })
 
 		render(<ThemeToggleFAB />)
-		const btn = screen.queryByRole("button")
-		expect(btn).toBeInTheDocument()
+		expect(screen.getByRole("button")).toBeInTheDocument()
 	})
 
 	it("exibe ícone 🌙 quando tema é light", async () => {
