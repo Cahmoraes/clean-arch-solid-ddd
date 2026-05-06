@@ -26,7 +26,7 @@ You MUST create a task for each of these items and complete them in order:
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
+6. **Write design doc** — save to `docs/superpowers/<feature-name>/specs/<feature-name>-design.md` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
 9. **Generate PRD** — invoke `generating-prd` skill to formalize user stories and functional requirements from the approved spec. If the user explicitly says "skip PRD" or "go straight to planning", skip this step.
@@ -171,7 +171,9 @@ Synthesize findings internally before proceeding. Do not relay raw subagent outp
 
 **Documentation:**
 
-- Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
+- Write the validated design (spec) to `docs/superpowers/<feature-name>/specs/<feature-name>-design.md`
+  - The `<feature-name>` is a kebab-case slug defined during this brainstorming session (e.g., `toggle-light-dark-theme`)
+  - Create the feature directory structure: `docs/superpowers/<feature-name>/specs/`, `docs/superpowers/<feature-name>/prd/`, `docs/superpowers/<feature-name>/plans/`
   - (User preferences for spec location override this default)
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git
@@ -198,7 +200,7 @@ Wait for the user's response. If they request changes, make them and re-run the 
 After the user approves the spec, generate the PRD to formalize requirements:
 
 - Invoke the `generating-prd` skill
-- The PRD is saved as a sibling to the design spec (same directory, `-prd.md` suffix)
+- The PRD is saved in the feature's `prd/` subdirectory (e.g., `docs/superpowers/<feature-name>/prd/prd-<feature-name>.md`)
 - If the user explicitly asks to skip ("skip PRD", "go straight to planning"), proceed directly to writing-plans
 - Wait for user approval of the PRD before proceeding
 

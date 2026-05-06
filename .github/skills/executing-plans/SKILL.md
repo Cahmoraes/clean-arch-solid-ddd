@@ -47,6 +47,17 @@ For each task:
 ### Step 3: Complete Development
 
 After all tasks complete and verified:
+
+**QA Gate (if PRD exists):**
+
+Before invoking `finishing-a-development-branch`, check whether a PRD exists for this feature:
+- Discovery: explicit path in context → `docs/superpowers/<feature-name>/prd/prd-<feature-name>.md` → directory scan for `prd-` prefix files
+- **If PRD found:** Invoke `superpowers:user-story-verification`, passing the PRD path and feature name
+  - If status is `PASSED` or `PARTIAL`: proceed to `finishing-a-development-branch`
+  - If status is `FAILED`: **STOP** — report the failing user stories to the user; do not invoke `finishing-a-development-branch` until the user resolves the failures and re-runs this skill
+- **If no PRD found:** Skip the QA Gate and proceed directly
+
+**Finish the branch:**
 - Announce: "I'm using the finishing-a-development-branch skill to complete this work."
 - **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
 - Pass the tasks index path so it can verify all tasks are `[x]`
@@ -83,4 +94,5 @@ After all tasks complete and verified:
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
+- **superpowers:user-story-verification** - QA Gate: verifies user stories from PRD before finishing branch (skipped if no PRD)
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
