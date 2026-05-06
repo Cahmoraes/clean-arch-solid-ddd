@@ -1,6 +1,6 @@
 # Task 2: Adicionar tokens CSS dark no globals.css [RF-008, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **Plan:** `../2026-05-05-dark-light-theme.md`
 
 ## Visão Geral

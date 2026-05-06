@@ -1,6 +1,6 @@
 # Task 1: Instalar next-themes [RF-005, RF-006, RF-009]
 
-**Status:** PENDING
+**Status:** DONE
 **Plan:** `../2026-05-05-dark-light-theme.md`
 
 ## Visão Geral

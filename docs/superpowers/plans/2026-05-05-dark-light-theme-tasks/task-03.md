@@ -1,6 +1,6 @@
 # Task 3: Criar componente ThemeToggleFAB com TDD [RF-001, RF-002, RF-003, RF-004]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **Plan:** `../2026-05-05-dark-light-theme.md`
 
 ## Visão Geral
