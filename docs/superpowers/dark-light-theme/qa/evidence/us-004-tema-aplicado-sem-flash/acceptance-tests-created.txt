@@ -1,0 +1,13 @@
+Arquivo alterado:
+- apps/frontend/src/components/ui/theme-toggle-fab.test.tsx
+
+Teste de aceitação criado:
+- "não renderiza nada antes do mount para evitar flash visual"
+
+Objetivo do teste:
+- Verificar unitariamente o guard anti-FOUC/hydration mismatch do `ThemeToggleFAB`.
+- O teste usa renderização server-side (`renderToStaticMarkup`) para confirmar que o componente retorna string vazia enquanto `mounted === false`.
+
+Lacunas ainda não cobertas por teste automatizado na suíte atual:
+- `suppressHydrationWarning` no elemento `<html>` de `apps/frontend/src/app/layout.tsx`
+- `disableTransitionOnChange` no `ThemeProvider` de `apps/frontend/src/app/layout.tsx`

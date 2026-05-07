@@ -40,3 +40,54 @@ Copilot CLI supports persistent async shell sessions, which have no direct Claud
 | `sql` | Query the session's SQLite database (todos, metadata) |
 | `fetch_copilot_cli_documentation` | Look up Copilot CLI documentation |
 | GitHub MCP tools (`github-mcp-server-*`) | Native GitHub API access (issues, PRs, code search) |
+
+---
+
+## Rubber Duck Agent (Experimental)
+
+**Rubber Duck** is a review agent exclusive to Copilot CLI, available in experimental mode. It uses a model from a different family than the orchestrator — when the orchestrator is Claude, Rubber Duck is GPT-5.4. This means independent perspectives with distinct blind spots, catching errors that self-review would miss.
+
+To enable experimental mode: run `/experimental` in Copilot CLI.
+
+### When to invoke (forced checkpoints)
+
+When `copilot.rubber_duck: true` in `.superpowers/preferences.yml`, **always** invoke Rubber Duck at these moments (do not skip):
+
+| Checkpoint | Moment in superpowers flow | Why |
+|-----------|---------------------------|-----|
+| **After drafting the plan** | `writing-plans` / `brainstorming` complete | Design decisions are cheap to fix on paper; mistakes here multiply through implementation |
+| **After a complex implementation** | `subagent-driven-development` finishes a task with 3+ files modified | A second perspective catches edge cases and cross-file conflicts that the primary agent misses while immersed in context |
+| **After writing tests** | `test-driven-development` writes tests, before running them | Identifies coverage gaps and flawed assertions before the agent self-confirms with "everything passed" |
+
+Rubber Duck can also be invoked **reactively** when `systematic-debugging` loops without progress — an external perspective can break the deadlock.
+
+The user may request a review at any time — comply and incorporate the feedback.
+
+### How to invoke
+
+Use the `task` tool with `agent_type: "rubber-duck"`:
+
+```
+task(
+  name: "rubber-duck-review",
+  agent_type: "rubber-duck",
+  description: "Second opinion on [plan / implementation / tests]",
+  prompt: "<full context: what was done, what decisions were made, what needs review>",
+  mode: "sync"
+)
+```
+
+After receiving feedback: reason over each point, adopt findings that prevent real bugs, and show the user what changed and why.
+
+### Check preference before invoking
+
+```
+1. Read .superpowers/preferences.yml
+2. If copilot.rubber_duck == true → force invoke at all checkpoints below
+3. If copilot.rubber_duck == false or key absent → Copilot CLI default behavior (it decides when to invoke)
+```
+
+### During Onboarding
+
+When running the `references/onboarding-preferences.md` wizard, include the additional Rubber Duck step as documented in the "Copilot CLI: Rubber Duck Additional Step" section of that file.
+

@@ -1,6 +1,6 @@
 ---
 name: user-story-verification
-description: "QA Gate that verifies every user story in a feature PRD against the live implementation. Dispatches parallel subagents per user story — running existing tests, creating missing acceptance tests, and capturing UI screenshots via Playwright/Puppeteer when available. Produces a structured QA report with PASSED/FAILED/PARTIAL status and evidence files. Invoked automatically by subagent-driven-development and executing-plans after all implementation tasks complete, before finishing-a-development-branch. Also use directly when you need to verify that all user stories from a PRD are fully implemented before merging or creating a PR. Activate whenever someone says 'rodar QA', 'verificar user stories', 'validar implementação contra PRD', 'run acceptance tests', or 'generate QA report'."
+description: "QA Gate that verifies every user story in a feature PRD against the live implementation. Dispatches parallel subagents per user story — running existing tests, creating missing acceptance tests saved in the evidence directory, and capturing UI screenshots via playwright-cli when available. Produces a structured QA report with PASSED/FAILED/PARTIAL status and evidence files. Invoked by subagent-driven-development and executing-plans when a PRD exists and the user opts into QA verification, before finishing-a-development-branch. Also use directly when you need to verify that all user stories from a PRD are fully implemented before merging or creating a PR. Activate whenever someone says 'rodar QA', 'verificar user stories', 'validar implementação contra PRD', 'run acceptance tests', or 'generate QA report'."
 ---
 
 # User Story Verification
@@ -24,7 +24,7 @@ Without this gate, teams merge branches that satisfy linting and unit tests but 
 | PRD path | Passed in context by `subagent-driven-development` or `executing-plans`, or discovered automatically | Required |
 | Feature name | Derived from PRD path | Required |
 | Test runner command | Detected from project files | Required |
-| Browser automation tool | Detected from project dependencies | Optional |
+| Browser automation tool | Detected via `playwright-cli` availability or project dependencies | Optional |
 
 ---
 
@@ -70,18 +70,22 @@ Gather this information **before** dispatching subagents so every subagent recei
 - `go.mod` → go test ./...
 
 **Browser automation** — check in order:
+- `playwright-cli` command available (`playwright-cli --version` or `npx playwright-cli --version`) → playwright-cli ✅ *(preferred — no new dependencies installed)*
 - `@playwright/test` in `devDependencies` → Playwright ✅
 - `puppeteer` in `dependencies` or `devDependencies` → Puppeteer ✅
-- Neither found → Screenshots unavailable ⚠️ (note in report, do not fail)
+- None found → Screenshots unavailable ⚠️ (note in report, do not fail)
 
-**Acceptance test location** — where to save any new tests:
-- Prefer an existing `e2e/`, `__tests__/`, `tests/`, `test/`, or `spec/` directory
-- Match the project's naming convention (`.spec.ts`, `.test.ts`, `_test.go`, `_spec.rb`, etc.)
-- When unsure, place new tests alongside the most closely related existing test file
+**Important:** Never install a new browser automation library (via `npm install`, `pip install`, etc.) to enable screenshots. If none of the above is found, mark screenshots as unavailable and continue.
+
+**Acceptance test location** — acceptance tests created by QA subagents belong exclusively in the evidence directory:
+- `docs/superpowers/<feature-name>/qa/evidence/<us-slug>/<us-slug>-<short-description>.acceptance.test.<ext>`
+- For JS/TS projects, these files can be run directly by the test runner using the full path (e.g., `npx vitest run docs/superpowers/.../us-001-foo.acceptance.test.tsx`)
+- **Never** place new test files inside the project source tree (e.g., `apps/`, `src/`, `lib/`) — that is out of scope for this skill
+- For non-JS/TS ecosystems (Go, Rust, Python, etc.), skip creating new test files; capture QA evidence through existing tests and playwright-cli screenshots instead
 
 ### Step 4: Dispatch QA Subagents in Parallel
 
-Launch one background subagent per user story **in a single turn** — all subagents run in parallel. Do not wait for one to finish before launching the next.
+Launch one background subagent per user story, dispatching them in parallel waves of up to **3 subagents** at a time. Do not wait for one wave to finish before launching the next if stories remain.
 
 Give each subagent exactly this context:
 
@@ -94,8 +98,9 @@ You are a QA verification subagent. Your sole job is to verify that one user sto
 **Feature PRD**: [path]
 **Feature Spec**: [path]
 **Test runner command**: [command, e.g. "npx vitest run"]
-**Browser automation**: [Playwright | Puppeteer | not available]
+**Browser automation**: [playwright-cli | Playwright | Puppeteer | not available]
 **Evidence directory**: docs/superpowers/<feature-name>/qa/evidence/<us-slug>/
+**Acceptance tests location**: if you need to create new tests, save them ONLY inside this evidence directory — never in the project source tree.
 
 ---
 
@@ -110,7 +115,7 @@ Run those tests:
 [test runner command] [relevant files or pattern]
 ```
 
-Save the complete output (stdout + stderr) to: `evidence/<us-slug>/test-output.txt`
+Summarize the results (pass count, fail count, relevant test names) — record this summary in `result.json`'s `test_output_summary` field. Do not save the raw test runner output as a file.
 
 ---
 
@@ -118,10 +123,11 @@ Save the complete output (stdout + stderr) to: `evidence/<us-slug>/test-output.t
 
 If no existing test covers this user story (or coverage is clearly partial), write a minimal acceptance test that verifies the story's primary behavior end-to-end.
 
-- Follow the project's test naming convention
-- Save the new test file under the project's acceptance/e2e test directory
-- Run it immediately to confirm it passes (or document if it fails and why)
+- **JS/TS projects only** — save the new test file in the evidence directory using the naming pattern: `<us-slug>-<short-description>.acceptance.test.<ext>` (e.g., `us-003-theme-persistence.acceptance.test.tsx`)
+- Run it immediately using the full path: `[test runner command] [full path to evidence dir test file]`
 - Save the file path(s) to: `evidence/<us-slug>/acceptance-tests-created.txt`
+- **Non-JS/TS ecosystems** — skip creating new test files; capture evidence via existing tests (Task 1) and playwright-cli screenshots (Task 3)
+- **Never** add test files to the project source tree — `apps/`, `src/`, `lib/`, or any project test directory
 
 If comprehensive tests already exist, skip this task.
 
@@ -129,11 +135,23 @@ If comprehensive tests already exist, skip this task.
 
 ### Task 3 — Capture UI Screenshot (if browser automation is available)
 
-If Playwright or Puppeteer is available:
+**If `playwright-cli` is available** (preferred):
+- Use `playwright-cli` commands to open the app, navigate to the feature's primary UI state, and capture a screenshot
+- Save the screenshot to: `evidence/<us-slug>/screenshot.png`
+- Example commands:
+  ```bash
+  playwright-cli open http://localhost:3000
+  playwright-cli goto /feature-path
+  playwright-cli screenshot --filename=evidence/<us-slug>/screenshot.png
+  playwright-cli close
+  ```
+
+**If `@playwright/test` or `Puppeteer` is available** (library-based):
 - Write a minimal script that starts the app (if needed), navigates to the feature's primary UI state, and captures a screenshot
-- The screenshot must show the feature described in the user story in its natural state
 - Save the screenshot to: `evidence/<us-slug>/screenshot.png`
 - Save the script to: `evidence/<us-slug>/screenshot-script.ts` (or `.js`)
+
+The screenshot must show the feature described in the user story in its natural state.
 
 If browser automation is **not** available, skip this task entirely — it does not affect the gate status.
 
@@ -150,7 +168,7 @@ Create `evidence/<us-slug>/result.json`:
   "requirements": ["RF-001", "RF-002"],
   "status": "PASSED|FAILED|PARTIAL|UNVERIFIABLE",
   "existing_tests_found": true,
-  "acceptance_tests_created": ["path/to/acceptance.spec.ts"],
+  "acceptance_tests_created": ["docs/superpowers/<feature-name>/qa/evidence/<us-slug>/<us-slug>-<desc>.acceptance.test.tsx"],
   "test_output_summary": "15 tests passed, 0 failed",
   "screenshot_path": "evidence/<us-slug>/screenshot.png",
   "failure_details": null,
@@ -194,7 +212,7 @@ Save the report to `docs/superpowers/<feature-name>/qa/qa-report-<feature-name>.
 
 | ID | Requisito | Status | Evidência |
 |----|-----------|--------|-----------|
-| RF-001 | [descrição] | ✅ PASSOU | `evidence/us-001-.../test-output.txt` |
+| RF-001 | [descrição] | ✅ PASSOU | `evidence/us-001-.../result.json` |
 
 ---
 
@@ -264,12 +282,16 @@ Fix the implementation, then re-run the orchestrator (subagent-driven-developmen
 - Proceed to merge/PR options when gate status is `FAILED`
 - Create evidence for features listed in "Fora de Escopo"
 - Block the pipeline because screenshots are unavailable (browser automation is optional)
+- Add new test files to the project source tree (`apps/`, `src/`, `lib/`, or any project test directory) — acceptance tests belong only in the evidence directory
+- Install a new browser automation library (npm install, pip install, etc.) — use `playwright-cli` or mark screenshots as unavailable
+- Save raw test runner output to `test-output.txt` — summaries belong in `result.json`'s `test_output_summary` field
 
 **Always:**
 - Save `result.json` for every story, even `UNVERIFIABLE` ones
 - Pass the complete PRD and spec content to each subagent so it has full context
 - Create the evidence directories before dispatching subagents
 - Include failure details and evidence paths in the report when status is `FAILED`
+- Place any new acceptance tests inside the evidence directory, never in the project source tree
 
 ---
 
@@ -286,7 +308,7 @@ Fix the implementation, then re-run the orchestrator (subagent-driven-developmen
 
 ## Integration
 
-**Invoked by:** `superpowers:subagent-driven-development` and `superpowers:executing-plans` — after all tasks complete and the final code reviewer approves, before `finishing-a-development-branch` is called  
+**Invoked by:** `superpowers:subagent-driven-development` and `superpowers:executing-plans` — after all tasks complete and the final code reviewer approves, when a PRD exists **and the user opts into QA verification**, before `finishing-a-development-branch` is called  
 **Artifacts saved to:** `docs/superpowers/<feature-name>/qa/`  
 **Required context:** PRD path, feature name, test runner command  
-**Optional context:** Playwright/Puppeteer availability
+**Optional context:** playwright-cli, Playwright, or Puppeteer availability

@@ -52,10 +52,16 @@ After all tasks complete and verified:
 
 Before invoking `finishing-a-development-branch`, check whether a PRD exists for this feature:
 - Discovery: explicit path in context → `docs/superpowers/<feature-name>/prd/prd-<feature-name>.md` → directory scan for `prd-` prefix files
-- **If PRD found:** Invoke `superpowers:user-story-verification`, passing the PRD path and feature name
-  - If status is `PASSED` or `PARTIAL`: proceed to `finishing-a-development-branch`
-  - If status is `FAILED`: **STOP** — report the failing user stories to the user; do not invoke `finishing-a-development-branch` until the user resolves the failures and re-runs this skill
-- **If no PRD found:** Skip the QA Gate and proceed directly
+- **If no PRD found:** Skip the QA Gate and proceed directly to `finishing-a-development-branch`
+- **If PRD found:** Ask the user whether they want to run the QA gate:
+  ```
+  A PRD was found for this feature. Do you want to run user-story-verification (QA gate)
+  to verify all user stories before finishing the branch?
+  ```
+  - **User confirms:** Invoke `superpowers:user-story-verification`, passing the PRD path and feature name
+    - If status is `PASSED` or `PARTIAL`: proceed to `finishing-a-development-branch`
+    - If status is `FAILED`: **STOP** — report the failing user stories to the user; do not invoke `finishing-a-development-branch` until the user resolves the failures and re-runs this skill
+  - **User declines:** Skip the gate and proceed directly to `finishing-a-development-branch`
 
 **Finish the branch:**
 - Announce: "I'm using the finishing-a-development-branch skill to complete this work."
@@ -94,5 +100,5 @@ Before invoking `finishing-a-development-branch`, check whether a PRD exists for
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:user-story-verification** - QA Gate: verifies user stories from PRD before finishing branch (skipped if no PRD)
+- **superpowers:user-story-verification** - QA Gate: verifies user stories from PRD before finishing branch (consent-based when PRD exists; skipped when no PRD or user declines)
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks

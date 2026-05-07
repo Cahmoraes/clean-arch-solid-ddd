@@ -1,0 +1,2 @@
+apps/frontend/src/app/layout.test.tsx
+- teste de aceitação adicionado para verificar que o ThemeToggleFAB aparece também no shell autenticado via RootLayout

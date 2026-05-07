@@ -1,0 +1,18 @@
+{
+  "us_id": "us-003",
+  "user_story": "Como qualquer usuário, eu quero que minha preferência de tema seja lembrada ao retornar à aplicação para que eu não precise reconfigurar toda vez.",
+  "requirements": ["RF-005", "RF-006", "RF-007"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/dark-light-theme/qa/evidence/us-003-preferencia-de-tema-lembrada/us-003-theme-provider-config.acceptance.test.tsx",
+    "docs/superpowers/dark-light-theme/qa/evidence/us-003-preferencia-de-tema-lembrada/us-003-theme-persistence.acceptance.test.tsx"
+  ],
+  "test_output_summary": "playwright-cli confirmou: (RF-005) localStorage['theme']='dark' após clicar toggle; (RF-006) após reload, classe 'dark' restaurada no <html> automaticamente; (RF-007) após localStorage.clear(), tema padrão é 'light' (classe 'light' e ícone 🌙). ThemeProvider configurado com defaultTheme='light'.",
+  "screenshot_path": [
+    "evidence/us-003-preferencia-de-tema-lembrada/screenshot-default-light.png",
+    "evidence/us-003-preferencia-de-tema-lembrada/screenshot-dark-after-reload.png"
+  ],
+  "failure_details": null,
+  "notes": "RF-005/RF-006/RF-007 verificados por playwright-cli em ambiente real de browser. Testes unitários existentes não cobriam persistência explicitamente — testes de aceitação criados para fechar essa lacuna."
+}

@@ -82,7 +82,9 @@ digraph process {
     "Read plan + task tracker, extract tasks, skip completed, create TodoWrite" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent for entire implementation" [shape=box];
-    "Invoke superpowers:user-story-verification\n(QA Gate — if PRD exists)" [shape=box style=filled fillcolor=lightyellow];
+    "PRD exists?" [shape=diamond];
+    "Ask user: run QA gate?" [shape=diamond];
+    "Invoke superpowers:user-story-verification\n(QA Gate)" [shape=box style=filled fillcolor=lightyellow];
     "QA Gate passed?" [shape=diamond];
     "STOP: report failing user stories to user" [shape=box style=filled fillcolor=salmon];
     "Pass tasks index path to finishing-a-development-branch" [shape=box];
@@ -106,9 +108,12 @@ digraph process {
     "Update task tracker: [x] + Status: DONE" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code reviewer subagent for entire implementation" -> "Invoke superpowers:user-story-verification\n(QA Gate — if PRD exists)";
-    "Invoke superpowers:user-story-verification\n(QA Gate — if PRD exists)" -> "QA Gate passed?" [label="PRD found"];
-    "Invoke superpowers:user-story-verification\n(QA Gate — if PRD exists)" -> "Pass tasks index path to finishing-a-development-branch" [label="no PRD"];
+    "Dispatch final code reviewer subagent for entire implementation" -> "PRD exists?";
+    "PRD exists?" -> "Pass tasks index path to finishing-a-development-branch" [label="no PRD"];
+    "PRD exists?" -> "Ask user: run QA gate?" [label="PRD found"];
+    "Ask user: run QA gate?" -> "Pass tasks index path to finishing-a-development-branch" [label="user declined"];
+    "Ask user: run QA gate?" -> "Invoke superpowers:user-story-verification\n(QA Gate)" [label="user confirmed"];
+    "Invoke superpowers:user-story-verification\n(QA Gate)" -> "QA Gate passed?" [label="gate ran"];
     "QA Gate passed?" -> "Pass tasks index path to finishing-a-development-branch" [label="PASSED / PARTIAL"];
     "QA Gate passed?" -> "STOP: report failing user stories to user" [label="FAILED"];
     "Pass tasks index path to finishing-a-development-branch" -> "Use superpowers:finishing-a-development-branch";
@@ -124,15 +129,28 @@ After the final code reviewer approves, and **before** invoking `finishing-a-dev
 2. Deterministic derivation: `docs/superpowers/<feature-name>/prd/prd-<feature-name>.md`
 3. Directory scan: files with `prd-` prefix in `docs/superpowers/<feature-name>/prd/`
 
-**If a PRD is found:** Invoke `superpowers:user-story-verification`, passing the PRD path, the feature name, and the test runner command.
+**If no PRD is found:** Skip the QA Gate and proceed directly to `finishing-a-development-branch`.
+
+**If a PRD is found:** Ask the user whether they want to run the QA gate before proceeding:
+
+```
+A PRD was found for this feature. Do you want to run user-story-verification (QA gate)
+to verify all user stories against the implementation before finishing the branch?
+This will dispatch parallel subagents to check acceptance criteria and collect evidence.
+```
+
+| User decision | Action |
+|--------------|--------|
+| **Yes / confirmed** | Invoke `superpowers:user-story-verification`, passing the PRD path, feature name, and test runner command |
+| **No / declined** | Skip the gate — proceed directly to `finishing-a-development-branch` |
+
+**When QA runs and returns a result:**
 
 | QA Result | Action |
 |-----------|--------|
 | `PASSED` | Continue — invoke `finishing-a-development-branch` |
 | `PARTIAL` | Continue — invoke `finishing-a-development-branch` (note partial coverage in handoff) |
 | `FAILED` | **STOP.** Report the failing user stories to the user. Do not invoke `finishing-a-development-branch` until the user resolves the failures and re-runs. |
-
-**If no PRD is found:** Skip the QA Gate and proceed directly to `finishing-a-development-branch`.
 
 The QA report is saved to `docs/superpowers/<feature-name>/qa/qa-report-<feature-name>.md` by `user-story-verification`.
 
@@ -223,6 +241,8 @@ Task 4: Session management
 Final reviewer: All requirements met, ready to merge
 
 [PRD found: docs/superpowers/toggle-light-dark-theme/prd/prd-toggle-light-dark-theme.md]
+[Ask user: "PRD found. Do you want to run the QA gate (user-story-verification)?"]
+User: "Yes, run QA."
 [Invoke superpowers:user-story-verification]
 QA Gate: 3/3 user stories verified. Status: PASSED.
 QA report → docs/superpowers/toggle-light-dark-theme/qa/qa-report-toggle-light-dark-theme.md
@@ -280,7 +300,7 @@ Done!
 - Move to next task while either review has open issues
 - **Mark task `[x]` before verification-before-completion confirms evidence** — reviews passing is necessary but not sufficient; fresh verification is the final gate
 - **Skip updating the task tracker** — if a tracker exists, both the index (`[x]`) and individual task file (`Status: DONE`) must be updated before moving on
-- **Skip user-story-verification when a PRD exists** — user stories must be verified before the branch is finished; the gate protects against merging incomplete features
+- **Skip user-story-verification without asking when a PRD exists** — always present the consent question to the user first; skipping after the user explicitly declines is valid, but skipping silently is not
 
 **If subagent asks questions:**
 - Answer clearly and completely
@@ -303,7 +323,7 @@ Done!
 - **superpowers:using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **superpowers:writing-plans** - Creates the plan this skill executes
 - **superpowers:requesting-code-review** - Code review template for reviewer subagents
-- **superpowers:user-story-verification** - QA Gate: verifies user stories from PRD before finishing branch (skipped if no PRD)
+- **superpowers:user-story-verification** - QA Gate: verifies user stories from PRD before finishing branch (consent-based when PRD exists; skipped when no PRD or user declines)
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**

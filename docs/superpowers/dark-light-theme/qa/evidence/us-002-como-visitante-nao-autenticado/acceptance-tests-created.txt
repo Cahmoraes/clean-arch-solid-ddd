@@ -1,0 +1,3 @@
+apps/frontend/src/app/layout.test.tsx
+- deve exibir o toggle de tema ao renderizar o shell público
+- deve exibir o toggle de tema ao renderizar o shell autenticado

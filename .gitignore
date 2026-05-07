@@ -11,3 +11,5 @@ coverage/
 .audits/
 .superpowers/
 .memory/
+.playwright
+.playwright-cli

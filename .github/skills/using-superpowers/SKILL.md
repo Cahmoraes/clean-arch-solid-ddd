@@ -20,7 +20,7 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 On every session start, check for `.superpowers/preferences.yml` in the user's repository root.
 
 - **If it exists:** Read it and keep the preferences in context. Inject relevant preferences when dispatching subagents (include them in the subagent prompt context).
-- **If it does NOT exist:** Follow the onboarding wizard in `onboarding-preferences.md` (read that file and execute the wizard before proceeding with the user's task).
+- **If it does NOT exist:** Follow the onboarding wizard in `references/onboarding-preferences.md` (read that file and execute the wizard before proceeding with the user's task).
 
 These preferences govern agent behavior throughout the workflow (auto-commit, language, destructive action confirmation). Skills that execute tasks (subagent-driven-development, executing-plans) also read the file directly, but the entry point ensures onboarding happens.
 

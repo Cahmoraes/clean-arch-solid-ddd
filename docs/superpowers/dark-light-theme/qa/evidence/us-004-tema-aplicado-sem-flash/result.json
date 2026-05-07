@@ -1,0 +1,17 @@
+{
+  "us_id": "us-004",
+  "user_story": "Como qualquer usuário, eu quero que o tema seja aplicado imediatamente ao carregar a página para que não haja piscar de tela branca ao acessar no modo escuro.",
+  "requirements": ["RF-008", "RF-009", "RF-010"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "apps/frontend/src/components/ui/theme-toggle-fab.test.tsx (teste: não renderiza nada antes do mount)"
+  ],
+  "test_output_summary": "18/18 testes focados de layout+tema passados. playwright-cli confirmou tema dark aplicado globalmente via classe CSS no <html> e tokens semânticos em globals.css. Mecanismos anti-FOUC verificados: suppressHydrationWarning, disableTransitionOnChange, useState(false)+useEffect guard no FAB.",
+  "screenshot_path": [
+    "evidence/us-004-tema-aplicado-sem-flash/screenshot-light-no-fouc.png",
+    "evidence/us-004-tema-aplicado-sem-flash/screenshot-dark-global.png"
+  ],
+  "failure_details": "Suíte completa do frontend possui falhas em testes não relacionados à feature (páginas admin/cadastro/login). Status PARTIAL por cobertura de testes focados — não afeta a implementação da feature.",
+  "notes": "RF-008: classe .dark aplica tokens a todos componentes shadcn/ui. RF-009: disableTransitionOnChange + suppressHydrationWarning previnem FOUC. RF-010: globals.css define contraste adequado em dark. Screenshots capturam before/after de forma instantânea sem flash visível."
+}

@@ -1,0 +1,5 @@
+docs/superpowers/dark-light-theme/qa/evidence/us-003-preferencia-de-tema-lembrada/us-003-theme-provider-config.acceptance.test.tsx
+- Cobre verificação de defaultTheme="light", storageKey padrão "theme" e chamada de setTheme("dark") no toggle.
+
+docs/superpowers/dark-light-theme/qa/evidence/us-003-preferencia-de-tema-lembrada/us-003-theme-persistence.acceptance.test.tsx
+- Cobre persistência em localStorage e restauração automática com next-themes.
