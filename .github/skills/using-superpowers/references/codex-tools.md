@@ -11,6 +11,18 @@ Skills use Claude Code tool names. When you encounter these in a skill, use your
 | `TodoWrite` (task tracking) | `update_plan` |
 | `Skill` tool (invoke a skill) | Skills load natively — just follow the instructions |
 | `Read`, `Write`, `Edit` (files) | Use your native file tools |
+
+## Checking Files in Hidden Directories
+
+File-search tools may not return files inside hidden directories (directories whose names start with `.`). Do not use search or glob-style tools to detect `.superpowers/preferences.yml`.
+
+**Always read the file directly using your native Read tool:**
+
+```
+Read(".superpowers/preferences.yml")
+```
+
+A successful read means the file exists. A "file not found" or "path does not exist" error means it is absent.
 | `Bash` (run commands) | Use your native shell tools |
 
 ## Subagent dispatch requires multi-agent support

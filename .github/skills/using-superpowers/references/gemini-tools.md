@@ -10,6 +10,18 @@ Skills use Claude Code tool names. When you encounter these in a skill, use your
 | `Bash` (run commands) | `run_shell_command` |
 | `Grep` (search file content) | `grep_search` |
 | `Glob` (search files by name) | `glob` |
+
+## ⚠️ Checking Files in Hidden Directories
+
+The `glob` tool may not return files inside hidden directories (directories whose names start with `.`). Do not rely on it to detect `.superpowers/preferences.yml`.
+
+**When checking for `.superpowers/preferences.yml`, always use `read_file` directly:**
+
+```
+read_file(".superpowers/preferences.yml")
+```
+
+A successful read means the file exists. A "file not found" error means it is absent.
 | `TodoWrite` (task tracking) | `write_todos` |
 | `Skill` tool (invoke a skill) | `activate_skill` |
 | `WebSearch` | `google_web_search` |

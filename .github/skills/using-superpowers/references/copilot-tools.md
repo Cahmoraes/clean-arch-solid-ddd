@@ -9,7 +9,7 @@ Skills use Claude Code tool names. When you encounter these in a skill, use your
 | `Edit` (file editing) | `edit` |
 | `Bash` (run commands) | `bash` |
 | `Grep` (search file content) | `grep` |
-| `Glob` (search files by name) | `glob` |
+| `Glob` (search files by name) | `glob` ⚠️ see limitation below |
 | `Skill` tool (invoke a skill) | `skill` |
 | `WebFetch` | `web_fetch` |
 | `Task` tool (dispatch subagent) | `task` with `agent_type: "general-purpose"` or `"explore"` |
@@ -18,6 +18,24 @@ Skills use Claude Code tool names. When you encounter these in a skill, use your
 | `TodoWrite` (task tracking) | `sql` with built-in `todos` table |
 | `WebSearch` | No equivalent — use `web_fetch` with a search engine URL |
 | `EnterPlanMode` / `ExitPlanMode` | No equivalent — stay in the main session |
+
+## ⚠️ Known Limitation: `glob` and Hidden Directories
+
+The `glob` tool **does not return files inside hidden directories** (directories whose names start with `.`). This affects `.superpowers/`, `.github/`, `.config/`, and any other dotdir.
+
+**When checking for `.superpowers/preferences.yml`, always use `view` directly** — do not use `glob`:
+
+```
+view("/path/to/repo/.superpowers/preferences.yml")
+```
+
+A successful read means the file exists. An error or "path does not exist" means it is absent. As an alternative:
+
+```bash
+test -f .superpowers/preferences.yml && echo exists || echo not-found
+```
+
+Never use `glob` to detect files in hidden directories.
 
 ## Async shell sessions
 
