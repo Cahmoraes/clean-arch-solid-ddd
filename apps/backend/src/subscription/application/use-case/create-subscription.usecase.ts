@@ -54,7 +54,6 @@ export class CreateSubscriptionUseCase {
 					metadata: { userId: input.userId },
 				})
 			const subscription = Subscription.create({
-				id: subscriptionResponse.subscriptionId,
 				userId: input.userId,
 				customerId: input.customerId,
 				billingSubscriptionId: subscriptionResponse.subscriptionId,

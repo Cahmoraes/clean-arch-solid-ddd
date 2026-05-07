@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import type { SubscriptionStatusTypes } from "./subscription-status-types"
 
 export interface SubscriptionConstructor {
@@ -12,7 +13,7 @@ export interface SubscriptionConstructor {
 }
 
 export interface SubscriptionCreate {
-	id: string
+	id?: string
 	userId: string
 	billingSubscriptionId: string
 	customerId: string
@@ -55,6 +56,7 @@ export class Subscription {
 		const createdAt = new Date()
 		return new Subscription({
 			...props,
+			id: props.id ?? randomUUID(),
 			createdAt,
 		})
 	}

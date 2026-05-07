@@ -84,11 +84,11 @@ export function createApiClient(): ApiClient {
 		onForcedLogout: handleForcedLogout,
 	})
 	client.use(
+		errorNormalizationMiddleware,
 		createAuthFetchMiddleware({
 			scheduler,
 			onForcedLogout: handleForcedLogout,
 		}),
-		errorNormalizationMiddleware,
 	)
 	return client
 }

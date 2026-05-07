@@ -29,6 +29,7 @@ const envSchema = z.object({
 	STRIPE_PRICE_ID: z.string(),
 	STRIPE_WEBHOOK_SECRET: z.string(),
 	DATABASE_PROVIDER: z.enum(["prisma", "sqlite"]).default("sqlite"),
+	SUBSCRIPTION_GATEWAY: z.enum(["stripe", "testing"]).default("stripe"),
 })
 
 const _env = envSchema.safeParse(process.env)

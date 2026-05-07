@@ -48,7 +48,9 @@ describe("CreateSubscription UseCase", () => {
 		const subscriptionSaved = await subscriptionRepository.ofUserId(
 			input.userId,
 		)
-		expect(subscriptionSaved?.id).toBe(value.subscriptionId)
+		expect(subscriptionSaved?.id).toMatch(
+			/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+		)
 		expect(subscriptionSaved?.userId).toBe(input.userId)
 		expect(subscriptionSaved?.customerId).toBe(input.customerId)
 		expect(subscriptionSaved?.billingSubscriptionId).toBe(value.subscriptionId)
