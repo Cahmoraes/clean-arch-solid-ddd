@@ -4,7 +4,7 @@ export interface SaveResponse {
 	id: string
 }
 
-export type CheckInStatus = "pending" | "validated"
+export type CheckInStatus = "pending" | "validated" | "rejected"
 
 export interface FindManyInput {
 	page: number

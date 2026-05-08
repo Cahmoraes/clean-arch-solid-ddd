@@ -7,7 +7,7 @@ import type {
 	FindManyOutput,
 	SaveResponse,
 } from "@/check-in/application/repository/check-in-repository"
-import { CheckIn } from "@/check-in/domain/check-in"
+import type { CheckIn } from "@/check-in/domain/check-in"
 import { env } from "@/shared/infra/env"
 
 @injectable()
@@ -21,24 +21,18 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 	}
 
 	public async save(checkIn: CheckIn): Promise<SaveResponse> {
-		const checkInWithId = CheckIn.restore({
-			id: checkIn.id,
-			userId: checkIn.userId,
-			gymId: checkIn.gymId,
-			createdAt: new Date(),
-			validatedAt: checkIn.validatedAt,
-			rejectedAt: checkIn.rejectedAt,
-			userLatitude: checkIn.latitude,
-			userLongitude: checkIn.longitude,
-		})
-		this.checkIns.add(checkInWithId)
+		const existing = this.checkIns.find((item) => item.id === checkIn.id)
+		if (existing) {
+			this.checkIns.delete(existing)
+		}
+		this.checkIns.add(checkIn)
 		return {
 			id: checkIn.id,
 		}
 	}
 
 	public async checkOfById(id: string): Promise<CheckIn | null> {
-		return this.checkIns.find((checkIn) => checkIn.id === id)
+		return this.checkIns.find((checkIn) => checkIn.id === id) ?? null
 	}
 
 	public async onSameDateOfUserId(
@@ -63,10 +57,8 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 		if (input.userId) {
 			filtered = filtered.filter((checkIn) => checkIn.userId === input.userId)
 		}
-		if (input.status === "pending") {
-			filtered = filtered.filter((checkIn) => checkIn.status === "pending")
-		} else if (input.status === "validated") {
-			filtered = filtered.filter((checkIn) => checkIn.status === "validated")
+		if (input.status) {
+			filtered = filtered.filter((checkIn) => checkIn.status === input.status)
 		}
 		const total = filtered.length
 		const start = (input.page - 1) * env.ITEMS_PER_PAGE
