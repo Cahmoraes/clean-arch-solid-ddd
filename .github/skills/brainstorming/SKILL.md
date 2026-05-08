@@ -174,6 +174,23 @@ Synthesize findings internally before proceeding. Do not relay raw subagent outp
 - Write the validated design (spec) to `docs/superpowers/<feature-name>/specs/<feature-name>-design.md`
   - The `<feature-name>` is a kebab-case slug defined during this brainstorming session (e.g., `toggle-light-dark-theme`)
   - Create the feature directory structure: `docs/superpowers/<feature-name>/specs/`, `docs/superpowers/<feature-name>/prd/`, `docs/superpowers/<feature-name>/plans/`
+  - Include a YAML frontmatter block at the very top of the file:
+    ```yaml
+    ---
+    created_at: "YYYY-MM-DDTHH:MM:SS±HH:MM"
+    updated_at: "YYYY-MM-DDTHH:MM:SS±HH:MM"
+    ---
+    ```
+    > **Deterministic frontmatter (preferred):** Use the shared script to read existing dates and write updated ones:
+    > ```bash
+    > # Check existing created_at (preserve if file already exists):
+    > node scripts/frontmatter-utils.js --file <spec-path> --get-key created_at
+    > # Set updated_at to current ISO 8601 datetime:
+    > node scripts/frontmatter-utils.js --file <spec-path> --set-key updated_at --set-value "<current-datetime>"
+    > ```
+    > **Fallback:** Write the frontmatter block manually.
+    
+    **Date rules:** if the file does not exist yet, set both fields to the current date/time from the system context (ISO 8601 with timezone). If the file already exists, preserve `created_at` and update only `updated_at`. Never write a literal placeholder in the document.
   - (User preferences for spec location override this default)
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git

@@ -17,6 +17,10 @@ Load plan, review critically, execute all tasks, report when complete.
 
 Before executing any task, read `.superpowers/preferences.yml` in the user's repository root.
 
+> **Deterministic reading (preferred):** `node ../using-superpowers/scripts/read-preferences.js`  
+> Outputs JSON with `preferences.workflow.auto_commit`, `preferences.communication.language`, etc.  
+> **Fallback:** Read via `view` directly — do NOT use `glob` (misses hidden dirs).
+
 - If `workflow.auto_commit` = false → do NOT commit after tasks. Inform the user that commits are pending.
 - If `workflow.auto_commit` = true (or file missing) → commit normally after each completed task.
 - If `workflow.confirm_destructive_actions` = true → ask before deleting or overwriting files.
@@ -26,6 +30,14 @@ Before executing any task, read `.superpowers/preferences.yml` in the user's rep
 ## The Process
 
 ### Step 1: Load Tasks Index
+
+> **Deterministic task parsing (preferred):**
+> ```bash
+> node ../subagent-driven-development/scripts/parse-tasks.js --tasks-index <path>
+> ```
+> Outputs JSON with `found`, `allDone`, `completed`, `pending`, `inProgress`, `mismatches`.  
+> Use `completed` to skip already-done tasks and `pending`+`inProgress` for what remains.  
+> **Fallback:** Read and parse the tasks index file manually.
 
 1. Read the tasks index file (`tasks-<feature-name>.md`) — passed explicitly in context or discovered in the feature's `plans/` directory
 2. If tracker exists: skip tasks already marked `[x]` (session resume), note which tasks remain
@@ -38,10 +50,14 @@ Before executing any task, read `.superpowers/preferences.yml` in the user's rep
 ### Step 2: Execute Tasks
 
 For each task:
-1. Update task file status: `PENDING` → `IN_PROGRESS` (if tracker exists)
+1. **Physically edit** `task-NN.md` using your file-editing tool: change `**Status:** PENDING` to `**Status:** IN_PROGRESS`. This is a real disk write — not a TodoWrite entry or a mental note — and must happen before any implementation begins.
 2. Follow each step exactly (plan has bite-sized steps)
 3. Run verifications as specified (use verification-before-completion)
-4. After verification passes: update task tracker — mark `[x]` in `*-tasks.md` and `Status: DONE` in individual task file
+4. After verification passes, make **two physical file edits on disk**:
+   - Edit `tasks-<feature-name>.md`: change `- [ ] N.` → `- [x] N.` for that task's line
+   - Edit `task-NN.md`: change `**Status:** IN_PROGRESS` → `**Status:** DONE`
+
+   These file edits are the authoritative audit record. `finishing-a-development-branch` reads the tasks index directly to verify all tasks are `[x]` — if the files are not edited on disk, the branch cannot be finished.
 5. Mark as completed in TodoWrite
 
 ### Step 3: Complete Development

@@ -17,6 +17,14 @@ Ensure work happens in an isolated workspace. Prefer your platform's native work
 
 **Before creating anything, check if you are already in an isolated workspace.**
 
+> **Deterministic detection (preferred):**
+> ```bash
+> bash scripts/detect-git-env.sh
+> ```
+> Outputs JSON with `isWorktree`, `isBareRepo`, `currentBranch`, `gitRoot`, `worktrees[]`.  
+> If `isWorktree: true`, skip to Step 3 — you are already isolated.  
+> **Fallback:** Use the manual git commands below.
+
 ```bash
 GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
 GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)

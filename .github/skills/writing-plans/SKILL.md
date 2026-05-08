@@ -23,6 +23,14 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 Before starting the plan, check if a PRD exists:
 
+> **Deterministic file discovery (preferred):**
+> ```bash
+> node scripts/find-feature-files.js --feature-name <feature-name>
+> ```
+> Outputs JSON with `prd.found`, `prd.path`, `spec.found`, `spec.path`, `tasksIndex.found`, `tasksIndex.path`.  
+> Use these to confirm which files exist before referencing them in the plan.  
+> **Fallback:** Use the discovery order below manually.
+
 **Discovery order (use the first match):**
 1. **Explicit path in context** — if `generating-prd` was invoked in this session, it passed the exact PRD path forward. Use it directly.
 2. **Deterministic derivation** — look for `docs/superpowers/<feature-name>/prd/prd-<feature-name>.md`. The feature name is already known from brainstorming.
@@ -249,6 +257,12 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 - All checkboxes are `[ ]` (none pre-checked)
 - Every task file has `**PRD:**` and `**Spec:**` fields with correct relative paths
 - Paths in the index correctly point to existing task files
+
+> **Deterministic validation (preferred):** Run the validator script to catch format issues automatically:
+> ```bash
+> node scripts/validate-tasks.js --tasks-index docs/superpowers/<feature-name>/plans/tasks-<feature-name>.md
+> ```
+> Fix any `errors` in the output before handing off to execution skills. `warnings` are advisory.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 

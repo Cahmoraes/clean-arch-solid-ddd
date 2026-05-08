@@ -1,7 +1,11 @@
+---
+created_at: "YYYY-MM-DDTHH:MM:SS±HH:MM"
+updated_at: "YYYY-MM-DDTHH:MM:SS±HH:MM"
+---
+
 # QA Report — [Feature Name]
 
 ## Resumo
-- **Data**: [ISO date]
 - **Status**: ✅ APROVADO / ❌ REPROVADO / ⚠️ PARCIAL
 - **PRD**: [relative path]
 - **Total de Requisitos**: [X]

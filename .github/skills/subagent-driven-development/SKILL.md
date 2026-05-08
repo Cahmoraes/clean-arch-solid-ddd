@@ -47,14 +47,26 @@ Before extracting tasks, locate the tasks index:
 
 **Discovery:** The tasks index path is passed explicitly in context (e.g., `docs/superpowers/<feature-name>/plans/tasks-<feature-name>.md`). If not passed, look for a `tasks-*.md` file in the feature's `plans/` directory.
 
+> **Deterministic task parsing (preferred):**
+> ```bash
+> node scripts/parse-tasks.js --tasks-index <path>
+> ```
+> Outputs JSON with `found`, `allDone`, `completed[]`, `pending[]`, `inProgress[]`, `mismatches[]`.  
+> Use `completed` to skip already-done tasks (session resume), `pending`+`inProgress` for what remains.  
+> Check `mismatches` — any mismatch between index and task file requires manual resolution before proceeding.  
+> **Fallback:** Read and parse the tasks index file manually if the script is unavailable.
+
 **If tracker exists:**
 1. Read the tasks index (`tasks-<feature-name>.md`)
 2. Tasks marked `[x]` are already completed — skip them entirely (session resume)
 3. For each remaining `[ ]` task, read the individual task file for full context
 4. **Read PRD and Spec from each task:** Before dispatching the implementer subagent, read the `**PRD:**` and `**Spec:**` fields from the task file header. Include the content of both files in the subagent's context alongside the task steps. This ensures the implementer has full feature requirements and design decisions available.
-5. When marking a task complete (after ALL gates pass), update both:
-   - The tasks index: `- [ ]` → `- [x]` for that task's line
-   - The individual task file: `Status: PENDING` → `Status: DONE`
+5. **Before dispatching each implementer:** use your file-editing tool to physically write the change to `task-NN.md` on disk — change `**Status:** PENDING` to `**Status:** IN_PROGRESS`. This is a real file edit, not a TodoWrite entry or a mental note. The file on disk must reflect the current working state.
+6. When ALL gates pass (verification-before-completion ✅ + spec review ✅ + code quality ✅), make **two physical file edits on disk** — this is mandatory even if you've already marked the task complete in TodoWrite:
+   - Edit `tasks-<feature-name>.md`: change `- [ ] N.` → `- [x] N.` for that task's line
+   - Edit `task-NN.md`: change `**Status:** IN_PROGRESS` → `**Status:** DONE`
+
+   These file edits are the authoritative audit record of task completion. `finishing-a-development-branch` reads the tasks index directly to verify all tasks are `[x]` — if the files are not edited on disk, the branch cannot be finished and the history cannot be audited.
 
 **If no tracker exists:**
 Proceed as before — extract tasks from a plan file if one was passed directly. Note in the log: "No task tracker found; using plan file directly."
@@ -251,6 +263,43 @@ QA report → docs/superpowers/toggle-light-dark-theme/qa/qa-report-toggle-light
 Done!
 ```
 
+## Suggesting Commit Messages
+
+After each task's code quality review is approved, provide the developer with a ready-to-copy git command block containing the staged files and commit message. The developer is responsible for executing it — your role is to produce an accurate, copy-paste-ready command.
+
+**Output format** — always render as a shell code block:
+```sh
+git add <arquivo1> <arquivo2> ...
+git commit -m "tipo(escopo): descrição em português no imperativo"
+```
+
+Use the file list from the implementer's report for `git add`. List each file explicitly — never use `git add .` or `git add -A`.
+
+**Commit message format:**
+```
+tipo(escopo): descrição em português no imperativo
+```
+
+**Common types:**
+- `feat` — nova funcionalidade
+- `fix` — correção de bug
+- `refactor` — refatoração sem mudança de comportamento observável
+- `test` — adição ou ajuste de testes
+- `docs` — atualização de documentação
+- `chore` — tarefas de manutenção, build, CI
+
+**Guidelines:**
+- `scope` should reflect the module, feature, or file area changed
+- Keep the subject line under 72 characters
+- Use imperative mood: "adicionar", "corrigir", "extrair" — not "adicionado" or "adicionando"
+- If the task warrants a body (breaking change, multi-concern), add it after a blank line
+
+**Example output:**
+```sh
+git add src/auth/jwt.ts src/auth/jwt.test.ts
+git commit -m "feat(auth): implementar autenticação com JWT"
+```
+
 ## Advantages
 
 **vs. Manual execution:**
@@ -299,7 +348,7 @@ Done!
 - **Start code quality review before spec compliance is ✅** (wrong order)
 - Move to next task while either review has open issues
 - **Mark task `[x]` before verification-before-completion confirms evidence** — reviews passing is necessary but not sufficient; fresh verification is the final gate
-- **Skip updating the task tracker** — if a tracker exists, both the index (`[x]`) and individual task file (`Status: DONE`) must be updated before moving on
+- **Skip updating the task tracker** — if a tracker exists, you must physically edit both `tasks-<feature-name>.md` (change `[ ]` → `[x]`) and `task-NN.md` (change `Status: IN_PROGRESS` → `Status: DONE`) on disk before moving to the next task. Updating TodoWrite or knowing mentally that the task is done does not count — the actual files must be edited and saved.
 - **Skip user-story-verification without asking when a PRD exists** — always present the consent question to the user first; skipping after the user explicitly declines is valid, but skipping silently is not
 
 **If subagent asks questions:**

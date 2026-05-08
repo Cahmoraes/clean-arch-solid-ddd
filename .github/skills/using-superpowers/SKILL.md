@@ -17,7 +17,17 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 ## Workflow Preferences
 
-On every session start, check for `.superpowers/preferences.yml` in the user's repository root. Consult your platform's reference file for the correct method — file-search tools may silently miss files inside hidden directories.
+On every session start, check for `.superpowers/preferences.yml` in the user's repository root.
+
+> **Deterministic reading (preferred):** Run the shared script to avoid hidden-directory glob failures and parse YAML correctly:
+> ```bash
+> node scripts/read-preferences.js
+> # or with explicit root:
+> node scripts/read-preferences.js --repo-root <repo-root>
+> ```
+> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, and `preferences.copilot.rubber_duck` directly from the output.
+> 
+> **Fallback (if script unavailable):** Read the file directly using `view` — do NOT use `glob` (glob silently misses hidden directories like `.superpowers/`). See `references/copilot-tools.md`.
 
 - **If it exists:** Read it and keep the preferences in context. Inject relevant preferences when dispatching subagents (include them in the subagent prompt context).
 - **If it does NOT exist:** Follow the onboarding wizard in `references/onboarding-preferences.md` (read that file and execute the wizard before proceeding with the user's task).

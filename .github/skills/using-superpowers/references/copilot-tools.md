@@ -23,7 +23,17 @@ Skills use Claude Code tool names. When you encounter these in a skill, use your
 
 The `glob` tool **does not return files inside hidden directories** (directories whose names start with `.`). This affects `.superpowers/`, `.github/`, `.config/`, and any other dotdir.
 
-**When checking for `.superpowers/preferences.yml`, always use `view` directly** — do not use `glob`:
+**Preferred method — use the deterministic script:**
+
+```bash
+node scripts/read-preferences.js
+# or with explicit root:
+node scripts/read-preferences.js --repo-root /path/to/repo
+```
+
+The script uses `git rev-parse --show-toplevel` for root detection, handles nested YAML correctly, returns defaults for missing keys, and marks malformed files. See `scripts/read-preferences.js --help` for the full JSON output schema.
+
+**Fallback — use `view` directly (NOT `glob`):**
 
 ```
 view("/path/to/repo/.superpowers/preferences.yml")

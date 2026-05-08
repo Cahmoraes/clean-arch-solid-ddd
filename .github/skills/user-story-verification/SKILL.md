@@ -39,6 +39,14 @@ Locate the PRD using this priority order:
 
 **If no PRD is found:** Report `"No PRD found for this feature — skipping QA gate."` and return control to the caller without blocking.
 
+> **Deterministic extraction (preferred):** Run the script to extract user stories with consistent slugs:
+> ```bash
+> node scripts/generate-slugs.js --prd <prd-path>
+> ```
+> Outputs JSON with `userStories[]` (each with `id`, `text`, `role`, `want`, `benefit`, `slug`) and `count`.  
+> Use `slug` from the JSON as the directory name in evidence tree (matches `us-<N>-<first-5-words-kebab>` format).  
+> **Fallback:** Extract user stories manually by reading the PRD.
+
 Read the PRD and extract:
 - All **Histórias de Usuário** (`Como [persona], eu quero [ação] para que [benefício]`)
 - All **Requisitos Funcionais** (RF-001, RF-002...) and their mapping to each story
@@ -193,13 +201,19 @@ Wait for all subagents to complete. Read every `evidence/<us-slug>/result.json`.
 - `FAILED` — one or more stories are `FAILED`
 - `PARTIAL` — mix of `PASSED` and `UNVERIFIABLE` (zero `FAILED`)
 
-Save the report to `docs/superpowers/<feature-name>/qa/qa-report-<feature-name>.md` using the template at `./assets/qa-report-template.md`:
+Save the report to `docs/superpowers/<feature-name>/qa/qa-report-<feature-name>.md` using the template at `./assets/qa-report-template.md` (that file is the canonical source — keep both in sync if you modify the structure here):
+
+**Date rules:** if the report file does not exist yet, set both `created_at` and `updated_at` in the frontmatter to the current date/time from the system context (ISO 8601 with timezone). If the file already exists (re-run scenario), preserve `created_at` and update only `updated_at`.
 
 ```markdown
+---
+created_at: "YYYY-MM-DDTHH:MM:SS±HH:MM"
+updated_at: "YYYY-MM-DDTHH:MM:SS±HH:MM"
+---
+
 # QA Report — [Feature Name]
 
 ## Resumo
-- **Data**: [ISO date]
 - **Status**: ✅ APROVADO | ❌ REPROVADO | ⚠️ PARCIAL
 - **PRD**: [relative path]
 - **Total de Requisitos**: [X]
