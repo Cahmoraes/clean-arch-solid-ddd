@@ -1,6 +1,6 @@
 # Task 9: FetchCheckInsUseCase + ListCheckInsController: status no DTO e filtro rejected [RF-013, RF-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 

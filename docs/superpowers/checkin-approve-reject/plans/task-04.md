@@ -1,6 +1,6 @@
 # Task 4: Atualizar repositório: interface + InMemory [RF-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 

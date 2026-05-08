@@ -1,6 +1,6 @@
 # Task 6: Atualizar PrismaCheckInRepository [RF-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 

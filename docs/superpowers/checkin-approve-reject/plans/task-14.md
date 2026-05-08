@@ -1,6 +1,6 @@
 # Task 14: Página /admin/check-ins — CheckInActions substituindo ValidateButton [RF-006, RF-007, RF-008, RF-009, RF-016, RF-018, RF-019]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 
@@ -177,8 +177,6 @@ Esperado: 0 issues.
 ```bash
 git add apps/frontend/src/app/(authenticated)/admin/check-ins/page.tsx
 git commit -m "feat(frontend/admin): replace ValidateButton with CheckInActions in admin check-ins
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
 ```
 
 ## Critérios de Sucesso

@@ -1,6 +1,6 @@
 # Task 7: RejectCheckInUseCase + testes [RF-001, RF-002, RF-003, RF-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 

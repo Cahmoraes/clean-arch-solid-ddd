@@ -1,6 +1,6 @@
 # Task 10: IoC — registrar RejectCheckIn no container [RF-001]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 

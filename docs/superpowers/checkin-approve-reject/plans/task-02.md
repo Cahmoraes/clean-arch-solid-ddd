@@ -1,6 +1,6 @@
 # Task 2: Value Object CheckInStatus (padrão Status) [RF-005, RF-006, RF-007, RF-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 

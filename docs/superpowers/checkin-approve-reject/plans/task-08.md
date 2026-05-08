@@ -1,6 +1,6 @@
 # Task 8: RejectCheckInController + rota [RF-001, RF-002, RF-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 

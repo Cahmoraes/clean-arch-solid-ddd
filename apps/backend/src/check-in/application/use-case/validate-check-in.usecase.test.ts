@@ -3,6 +3,7 @@ import {
 	createAndSaveCheckIn,
 } from "test/factory/create-and-save-check-in"
 
+import { CheckInAlreadyRejectedError } from "@/check-in/domain/error/check-in-already-rejected-error"
 import { CheckInTimeExceededError } from "@/check-in/domain/error/check-in-time-exceeded-error"
 import { InMemoryCheckInRepository } from "@/shared/infra/database/repository/in-memory/in-memory-check-in-repository"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
@@ -82,5 +83,25 @@ describe("ValidateCheckIn", () => {
 		const result = await sut.execute(input)
 		const left = result.force.failure().value
 		expect(left).toBeInstanceOf(CheckInNotFoundError)
+	})
+
+	test("Não deve validar um check-in rejeitado", async () => {
+		const createCheckInProps: CreateAndSaveCheckInProps = {
+			checkInRepository,
+			gymId: "any_gym_id",
+			id: "check-in-id",
+			userId: "any_user_id",
+		}
+		const checkIn = await createAndSaveCheckIn(createCheckInProps)
+		checkIn.reject()
+		await checkInRepository.save(checkIn)
+
+		const input: ValidateCheckInUseCaseInput = {
+			checkInId: checkIn.id,
+		}
+		const result = await sut.execute(input)
+		expect(result.isFailure()).toBe(true)
+		const left = result.force.failure().value
+		expect(left).toBeInstanceOf(CheckInAlreadyRejectedError)
 	})
 })

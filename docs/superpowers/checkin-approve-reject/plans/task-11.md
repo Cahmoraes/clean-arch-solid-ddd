@@ -1,6 +1,6 @@
 # Task 11: Camada de API do frontend — extended-paths + hooks [RF-001, RF-013, RF-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 

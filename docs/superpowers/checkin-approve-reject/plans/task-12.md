@@ -1,6 +1,6 @@
 # Task 12: Componentes frontend — CheckInItem badge + CheckInActions [RF-006, RF-007, RF-008, RF-009, RF-010, RF-011, RF-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 
@@ -215,8 +215,6 @@ Esperado: todos passam.
 git add apps/frontend/src/features/check-ins/components/check-in-item.tsx \
         apps/frontend/src/features/check-ins/components/check-in-actions.tsx
 git commit -m "feat(frontend/check-ins): add status badge and CheckInActions component
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
 ```
 
 ## Critérios de Sucesso

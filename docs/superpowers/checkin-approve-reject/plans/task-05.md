@@ -1,6 +1,6 @@
 # Task 5: Migração Prisma: coluna rejected_at [RF-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-approve-reject.md`
 **Spec:** `../specs/checkin-approve-reject-design.md`
 
