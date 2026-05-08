@@ -82,7 +82,6 @@ export class PrismaCheckInRepository implements CheckInRepository {
 			validatedAt: props.validated_at ?? undefined,
 			userLatitude: props.latitude,
 			userLongitude: props.longitude,
-			isValidated: !!props.validated_at,
 		})
 	}
 

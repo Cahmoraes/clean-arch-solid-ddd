@@ -52,7 +52,7 @@ describe("ValidateCheckIn", () => {
 		const right = result.force.success().value
 		expect(right.validatedAt).toBeInstanceOf(Date)
 		expect(right.validatedAt).toBeInstanceOf(Date)
-		expect(checkIn.isValidated).toBe(true)
+		expect(checkIn.status).toBe("validated")
 	})
 
 	test("Não deve validar um check-in após o tempo limite", async () => {

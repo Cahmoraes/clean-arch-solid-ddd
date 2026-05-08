@@ -27,9 +27,9 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 			gymId: checkIn.gymId,
 			createdAt: new Date(),
 			validatedAt: checkIn.validatedAt,
+			rejectedAt: checkIn.rejectedAt,
 			userLatitude: checkIn.latitude,
 			userLongitude: checkIn.longitude,
-			isValidated: false,
 		})
 		this.checkIns.add(checkInWithId)
 		return {
@@ -64,9 +64,9 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 			filtered = filtered.filter((checkIn) => checkIn.userId === input.userId)
 		}
 		if (input.status === "pending") {
-			filtered = filtered.filter((checkIn) => !checkIn.isValidated)
+			filtered = filtered.filter((checkIn) => checkIn.status === "pending")
 		} else if (input.status === "validated") {
-			filtered = filtered.filter((checkIn) => checkIn.isValidated)
+			filtered = filtered.filter((checkIn) => checkIn.status === "validated")
 		}
 		const total = filtered.length
 		const start = (input.page - 1) * env.ITEMS_PER_PAGE

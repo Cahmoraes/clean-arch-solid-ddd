@@ -1,16 +1,18 @@
 import type { Optional } from "@/@types/optional"
-import { CheckInTimeExceededError } from "@/check-in/domain/error/check-in-time-exceeded-error"
+import type { CheckInAlreadyRejectedError } from "@/check-in/domain/error/check-in-already-rejected-error.js"
+import type { CheckInTimeExceededError } from "@/check-in/domain/error/check-in-time-exceeded-error.js"
 import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
+import type { Either } from "@/shared/domain/value-object/either"
 import { ExistingId } from "@/shared/domain/value-object/existing-id"
 import { Id } from "@/shared/domain/value-object/id"
 import { env } from "@/shared/infra/env"
 
 import { CheckInCreatedEvent } from "./event/check-in-created-event"
+import {
+	type CheckInStatus,
+	CheckInStatusFactory,
+	type CheckInStatusTypes,
+} from "./value-object/check-in-status"
 
 interface CheckInProps {
 	id: Id
@@ -18,14 +20,14 @@ interface CheckInProps {
 	gymId: ExistingId
 	createdAt: Date
 	validatedAt?: Date
+	rejectedAt?: Date
 	userLatitude: number
 	userLongitude: number
-	isValidated: boolean
 }
 
 export type CheckInCreateProps = Omit<
 	Optional<CheckInProps, "id" | "createdAt">,
-	"id" | "userId" | "gymId" | "isValidated"
+	"id" | "userId" | "gymId" | "rejectedAt"
 > & {
 	id?: string
 	userId: string
@@ -38,9 +40,9 @@ export type CheckInRestoreProps = {
 	gymId: string
 	createdAt: Date
 	validatedAt?: Date
+	rejectedAt?: Date
 	userLatitude: number
 	userLongitude: number
-	isValidated: boolean
 }
 
 export class CheckIn {
@@ -50,8 +52,9 @@ export class CheckIn {
 	private readonly _createdAt: Date
 	private readonly _latitude: number
 	private readonly _longitude: number
-	private _isValidated: boolean
 	private _validatedAt?: Date
+	private _rejectedAt?: Date
+	private _status: CheckInStatus
 
 	private constructor(props: CheckInProps) {
 		this._id = props.id
@@ -59,9 +62,16 @@ export class CheckIn {
 		this._gymId = props.gymId
 		this._createdAt = props.createdAt
 		this._validatedAt = props.validatedAt
+		this._rejectedAt = props.rejectedAt
 		this._latitude = props.userLatitude
 		this._longitude = props.userLongitude
-		this._isValidated = props.isValidated
+
+		const statusType: CheckInStatusTypes = props.rejectedAt
+			? "rejected"
+			: props.validatedAt
+				? "validated"
+				: "pending"
+		this._status = CheckInStatusFactory.create(this, statusType)
 	}
 
 	public static create(props: CheckInCreateProps): CheckIn {
@@ -74,7 +84,6 @@ export class CheckIn {
 			userId,
 			gymId,
 			createdAt,
-			isValidated: false,
 			userLatitude: props.userLatitude,
 			userLongitude: props.userLongitude,
 		})
@@ -101,11 +110,13 @@ export class CheckIn {
 			gymId: ExistingId.restore(props.gymId),
 			createdAt: props.createdAt,
 			validatedAt: props.validatedAt,
+			rejectedAt: props.rejectedAt,
 			userLatitude: props.userLatitude,
 			userLongitude: props.userLongitude,
-			isValidated: props.isValidated,
 		})
 	}
+
+	// ── Getters ─────────────────────────────────────────────────
 
 	get id(): string {
 		return this._id.value
@@ -127,8 +138,12 @@ export class CheckIn {
 		return this._validatedAt
 	}
 
-	set validatedAt(date: Date) {
-		this._validatedAt = date
+	get rejectedAt(): Date | undefined {
+		return this._rejectedAt
+	}
+
+	get status(): CheckInStatusTypes {
+		return this._status.type
 	}
 
 	get latitude(): number {
@@ -139,23 +154,46 @@ export class CheckIn {
 		return this._longitude
 	}
 
-	get isValidated(): boolean {
-		return this._isValidated
+	// ── Public domain methods ────────────────────────────────────
+
+	public validate(): Either<
+		CheckInTimeExceededError | CheckInAlreadyRejectedError,
+		true
+	> {
+		return this._status.validate()
 	}
 
-	public validate(): Either<CheckInTimeExceededError, true> {
-		if (this.isNotEligibleToValidate()) {
-			return failure(new CheckInTimeExceededError())
-		}
-		this._validatedAt = new Date()
-		this._isValidated = true
-		return success(true)
+	public reject(): Either<never, true> {
+		return this._status.reject()
 	}
 
-	private isNotEligibleToValidate(): boolean {
+	// ── Internal methods (called by CheckInStatus) ───────────────
+
+	/** @internal used by CheckInStatus */
+	public _isNotEligibleToValidate(): boolean {
 		const now = new Date()
 		const differenceInMilliseconds = now.getTime() - this._createdAt.getTime()
 		const differenceInMinutes = differenceInMilliseconds / 1000 / 60
 		return differenceInMinutes > env.CHECK_IN_EXPIRATION_TIME
+	}
+
+	/** @internal used by CheckInStatus */
+	public _changeStatus(status: CheckInStatus): void {
+		this._status = status
+	}
+
+	/** @internal used by CheckInStatus */
+	public _setValidatedAt(date: Date): void {
+		this._validatedAt = date
+	}
+
+	/** @internal used by CheckInStatus */
+	public _clearValidatedAt(): void {
+		this._validatedAt = undefined
+	}
+
+	/** @internal used by CheckInStatus */
+	public _setRejectedAt(date: Date): void {
+		this._rejectedAt = date
 	}
 }
