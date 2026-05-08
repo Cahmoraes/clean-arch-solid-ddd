@@ -77,7 +77,6 @@ export function createApiClient(): ApiClient {
 	const client = createClient<paths>({
 		baseUrl: API_BASE_URL,
 		credentials: "include",
-		headers: { "Content-Type": "application/json" },
 	})
 	const scheduler = getTokenRefreshScheduler({
 		refreshFn: refreshAccessToken,

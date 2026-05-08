@@ -29,7 +29,11 @@ export class GlobalErrorHandler {
 				.status(HTTP_STATUS.BAD_REQUEST)
 				.send({ message: validationError.toString() })
 		}
-		if (error.code === "FST_ERR_VALIDATION") {
+		if (
+			error.code === "FST_ERR_VALIDATION" ||
+			error.code === "FST_ERR_CTP_INVALID_JSON_BODY" ||
+			error.code === "FST_ERR_CTP_EMPTY_JSON_BODY"
+		) {
 			return reply
 				.status(HTTP_STATUS.BAD_REQUEST)
 				.send({ message: error.message })
