@@ -19,6 +19,7 @@ interface CreateCheckInProps {
 	id: string
 	created_at: Date
 	validated_at: Date | null
+	rejected_at: Date | null
 	user_id: string
 	gym_id: string
 	latitude: number
@@ -42,21 +43,24 @@ export class PrismaCheckInRepository implements CheckInRepository {
 	}
 
 	public async save(checkIn: CheckIn): Promise<SaveResponse> {
-		const result = await this.prismaClient.checkIn.create({
-			data: {
+		const result = await this.prismaClient.checkIn.upsert({
+			where: { id: checkIn.id },
+			create: {
+				id: checkIn.id,
 				gym_id: checkIn.gymId,
 				user_id: checkIn.userId,
-				validated_at: checkIn.validatedAt,
+				validated_at: checkIn.validatedAt ?? null,
+				rejected_at: checkIn.rejectedAt ?? null,
 				latitude: checkIn.latitude,
 				longitude: checkIn.longitude,
 			},
-			select: {
-				gym_id: true,
+			update: {
+				validated_at: checkIn.validatedAt ?? null,
+				rejected_at: checkIn.rejectedAt ?? null,
 			},
+			select: { id: true },
 		})
-		return {
-			id: result.gym_id,
-		}
+		return { id: result.id }
 	}
 
 	public async checkOfById(id: string): Promise<CheckIn | null> {
@@ -80,6 +84,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
 			userId: props.user_id,
 			createdAt: props.created_at,
 			validatedAt: props.validated_at ?? undefined,
+			rejectedAt: props.rejected_at ?? undefined,
 			userLatitude: props.latitude,
 			userLongitude: props.longitude,
 		})
@@ -133,9 +138,14 @@ export class PrismaCheckInRepository implements CheckInRepository {
 		}
 		if (input.status === "pending") {
 			where.validated_at = null
+			where.rejected_at = null
 		}
 		if (input.status === "validated") {
 			where.validated_at = { not: null }
+			where.rejected_at = null
+		}
+		if (input.status === "rejected") {
+			where.rejected_at = { not: null }
 		}
 		return where
 	}
