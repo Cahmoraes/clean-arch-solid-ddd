@@ -1,17 +1,13 @@
 import type { FastifyRequest } from "fastify"
 import { inject } from "inversify"
-import { ZodError, z } from "zod"
+import { z } from "zod"
 import type { RejectCheckInUseCase } from "@/check-in/application/use-case/reject-check-in.usecase"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { CHECKIN_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type {
-	HandleCallbackResponse,
-	HttpServer,
-	Schema,
-} from "@/shared/infra/server/http-server"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import { CheckInRoutes } from "./routes/check-in-routes"
 
@@ -42,16 +38,6 @@ export class RejectCheckInController extends BaseController {
 	})
 	public async init(): Promise<void> {
 		this.server.register(
-			"post",
-			CheckInRoutes.REJECT,
-			{
-				callback: this.callback,
-				isProtected: true,
-				onlyAdmin: true,
-			},
-			makeRejectCheckInSwaggerSchema(),
-		)
-		this.server.register(
 			"patch",
 			CheckInRoutes.REJECT,
 			{
@@ -61,19 +47,6 @@ export class RejectCheckInController extends BaseController {
 			},
 			makeRejectCheckInSwaggerSchema(),
 		)
-	}
-
-	protected override mapResponseError(
-		error: Error | Error[],
-	): HandleCallbackResponse | undefined {
-		if (Array.isArray(error) || error instanceof ZodError) {
-			return undefined
-		}
-
-		return ResponseFactory.create({
-			status: HTTP_STATUS.CONFLICT,
-			message: error.message,
-		})
 	}
 
 	private async callback(req: FastifyRequest) {
@@ -120,8 +93,8 @@ function makeRejectCheckInSwaggerSchema(): Schema {
 					message: z.string().meta({ description: "Error message" }),
 				}),
 			},
-			409: {
-				description: "Conflict - Check-in not found",
+			404: {
+				description: "Check-in not found",
 				schema: z.object({
 					message: z.string().meta({ description: "Error message" }),
 				}),
