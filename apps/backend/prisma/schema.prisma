@@ -28,6 +28,7 @@ model CheckIn {
   id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at   DateTime  @default(now())
   validated_at DateTime?
+  rejected_at  DateTime?
   latitude     Decimal
   longitude    Decimal
   user_id      String    @db.Uuid

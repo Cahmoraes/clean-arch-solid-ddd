@@ -836,6 +836,7 @@ export const CheckInScalarFieldEnum = {
   id: 'id',
   created_at: 'created_at',
   validated_at: 'validated_at',
+  rejected_at: 'rejected_at',
   latitude: 'latitude',
   longitude: 'longitude',
   user_id: 'user_id',

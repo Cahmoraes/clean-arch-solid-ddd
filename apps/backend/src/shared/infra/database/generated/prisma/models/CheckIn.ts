@@ -40,6 +40,7 @@ export type CheckInMinAggregateOutputType = {
   id: string | null
   created_at: Date | null
   validated_at: Date | null
+  rejected_at: Date | null
   latitude: runtime.Decimal | null
   longitude: runtime.Decimal | null
   user_id: string | null
@@ -51,6 +52,7 @@ export type CheckInMaxAggregateOutputType = {
   id: string | null
   created_at: Date | null
   validated_at: Date | null
+  rejected_at: Date | null
   latitude: runtime.Decimal | null
   longitude: runtime.Decimal | null
   user_id: string | null
@@ -62,6 +64,7 @@ export type CheckInCountAggregateOutputType = {
   id: number
   created_at: number
   validated_at: number
+  rejected_at: number
   latitude: number
   longitude: number
   user_id: number
@@ -85,6 +88,7 @@ export type CheckInMinAggregateInputType = {
   id?: true
   created_at?: true
   validated_at?: true
+  rejected_at?: true
   latitude?: true
   longitude?: true
   user_id?: true
@@ -96,6 +100,7 @@ export type CheckInMaxAggregateInputType = {
   id?: true
   created_at?: true
   validated_at?: true
+  rejected_at?: true
   latitude?: true
   longitude?: true
   user_id?: true
@@ -107,6 +112,7 @@ export type CheckInCountAggregateInputType = {
   id?: true
   created_at?: true
   validated_at?: true
+  rejected_at?: true
   latitude?: true
   longitude?: true
   user_id?: true
@@ -205,6 +211,7 @@ export type CheckInGroupByOutputType = {
   id: string
   created_at: Date
   validated_at: Date | null
+  rejected_at: Date | null
   latitude: runtime.Decimal
   longitude: runtime.Decimal
   user_id: string
@@ -239,6 +246,7 @@ export type CheckInWhereInput = {
   id?: Prisma.UuidFilter<"CheckIn"> | string
   created_at?: Prisma.DateTimeFilter<"CheckIn"> | Date | string
   validated_at?: Prisma.DateTimeNullableFilter<"CheckIn"> | Date | string | null
+  rejected_at?: Prisma.DateTimeNullableFilter<"CheckIn"> | Date | string | null
   latitude?: Prisma.DecimalFilter<"CheckIn"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFilter<"CheckIn"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id?: Prisma.UuidFilter<"CheckIn"> | string
@@ -252,6 +260,7 @@ export type CheckInOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   validated_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejected_at?: Prisma.SortOrderInput | Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   user_id?: Prisma.SortOrder
@@ -268,6 +277,7 @@ export type CheckInWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CheckInWhereInput | Prisma.CheckInWhereInput[]
   created_at?: Prisma.DateTimeFilter<"CheckIn"> | Date | string
   validated_at?: Prisma.DateTimeNullableFilter<"CheckIn"> | Date | string | null
+  rejected_at?: Prisma.DateTimeNullableFilter<"CheckIn"> | Date | string | null
   latitude?: Prisma.DecimalFilter<"CheckIn"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFilter<"CheckIn"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id?: Prisma.UuidFilter<"CheckIn"> | string
@@ -281,6 +291,7 @@ export type CheckInOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   validated_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  rejected_at?: Prisma.SortOrderInput | Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   user_id?: Prisma.SortOrder
@@ -300,6 +311,7 @@ export type CheckInScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"CheckIn"> | string
   created_at?: Prisma.DateTimeWithAggregatesFilter<"CheckIn"> | Date | string
   validated_at?: Prisma.DateTimeNullableWithAggregatesFilter<"CheckIn"> | Date | string | null
+  rejected_at?: Prisma.DateTimeNullableWithAggregatesFilter<"CheckIn"> | Date | string | null
   latitude?: Prisma.DecimalWithAggregatesFilter<"CheckIn"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalWithAggregatesFilter<"CheckIn"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id?: Prisma.UuidWithAggregatesFilter<"CheckIn"> | string
@@ -311,6 +323,7 @@ export type CheckInCreateInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   updated_at?: Date | string
@@ -322,6 +335,7 @@ export type CheckInUncheckedCreateInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id: string
@@ -333,6 +347,7 @@ export type CheckInUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -344,6 +359,7 @@ export type CheckInUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -355,6 +371,7 @@ export type CheckInCreateManyInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id: string
@@ -366,6 +383,7 @@ export type CheckInUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -375,6 +393,7 @@ export type CheckInUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -396,6 +415,7 @@ export type CheckInCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   validated_at?: Prisma.SortOrder
+  rejected_at?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   user_id?: Prisma.SortOrder
@@ -412,6 +432,7 @@ export type CheckInMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   validated_at?: Prisma.SortOrder
+  rejected_at?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   user_id?: Prisma.SortOrder
@@ -423,6 +444,7 @@ export type CheckInMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   validated_at?: Prisma.SortOrder
+  rejected_at?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   user_id?: Prisma.SortOrder
@@ -535,6 +557,7 @@ export type CheckInCreateWithoutUserInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   updated_at?: Date | string
@@ -545,6 +568,7 @@ export type CheckInUncheckedCreateWithoutUserInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   gym_id: string
@@ -584,6 +608,7 @@ export type CheckInScalarWhereInput = {
   id?: Prisma.UuidFilter<"CheckIn"> | string
   created_at?: Prisma.DateTimeFilter<"CheckIn"> | Date | string
   validated_at?: Prisma.DateTimeNullableFilter<"CheckIn"> | Date | string | null
+  rejected_at?: Prisma.DateTimeNullableFilter<"CheckIn"> | Date | string | null
   latitude?: Prisma.DecimalFilter<"CheckIn"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFilter<"CheckIn"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id?: Prisma.UuidFilter<"CheckIn"> | string
@@ -595,6 +620,7 @@ export type CheckInCreateWithoutGymInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   updated_at?: Date | string
@@ -605,6 +631,7 @@ export type CheckInUncheckedCreateWithoutGymInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id: string
@@ -641,6 +668,7 @@ export type CheckInCreateManyUserInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   gym_id: string
@@ -651,6 +679,7 @@ export type CheckInUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -661,6 +690,7 @@ export type CheckInUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gym_id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -671,6 +701,7 @@ export type CheckInUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gym_id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -681,6 +712,7 @@ export type CheckInCreateManyGymInput = {
   id?: string
   created_at?: Date | string
   validated_at?: Date | string | null
+  rejected_at?: Date | string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id: string
@@ -691,6 +723,7 @@ export type CheckInUpdateWithoutGymInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -701,6 +734,7 @@ export type CheckInUncheckedUpdateWithoutGymInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -711,6 +745,7 @@ export type CheckInUncheckedUpdateManyWithoutGymInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   validated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejected_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   user_id?: Prisma.StringFieldUpdateOperationsInput | string
@@ -723,6 +758,7 @@ export type CheckInSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   created_at?: boolean
   validated_at?: boolean
+  rejected_at?: boolean
   latitude?: boolean
   longitude?: boolean
   user_id?: boolean
@@ -736,6 +772,7 @@ export type CheckInSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   created_at?: boolean
   validated_at?: boolean
+  rejected_at?: boolean
   latitude?: boolean
   longitude?: boolean
   user_id?: boolean
@@ -749,6 +786,7 @@ export type CheckInSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   created_at?: boolean
   validated_at?: boolean
+  rejected_at?: boolean
   latitude?: boolean
   longitude?: boolean
   user_id?: boolean
@@ -762,6 +800,7 @@ export type CheckInSelectScalar = {
   id?: boolean
   created_at?: boolean
   validated_at?: boolean
+  rejected_at?: boolean
   latitude?: boolean
   longitude?: boolean
   user_id?: boolean
@@ -769,7 +808,7 @@ export type CheckInSelectScalar = {
   updated_at?: boolean
 }
 
-export type CheckInOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "validated_at" | "latitude" | "longitude" | "user_id" | "gym_id" | "updated_at", ExtArgs["result"]["checkIn"]>
+export type CheckInOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "validated_at" | "rejected_at" | "latitude" | "longitude" | "user_id" | "gym_id" | "updated_at", ExtArgs["result"]["checkIn"]>
 export type CheckInInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   gym?: boolean | Prisma.GymDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -793,6 +832,7 @@ export type $CheckInPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: string
     created_at: Date
     validated_at: Date | null
+    rejected_at: Date | null
     latitude: runtime.Decimal
     longitude: runtime.Decimal
     user_id: string
@@ -1226,6 +1266,7 @@ export interface CheckInFieldRefs {
   readonly id: Prisma.FieldRef<"CheckIn", 'String'>
   readonly created_at: Prisma.FieldRef<"CheckIn", 'DateTime'>
   readonly validated_at: Prisma.FieldRef<"CheckIn", 'DateTime'>
+  readonly rejected_at: Prisma.FieldRef<"CheckIn", 'DateTime'>
   readonly latitude: Prisma.FieldRef<"CheckIn", 'Decimal'>
   readonly longitude: Prisma.FieldRef<"CheckIn", 'Decimal'>
   readonly user_id: Prisma.FieldRef<"CheckIn", 'String'>
