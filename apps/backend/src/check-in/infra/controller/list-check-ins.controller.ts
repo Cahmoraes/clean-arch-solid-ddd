@@ -16,7 +16,7 @@ const listCheckInsQuerySchema = z.object({
 		description: "Page number",
 		example: 1,
 	}),
-	status: z.enum(["pending", "validated"]).optional().meta({
+	status: z.enum(["pending", "validated", "rejected"]).optional().meta({
 		description: "Filter by status",
 		example: "pending",
 	}),
@@ -94,6 +94,13 @@ function makeListCheckInsSwaggerSchema(): Schema {
 								.string()
 								.nullable()
 								.meta({ description: "Validation date (ISO) or null" }),
+							rejectedAt: z
+								.string()
+								.nullable()
+								.meta({ description: "Rejection date (ISO) or null" }),
+							status: z
+								.enum(["pending", "validated", "rejected"])
+								.meta({ description: "Computed check-in status" }),
 							latitude: z.number().meta({ description: "Latitude" }),
 							longitude: z.number().meta({ description: "Longitude" }),
 						}),

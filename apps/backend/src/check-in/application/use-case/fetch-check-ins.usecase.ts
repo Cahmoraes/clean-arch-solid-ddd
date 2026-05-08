@@ -19,6 +19,8 @@ export interface CheckInDTO {
 	gymId: string
 	createdAt: string
 	validatedAt: string | null
+	rejectedAt: string | null
+	status: "pending" | "validated" | "rejected"
 	latitude: number
 	longitude: number
 }
@@ -57,6 +59,8 @@ export class FetchCheckInsUseCase {
 			gymId: checkIn.gymId,
 			createdAt: checkIn.createdAt.toISOString(),
 			validatedAt: checkIn.validatedAt?.toISOString() ?? null,
+			rejectedAt: checkIn.rejectedAt?.toISOString() ?? null,
+			status: checkIn.status,
 			latitude: checkIn.latitude,
 			longitude: checkIn.longitude,
 		}))
