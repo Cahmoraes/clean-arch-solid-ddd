@@ -8,6 +8,7 @@ export const CHECKIN_TYPES = {
 	UseCases: {
 		CreateCheckIn: Symbol.for("CreateCheckInUseCase"),
 		ValidateCheckIn: Symbol.for("ValidateCheckInUseCase"),
+		RejectCheckIn: Symbol.for("RejectCheckInUseCase"),
 		FetchCheckIns: Symbol.for("FetchCheckInsUseCase"),
 		CheckIn: Symbol.for("CheckInUseCase"),
 		CheckInHistory: Symbol.for("CheckInHistoryUseCase"),
@@ -15,6 +16,7 @@ export const CHECKIN_TYPES = {
 	Controllers: {
 		CheckIn: Symbol.for("CheckInController"),
 		ValidateCheckIn: Symbol.for("ValidateCheckInController"),
+		RejectCheckIn: Symbol.for("RejectCheckInController"),
 		ListCheckIns: Symbol.for("ListCheckInsController"),
 		Metrics: Symbol.for("CheckInMetricsController"),
 	},
