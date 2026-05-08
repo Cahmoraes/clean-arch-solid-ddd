@@ -2,17 +2,12 @@
 
 import { ShieldCheck } from "lucide-react"
 import { useState } from "react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-	type CheckIn,
-	useCheckIns,
-	useValidateCheckIn,
-} from "@/features/check-ins/api"
+import { type CheckIn, useCheckIns } from "@/features/check-ins/api"
+import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
-import { ApiError } from "@/lib/errors"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3"]
 
@@ -29,44 +24,6 @@ function LoadingState() {
 				</li>
 			))}
 		</ul>
-	)
-}
-
-function validateErrorMessage(error: unknown): string {
-	if (error instanceof ApiError) {
-		if (error.status === 409) {
-			return "Este check-in já foi validado ou expirou."
-		}
-		return error.userMessage
-	}
-	return "Não foi possível validar o check-in. Tente novamente."
-}
-
-interface ValidateButtonProps {
-	checkIn: CheckIn
-}
-
-function ValidateButton({ checkIn }: ValidateButtonProps) {
-	const { mutateAsync, isPending } = useValidateCheckIn()
-	async function handleClick() {
-		try {
-			await mutateAsync(checkIn.id)
-			toast.success("Check-in validado com sucesso.")
-		} catch (submitError) {
-			toast.error(validateErrorMessage(submitError))
-		}
-	}
-	return (
-		<Button
-			type="button"
-			size="sm"
-			onClick={handleClick}
-			disabled={isPending}
-			aria-busy={isPending}
-			data-testid={`admin-checkin-validate-${checkIn.id}`}
-		>
-			{isPending ? "Validando..." : "Validar"}
-		</Button>
 	)
 }
 
@@ -96,8 +53,8 @@ function PendingEmpty() {
 	return (
 		<EmptyState
 			icon={ShieldCheck}
-			title="Nenhum check-in pendente"
-			description="Todos os check-ins foram validados."
+			title="Nenhum check-in pendente ou a revisar"
+			description="Todos os check-ins foram validados ou rejeitados."
 		/>
 	)
 }
@@ -109,7 +66,7 @@ function PendingList({ items }: { items: ReadonlyArray<CheckIn> }) {
 				<CheckInItem
 					key={checkIn.id}
 					checkIn={checkIn}
-					action={<ValidateButton checkIn={checkIn} />}
+					action={<CheckInActions checkIn={checkIn} />}
 				/>
 			))}
 		</ul>
@@ -121,7 +78,7 @@ function AdminCheckInsBody({ query }: BodyProps) {
 	if (query.isError) return <PendingError query={query} />
 	if (!query.isSuccess) return null
 	const items = (query.data?.items ?? []).filter(
-		(item) => item.validatedAt === null,
+		(item) => item.status !== "rejected",
 	)
 	if (items.length === 0) return <PendingEmpty />
 	return <PendingList items={items} />
@@ -144,7 +101,7 @@ export default function AdminCheckInsPage() {
 					Check-ins pendentes
 				</h1>
 				<p className="text-sm text-muted-foreground">
-					Valide as presenças registradas pelos membros.
+					Aprove ou rejeite as presenças registradas pelos membros.
 				</p>
 			</header>
 

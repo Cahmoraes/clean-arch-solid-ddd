@@ -17,7 +17,9 @@ import {
 	CHECK_INS_DEFAULT_PAGE_SIZE,
 	useCheckIns,
 } from "@/features/check-ins/api"
+import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
+import { useAuthStore } from "@/lib/auth/auth-store"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3", "sk-4"]
 
@@ -55,10 +57,17 @@ interface ListProps {
 }
 
 function CheckInsList({ items }: ListProps) {
+	const user = useAuthStore((state) => state.user)
+	const isAdmin = user?.role === "ADMIN"
+
 	return (
 		<ul data-testid="checkins-list" className="flex flex-col gap-2">
 			{items.map((checkIn) => (
-				<CheckInItem key={checkIn.id} checkIn={checkIn} />
+				<CheckInItem
+					key={checkIn.id}
+					checkIn={checkIn}
+					action={isAdmin ? <CheckInActions checkIn={checkIn} /> : undefined}
+				/>
 			))}
 		</ul>
 	)

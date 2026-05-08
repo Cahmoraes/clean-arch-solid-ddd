@@ -39,6 +39,8 @@ describe("AdminCheckInsPage", () => {
 									gymId: "g1",
 									gymTitle: "Iron Gym",
 									validatedAt: null,
+									rejectedAt: null,
+									status: "pending",
 									createdAt: "2024-01-01T10:00:00Z",
 								},
 							]
@@ -56,14 +58,12 @@ describe("AdminCheckInsPage", () => {
 		const user = userEvent.setup()
 		renderWithProviders(<AdminCheckInsPage />)
 
-		const validateButton = await screen.findByTestId(
-			"admin-checkin-validate-c1",
-		)
+		const validateButton = await screen.findByTestId("checkin-approve-c1")
 		await user.click(validateButton)
 
 		await waitFor(() => {
 			expect(toast.success).toHaveBeenCalledWith(
-				"Check-in validado com sucesso.",
+				"Check-in aprovado com sucesso.",
 			)
 		})
 
@@ -96,6 +96,8 @@ describe("AdminCheckInsPage", () => {
 								gymId: "g1",
 								gymTitle: "Iron Gym",
 								validatedAt: null,
+								rejectedAt: null,
+								status: "pending",
 								createdAt: "2024-01-01T10:00:00Z",
 							},
 						],
@@ -111,13 +113,11 @@ describe("AdminCheckInsPage", () => {
 		)
 		const user = userEvent.setup()
 		renderWithProviders(<AdminCheckInsPage />)
-		const validateButton = await screen.findByTestId(
-			"admin-checkin-validate-c1",
-		)
+		const validateButton = await screen.findByTestId("checkin-approve-c1")
 		await user.click(validateButton)
 		await waitFor(() => {
 			expect(toast.error).toHaveBeenCalledWith(
-				"Este check-in já foi validado ou expirou.",
+				"Conflito ao processar a solicitação.",
 			)
 		})
 	})
