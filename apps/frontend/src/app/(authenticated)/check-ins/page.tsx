@@ -48,6 +48,8 @@ interface ListProps {
 		gymId: string
 		gymTitle?: string | null
 		validatedAt: string | null
+		rejectedAt: string | null
+		status: "pending" | "validated" | "rejected"
 		createdAt: string
 	}>
 }

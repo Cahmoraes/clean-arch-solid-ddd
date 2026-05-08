@@ -13,6 +13,8 @@ export interface CheckIn {
 	gymTitle?: string | null
 	userId?: string
 	validatedAt: string | null
+	rejectedAt: string | null
+	status: "pending" | "validated" | "rejected"
 	createdAt: string
 }
 
@@ -24,7 +26,7 @@ export interface PaginatedCheckIns {
 
 export interface CheckInsListQuery {
 	page?: number
-	status?: "pending" | "validated"
+	status?: "pending" | "validated" | "rejected"
 }
 
 export interface CheckInExtendedPaths {
@@ -44,6 +46,18 @@ export interface CheckInExtendedPaths {
 			responses: {
 				200: {
 					content: { "application/json": { checkInId: string } }
+				}
+			}
+		}
+	}
+	"/check-ins/reject": {
+		patch: {
+			requestBody: {
+				content: { "application/json": { checkInId: string } }
+			}
+			responses: {
+				200: {
+					content: { "application/json": { rejectedAt: string } }
 				}
 			}
 		}

@@ -100,7 +100,7 @@ async function fetchCheckIns(
 
 export interface UseCheckInsParams {
 	page: number
-	status?: "pending" | "validated"
+	status?: "pending" | "validated" | "rejected"
 }
 
 export function useCheckIns(
@@ -138,6 +138,34 @@ export function useValidateCheckIn(): UseMutationResult<
 	const queryClient = useQueryClient()
 	return useMutation<string, ApiError, string>({
 		mutationFn: validateCheckInRequest,
+		retry: 0,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: checkInsKeys.all })
+		},
+	})
+}
+
+async function rejectCheckInRequest(checkInId: string): Promise<string> {
+	const client = getCheckInsExtendedClient()
+	const { data, error } = await client.PATCH("/check-ins/reject", {
+		body: { checkInId },
+	})
+	if (error || !data) throw toApiError(error)
+	return data.rejectedAt
+}
+
+/**
+ * Admin mutation to reject a pending or validated check-in. Invalidates all
+ * check-in queries so the list refreshes automatically.
+ */
+export function useRejectCheckIn(): UseMutationResult<
+	string,
+	ApiError,
+	string
+> {
+	const queryClient = useQueryClient()
+	return useMutation<string, ApiError, string>({
+		mutationFn: rejectCheckInRequest,
 		retry: 0,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: checkInsKeys.all })
