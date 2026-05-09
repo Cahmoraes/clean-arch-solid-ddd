@@ -8,6 +8,7 @@ import type {
 	GoogleUserInfo,
 } from "@/session/application/provider/google-auth-provider.js"
 import type { AuthTokenOutputDTO } from "@/session/application/use-case/authenticate.usecase.js"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher.js"
 import {
 	type Either,
 	failure,
@@ -15,7 +16,6 @@ import {
 } from "@/shared/domain/value-object/either.js"
 import { env } from "@/shared/infra/env/index.js"
 import { AUTH_TYPES, SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
-import type { Queue } from "@/shared/infra/queue/queue"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { UserCreatedEvent } from "@/user/domain/event/user-created-event.js"
@@ -42,10 +42,6 @@ export class AuthenticateWithGoogleUseCase {
 		private readonly userRepository: UserRepository,
 		@inject(SHARED_TYPES.Tokens.Auth)
 		private readonly authToken: AuthToken,
-		@inject(SHARED_TYPES.Queue)
-		private readonly queue: Queue,
-		@inject(SHARED_TYPES.Worker)
-		private readonly worker: Queue,
 	) {}
 
 	public async execute(
@@ -130,8 +126,7 @@ export class AuthenticateWithGoogleUseCase {
 
 	private publishUserCreatedEvent(user: User): void {
 		const event = new UserCreatedEvent({ email: user.email })
-		this.queue.publish(event.eventName, event)
-		this.worker.publish(event.eventName, event)
+		DomainEventPublisher.instance.publish(event)
 	}
 
 	private createAuthTokenOutput(user: User): AuthTokenOutputDTO {
