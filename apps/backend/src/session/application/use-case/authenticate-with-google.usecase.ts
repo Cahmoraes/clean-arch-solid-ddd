@@ -15,8 +15,10 @@ import {
 } from "@/shared/domain/value-object/either.js"
 import { env } from "@/shared/infra/env/index.js"
 import { AUTH_TYPES, SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import type { Queue } from "@/shared/infra/queue/queue"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
+import { UserCreatedEvent } from "@/user/domain/event/user-created-event.js"
 import { User } from "@/user/domain/user"
 import { GoogleId } from "@/user/domain/value-object/google-id.js"
 
@@ -40,6 +42,10 @@ export class AuthenticateWithGoogleUseCase {
 		private readonly userRepository: UserRepository,
 		@inject(SHARED_TYPES.Tokens.Auth)
 		private readonly authToken: AuthToken,
+		@inject(SHARED_TYPES.Queue)
+		private readonly queue: Queue,
+		@inject(SHARED_TYPES.Worker)
+		private readonly worker: Queue,
 	) {}
 
 	public async execute(
@@ -118,7 +124,14 @@ export class AuthenticateWithGoogleUseCase {
 			}
 			throw new Error("Failed to persist Google user account")
 		}
+		this.publishUserCreatedEvent(createdUserResult.value)
 		return success(this.createAuthTokenOutput(createdUserResult.value))
+	}
+
+	private publishUserCreatedEvent(user: User): void {
+		const event = new UserCreatedEvent({ email: user.email })
+		this.queue.publish(event.eventName, event)
+		this.worker.publish(event.eventName, event)
 	}
 
 	private createAuthTokenOutput(user: User): AuthTokenOutputDTO {
