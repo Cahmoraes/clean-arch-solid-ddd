@@ -1,0 +1,108 @@
+{
+  "us_id": "us-002",
+  "user_story": "Como usuário que já me autentiquei com Google anteriormente, eu quero clicar em 'Entrar com Google' e acessar minha conta imediatamente para que o login seja rápido e sem fricção.",
+  "requirements": ["RF-001", "RF-002", "RF-005", "RF-007"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "test_coverage": {
+    "unit_tests": {
+      "file": "apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts",
+      "total_tests": 8,
+      "passed": 8,
+      "duration_ms": 211,
+      "relevant_test": "deve autenticar usuário existente com googleId"
+    },
+    "business_flow_tests": {
+      "file": "apps/backend/src/session/infra/controller/authenticate-with-google.business-flow-test.ts",
+      "total_tests": 6,
+      "passed": 6,
+      "duration_ms": 1160,
+      "relevant_test": "Deve autenticar usuário existente com googleId"
+    }
+  },
+  "acceptance_tests_created": false,
+  "test_output_summary": "14 tests passed in authenticate-with-google module (8 unit tests + 6 business flow tests)",
+  "screenshot_path": null,
+  "failure_details": null,
+  "test_scenarios_verified": [
+    {
+      "scenario": "Autenticar usuário existente com googleId",
+      "status": "PASSED",
+      "assertions": [
+        "HTTP 200 OK response",
+        "Response contains token (JWT)",
+        "Response contains refreshToken (JWT)",
+        "refreshToken is set as secure HTTP-only cookie",
+        "User can login using previously linked Google ID"
+      ]
+    },
+    {
+      "scenario": "Retornar 401 para token Google inválido",
+      "status": "PASSED",
+      "assertions": [
+        "Invalid token returns HTTP 401 Unauthorized",
+        "Error message clearly indicates invalid Google token"
+      ]
+    },
+    {
+      "scenario": "Retornar 422 para email não verificado",
+      "status": "PASSED",
+      "assertions": [
+        "Unverified Google email returns HTTP 422 Unprocessable Entity",
+        "Error message indicates email not verified"
+      ]
+    },
+    {
+      "scenario": "Vincular conta Google a usuário existente",
+      "status": "PASSED",
+      "assertions": [
+        "Can link Google ID to existing user by matching email",
+        "Returns tokens after linking"
+      ]
+    },
+    {
+      "scenario": "Criar novo usuário via Google",
+      "status": "PASSED",
+      "assertions": [
+        "New user can be created during Google auth flow",
+        "User data is persisted correctly"
+      ]
+    },
+    {
+      "scenario": "Prevenir múltiplos Google IDs por email",
+      "status": "PASSED",
+      "assertions": [
+        "Returns HTTP 409 Conflict if email already linked to another Google ID"
+      ]
+    }
+  ],
+  "requirement_mapping": {
+    "RF-001": {
+      "endpoint": "POST /sessions/google",
+      "status": "IMPLEMENTED",
+      "verified": true,
+      "test_file": "authenticate-with-google.business-flow-test.ts"
+    },
+    "RF-002": {
+      "requirement": "Retorna 200 com tokens",
+      "status": "IMPLEMENTED",
+      "verified": true,
+      "test_evidence": "response.status === 200, response.body.token === JWT, response.body.refreshToken === JWT"
+    },
+    "RF-005": {
+      "requirement": "Endpoint é público (sem autenticação)",
+      "status": "IMPLEMENTED",
+      "verified": true,
+      "test_evidence": "Nenhum token de autenticação é necessário para fazer POST /sessions/google"
+    },
+    "RF-007": {
+      "requirement": "Se google_id já existe, retorna tokens diretamente",
+      "status": "IMPLEMENTED",
+      "verified": true,
+      "test_evidence": "Teste 'Deve autenticar usuário existente com googleId' valida esse comportamento"
+    }
+  },
+  "notes": "US-002 é totalmente coberta por testes existentes. Os testes de unidade e integração verificam que usuários previamente autenticados com Google podem fazer login rápido e sem fricção usando seu googleId existente. A implementação inclui validação de token Google, verificação de email, linkagem de conta, criação de usuários novos, e prevenção de conflitos de múltiplos Google IDs por email.",
+  "test_execution_timestamp": "2024-04-28T14:12:06Z",
+  "platform": "backend (Node.js/TypeScript)"
+}
