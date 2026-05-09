@@ -1,6 +1,6 @@
 ---
 name: refactoring
-description: Apply Martin Fowler's refactoring catalog to improve code structure without changing behavior. Use when identifying code smells, applying specific refactoring techniques, planning a refactoring session, understanding when and how to restructure code, or reviewing code for design issues. Covers all 24 code smells from Chapter 3 and all 61 techniques from Chapters 6–12 of Refactoring (2nd ed.).
+description: Guide for restructuring code without changing observable behavior, based on Martin Fowler's Refactoring. Use this skill whenever the user asks to refactor, clean up, improve, simplify, or restructure code — even if they don't use the word "refactoring" explicitly. Also trigger when the user asks why code feels wrong, mentions code smells (long functions, duplicate code, God classes, feature envy, etc.), wants to extract a function or class, needs to rename things for clarity, asks how to reduce coupling or improve cohesion, or wants to apply patterns like Replace Conditional with Polymorphism or Introduce Parameter Object.
 ---
 
 # Refactoring
