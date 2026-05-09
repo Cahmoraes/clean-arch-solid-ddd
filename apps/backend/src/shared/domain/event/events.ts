@@ -5,6 +5,7 @@ export const EVENTS = {
 	CHECK_IN_REJECTED: "checkInRejected",
 	USER_PROFILE_UPDATED: "userProfileUpdated",
 	USER_ASSIGNED_BILLING_CUSTOMER_ID: "userAssignedBillingCustomerID",
+	GOOGLE_ACCOUNT_LINKED: "googleAccountLinked",
 } as const
 
 export type EventTypes = (typeof EVENTS)[keyof typeof EVENTS]
