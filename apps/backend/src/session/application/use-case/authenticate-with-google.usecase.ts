@@ -67,7 +67,6 @@ export class AuthenticateWithGoogleUseCase {
 		if (userByGoogleId) {
 			return success(this.createAuthTokenOutput(userByGoogleId))
 		}
-
 		return this.resolveByEmail(googleUserInfo)
 	}
 
@@ -106,7 +105,19 @@ export class AuthenticateWithGoogleUseCase {
 		if (createdUserResult.isFailure()) {
 			return failure(new InvalidGoogleTokenError())
 		}
-		await this.userRepository.save(createdUserResult.value)
+		try {
+			await this.userRepository.save(createdUserResult.value)
+		} catch {
+			// Race condition: concurrent request created the user first.
+			// Recover by fetching the already-persisted user.
+			const existing = await this.userRepository.userOfGoogleId(
+				googleUserInfo.sub,
+			)
+			if (existing) {
+				return success(this.createAuthTokenOutput(existing))
+			}
+			throw new Error("Failed to persist Google user account")
+		}
 		return success(this.createAuthTokenOutput(createdUserResult.value))
 	}
 

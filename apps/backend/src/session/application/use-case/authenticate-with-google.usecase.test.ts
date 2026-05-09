@@ -152,6 +152,33 @@ describe("AuthenticateWithGoogleUseCase", () => {
 		)
 	})
 
+	test("deve autenticar usuário existente quando save falha por race condition (upsert otimista)", async () => {
+		googleAuthProvider.addValidToken("race-token", {
+			sub: "google-sub-race",
+			email: "race@user.com",
+			name: "Race User",
+			emailVerified: true,
+		})
+		// Simula race condition: save lança exceção mas o usuário já existe
+		const existingUser = await createAndSaveUser({
+			userRepository,
+			email: "race@user.com",
+			googleId: "google-sub-race",
+		})
+		vi.spyOn(userRepository, "save").mockRejectedValueOnce(
+			new Error("Unique constraint violation"),
+		)
+
+		const result = await sut.execute({ idToken: "race-token" })
+
+		expect(result.isSuccess()).toBe(true)
+		const { token } = result.forceSuccess().value
+		expect(token).toEqual(expect.any(String))
+		vi.restoreAllMocks()
+		const savedUser = await userRepository.userOfGoogleId("google-sub-race")
+		expect(savedUser?.id).toBe(existingUser.id)
+	})
+
 	test("deve retornar tokens válidos com dados do usuário corretos", async () => {
 		const user = await createAndSaveUser({
 			userRepository,
