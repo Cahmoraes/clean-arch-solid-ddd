@@ -49,15 +49,18 @@ describe("CheckInUseCase", () => {
 			userLatitude: -27.0747279,
 			userLongitude: -49.4889672,
 		}
+		const subscriber = vi.fn()
+		DomainEventPublisher.instance.subscribe(EVENTS.CHECK_IN_CREATED, subscriber)
 		const result = await sut.execute(input)
 		expect(result.forceSuccess().value.checkInId).toEqual(expect.any(String))
 		expect(result.forceSuccess().value.date).toEqual(expect.any(Date))
 		const checkInSaved = checkInRepository.checkIns.toArray()[0]
 		expect(checkInSaved.id).toEqual(result.forceSuccess().value.checkInId)
-		const hasCheckInCreatedEvent = DomainEventPublisher.instance[
-			"subscribers"
-		].has(EVENTS.CHECK_IN_CREATED)
-		expect(hasCheckInCreatedEvent).toBe(true)
+		expect(subscriber).toHaveBeenCalledTimes(1)
+		DomainEventPublisher.instance.unsubscribe(
+			EVENTS.CHECK_IN_CREATED,
+			subscriber,
+		)
 	})
 
 	test("Não deve criar um check-in se o usuário não existir", async () => {

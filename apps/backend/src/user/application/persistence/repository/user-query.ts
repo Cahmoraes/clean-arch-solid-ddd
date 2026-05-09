@@ -1,14 +1,27 @@
-import type { CreateUserDto } from "@/user/domain/user"
+import type { RoleTypes } from "@/user/domain/value-object/role"
+import type { StatusTypes } from "@/user/domain/value-object/status"
 
-type UserField = keyof CreateUserDto
-
-type UserObjectFields = {
-	[Property in UserField]?: NonNullable<CreateUserDto[Property]>
+type UserQueryDTO = {
+	id?: string | null
+	name?: string
+	email?: string
+	password?: string | null
+	role?: RoleTypes
+	createdAt?: Date
+	updatedAt?: Date
+	status?: StatusTypes
+	billingCustomerId?: string
 }
 
-type UserValues = CreateUserDto[keyof UserObjectFields]
+type UserField = keyof UserQueryDTO
 
-type UserCreatePartial = Partial<CreateUserDto>
+type UserObjectFields = {
+	[Property in UserField]?: NonNullable<UserQueryDTO[Property]>
+}
+
+type UserValues = UserQueryDTO[keyof UserObjectFields]
+
+type UserCreatePartial = Partial<UserQueryDTO>
 
 export class UserQuery {
 	private readonly _user: UserCreatePartial
@@ -28,7 +41,6 @@ export class UserQuery {
 	}
 
 	get fields(): UserObjectFields {
-		console.log(this._fields)
 		return Object.fromEntries(this._fields)
 	}
 

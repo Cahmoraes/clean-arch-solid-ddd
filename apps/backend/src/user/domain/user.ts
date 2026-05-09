@@ -26,7 +26,7 @@ export interface UserConstructor {
 	id: Id
 	name: Name
 	email: Email
-	password: Password
+	password: Password | null
 	role: Role
 	createdAt: Date
 	updatedAt?: Date
@@ -50,7 +50,7 @@ export interface UserRestore {
 	id: string
 	name: string
 	email: string
-	password: string
+	password: string | null
 	role: RoleTypes
 	status: StatusTypes
 	createdAt: Date
@@ -74,7 +74,7 @@ export class User extends Observable {
 	private _id: Id
 	private _name: Name
 	private _email: Email
-	private _password: Password
+	private _password: Password | null
 	private _role: Role
 	private _createdAt: Date
 	private _updatedAt?: Date
@@ -152,7 +152,9 @@ export class User extends Observable {
 			id: Id.restore(userRestoreProps.id),
 			email: Email.restore(userRestoreProps.email),
 			name: Name.restore(userRestoreProps.name),
-			password: Password.restore(userRestoreProps.password),
+			password: userRestoreProps.password
+				? Password.restore(userRestoreProps.password)
+				: null,
 			role: Role.restore(userRestoreProps.role),
 			createdAt: userRestoreProps.createdAt,
 			updatedAt: userRestoreProps.updatedAt,
@@ -173,8 +175,8 @@ export class User extends Observable {
 		return this._email.value
 	}
 
-	get password(): string {
-		return this._password.value
+	get password(): string | null {
+		return this._password?.value ?? null
 	}
 
 	get role(): RoleTypes {
@@ -216,6 +218,9 @@ export class User extends Observable {
 	}
 
 	public checkPassword(aString: string): Promise<boolean> {
+		if (!this._password) {
+			return Promise.resolve(false)
+		}
 		return this._password.compare(aString)
 	}
 

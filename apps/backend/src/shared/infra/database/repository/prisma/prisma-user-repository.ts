@@ -18,7 +18,7 @@ interface UserData {
 	id: string
 	name: string
 	email: string
-	password_hash: string
+	password_hash: string | null
 	created_at: Date
 	updated_at: Date
 	role: RoleTypes
