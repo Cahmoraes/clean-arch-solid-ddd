@@ -9,10 +9,17 @@ import {
 import { Id } from "@/shared/domain/value-object/id"
 import type { InvalidEmailError } from "./error/invalid-email-error"
 import type { InvalidNameLengthError } from "./error/invalid-name-length-error"
+import type { UserMissingAuthenticationMethodError } from "./error/user-missing-authentication-method-error.js"
+import { GoogleAccountLinkedEvent } from "./event/google-account-linked-event.js"
 import { PasswordChangedEvent } from "./event/password-changed-event"
 import { UserAssignedBillingCustomerIdEvent } from "./event/user-assigned-billing-customer-id-event"
 import { UserProfileUpdatedEvent } from "./event/user-profile-updated-event"
+import { UserCreator } from "./user-creator.js"
 import { Email } from "./value-object/email"
+import {
+	GoogleId,
+	type InvalidGoogleIdError,
+} from "./value-object/google-id.js"
 import { Name } from "./value-object/name"
 import { Password } from "./value-object/password"
 import { Role, type RoleTypes } from "./value-object/role"
@@ -26,7 +33,8 @@ export interface UserConstructor {
 	id: Id
 	name: Name
 	email: Email
-	password: Password | null
+	password?: Password
+	googleId?: GoogleId
 	role: Role
 	createdAt: Date
 	updatedAt?: Date
@@ -38,7 +46,8 @@ export interface CreateUserDto {
 	id?: string | null
 	name: string
 	email: string
-	password: string
+	password?: string
+	googleId?: string
 	role?: RoleTypes
 	createdAt?: Date
 	updatedAt?: Date
@@ -50,7 +59,8 @@ export interface UserRestore {
 	id: string
 	name: string
 	email: string
-	password: string | null
+	password?: string
+	googleId?: string
 	role: RoleTypes
 	status: StatusTypes
 	createdAt: Date
@@ -60,21 +70,26 @@ export interface UserRestore {
 
 export type UserUpdateProps = Partial<Pick<CreateUserDto, "name" | "email">>
 
-export type ValidatedUserProps = Omit<
-	UserConstructor,
-	"id" | "createdAt" | "role" | "status"
->
+export type ValidatedUserProps = {
+	name: Name
+	email: Email
+	password?: Password
+	googleId?: GoogleId
+}
 
 export type UserValidationErrors =
 	| ValidationError
 	| InvalidNameLengthError
 	| InvalidEmailError
+	| InvalidGoogleIdError
+	| UserMissingAuthenticationMethodError
 
 export class User extends Observable {
 	private _id: Id
 	private _name: Name
 	private _email: Email
-	private _password: Password | null
+	private _password?: Password
+	private _googleId?: GoogleId
 	private _role: Role
 	private _createdAt: Date
 	private _updatedAt?: Date
@@ -87,6 +102,7 @@ export class User extends Observable {
 		this._name = props.name
 		this._email = props.email
 		this._password = props.password
+		this._googleId = props.googleId
 		this._role = props.role
 		this._createdAt = props.createdAt
 		this._updatedAt = props.updatedAt
@@ -97,40 +113,11 @@ export class User extends Observable {
 	public static async create(
 		createUserDto: CreateUserDto,
 	): Promise<Either<UserValidationErrors[], User>> {
-		const userValidationOutcome = await User.validate(createUserDto)
-		if (userValidationOutcome.isFailure()) {
-			return failure(userValidationOutcome.value)
+		const userConstructor = await new UserCreator(createUserDto).execute()
+		if (userConstructor.isFailure()) {
+			return failure(userConstructor.value)
 		}
-		const id = Id.create(createUserDto.id)
-		const createdAt = createUserDto.createdAt ?? new Date()
-		const role = Role.create(createUserDto.role)
-		return success(
-			new User({
-				id,
-				createdAt,
-				role,
-				name: userValidationOutcome.value.name,
-				email: userValidationOutcome.value.email,
-				password: userValidationOutcome.value.password,
-				status: createUserDto.status ?? StatusTypes.ACTIVATED,
-				billingCustomerId: createUserDto.billingCustomerId,
-			}),
-		)
-	}
-
-	private static async validate(
-		userCreateProps: CreateUserDto,
-	): Promise<Either<UserValidationErrors[], ValidatedUserProps>> {
-		const nameResult = Name.create(userCreateProps.name)
-		const emailResult = Email.create(userCreateProps.email)
-		const passwordResult = await Password.create(userCreateProps.password)
-		const result = Result.combine([nameResult, emailResult, passwordResult])
-		if (result.not.valid) return failure(result.errors)
-		return success({
-			email: emailResult.forceSuccess().value,
-			name: nameResult.forceSuccess().value,
-			password: passwordResult.forceSuccess().value,
-		})
+		return success(new User(userConstructor.value))
 	}
 
 	private static validateNameAndEmail(
@@ -154,7 +141,10 @@ export class User extends Observable {
 			name: Name.restore(userRestoreProps.name),
 			password: userRestoreProps.password
 				? Password.restore(userRestoreProps.password)
-				: null,
+				: undefined,
+			googleId: userRestoreProps.googleId
+				? GoogleId.restore(userRestoreProps.googleId)
+				: undefined,
 			role: Role.restore(userRestoreProps.role),
 			createdAt: userRestoreProps.createdAt,
 			updatedAt: userRestoreProps.updatedAt,
@@ -175,8 +165,12 @@ export class User extends Observable {
 		return this._email.value
 	}
 
-	get password(): string | null {
-		return this._password?.value ?? null
+	get googleId(): string | undefined {
+		return this._googleId?.value
+	}
+
+	get password(): string | undefined {
+		return this._password?.value
 	}
 
 	get role(): RoleTypes {
@@ -218,10 +212,18 @@ export class User extends Observable {
 	}
 
 	public checkPassword(aString: string): Promise<boolean> {
-		if (!this._password) {
-			return Promise.resolve(false)
-		}
+		if (!this._password) return Promise.resolve(false)
 		return this._password.compare(aString)
+	}
+
+	public linkGoogleAccount(googleId: GoogleId): void {
+		this._googleId = googleId
+		this.refreshUpdatedAt()
+		const event = new GoogleAccountLinkedEvent({
+			userEmail: this.email,
+			googleId: googleId.value,
+		})
+		this.notify(event)
 	}
 
 	public async changePassword(

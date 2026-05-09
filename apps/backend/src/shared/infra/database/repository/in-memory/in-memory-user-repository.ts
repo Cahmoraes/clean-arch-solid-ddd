@@ -18,6 +18,7 @@ export class InMemoryUserRepository implements UserRepository {
 			email: user.email,
 			name: user.name,
 			password: user.password,
+			googleId: user.googleId,
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
 			role: user.role,

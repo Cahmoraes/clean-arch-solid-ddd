@@ -14,6 +14,7 @@ interface UserData {
 	name: string
 	email: string
 	password_hash: string | null
+	google_id: string | null
 	created_at: Date
 	updated_at: Date
 	role: RoleTypes
@@ -62,7 +63,8 @@ export class SQLiteUserRepository implements UserRepository {
 			id: userData.id,
 			email: userData.email,
 			name: userData.name,
-			password: userData.password_hash,
+			password: userData.password_hash ?? undefined,
+			googleId: userData.google_id ?? undefined,
 			createdAt: new Date(userData.created_at),
 			updatedAt: userData.updated_at
 				? new Date(userData.updated_at)
@@ -94,18 +96,20 @@ export class SQLiteUserRepository implements UserRepository {
         "users" (
           "email", 
           "name", 
-          "password_hash", 
+          "password_hash",
+          "google_id", 
           "created_at", 
           "role", 
           "status", 
           "billing_customer_id"
         )
-      VALUES (?, ?, ?, ?, ?, ?, ?); 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?); 
     `)
 			.run(
 				user.email,
 				user.name,
-				user.password,
+				user.password ?? null,
+				user.googleId ?? null,
 				user.createdAt.toISOString(),
 				user.role,
 				user.status,
@@ -122,6 +126,7 @@ export class SQLiteUserRepository implements UserRepository {
         "email" = ?,
         "name" = ?,
         "password_hash" = ?,
+        "google_id" = ?,
         "created_at" = ?,
         "role" = ?,
         "status" = ?,
@@ -133,7 +138,8 @@ export class SQLiteUserRepository implements UserRepository {
 			.run(
 				user.email,
 				user.name,
-				user.password,
+				user.password ?? null,
+				user.googleId ?? null,
 				user.createdAt.toISOString(),
 				user.role,
 				user.status,

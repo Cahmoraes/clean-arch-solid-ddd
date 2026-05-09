@@ -19,6 +19,7 @@ interface UserData {
 	name: string
 	email: string
 	password_hash: string | null
+	google_id: string | null
 	created_at: Date
 	updated_at: Date
 	role: RoleTypes
@@ -73,7 +74,8 @@ export class PrismaUserRepository implements UserRepository {
 			id: userData.id,
 			email: userData.email,
 			name: userData.name,
-			password: userData.password_hash,
+			password: userData.password_hash ?? undefined,
+			googleId: userData.google_id ?? undefined,
 			createdAt: new Date(userData.created_at),
 			updatedAt: new Date(userData.updated_at),
 			role: userData.role,
@@ -88,6 +90,7 @@ export class PrismaUserRepository implements UserRepository {
 				email: user.email,
 				name: user.name,
 				password_hash: user.password,
+				google_id: user.googleId,
 				created_at: user.createdAt,
 				role: user.role,
 				status: user.status,
@@ -105,6 +108,7 @@ export class PrismaUserRepository implements UserRepository {
 				email: user.email,
 				name: user.name,
 				password_hash: user.password,
+				google_id: user.googleId,
 				created_at: user.createdAt,
 				role: user.role,
 				status: user.status,

@@ -33,7 +33,8 @@ export class PgUserRepository implements UserRepository {
 			id: row.id,
 			email: row.email,
 			name: row.name,
-			password: row.password_hash,
+			password: row.password_hash ?? undefined,
+			googleId: row.google_id ?? undefined,
 			role: row.role,
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
@@ -51,7 +52,8 @@ export class PgUserRepository implements UserRepository {
 			id: row.id,
 			email: row.email,
 			name: row.name,
-			password: row.password_hash,
+			password: row.password_hash ?? undefined,
+			googleId: row.google_id ?? undefined,
 			role: row.role,
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
@@ -61,8 +63,14 @@ export class PgUserRepository implements UserRepository {
 
 	public async save(user: User): Promise<void> {
 		await this.pgClient.query(
-			"INSERT INTO users (id, name, email, password_hash, role, created_at, updated_at) VALUES (gen_random_uuid(), $1, $2, $3, $4, now(), now())",
-			[user.name, user.email, user.password, user.role],
+			"INSERT INTO users (id, name, email, password_hash, google_id, role, created_at, updated_at) VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, now(), now())",
+			[
+				user.name,
+				user.email,
+				user.password ?? null,
+				user.googleId ?? null,
+				user.role,
+			],
 		)
 	}
 

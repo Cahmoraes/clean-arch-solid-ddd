@@ -3,6 +3,7 @@ import { UserStatus } from "@/shared/infra/database/generated/prisma/client"
 import { InvalidEmailError } from "./error/invalid-email-error"
 import { InvalidNameLengthError } from "./error/invalid-name-length-error"
 import { type CreateUserDto, User, type UserRestore } from "./user"
+import { GoogleId } from "./value-object/google-id.js"
 import { RoleValues } from "./value-object/role"
 
 describe("User Entity", () => {
@@ -238,5 +239,64 @@ describe("User Entity", () => {
 		expect(user.billingCustomerId).toBeUndefined()
 		user.assignBillingCustomerId(invalidValue as string)
 		expect(user.billingCustomerId).toBeUndefined()
+	})
+
+	test("Deve criar um usuário com googleId e sem senha", async () => {
+		const result = await User.create({
+			name: "Google User",
+			email: "google@example.com",
+			googleId: "google-sub-123",
+		})
+		expect(result.isSuccess()).toBe(true)
+		const user = result.force.success().value
+		expect(user.googleId).toBe("google-sub-123")
+		expect(user.password).toBeUndefined()
+	})
+
+	test("Não deve criar um usuário sem senha e sem googleId", async () => {
+		const result = await User.create({
+			name: "No Auth User",
+			email: "noauth@example.com",
+		})
+		expect(result.isFailure()).toBe(true)
+	})
+
+	test("Deve criar um usuário com senha e googleId", async () => {
+		const result = await User.create({
+			name: "Both Auth User",
+			email: "both@example.com",
+			password: "any_password",
+			googleId: "google-sub-456",
+		})
+		expect(result.isSuccess()).toBe(true)
+		const user = result.force.success().value
+		expect(user.googleId).toBe("google-sub-456")
+		expect(user.password).toBeDefined()
+	})
+
+	test("Deve restaurar um usuário com googleId", () => {
+		const user = User.restore({
+			id: "any-id",
+			name: "Restored User",
+			email: "restored@example.com",
+			role: "MEMBER",
+			status: "activated",
+			createdAt: new Date(),
+			googleId: "google-sub-789",
+		})
+		expect(user.googleId).toBe("google-sub-789")
+		expect(user.password).toBeUndefined()
+	})
+
+	test("Deve vincular conta Google a um usuário existente", async () => {
+		const result = await User.create({
+			name: "Existing User",
+			email: "existing@example.com",
+			password: "any_password",
+		})
+		const user = result.force.success().value
+		expect(user.googleId).toBeUndefined()
+		user.linkGoogleAccount(GoogleId.restore("google-sub-999"))
+		expect(user.googleId).toBe("google-sub-999")
 	})
 })
