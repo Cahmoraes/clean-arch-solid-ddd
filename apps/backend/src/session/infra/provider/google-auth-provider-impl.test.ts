@@ -105,7 +105,7 @@ async function loadSut({
 	payload,
 	error,
 }: LoadSutOptions = {}) {
-	const verifyIdTokenSpy = vi.fn(async (options: unknown) => {
+	const verifyIdTokenSpy = vi.fn(async (_options: unknown) => {
 		if (error) {
 			throw error
 		}

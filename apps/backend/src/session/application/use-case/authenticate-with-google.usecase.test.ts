@@ -1,5 +1,6 @@
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import { GoogleAccountAlreadyLinkedError } from "@/session/application/error/google-account-already-linked-error.js"
 import { GoogleEmailNotVerifiedError } from "@/session/application/error/google-email-not-verified-error.js"
 import { InvalidGoogleTokenError } from "@/session/application/error/invalid-google-token-error.js"
 import { InMemoryGoogleAuthProvider } from "@/session/infra/provider/in-memory-google-auth-provider.js"
@@ -30,7 +31,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 	beforeEach(async () => {
 		container.snapshot()
 		container
-			.bind(AUTH_TYPES.UseCases.AuthenticateWithGoogle)
+			.rebind(AUTH_TYPES.UseCases.AuthenticateWithGoogle)
 			.to(AuthenticateWithGoogleUseCaseClass)
 		googleAuthProvider = new InMemoryGoogleAuthProvider()
 		container
@@ -128,6 +129,27 @@ describe("AuthenticateWithGoogleUseCase", () => {
 		expect(createdUser).not.toBeNull()
 		expect(createdUser?.name).toBe("New User")
 		expect(createdUser?.googleId).toBe("google-sub-123")
+	})
+
+	test("deve retornar GoogleAccountAlreadyLinkedError quando email já vinculado a outro googleId", async () => {
+		await createAndSaveUser({
+			userRepository,
+			email: "john@doe.com",
+			googleId: "existing-google-sub",
+		})
+		googleAuthProvider.addValidToken("conflict-token", {
+			sub: "different-google-sub",
+			email: "john@doe.com",
+			name: "John Doe",
+			emailVerified: true,
+		})
+
+		const result = await sut.execute({ idToken: "conflict-token" })
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.forceFailure().value).toBeInstanceOf(
+			GoogleAccountAlreadyLinkedError,
+		)
 	})
 
 	test("deve retornar tokens válidos com dados do usuário corretos", async () => {

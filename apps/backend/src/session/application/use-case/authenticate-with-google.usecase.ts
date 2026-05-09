@@ -1,10 +1,12 @@
 import { randomBytes } from "node:crypto"
-
 import { inject, injectable } from "inversify"
-
+import { GoogleAccountAlreadyLinkedError } from "@/session/application/error/google-account-already-linked-error.js"
 import { GoogleEmailNotVerifiedError } from "@/session/application/error/google-email-not-verified-error.js"
 import { InvalidGoogleTokenError } from "@/session/application/error/invalid-google-token-error.js"
-import type { GoogleAuthProvider } from "@/session/application/provider/google-auth-provider.js"
+import type {
+	GoogleAuthProvider,
+	GoogleUserInfo,
+} from "@/session/application/provider/google-auth-provider.js"
 import type { AuthTokenOutputDTO } from "@/session/application/use-case/authenticate.usecase.js"
 import {
 	type Either,
@@ -23,7 +25,9 @@ export interface AuthenticateWithGoogleUseCaseInput {
 }
 
 export type AuthenticateWithGoogleUseCaseOutput = Either<
-	InvalidGoogleTokenError | GoogleEmailNotVerifiedError,
+	| InvalidGoogleTokenError
+	| GoogleEmailNotVerifiedError
+	| GoogleAccountAlreadyLinkedError,
 	AuthTokenOutputDTO
 >
 
@@ -47,12 +51,16 @@ export class AuthenticateWithGoogleUseCase {
 		if (googleUserInfoResult.isFailure()) {
 			return failure(googleUserInfoResult.value)
 		}
-
 		const googleUserInfo = googleUserInfoResult.value
 		if (!googleUserInfo.emailVerified) {
 			return failure(new GoogleEmailNotVerifiedError())
 		}
+		return this.resolveUser(googleUserInfo)
+	}
 
+	private async resolveUser(
+		googleUserInfo: GoogleUserInfo,
+	): Promise<AuthenticateWithGoogleUseCaseOutput> {
 		const userByGoogleId = await this.userRepository.userOfGoogleId(
 			googleUserInfo.sub,
 		)
@@ -60,15 +68,36 @@ export class AuthenticateWithGoogleUseCase {
 			return success(this.createAuthTokenOutput(userByGoogleId))
 		}
 
+		return this.resolveByEmail(googleUserInfo)
+	}
+
+	private async resolveByEmail(
+		googleUserInfo: GoogleUserInfo,
+	): Promise<AuthenticateWithGoogleUseCaseOutput> {
 		const userByEmail = await this.userRepository.userOfEmail(
 			googleUserInfo.email,
 		)
 		if (userByEmail) {
-			userByEmail.linkGoogleAccount(GoogleId.restore(googleUserInfo.sub))
-			await this.userRepository.update(userByEmail)
-			return success(this.createAuthTokenOutput(userByEmail))
+			return this.linkAndAuthenticate(userByEmail, googleUserInfo.sub)
 		}
+		return this.createAndAuthenticate(googleUserInfo)
+	}
 
+	private async linkAndAuthenticate(
+		user: User,
+		googleSub: string,
+	): Promise<AuthenticateWithGoogleUseCaseOutput> {
+		if (user.googleId && user.googleId !== googleSub) {
+			return failure(new GoogleAccountAlreadyLinkedError())
+		}
+		user.linkGoogleAccount(GoogleId.restore(googleSub))
+		await this.userRepository.update(user)
+		return success(this.createAuthTokenOutput(user))
+	}
+
+	private async createAndAuthenticate(
+		googleUserInfo: GoogleUserInfo,
+	): Promise<AuthenticateWithGoogleUseCaseOutput> {
 		const createdUserResult = await User.create({
 			name: googleUserInfo.name,
 			email: googleUserInfo.email,
@@ -77,14 +106,12 @@ export class AuthenticateWithGoogleUseCase {
 		if (createdUserResult.isFailure()) {
 			return failure(new InvalidGoogleTokenError())
 		}
-
 		await this.userRepository.save(createdUserResult.value)
 		return success(this.createAuthTokenOutput(createdUserResult.value))
 	}
 
 	private createAuthTokenOutput(user: User): AuthTokenOutputDTO {
 		const jwi = this.createJSONWebId()
-
 		return {
 			token: this.signUserToken(user, jwi),
 			refreshToken: this.createRefreshToken(user, jwi),
