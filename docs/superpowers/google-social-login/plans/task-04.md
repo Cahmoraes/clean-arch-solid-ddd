@@ -1,6 +1,6 @@
 # Task 4: Repositórios — userOfGoogleId + password nullable [RF-007, RF-008, RF-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-google-social-login.md`
 **Spec:** `../specs/google-social-login-design.md`
 

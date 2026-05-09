@@ -1,6 +1,6 @@
 # Task 3: Entidade User — suporte a googleId e password opcional [RF-007, RF-008, RF-009, RF-012, RF-013, RF-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-google-social-login.md`
 **Spec:** `../specs/google-social-login-design.md`
 

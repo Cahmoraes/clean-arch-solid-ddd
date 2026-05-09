@@ -1,6 +1,6 @@
 # Task 5: GoogleAuthProvider — abstração e implementações [RF-003, RF-004]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-google-social-login.md`
 **Spec:** `../specs/google-social-login-design.md`
 

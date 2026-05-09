@@ -1,6 +1,6 @@
 # Task 1: Schema Prisma + Variável de Ambiente [RF-011, RF-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-google-social-login.md`
 **Spec:** `../specs/google-social-login-design.md`
 

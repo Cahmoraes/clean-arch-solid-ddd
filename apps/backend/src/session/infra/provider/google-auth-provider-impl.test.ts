@@ -70,6 +70,23 @@ describe("GoogleAuthProviderImpl", () => {
 		expect(result.forceFailure().value).toBeInstanceOf(InvalidGoogleTokenError)
 	})
 
+	test("deve retornar success com emailVerified=false quando e-mail não for verificado", async () => {
+		const { sut } = await loadSut({
+			googleClientId: "google-client-id",
+			payload: {
+				sub: "google-user-1",
+				email: "john@doe.com",
+				name: "John Doe",
+				email_verified: false,
+			},
+		})
+
+		const result = await sut.verify("valid-token")
+
+		expect(result.isSuccess()).toBe(true)
+		expect(result.forceSuccess().value).toMatchObject({ emailVerified: false })
+	})
+
 	test("deve retornar InvalidGoogleTokenError quando a verificação do token lançar erro", async () => {
 		const { sut, InvalidGoogleTokenError } = await loadSut({
 			googleClientId: "google-client-id",

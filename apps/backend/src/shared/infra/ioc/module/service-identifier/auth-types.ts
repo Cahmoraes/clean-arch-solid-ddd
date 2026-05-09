@@ -1,6 +1,7 @@
 export const AUTH_TYPES = {
 	UseCases: {
 		Authenticate: Symbol.for("AuthenticateUseCase"),
+		AuthenticateWithGoogle: Symbol.for("AuthenticateWithGoogleUseCase"),
 		Logout: Symbol.for("LogoutUseCase"),
 		RefreshToken: Symbol.for("RefreshTokenUseCase"),
 	},
@@ -8,6 +9,9 @@ export const AUTH_TYPES = {
 		Authenticate: Symbol.for("AuthenticateController"),
 		Logout: Symbol.for("LogoutController"),
 		RefreshToken: Symbol.for("RefreshTokenController"),
+	},
+	Providers: {
+		GoogleAuth: Symbol.for("GoogleAuthProvider"),
 	},
 	DAO: {
 		RevokedToken: Symbol.for("RevokedTokenDAO"),

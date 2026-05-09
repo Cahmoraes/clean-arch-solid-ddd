@@ -1,6 +1,6 @@
 # Task 2: Value Object GoogleId + Erros de Domínio + Evento [RF-003, RF-004, RF-010, RF-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-google-social-login.md`
 **Spec:** `../specs/google-social-login-design.md`
 

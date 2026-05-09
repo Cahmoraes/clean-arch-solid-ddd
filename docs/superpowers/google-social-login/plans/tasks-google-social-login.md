@@ -15,10 +15,10 @@
 
 ## Tarefas
 
-- [ ] 1. Schema Prisma + Variável de Ambiente [RF-011, RF-012] → `task-01.md`
-- [ ] 2. Value Object GoogleId + Erros de Domínio + Evento [RF-003, RF-004, RF-010, RF-011] → `task-02.md`
-- [ ] 3. Entidade User — suporte a googleId e password opcional [RF-007, RF-008, RF-009, RF-012, RF-013, RF-014] → `task-03.md`
-- [ ] 4. Repositórios — userOfGoogleId + password nullable [RF-007, RF-008, RF-011] → `task-04.md`
+- [x] 1. Schema Prisma + Variável de Ambiente [RF-011, RF-012] → `task-01.md`
+- [x] 2. Value Object GoogleId + Erros de Domínio + Evento [RF-003, RF-004, RF-010, RF-011] → `task-02.md`
+- [x] 3. Entidade User — suporte a googleId e password opcional [RF-007, RF-008, RF-009, RF-012, RF-013, RF-014] → `task-03.md`
+- [x] 4. Repositórios — userOfGoogleId + password nullable [RF-007, RF-008, RF-011] → `task-04.md`
 - [ ] 5. GoogleAuthProvider — abstração e implementações [RF-003, RF-004] → `task-05.md`
 - [ ] 6. AuthenticateWithGoogleUseCase [RF-001, RF-002, RF-007, RF-008, RF-009, RF-010] → `task-06.md`
 - [ ] 7. Controller + Rotas + IoC + Business Flow Tests [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-015] → `task-07.md`
