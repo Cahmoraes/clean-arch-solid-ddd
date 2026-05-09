@@ -54,6 +54,17 @@ export class SQLiteUserRepository implements UserRepository {
 		return this.restoreUser(userDataOrNull)
 	}
 
+	public async userOfGoogleId(googleId: string): Promise<User | null> {
+		const userDataOrNull = this.sqliteConnection
+			.query(/*SQL*/ `
+      SELECT * FROM "users" WHERE "google_id" = ?
+    `)
+			.get(googleId)
+		if (!userDataOrNull) return null
+		this.assertUserData(userDataOrNull)
+		return this.restoreUser(userDataOrNull)
+	}
+
 	private assertUserData(object: any): asserts object is UserData {
 		if (!Reflect.has(object, "id")) throw new Error("Invalid object")
 	}

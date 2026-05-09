@@ -69,6 +69,16 @@ export class PrismaUserRepository implements UserRepository {
 		return this.restoreUser(userDataOrNull)
 	}
 
+	public async userOfGoogleId(googleId: string): Promise<User | null> {
+		const userDataOrNull = await this.prisma.user.findUnique({
+			where: {
+				google_id: googleId,
+			},
+		})
+		if (!userDataOrNull) return null
+		return this.restoreUser(userDataOrNull)
+	}
+
 	private async restoreUser(userData: UserData): Promise<User> {
 		return User.restore({
 			id: userData.id,

@@ -8,10 +8,16 @@ export interface CreateAndSaveUserProps {
 	name?: string
 	email?: string
 	password?: string
+	googleId?: string
 	role?: RoleTypes
 }
 
-// eslint-disable-next-line complexity
+function resolvePassword(props: CreateAndSaveUserProps): string | undefined {
+	if (props.password !== undefined) return props.password
+	if (props.googleId !== undefined) return undefined
+	return "any_password"
+}
+
 export async function createAndSaveUser(props: CreateAndSaveUserProps) {
 	const userId = props.id ?? "any_user_id"
 	const name = props.name ?? "any_name"
@@ -19,9 +25,10 @@ export async function createAndSaveUser(props: CreateAndSaveUserProps) {
 	const user = (
 		await User.create({
 			id: userId,
-			name: name,
-			email: email,
-			password: props.password ?? "any_password",
+			name,
+			email,
+			password: resolvePassword(props),
+			googleId: props.googleId,
 			role: props.role ?? "MEMBER",
 		})
 	).force.success().value

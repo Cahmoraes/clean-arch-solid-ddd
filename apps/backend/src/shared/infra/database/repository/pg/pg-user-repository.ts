@@ -29,6 +29,27 @@ export class PgUserRepository implements UserRepository {
 			[email],
 		)
 		const row = result.rows[0]
+		if (!row) return null
+		return User.restore({
+			id: row.id,
+			email: row.email,
+			name: row.name,
+			password: row.password_hash ?? undefined,
+			googleId: row.google_id ?? undefined,
+			role: row.role,
+			createdAt: row.created_at,
+			updatedAt: row.updated_at,
+			status: row.status,
+		})
+	}
+
+	public async userOfGoogleId(googleId: string): Promise<User | null> {
+		const result = await this.pgClient.query(
+			"SELECT * FROM users WHERE google_id = $1",
+			[googleId],
+		)
+		const row = result.rows[0]
+		if (!row) return null
 		return User.restore({
 			id: row.id,
 			email: row.email,
