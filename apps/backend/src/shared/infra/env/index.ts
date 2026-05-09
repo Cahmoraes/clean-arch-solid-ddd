@@ -23,6 +23,7 @@ const envSchema = z.object({
 	REDIS_PORT: z.coerce.number().default(6379),
 	TTL: z.coerce.number().default(60),
 	DIRECT_URL: z.string().optional(),
+	GOOGLE_CLIENT_ID: z.string().optional(),
 	CRON_TIME_TO_UPDATE_CACHE: z.string(),
 	STRIPE_PUBLIC_KEY: z.string(),
 	STRIPE_PRIVATE_KEY: z.string(),
