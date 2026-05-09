@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import { version } from "../../../../package.json"
 import { HEALTH_CHECK_TYPES } from "../ioc/types"
 import type { CacheHealthProvider } from "./cache/cache-health-provider"

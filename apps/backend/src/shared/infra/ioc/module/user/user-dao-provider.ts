@@ -1,5 +1,4 @@
 import type { ResolutionContext } from "inversify"
-
 import { UserDAOMemory } from "@/shared/infra/database/dao/in-memory/user-dao-memory"
 import { PrismaUserDAO } from "@/shared/infra/database/dao/prisma/prisma-user-dao"
 import { isProduction } from "@/shared/infra/env"

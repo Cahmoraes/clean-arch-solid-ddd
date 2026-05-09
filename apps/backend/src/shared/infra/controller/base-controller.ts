@@ -55,12 +55,10 @@ export abstract class BaseController implements Controller {
 		if (result.isSuccess()) {
 			return ResponseFactory.OK({ body: result.value })
 		}
-
 		const overriddenResponse = this.mapResponseError(result.value)
 		if (overriddenResponse) {
 			return overriddenResponse
 		}
-
 		return this.createDefaultResponseError(result.value)
 	}
 
@@ -74,11 +72,9 @@ export abstract class BaseController implements Controller {
 		if (Array.isArray(error)) {
 			return this.createUnprocessableEntity(error)
 		}
-
 		if (error instanceof ZodError) {
 			return this.createBadRequest(error)
 		}
-
 		return this.createResponseByStatus(error)
 	}
 
@@ -92,19 +88,15 @@ export abstract class BaseController implements Controller {
 		if (UNAUTHORIZED_ERRORS.has(error.name)) {
 			return ResponseFactory.UNAUTHORIZED({ message: error.message })
 		}
-
 		if (error.name.endsWith("NotFoundError")) {
 			return ResponseFactory.NOT_FOUND({ message: error.message })
 		}
-
 		if (CONFLICT_ERRORS.has(error.name)) {
 			return ResponseFactory.CONFLICT({ message: error.message })
 		}
-
 		if (error.name.startsWith("Invalid") || error.name === "ValidationError") {
 			return this.createUnprocessableEntity(error)
 		}
-
 		return ResponseFactory.INTERNAL_SERVER_ERROR({
 			message: error.message,
 		})

@@ -1,8 +1,6 @@
 import { inject, injectable } from "inversify"
-
 import type { Either } from "@/shared/domain/value-object/either.js"
 import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types.js"
-
 import type { SubscriptionNotFoundError } from "../error/subscription-not-found-error.js"
 import type { SubscriptionLifecycleService } from "../service/subscription-lifecycle.service.js"
 

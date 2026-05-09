@@ -3,7 +3,6 @@ import { inject, injectable } from "inversify"
 import Stripe from "stripe"
 import { z } from "zod"
 import type { Controller } from "@/shared/infra/controller/controller"
-
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"

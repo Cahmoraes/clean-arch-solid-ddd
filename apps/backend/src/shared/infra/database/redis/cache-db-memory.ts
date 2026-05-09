@@ -1,6 +1,5 @@
 import { injectable } from "inversify"
 import NodeCache from "node-cache"
-
 import type { CacheDB } from "./cache-db"
 
 @injectable()

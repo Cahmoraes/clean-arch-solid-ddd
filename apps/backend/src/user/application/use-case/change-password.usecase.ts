@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify"
 import type { ValidationError } from "zod-validation-error"
-
 import {
 	type Either,
 	failure,
@@ -10,7 +9,6 @@ import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { Queue } from "@/shared/infra/queue/queue"
 import { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
 import type { User } from "@/user/domain/user"
-
 import { PasswordUnchangedError } from "../error/password-unchanged-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"

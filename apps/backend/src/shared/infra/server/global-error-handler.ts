@@ -1,9 +1,7 @@
 import type { FastifyError, FastifyReply, FastifyRequest } from "fastify"
 import { ZodError } from "zod"
 import { fromError } from "zod-validation-error"
-
 import { UserAlreadyExistsError } from "@/user/application/error/user-already-exists-error"
-
 import { container } from "../ioc/container"
 import { SHARED_TYPES } from "../ioc/types"
 import type { Logger } from "../logger/logger"

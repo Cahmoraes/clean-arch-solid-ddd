@@ -1,6 +1,5 @@
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
-
 import type {
 	CheckInRepository,
 	FindManyInput,

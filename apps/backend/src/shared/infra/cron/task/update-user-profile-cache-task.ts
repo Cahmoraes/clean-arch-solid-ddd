@@ -1,11 +1,9 @@
 import { inject, injectable } from "inversify"
-
 import type {
 	FetchUsersOutput,
 	UserDAO,
 } from "@/user/application/persistence/dao/user-dao"
 import type { RoleTypes } from "@/user/domain/value-object/role"
-
 import type { CacheDB } from "../../database/redis/cache-db"
 import { env } from "../../env"
 import { SHARED_TYPES, USER_TYPES } from "../../ioc/types"

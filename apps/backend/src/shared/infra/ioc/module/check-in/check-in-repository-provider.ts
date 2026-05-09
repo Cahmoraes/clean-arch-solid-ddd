@@ -1,5 +1,4 @@
 import type { ResolutionContext } from "inversify"
-
 import type { CheckInRepository } from "@/check-in/application/repository/check-in-repository"
 import { InMemoryCheckInRepository } from "@/shared/infra/database/repository/in-memory/in-memory-check-in-repository"
 import { PrismaCheckInRepository } from "@/shared/infra/database/repository/prisma/prisma-check-in-repository"

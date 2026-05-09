@@ -1,6 +1,5 @@
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-
 import type { InMemorySubscriptionRepository } from "@/shared/infra/database/repository/in-memory/in-memory-subscription-repository"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"

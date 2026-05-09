@@ -9,7 +9,7 @@ interface SchemaProperty {
 
 const NUMERIC_TYPES = new Set(["integer", "number"])
 
-function getActualType(value: unknown): string {
+function actualType(value: unknown): string {
 	return Array.isArray(value) ? "array" : typeof value
 }
 
@@ -17,7 +17,7 @@ function isTypeMismatch(value: unknown, expectedType: string): boolean {
 	if (NUMERIC_TYPES.has(expectedType)) {
 		return typeof value !== "number"
 	}
-	return getActualType(value) !== expectedType
+	return actualType(value) !== expectedType
 }
 
 function formatTypeError(
@@ -25,7 +25,7 @@ function formatTypeError(
 	expectedType: string,
 	value: unknown,
 ): string {
-	return `Field "${key}" expected type "${expectedType}" but got "${getActualType(value)}"`
+	return `Field "${key}" expected type "${expectedType}" but got "${actualType(value)}"`
 }
 
 function validateArraySchema(body: unknown): string[] {
@@ -72,7 +72,6 @@ function validateAgainstSchema(
 	if (!schema || typeof body !== "object" || body === null) return []
 	if (schema.type === "array") return validateArraySchema(body)
 	if (!schema.properties) return []
-
 	return [
 		...collectMissingRequiredFields(body, schema.required ?? []),
 		...validateProperties(body, schema.properties),
@@ -126,7 +125,6 @@ function isValidationDisabled(): boolean {
 export class ResponseValidationHook {
 	static register(server: FastifyInstance): void {
 		if (isValidationDisabled()) return
-
 		server.addHook(
 			"onSend",
 			async (

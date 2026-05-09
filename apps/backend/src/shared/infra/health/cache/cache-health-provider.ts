@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import type { RedisAdapter } from "../../database/redis/redis-adapter"
 import { SHARED_TYPES } from "../../ioc/types"
 import type { HealthProvider, ServiceHealth } from "../health-check"

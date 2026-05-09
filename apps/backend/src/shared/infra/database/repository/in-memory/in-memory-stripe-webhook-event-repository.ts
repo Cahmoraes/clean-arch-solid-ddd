@@ -1,5 +1,4 @@
 import { injectable } from "inversify"
-
 import { DuplicateWebhookEventError } from "@/subscription/application/error/duplicate-webhook-event-error.js"
 import type { StripeWebhookEventRepository } from "@/subscription/repository/stripe-webhook-event-repository.js"
 

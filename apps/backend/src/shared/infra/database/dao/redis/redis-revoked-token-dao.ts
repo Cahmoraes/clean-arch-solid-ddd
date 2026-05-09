@@ -1,12 +1,10 @@
 import { inject, injectable } from "inversify"
-
 import type {
 	RevokedTokenDAO,
 	RevokedTokenData,
 } from "@/session/application/dao/revoked-token-dao"
 import { env } from "@/shared/infra/env"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
-
 import type { CacheDB } from "../../redis/cache-db"
 
 @injectable()

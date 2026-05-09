@@ -1,10 +1,8 @@
 import { ContainerModule } from "inversify"
-
 import { HealthCheckController } from "@/shared/infra/controller/health-check-controller"
 import { CacheHealthProvider } from "@/shared/infra/health/cache/cache-health-provider"
 import { DatabaseHealthProvider } from "@/shared/infra/health/database/database-health-provider"
 import { HealthCheckImpl } from "@/shared/infra/health/health-check.impl"
-
 import { HEALTH_CHECK_TYPES } from "../../types"
 
 export const healthCheckModule = new ContainerModule(({ bind }) => {

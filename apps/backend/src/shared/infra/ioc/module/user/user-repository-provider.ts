@@ -1,5 +1,4 @@
 import type { ResolutionContext } from "inversify"
-
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository.js"
 import { PrismaUserRepository } from "@/shared/infra/database/repository/prisma/prisma-user-repository"
 import { SQLiteUserRepository } from "@/shared/infra/database/repository/sqlite/sqlite-user-repository"

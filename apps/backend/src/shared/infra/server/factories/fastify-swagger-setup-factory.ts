@@ -1,5 +1,4 @@
 import type { FastifyDynamicSwaggerOptions } from "@fastify/swagger"
-
 import { env } from "@/shared/infra/env"
 
 export class FastifySwaggerSetupFactory {

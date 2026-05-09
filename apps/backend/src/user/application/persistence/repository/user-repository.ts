@@ -1,5 +1,4 @@
 import type { User } from "@/user/domain/user"
-
 import type { UserQuery } from "./user-query"
 
 export interface UserRepository {

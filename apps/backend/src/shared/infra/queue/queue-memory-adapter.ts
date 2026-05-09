@@ -1,5 +1,5 @@
 import { injectable } from "inversify"
-
+import { requires } from "@/shared/domain/requires"
 import { LazyInject } from "../decorator/lazy-inject"
 import { SHARED_TYPES } from "../ioc/types"
 import type { Logger } from "../logger/logger"
@@ -19,20 +19,22 @@ export class QueueMemoryAdapter implements Queue {
 		if (!this.queues.has(exchange)) {
 			this.queues.set(exchange, [])
 		}
-		// biome-ignore lint/style/noNonNullAssertion: verificação de null realizada antes desta instrução
-		for (const callback of this.queues.get(exchange)!) {
+		const exchanges = this.queues.get(exchange)
+		requires(exchanges, "[QueueMemoryAdapter] Exchanges should not be null")
+		for (const callback of exchanges) {
 			callback(data)
 		}
 	}
 
 	public async consume(
-		queue: string,
+		queueName: string,
 		callback: CallableFunction,
 	): Promise<void> {
-		if (!this.queues.has(queue)) {
-			this.queues.set(queue, [])
+		if (!this.queues.has(queueName)) {
+			this.queues.set(queueName, [])
 		}
-		// biome-ignore lint/style/noNonNullAssertion: verificação de null realizada antes desta instrução
-		this.queues.get(queue)!.push(callback)
+		const queue = this.queues.get(queueName)
+		requires(queue, "[QueueMemoryAdapter] Queue should not be null")
+		queue.push(callback)
 	}
 }

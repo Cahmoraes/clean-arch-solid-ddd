@@ -1,10 +1,8 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: for testing */
 import {
 	type CreateAndSaveUserProps,
 	createAndSaveUser,
 } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
-
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
@@ -44,7 +42,7 @@ describe("ChangePasswordUseCase", () => {
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
-			userId: user.id!,
+			userId: user.id,
 			newRawPassword: "654321",
 		}
 		const result = await sut.execute(input)
@@ -74,13 +72,13 @@ describe("ChangePasswordUseCase", () => {
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
-			userId: user.id!,
+			userId: user.id,
 			newRawPassword: "",
 		}
 		const result = await sut.execute(input)
 		expect(result).toBeDefined()
 		expect(result.isFailure()).toBe(true)
-		expect(result.value).toBeInstanceOf(Error) // Assuming there's a validation error class
+		expect(result.value).toBeInstanceOf(Error)
 	})
 
 	test("Deve falhar ao tentar alterar o password com um userId inválido", async () => {
@@ -108,7 +106,7 @@ describe("ChangePasswordUseCase", () => {
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
-			userId: user.id!,
+			userId: user.id,
 			newRawPassword: "654321",
 		}
 		const result = await sut.execute(input)
@@ -126,7 +124,7 @@ describe("ChangePasswordUseCase", () => {
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
-			userId: user.id!,
+			userId: user.id,
 			newRawPassword: "123456",
 		}
 		const result = await sut.execute(input)

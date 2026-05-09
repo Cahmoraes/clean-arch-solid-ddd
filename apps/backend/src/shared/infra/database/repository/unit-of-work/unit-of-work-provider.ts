@@ -1,7 +1,5 @@
 import type { ResolutionContext } from "inversify"
-
 import { isProduction } from "@/shared/infra/env"
-
 import { PrismaUnitOfWork } from "./prisma-unit-of-work"
 import { TestingUnitOfWork } from "./testing-unit-of-work"
 import type { UnitOfWork } from "./unit-of-work"

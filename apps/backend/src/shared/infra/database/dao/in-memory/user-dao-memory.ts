@@ -1,7 +1,6 @@
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { faker } from "@faker-js/faker"
 import { injectable } from "inversify"
-
 import type {
 	FetchUsersData,
 	FetchUsersInput,

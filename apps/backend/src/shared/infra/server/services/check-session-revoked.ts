@@ -1,7 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
-
 import type { RevokedTokenDAO } from "@/session/application/dao/revoked-token-dao"
-
 import { container } from "../../ioc/container"
 import { AUTH_TYPES } from "../../ioc/types"
 import { HTTP_STATUS } from "../http-status"

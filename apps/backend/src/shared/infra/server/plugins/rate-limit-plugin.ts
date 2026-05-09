@@ -5,7 +5,6 @@ import { env, isDevelopment } from "@/shared/infra/env/index.js"
 import type { Logger } from "@/shared/infra/logger/logger.js"
 import { EXCHANGES } from "@/shared/infra/queue/exchanges.js"
 import type { Queue } from "@/shared/infra/queue/queue.js"
-
 import {
 	RATE_LIMIT_CONFIG,
 	type RateLimitExceededEvent,

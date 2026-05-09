@@ -6,7 +6,6 @@ import type { RedisAdapter } from "@/shared/infra/database/redis/redis-adapter"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { StatusTypes } from "@/user/domain/value-object/status"
-
 import type {
 	FetchUsersUseCase,
 	FetchUsersUseCaseInput,

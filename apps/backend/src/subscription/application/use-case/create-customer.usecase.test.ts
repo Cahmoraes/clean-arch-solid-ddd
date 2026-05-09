@@ -1,6 +1,5 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: for testing */
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
-
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { TestingSubscriptionGateway } from "@/shared/infra/gateway/testing-subscription-gateway"
 import { container } from "@/shared/infra/ioc/container"

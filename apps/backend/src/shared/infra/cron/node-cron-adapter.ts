@@ -1,6 +1,5 @@
 import { injectable } from "inversify"
 import nodeCron from "node-cron"
-
 import type { CronJob } from "./cron-job"
 
 @injectable()

@@ -1,5 +1,4 @@
 import type { ResolutionContext } from "inversify"
-
 import { isProduction } from "@/shared/infra/env"
 import { BullMQAdapter } from "@/shared/infra/queue/bullmq-adapter"
 import type { Queue } from "@/shared/infra/queue/queue"

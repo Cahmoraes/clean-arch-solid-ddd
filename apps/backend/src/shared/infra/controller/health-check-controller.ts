@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify"
 import { z } from "zod"
-
 import type { HealthCheckImpl } from "../health/health-check.impl"
 import { HEALTH_CHECK_TYPES, SHARED_TYPES } from "../ioc/types"
 import { OpenApiSchemaBuilder } from "../openapi/openapi-schema-builder.js"

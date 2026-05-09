@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: for testing */
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
 import {
 	type CreateAndSaveUserProps,
@@ -41,11 +40,11 @@ describe("DeleteUserUseCase", () => {
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: DeleteUserUseCaseInput = {
-			userId: user.id!,
+			userId: user.id,
 		}
 		const result = await sut.execute(input)
 		expect(result.isSuccess()).toBe(true)
-		const foundUser = await userRepository.userOfId(user.id!)
+		const foundUser = await userRepository.userOfId(user.id)
 		expect(foundUser).toBeNull()
 	})
 
@@ -68,10 +67,10 @@ describe("DeleteUserUseCase", () => {
 			checkInRepository,
 			gymId: "gym-id",
 			id: "check-in-id",
-			userId: user.id!,
+			userId: user.id,
 		})
 		const input: DeleteUserUseCaseInput = {
-			userId: user.id!,
+			userId: user.id,
 		}
 		const result = await sut.execute(input)
 		expect(result.isSuccess()).toBe(false)

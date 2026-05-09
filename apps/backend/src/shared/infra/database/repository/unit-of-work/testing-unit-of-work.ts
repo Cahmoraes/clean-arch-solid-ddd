@@ -1,5 +1,4 @@
 import { injectable } from "inversify"
-
 import type { Callback, UnitOfWork } from "./unit-of-work"
 
 @injectable()

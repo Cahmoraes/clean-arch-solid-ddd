@@ -1,9 +1,7 @@
 import { inject, injectable } from "inversify"
-
 import type { CheckInCreatedEvent } from "@/check-in/domain/event/check-in-created-event"
 import type { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
 import type { UserCreatedEvent } from "@/user/domain/event/user-created-event"
-
 import type { MailerGateway } from "../gateway/mailer-gateway"
 import { SHARED_TYPES } from "../ioc/types"
 import type { Logger } from "../logger/logger"
@@ -24,6 +22,13 @@ export class QueueController implements Controller {
 
 	public async init(): Promise<void> {
 		this.logger.info(this, "✅")
+		this.consumeSendWelcomeEmail()
+		this.consumeNotifyPasswordChanged()
+		this.consumeLog()
+		this.consumeCheckIn()
+	}
+
+	private consumeSendWelcomeEmail(): void {
 		this.queue.consume(
 			QUEUES.SEND_WELCOME_EMAIL,
 			async (message: UserCreatedEvent): Promise<void> => {
@@ -35,7 +40,9 @@ export class QueueController implements Controller {
 				)
 			},
 		)
+	}
 
+	private consumeNotifyPasswordChanged(): void {
 		this.queue.consume(
 			QUEUES.NOTIFY_PASSWORD_CHANGED,
 			async (event: PasswordChangedEvent): Promise<void> => {
@@ -51,11 +58,15 @@ export class QueueController implements Controller {
 				)
 			},
 		)
+	}
 
+	private consumeLog(): void {
 		this.queue.consume(QUEUES.LOG, async (event: any): Promise<void> => {
 			this.logger.info(this, `QUEUE [LOG]: ${JSON.stringify(event, null, 2)}`)
 		})
+	}
 
+	private consumeCheckIn(): void {
 		this.queue.consume(
 			QUEUES.CHECK_IN,
 			async (event: CheckInCreatedEvent): Promise<void> => {

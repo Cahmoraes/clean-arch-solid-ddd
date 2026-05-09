@@ -1,9 +1,7 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: for testing */
 import request from "supertest"
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
-
 import type { AuthenticateUseCase } from "@/session/application/use-case/authenticate.usecase"
 import { InMemoryCheckInRepository } from "@/shared/infra/database/repository/in-memory/in-memory-check-in-repository"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
@@ -82,7 +80,7 @@ describe("Obter Métricas do Usuário", () => {
 		await createAndSaveCheckIn({
 			checkInRepository,
 			id: "1",
-			userId: user.id!,
+			userId: user.id,
 			gymId: "gymId1",
 			userLatitude: 0,
 			userLongitude: 0,
@@ -115,7 +113,7 @@ describe("Obter Métricas do Usuário", () => {
 			await createAndSaveCheckIn({
 				checkInRepository,
 				id: i.toString(),
-				userId: user.id!,
+				userId: user.id,
 				gymId: "gymId1",
 				userLatitude: 0,
 				userLongitude: 0,

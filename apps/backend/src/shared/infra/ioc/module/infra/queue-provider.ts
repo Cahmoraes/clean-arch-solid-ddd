@@ -1,5 +1,4 @@
 import type { ResolutionContext } from "inversify"
-
 import { isProduction } from "@/shared/infra/env"
 import type { Queue } from "@/shared/infra/queue/queue"
 import { QueueMemoryAdapter } from "@/shared/infra/queue/queue-memory-adapter"

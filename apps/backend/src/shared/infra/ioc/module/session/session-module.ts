@@ -1,5 +1,4 @@
 import { ContainerModule } from "inversify"
-
 import type { GoogleAuthProvider } from "@/session/application/provider/google-auth-provider.js"
 import { AuthenticateUseCase } from "@/session/application/use-case/authenticate.usecase"
 import { AuthenticateWithGoogleUseCase } from "@/session/application/use-case/authenticate-with-google.usecase.js"
@@ -7,7 +6,6 @@ import { LogoutUseCase } from "@/session/application/use-case/logout.usecase"
 import { AuthenticateController } from "@/session/infra/controller/authenticate.controller"
 import { AuthenticateWithGoogleController } from "@/session/infra/controller/authenticate-with-google.controller.js"
 import { LogoutController } from "@/session/infra/controller/logout.controller"
-
 import { AUTH_TYPES } from "../../types"
 import { GoogleAuthProviderProvider } from "./google-auth-provider-provider"
 import { RevokedTokenDAOProvider } from "./revoked-token-dao-provider"

@@ -1,6 +1,5 @@
 import amqp from "amqplib"
 import { injectable } from "inversify"
-
 import { LazyInject } from "../decorator/lazy-inject"
 import { Logger as LoggerDecorate } from "../decorator/logger"
 import { env } from "../env"

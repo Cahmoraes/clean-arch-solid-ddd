@@ -3,9 +3,7 @@ import type {
 	Prisma,
 	PrismaClient,
 } from "@/shared/infra/database/generated/prisma/client"
-
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
-
 import type { Callback, UnitOfWork } from "./unit-of-work"
 
 type PrismaClientTransaction = PrismaClient | Prisma.TransactionClient

@@ -1,12 +1,10 @@
 import { inject, injectable } from "inversify"
-
 import {
 	type Either,
 	failure,
 	success,
 } from "@/shared/domain/value-object/either"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
-
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
 

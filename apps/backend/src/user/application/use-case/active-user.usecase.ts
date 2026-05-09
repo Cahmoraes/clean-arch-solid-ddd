@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import {
 	type Either,
 	failure,
@@ -7,7 +6,6 @@ import {
 } from "@/shared/domain/value-object/either"
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
-
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
 

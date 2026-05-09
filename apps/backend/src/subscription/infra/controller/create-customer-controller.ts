@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { Controller } from "@/shared/infra/controller/controller"
 import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types"

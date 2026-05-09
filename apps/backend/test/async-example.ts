@@ -12,9 +12,7 @@ async function saveUserDataToCache() {
 async function execute() {
 	console.log("🚀 Buscando usuários...")
 	await new Promise((resolve) => setTimeout(resolve, 2000)) // Simula busca lenta
-
 	saveUserDataToCache() // Sem await
-
 	console.log("🏁 Finalizando execução...")
 }
 

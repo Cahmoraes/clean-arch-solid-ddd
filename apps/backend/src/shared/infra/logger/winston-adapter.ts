@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify"
 import winston from "winston"
-
 import { isProduction } from "../env"
 import { SHARED_TYPES } from "../ioc/types"
 import { EXCHANGES } from "../queue/exchanges"

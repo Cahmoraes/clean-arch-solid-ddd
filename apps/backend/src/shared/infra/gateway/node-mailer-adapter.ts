@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify"
 import nodemailer, { type Transporter } from "nodemailer"
-
 import { Logger as LoggerDecorate } from "../decorator/logger"
 import { SHARED_TYPES } from "../ioc/types"
 import type { Logger } from "../logger/logger"

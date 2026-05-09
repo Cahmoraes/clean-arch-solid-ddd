@@ -1,7 +1,6 @@
 import request from "supertest"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
 import { vi } from "vitest"
-
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { TestingSubscriptionGateway } from "@/shared/infra/gateway/testing-subscription-gateway"
 import { container } from "@/shared/infra/ioc/container"

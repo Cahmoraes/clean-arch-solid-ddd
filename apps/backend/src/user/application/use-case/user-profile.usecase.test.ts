@@ -1,6 +1,4 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: for testing */
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
-
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
@@ -36,7 +34,7 @@ describe("UserProfile", () => {
 		await userRepository.save(user.forceSuccess().value)
 		const savedUser = userRepository.users.toArray()[0]
 		const input: UserProfileUseCaseInput = {
-			userId: savedUser.id!,
+			userId: savedUser.id,
 		}
 		const leftOrRight = await sut.execute(input)
 		const result = leftOrRight.force.success().value

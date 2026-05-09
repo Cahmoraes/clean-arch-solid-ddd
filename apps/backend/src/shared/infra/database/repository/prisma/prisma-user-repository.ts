@@ -1,10 +1,8 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: intentionally */
 import { inject, injectable } from "inversify"
 import type {
 	Prisma,
 	PrismaClient,
 } from "@/shared/infra/database/generated/prisma/client"
-
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { UserQuery } from "@/user/application/persistence/repository/user-query"
@@ -113,7 +111,7 @@ export class PrismaUserRepository implements UserRepository {
 	public async update(user: User): Promise<void> {
 		await this.prisma.user.update({
 			where: {
-				id: user.id!,
+				id: user.id,
 			},
 			data: {
 				email: user.email,
@@ -132,7 +130,7 @@ export class PrismaUserRepository implements UserRepository {
 	public async delete(user: User): Promise<void> {
 		await this.prisma.user.delete({
 			where: {
-				id: user.id!,
+				id: user.id,
 			},
 		})
 	}

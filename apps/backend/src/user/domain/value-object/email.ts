@@ -1,14 +1,12 @@
 import { z } from "zod"
-
 import {
 	type Either,
 	failure,
 	success,
 } from "@/shared/domain/value-object/either"
-
 import { InvalidEmailError } from "../error/invalid-email-error"
 
-const emailValidationSchema = z.string().email()
+const emailValidationSchema = z.email()
 
 export class Email {
 	private readonly _value: string

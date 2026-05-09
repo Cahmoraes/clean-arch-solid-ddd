@@ -1,5 +1,4 @@
 import { ValidationError } from "zod-validation-error"
-
 import { Password } from "./password"
 
 describe("Password test unit", () => {

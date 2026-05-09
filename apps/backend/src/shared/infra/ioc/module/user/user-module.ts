@@ -1,5 +1,4 @@
 import { ContainerModule } from "inversify"
-
 import { RefreshTokenController } from "@/session/infra/controller/refresh-token.controller"
 import { PgUserRepository } from "@/shared/infra/database/repository/pg/pg-user-repository"
 import { SQLiteUserRepository } from "@/shared/infra/database/repository/sqlite/sqlite-user-repository"

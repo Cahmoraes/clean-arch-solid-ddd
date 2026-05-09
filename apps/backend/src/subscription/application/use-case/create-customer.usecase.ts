@@ -1,6 +1,4 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: intentionally */
 import { inject, injectable } from "inversify"
-
 import {
 	type Either,
 	failure,
@@ -48,13 +46,13 @@ export class CreateCustomer {
 		const customer = await this.subscriptionGateway.createCustomer({
 			email: user.email,
 			name: user.name,
-			metadata: { userId: user.id! },
+			metadata: { userId: user.id },
 		})
 		user.assignBillingCustomerId(customer.id)
 		await this.userRepository.update(user)
 		return success({
 			id: customer.id,
-			userId: user.id!,
+			userId: user.id,
 			name: customer.name,
 			email: customer.email,
 		})

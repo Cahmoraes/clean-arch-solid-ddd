@@ -4,7 +4,6 @@ import type { InMemoryUserRepository } from "@/shared/infra/database/repository/
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { User } from "@/user/domain/user"
-
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type {
 	SuspendUserUseCase,

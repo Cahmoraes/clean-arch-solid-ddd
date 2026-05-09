@@ -1,17 +1,12 @@
 import { inject, injectable } from "inversify"
 import jwt, { type SignOptions } from "jsonwebtoken"
-
 import {
 	type Either,
 	failure,
 	success,
 } from "@/shared/domain/value-object/either"
-
-import type {
-	AuthToken,
-	Payload,
-} from "../../../user/application/auth/auth-token"
-import { InvalidUserTokenError } from "../../../user/application/error/invalid-user-token-error"
+import type { AuthToken, Payload } from "@/user/application/auth/auth-token"
+import { InvalidUserTokenError } from "@/user/application/error/invalid-user-token-error"
 import { env } from "../env"
 import { SHARED_TYPES } from "../ioc/types"
 import type { Logger } from "../logger/logger"

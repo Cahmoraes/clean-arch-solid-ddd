@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify"
 import type { PrismaClient } from "@/shared/infra/database/generated/prisma/client"
-
 import { SHARED_TYPES } from "../../ioc/types"
 import type { HealthProvider, ServiceHealth } from "../health-check"
 

@@ -1,10 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
 import { InMemorySubscriptionRepository } from "@/shared/infra/database/repository/in-memory/in-memory-subscription-repository"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { Subscription } from "@/subscription/domain/subscription"
 import { User } from "@/user/domain/user"
-
 import { SubscriptionNotFoundError } from "../error/subscription-not-found-error"
 import { SubscriptionLifecycleServiceImpl } from "./subscription-lifecycle.service"
 

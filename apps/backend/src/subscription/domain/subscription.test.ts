@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest"
-
 import { Subscription } from "./subscription"
 
 describe("Subscription", () => {

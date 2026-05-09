@@ -1,5 +1,4 @@
 import type { ResolutionContext } from "inversify"
-
 import { env, isProduction } from "@/shared/infra/env"
 import { StripeSubscriptionGateway } from "@/shared/infra/gateway/stripe-subscription-gateway"
 import { TestingSubscriptionGateway } from "@/shared/infra/gateway/testing-subscription-gateway"

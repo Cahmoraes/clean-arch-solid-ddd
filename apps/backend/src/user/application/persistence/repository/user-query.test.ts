@@ -1,7 +1,6 @@
 import { User, type UserRestore } from "@/user/domain/user"
 import { RoleValues } from "@/user/domain/value-object/role"
 import { StatusTypes } from "@/user/domain/value-object/status"
-
 import { UserQuery } from "./user-query"
 
 describe("UserQuery", () => {

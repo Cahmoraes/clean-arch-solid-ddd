@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import {
 	type Either,
 	failure,
@@ -11,7 +10,6 @@ import type { Subscription } from "@/subscription/domain/subscription.js"
 import type { SubscriptionRepository } from "@/subscription/repository/subscription-repository.js"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository.js"
 import type { User } from "@/user/domain/user.js"
-
 import { SubscriptionNotFoundError } from "../error/subscription-not-found-error.js"
 
 export interface SubscriptionLifecycleService {

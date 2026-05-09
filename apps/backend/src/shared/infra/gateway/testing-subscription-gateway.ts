@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
 import type Stripe from "stripe"
-
 import type {
 	AttachPaymentMethodInput,
 	CreateCustomerInput,

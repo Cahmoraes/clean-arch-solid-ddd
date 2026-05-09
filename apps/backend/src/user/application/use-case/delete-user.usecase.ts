@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import type { CheckInRepository } from "@/check-in/application/repository/check-in-repository"
 import {
 	type Either,

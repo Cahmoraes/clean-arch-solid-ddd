@@ -1,5 +1,4 @@
 import { describe, expect, test, vi } from "vitest"
-
 import { RATE_LIMIT_CONFIG } from "./rate-limit-config.js"
 import { RateLimitPlugin } from "./rate-limit-plugin.js"
 
