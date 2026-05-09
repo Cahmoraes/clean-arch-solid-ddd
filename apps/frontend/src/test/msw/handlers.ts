@@ -20,6 +20,12 @@ export const handlers = [
 			{ status: 200 },
 		),
 	),
+	http.post(endpoint("/sessions/google"), () =>
+		HttpResponse.json(
+			{ token: "stub-google-token", refreshToken: "stub-google-refresh" },
+			{ status: 200 },
+		),
+	),
 	http.patch(endpoint("/sessions/refresh"), () =>
 		HttpResponse.json({ token: "stub-token" }, { status: 200 }),
 	),

@@ -40,6 +40,28 @@ export function useLogin(): UseMutationResult<
 	})
 }
 
+export interface LoginWithGoogleResult {
+	token: string
+	refreshToken: string
+}
+
+export function useLoginWithGoogle(): UseMutationResult<
+	LoginWithGoogleResult,
+	ApiError,
+	string
+> {
+	return useMutation<LoginWithGoogleResult, ApiError, string>({
+		mutationFn: async (idToken) => {
+			const { data, error } = await api.POST("/sessions/google", {
+				body: { idToken },
+			})
+			if (error || !data) throw toApiError(error)
+			useAuthStore.getState().setSession(data.token)
+			return { token: data.token, refreshToken: data.refreshToken }
+		},
+	})
+}
+
 export interface SignupResult {
 	email: string
 }

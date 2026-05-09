@@ -1,10 +1,28 @@
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
+import type { ReactNode } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const replace = vi.fn()
 const searchParamsGet = vi.fn<(key: string) => string | null>(() => null)
+
+vi.mock("@react-oauth/google", () => ({
+	GoogleOAuthProvider: ({ children }: { children: ReactNode }) => children,
+	GoogleLogin: ({
+		onSuccess,
+	}: {
+		onSuccess: (resp: { credential?: string }) => void
+	}) => (
+		<button
+			type="button"
+			data-testid="google-login-mock"
+			onClick={() => onSuccess({ credential: "fake-google-token" })}
+		>
+			Google
+		</button>
+	),
+}))
 
 vi.mock("next/navigation", () => ({
 	useRouter: () => ({
@@ -106,5 +124,32 @@ describe("LoginPage", () => {
 
 		expect(await screen.findByText(/e-mail válido/i)).toBeInTheDocument()
 		expect(replace).not.toHaveBeenCalled()
+	})
+
+	it("exibe botão Entrar com Google", () => {
+		renderWithProviders(<LoginPage />)
+
+		expect(screen.getByTestId("google-sign-in-button")).toBeInTheDocument()
+	})
+
+	it("redireciona para /academias após login Google bem-sucedido", async () => {
+		const token = makeTestJwt({ sub: "google-user", role: "MEMBER" })
+		server.use(
+			http.post(`${apiBaseUrl}/sessions/google`, () =>
+				HttpResponse.json(
+					{ token, refreshToken: "google-refresh" },
+					{ status: 200 },
+				),
+			),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<LoginPage />)
+
+		await user.click(screen.getByTestId("google-login-mock"))
+
+		await waitFor(() => {
+			expect(replace).toHaveBeenCalledWith("/academias")
+		})
+		expect(useAuthStore.getState().accessToken).toBe(token)
 	})
 })

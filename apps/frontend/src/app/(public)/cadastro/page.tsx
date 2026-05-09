@@ -2,12 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
-import { useId, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Suspense, useId, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
-import { useSignup } from "@/features/auth/api"
+import { useLoginWithGoogle, useSignup } from "@/features/auth/api"
+import { GoogleSignInButton } from "@/features/auth/components/google-sign-in-button"
 import { type SignupInput, signupSchema } from "@/features/auth/schemas"
 import { ApiError } from "@/lib/errors"
 
@@ -19,6 +21,20 @@ function signupErrorMessage(error: unknown): string {
 		return error.userMessage
 	}
 	return "Não foi possível concluir o cadastro. Tente novamente."
+}
+
+const googleSignupStatusMessages: Record<number, string> = {
+	401: "Token Google inválido ou expirado.",
+	409: "Este e-mail Google já está vinculado a outra conta.",
+	422: "O e-mail da conta Google não está verificado.",
+}
+
+function googleSignupErrorMessage(error: unknown): string {
+	if (!(error instanceof ApiError)) {
+		return "Não foi possível concluir o cadastro com Google. Tente novamente."
+	}
+
+	return googleSignupStatusMessages[error.status] ?? error.userMessage
 }
 
 interface SuccessViewProps {
@@ -52,12 +68,15 @@ function SuccessView({ email, onAnother }: SuccessViewProps) {
 	)
 }
 
-export default function SignupPage() {
+function SignupForm() {
+	const router = useRouter()
 	const nameId = useId()
 	const emailId = useId()
 	const passwordId = useId()
 	const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
 	const { mutateAsync, isPending, error } = useSignup()
+	const { mutateAsync: mutateAsyncGoogle, isPending: isGooglePending } =
+		useLoginWithGoogle()
 	const {
 		register,
 		handleSubmit,
@@ -78,6 +97,14 @@ export default function SignupPage() {
 			toast.error(signupErrorMessage(submitError))
 		}
 	}
+
+	function onGoogleSuccess(idToken: string) {
+		mutateAsyncGoogle(idToken)
+			.then(() => router.replace("/academias"))
+			.catch((err: unknown) => toast.error(googleSignupErrorMessage(err)))
+	}
+
+	const isBusy = isPending || isGooglePending
 
 	if (registeredEmail) {
 		return (
@@ -105,7 +132,7 @@ export default function SignupPage() {
 				noValidate
 				className="flex flex-col gap-4"
 				onSubmit={handleSubmit(onSubmit)}
-				aria-busy={isPending}
+				aria-busy={isBusy}
 			>
 				<FormField
 					id={nameId}
@@ -142,10 +169,25 @@ export default function SignupPage() {
 					</p>
 				) : null}
 
-				<Button type="submit" disabled={isPending} data-testid="signup-submit">
+				<Button type="submit" disabled={isBusy} data-testid="signup-submit">
 					{isPending ? "Cadastrando…" : "Criar conta"}
 				</Button>
 			</form>
+
+			<div className="flex items-center gap-3">
+				<div className="flex-1 border-t border-border" />
+				<span className="text-xs text-muted-foreground">ou</span>
+				<div className="flex-1 border-t border-border" />
+			</div>
+
+			<GoogleSignInButton
+				onSuccess={onGoogleSuccess}
+				onError={(submitError) =>
+					toast.error(googleSignupErrorMessage(submitError))
+				}
+				disabled={isPending}
+				isPending={isGooglePending}
+			/>
 
 			<p className="text-sm text-muted-foreground">
 				Já tem conta?{" "}
@@ -157,5 +199,13 @@ export default function SignupPage() {
 				</Link>
 			</p>
 		</section>
+	)
+}
+
+export default function SignupPage() {
+	return (
+		<Suspense fallback={<div data-testid="signup-loading" aria-busy="true" />}>
+			<SignupForm />
+		</Suspense>
 	)
 }

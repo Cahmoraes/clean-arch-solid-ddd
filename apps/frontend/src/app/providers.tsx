@@ -1,5 +1,6 @@
 "use client"
 
+import { GoogleOAuthProvider } from "@react-oauth/google"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { type ReactNode, useEffect, useLayoutEffect, useState } from "react"
 import { getApi } from "@/lib/api"
@@ -52,12 +53,22 @@ function AuthProvider({ children }: { children: ReactNode }) {
 	return <>{children}</>
 }
 
+const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""
+
+if (process.env.NODE_ENV !== "production" && !googleClientId) {
+	console.warn(
+		"[GoogleOAuthProvider] NEXT_PUBLIC_GOOGLE_CLIENT_ID não está definido. O login com Google estará desabilitado.",
+	)
+}
+
 export function Providers({ children }: { children: ReactNode }) {
 	const [queryClient] = useState(() => createQueryClient())
 
 	return (
-		<QueryClientProvider client={queryClient}>
-			<AuthProvider>{children}</AuthProvider>
-		</QueryClientProvider>
+		<GoogleOAuthProvider clientId={googleClientId}>
+			<QueryClientProvider client={queryClient}>
+				<AuthProvider>{children}</AuthProvider>
+			</QueryClientProvider>
+		</GoogleOAuthProvider>
 	)
 }

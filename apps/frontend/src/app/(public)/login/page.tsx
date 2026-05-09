@@ -8,7 +8,8 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
-import { useLogin } from "@/features/auth/api"
+import { useLogin, useLoginWithGoogle } from "@/features/auth/api"
+import { GoogleSignInButton } from "@/features/auth/components/google-sign-in-button"
 import { type LoginInput, loginSchema } from "@/features/auth/schemas"
 import { ApiError } from "@/lib/errors"
 
@@ -22,12 +23,27 @@ function loginErrorMessage(error: unknown): string {
 	return "Não foi possível concluir o login. Tente novamente."
 }
 
+const googleLoginStatusMessages: Record<number, string> = {
+	401: "Token Google inválido ou expirado.",
+	422: "O e-mail da conta Google não está verificado.",
+}
+
+function googleLoginErrorMessage(error: unknown): string {
+	if (!(error instanceof ApiError)) {
+		return "Não foi possível concluir o login com Google. Tente novamente."
+	}
+
+	return googleLoginStatusMessages[error.status] ?? error.userMessage
+}
+
 function LoginForm() {
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const emailId = useId()
 	const passwordId = useId()
 	const { mutateAsync, isPending, error } = useLogin()
+	const { mutateAsync: mutateAsyncGoogle, isPending: isGooglePending } =
+		useLoginWithGoogle()
 	const {
 		register,
 		handleSubmit,
@@ -64,7 +80,7 @@ function LoginForm() {
 				noValidate
 				className="flex flex-col gap-4"
 				onSubmit={handleSubmit(onSubmit)}
-				aria-busy={isPending}
+				aria-busy={isPending || isGooglePending}
 			>
 				<FormField
 					id={emailId}
@@ -93,10 +109,37 @@ function LoginForm() {
 					</p>
 				) : null}
 
-				<Button type="submit" disabled={isPending} data-testid="login-submit">
+				<Button
+					type="submit"
+					disabled={isPending || isGooglePending}
+					data-testid="login-submit"
+				>
 					{isPending ? "Entrando…" : "Entrar"}
 				</Button>
 			</form>
+
+			<div className="flex items-center gap-3">
+				<div className="flex-1 border-t border-border" />
+				<span className="text-xs text-muted-foreground">ou</span>
+				<div className="flex-1 border-t border-border" />
+			</div>
+
+			<GoogleSignInButton
+				onSuccess={async (idToken) => {
+					try {
+						await mutateAsyncGoogle(idToken)
+						const redirect = searchParams?.get("redirect") ?? DEFAULT_REDIRECT
+						router.replace(redirect)
+					} catch (submitError) {
+						toast.error(googleLoginErrorMessage(submitError))
+					}
+				}}
+				onError={(submitError) =>
+					toast.error(googleLoginErrorMessage(submitError))
+				}
+				disabled={isPending}
+				isPending={isGooglePending}
+			/>
 
 			<p className="text-sm text-muted-foreground">
 				Não tem conta?{" "}
