@@ -1,8 +1,5 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: for testing */
 import { randomBytes } from "node:crypto"
-
 import { inject, injectable } from "inversify"
-
 import {
 	type Either,
 	failure,
@@ -64,7 +61,7 @@ export class AuthenticateUseCase {
 		return this.authToken.sign(
 			{
 				sub: {
-					id: user.id!,
+					id: user.id,
 					email: user.email,
 					role: user.role,
 					jwi,
@@ -78,7 +75,7 @@ export class AuthenticateUseCase {
 		return this.authToken.refreshToken(
 			{
 				sub: {
-					id: user.id!,
+					id: user.id,
 					email: user.email,
 					role: user.role,
 					jwi,

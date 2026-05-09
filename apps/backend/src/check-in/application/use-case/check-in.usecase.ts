@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import { CheckIn } from "@/check-in/domain/check-in"
 import type { InvalidDistanceError } from "@/check-in/domain/error/invalid-distance-error"
 import type { CheckInCreatedEvent } from "@/check-in/domain/event/check-in-created-event"
@@ -26,7 +25,6 @@ import type { Queue } from "@/shared/infra/queue/queue"
 import { UserHasAlreadyCheckedInToday } from "@/user/application/error/user-has-already-checked-in-today"
 import { UserNotFoundError } from "@/user/application/error/user-not-found-error"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
-
 import { MaxDistanceError } from "../error/max-distance-error"
 import type { CheckInRepository } from "../repository/check-in-repository"
 
@@ -98,7 +96,6 @@ export class CheckInUseCase {
 			const { id } = await this.checkInRepository
 				.withTransaction(tx)
 				.save(checkIn)
-			// throw new Error('Erro Transaction')
 			void DomainEventPublisher.instance.subscribe(
 				"checkInCreated",
 				this.createDomainEventSubscriber,

@@ -1,11 +1,9 @@
 import { inject, injectable } from "inversify"
-
 import type {
 	CheckInStatus,
 	FindManyOutput,
 } from "@/check-in/application/repository/check-in-repository"
 import { CHECKIN_TYPES } from "@/shared/infra/ioc/types"
-
 import type { CheckInRepository } from "../repository/check-in-repository"
 
 export interface FetchCheckInsUseCaseInput {
