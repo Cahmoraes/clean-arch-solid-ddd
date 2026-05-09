@@ -68,8 +68,11 @@ describe("Retry", () => {
 		})
 
 		test("Deve realizar o máximo de tentativas permitido com tempo agendado", async () => {
+			const rejectCallback = vi
+				.fn()
+				.mockRejectedValue(new Error("Only reject function"))
 			const retry = Retry.wrap({
-				callback: onlyRejectFunction,
+				callback: rejectCallback,
 				maxAttempts: 2,
 				time: 1000,
 			})
@@ -82,8 +85,7 @@ describe("Retry", () => {
 			await vi.runAllTimersAsync()
 
 			await expectation
-
-			expect(retry["_attempts"]).toBe(2)
+			expect(rejectCallback).toHaveBeenCalledTimes(2)
 		}, 7000)
 	})
 
@@ -103,7 +105,7 @@ describe("Retry", () => {
 			const promise = retry.run()
 			await vi.runAllTimersAsync()
 			await expect(promise).resolves.toEqual("Success")
-			expect(retry["_attempts"]).toBe(1)
+			expect(failTwoTimesAndThenSuccess).toHaveBeenCalledTimes(2)
 		})
 
 		test("Deve falhar 2 vezes e depois ter sucesso", async () => {
@@ -122,7 +124,7 @@ describe("Retry", () => {
 			const promise = retry.run()
 			await vi.runAllTimersAsync()
 			await expect(promise).resolves.toEqual("Success")
-			expect(retry["_attempts"]).toBe(2)
+			expect(failTwoTimesAndThenSuccess).toHaveBeenCalledTimes(3)
 		})
 	})
 })
