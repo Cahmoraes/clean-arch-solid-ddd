@@ -88,8 +88,18 @@ export class FastifyAdapter implements HttpServer {
 	}
 
 	private async setupCORS(): Promise<void> {
+		const allowedOrigins = (env.CORS_ORIGINS ?? "")
+			.split(",")
+			.map((origin) => origin.trim())
+			.filter(Boolean)
+
 		await this._server.register(fastifyCors, {
-			origin: true,
+			origin: (origin, callback) => {
+				if (!origin || allowedOrigins.includes(origin)) {
+					return callback(null, true)
+				}
+				callback(new Error("Not allowed by CORS"), false)
+			},
 			credentials: true,
 			methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 		})
