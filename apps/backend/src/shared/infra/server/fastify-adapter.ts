@@ -15,14 +15,14 @@ import { inject, injectable } from "inversify"
 import type { z } from "zod"
 import type pino from "pino"
 import type { AuthToken } from "@/user/application/auth/auth-token"
-import { Logger as LoggerDecorate } from "../decorator/logger"
+import { Logger as LoggerDecorate } from "../decorator/logger.js"
 import { env } from "../env"
 import { SHARED_TYPES } from "../ioc/types.js"
-import type { Logger } from "../logger/logger"
-import type { Queue } from "../queue/queue"
-import { FastifySwaggerSetupFactory } from "./factories/fastify-swagger-setup-factory"
-import { FastifySwaggerUISetupFactory } from "./factories/fastify-swagger-ui-setup-factory"
-import { GlobalErrorHandler } from "./global-error-handler"
+import type { Logger } from "../logger/logger.js"
+import type { Queue } from "../queue/queue.js"
+import { FastifySwaggerSetupFactory } from "./factories/fastify-swagger-setup-factory.js"
+import { FastifySwaggerUISetupFactory } from "./factories/fastify-swagger-ui-setup-factory.js"
+import { GlobalErrorHandler } from "./global-error-handler.js"
 import { ResponseValidationHook } from "./hooks/response-validation-hook.js"
 import type {
 	HandlerOptions,
@@ -30,12 +30,12 @@ import type {
 	METHOD,
 	Schema,
 	ZodValidationSchemas,
-} from "./http-server"
+} from "./http-server.js"
 import { RATE_LIMIT_CONFIG } from "./plugins/rate-limit-config.js"
 import { RateLimitPlugin } from "./plugins/rate-limit-plugin.js"
-import { AdminRoleCheck } from "./services/admin-role-check"
-import { AuthenticateHandler } from "./services/authenticate-pre-handler"
-import { CheckSessionRevokedHandler } from "./services/check-session-revoked"
+import { AdminRoleCheck } from "./services/admin-role-check.js"
+import { AuthenticateHandler } from "./services/authenticate-pre-handler.js"
+import { CheckSessionRevokedHandler } from "./services/check-session-revoked.js"
 
 @injectable()
 export class FastifyAdapter implements HttpServer {
