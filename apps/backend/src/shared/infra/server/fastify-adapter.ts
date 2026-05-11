@@ -13,10 +13,11 @@ import fastify, {
 } from "fastify"
 import { inject, injectable } from "inversify"
 import type { z } from "zod"
+import type pino from "pino"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { Logger as LoggerDecorate } from "../decorator/logger"
 import { env } from "../env"
-import { SHARED_TYPES } from "../ioc/types"
+import { SHARED_TYPES } from "../ioc/types.js"
 import type { Logger } from "../logger/logger"
 import type { Queue } from "../queue/queue"
 import { FastifySwaggerSetupFactory } from "./factories/fastify-swagger-setup-factory"
@@ -47,8 +48,11 @@ export class FastifyAdapter implements HttpServer {
 		private readonly logger: Logger,
 		@inject(SHARED_TYPES.Queue)
 		private readonly queue: Queue,
+		@inject(SHARED_TYPES.PinoLogger)
+		private readonly pinoLogger: pino.Logger,
 	) {
 		this._server = fastify({
+			logger: this.pinoLogger,
 			ajv: {
 				customOptions: {
 					keywords: ["example"],
