@@ -5,21 +5,19 @@ import { container } from "@/shared/infra/ioc/container"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
-import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
 import { UserRoutes } from "./routes/user-routes"
 
 describe("Cadastrar Usuário", () => {
 	let fastifyServer: FastifyAdapter
-	let userRepository: UserRepository
+	let userRepository: InMemoryUserRepository
 
 	beforeEach(async () => {
-		const inMemoryRepository = new InMemoryUserRepository()
 		container.snapshot()
+		userRepository = new InMemoryUserRepository()
 		container
 			.rebind(USER_TYPES.Repositories.User)
-			.toConstantValue(inMemoryRepository)
-		userRepository = container.get<UserRepository>(USER_TYPES.Repositories.User)
+			.toConstantValue(userRepository)
 		fastifyServer = await serverBuildForTest()
 		await fastifyServer.ready()
 	})
@@ -99,5 +97,23 @@ describe("Cadastrar Usuário", () => {
 		expect(result.body).toEqual({
 			message: "Name must have between 10 and 30 characters",
 		})
+	})
+
+	test("Não deve criar um usuário com role ADMIN via endpoint público", async () => {
+		const input = {
+			name: "any_name",
+			email: "attacker@evil.com",
+			password: "any_password",
+			role: "ADMIN",
+		}
+
+		const result = await request(fastifyServer.server)
+			.post(UserRoutes.CREATE)
+			.send(input)
+
+		expect(result.status).toBe(HTTP_STATUS.CREATED)
+
+		const created = userRepository.users.find((u) => u.email === input.email)
+		expect(created?.role).toBe("MEMBER")
 	})
 })

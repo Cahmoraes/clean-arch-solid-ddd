@@ -9,7 +9,6 @@ import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-buil
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
 import type { CreateUserUseCase } from "@/user/application/use-case/create-user.usecase"
-import { RoleValues } from "@/user/domain/value-object/role"
 import { UserRoutes } from "./routes/user-routes"
 
 const createUserRequestSchema = z.object({
@@ -22,11 +21,6 @@ const createUserRequestSchema = z.object({
 		description: "User password (min 6 characters)",
 		example: "secret123",
 	}),
-	role: z
-		.enum([RoleValues.ADMIN, RoleValues.MEMBER])
-		.optional()
-		.default("MEMBER")
-		.meta({ description: "User role", example: "MEMBER" }),
 })
 
 const createUserResponseSchema = z.object({
@@ -101,7 +95,7 @@ function makeCreateUserControllerSwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
 		tags: ["users"],
 		summary: "Create a new user",
-		description: "Endpoint to create a new user with role and credentials.",
+		description: "Endpoint to create a new user with credentials.",
 		body: createUserRequestSchema,
 		responses: {
 			201: {
