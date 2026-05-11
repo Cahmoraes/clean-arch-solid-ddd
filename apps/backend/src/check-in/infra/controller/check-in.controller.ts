@@ -1,3 +1,4 @@
+import type { FastifyRequest } from "fastify"
 import { inject } from "inversify"
 import { ZodError, z } from "zod"
 import type { CheckInUseCase } from "@/check-in/application/use-case/check-in.usecase"
@@ -14,10 +15,6 @@ import type {
 import { CheckInRoutes } from "./routes/check-in-routes"
 
 const checkInRequestSchema = z.object({
-	userId: z.string().meta({
-		description: "User ID performing check-in",
-		example: "550e8400-e29b-41d4-a716-446655440000",
-	}),
 	gymId: z.string().meta({
 		description: "Gym ID for check-in",
 		example: "660e8400-e29b-41d4-a716-446655440000",
@@ -55,7 +52,6 @@ export class CheckInController extends BaseController {
 			{
 				callback: this.callback,
 				isProtected: true,
-				onlyAdmin: true,
 			},
 			makeCheckInSwaggerSchema(),
 		)
@@ -73,14 +69,14 @@ export class CheckInController extends BaseController {
 		})
 	}
 
-	private async callback(req: any) {
+	private async callback(req: FastifyRequest) {
 		const parsedBodyOrError = this.parseRequest(checkInRequestSchema, req.body)
 		if (parsedBodyOrError.isFailure()) {
 			return this.createResponseError(parsedBodyOrError)
 		}
 
 		const result = await this.checkIn.execute({
-			userId: parsedBodyOrError.value.userId,
+			userId: req.user.sub.id,
 			gymId: parsedBodyOrError.value.gymId,
 			userLatitude: parsedBodyOrError.value.userLatitude,
 			userLongitude: parsedBodyOrError.value.userLongitude,
@@ -105,7 +101,7 @@ function makeCheckInSwaggerSchema(): Schema {
 		tags: ["check-ins"],
 		summary: "Create a check-in",
 		description:
-			"Create a check-in for a user at a gym. Validates proximity to gym. Requires ADMIN role",
+			"Create a check-in for a user at a gym. Validates proximity to gym.",
 		security: true,
 		body: checkInRequestSchema,
 		responses: {

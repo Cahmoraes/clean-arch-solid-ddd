@@ -41,7 +41,6 @@ export const checkInsKeys = {
 export const CHECK_INS_DEFAULT_PAGE_SIZE = 20
 
 export interface CreateCheckInInput {
-	userId: string
 	gymId: string
 	userLatitude: number
 	userLongitude: number
@@ -57,7 +56,6 @@ async function createCheckInRequest(
 ): Promise<CreateCheckInResult> {
 	const { data, error } = await api.POST("/check-ins", {
 		body: {
-			userId: input.userId,
 			gymId: input.gymId,
 			userLatitude: input.userLatitude,
 			userLongitude: input.userLongitude,

@@ -187,7 +187,6 @@ describe("GymDetailPage", () => {
 			)
 		})
 		expect(postBody).toMatchObject({
-			userId: "user-1",
 			gymId: "gym-1",
 			userLatitude: -23.5,
 			userLongitude: -46.6,

@@ -10,7 +10,6 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCreateCheckIn } from "@/features/check-ins/api"
 import { type Gym, useGymById } from "@/features/gyms/api"
-import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError } from "@/lib/errors"
 
 function DetailLoading() {
@@ -87,16 +86,11 @@ interface CheckInButtonProps {
 }
 
 function CheckInButton({ gym }: CheckInButtonProps) {
-	const userId = useAuthStore((state) => state.user?.id)
 	const { mutateAsync, isPending } = useCreateCheckIn()
 	const [isLocating, setIsLocating] = useState(false)
 	const busy = isPending || isLocating
 
 	async function handleCheckIn() {
-		if (!userId) {
-			toast.error("Você precisa estar autenticado para fazer check-in.")
-			return
-		}
 		setIsLocating(true)
 		const coords = (await getUserPosition()) ?? {
 			latitude: gym.latitude,
@@ -105,7 +99,6 @@ function CheckInButton({ gym }: CheckInButtonProps) {
 		setIsLocating(false)
 		try {
 			await mutateAsync({
-				userId,
 				gymId: gym.id,
 				userLatitude: coords.latitude,
 				userLongitude: coords.longitude,

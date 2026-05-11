@@ -2,7 +2,6 @@
 import request from "supertest"
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
-import { isValidDate } from "test/is-valid-date"
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
 import { serverBuild } from "@/bootstrap/server-build"
 import { CheckInRoutes } from "@/check-in/infra/controller/routes/check-in-routes"
@@ -76,7 +75,7 @@ describe("Validar CheckIn", () => {
 		expect(response.status).toBe(HTTP_STATUS.OK)
 		const responseBody = response.body
 		expect(responseBody).toHaveProperty("validatedAt")
-		expect(isValidDate(responseBody.validatedAt)).toBeTruthy()
+		expect(new Date(responseBody.validatedAt).getTime()).not.toBeNaN()
 	})
 
 	test("should return 400 for invalid check-in ID", async () => {

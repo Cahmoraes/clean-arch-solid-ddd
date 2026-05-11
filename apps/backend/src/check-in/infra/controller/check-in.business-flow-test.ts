@@ -1,7 +1,6 @@
 import request from "supertest"
 import { createAndSaveGym } from "test/factory/create-and-save-gym"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
-import { isValidDate } from "test/is-valid-date"
 
 import { serverBuild } from "@/bootstrap/server-build"
 import type { AuthenticateUseCase } from "@/session/application/use-case/authenticate.usecase"
@@ -56,9 +55,9 @@ describe("Realizar CheckIn", () => {
 		const createUserDto = {
 			email: "john@doe.com",
 			password: "securepassword123",
-			role: RoleValues.ADMIN,
+			role: RoleValues.MEMBER,
 		}
-		const user = await createAndSaveUser({ userRepository, ...createUserDto })
+		await createAndSaveUser({ userRepository, ...createUserDto })
 		const gym = await createAndSaveGym({
 			gymRepository,
 			title: "fake gym",
@@ -80,7 +79,6 @@ describe("Realizar CheckIn", () => {
 			.post(CheckInRoutes.CREATE)
 			.auth(token, { type: "bearer" })
 			.send({
-				userId: user.id,
 				gymId: gym.id,
 				userLatitude: -27.0747279,
 				userLongitude: -49.4889672,
@@ -88,6 +86,6 @@ describe("Realizar CheckIn", () => {
 
 		expect(response.body.message).toBe("Check-in created")
 		expect(response.body.id).toBeDefined()
-		expect(isValidDate(response.body.date)).toBeTruthy()
+		expect(new Date(response.body.date).getTime()).not.toBeNaN()
 	})
 })

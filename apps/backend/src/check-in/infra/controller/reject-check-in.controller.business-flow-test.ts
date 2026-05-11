@@ -2,7 +2,6 @@
 import request from "supertest"
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
-import { isValidDate } from "test/is-valid-date"
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
 import { serverBuild } from "@/bootstrap/server-build"
 import { CheckInRoutes } from "@/check-in/infra/controller/routes/check-in-routes"
@@ -76,7 +75,7 @@ describe("Rejeitar CheckIn", () => {
 		expect(response.status).toBe(HTTP_STATUS.OK)
 		const responseBody = response.body
 		expect(responseBody).toHaveProperty("rejectedAt")
-		expect(isValidDate(responseBody.rejectedAt)).toBeTruthy()
+		expect(new Date(responseBody.rejectedAt).getTime()).not.toBeNaN()
 	})
 
 	test("should reject a validated check-in (reversal)", async () => {
@@ -102,7 +101,7 @@ describe("Rejeitar CheckIn", () => {
 		expect(response.status).toBe(HTTP_STATUS.OK)
 		const responseBody = response.body
 		expect(responseBody).toHaveProperty("rejectedAt")
-		expect(isValidDate(responseBody.rejectedAt)).toBeTruthy()
+		expect(new Date(responseBody.rejectedAt).getTime()).not.toBeNaN()
 	})
 
 	test("should return 404 for non-existent check-in", async () => {

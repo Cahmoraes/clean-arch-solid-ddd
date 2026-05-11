@@ -42,14 +42,12 @@ describe("useCreateCheckIn", () => {
 			wrapper: Wrapper,
 		})
 		const created = await result.current.mutateAsync({
-			userId: "user-1",
 			gymId: "gym-42",
 			userLatitude: -23.5,
 			userLongitude: -46.6,
 		})
 		expect(created.id).toBe("checkin-1")
 		expect(receivedBody).toEqual({
-			userId: "user-1",
 			gymId: "gym-42",
 			userLatitude: -23.5,
 			userLongitude: -46.6,
@@ -70,7 +68,6 @@ describe("useCreateCheckIn", () => {
 		})
 		await expect(
 			result.current.mutateAsync({
-				userId: "u1",
 				gymId: "g1",
 				userLatitude: 0,
 				userLongitude: 0,
@@ -91,7 +88,6 @@ describe("useCreateCheckIn", () => {
 		})
 		await expect(
 			result.current.mutateAsync({
-				userId: "u1",
 				gymId: "g1",
 				userLatitude: 0,
 				userLongitude: 0,
