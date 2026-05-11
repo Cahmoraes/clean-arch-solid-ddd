@@ -55,8 +55,15 @@ export class UserProfileController extends BaseController {
 			return this.createResponseError(parseParamsResult)
 		}
 
+		const requesterId = req.user.sub.id
+		const targetId = parseParamsResult.value.userId
+		const isAdmin = req.user.sub.role === "ADMIN"
+		if (requesterId !== targetId && !isAdmin) {
+			return ResponseFactory.FORBIDDEN({ message: "Forbidden" })
+		}
+
 		const result = await this.userProfile.execute({
-			userId: parseParamsResult.value.userId,
+			userId: targetId,
 		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)
@@ -95,6 +102,7 @@ function makeUserProfileSwaggerSchema(): Schema {
 				schema: userProfileResponseSchema,
 			},
 			401: { description: "Unauthorized" },
+			403: { description: "Forbidden", schema: errorResponseSchema },
 			404: { description: "User not found", schema: errorResponseSchema },
 		},
 	})

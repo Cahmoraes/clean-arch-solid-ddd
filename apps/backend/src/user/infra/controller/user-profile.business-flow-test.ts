@@ -69,6 +69,71 @@ describe("Obter Perfil do usuário por ID", () => {
 		})
 	})
 
+	test("Não deve permitir que MEMBER acesse o perfil de outro usuário", async () => {
+		const requesterId = "member-requester-id"
+		const targetId = "member-target-id"
+		await createAndSaveUser({
+			userRepository,
+			id: requesterId,
+			email: "member.requester@email.com",
+			password: "member_password",
+		})
+		await createAndSaveUser({
+			userRepository,
+			id: targetId,
+			email: "member.target@email.com",
+		})
+
+		const result = await authenticate.execute({
+			email: "member.requester@email.com",
+			password: "member_password",
+		})
+		const token = result.force.success().value.token
+		const response = await request(fastifyServer.server)
+			.get(toPath(targetId))
+			.set("Authorization", `Bearer ${token}`)
+			.send()
+
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
+		expect(response.body).toEqual({ message: "Forbidden" })
+	})
+
+	test("Deve permitir que ADMIN acesse o perfil de qualquer usuário", async () => {
+		const adminId = "admin-requester-id"
+		const targetId = "admin-target-id"
+		await createAndSaveUser({
+			userRepository,
+			id: adminId,
+			email: "admin.requester@email.com",
+			password: "admin_password",
+			role: "ADMIN",
+		})
+		await createAndSaveUser({
+			userRepository,
+			id: targetId,
+			name: "target_name",
+			email: "admin.target@email.com",
+		})
+
+		const result = await authenticate.execute({
+			email: "admin.requester@email.com",
+			password: "admin_password",
+		})
+		const token = result.force.success().value.token
+		const response = await request(fastifyServer.server)
+			.get(toPath(targetId))
+			.set("Authorization", `Bearer ${token}`)
+			.send()
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body).toEqual({
+			id: targetId,
+			name: "target_name",
+			email: "admin.target@email.com",
+			role: "MEMBER",
+		})
+	})
+
 	test("Não deve obter o perfil de um usuário inexistente", async () => {
 		const response = await request(fastifyServer.server)
 			.get(toPath("inexistent_id"))
