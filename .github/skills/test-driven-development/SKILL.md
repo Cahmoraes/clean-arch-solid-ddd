@@ -323,6 +323,8 @@ PASS
 
 **REFACTOR**
 Extract validation for multiple fields if needed.
+*always use `refactoring` skill to help you in this stage!*
+The `refactoring` skill helps identify code smells and contains a catalog of refactoring options.
 
 ## Verification Checklist
 
