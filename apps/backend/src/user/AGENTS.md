@@ -218,7 +218,7 @@ export const UserRoutes = {
 | Rota                            | Método | Proteção            |
 |---------------------------------|--------|---------------------|
 | `POST /users`                   | POST   | Pública             |
-| `GET /users`                    | GET    | `isProtected: true` |
+| `GET /users`                    | GET    | `isProtected: true, onlyAdmin: true` |
 | `GET /users/:userId`            | GET    | `isProtected: true` |
 | `GET /users/me`                 | GET    | `isProtected: true` |
 | `GET /users/me/metrics`         | GET    | `isProtected: true` |

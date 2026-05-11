@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import request from "supertest"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
@@ -7,6 +8,7 @@ import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-me
 import { container } from "@/shared/infra/ioc/container"
 import { AUTH_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
+import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import { StatusTypes } from "@/user/domain/value-object/status"
 import { UserRoutes } from "./routes/user-routes"
 
@@ -16,6 +18,7 @@ describe("Buscar Usuários", () => {
 	let userRepository: InMemoryUserRepository
 	let authenticate: AuthenticateUseCase
 	let token: string
+	let memberToken: string
 
 	beforeEach(async () => {
 		container.snapshot()
@@ -31,16 +34,31 @@ describe("Buscar Usuários", () => {
 		)
 		fastifyServer = await serverBuildForTest()
 		await fastifyServer.ready()
+
 		await createAndSaveUser({
 			userRepository,
-			email: "auth@user.com",
+			id: randomUUID(),
+			email: "admin@user.com",
+			password: "any_password",
+			role: "ADMIN",
+		})
+		const adminResult = await authenticate.execute({
+			email: "admin@user.com",
 			password: "any_password",
 		})
-		const result = await authenticate.execute({
-			email: "auth@user.com",
+		token = adminResult.force.success().value.token
+
+		await createAndSaveUser({
+			userRepository,
+			id: randomUUID(),
+			email: "member@user.com",
 			password: "any_password",
 		})
-		token = result.force.success().value.token
+		const memberResult = await authenticate.execute({
+			email: "member@user.com",
+			password: "any_password",
+		})
+		memberToken = memberResult.force.success().value.token
 	})
 
 	afterEach(async () => {
@@ -103,6 +121,15 @@ describe("Buscar Usuários", () => {
 		expect(response.body.users[0].id).not.toBe(fakeId)
 	})
 
+	test("Não deve permitir que MEMBER liste usuários", async () => {
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ limit: 10, page: 1 })
+			.set("Authorization", `Bearer ${memberToken}`)
+
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
+	})
+
 	test("Deve retornar os usuários da página 1 em CSV", async () => {
 		const fakeId = "fake_id"
 		userDAO.createFakeUser({
@@ -120,12 +147,7 @@ describe("Buscar Usuários", () => {
 			.set("Accept", "text/csv")
 			.set("Authorization", `Bearer ${token}`)
 
-		expect(response.body.users).toEqual(expect.stringContaining(fakeId))
-		expect(response.body.pagination).toEqual({
-			limit: 10,
-			page: 1,
-			total: 20,
-		})
-		expect(response.status).toBe(200)
+		expect(response.text).toEqual(expect.stringContaining(fakeId))
+		expect(response.status).toBe(HTTP_STATUS.OK)
 	})
 })

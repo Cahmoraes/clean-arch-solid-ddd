@@ -1,4 +1,4 @@
-import type { FastifyRequest } from "fastify"
+import type { FastifyReply, FastifyRequest } from "fastify"
 import { inject } from "inversify"
 import { z } from "zod"
 import { BaseController } from "@/shared/infra/controller/base-controller"
@@ -6,7 +6,10 @@ import { ResponseFactory } from "@/shared/infra/controller/factory/response-fact
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import { PresenterFactory } from "@/shared/infra/presenter/presenter-factory"
+import {
+	MimeType,
+	PresenterFactory,
+} from "@/shared/infra/presenter/presenter-factory"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import type { FetchUsersUseCase } from "@/user/application/use-case/fetch-users.usecase"
 import { UserRoutes } from "./routes/user-routes"
@@ -43,12 +46,13 @@ export class FetchUsersController extends BaseController {
 			{
 				callback: this.callback,
 				isProtected: true,
+				onlyAdmin: true,
 			},
 			makeFetchUsersSwaggerSchema(),
 		)
 	}
 
-	private async callback(req: FastifyRequest) {
+	private async callback(req: FastifyRequest, reply: FastifyReply) {
 		const parsedQueryParamsOrError = this.parseRequest(
 			fetchUsersRequestSchema,
 			req.query,
@@ -62,10 +66,15 @@ export class FetchUsersController extends BaseController {
 			limit,
 			page,
 		})
+		const users = this.presenter(req.headers.accept).format(result.data)
+		if (req.headers.accept === MimeType.CSV) {
+			reply.header("Content-Type", MimeType.CSV)
+			return ResponseFactory.OK({ body: users })
+		}
 
 		return ResponseFactory.OK({
 			body: {
-				users: this.presenter(req.headers.accept).format(result.data),
+				users,
 				pagination: result.pagination,
 			},
 		})
@@ -107,7 +116,8 @@ function makeFetchUsersSwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
 		tags: ["users"],
 		summary: "List all users",
-		description: "Retrieve paginated list of users.",
+		description:
+			"Retrieve paginated list of users. Requires authentication and admin role.",
 		security: true,
 		querystring: fetchUsersRequestSchema,
 		responses: {
@@ -117,6 +127,7 @@ function makeFetchUsersSwaggerSchema(): Schema {
 			},
 			400: { description: "Bad Request", schema: errorResponseSchema },
 			401: { description: "Unauthorized" },
+			403: { description: "Forbidden", schema: errorResponseSchema },
 		},
 	})
 }
