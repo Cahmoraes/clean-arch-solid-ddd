@@ -10,7 +10,7 @@ const envSchema = z.object({
 	NODE_ENV: z.enum(["test", "production"]).default("production"),
 	PORT: z.coerce.number(),
 	HOST: z.string().default("0.0.0.0"),
-	PASSWORD_SALT: z.coerce.number().default(2),
+	PASSWORD_SALT: z.coerce.number().min(10).default(12),
 	PRIVATE_KEY: z.string().default("private-key-example"),
 	ITEMS_PER_PAGE: z.coerce.number().default(20),
 	CHECK_IN_EXPIRATION_TIME: z.coerce.number().default(20),

@@ -9,7 +9,7 @@ import { config } from "dotenv"
 process.env.NODE_ENV = "test"
 
 config({
-	path: join(cwd(), ".env"),
+	path: [join(cwd(), ".env.test"), join(cwd(), ".env")],
 	override: false, // Nao sobrescrever NODE_ENV definido acima
 	quiet: true,
 })
