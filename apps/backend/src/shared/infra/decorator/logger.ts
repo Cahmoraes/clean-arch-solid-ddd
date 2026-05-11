@@ -1,11 +1,10 @@
-import { SHARED_TYPES } from "../ioc/types"
-import type { Logger as ILogger } from "../logger/logger"
-import type { WinstonAdapter } from "../logger/winston-adapter"
+import { SHARED_TYPES } from "../ioc/types.js"
+import type { Logger as ILogger } from "../logger/logger.js"
 
-export async function importLoggerWithLazyLoading(): Promise<WinstonAdapter> {
-	const module = await import("../ioc/container")
+export async function importLoggerWithLazyLoading(): Promise<ILogger> {
+	const module = await import("../ioc/container.js")
 	const container = module.container
-	const logger = container.get<WinstonAdapter>(SHARED_TYPES.Logger)
+	const logger = container.get<ILogger>(SHARED_TYPES.Logger)
 	return logger
 }
 
@@ -29,7 +28,7 @@ export function Logger({ message, type }: LoggerProps) {
 				logger[loggerMethod](target, message)
 				return result
 			} catch (error: any) {
-				logger.publish("error", error.message)
+				logger.error(target, error.message)
 				throw error
 			}
 		}

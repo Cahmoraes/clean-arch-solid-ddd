@@ -11,7 +11,8 @@ import { PrismaUnitOfWork } from "@/shared/infra/database/repository/unit-of-wor
 import { UnitOfWorkProvider } from "@/shared/infra/database/repository/unit-of-work/unit-of-work-provider"
 import { MailerGatewayMemory } from "@/shared/infra/gateway/mailer-gateway-memory"
 import { NodeMailerAdapter } from "@/shared/infra/gateway/node-mailer-adapter"
-import { WinstonAdapter } from "@/shared/infra/logger/winston-adapter"
+import { PinoAdapter } from "@/shared/infra/logger/pino-adapter.js"
+import { createPinoLogger } from "@/shared/infra/logger/pino-logger-factory.js"
 import { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 import { SHARED_TYPES } from "../../types"
 import { CacheDBProvider } from "./cache-db-provider"
@@ -30,7 +31,8 @@ export const infraModule = new ContainerModule(({ bind }) => {
 	bind(SHARED_TYPES.Redis)
 		.toDynamicValue(CacheDBProvider.provide)
 		.inSingletonScope()
-	bind(SHARED_TYPES.Logger).to(WinstonAdapter).inSingletonScope()
+	bind(SHARED_TYPES.PinoLogger).toConstantValue(createPinoLogger())
+	bind(SHARED_TYPES.Logger).to(PinoAdapter).inSingletonScope()
 	bind(SHARED_TYPES.Queue)
 		.toDynamicValue(QueueProvider.provide)
 		.inSingletonScope()

@@ -29,6 +29,7 @@ export const SHARED_TYPES = {
 		PreHandlerAuthenticate: Symbol.for("PreHandlerAuthenticate"),
 	},
 	Logger: Symbol.for("Logger"),
+	PinoLogger: Symbol.for("PinoLogger"),
 	Queue: Symbol.for("Queue"),
 	Mailer: Symbol.for("Mailer"),
 	Redis: Symbol.for("Redis"),
