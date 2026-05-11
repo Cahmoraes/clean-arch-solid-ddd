@@ -27,18 +27,15 @@ export class GoogleAuthProviderImpl implements GoogleAuthProvider {
 		if (!this.googleClientId) {
 			return failure(new InvalidGoogleTokenError())
 		}
-
 		try {
 			const ticket = await this.client.verifyIdToken({
 				idToken,
 				audience: this.googleClientId,
 			})
 			const payload = ticket.getPayload()
-
 			if (!payload?.sub || !payload.email || !payload.name) {
 				return failure(new InvalidGoogleTokenError())
 			}
-
 			return success({
 				sub: payload.sub,
 				email: payload.email,
