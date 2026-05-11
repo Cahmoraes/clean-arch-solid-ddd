@@ -46,7 +46,7 @@ Before starting the plan, check if a PRD exists:
 
 **If no PRD exists:**
 
-Proceed as normal — derive tasks from the design spec and conversation context. Note in the plan header: "Spec-only planning; no RF traceability available." The PRD is an enrichment, not a hard dependency.
+Proceed as normal — derive tasks from the design spec and conversation context. Note in the plan header: "Spec-only planning; no RF traceability available." The PRD is an enrichment, not a hard dependency. Omit `[RF-XXX]` tags everywhere.
 
 ## Task Tracking Artifacts
 
@@ -68,66 +68,18 @@ Rule: everything lives inside the feature directory. Tasks are flat in `plans/` 
 
 ### Tasks Index (`tasks-<feature-name>.md`)
 
-Use the template in `./templates/tasks-template.md`. The index is a flat list — no subtasks, no steps. Each entry links to its individual task file:
-
-```markdown
-# Tarefas: [Feature Name]
-
-**Spec:** `../specs/<feature-name>-design.md`
-**PRD:** `../prd/prd-<feature-name>.md`
-
-**Goal:** [One sentence describing what this builds]
-**Architecture:** [2-3 sentences about approach]
-**Tech Stack:** [Key technologies/libraries]
-
-## Tarefas
-
-- [ ] 1. Setup project structure [RF-001] → `task-01.md`
-- [ ] 2. User login flow [RF-002, RF-003] → `task-02.md`
-- [ ] 3. Token refresh [RF-004] → `task-03.md`
-```
-
-The `[RF-XXX]` mapping is included only when a PRD exists. Task file paths are relative to the same directory as the tasks index (flat in `plans/`).
+**Before writing the tasks index, read `./templates/tasks-template.md` and copy its structure exactly.** Every tasks index MUST start with the exact header from that template — including the required agentic-worker notice banner and the `---` separator. Fill in feature-specific content: goal, architecture, tech stack, and the flat task list with RF-XXX mappings (only when a PRD exists; omit them entirely when planning from spec alone). Task file paths are relative to the same directory as the tasks index (flat in `plans/`).
 
 ### Individual Task Files (`task-NN.md`)
 
-Each task file is self-contained — an engineer (or subagent) should be able to implement it without reading other task files. Content comes from the corresponding task in the plan:
+**Before writing each task file, read `./templates/task-file-template.md` and preserve all required headers exactly.** Each task file is self-contained — an engineer (or subagent) should be able to implement it without reading other task files. Content comes from the corresponding task in the plan.
 
-```markdown
-# Task N: [Task Title] [RF-XXX, RF-YYY]
-
-**Status:** PENDING
-**PRD:** `../prd/prd-<feature-name>.md`
-**Spec:** `../specs/<feature-name>-design.md`
-
-## Visão Geral
-
-[Brief description of what this task accomplishes]
-
-## Arquivos
-
-- Create: `exact/path/to/file.py`
-- Modify: `exact/path/to/existing.py`
-- Test: `tests/exact/path/to/test.py`
-
-## Passos
-
-[Full steps with code blocks, copied from the plan — not references.
-Each step uses checkbox syntax for fine-grained tracking]
-
-- [ ] **Step 1: Write the failing test**
-...
-
-## Critérios de Sucesso
-
-- [Measurable success criteria]
-- [Acceptance criteria linked to RF-XXX if PRD exists]
-```
-
-**Mandatory context references:** Every task file MUST include `**PRD:**` and `**Spec:**` fields in the header pointing to the relative paths of the PRD and design spec. These enable execution agents to read full feature context (functional requirements, user stories, architecture decisions) before implementing. If no PRD exists, use `**PRD:** N/A`.
+**Parser-critical fields (must be present verbatim):**
+- `**Status:** PENDING` — execution skills update this as work progresses
+- `**PRD:** <relative-path>` — if no PRD exists, use `**PRD:** N/A`
+- `**Spec:** <relative-path>` — always required
 
 **Status values:** `PENDING` → `IN_PROGRESS` → `DONE`
-- Execution skills update the `Status:` field as they work through tasks
 - The `Status:` in the task file is the detailed view; the `[x]` in the tasks index is the management view
 
 ### When to Generate
@@ -145,82 +97,20 @@ Before defining tasks, map out which files will be created or modified and what 
 - Design units with clear boundaries and well-defined interfaces. Each file should have one clear responsibility.
 - You reason best about code you can hold in context at once, and your edits are more reliable when files are focused. Prefer smaller, focused files over large ones that do too much.
 - Files that change together should live together. Split by responsibility, not by technical layer.
-- In existing codebases, follow established patterns. If the codebase uses large files, don't unilaterally restructure - but if a file you're modifying has grown unwieldy, including a split in the plan is reasonable.
+- In existing codebases, follow established patterns. If the codebase uses large files, don't unilaterally restructure — but if a file you're modifying has grown unwieldy, including a split in the plan is reasonable.
 
 This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
 
 ## Bite-Sized Task Granularity
 
-**Each step is one action (2-5 minutes):**
-- "Write the failing test" - step
-- "Run it to make sure it fails" - step
-- "Implement the minimal code to make the test pass" - step
-- "Run the tests and make sure they pass" - step
-- "Commit" - step
+**Each step is one action (2–5 minutes):**
+- "Write the failing test" — step
+- "Run it to make sure it fails" — step
+- "Implement the minimal code to make the test pass" — step
+- "Run the tests and make sure they pass" — step
+- "Commit" — step
 
-## Tasks Index Header
-
-**Every tasks index MUST start with this header:**
-
-```markdown
-# Tarefas: [Feature Name]
-
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement tasks. Each task file contains full steps with checkbox (`- [ ]`) syntax for tracking.
-
-**Spec:** `../specs/<feature-name>-design.md`
-**PRD:** `../prd/prd-<feature-name>.md`
-
-**Goal:** [One sentence describing what this builds]
-
-**Architecture:** [2-3 sentences about approach]
-
-**Tech Stack:** [Key technologies/libraries]
-
----
-```
-
-## Task Structure
-
-````markdown
-### Task N: [Component Name]
-
-**Files:**
-- Create: `exact/path/to/file.py`
-- Modify: `exact/path/to/existing.py:123-145`
-- Test: `tests/exact/path/to/test.py`
-
-- [ ] **Step 1: Write the failing test**
-
-```python
-def test_specific_behavior():
-    result = function(input)
-    assert result == expected
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: FAIL with "function not defined"
-
-- [ ] **Step 3: Write minimal implementation**
-
-```python
-def function(input):
-    return expected
-```
-
-- [ ] **Step 4: Run test to verify it passes**
-
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: PASS
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add tests/path/test.py src/path/file.py
-git commit -m "feat: add specific feature"
-```
-````
+**When writing `## Passos` sections in task files, read `./references/required-task-step-pattern.md` and follow the pattern exactly** — TDD steps with actual code blocks, exact run commands, and expected outputs. That file is the normative contract for step format.
 
 ## No Placeholders
 
@@ -240,23 +130,7 @@ Every step must contain the actual content an engineer needs. These are **plan f
 
 ## Self-Review
 
-After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.
-
-**1. Spec coverage:** Skim each section/requirement in the spec. Can you point to a task that implements it? List any gaps.
-
-**2. PRD traceability (if PRD exists):** Verify every functional requirement (RF-XXX) from the PRD maps to at least one task. List any orphaned requirements. Verify that no task implements something listed in "Fora de Escopo."
-
-**3. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
-
-**4. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
-
-**5. Task tracking artifacts:** Verify that:
-- `tasks-<feature-name>.md` exists and lists every task (same count, same titles)
-- Every task in the index has a corresponding `task-NN.md` file in the same `plans/` directory
-- RF-XXX mappings in the index match those in the task files (if PRD exists)
-- All checkboxes are `[ ]` (none pre-checked)
-- Every task file has `**PRD:**` and `**Spec:**` fields with correct relative paths
-- Paths in the index correctly point to existing task files
+After writing the complete plan, look at the spec with fresh eyes. **Read `./references/self-review-checklist.md` and run through all five steps.** Fix issues inline as you find them — no need to re-review after fixing.
 
 > **Deterministic validation (preferred):** Run the validator script to catch format issues automatically:
 > ```bash
@@ -264,29 +138,10 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 > ```
 > Fix any `errors` in the output before handing off to execution skills. `warnings` are advisory.
 
-If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
+### Optional External Review
+
+If you want an independent second opinion on the plan's completeness and buildability, dispatch a plan document reviewer subagent using the template in `./plan-document-reviewer-prompt.md`. This is optional — use it for complex or high-stakes plans where a self-review might not be enough.
 
 ## Execution Handoff
 
-After saving the tasks index and task files, offer execution choice:
-
-**"Tasks created and saved to `docs/superpowers/<feature-name>/plans/`.**
-**Task index: `tasks-<feature-name>.md` with N tasks.**
-
-**Two execution options:**
-
-**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
-
-**2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
-
-**Which approach?"**
-
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-- Fresh subagent per task + two-stage review
-- Pass the tasks index path to the execution skill
-
-**If Inline Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
-- Batch execution with checkpoints
-- Pass the tasks index path to the execution skill for review
+After saving the tasks index and task files, **read `./references/execution-handoff-message.md` and offer its message verbatim to the user**, filling in the feature name and task count.
