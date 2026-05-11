@@ -1,6 +1,6 @@
 # Task 6: Remover WinstonAdapter e validação final
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/winston-to-pino-migration-design.md`
 
@@ -80,9 +80,7 @@ git commit -m "feat(backend): migrate logger from winston to pino
 - Add PinoAdapter implementing Logger interface
 - Add PinoLoggerFactory with pino-pretty in dev, JSON in production
 - Share single pino instance between PinoAdapter and FastifyAdapter
-- Enable native Fastify request logging via pino
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+- Enable native Fastify request logging via pino"
 ```
 
 ## Critérios de Sucesso

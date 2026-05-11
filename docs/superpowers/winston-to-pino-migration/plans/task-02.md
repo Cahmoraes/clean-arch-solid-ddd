@@ -1,6 +1,6 @@
 # Task 2: Criar PinoLoggerFactory
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/winston-to-pino-migration-design.md`
 
@@ -86,8 +86,6 @@ Esperado:
 git add apps/backend/src/shared/infra/logger/pino-logger-factory.ts \
         apps/backend/src/shared/infra/logger/pino-logger-factory.test.ts
 git commit -m "feat(backend): add PinoLoggerFactory
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
 ```
 
 ## Critérios de Sucesso

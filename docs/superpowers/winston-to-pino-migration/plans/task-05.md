@@ -1,6 +1,6 @@
 # Task 5: Integrar Pino no FastifyAdapter
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/winston-to-pino-migration-design.md`
 
@@ -92,9 +92,7 @@ Esperado: todos os testes passando.
 
 ```bash
 git add apps/backend/src/shared/infra/server/fastify-adapter.ts
-git commit -m "feat(backend): integrate pino instance into FastifyAdapter for native request logging
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+git commit -m "feat(backend): integrate pino instance into FastifyAdapter for native request logging"
 ```
 
 ## Critérios de Sucesso

@@ -1,6 +1,6 @@
 # Task 3: Criar PinoAdapter
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/winston-to-pino-migration-design.md`
 
@@ -189,9 +189,7 @@ Esperado:
 ```bash
 git add apps/backend/src/shared/infra/logger/pino-adapter.ts \
         apps/backend/src/shared/infra/logger/pino-adapter.test.ts
-git commit -m "feat(backend): add PinoAdapter implementing Logger interface
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+git commit -m "feat(backend): add PinoAdapter implementing Logger interface"
 ```
 
 ## Critérios de Sucesso

@@ -15,9 +15,9 @@
 
 ## Tarefas
 
-- [ ] 1. Instalar pino e remover winston → `task-01.md`
-- [ ] 2. Criar PinoLoggerFactory → `task-02.md`
-- [ ] 3. Criar PinoAdapter → `task-03.md`
-- [ ] 4. Atualizar IoC (shared-types + infra-module) → `task-04.md`
-- [ ] 5. Integrar Pino no FastifyAdapter → `task-05.md`
-- [ ] 6. Remover WinstonAdapter e validação final → `task-06.md`
+- [x] 1. Instalar pino e remover winston → `task-01.md`
+- [x] 2. Criar PinoLoggerFactory → `task-02.md`
+- [x] 3. Criar PinoAdapter → `task-03.md`
+- [x] 4. Atualizar IoC (shared-types + infra-module) → `task-04.md`
+- [x] 5. Integrar Pino no FastifyAdapter → `task-05.md`
+- [x] 6. Remover WinstonAdapter e validação final → `task-06.md`

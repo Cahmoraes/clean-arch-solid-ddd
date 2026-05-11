@@ -1,6 +1,6 @@
 # Task 1: Instalar pino e remover winston
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/winston-to-pino-migration-design.md`
 
@@ -62,9 +62,7 @@ Esperado: linhas com `pino` e `pino-pretty` presentes; nenhuma linha com `winsto
 
 ```bash
 git add apps/backend/package.json pnpm-lock.yaml
-git commit -m "chore(backend): replace winston with pino dependencies
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
+git commit -m "chore(backend): replace winston with pino dependencies"
 ```
 
 ## Critérios de Sucesso
