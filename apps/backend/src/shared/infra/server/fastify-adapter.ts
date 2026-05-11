@@ -3,6 +3,7 @@ import fastifyCors from "@fastify/cors"
 import fastifySwagger from "@fastify/swagger"
 import fastifySwaggerUI from "@fastify/swagger-ui"
 import fastify, {
+	type FastifyBaseLogger,
 	type FastifyInstance,
 	type FastifyReply,
 	type FastifyRequest,
@@ -12,7 +13,6 @@ import fastify, {
 	type RouteHandler,
 } from "fastify"
 import { inject, injectable } from "inversify"
-import type pino from "pino"
 import type { z } from "zod"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { Logger as LoggerDecorate } from "../decorator/logger.js"
@@ -49,7 +49,7 @@ export class FastifyAdapter implements HttpServer {
 		@inject(SHARED_TYPES.Queue)
 		private readonly queue: Queue,
 		@inject(SHARED_TYPES.PinoLogger)
-		private readonly pinoLogger: pino.Logger,
+		private readonly pinoLogger: FastifyBaseLogger,
 	) {
 		this._server = fastify({
 			loggerInstance: this.pinoLogger,
