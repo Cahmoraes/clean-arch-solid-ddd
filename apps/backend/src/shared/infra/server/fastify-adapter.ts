@@ -12,8 +12,8 @@ import fastify, {
 	type RouteHandler,
 } from "fastify"
 import { inject, injectable } from "inversify"
-import type { z } from "zod"
 import type pino from "pino"
+import type { z } from "zod"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { Logger as LoggerDecorate } from "../decorator/logger.js"
 import { env } from "../env"
@@ -52,7 +52,7 @@ export class FastifyAdapter implements HttpServer {
 		private readonly pinoLogger: pino.Logger,
 	) {
 		this._server = fastify({
-			logger: this.pinoLogger,
+			loggerInstance: this.pinoLogger,
 			ajv: {
 				customOptions: {
 					keywords: ["example"],
