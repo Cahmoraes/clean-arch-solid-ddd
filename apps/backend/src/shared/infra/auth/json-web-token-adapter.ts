@@ -21,6 +21,7 @@ export class JsonWebTokenAdapter implements AuthToken {
 	public sign(payload: Payload, privateKey: string): string {
 		return jwt.sign(payload, privateKey, {
 			expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"],
+			algorithm: "HS256",
 		})
 	}
 
@@ -29,7 +30,9 @@ export class JsonWebTokenAdapter implements AuthToken {
 		secretKey: string,
 	): Either<InvalidUserTokenError, TokenPayload> {
 		try {
-			const payload = jwt.verify(token, secretKey) as TokenPayload
+			const payload = jwt.verify(token, secretKey, {
+				algorithms: ["HS256"],
+			}) as TokenPayload
 			return success(payload)
 		} catch (error) {
 			if (error instanceof Error) {
@@ -42,6 +45,7 @@ export class JsonWebTokenAdapter implements AuthToken {
 	public refreshToken(payload: Payload, secretKey: string): string {
 		return jwt.sign(payload, secretKey, {
 			expiresIn: env.JWT_REFRESH_EXPIRES_IN as SignOptions["expiresIn"],
+			algorithm: "HS256",
 		})
 	}
 }
