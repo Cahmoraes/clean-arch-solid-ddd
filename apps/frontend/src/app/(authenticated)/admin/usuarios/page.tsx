@@ -2,8 +2,9 @@
 
 import { Users } from "lucide-react"
 import type { MouseEvent } from "react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Input } from "@/components/ui/input"
 import {
 	Pagination,
 	PaginationContent,
@@ -20,6 +21,7 @@ import {
 } from "@/features/admin/api/use-users"
 import { UserDetailModal } from "@/features/admin/components/user-detail-modal"
 import { UserRow } from "@/features/admin/components/user-row"
+import { useDebounce } from "@/hooks/use-debounce"
 import type { ApiError } from "@/lib/errors"
 
 const SKELETON_ROWS = 5
@@ -205,11 +207,19 @@ function UsersContent({
 export default function AdminUsersPage() {
 	const [page, setPage] = useState(1)
 	const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
+	const [inputQuery, setInputQuery] = useState("")
+	const debouncedQuery = useDebounce(inputQuery, 500)
 	const limit = ADMIN_USERS_DEFAULT_LIMIT
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Intentionally reset page when search query changes
+	useEffect(() => {
+		setPage(1)
+	}, [debouncedQuery])
 
 	const { data, isLoading, isError, error, isFetching } = useUsers({
 		page,
 		limit,
+		query: debouncedQuery || undefined,
 	})
 
 	const totalPages = useMemo(() => {
@@ -249,6 +259,14 @@ export default function AdminUsersPage() {
 				<p className="text-sm text-muted-foreground">
 					Visualize todas as contas cadastradas na plataforma.
 				</p>
+				<Input
+					data-testid="admin-users-search"
+					type="search"
+					placeholder="Buscar por nome ou e-mail..."
+					value={inputQuery}
+					onChange={(e) => setInputQuery(e.target.value)}
+					className="max-w-sm"
+				/>
 			</header>
 
 			<UsersContent

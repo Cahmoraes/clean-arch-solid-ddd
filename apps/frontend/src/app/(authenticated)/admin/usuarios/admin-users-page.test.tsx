@@ -110,4 +110,99 @@ describe("AdminUsersPage modal integration", () => {
 		})
 		expect(screen.queryByText("Detalhes do usuário")).not.toBeInTheDocument()
 	})
+
+	test("renderiza o campo de busca na página", async () => {
+		mockUsersList()
+		renderPage()
+
+		const searchInput = await screen.findByTestId("admin-users-search")
+		expect(searchInput).toBeInTheDocument()
+		expect(searchInput).toHaveAttribute(
+			"placeholder",
+			"Buscar por nome ou e-mail...",
+		)
+	})
+
+	test("lista todos usuários quando campo de busca está vazio", async () => {
+		mockUsersList([
+			buildUser(),
+			buildUser({
+				id: "user-2",
+				name: "Carlos Lima",
+				email: "carlos@example.com",
+			}),
+		])
+		renderPage()
+
+		await waitFor(() => {
+			expect(screen.getByTestId("admin-users-list")).toBeInTheDocument()
+		})
+		expect(screen.getByTestId("admin-users-list").children).toHaveLength(2)
+	})
+
+	test("chama API com query param após digitar no campo de busca", async () => {
+		const user = userEvent.setup()
+		let receivedQuery: string | null = null
+
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				receivedQuery = url.searchParams.get("query")
+				return HttpResponse.json(
+					{
+						users: [buildUser()],
+						pagination: { page: 1, limit: 10, total: 1 },
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+
+		renderPage()
+		const searchInput = await screen.findByTestId("admin-users-search")
+		await user.type(searchInput, "ana")
+
+		await waitFor(
+			() => {
+				expect(receivedQuery).toBe("ana")
+			},
+			{ timeout: 2000 },
+		)
+	}, 20_000)
+
+	test("não dispara busca antes do debounce de 500ms", async () => {
+		const user = userEvent.setup()
+		let callCount = 0
+
+		mockUsersList()
+
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				if (url.searchParams.get("query")) callCount++
+				return HttpResponse.json(
+					{
+						users: [buildUser()],
+						pagination: { page: 1, limit: 10, total: 1 },
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+
+		renderPage()
+		const searchInput = await screen.findByTestId("admin-users-search")
+		await user.type(searchInput, "a")
+
+		// Wait for the initial request to complete before checking
+		await waitFor(() => {
+			expect(screen.getByTestId("admin-users-list")).toBeInTheDocument()
+		})
+
+		const initialCallCount = callCount
+
+		// Wait a bit (but less than debounce), then check no additional calls were made
+		await new Promise((resolve) => setTimeout(resolve, 250))
+		expect(callCount).toBe(initialCallCount)
+	}, 20_000)
 })
