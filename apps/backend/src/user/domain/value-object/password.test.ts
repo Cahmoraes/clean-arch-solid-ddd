@@ -15,12 +15,12 @@ describe("Password test unit", () => {
 		expect(password.value).toBe(fakePassword)
 	})
 
-	test("Não deve criar um password com menos de 6 caracteres", async () => {
-		const fakePassword = ""
+	test("Não deve criar um password com menos de 8 caracteres", async () => {
+		const fakePassword = "1234567"
 		const password = await Password.create(fakePassword)
 		expect(password.forceFailure().value).instanceOf(ValidationError)
 		expect(password.forceFailure().value.message).toBe(
-			"Validation error: Too small: expected string to have >=6 characters",
+			"Validation error: Too small: expected string to have >=8 characters",
 		)
 	})
 

@@ -38,12 +38,12 @@ describe("ChangePasswordUseCase", () => {
 		const createUserProps: CreateAndSaveUserProps = {
 			userRepository,
 			email: "john@mail.com",
-			password: "123456",
+			password: "12345678",
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: user.id,
-			newRawPassword: "654321",
+			newRawPassword: "87654321",
 		}
 		const result = await sut.execute(input)
 		expect(result).toBeDefined()
@@ -56,7 +56,7 @@ describe("ChangePasswordUseCase", () => {
 	test("Não deve alterar o password de um usuário inexistente", async () => {
 		const input: ChangePasswordUseCaseInput = {
 			userId: "invalid-id",
-			newRawPassword: "654321",
+			newRawPassword: "87654321",
 		}
 		const result = await sut.execute(input)
 		expect(result).toBeDefined()
@@ -68,7 +68,7 @@ describe("ChangePasswordUseCase", () => {
 		const createUserProps: CreateAndSaveUserProps = {
 			userRepository,
 			email: "jane@mail.com",
-			password: "123456",
+			password: "12345678",
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
@@ -85,12 +85,12 @@ describe("ChangePasswordUseCase", () => {
 		const createUserProps: CreateAndSaveUserProps = {
 			userRepository,
 			email: "jane@mail.com",
-			password: "123456",
+			password: "12345678",
 		}
 		await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: "invalid-id",
-			newRawPassword: "654321",
+			newRawPassword: "87654321",
 		}
 		const result = await sut.execute(input)
 		expect(result).toBeDefined()
@@ -102,30 +102,30 @@ describe("ChangePasswordUseCase", () => {
 		const createUserProps: CreateAndSaveUserProps = {
 			userRepository,
 			email: "john.doe@mail.com",
-			password: "123456",
+			password: "12345678",
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: user.id,
-			newRawPassword: "654321",
+			newRawPassword: "87654321",
 		}
 		const result = await sut.execute(input)
 		expect(result).toBeDefined()
 		expect(result.value).toBeNull()
 		await expect(user.checkPassword(input.newRawPassword)).resolves.toBe(true)
-		await expect(user.checkPassword("123456")).resolves.toBe(false)
+		await expect(user.checkPassword("12345678")).resolves.toBe(false)
 	})
 
 	test("Não deve criar deve alterar para o mesmo password", async () => {
 		const createUserProps: CreateAndSaveUserProps = {
 			userRepository,
 			email: "john.doe@mail.com",
-			password: "123456",
+			password: "12345678",
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: user.id,
-			newRawPassword: "123456",
+			newRawPassword: "12345678",
 		}
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBeTruthy()

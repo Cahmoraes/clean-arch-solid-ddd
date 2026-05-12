@@ -94,7 +94,7 @@ describe("Alterar Senha", () => {
 		await expect(user.checkPassword(oldPassword)).resolves.toBeTruthy()
 		expect(response.body).toMatchObject({
 			message:
-				'Validation error: Too small: expected string to have >=6 characters at "newRawPassword"',
+				'Validation error: Too small: expected string to have >=8 characters at "newRawPassword"',
 		})
 	})
 

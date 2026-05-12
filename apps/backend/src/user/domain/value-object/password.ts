@@ -8,7 +8,7 @@ import {
 } from "@/shared/domain/value-object/either"
 import { env } from "@/shared/infra/env"
 
-const passwordValidationSchema = z.string().min(6)
+const passwordValidationSchema = z.string().min(8).max(128)
 export type PasswordData = z.infer<typeof passwordValidationSchema>
 
 export class Password {

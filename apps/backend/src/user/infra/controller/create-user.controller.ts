@@ -17,8 +17,8 @@ const createUserRequestSchema = z.object({
 		.string()
 		.email()
 		.meta({ description: "User email address", example: "john@example.com" }),
-	password: z.string().min(6).meta({
-		description: "User password (min 6 characters)",
+	password: z.string().min(8).max(128).meta({
+		description: "User password (min 8 characters)",
 		example: "secret123",
 	}),
 })

@@ -125,11 +125,11 @@ describe("User Entity", () => {
 		const input: CreateUserDto = {
 			name: "John Doe",
 			email: "john.doe@example.com",
-			password: "123456",
+			password: "12345678",
 		}
 		const user = (await User.create(input)).forceSuccess().value
 		const oldPassword = user.password
-		const newRawPassword = "654321"
+		const newRawPassword = "87654321"
 		const result = await user.changePassword(newRawPassword)
 		expect(result.isSuccess()).toBe(true)
 		expect(user.password).not.toBe(oldPassword)

@@ -15,8 +15,8 @@ import type { ChangePasswordUseCase } from "@/user/application/use-case/change-p
 import { UserRoutes } from "./routes/user-routes"
 
 const changePasswordSchema = z.object({
-	newRawPassword: z.string().min(6).meta({
-		description: "New password (min 6 characters)",
+	newRawPassword: z.string().min(8).max(128).meta({
+		description: "New password (min 8 characters)",
 		example: "newpass123",
 	}),
 })

@@ -37,7 +37,7 @@ describe("CreateCustomerUseCase", () => {
 			await User.create({
 				email: "caique@moraes.com.br",
 				name: "Caique Moraes",
-				password: "123456",
+				password: "12345678",
 			})
 		).force.success().value
 		await userRepository.save(user)

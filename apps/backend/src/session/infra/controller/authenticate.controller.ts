@@ -24,7 +24,8 @@ const authenticateRequestSchema = z.object({
 		.meta({ description: "User email address", example: "john@example.com" }),
 	password: z
 		.string()
-		.min(6)
+		.min(8)
+		.max(128)
 		.meta({ description: "User password", example: "secret123" }),
 })
 

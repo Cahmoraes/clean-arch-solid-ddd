@@ -36,7 +36,7 @@ describe("DeleteUserUseCase", () => {
 		const createUserProps: CreateAndSaveUserProps = {
 			userRepository,
 			email: "john@mail.com",
-			password: "123456",
+			password: "12345678",
 		}
 		const user = await createAndSaveUser(createUserProps)
 		const input: DeleteUserUseCaseInput = {
@@ -60,7 +60,7 @@ describe("DeleteUserUseCase", () => {
 		const createUserProps: CreateAndSaveUserProps = {
 			userRepository,
 			email: "john@mail.com",
-			password: "123456",
+			password: "12345678",
 		}
 		const user = await createAndSaveUser(createUserProps)
 		await createAndSaveCheckIn({
