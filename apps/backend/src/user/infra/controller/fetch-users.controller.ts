@@ -19,6 +19,10 @@ const fetchUsersRequestSchema = z.object({
 		.number()
 		.meta({ description: "Number of users per page", example: 10 }),
 	page: z.coerce.number().meta({ description: "Page number", example: 1 }),
+	query: z
+		.string()
+		.optional()
+		.meta({ description: "Search by name or email", example: "joao" }),
 })
 
 export class FetchUsersController extends BaseController {
@@ -61,10 +65,11 @@ export class FetchUsersController extends BaseController {
 			return this.createResponseError(parsedQueryParamsOrError)
 		}
 
-		const { limit, page } = parsedQueryParamsOrError.value
+		const { limit, page, query } = parsedQueryParamsOrError.value
 		const result = await this.fetchUsers.execute({
 			limit,
 			page,
+			query,
 		})
 		const users = this.presenter(req.headers.accept).format(result.data)
 		if (req.headers.accept === MimeType.CSV) {

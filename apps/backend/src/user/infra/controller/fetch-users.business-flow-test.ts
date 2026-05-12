@@ -150,4 +150,80 @@ describe("Buscar Usuários", () => {
 		expect(response.text).toEqual(expect.stringContaining(fakeId))
 		expect(response.status).toBe(HTTP_STATUS.OK)
 	})
+
+	test("Deve filtrar usuários por nome parcial via query param", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao",
+			name: "João Silva",
+			email: "joao@example.com",
+		})
+		userDAO.createFakeUser({
+			id: "u-maria",
+			name: "Maria Santos",
+			email: "maria@example.com",
+		})
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10, query: "João" })
+			.set("Accept", "application/json")
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.users).toHaveLength(1)
+		expect(response.body.users[0].id).toBe("u-joao")
+		expect(response.body.pagination.total).toBe(1)
+	})
+
+	test("Deve filtrar usuários por email parcial via query param", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao",
+			name: "João Silva",
+			email: "joao@example.com",
+		})
+		userDAO.createFakeUser({
+			id: "u-maria",
+			name: "Maria Santos",
+			email: "maria@example.com",
+		})
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10, query: "maria@" })
+			.set("Accept", "application/json")
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.users).toHaveLength(1)
+		expect(response.body.users[0].id).toBe("u-maria")
+		expect(response.body.pagination.total).toBe(1)
+	})
+
+	test("Deve retornar todos os usuários quando query está ausente", async () => {
+		userDAO.bulkCreateFakeUsers(5)
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10 })
+			.set("Accept", "application/json")
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.users).toHaveLength(5)
+		expect(response.body.pagination.total).toBe(5)
+	})
+
+	test("Deve retornar lista vazia quando query não encontra usuários", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao",
+			name: "João Silva",
+			email: "joao@example.com",
+		})
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10, query: "xyz_sem_match" })
+			.set("Accept", "application/json")
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.users).toHaveLength(0)
+		expect(response.body.pagination.total).toBe(0)
+	})
 })
