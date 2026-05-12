@@ -51,12 +51,12 @@ Before executing any task, read `.superpowers/preferences.yml` in the user's rep
 
 For each task:
 1. **Physically edit** `task-NN.md` using your file-editing tool: change `**Status:** PENDING` to `**Status:** IN_PROGRESS`. This is a real disk write — not a TodoWrite entry or a mental note — and must happen before any implementation begins.
-2. Follow each step exactly (plan has bite-sized steps)
+2. Follow each step exactly (plan has bite-sized steps). **After completing each individual subtask**, immediately edit `task-NN.md` and mark it done: change `- [ ] N.` → `- [x] N.` for that specific subtask's line. This is an incremental disk write done one subtask at a time — do NOT defer these edits to the end of the task.
 3. Run verifications as specified (use verification-before-completion)
 4. After verification passes, make **three physical file edits on disk**:
    - Edit `tasks-<feature-name>.md`: change `- [ ] N.` → `- [x] N.` for that task's line
    - Edit `task-NN.md`: change `**Status:** IN_PROGRESS` → `**Status:** DONE`
-   - Edit in `task-NN.md`: change subtask done `- [ ] N.` → `- [x] N.` for that task's line
+   - Verify all subtasks in `task-NN.md` are marked `[x]` — if any were missed during execution, mark them now
 
    These file edits are the authoritative audit record. `finishing-a-development-branch` reads the tasks index directly to verify all tasks are `[x]` — if the files are not edited on disk, the branch cannot be finished.
 5. Mark as completed in TodoWrite
