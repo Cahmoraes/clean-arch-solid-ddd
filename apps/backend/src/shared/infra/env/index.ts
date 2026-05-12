@@ -11,7 +11,7 @@ const envSchema = z.object({
 	PORT: z.coerce.number(),
 	HOST: z.string().default("0.0.0.0"),
 	PASSWORD_SALT: z.coerce.number().min(10).default(12),
-	PRIVATE_KEY: z.string().default("private-key-example"),
+	PRIVATE_KEY: z.string().min(32),
 	ITEMS_PER_PAGE: z.coerce.number().default(20),
 	CHECK_IN_EXPIRATION_TIME: z.coerce.number().default(20),
 	DATABASE_URL: z.string(),
