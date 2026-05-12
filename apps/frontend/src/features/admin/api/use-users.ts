@@ -18,6 +18,7 @@ export type AdminUsersPagination = UsersResponse["pagination"]
 export interface UseUsersParams {
 	page: number
 	limit: number
+	query?: string
 }
 
 export interface UseUsersResult {
@@ -30,7 +31,12 @@ export const ADMIN_USERS_DEFAULT_LIMIT = 10
 export const ADMIN_USERS_STALE_TIME_MS = 30_000
 
 export function adminUsersQueryKey(params: UseUsersParams) {
-	return [ADMIN_USERS_QUERY_KEY, params.page, params.limit] as const
+	return [
+		ADMIN_USERS_QUERY_KEY,
+		params.page,
+		params.limit,
+		params.query ?? "",
+	] as const
 }
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {
@@ -47,7 +53,13 @@ export function useUsers(
 		queryKey: adminUsersQueryKey(params),
 		queryFn: async () => {
 			const { data, error } = await api.GET("/users", {
-				params: { query: { page: params.page, limit: params.limit } },
+				params: {
+					query: {
+						page: params.page,
+						limit: params.limit,
+						query: params.query,
+					},
+				},
 			})
 			if (error || !data) throw toApiError(error)
 			return { users: data.users, pagination: data.pagination }

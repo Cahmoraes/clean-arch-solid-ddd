@@ -78,4 +78,57 @@ describe("useUsers", () => {
 		await waitFor(() => expect(result.current.isError).toBe(true))
 		expect(result.current.error?.status).toBe(401)
 	})
+
+	it("inclui query param na URL quando fornecido", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				expect(url.searchParams.get("query")).toBe("ana")
+				return HttpResponse.json(
+					{
+						users: [
+							{
+								id: "u1",
+								name: "Ana Silva",
+								email: "ana@example.com",
+								role: "MEMBER",
+								status: "activated",
+								createdAt: "2024-01-15T12:00:00.000Z",
+							},
+						],
+						pagination: { page: 1, limit: 10, total: 1 },
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+
+		const { result } = renderHook(
+			() => useUsers({ page: 1, limit: 10, query: "ana" }),
+			{ wrapper: wrapper() },
+		)
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data?.users).toHaveLength(1)
+		expect(result.current.data?.users[0].name).toBe("Ana Silva")
+	})
+
+	it("não inclui query param quando query é undefined", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				expect(url.searchParams.has("query")).toBe(false)
+				return HttpResponse.json(
+					{ users: [], pagination: { page: 1, limit: 10, total: 0 } },
+					{ status: 200 },
+				)
+			}),
+		)
+
+		const { result } = renderHook(() => useUsers({ page: 1, limit: 10 }), {
+			wrapper: wrapper(),
+		})
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+	})
 })
