@@ -71,7 +71,7 @@ export class FetchUsersUseCase {
 	}
 
 	private createCacheKey(input: FetchUsersUseCaseInput): string {
-		return `fetch-users:${input.page}:${input.limit}`
+		return `fetch-users:${input.page}:${input.limit}:${input.query ?? ""}`
 	}
 
 	private async saveUserDataToCache(

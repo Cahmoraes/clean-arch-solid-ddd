@@ -210,4 +210,34 @@ describe("FetchUsersUseCase", () => {
 		expect(page2.data).toHaveLength(5)
 		expect(page2.pagination.total).toBe(15)
 	})
+
+	test("Deve não colidir cache entre buscas diferentes (query diferente não retorna cache de outra query)", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao",
+			name: "João Silva",
+			email: "joao@example.com",
+		})
+		userDAO.createFakeUser({
+			id: "u-maria",
+			name: "Maria Santos",
+			email: "maria@example.com",
+		})
+
+		const joaoResult = await sut.execute({
+			page: 1,
+			limit: 10,
+			query: "joao",
+		})
+		expect(joaoResult.data).toHaveLength(1)
+		expect(joaoResult.data[0].id).toBe("u-joao")
+
+		const mariaResult = await sut.execute({
+			page: 1,
+			limit: 10,
+			query: "maria",
+		})
+		expect(mariaResult.data).toHaveLength(1)
+		expect(mariaResult.data[0].id).toBe("u-maria")
+		expect(mariaResult.data[0].id).not.toBe("u-joao")
+	})
 })
