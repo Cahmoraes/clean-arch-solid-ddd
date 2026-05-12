@@ -66,8 +66,8 @@ export class PrismaUserDAO implements UserDAO {
 		return this.prisma.user.count({
 			where: {
 				OR: [
-					{ name: { contains: query, mode: "insensitive" } },
-					{ email: { contains: query, mode: "insensitive" } },
+					{ name: { contains: query, mode: "insensitive" as const } },
+					{ email: { contains: query, mode: "insensitive" as const } },
 				],
 			},
 		})
