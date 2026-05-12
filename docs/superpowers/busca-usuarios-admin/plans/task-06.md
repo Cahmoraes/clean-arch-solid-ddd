@@ -1,6 +1,6 @@
 # Task 6: Frontend — AdminUsersPage UI de busca
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/busca-usuarios-admin-design.md`
 

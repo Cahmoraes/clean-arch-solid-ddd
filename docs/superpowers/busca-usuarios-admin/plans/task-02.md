@@ -1,6 +1,6 @@
 # Task 2: Backend DAO — PrismaUserDAO
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/busca-usuarios-admin-design.md`
 

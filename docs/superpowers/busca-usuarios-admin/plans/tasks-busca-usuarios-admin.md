@@ -15,9 +15,9 @@
 
 ## Tarefas
 
-- [ ] 1. Backend DAO — Interface + UserDAOMemory → `task-01.md`
-- [ ] 2. Backend DAO — PrismaUserDAO → `task-02.md`
-- [ ] 3. Backend UseCase + Controller + testes de business flow → `task-03.md`
-- [ ] 4. Regenerar tipos da API (pnpm generate:types) → `task-04.md`
-- [ ] 5. Frontend — useDebounce + useUsers → `task-05.md`
-- [ ] 6. Frontend — AdminUsersPage UI de busca → `task-06.md`
+- [x] 1. Backend DAO — Interface + UserDAOMemory → `task-01.md`
+- [x] 2. Backend DAO — PrismaUserDAO → `task-02.md`
+- [x] 3. Backend UseCase + Controller + testes de business flow → `task-03.md`
+- [x] 4. Regenerar tipos da API (pnpm generate:types) → `task-04.md`
+- [x] 5. Frontend — useDebounce + useUsers → `task-05.md`
+- [x] 6. Frontend — AdminUsersPage UI de busca → `task-06.md`

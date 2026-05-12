@@ -1,6 +1,6 @@
 # Task 3: Backend UseCase + Controller + testes de business flow
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/busca-usuarios-admin-design.md`
 

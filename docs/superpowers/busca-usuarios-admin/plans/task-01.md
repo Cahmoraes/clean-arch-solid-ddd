@@ -1,6 +1,6 @@
 # Task 1: Backend DAO — Interface + UserDAOMemory
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/busca-usuarios-admin-design.md`
 

@@ -1,6 +1,6 @@
 # Task 5: Frontend — useDebounce + useUsers
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/busca-usuarios-admin-design.md`
 

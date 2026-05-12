@@ -1,6 +1,6 @@
 # Task 4: Regenerar tipos da API (pnpm generate:types)
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/busca-usuarios-admin-design.md`
 
