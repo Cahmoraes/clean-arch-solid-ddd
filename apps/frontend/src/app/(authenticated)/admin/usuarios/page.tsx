@@ -211,7 +211,7 @@ export default function AdminUsersPage() {
 	const debouncedQuery = useDebounce(inputQuery, 500)
 	const limit = ADMIN_USERS_DEFAULT_LIMIT
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Intentionally reset page when search query changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies: debouncedQuery é o gatilho intencional para resetar a página; não é consumido no corpo do efeito
 	useEffect(() => {
 		setPage(1)
 	}, [debouncedQuery])
