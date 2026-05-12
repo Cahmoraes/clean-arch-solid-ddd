@@ -18,7 +18,7 @@ const envSchema = z.object({
 	JWT_EXPIRES_IN: z.string().default("10Min"),
 	JWT_REFRESH_EXPIRES_IN: z.string().default("7D"),
 	REFRESH_TOKEN_NAME: z.string().default("refreshToken"),
-	AMQP_URL: z.string().url().default("amqp://localhost"),
+	AMQP_URL: z.url().default("amqp://localhost"),
 	REDIS_HOST: z.string().default("127.0.0.1"),
 	REDIS_PORT: z.coerce.number().default(6379),
 	TTL: z.coerce.number().default(60),
