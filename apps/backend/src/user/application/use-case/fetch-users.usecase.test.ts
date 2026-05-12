@@ -111,4 +111,103 @@ describe("FetchUsersUseCase", () => {
 		expect(result.pagination.total).toBe(totalItems)
 		expect(result.data[0]).toEqual(fakeUser)
 	})
+
+	test("Deve filtrar usuários por nome parcial (case-insensitive)", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao",
+			name: "João Silva",
+			email: "joao@example.com",
+		})
+		userDAO.createFakeUser({
+			id: "u-maria",
+			name: "Maria Santos",
+			email: "maria@example.com",
+		})
+		const input: FetchUsersUseCaseInput = { page: 1, limit: 10, query: "joão" }
+		const result = await sut.execute(input)
+		expect(result.data).toHaveLength(1)
+		expect(result.data[0].id).toBe("u-joao")
+		expect(result.pagination.total).toBe(1)
+	})
+
+	test("Deve filtrar usuários por email parcial", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao",
+			name: "João Silva",
+			email: "joao@example.com",
+		})
+		userDAO.createFakeUser({
+			id: "u-maria",
+			name: "Maria Santos",
+			email: "maria@example.com",
+		})
+		const input: FetchUsersUseCaseInput = {
+			page: 1,
+			limit: 10,
+			query: "maria@",
+		}
+		const result = await sut.execute(input)
+		expect(result.data).toHaveLength(1)
+		expect(result.data[0].id).toBe("u-maria")
+		expect(result.pagination.total).toBe(1)
+	})
+
+	test("Deve retornar todos os usuários quando query está ausente", async () => {
+		userDAO.bulkCreateFakeUsers(5)
+		const input: FetchUsersUseCaseInput = { page: 1, limit: 10 }
+		const result = await sut.execute(input)
+		expect(result.data).toHaveLength(5)
+		expect(result.pagination.total).toBe(5)
+	})
+
+	test("Deve realizar busca case-insensitive (query em maiúsculas)", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao",
+			name: "João Silva",
+			email: "joao@example.com",
+		})
+		const input: FetchUsersUseCaseInput = { page: 1, limit: 10, query: "JOÃO" }
+		const result = await sut.execute(input)
+		expect(result.data).toHaveLength(1)
+		expect(result.data[0].id).toBe("u-joao")
+	})
+
+	test("Deve retornar lista vazia quando nenhum usuário corresponde à query", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao",
+			name: "João Silva",
+			email: "joao@example.com",
+		})
+		const input: FetchUsersUseCaseInput = {
+			page: 1,
+			limit: 10,
+			query: "xyz_sem_match",
+		}
+		const result = await sut.execute(input)
+		expect(result.data).toHaveLength(0)
+		expect(result.pagination.total).toBe(0)
+	})
+
+	test("Deve paginar corretamente os resultados filtrados", async () => {
+		for (let i = 1; i <= 15; i++) {
+			userDAO.createFakeUser({
+				id: `u-silva-${i}`,
+				name: `Silva ${i}`,
+				email: `silva${i}@example.com`,
+			})
+		}
+		userDAO.createFakeUser({
+			id: "u-outro",
+			name: "Outro Nome",
+			email: "outro@example.com",
+		})
+		const input: FetchUsersUseCaseInput = { page: 1, limit: 10, query: "silva" }
+		const result = await sut.execute(input)
+		expect(result.data).toHaveLength(10)
+		expect(result.pagination.total).toBe(15)
+
+		const page2 = await sut.execute({ page: 2, limit: 10, query: "silva" })
+		expect(page2.data).toHaveLength(5)
+		expect(page2.pagination.total).toBe(15)
+	})
 })

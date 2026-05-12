@@ -72,12 +72,21 @@ export class UserDAOMemory implements UserDAO {
 	public async fetchAndCountUsers(
 		input: FetchUsersInput,
 	): Promise<FetchUsersOutput> {
-		const usersData = this.usersData
-			.toArray()
-			.slice((input.page - 1) * input.limit, input.page * input.limit)
+		const allUsers = this.usersData.toArray()
+		const filtered = input.query
+			? allUsers.filter(
+					(u) =>
+						u.name.toLowerCase().includes(input.query?.toLowerCase() ?? "") ||
+						u.email.toLowerCase().includes(input.query?.toLowerCase() ?? ""),
+				)
+			: allUsers
+		const usersData = filtered.slice(
+			(input.page - 1) * input.limit,
+			input.page * input.limit,
+		)
 		return {
 			usersData,
-			total: this.usersData.size,
+			total: filtered.length,
 		}
 	}
 }

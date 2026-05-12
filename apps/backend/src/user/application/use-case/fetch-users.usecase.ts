@@ -10,6 +10,7 @@ import type { FetchUsersOutput, UserDAO } from "../persistence/dao/user-dao"
 export interface FetchUsersUseCaseInput {
 	page: number
 	limit: number
+	query?: string
 }
 
 export interface FetchUsersData {

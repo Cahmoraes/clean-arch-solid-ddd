@@ -4,6 +4,7 @@ import type { StatusTypes } from "@/user/domain/value-object/status"
 export interface FetchUsersInput {
 	page: number
 	limit: number
+	query?: string
 }
 
 export interface FetchUsersData {
