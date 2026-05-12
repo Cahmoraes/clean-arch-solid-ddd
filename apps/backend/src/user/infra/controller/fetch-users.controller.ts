@@ -21,6 +21,7 @@ const fetchUsersRequestSchema = z.object({
 	page: z.coerce.number().meta({ description: "Page number", example: 1 }),
 	query: z
 		.string()
+		.max(100)
 		.optional()
 		.meta({ description: "Search by name or email", example: "joao" }),
 })
