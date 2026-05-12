@@ -17,6 +17,24 @@ export class PrismaUserDAO implements UserDAO {
 	public async fetchAndCountUsers(
 		input: FetchUsersInput,
 	): Promise<FetchUsersOutput> {
+		const where = input.query
+			? {
+					OR: [
+						{
+							name: {
+								contains: input.query,
+								mode: "insensitive" as const,
+							},
+						},
+						{
+							email: {
+								contains: input.query,
+								mode: "insensitive" as const,
+							},
+						},
+					],
+				}
+			: undefined
 		const usersData = await this.prisma.user.findMany({
 			select: {
 				email: true,
@@ -26,11 +44,12 @@ export class PrismaUserDAO implements UserDAO {
 				status: true,
 				created_at: true,
 			},
+			where,
 			take: input.limit,
 			skip: (input.page - 1) * input.limit,
 		})
 		return {
-			total: await this.total(),
+			total: await this.total(input.query),
 			usersData: usersData.map((userData) => ({
 				id: userData.id,
 				email: userData.email,
@@ -42,7 +61,15 @@ export class PrismaUserDAO implements UserDAO {
 		}
 	}
 
-	private total(): Promise<number> {
-		return this.prisma.user.count()
+	private total(query?: string): Promise<number> {
+		if (!query) return this.prisma.user.count()
+		return this.prisma.user.count({
+			where: {
+				OR: [
+					{ name: { contains: query, mode: "insensitive" } },
+					{ email: { contains: query, mode: "insensitive" } },
+				],
+			},
+		})
 	}
 }
