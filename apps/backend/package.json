@@ -50,6 +50,7 @@
 	"description": "",
 	"devDependencies": {
 		"@biomejs/biome": "2.4.13",
+		"@faker-js/faker": "10.4.0",
 		"@types/amqplib": "0.10.8",
 		"@types/better-sqlite3": "7.6.13",
 		"@types/jsonwebtoken": "9.0.10",
@@ -75,7 +76,6 @@
 	},
 	"dependencies": {
 		"@cahmoraes93/extended-set": "1.2.1",
-		"@faker-js/faker": "10.4.0",
 		"@fastify/cors": "11.2.0",
 		"@fastify/rate-limit": "10.3.0",
 		"@fastify/swagger": "9.7.0",
