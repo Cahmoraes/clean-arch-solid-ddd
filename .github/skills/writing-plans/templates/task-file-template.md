@@ -16,11 +16,10 @@
 - Modify: `exact/path/to/existing.py`
 - Test: `tests/exact/path/to/test.py`
 
-<skills>
-### Compliance with Standard Skills
 
-[Search the skills in the skills folder that fit and apply to this techspec and list them below:]
-</skills>
+## Conformidade com as Competências Padrão
+
+[Search the skills in the skills folder that fit and apply to this task and list them below:]
 
 ## Passos
 
