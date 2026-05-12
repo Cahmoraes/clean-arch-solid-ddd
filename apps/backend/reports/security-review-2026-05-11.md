@@ -143,7 +143,7 @@ A senha `REDACTED_PASSWORD` e o identificador de projeto Supabase `REDACTED_PROJ
 **Ação Imediata Necessária:**
 1. Rotacionar a senha do banco Supabase **AGORA** em [app.supabase.com](https://app.supabase.com)
 2. Remover as linhas sensíveis do `.env.example` (substituir por placeholders)
-3. Verificar histórico git: `git log --all -p -- apps/backend/.env.example | grep "SSEPd8"`
+3. Verificar histórico git: `git log --all -p -- apps/backend/.env.example | grep "REDACTED_PASSWORD"`
 4. Se presente em commits: usar `git-filter-repo` para expurgar do histórico
 
 **Correção:**
