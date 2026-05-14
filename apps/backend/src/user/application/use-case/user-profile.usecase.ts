@@ -5,6 +5,7 @@ import {
 	success,
 } from "@/shared/domain/value-object/either"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
+import type { User } from "@/user/domain/user"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
 
@@ -17,6 +18,8 @@ interface UserProfileUseCaseOutputDTO {
 	name: string
 	email: string
 	role: string
+	hasPassword: boolean
+	authMethods: string[]
 }
 
 export type UserProfileUseCaseOutput = Either<
@@ -31,6 +34,13 @@ export class UserProfileUseCase {
 		private readonly userRepository: UserRepository,
 	) {}
 
+	private resolveAuthMethods(user: User): string[] {
+		const methods: string[] = []
+		if (user.password) methods.push("password")
+		if (user.googleId) methods.push("google")
+		return methods
+	}
+
 	public async execute(
 		input: UserProfileUseCaseInput,
 	): Promise<UserProfileUseCaseOutput> {
@@ -41,6 +51,8 @@ export class UserProfileUseCase {
 			id: userOrNull.id,
 			name: userOrNull.name,
 			role: userOrNull.role,
+			hasPassword: Boolean(userOrNull.password),
+			authMethods: this.resolveAuthMethods(userOrNull),
 		})
 	}
 }

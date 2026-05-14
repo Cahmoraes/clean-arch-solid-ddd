@@ -33,39 +33,34 @@ describe("Obter Perfil do usuário por ID", () => {
 		await fastifyServer.close()
 	})
 
-	test("Deve obter o perfil de um usuário", async () => {
+	test("Deve retornar hasPassword e authMethods em GET /users/:userId", async () => {
 		const input = {
 			name: "any_name",
 			email: "any@email.com",
 			password: "any_password",
 		}
-
 		const user = await createAndSaveUser({
 			userRepository,
 			...input,
 		})
-		// biome-ignore lint/style/noNonNullAssertion: para testes
-		// biome-ignore lint/suspicious/noNonNullAssertedOptionalChain: para testes
-		const userId = user?.id!
-		const result = await authenticate.execute({
-			email: input.email,
-			password: input.password,
-		})
-		const token = result.force.success().value.token
+		const token = (
+			await authenticate.execute({
+				email: input.email,
+				password: input.password,
+			})
+		).force.success().value.token
 		const response = await request(fastifyServer.server)
-			.get(toPath(userId))
+			.get(toPath(user.id))
 			.set("Authorization", `Bearer ${token}`)
-			.send()
 
 		expect(response.status).toBe(HTTP_STATUS.OK)
-		expect(response.body).toHaveProperty("id")
-		expect(response.body).toHaveProperty("name")
-		expect(response.body).toHaveProperty("email")
 		expect(response.body).toEqual({
-			id: userId,
+			id: user.id,
 			name: input.name,
 			email: input.email,
 			role: "MEMBER",
+			hasPassword: true,
+			authMethods: ["password"],
 		})
 	})
 
@@ -98,7 +93,7 @@ describe("Obter Perfil do usuário por ID", () => {
 		expect(response.body).toEqual({ message: "Forbidden" })
 	})
 
-	test("Deve permitir que ADMIN acesse o perfil de qualquer usuário", async () => {
+	test("Deve permitir que ADMIN acesse o perfil externo de qualquer usuário", async () => {
 		const adminId = "admin-requester-id"
 		const targetId = "admin-target-id"
 		await createAndSaveUser({
@@ -113,6 +108,7 @@ describe("Obter Perfil do usuário por ID", () => {
 			id: targetId,
 			name: "target_name",
 			email: "admin.target@email.com",
+			googleId: "admin-target-google-sub",
 		})
 
 		const result = await authenticate.execute({
@@ -131,6 +127,8 @@ describe("Obter Perfil do usuário por ID", () => {
 			name: "target_name",
 			email: "admin.target@email.com",
 			role: "MEMBER",
+			hasPassword: false,
+			authMethods: ["google"],
 		})
 	})
 

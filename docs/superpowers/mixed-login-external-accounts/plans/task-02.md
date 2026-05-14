@@ -1,6 +1,6 @@
 # Task 2: Expor capacidades de credencial e bloquear linking inseguro [RF-001, RF-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-mixed-login-external-accounts.md`
 **Spec:** `../specs/mixed-login-external-accounts-design.md`
 

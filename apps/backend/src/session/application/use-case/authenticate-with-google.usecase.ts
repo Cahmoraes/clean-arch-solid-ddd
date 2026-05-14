@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto"
 import { inject, injectable } from "inversify"
+import { ExternalProviderLinkRequiredError } from "@/session/application/error/external-provider-link-required-error.js"
 import { GoogleAccountAlreadyLinkedError } from "@/session/application/error/google-account-already-linked-error.js"
 import { GoogleEmailNotVerifiedError } from "@/session/application/error/google-email-not-verified-error.js"
 import { InvalidGoogleTokenError } from "@/session/application/error/invalid-google-token-error.js"
@@ -29,7 +30,8 @@ export interface AuthenticateWithGoogleUseCaseInput {
 export type AuthenticateWithGoogleUseCaseOutput = Either<
 	| InvalidGoogleTokenError
 	| GoogleEmailNotVerifiedError
-	| GoogleAccountAlreadyLinkedError,
+	| GoogleAccountAlreadyLinkedError
+	| ExternalProviderLinkRequiredError,
 	AuthTokenOutputDTO
 >
 
@@ -79,6 +81,9 @@ export class AuthenticateWithGoogleUseCase {
 			googleUserInfo.email,
 		)
 		if (userByEmail) {
+			if (!userByEmail.googleId) {
+				return failure(new ExternalProviderLinkRequiredError())
+			}
 			return this.linkAndAuthenticate(userByEmail, googleUserInfo.sub)
 		}
 		return this.createAndAuthenticate(googleUserInfo)

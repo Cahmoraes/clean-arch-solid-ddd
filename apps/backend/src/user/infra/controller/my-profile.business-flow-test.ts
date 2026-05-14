@@ -34,7 +34,7 @@ describe("Obter Meu Perfil", () => {
 		await fastifyServer.close()
 	})
 
-	test("Deve obter o perfil de um usuário", async () => {
+	test("Deve retornar hasPassword e authMethods em GET /users/me", async () => {
 		const input = {
 			name: "any_name",
 			email: "any@email.com",
@@ -44,27 +44,50 @@ describe("Obter Meu Perfil", () => {
 			userRepository,
 			...input,
 		})
-		// biome-ignore lint/style/noNonNullAssertion: para testes
-		// biome-ignore lint/suspicious/noNonNullAssertedOptionalChain: para testes
-		const userId = user?.id!
-		const result = await authenticate.execute({
-			email: input.email,
-			password: input.password,
-		})
-		const token = result.force.success().value.token
+		const token = (
+			await authenticate.execute({
+				email: input.email,
+				password: input.password,
+			})
+		).force.success().value.token
 		const response = await request(fastifyServer.server)
 			.get(UserRoutes.ME)
 			.set("Authorization", `Bearer ${token}`)
-			.send()
 
 		expect(response.status).toBe(HTTP_STATUS.OK)
-		expect(response.body).toHaveProperty("id")
-		expect(response.body).toHaveProperty("name")
-		expect(response.body).toHaveProperty("email")
 		expect(response.body).toEqual({
-			id: userId,
+			id: user.id,
 			name: input.name,
 			email: input.email,
+			role: "MEMBER",
+			hasPassword: true,
+			authMethods: ["password"],
+		})
+	})
+
+	test("Deve retornar authMethods com password e google em GET /users/me para conta mista", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			name: "mixed_name",
+			email: "mixed@doe.com",
+			password: "Senha123!",
+			googleId: "google-sub-mixed",
+		})
+		const token = (
+			await authenticate.execute({
+				email: user.email,
+				password: "Senha123!",
+			})
+		).force.success().value.token
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.ME)
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body).toMatchObject({
+			id: user.id,
+			hasPassword: true,
+			authMethods: ["password", "google"],
 		})
 	})
 

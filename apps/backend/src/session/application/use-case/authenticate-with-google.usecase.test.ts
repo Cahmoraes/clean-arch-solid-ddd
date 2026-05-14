@@ -1,5 +1,6 @@
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import { ExternalProviderLinkRequiredError } from "@/session/application/error/external-provider-link-required-error.js"
 import { GoogleAccountAlreadyLinkedError } from "@/session/application/error/google-account-already-linked-error.js"
 import { GoogleEmailNotVerifiedError } from "@/session/application/error/google-email-not-verified-error.js"
 import { InvalidGoogleTokenError } from "@/session/application/error/invalid-google-token-error.js"
@@ -92,7 +93,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 		})
 	})
 
-	test("deve vincular conta Google a usuário existente pelo email e autenticar", async () => {
+	test("deve exigir linking explícito quando encontrar email existente sem googleId", async () => {
 		await createAndSaveUser({
 			userRepository,
 			email: "john@doe.com",
@@ -109,9 +110,11 @@ describe("AuthenticateWithGoogleUseCase", () => {
 		const result = await sut.execute({ idToken: "link-token" })
 		const linkedUser = await userRepository.userOfGoogleId("google-sub-123")
 
-		expect(result.isSuccess()).toBe(true)
-		expect(linkedUser).not.toBeNull()
-		expect(linkedUser?.email).toBe("john@doe.com")
+		expect(result.isFailure()).toBe(true)
+		expect(result.forceFailure().value).toBeInstanceOf(
+			ExternalProviderLinkRequiredError,
+		)
+		expect(linkedUser).toBeNull()
 	})
 
 	test("deve criar novo usuário via Google e autenticar", async () => {

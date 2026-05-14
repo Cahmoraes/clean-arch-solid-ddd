@@ -78,6 +78,14 @@ export class AuthenticateWithGoogleController extends BaseController {
 			})
 		}
 
+		if (error.name === "ExternalProviderLinkRequiredError") {
+			return ResponseFactory.CONFLICT({
+				code: "external_account_link_required",
+				message:
+					"Link this external account from an authenticated session first",
+			})
+		}
+
 		if (error.name === "GoogleAccountAlreadyLinkedError") {
 			return ResponseFactory.CONFLICT({
 				message: "This email is already linked to a different Google account",
@@ -161,8 +169,12 @@ function makeAuthenticateWithGoogleSwaggerSchema(): Schema {
 				}),
 			},
 			409: {
-				description: "Email already linked to a different Google account",
+				description: "Authentication conflict for Google external account",
 				schema: z.object({
+					code: z.string().optional().meta({
+						description: "Machine-readable conflict code",
+						example: "external_account_link_required",
+					}),
 					message: z.string().meta({ description: "Error message" }),
 				}),
 			},

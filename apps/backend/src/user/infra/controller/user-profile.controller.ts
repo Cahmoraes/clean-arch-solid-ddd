@@ -83,6 +83,14 @@ const userProfileResponseSchema = z.object({
 		.string()
 		.meta({ description: "User email", example: "john@example.com" }),
 	role: z.string().meta({ description: "User role", example: "MEMBER" }),
+	hasPassword: z.boolean().meta({
+		description: "Whether the account has a local password",
+		example: true,
+	}),
+	authMethods: z.array(z.string()).meta({
+		description: "Enabled authentication methods",
+		example: ["password", "google"],
+	}),
 })
 
 const errorResponseSchema = z.object({

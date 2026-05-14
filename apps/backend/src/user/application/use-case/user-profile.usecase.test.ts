@@ -1,8 +1,8 @@
+import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
-import { type CreateUserDto, User } from "@/user/domain/user"
 
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type {
@@ -14,9 +14,9 @@ describe("UserProfile", () => {
 	let sut: UserProfileUseCase
 	let userRepository: InMemoryUserRepository
 
-	beforeEach(async () => {
+	beforeEach(() => {
 		container.snapshot()
-		userRepository = (await setupInMemoryRepositories()).userRepository
+		userRepository = setupInMemoryRepositories().userRepository
 		sut = container.get<UserProfileUseCase>(USER_TYPES.UseCases.UserProfile)
 	})
 
@@ -24,23 +24,61 @@ describe("UserProfile", () => {
 		container.restore()
 	})
 
-	test("Deve obter os dados de um usuário", async () => {
-		const userCreateProps: CreateUserDto = {
-			name: "any_name",
-			email: "john@email.com",
-			password: "any_password",
-		}
-		const user = await User.create(userCreateProps)
-		await userRepository.save(user.forceSuccess().value)
-		const savedUser = userRepository.users.toArray()[0]
-		const input: UserProfileUseCaseInput = {
-			userId: savedUser.id,
-		}
-		const leftOrRight = await sut.execute(input)
-		const result = leftOrRight.force.success().value
-		expect(result.id).toBe(input.userId)
-		expect(result.name).toBe(userCreateProps.name)
-		expect(result.email).toBe(userCreateProps.email)
+	test("Deve expor hasPassword e authMethods no perfil do usuário", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "john@doe.com",
+			password: "Senha123!",
+		})
+
+		const result = await sut.execute({ userId: user.id })
+
+		expect(result.isSuccess()).toBe(true)
+		expect(result.forceSuccess().value).toMatchObject({
+			id: user.id,
+			name: user.name,
+			email: user.email,
+			role: user.role,
+			hasPassword: true,
+			authMethods: ["password"],
+		})
+	})
+
+	test("Deve expor authMethods apenas com google para conta externa sem senha", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "google@doe.com",
+			googleId: "google-sub-123",
+		})
+
+		const result = await sut.execute({ userId: user.id })
+
+		expect(result.isSuccess()).toBe(true)
+		expect(result.forceSuccess().value).toMatchObject({
+			id: user.id,
+			name: user.name,
+			email: user.email,
+			role: user.role,
+			hasPassword: false,
+			authMethods: ["google"],
+		})
+	})
+
+	test("Deve expor authMethods com password e google para conta mista", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "mixed@doe.com",
+			password: "Senha123!",
+			googleId: "google-sub-mixed",
+		})
+
+		const result = await sut.execute({ userId: user.id })
+
+		expect(result.forceSuccess().value).toMatchObject({
+			hasPassword: true,
+			authMethods: expect.arrayContaining(["password", "google"]),
+		})
+		expect(result.forceSuccess().value.authMethods).toHaveLength(2)
 	})
 
 	test("Deve retornar erro se o usuário não for encontrado", async () => {

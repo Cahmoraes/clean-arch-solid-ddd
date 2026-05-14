@@ -124,7 +124,7 @@ describe("Autenticar com Google", () => {
 		expect(createdUser?.googleId).toBe("google-sub-new")
 	})
 
-	test("Deve vincular conta Google a usuário existente pelo email e autenticar", async () => {
+	test("Deve retornar 409 com code external_account_link_required quando o email já existir sem googleId", async () => {
 		await createAndSaveUser({
 			userRepository,
 			email: "john@doe.com",
@@ -142,14 +142,11 @@ describe("Autenticar com Google", () => {
 			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
 			.send({ idToken: "link-token" })
 
-		const linkedUser = await userRepository.userOfGoogleId("google-sub-123")
-
-		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.status).toBe(HTTP_STATUS.CONFLICT)
 		expect(response.body).toEqual({
-			token: expect.any(String),
-			refreshToken: expect.any(String),
+			code: "external_account_link_required",
+			message: "Link this external account from an authenticated session first",
 		})
-		expect(linkedUser?.email).toBe("john@doe.com")
 	})
 
 	test("Deve retornar 409 quando email já estiver vinculado a outro googleId", async () => {
