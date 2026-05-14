@@ -53,6 +53,19 @@ Record the answer as `workflow.confirm_destructive_actions` (true/false).
 5. Confirm:
 > "Preferences saved to `.superpowers/preferences.yml`. You can edit them manually at any time or ask me to update them."
 
+### Step 6 — Opening Triage
+
+Immediately after saving preferences, decide whether to ask the opening question or route straight into a flow.
+
+- If the session started with a greeting, a generic request for help, or no concrete task yet, ask the opening question in the chosen language.
+- If the user's message already maps cleanly to a single superpowers flow, skip the opening question and hand off directly using `using-superpowers` routing rules.
+
+English baseline wording:
+> "How can I help? I can route us into brainstorming, debugging, planning an approved spec, execution, or review."
+
+pt-BR baseline wording:
+> "Como posso te ajudar? Posso te encaminhar para brainstorming, debugging, planejamento de um spec ja aprovado, execucao ou review."
+
 ## Generated YAML Structure
 
 The full YAML template is in `../template/preferences.md`. The structure is:

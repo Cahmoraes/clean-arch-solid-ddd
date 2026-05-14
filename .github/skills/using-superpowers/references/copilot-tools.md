@@ -17,7 +17,7 @@ Skills use Claude Code tool names. When you encounter these in a skill, use your
 | Task status/output | `read_agent`, `list_agents` |
 | `TodoWrite` (task tracking) | `sql` with built-in `todos` table |
 | `WebSearch` | No equivalent — use `web_fetch` with a search engine URL |
-| `EnterPlanMode` / `ExitPlanMode` | No equivalent — stay in the main session |
+| `EnterPlanMode` / `ExitPlanMode` | No equivalent — stay in the main session. Do not fall back to the platform's native plan mode; use `brainstorming` -> `generating-prd` -> `writing-plans`. |
 
 ## ⚠️ Known Limitation: `glob` and Hidden Directories
 
@@ -118,4 +118,3 @@ After receiving feedback: reason over each point, adopt findings that prevent re
 ### During Onboarding
 
 When running the `references/onboarding-preferences.md` wizard, include the additional Rubber Duck step as documented in the "Copilot CLI: Rubber Duck Additional Step" section of that file.
-

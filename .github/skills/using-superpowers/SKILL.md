@@ -1,6 +1,6 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions
+description: Use at the start of every conversation to load preferences, complete onboarding when needed, ask the opening triage question when the request is ambiguous, and route into the correct superpowers skill before any other response. Must keep feature, design, migration, and refactor work inside the internal superpowers flow instead of platform-native plan mode.
 disable-model-invocation: true
 ---
 
@@ -32,8 +32,35 @@ On every session start, check for `.superpowers/preferences.yml` in the user's r
 
 - **If it exists:** Read it and keep the preferences in context. Inject relevant preferences when dispatching subagents (include them in the subagent prompt context).
 - **If it does NOT exist:** Follow the onboarding wizard in `references/onboarding-preferences.md` (read that file and execute the wizard before proceeding with the user's task).
+- **After preferences are available:** Continue into the opening triage step below. Do not stop after the onboarding confirmation message.
 
 These preferences govern agent behavior throughout the workflow (auto-commit, language, destructive action confirmation). Skills that execute tasks (subagent-driven-development, executing-plans) also read the file directly, but the entry point ensures onboarding happens.
+
+## Opening Triage
+
+Once preferences are available, decide whether to ask the opening question or route immediately.
+
+**Rule:** If the user already gave a request that clearly maps to a single superpowers flow, skip the opening question and route directly. Do not spend a turn asking "how can I help?" when the correct flow is already obvious.
+
+If the user greeted you, asked for generic help, or the request is still ambiguous, ask the opening question in the preferred language.
+
+- **pt-BR example:** "Como posso te ajudar? Posso te encaminhar para brainstorming, debugging, planejamento de um spec ja aprovado, execucao ou review."
+- **en example:** "How can I help? I can route us into brainstorming, debugging, planning an approved spec, execution, or review."
+
+Use this routing table:
+
+| Request shape | Required action |
+|---|---|
+| Greeting, generic help request, or ambiguous task | Ask the opening question above and wait for the user's answer. |
+| Bug, regression, failing test, or unexpected behavior | Invoke `systematic-debugging` immediately. |
+| New feature, behavior change, architecture change, migration, or refactor | Invoke `brainstorming` immediately. This is the path for prompts like "preciso migrar um repositório monolítico para dentro de um monolito modular". |
+| Approved design spec or PRD and the user wants the implementation plan | Invoke `writing-plans` immediately. |
+| Existing tasks index, task file, or "execute task X" request | Invoke `executing-plans` or `subagent-driven-development`, depending on the requested execution mode. |
+| Review, QA, or verification request | Invoke the matching review or verification skill. |
+
+### Native plan mode is forbidden while superpowers is routing
+
+Do not use the platform's native plan mode (EnterPlanMode, `/plan`, `[[PLAN]]`, or equivalent) for feature, design, migration, or refactor requests while superpowers is active. Stay in the main session and use the internal superpowers pipeline: `brainstorming` -> `generating-prd` -> `writing-plans`. If the user wants to skip the PRD, go from `brainstorming` directly to `writing-plans`.
 
 ## Instruction Priority
 
@@ -68,10 +95,12 @@ Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-too
 ```dot
 digraph skill_flow {
     "User message received" [shape=doublecircle];
-    "About to EnterPlanMode?" [shape=doublecircle];
-    "Already brainstormed?" [shape=diamond];
-    "Invoke brainstorming skill" [shape=box];
-    "Might any skill apply?" [shape=diamond];
+    "Read preferences" [shape=box];
+    "Need onboarding?" [shape=diamond];
+    "Run onboarding wizard" [shape=box];
+    "Need opening question?" [shape=diamond];
+    "Ask opening question" [shape=box];
+    "Route directly to superpowers flow" [shape=box];
     "Invoke Skill tool" [shape=box];
     "Announce: 'Using [skill] to [purpose]'" [shape=box];
     "Has checklist?" [shape=diamond];
@@ -79,14 +108,15 @@ digraph skill_flow {
     "Follow skill exactly" [shape=box];
     "Respond (including clarifications)" [shape=doublecircle];
 
-    "About to EnterPlanMode?" -> "Already brainstormed?";
-    "Already brainstormed?" -> "Invoke brainstorming skill" [label="no"];
-    "Already brainstormed?" -> "Might any skill apply?" [label="yes"];
-    "Invoke brainstorming skill" -> "Might any skill apply?";
-
-    "User message received" -> "Might any skill apply?";
-    "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
-    "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
+    "User message received" -> "Read preferences";
+    "Read preferences" -> "Need onboarding?";
+    "Need onboarding?" -> "Run onboarding wizard" [label="yes"];
+    "Need onboarding?" -> "Need opening question?" [label="no"];
+    "Run onboarding wizard" -> "Need opening question?";
+    "Need opening question?" -> "Ask opening question" [label="greeting or ambiguous"];
+    "Need opening question?" -> "Route directly to superpowers flow" [label="maps to one flow"];
+    "Ask opening question" -> "Route directly to superpowers flow";
+    "Route directly to superpowers flow" -> "Invoke Skill tool";
     "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";
     "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
     "Has checklist?" -> "Create TodoWrite todo per item" [label="yes"];
@@ -139,4 +169,3 @@ Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
 ## Superpowers Finite State Machine
 
 To understand how the flows and states you will go through in your execution plan work, see the state diagram: `assets/state-diagram.mmd`.
-

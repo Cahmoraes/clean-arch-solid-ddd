@@ -1,8 +1,16 @@
 stateDiagram-v2
     direction LR
 
-    [*] --> Explorando : brainstorming invocado
-    [*] --> Depurando : bug/erro reportado diretamente (via using-superpowers)
+    [*] --> ChecandoPreferencias
+    ChecandoPreferencias --> Onboarding : preferencias ausentes
+    ChecandoPreferencias --> Triagem : preferencias carregadas
+    Onboarding --> Triagem : preferencias salvas
+    Triagem --> PerguntaDeAbertura : saudacao ou pedido ambiguo
+    PerguntaDeAbertura --> Triagem : fluxo escolhido
+    Triagem --> Explorando : feature, design, migracao ou refactor
+    Triagem --> Depurando : bug/erro reportado diretamente
+    Triagem --> Planejando : spec ou PRD ja aprovado
+    Triagem --> Executando : task index ou task file existente
 
     Explorando --> Formalizando : spec aprovada (default)
     Explorando --> Planejando : PRD pulado
