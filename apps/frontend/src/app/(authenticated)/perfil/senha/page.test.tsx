@@ -11,12 +11,18 @@ const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
 describe("ChangePasswordPage", () => {
 	it("submete nova senha quando válida", async () => {
-		let received: { newRawPassword: string } | null = null
+		let received: {
+			currentRawPassword: string
+			newRawPassword: string
+		} | null = null
 		server.use(
 			http.patch(
 				`${apiBaseUrl}/users/me/change-password`,
 				async ({ request }) => {
-					received = (await request.json()) as { newRawPassword: string }
+					received = (await request.json()) as {
+						currentRawPassword: string
+						newRawPassword: string
+					}
 					return new HttpResponse(null, { status: 204 })
 				},
 			),
@@ -30,7 +36,10 @@ describe("ChangePasswordPage", () => {
 		await user.click(screen.getByTestId("change-password-submit"))
 
 		await waitFor(() => {
-			expect(received).toEqual({ newRawPassword: "newpass1" })
+			expect(received).toEqual({
+				currentRawPassword: "oldpass1",
+				newRawPassword: "newpass1",
+			})
 		})
 	})
 

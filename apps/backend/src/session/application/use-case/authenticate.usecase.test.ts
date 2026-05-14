@@ -5,6 +5,7 @@ import { container } from "@/shared/infra/ioc/container"
 import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { InvalidCredentialsError } from "@/user/application/error/invalid-credentials-error"
+import { PasswordNotSetError } from "@/user/application/error/password-not-set-error"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import {
 	type CreateUserDto,
@@ -87,6 +88,22 @@ describe("AuthenticateUseCase", () => {
 		})
 
 		expect(result.forceFailure().value).toBeInstanceOf(InvalidCredentialsError)
+	})
+
+	test("Não deve autenticar por email/senha quando o usuário ainda não possui senha local", async () => {
+		await createAndSaveUser({
+			name: "John Doe",
+			email: "john@doe.com",
+			googleId: "google-sub-123",
+		})
+
+		const result = await sut.execute({
+			email: "john@doe.com",
+			password: "qualquer_senha",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.forceFailure().value).toBeInstanceOf(PasswordNotSetError)
 	})
 
 	async function createAndSaveUser(userProps: CreateUserDto): Promise<User> {

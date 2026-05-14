@@ -1,6 +1,6 @@
 # Task 1: Endurecer fluxos atuais de senha e login local [RF-008, RF-009, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-mixed-login-external-accounts.md`
 **Spec:** `../specs/mixed-login-external-accounts-design.md`
 

@@ -15,6 +15,10 @@ import type { ChangePasswordUseCase } from "@/user/application/use-case/change-p
 import { UserRoutes } from "./routes/user-routes"
 
 const changePasswordSchema = z.object({
+	currentRawPassword: z.string().min(1).meta({
+		description: "Current password",
+		example: "oldpass123",
+	}),
 	newRawPassword: z.string().min(8).max(128).meta({
 		description: "New password (min 8 characters)",
 		example: "newpass123",
@@ -58,6 +62,20 @@ export class ChangePasswordController extends BaseController {
 			return undefined
 		}
 
+		if (error.name === "InvalidCredentialsError") {
+			return ResponseFactory.UNAUTHORIZED({
+				code: "current_password_invalid",
+				message: "Current password is invalid",
+			})
+		}
+
+		if (error.name === "PasswordNotSetError") {
+			return ResponseFactory.CONFLICT({
+				code: "password_not_set",
+				message: "Password not set for this account",
+			})
+		}
+
 		return ResponseFactory.CONFLICT({
 			message: error.message,
 		})
@@ -71,6 +89,7 @@ export class ChangePasswordController extends BaseController {
 
 		const result = await this.changePassword.execute({
 			userId: this.extractUserId(req),
+			currentRawPassword: parsedBodyOrError.value.currentRawPassword,
 			newRawPassword: parsedBodyOrError.value.newRawPassword,
 		})
 
@@ -87,6 +106,7 @@ export class ChangePasswordController extends BaseController {
 }
 
 const errorResponseSchema = z.object({
+	code: z.string().optional().meta({ description: "Error code" }),
 	message: z.string().meta({ description: "Error message" }),
 })
 

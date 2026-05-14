@@ -2,11 +2,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { renderHook, waitFor } from "@testing-library/react"
 import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, test } from "vitest"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import { makeTestJwt } from "@/test/render"
-import { useLogin, useLoginWithGoogle } from "./index"
+import { useChangePassword, useLogin, useLoginWithGoogle } from "./index"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -120,5 +120,38 @@ describe("useLoginWithGoogle", () => {
 		await expect(
 			result.current.mutateAsync("unverified-token"),
 		).rejects.toMatchObject({ status: 422 })
+	})
+})
+
+describe("useChangePassword", () => {
+	test("deve enviar currentRawPassword ao alterar senha", async () => {
+		let received: unknown = null
+		useAuthStore
+			.getState()
+			.setSession(makeTestJwt({ sub: "user-password-1", role: "MEMBER" }))
+		server.use(
+			http.patch(
+				`${apiBaseUrl}/users/me/change-password`,
+				async ({ request }) => {
+					received = await request.json()
+					return new HttpResponse(null, { status: 204 })
+				},
+			),
+		)
+
+		const { result } = renderHook(() => useChangePassword(), {
+			wrapper: wrapper(),
+		})
+
+		await result.current.mutateAsync({
+			currentPassword: "SenhaAtual123!",
+			newPassword: "SenhaNova123!",
+			confirmPassword: "SenhaNova123!",
+		})
+
+		expect(received).toEqual({
+			currentRawPassword: "SenhaAtual123!",
+			newRawPassword: "SenhaNova123!",
+		})
 	})
 })

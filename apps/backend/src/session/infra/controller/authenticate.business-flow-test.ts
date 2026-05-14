@@ -97,4 +97,26 @@ describe("Autenticar Usuário", () => {
 		expect(response.body.message).toEqual("Invalid credentials")
 		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
 	})
+
+	test("Deve retornar 401 com code password_not_set quando a conta existir sem senha local", async () => {
+		await createAndSaveUser({
+			userRepository,
+			email: "google-only@email.com",
+			googleId: "google-sub-123",
+			name: "Google Only",
+		})
+
+		const response = await request(fastifyServer.server)
+			.post(SessionRoutes.AUTHENTICATE)
+			.send({
+				email: "google-only@email.com",
+				password: "Senha123!",
+			})
+
+		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
+		expect(response.body).toEqual({
+			code: "password_not_set",
+			message: "Password not set for this account",
+		})
+	})
 })

@@ -118,7 +118,10 @@ export function useChangePassword(): UseMutationResult<
 	return useMutation<void, ApiError, ChangePasswordInput>({
 		mutationFn: async (input) => {
 			const { error } = await api.PATCH("/users/me/change-password", {
-				body: { newRawPassword: input.newPassword },
+				body: {
+					currentRawPassword: input.currentPassword,
+					newRawPassword: input.newPassword,
+				},
 			})
 			if (error) throw toApiError(error)
 		},

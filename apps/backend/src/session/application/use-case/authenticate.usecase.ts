@@ -9,6 +9,7 @@ import { env } from "@/shared/infra/env"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { InvalidCredentialsError } from "@/user/application/error/invalid-credentials-error"
+import { PasswordNotSetError } from "@/user/application/error/password-not-set-error"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import type { User } from "@/user/domain/user"
 
@@ -23,7 +24,7 @@ export interface AuthTokenOutputDTO {
 }
 
 export type AuthenticateUseCaseOutput = Either<
-	InvalidCredentialsError,
+	InvalidCredentialsError | PasswordNotSetError,
 	AuthTokenOutputDTO
 >
 
@@ -42,6 +43,9 @@ export class AuthenticateUseCase {
 		const userOrNull = await this.userRepository.userOfEmail(input.email)
 		if (!userOrNull) {
 			return failure(new InvalidCredentialsError())
+		}
+		if (!userOrNull.password) {
+			return failure(new PasswordNotSetError())
 		}
 		if (!(await userOrNull.checkPassword(input.password))) {
 			return failure(new InvalidCredentialsError())

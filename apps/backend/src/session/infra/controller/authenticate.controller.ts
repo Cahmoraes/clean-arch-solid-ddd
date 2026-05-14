@@ -77,6 +77,13 @@ export class AuthenticateController extends BaseController {
 			})
 		}
 
+		if (error.name === "PasswordNotSetError") {
+			return ResponseFactory.UNAUTHORIZED({
+				code: "password_not_set",
+				message: "Password not set for this account",
+			})
+		}
+
 		return undefined
 	}
 
@@ -142,8 +149,9 @@ function makeAuthenticateSwaggerSchema(): Schema {
 				}),
 			},
 			401: {
-				description: "Invalid credentials",
+				description: "Authentication error",
 				schema: z.object({
+					code: z.string().optional().meta({ description: "Error code" }),
 					message: z.string().meta({ description: "Error message" }),
 				}),
 			},

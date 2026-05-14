@@ -149,6 +149,7 @@ describe("Rejeitar CheckIn", () => {
 			userRepository,
 			id: "normal-user-id",
 			email: "normaluser@reject-checkin.test",
+			password: "Password123!",
 			role: "MEMBER",
 		})
 		const authenticate = container.get<AuthenticateUseCase>(

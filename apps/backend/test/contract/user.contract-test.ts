@@ -196,7 +196,10 @@ describe("User Contract Tests", () => {
 			const response = await request(fastifyServer.server)
 				.patch(UserRoutes.CHANGE_PASSWORD)
 				.set("Authorization", `Bearer ${token}`)
-				.send({ newRawPassword: "new_password123" })
+				.send({
+					currentRawPassword: "old_password",
+					newRawPassword: "new_password123",
+				})
 
 			expect(response.status).toBe(204)
 			expect(response).toSatisfyApiSpec()
@@ -205,7 +208,10 @@ describe("User Contract Tests", () => {
 		test("deve satisfazer a spec com status 401 sem autenticacao", async () => {
 			const response = await request(fastifyServer.server)
 				.patch(UserRoutes.CHANGE_PASSWORD)
-				.send({ newRawPassword: "new_password123" })
+				.send({
+					currentRawPassword: "old_password",
+					newRawPassword: "new_password123",
+				})
 
 			expect(response.status).toBe(401)
 			expect(response).toSatisfyApiSpec()

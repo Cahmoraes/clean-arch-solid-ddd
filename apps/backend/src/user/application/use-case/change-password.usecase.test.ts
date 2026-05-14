@@ -3,11 +3,14 @@ import {
 	createAndSaveUser,
 } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import { vi } from "vitest"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { QueueMemoryAdapter } from "@/shared/infra/queue/queue-memory-adapter"
 
+import { InvalidCredentialsError } from "../error/invalid-credentials-error"
+import { PasswordNotSetError } from "../error/password-not-set-error"
 import { PasswordUnchangedError } from "../error/password-unchanged-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import {
@@ -22,10 +25,10 @@ describe("ChangePasswordUseCase", () => {
 
 	beforeEach(async () => {
 		container.snapshot()
-		const repositories = await setupInMemoryRepositories()
+		const repositories = setupInMemoryRepositories()
 		userRepository = repositories.userRepository
 		queue = new QueueMemoryAdapter()
-		await container.unbind(SHARED_TYPES.Queue)
+		container.unbind(SHARED_TYPES.Queue)
 		container.bind(SHARED_TYPES.Queue).toConstantValue(queue)
 		sut = container.get(ChangePasswordUseCase, { autobind: true })
 	})
@@ -43,6 +46,7 @@ describe("ChangePasswordUseCase", () => {
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: user.id,
+			currentRawPassword: "12345678",
 			newRawPassword: "87654321",
 		}
 		const result = await sut.execute(input)
@@ -56,6 +60,7 @@ describe("ChangePasswordUseCase", () => {
 	test("Não deve alterar o password de um usuário inexistente", async () => {
 		const input: ChangePasswordUseCaseInput = {
 			userId: "invalid-id",
+			currentRawPassword: "12345678",
 			newRawPassword: "87654321",
 		}
 		const result = await sut.execute(input)
@@ -73,6 +78,7 @@ describe("ChangePasswordUseCase", () => {
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: user.id,
+			currentRawPassword: "12345678",
 			newRawPassword: "",
 		}
 		const result = await sut.execute(input)
@@ -90,6 +96,7 @@ describe("ChangePasswordUseCase", () => {
 		await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: "invalid-id",
+			currentRawPassword: "12345678",
 			newRawPassword: "87654321",
 		}
 		const result = await sut.execute(input)
@@ -107,6 +114,7 @@ describe("ChangePasswordUseCase", () => {
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: user.id,
+			currentRawPassword: "12345678",
 			newRawPassword: "87654321",
 		}
 		const result = await sut.execute(input)
@@ -125,10 +133,65 @@ describe("ChangePasswordUseCase", () => {
 		const user = await createAndSaveUser(createUserProps)
 		const input: ChangePasswordUseCaseInput = {
 			userId: user.id,
+			currentRawPassword: "12345678",
 			newRawPassword: "12345678",
 		}
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBeTruthy()
 		expect(result.value).toBeInstanceOf(PasswordUnchangedError)
+	})
+
+	test("Deve exigir a senha atual correta antes de alterar o password", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "john@mail.com",
+			password: "12345678",
+		})
+
+		const result = await sut.execute({
+			userId: user.id,
+			currentRawPassword: "senha_errada",
+			newRawPassword: "87654321",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(InvalidCredentialsError)
+	})
+
+	test("Deve persistir a senha alterada chamando update no repositório", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "persist@mail.com",
+			password: "12345678",
+		})
+		const updateSpy = vi.spyOn(userRepository, "update")
+
+		const result = await sut.execute({
+			userId: user.id,
+			currentRawPassword: "12345678",
+			newRawPassword: "87654321",
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		expect(updateSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ id: user.id }),
+		)
+	})
+
+	test("Deve falhar quando o usuário não possui senha local", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "google-only@mail.com",
+			googleId: "google-sub-123",
+		})
+
+		const result = await sut.execute({
+			userId: user.id,
+			currentRawPassword: "qualquer_senha",
+			newRawPassword: "87654321",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(PasswordNotSetError)
 	})
 })
