@@ -1,6 +1,6 @@
 # Task 3: Implementar reautenticação e definição da primeira senha no backend [RF-004, RF-005, RF-006, RF-007, RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-mixed-login-external-accounts.md`
 **Spec:** `../specs/mixed-login-external-accounts-design.md`
 

@@ -27,6 +27,13 @@ export class CacheDBMemory implements CacheDB {
 		this._cache.del(key)
 	}
 
+	public async getAndDelete<T>(key: string): Promise<T | null> {
+		const value = this._cache.get<T>(key)
+		if (value === undefined) return null
+		this._cache.del(key)
+		return value
+	}
+
 	public async deleteByPattern(pattern: string): Promise<void> {
 		const regex = new RegExp(`^${pattern.replace(/\*/g, ".*")}$`)
 		const matchingKeys = this._cache.keys().filter((key) => regex.test(key))

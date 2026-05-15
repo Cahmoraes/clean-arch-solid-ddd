@@ -4,7 +4,9 @@ import { PgUserRepository } from "@/shared/infra/database/repository/pg/pg-user-
 import { SQLiteUserRepository } from "@/shared/infra/database/repository/sqlite/sqlite-user-repository"
 import { ActiveUserUseCase } from "@/user/application/use-case/active-user.usecase"
 import { ChangePasswordUseCase } from "@/user/application/use-case/change-password.usecase"
+import { CreatePasswordReauthGrantUseCase } from "@/user/application/use-case/create-password-reauth-grant.usecase"
 import { CreateUserUseCase } from "@/user/application/use-case/create-user.usecase"
+import { DefinePasswordUseCase } from "@/user/application/use-case/define-password.usecase"
 import { DeleteUserUseCase } from "@/user/application/use-case/delete-user.usecase"
 import { FetchUsersUseCase } from "@/user/application/use-case/fetch-users.usecase"
 import { SuspendUserUseCase } from "@/user/application/use-case/suspend-user.usecase"
@@ -13,7 +15,9 @@ import { UserMetricsUseCase } from "@/user/application/use-case/user-metrics.use
 import { UserProfileUseCase } from "@/user/application/use-case/user-profile.usecase"
 import { ActivateUserController } from "@/user/infra/controller/activate-user.controller"
 import { ChangePasswordController } from "@/user/infra/controller/change-password.controller"
+import { CreatePasswordReauthGrantController } from "@/user/infra/controller/create-password-reauth-grant.controller"
 import { CreateUserController } from "@/user/infra/controller/create-user.controller"
+import { DefinePasswordController } from "@/user/infra/controller/define-password.controller"
 import { FetchUsersController } from "@/user/infra/controller/fetch-users.controller"
 import { MyProfileController } from "@/user/infra/controller/my-profile.controller"
 import { SuspendUserController } from "@/user/infra/controller/suspend-user.controller"
@@ -38,12 +42,20 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Controllers.UserMetrics).to(UserMetricsController)
 	bind(AUTH_TYPES.Controllers.RefreshToken).to(RefreshTokenController)
 	bind(USER_TYPES.Controllers.ChangePassword).to(ChangePasswordController)
+	bind(USER_TYPES.Controllers.CreatePasswordReauthGrant).to(
+		CreatePasswordReauthGrantController,
+	)
+	bind(USER_TYPES.Controllers.DefinePassword).to(DefinePasswordController)
 	bind(USER_TYPES.Controllers.FetchUsers).to(FetchUsersController)
 	bind(USER_TYPES.Controllers.UpdateUserProfile).to(UpdateUserProfileController)
 	bind(USER_TYPES.UseCases.CreateUser).to(CreateUserUseCase)
 	bind(USER_TYPES.UseCases.UserProfile).to(UserProfileUseCase)
 	bind(USER_TYPES.UseCases.UserMetrics).to(UserMetricsUseCase)
 	bind(USER_TYPES.UseCases.ChangePassword).to(ChangePasswordUseCase)
+	bind(USER_TYPES.UseCases.CreatePasswordReauthGrant).to(
+		CreatePasswordReauthGrantUseCase,
+	)
+	bind(USER_TYPES.UseCases.DefinePassword).to(DefinePasswordUseCase)
 	bind(USER_TYPES.UseCases.FetchUsers).to(FetchUsersUseCase)
 	bind(USER_TYPES.UseCases.UpdateUserProfile).to(UpdateUserProfileUseCase)
 	bind(USER_TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
