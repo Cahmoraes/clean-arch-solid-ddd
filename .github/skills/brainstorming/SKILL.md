@@ -181,16 +181,16 @@ Synthesize findings internally before proceeding. Do not relay raw subagent outp
     updated_at: "YYYY-MM-DDTHH:MM:SS±HH:MM"
     ---
     ```
-    > **Deterministic frontmatter (preferred):** Use the shared script to read existing dates and write updated ones:
+    > **Deterministic frontmatter (preferred):** Use the shared scripts to read existing dates and write updated ones:
     > ```bash
     > # Check existing created_at (preserve if file already exists):
     > node scripts/frontmatter-utils.js --file <spec-path> --get-key created_at
-    > # Set updated_at to current ISO 8601 datetime:
-    > node scripts/frontmatter-utils.js --file <spec-path> --set-key updated_at --set-value "<current-datetime>"
+    > # Set updated_at to the current datetime from the host clock:
+    > node scripts/frontmatter-utils.js --file <spec-path> --set-key updated_at --set-value "$(node scripts/get-current-datetime.js)"
     > ```
     > **Fallback:** Write the frontmatter block manually.
     
-    **Date rules:** if the file does not exist yet, set both fields to the current date/time from the system context (ISO 8601 with timezone). If the file already exists, preserve `created_at` and update only `updated_at`. Never write a literal placeholder in the document.
+    **Date rules:** if the file does not exist yet, set both fields to the current date/time from the host clock via `node scripts/get-current-datetime.js` (ISO 8601 with timezone). If the file already exists, preserve `created_at` and update only `updated_at`. Never write a literal placeholder in the document.
   - (User preferences for spec location override this default)
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git

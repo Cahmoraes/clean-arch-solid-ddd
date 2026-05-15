@@ -16,10 +16,9 @@
 - Modify: `exact/path/to/existing.py`
 - Test: `tests/exact/path/to/test.py`
 
+### Conformidade com as Skills Padrão
 
-## Conformidade com as Competências Padrão
-
-[Search the skills in the skills folder that fit and apply to this task and list them below:]
+[Search the skills in the skills folder that fit and apply to this task and list them below: >> "use format skill name: thin description"]
 
 ## Passos
 

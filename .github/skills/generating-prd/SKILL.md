@@ -100,15 +100,15 @@ updated_at: "YYYY-MM-DDTHH:MM:SS±HH:MM"
 - Keep the PRD under 2,000 words — concise and actionable
 
 **Frontmatter date rules:**
-- If the file **does not exist yet**: set both `created_at` and `updated_at` to the current date/time from the system context, in ISO 8601 format with timezone (e.g., `"2026-05-07T16:54:36-03:00"`). Never write the literal placeholder in the document.
+- If the file **does not exist yet**: set both `created_at` and `updated_at` to the current date/time from the host clock (see script below), in ISO 8601 format with timezone (e.g., `"2026-05-07T16:54:36-03:00"`). Never write the literal placeholder in the document.
 - If the file **already exists**: preserve the existing `created_at` value and update only `updated_at` to the current date/time.
 
 > **Deterministic frontmatter (preferred):**
 > ```bash
 > # Preserve created_at if file exists:
 > node ../brainstorming/scripts/frontmatter-utils.js --file <prd-path> --get-key created_at
-> # Update updated_at:
-> node ../brainstorming/scripts/frontmatter-utils.js --file <prd-path> --set-key updated_at --set-value "<current-datetime>"
+> # Update updated_at using the host clock:
+> node ../brainstorming/scripts/frontmatter-utils.js --file <prd-path> --set-key updated_at --set-value "$(node ../brainstorming/scripts/get-current-datetime.js)"
 > ```
 > **Fallback:** Write frontmatter manually.
 

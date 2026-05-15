@@ -203,7 +203,16 @@ Wait for all subagents to complete. Read every `evidence/<us-slug>/result.json`.
 
 Save the report to `docs/superpowers/<feature-name>/qa/qa-report-<feature-name>.md` using the template at `./assets/qa-report-template.md` (that file is the canonical source — keep both in sync if you modify the structure here):
 
-**Date rules:** if the report file does not exist yet, set both `created_at` and `updated_at` in the frontmatter to the current date/time from the system context (ISO 8601 with timezone). If the file already exists (re-run scenario), preserve `created_at` and update only `updated_at`.
+**Date rules:** if the report file does not exist yet, set both `created_at` and `updated_at` in the frontmatter to the current date/time from the host clock (ISO 8601 with timezone). If the file already exists (re-run scenario), preserve `created_at` and update only `updated_at`.
+
+> **Deterministic frontmatter (preferred):**
+> ```bash
+> # Preserve created_at if file exists:
+> node ../brainstorming/scripts/frontmatter-utils.js --file <report-path> --get-key created_at
+> # Update updated_at using the host clock:
+> node ../brainstorming/scripts/frontmatter-utils.js --file <report-path> --set-key updated_at --set-value "$(node ../brainstorming/scripts/get-current-datetime.js)"
+> ```
+> **Fallback:** Write frontmatter manually.
 
 ```markdown
 ---

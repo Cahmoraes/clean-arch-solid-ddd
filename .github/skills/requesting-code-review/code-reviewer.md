@@ -47,8 +47,14 @@ Task tool (general-purpose):
     **Architecture:**
     - Sound design decisions?
     - Reasonable scalability and performance?
-    - Security concerns?
     - Integrates cleanly with surrounding code?
+
+    **Security:**
+    - Input validation and sanitization in place?
+    - Authentication and authorization enforced correctly?
+    - Sensitive data (tokens, credentials, PII) handled and not exposed?
+    - No injection vulnerabilities (SQL, XSS, command injection)?
+    - Dependencies free of known critical vulnerabilities?
 
     **Testing:**
     - Tests verify real behavior, not mocks?
