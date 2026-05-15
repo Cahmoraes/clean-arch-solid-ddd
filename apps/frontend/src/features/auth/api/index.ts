@@ -1,12 +1,17 @@
 "use client"
 
-import { type UseMutationResult, useMutation } from "@tanstack/react-query"
+import {
+	type UseMutationResult,
+	useMutation,
+	useQueryClient,
+} from "@tanstack/react-query"
 import type {
 	ActivateInput,
 	ChangePasswordInput,
 	LoginInput,
 	SignupInput,
 } from "@/features/auth/schemas"
+import { profileQueryKeys } from "@/features/profile/api"
 import { api } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
@@ -110,11 +115,53 @@ export function useLogout(): UseMutationResult<void, ApiError, void> {
 	})
 }
 
+export function useCreatePasswordReauthGrant(): UseMutationResult<
+	{ reauthGrant: string; expiresInSeconds: number },
+	ApiError,
+	{ provider: "google"; idToken: string }
+> {
+	return useMutation({
+		mutationFn: async (input) => {
+			const { data, error } = await api.POST("/users/me/password/reauth", {
+				body: input,
+			})
+			if (error || !data) throw toApiError(error)
+			return data
+		},
+	})
+}
+
+export function useDefinePassword(): UseMutationResult<
+	void,
+	ApiError,
+	{ provider: "google"; reauthGrant: string; newPassword: string }
+> {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: async (input) => {
+			const { error } = await api.POST("/users/me/password", {
+				body: {
+					provider: input.provider,
+					reauthGrant: input.reauthGrant,
+					newRawPassword: input.newPassword,
+				},
+			})
+			if (error) throw toApiError(error)
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: profileQueryKeys.me() })
+		},
+	})
+}
+
 export function useChangePassword(): UseMutationResult<
 	void,
 	ApiError,
 	ChangePasswordInput
 > {
+	const queryClient = useQueryClient()
+
 	return useMutation<void, ApiError, ChangePasswordInput>({
 		mutationFn: async (input) => {
 			const { error } = await api.PATCH("/users/me/change-password", {
@@ -124,6 +171,9 @@ export function useChangePassword(): UseMutationResult<
 				},
 			})
 			if (error) throw toApiError(error)
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({ queryKey: profileQueryKeys.me() })
 		},
 	})
 }

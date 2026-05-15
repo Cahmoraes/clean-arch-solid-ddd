@@ -17,6 +17,9 @@ const DEFAULT_REDIRECT = "/academias"
 
 function loginErrorMessage(error: unknown): string {
 	if (error instanceof ApiError) {
+		if (error.code === "password_not_set") {
+			return "Essa conta ainda não possui senha local. Entre com o provider externo ou defina uma senha no perfil."
+		}
 		if (error.status === 401) return "E-mail ou senha incorretos."
 		return error.userMessage
 	}

@@ -2,7 +2,7 @@ import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 
 const replace = vi.fn()
 const searchParamsGet = vi.fn<(key: string) => string | null>(() => null)
@@ -52,7 +52,7 @@ describe("LoginPage", () => {
 		searchParamsGet.mockImplementation(() => null)
 	})
 
-	it("submete credenciais válidas e redireciona para /academias", async () => {
+	test("submete credenciais válidas e redireciona para /academias", async () => {
 		const token = makeTestJwt({ sub: "user-7", role: "MEMBER" })
 		server.use(
 			http.post(`${apiBaseUrl}/sessions`, () =>
@@ -75,7 +75,7 @@ describe("LoginPage", () => {
 		expect(useAuthStore.getState().accessToken).toBe(token)
 	})
 
-	it("respeita query string `redirect` ao redirecionar", async () => {
+	test("respeita query string `redirect` ao redirecionar", async () => {
 		const token = makeTestJwt({ sub: "user-7" })
 		searchParamsGet.mockImplementation((key) =>
 			key === "redirect" ? "/perfil" : null,
@@ -95,7 +95,7 @@ describe("LoginPage", () => {
 		await waitFor(() => expect(replace).toHaveBeenCalledWith("/perfil"))
 	})
 
-	it("exibe mensagem amigável (sem 401) ao receber credenciais inválidas", async () => {
+	test("exibe mensagem amigável (sem 401) ao receber credenciais inválidas", async () => {
 		server.use(
 			http.post(`${apiBaseUrl}/sessions`, () =>
 				HttpResponse.json({ message: "Invalid" }, { status: 401 }),
@@ -114,7 +114,31 @@ describe("LoginPage", () => {
 		expect(replace).not.toHaveBeenCalled()
 	})
 
-	it("bloqueia submissão quando email é inválido", async () => {
+	test("orienta o usuário quando a conta ainda não possui senha local", async () => {
+		server.use(
+			http.post(`${apiBaseUrl}/sessions`, () =>
+				HttpResponse.json(
+					{
+						code: "password_not_set",
+						message: "Password not set for this account",
+					},
+					{ status: 401 },
+				),
+			),
+		)
+
+		const user = userEvent.setup()
+		renderWithProviders(<LoginPage />)
+
+		await user.type(screen.getByLabelText(/e-mail/i), "user@example.com")
+		await user.type(screen.getByLabelText(/^senha$/i), "Senha123!")
+		await user.click(screen.getByTestId("login-submit"))
+
+		const alert = await screen.findByTestId("login-submit-error")
+		expect(alert).toHaveTextContent(/provider externo ou defina uma senha/i)
+	})
+
+	test("bloqueia submissão quando email é inválido", async () => {
 		const user = userEvent.setup()
 		renderWithProviders(<LoginPage />)
 
@@ -126,13 +150,13 @@ describe("LoginPage", () => {
 		expect(replace).not.toHaveBeenCalled()
 	})
 
-	it("exibe botão Entrar com Google", () => {
+	test("exibe botão Entrar com Google", () => {
 		renderWithProviders(<LoginPage />)
 
 		expect(screen.getByTestId("google-sign-in-button")).toBeInTheDocument()
 	})
 
-	it("redireciona para /academias após login Google bem-sucedido", async () => {
+	test("redireciona para /academias após login Google bem-sucedido", async () => {
 		const token = makeTestJwt({ sub: "google-user", role: "MEMBER" })
 		server.use(
 			http.post(`${apiBaseUrl}/sessions/google`, () =>

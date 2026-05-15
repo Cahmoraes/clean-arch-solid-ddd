@@ -5,11 +5,23 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useMe, useMetrics } from "@/features/profile/api"
+import { type Me, useMe, useMetrics } from "@/features/profile/api"
 
-function ProfileSection() {
-	const { data, isLoading, isError, refetch, isFetching } = useMe()
+interface ProfileSectionProps {
+	data: Me | undefined
+	isError: boolean
+	isFetching: boolean
+	isLoading: boolean
+	onRetry: () => void
+}
 
+function ProfileSection({
+	data,
+	isError,
+	isFetching,
+	isLoading,
+	onRetry,
+}: ProfileSectionProps) {
 	if (isLoading) {
 		return (
 			<div data-testid="profile-skeleton" className="flex flex-col gap-3">
@@ -30,7 +42,7 @@ function ProfileSection() {
 					<Button
 						type="button"
 						variant="secondary"
-						onClick={() => refetch()}
+						onClick={onRetry}
 						data-testid="profile-retry"
 						disabled={isFetching}
 					>
@@ -124,6 +136,10 @@ function MetricsSection() {
 }
 
 export default function ProfilePage() {
+	const { data, isLoading, isError, refetch, isFetching } = useMe()
+	const passwordActionLabel =
+		data?.hasPassword === false ? "Definir senha" : "Alterar senha"
+
 	return (
 		<main className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 py-10 sm:px-6">
 			<header className="flex flex-col gap-2">
@@ -153,11 +169,19 @@ export default function ProfilePage() {
 							className="inline-flex items-center gap-2"
 						>
 							<KeyRound className="h-4 w-4" />
-							Alterar senha
+							{passwordActionLabel}
 						</Link>
 					</Button>
 				</div>
-				<ProfileSection />
+				<ProfileSection
+					data={data}
+					isError={isError}
+					isFetching={isFetching}
+					isLoading={isLoading}
+					onRetry={() => {
+						void refetch()
+					}}
+				/>
 			</section>
 
 			<section

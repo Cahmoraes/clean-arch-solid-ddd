@@ -1,6 +1,6 @@
 # Task 4: Regenerar contratos e adaptar frontend de perfil, senha e login [RF-002, RF-003, RF-007, RF-010, RF-012]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-mixed-login-external-accounts.md`
 **Spec:** `../specs/mixed-login-external-accounts-design.md`
 

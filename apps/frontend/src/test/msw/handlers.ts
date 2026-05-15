@@ -33,8 +33,19 @@ export const handlers = [
 		endpoint("/sessions/logout"),
 		() => new HttpResponse(null, { status: 204 }),
 	),
-	http.patch(endpoint("/users/me/change-password"), () =>
-		HttpResponse.json({}, { status: 204 }),
+	http.patch(
+		endpoint("/users/me/change-password"),
+		() => new HttpResponse(null, { status: 204 }),
+	),
+	http.post(endpoint("/users/me/password/reauth"), () =>
+		HttpResponse.json(
+			{ reauthGrant: "stub-grant", expiresInSeconds: 300 },
+			{ status: 200 },
+		),
+	),
+	http.post(
+		endpoint("/users/me/password"),
+		() => new HttpResponse(null, { status: 204 }),
 	),
 	http.get(endpoint("/users/me"), () =>
 		HttpResponse.json(
@@ -43,6 +54,8 @@ export const handlers = [
 				name: "Stub User",
 				email: "stub@example.com",
 				role: "MEMBER",
+				hasPassword: true,
+				authMethods: ["password"],
 			},
 			{ status: 200 },
 		),

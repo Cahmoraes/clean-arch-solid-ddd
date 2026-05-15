@@ -1,7 +1,6 @@
 import { screen, waitFor } from "@testing-library/react"
 import { delay, HttpResponse, http } from "msw"
-import { describe, expect, it } from "vitest"
-
+import { describe, expect, test } from "vitest"
 import { profileQueryKeys } from "@/features/profile/api"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
@@ -10,12 +9,19 @@ import ProfilePage from "./page"
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
 describe("ProfilePage", () => {
-	it("exibe skeleton durante loading e dados após resposta MSW", async () => {
+	test("exibe skeleton durante loading e dados após resposta MSW", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users/me`, async () => {
 				await delay(20)
 				return HttpResponse.json(
-					{ id: "u-1", name: "Alice", email: "alice@example.com" },
+					{
+						id: "u-1",
+						name: "Alice",
+						email: "alice@example.com",
+						role: "MEMBER",
+						hasPassword: true,
+						authMethods: ["password"],
+					},
 					{ status: 200 },
 				)
 			}),
@@ -39,7 +45,7 @@ describe("ProfilePage", () => {
 		expect(screen.getByTestId("metric-checkins")).toHaveTextContent("12")
 	})
 
-	it("exibe mensagem amigável quando /users/me retorna erro", async () => {
+	test("exibe mensagem amigável quando /users/me retorna erro", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users/me`, () =>
 				HttpResponse.json({ message: "fail" }, { status: 500 }),
@@ -55,13 +61,38 @@ describe("ProfilePage", () => {
 		expect(screen.getByTestId("profile-retry")).toBeInTheDocument()
 	})
 
-	it("expõe link para alterar senha (edição suportada pelo backend)", async () => {
+	test("expõe link para alterar senha (edição suportada pelo backend)", async () => {
 		renderWithProviders(<ProfilePage />)
 		const link = await screen.findByTestId("profile-change-password-link")
 		expect(link).toHaveAttribute("href", "/perfil/senha")
 	})
 
-	it("exibe mensagem de erro específica para falha em métricas", async () => {
+	test("troca o CTA para Definir senha quando a conta não possui senha local", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users/me`, () =>
+				HttpResponse.json(
+					{
+						id: "u-1",
+						name: "Alice",
+						email: "alice@example.com",
+						role: "MEMBER",
+						hasPassword: false,
+						authMethods: ["google"],
+					},
+					{ status: 200 },
+				),
+			),
+		)
+
+		renderWithProviders(<ProfilePage />)
+
+		const link = await screen.findByTestId("profile-change-password-link")
+		await waitFor(() => {
+			expect(link).toHaveTextContent("Definir senha")
+		})
+	})
+
+	test("exibe mensagem de erro específica para falha em métricas", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users/me/metrics`, () =>
 				HttpResponse.json({}, { status: 500 }),
@@ -73,7 +104,7 @@ describe("ProfilePage", () => {
 		).toBeInTheDocument()
 	})
 
-	it("invalidação da query /users/me re-busca dados e atualiza a UI sem reload", async () => {
+	test("invalidação da query /users/me re-busca dados e atualiza a UI sem reload", async () => {
 		let callCount = 0
 		server.use(
 			http.get(`${apiBaseUrl}/users/me`, () => {
@@ -83,6 +114,9 @@ describe("ProfilePage", () => {
 						id: "u-1",
 						name: callCount === 1 ? "Alice" : "Alice Atualizada",
 						email: "alice@example.com",
+						role: "MEMBER",
+						hasPassword: true,
+						authMethods: ["password"],
 					},
 					{ status: 200 },
 				)
