@@ -1,0 +1,72 @@
+stateDiagram-v2
+    direction LR
+
+    [*] --> ChecandoPreferencias
+    ChecandoPreferencias --> Onboarding : preferencias ausentes
+    ChecandoPreferencias --> Triagem : preferencias carregadas
+    Onboarding --> Triagem : preferencias salvas
+    Triagem --> PerguntaDeAbertura : saudacao ou pedido ambiguo
+    PerguntaDeAbertura --> Triagem : fluxo escolhido
+    Triagem --> Explorando : feature, design, migracao ou refactor
+    Triagem --> Depurando : bug/erro reportado diretamente
+    Triagem --> Planejando : spec ou PRD ja aprovado
+    Triagem --> Executando : task index ou task file existente
+
+    Explorando --> Formalizando : spec aprovada (default)
+    Explorando --> Planejando : PRD pulado
+
+    Formalizando --> Planejando : PRD aprovado
+
+    Planejando --> Executando : plano criado, workspace isolado
+
+    state Executando {
+        direction TB
+        [*] --> Implementando
+        Implementando --> EmRevisao : tarefa submetida
+        EmRevisao --> Implementando : issues, corrigir
+        EmRevisao --> [*] : todas as tarefas ok
+        Implementando --> Depurando : bug encontrado
+        Depurando --> Implementando : causa raiz identificada, fix aplicado
+    }
+
+    state Depurando {
+        direction TB
+        [*] --> Investigando
+        Investigando --> Analisando : causa raiz encontrada
+        Analisando --> Corrigindo : hipótese confirmada (via TDD)
+        Corrigindo --> [*] : fix verificado (VBC) ✅
+        Corrigindo --> Investigando : fix falhou, retenta
+        Corrigindo --> QuestionandoArquitetura : 3+ tentativas falhas
+        QuestionandoArquitetura --> [*] : decisão tomada com humano
+    }
+
+    Executando --> GateQA : PRD existe + usuário confirma QA
+    Executando --> Finalizando : sem PRD, pula gate
+    Executando --> Finalizando : PRD existe mas usuário declina QA
+
+    Depurando --> Finalizando : bug como tarefa principal → resolvido
+
+    state GateQA {
+        direction TB
+        [*] --> Verificando
+        Verificando --> Aprovado : PASSED ou PARTIAL
+        Verificando --> Reprovado : FAILED
+    }
+
+    Aprovado --> Finalizando
+    Reprovado --> Executando : corrigir e re-executar
+
+    state Finalizando {
+        direction TB
+        [*] --> TestesVerificados
+        TestesVerificados --> ApresentandoOpcoes
+        ApresentandoOpcoes --> Merge
+        ApresentandoOpcoes --> PullRequest
+        ApresentandoOpcoes --> Manter
+        ApresentandoOpcoes --> Descartar
+    }
+
+    Merge --> [*]
+    PullRequest --> [*]
+    Manter --> [*]
+    Descartar --> [*]
