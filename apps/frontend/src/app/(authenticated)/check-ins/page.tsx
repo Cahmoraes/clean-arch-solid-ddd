@@ -15,7 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import {
 	CHECK_INS_DEFAULT_PAGE_SIZE,
-	useCheckIns,
+	useMyCheckIns,
 } from "@/features/check-ins/api"
 import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
@@ -113,7 +113,7 @@ function CheckInsPager({ page, pages, onChange }: PagerProps) {
 }
 
 interface BodyProps {
-	query: ReturnType<typeof useCheckIns>
+	query: ReturnType<typeof useMyCheckIns>
 }
 
 function HistoryError({ query }: BodyProps) {
@@ -155,7 +155,7 @@ function CheckInsBody({ query }: BodyProps) {
 
 export default function CheckInsPage() {
 	const [page, setPage] = useState(1)
-	const query = useCheckIns({ page })
+	const query = useMyCheckIns({ page })
 	const pages = totalPages(query.data?.total ?? 0, CHECK_INS_DEFAULT_PAGE_SIZE)
 
 	return (

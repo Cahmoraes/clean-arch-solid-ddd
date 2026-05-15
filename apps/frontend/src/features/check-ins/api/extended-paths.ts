@@ -38,6 +38,14 @@ export interface CheckInExtendedPaths {
 			}
 		}
 	}
+	"/check-ins/me": {
+		get: {
+			parameters: { query?: CheckInsListQuery }
+			responses: {
+				200: { content: { "application/json": PaginatedCheckIns } }
+			}
+		}
+	}
 	"/check-ins/validate": {
 		patch: {
 			requestBody: {

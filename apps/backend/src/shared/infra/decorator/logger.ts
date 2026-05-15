@@ -1,8 +1,8 @@
-import { SHARED_TYPES } from "../ioc/types.js"
-import type { Logger as ILogger } from "../logger/logger.js"
+import { SHARED_TYPES } from "../ioc/types"
+import type { Logger as ILogger } from "../logger/logger"
 
 export async function importLoggerWithLazyLoading(): Promise<ILogger> {
-	const module = await import("../ioc/container.js")
+	const module = await import("../ioc/container")
 	const container = module.container
 	const logger = container.get<ILogger>(SHARED_TYPES.Logger)
 	return logger

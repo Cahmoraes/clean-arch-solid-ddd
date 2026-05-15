@@ -34,6 +34,13 @@ export const checkInsKeys = {
 			query.page ?? 1,
 			query.status ?? "all",
 		] as const,
+	mine: (query: CheckInsListQuery) =>
+		[
+			...checkInsKeys.all,
+			"mine",
+			query.page ?? 1,
+			query.status ?? "all",
+		] as const,
 	pendingAdmin: (page: number) =>
 		[...checkInsKeys.all, "admin-pending", page] as const,
 }
@@ -111,6 +118,31 @@ export function useCheckIns(
 	return useQuery<PaginatedCheckIns, ApiError>({
 		queryKey: checkInsKeys.list(query),
 		queryFn: () => fetchCheckIns(query),
+		placeholderData: keepPreviousData,
+	})
+}
+
+async function fetchMyCheckIns(
+	query: CheckInsListQuery,
+): Promise<PaginatedCheckIns> {
+	const client = getCheckInsExtendedClient()
+	const { data, error } = await client.GET("/check-ins/me", {
+		params: { query },
+	})
+	if (error || !data) throw toApiError(error)
+	return data
+}
+
+export function useMyCheckIns(
+	params: UseCheckInsParams,
+): UseQueryResult<PaginatedCheckIns, ApiError> {
+	const query: CheckInsListQuery = {
+		page: params.page,
+		...(params.status ? { status: params.status } : {}),
+	}
+	return useQuery<PaginatedCheckIns, ApiError>({
+		queryKey: checkInsKeys.mine(query),
+		queryFn: () => fetchMyCheckIns(query),
 		placeholderData: keepPreviousData,
 	})
 }

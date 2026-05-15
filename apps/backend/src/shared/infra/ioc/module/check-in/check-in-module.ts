@@ -7,6 +7,7 @@ import { ValidateCheckInUseCase } from "@/check-in/application/use-case/validate
 import { CheckInController } from "@/check-in/infra/controller/check-in.controller"
 import { ListCheckInsController } from "@/check-in/infra/controller/list-check-ins.controller"
 import { MetricsController } from "@/check-in/infra/controller/metrics.controller"
+import { MyCheckInsController } from "@/check-in/infra/controller/my-check-ins.controller"
 import { RejectCheckInController } from "@/check-in/infra/controller/reject-check-in.controller"
 import { ValidateCheckInController } from "@/check-in/infra/controller/validate-check-in.controller"
 import { CHECKIN_TYPES } from "../../types"
@@ -20,6 +21,7 @@ export const checkInModule = new ContainerModule(({ bind }) => {
 	bind(CHECKIN_TYPES.Controllers.RejectCheckIn).to(RejectCheckInController)
 	bind(CHECKIN_TYPES.Controllers.CheckIn).to(CheckInController)
 	bind(CHECKIN_TYPES.Controllers.ListCheckIns).to(ListCheckInsController)
+	bind(CHECKIN_TYPES.Controllers.MyCheckIns).to(MyCheckInsController)
 	bind(CHECKIN_TYPES.Controllers.Metrics).to(MetricsController)
 	bind(CHECKIN_TYPES.UseCases.CheckIn).to(CheckInUseCase)
 	bind(CHECKIN_TYPES.UseCases.CheckInHistory).to(CheckInHistoryUseCase)

@@ -9,6 +9,7 @@ import type { CheckInRepository } from "../repository/check-in-repository"
 export interface FetchCheckInsUseCaseInput {
 	page: number
 	status?: CheckInStatus
+	userId?: string
 }
 
 export interface CheckInDTO {
@@ -42,6 +43,7 @@ export class FetchCheckInsUseCase {
 		const result: FindManyOutput = await this.checkInRepository.findMany({
 			page: input.page,
 			status: input.status,
+			userId: input.userId,
 		})
 		return {
 			items: this.toDTO(result.items),

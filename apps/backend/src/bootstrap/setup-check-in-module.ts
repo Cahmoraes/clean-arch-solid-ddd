@@ -12,6 +12,7 @@ export function setupCheckInModule(): ModuleControllers {
 		resolve(CHECKIN_TYPES.Controllers.ValidateCheckIn),
 		resolve(CHECKIN_TYPES.Controllers.RejectCheckIn),
 		resolve(CHECKIN_TYPES.Controllers.ListCheckIns),
+		resolve(CHECKIN_TYPES.Controllers.MyCheckIns),
 		resolve(CHECKIN_TYPES.Controllers.Metrics),
 	]
 	return { controllers }
