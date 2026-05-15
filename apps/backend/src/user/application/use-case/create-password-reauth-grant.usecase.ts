@@ -61,7 +61,6 @@ export class CreatePasswordReauthGrantUseCase {
 		if (eligibleUserResult.isFailure()) {
 			return failure(eligibleUserResult.value)
 		}
-
 		const user = eligibleUserResult.value
 		const googleReauthResult = await this.validateGoogleReauth(
 			input,
@@ -70,7 +69,6 @@ export class CreatePasswordReauthGrantUseCase {
 		if (googleReauthResult.isFailure()) {
 			return failure(googleReauthResult.value)
 		}
-
 		const reauthGrant = randomUUID()
 		await this.cacheDB.set<PasswordReauthGrantData>(
 			this.createCacheKey(reauthGrant),
@@ -101,11 +99,9 @@ export class CreatePasswordReauthGrantUseCase {
 		if (!userFound) {
 			return failure(new UserNotFoundError())
 		}
-
 		if (userFound.password) {
 			return failure(new PasswordAlreadySetError())
 		}
-
 		const googleId = userFound.googleId
 		if (
 			googleId === undefined ||
@@ -113,7 +109,6 @@ export class CreatePasswordReauthGrantUseCase {
 		) {
 			return failure(new ExternalProviderNotLinkedError())
 		}
-
 		return success({
 			id: userFound.id,
 			googleId,
@@ -137,16 +132,13 @@ export class CreatePasswordReauthGrantUseCase {
 		if (googleUserInfoResult.isFailure()) {
 			return failure(googleUserInfoResult.value)
 		}
-
 		const googleUserInfo = googleUserInfoResult.value
 		if (!googleUserInfo.emailVerified) {
 			return failure(new GoogleEmailNotVerifiedError())
 		}
-
 		if (googleUserInfo.sub !== googleId) {
 			return failure(new ExternalProviderNotLinkedError())
 		}
-
 		return success(null)
 	}
 
@@ -157,7 +149,6 @@ export class CreatePasswordReauthGrantUseCase {
 		if (provider === "google") {
 			return Boolean(googleId)
 		}
-
 		return false
 	}
 

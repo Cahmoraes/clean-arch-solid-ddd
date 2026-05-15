@@ -63,19 +63,16 @@ export class DefinePasswordUseCase {
 		if (eligibleUserResult.isFailure()) {
 			return failure(eligibleUserResult.value)
 		}
-
 		const grantResult = await this.consumeGrant(input)
 		if (grantResult.isFailure()) {
 			return failure(grantResult.value)
 		}
-
 		const user = eligibleUserResult.value
 		user.subscribe(this.handlePasswordChangedEvent)
 		const changePasswordResult = await user.changePassword(input.newRawPassword)
 		if (changePasswordResult.isFailure()) {
 			return failure(changePasswordResult.value)
 		}
-
 		await this.userRepository.update(user)
 		return success(null)
 	}
@@ -94,15 +91,12 @@ export class DefinePasswordUseCase {
 		if (!userFound) {
 			return failure(new UserNotFoundError())
 		}
-
 		if (userFound.password) {
 			return failure(new PasswordAlreadySetError())
 		}
-
 		if (!this.isProviderLinked(userFound.googleId, input.provider)) {
 			return failure(new ExternalProviderNotLinkedError())
 		}
-
 		return success(userFound)
 	}
 
@@ -118,7 +112,6 @@ export class DefinePasswordUseCase {
 		if (!grantData || !this.matchesGrant(grantData, input)) {
 			return failure(new ReauthGrantInvalidError())
 		}
-
 		return success(null)
 	}
 
@@ -129,7 +122,6 @@ export class DefinePasswordUseCase {
 		if (provider === "google") {
 			return Boolean(googleId)
 		}
-
 		return false
 	}
 
