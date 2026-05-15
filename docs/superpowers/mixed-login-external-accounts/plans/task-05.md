@@ -1,6 +1,6 @@
 # Task 5: Cobrir a jornada mista com testes determinísticos e Playwright [RF-007, RF-012, RF-013]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-mixed-login-external-accounts.md`
 **Spec:** `../specs/mixed-login-external-accounts-design.md`
 

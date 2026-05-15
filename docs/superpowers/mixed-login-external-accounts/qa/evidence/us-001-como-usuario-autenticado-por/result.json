@@ -1,0 +1,14 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como usuário autenticado por provider externo e sem senha local, eu quero definir uma senha local após me reautenticar para ter um método alternativo de acesso.",
+  "requirements": ["RF-004", "RF-005", "RF-006", "RF-007"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/mixed-login-external-accounts/qa/evidence/us-001-como-usuario-autenticado-por/us-001.acceptance.business-flow-test.ts"
+  ],
+  "test_output_summary": "Testes existentes encontrados nos arquivos solicitados. Backend unit (execução direta via Vitest): 9/9 testes passaram em define-password.usecase.test.ts e create-password-reauth-grant.usecase.test.ts. Backend business-flow (execução direta via Vitest): 2/2 testes passaram em define-password.business-flow-test.ts e create-password-reauth-grant.business-flow-test.ts. Frontend (execução direta via Vitest): 13/13 testes passaram em perfil/senha/page.test.tsx e features/auth/api/index.test.tsx. Cobertura complementar encontrada no codebase: user-profile.usecase.test.ts, my-profile.business-flow-test.ts, perfil/page.test.tsx, login/page.test.tsx. Teste de aceitação adicional em evidência executado com tsx validou RF-004 a RF-007 no fluxo ponta a ponta: conta externa sem senha obteve reauthGrant, definiu primeira senha, permaneceu com o mesmo usuário, passou a expor authMethods [password, google] e aceitou login por Google e por email/senha.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Os comandos solicitados via scripts pnpm com filtros por arquivo não concluíram a seleção corretamente; para coletar evidência confiável, o mesmo escopo foi rerodado diretamente com pnpm exec vitest. Screenshot pulado porque os servidores não estavam em execução."
+}

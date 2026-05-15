@@ -1,0 +1,45 @@
+{
+  "user_story": "US-003",
+  "status": "DEFINED_NOT_EXECUTED",
+  "reason": "Os testes de aceitação adicionais foram definidos no diretório de evidências, mas não puderam ser executados com o runner atual sem mover arquivos para a árvore de código do frontend, o que violaria a restrição desta QA.",
+  "scenarios": [
+    {
+      "id": "AT-US003-RF013",
+      "requirement": "RF-013",
+      "title": "Notificar sucesso após definir a primeira senha",
+      "type": "frontend-acceptance",
+      "preconditions": [
+        "Usuário autenticado com conta Google-only",
+        "GET /users/me retorna hasPassword=false e authMethods=['google']"
+      ],
+      "steps": [
+        "Abrir /perfil/senha",
+        "Concluir reautenticação com Google",
+        "Informar nova senha válida e confirmar",
+        "Submeter definição da primeira senha"
+      ],
+      "expected_results": [
+        "POST /users/me/password retorna 204",
+        "A interface exibe feedback explícito de sucesso com a mensagem 'Senha definida com sucesso.'"
+      ]
+    },
+    {
+      "id": "AT-US003-RF012",
+      "requirement": "RF-012",
+      "title": "Atualizar CTA do perfil imediatamente após definir a primeira senha",
+      "type": "frontend-acceptance",
+      "preconditions": [
+        "Usuário autenticado com conta Google-only",
+        "Perfil inicial exibe CTA 'Definir senha'"
+      ],
+      "steps": [
+        "Definir a primeira senha com sucesso",
+        "Recarregar ou reconsultar o perfil após invalidação de cache"
+      ],
+      "expected_results": [
+        "GET /users/me passa a retornar hasPassword=true",
+        "O CTA em /perfil muda para 'Alterar senha' sem exigir nova implementação de conta"
+      ]
+    }
+  ]
+}

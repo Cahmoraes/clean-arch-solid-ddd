@@ -1,0 +1,156 @@
+{
+  "us_id": "US-003",
+  "user_story": "Como usuário que tenta entrar por email/senha em uma conta sem senha local, eu quero receber orientação clara sobre o próximo passo correto.",
+  "requirements": ["RF-010", "RF-012", "RF-013"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/mixed-login-external-accounts/qa/evidence/us-003-como-usuario-que-tenta/acceptance-tests.json"
+  ],
+  "test_output_summary": {
+    "backend_unit": {
+      "command": "cd apps/backend && CI=1 npx vitest run --config ./test/vite.config.app-domain.ts src/session/application/use-case/authenticate.usecase.test.ts",
+      "status": "PASSED",
+      "test_files": 1,
+      "passed": 4,
+      "failed": 0,
+      "duration": "9.59s"
+    },
+    "backend_business_flow": {
+      "command": "cd apps/backend && CI=1 npx vitest run --config ./test/vite.config.business-flow.ts src/session/infra/controller/authenticate.business-flow-test.ts src/user/infra/controller/define-password.business-flow-test.ts",
+      "status": "PASSED",
+      "test_files": 2,
+      "passed": 4,
+      "failed": 0,
+      "duration": "6.63s"
+    },
+    "frontend_ui": {
+      "command": "cd apps/frontend && pnpm test --run src/app/(public)/login/page.test.tsx src/app/(authenticated)/perfil/page.test.tsx src/app/(authenticated)/perfil/senha/page.test.tsx",
+      "status": "PASSED",
+      "test_files": 3,
+      "passed": 17,
+      "failed": 0,
+      "duration": "34.17s"
+    },
+    "frontend_hooks": {
+      "command": "cd apps/frontend && pnpm test --run src/features/auth/api/index.test.tsx",
+      "status": "PASSED",
+      "test_files": 1,
+      "passed": 9,
+      "failed": 0,
+      "duration": "3.45s"
+    }
+  },
+  "verified_behaviors": [
+    {
+      "behavior": "Backend retorna 401 com { code: 'password_not_set' } quando conta Google-only tenta login por email/senha",
+      "status": "VERIFIED",
+      "evidence": [
+        {
+          "file": "apps/backend/src/session/infra/controller/authenticate.business-flow-test.ts",
+          "test_name": "Deve retornar 401 com code password_not_set quando a conta existir sem senha local",
+          "line_range": [101, 121]
+        },
+        {
+          "file": "apps/backend/src/session/infra/controller/authenticate.controller.ts",
+          "line_range": [80, 84],
+          "detail": "Mapeia PasswordNotSetError para HTTP 401 com code=password_not_set"
+        },
+        {
+          "file": "apps/backend/src/session/application/use-case/authenticate.usecase.test.ts",
+          "test_name": "Não deve autenticar por email/senha quando o usuário ainda não possui senha local",
+          "line_range": [93, 107]
+        }
+      ]
+    },
+    {
+      "behavior": "Frontend mostra mensagem orientativa quando error.code === 'password_not_set'",
+      "status": "VERIFIED",
+      "evidence": [
+        {
+          "file": "apps/frontend/src/app/(public)/login/page.test.tsx",
+          "test_name": "orienta o usuário quando a conta ainda não possui senha local",
+          "line_range": [117, 139]
+        },
+        {
+          "file": "apps/frontend/src/app/(public)/login/page.tsx",
+          "line_range": [18, 26],
+          "detail": "Mensagem: 'Essa conta ainda não possui senha local. Entre com o provider externo ou defina uma senha no perfil.'"
+        }
+      ]
+    },
+    {
+      "behavior": "Após definir a primeira senha, o perfil deve refletir capacidade imediata de login local",
+      "status": "PARTIALLY_VERIFIED",
+      "evidence": [
+        {
+          "file": "apps/frontend/src/features/auth/api/index.test.tsx",
+          "test_name": "envia newRawPassword e invalida o perfil após definir senha",
+          "line_range": [173, 204]
+        },
+        {
+          "file": "apps/frontend/src/features/auth/api/index.ts",
+          "line_range": [141, 154],
+          "detail": "useDefinePassword invalida profileQueryKeys.me() no sucesso"
+        },
+        {
+          "file": "apps/frontend/src/app/(authenticated)/perfil/page.tsx",
+          "line_range": [138, 141],
+          "detail": "CTA depende imediatamente de hasPassword"
+        },
+        {
+          "file": "apps/frontend/e2e/mixed-login-external-accounts.spec.ts",
+          "line_range": [29, 60],
+          "detail": "Spec existente cobre mudança de 'Definir senha' para 'Alterar senha' e login por email/senha, mas não foi executada nesta sessão"
+        }
+      ],
+      "gap": "Não há evidência executada nesta sessão mostrando, ponta a ponta, a troca do CTA para 'Alterar senha' logo após a definição da primeira senha."
+    },
+    {
+      "behavior": "Usuário recebe notificação de sucesso ao criar a primeira senha local",
+      "status": "PARTIALLY_VERIFIED",
+      "evidence": [
+        {
+          "file": "apps/frontend/src/app/(authenticated)/perfil/senha/page.tsx",
+          "line_range": [157, 166],
+          "detail": "Implementação chama toast.success('Senha definida com sucesso.')"
+        },
+        {
+          "file": "apps/frontend/src/app/(authenticated)/perfil/senha/page.test.tsx",
+          "test_name": "renderiza o fluxo de definir senha sem campo de senha atual",
+          "line_range": [98, 155],
+          "detail": "Teste executado cobre reautenticação e submit, mas a asserção atual valida apenas o toast de reautenticação, não o toast final de sucesso"
+        }
+      ],
+      "gap": "Nenhum teste automatizado executado nesta sessão afirmou explicitamente a mensagem 'Senha definida com sucesso.'."
+    }
+  ],
+  "requirement_mapping": {
+    "RF-010": {
+      "status": "VERIFIED",
+      "summary": "Coberto por testes unitários/backend business-flow e por teste de UI da tela de login."
+    },
+    "RF-012": {
+      "status": "PARTIALLY_VERIFIED",
+      "summary": "Há suporte de implementação e testes indiretos (invalidação de cache + CTA baseado em hasPassword), além de spec E2E existente não executada."
+    },
+    "RF-013": {
+      "status": "PARTIALLY_VERIFIED",
+      "summary": "A notificação de sucesso está implementada, mas falta evidência automatizada fresca validando o toast final."
+    }
+  },
+  "coverage_gaps": [
+    {
+      "requirement": "RF-012",
+      "missing_evidence": "Teste executado no ambiente atual comprovando a troca do CTA para 'Alterar senha' após a primeira senha."
+    },
+    {
+      "requirement": "RF-013",
+      "missing_evidence": "Teste executado no ambiente atual comprovando o toast 'Senha definida com sucesso.'."
+    }
+  ],
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Conclusão honesta da QA: a orientação de login para contas sem senha local (núcleo da US-003/RF-010) está implementada e comprovada por testes passando. Porém, os requisitos associados RF-012 e RF-013 ficaram apenas parcialmente verificados nesta sessão por falta de evidência automatizada executável no diretório de evidências sem alterar a árvore de código do frontend. Para registrar a lacuna, foram definidos cenários adicionais em acceptance-tests.json.",
+  "verification_timestamp": "2026-05-15T07:52:03-03:00"
+}
