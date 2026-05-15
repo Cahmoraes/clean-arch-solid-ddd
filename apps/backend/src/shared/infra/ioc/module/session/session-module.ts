@@ -5,6 +5,7 @@ import { AuthenticateWithGoogleUseCase } from "@/session/application/use-case/au
 import { LogoutUseCase } from "@/session/application/use-case/logout.usecase"
 import { AuthenticateController } from "@/session/infra/controller/authenticate.controller"
 import { AuthenticateWithGoogleController } from "@/session/infra/controller/authenticate-with-google.controller.js"
+import { DevGoogleTokenController } from "@/session/infra/controller/dev-google-token.controller.js"
 import { LogoutController } from "@/session/infra/controller/logout.controller"
 import { AUTH_TYPES } from "../../types"
 import { GoogleAuthProviderProvider } from "./google-auth-provider-provider"
@@ -15,6 +16,7 @@ export const sessionModule = new ContainerModule(({ bind }) => {
 	bind(AUTH_TYPES.Controllers.AuthenticateWithGoogle).to(
 		AuthenticateWithGoogleController,
 	)
+	bind(AUTH_TYPES.Controllers.DevGoogleToken).to(DevGoogleTokenController)
 	bind(AUTH_TYPES.Controllers.Logout).to(LogoutController)
 	bind(AUTH_TYPES.UseCases.Authenticate).to(AuthenticateUseCase)
 	bind(AUTH_TYPES.UseCases.AuthenticateWithGoogle).to(

@@ -8,6 +8,7 @@ export const AUTH_TYPES = {
 	Controllers: {
 		Authenticate: Symbol.for("AuthenticateController"),
 		AuthenticateWithGoogle: Symbol.for("AuthenticateWithGoogleController"),
+		DevGoogleToken: Symbol.for("DevGoogleTokenController"),
 		Logout: Symbol.for("LogoutController"),
 		RefreshToken: Symbol.for("RefreshTokenController"),
 	},

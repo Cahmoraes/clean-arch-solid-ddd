@@ -18,6 +18,6 @@
 - [x] 1. Endurecer fluxos atuais de senha e login local [RF-008, RF-009, RF-010] → `task-01.md`
 - [x] 2. Expor capacidades de credencial e bloquear linking inseguro [RF-001, RF-011] → `task-02.md`
 - [x] 3. Implementar reautenticação e definição da primeira senha no backend [RF-004, RF-005, RF-006, RF-007, RF-012, RF-013] → `task-03.md`
-- [ ] 4. Regenerar contratos e adaptar frontend de perfil, senha e login [RF-002, RF-003, RF-007, RF-010, RF-012] → `task-04.md`
+- [x] 4. Regenerar contratos e adaptar frontend de perfil, senha e login [RF-002, RF-003, RF-007, RF-010, RF-012] → `task-04.md`
 - [ ] 5. Cobrir a jornada mista com testes determinísticos e Playwright [RF-007, RF-012, RF-013] → `task-05.md`
 

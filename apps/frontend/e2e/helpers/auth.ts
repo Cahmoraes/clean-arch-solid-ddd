@@ -118,7 +118,9 @@ export async function loginViaApi(
 		.filter((h) => h.name.toLowerCase() === "set-cookie")
 	for (const cookie of cookies) {
 		const [pair] = cookie.value.split(";")
-		const [name, value] = pair.split("=")
+		const eqIndex = pair.indexOf("=")
+		const name = pair.slice(0, eqIndex)
+		const value = pair.slice(eqIndex + 1)
 		await page.context().addCookies([
 			{
 				name,
@@ -168,4 +170,96 @@ function psql(sql: string, extraFlag?: string): string {
 
 function escapeSql(value: string): string {
 	return value.replace(/'/g, "''")
+}
+
+export async function seedGoogleToken(
+	request: APIRequestContext,
+	input: { idToken: string; sub: string; email: string; name: string },
+): Promise<{ idToken: string }> {
+	const response = await request.post(
+		`${BACKEND_URL}/sessions/google/dev-token`,
+		{ data: { ...input, emailVerified: true } },
+	)
+	expect(
+		response.ok(),
+		`seedGoogleToken failed: ${response.status()} ${await response.text()}`,
+	).toBeTruthy()
+	return { idToken: input.idToken }
+}
+
+export async function loginViaSeededGoogleApi(
+	request: APIRequestContext,
+	page: Page,
+	idToken: string,
+): Promise<{ accessToken: string }> {
+	const response = await request.post(`${BACKEND_URL}/sessions/google`, {
+		data: { idToken },
+	})
+	expect(
+		response.ok(),
+		`loginViaSeededGoogleApi failed: ${response.status()} ${await response.text()}`,
+	).toBeTruthy()
+	const body = (await response.json()) as { token: string }
+	const cookies = response
+		.headersArray()
+		.filter((h) => h.name.toLowerCase() === "set-cookie")
+	for (const cookie of cookies) {
+		const [pair] = cookie.value.split(";")
+		const eqIndex = pair.indexOf("=")
+		const name = pair.slice(0, eqIndex)
+		const value = pair.slice(eqIndex + 1)
+		await page
+			.context()
+			.addCookies([
+				{ name, value, domain: "localhost", path: "/", httpOnly: true },
+			])
+	}
+	return { accessToken: body.token }
+}
+
+export async function requestFirstPasswordGrant(
+	request: APIRequestContext,
+	accessToken: string,
+	idToken: string,
+): Promise<{ reauthGrant: string }> {
+	const response = await request.post(
+		`${BACKEND_URL}/users/me/password/reauth`,
+		{
+			headers: { Authorization: `Bearer ${accessToken}` },
+			data: { provider: "google", idToken },
+		},
+	)
+	expect(
+		response.ok(),
+		`requestFirstPasswordGrant failed: ${response.status()} ${await response.text()}`,
+	).toBeTruthy()
+	return (await response.json()) as { reauthGrant: string }
+}
+
+export async function defineFirstPasswordViaApi(
+	request: APIRequestContext,
+	accessToken: string,
+	reauthGrant: string,
+	newPassword: string,
+): Promise<void> {
+	const response = await request.post(`${BACKEND_URL}/users/me/password`, {
+		headers: { Authorization: `Bearer ${accessToken}` },
+		data: { provider: "google", reauthGrant, newRawPassword: newPassword },
+	})
+	expect(
+		response.status(),
+		`defineFirstPasswordViaApi failed: ${await response.text()}`,
+	).toBe(204)
+}
+
+export async function loginViaEmailUi(
+	page: Page,
+	user: { email: string; password: string },
+	expectedRedirect = "/academias",
+): Promise<void> {
+	await page.goto("/login")
+	await page.getByLabel("E-mail").fill(user.email)
+	await page.getByLabel("Senha").fill(user.password)
+	await page.getByTestId("login-submit").click()
+	await page.waitForURL(`**${expectedRedirect}**`, { timeout: 30_000 })
 }
