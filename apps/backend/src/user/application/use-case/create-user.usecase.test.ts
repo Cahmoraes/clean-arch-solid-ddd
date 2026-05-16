@@ -1,4 +1,8 @@
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import {
+	DomainEventPublisher,
+	type Subscriber,
+} from "@/shared/domain/event/domain-event-publisher"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { QueueMemoryAdapter } from "@/shared/infra/queue/queue-memory-adapter"
@@ -53,5 +57,34 @@ describe("CreateUserUseCase", () => {
 		await sut.execute(input)
 		const result = await sut.execute(input)
 		expect(result.forceFailure().value).toBeInstanceOf(UserAlreadyExistsError)
+	})
+
+	test("deve publicar UserCreatedEvent com name no payload", async () => {
+		let receivedName: string | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (
+				typeof event.payload === "object" &&
+				event.payload !== null &&
+				"name" in event.payload &&
+				typeof event.payload.name === "string"
+			) {
+				receivedName = event.payload.name
+			}
+		}
+		DomainEventPublisher.instance.subscribe("userCreated", subscriber)
+
+		const input: CreateUserUseCaseInput = {
+			name: "João Silva",
+			email: "joao@example.com",
+			password: "any_password",
+		}
+
+		try {
+			await sut.execute(input)
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("userCreated", subscriber)
+		}
+
+		expect(receivedName).toBe("João Silva")
 	})
 })

@@ -125,13 +125,16 @@ export class AuthenticateWithGoogleUseCase {
 			}
 			throw new Error("Failed to persist Google user account")
 		}
-		this.publishUserCreatedEvent(createdUserResult.value)
+		await this.publishUserCreatedEvent(createdUserResult.value)
 		return success(this.createAuthTokenOutput(createdUserResult.value))
 	}
 
-	private publishUserCreatedEvent(user: User): void {
-		const event = new UserCreatedEvent({ email: user.email })
-		DomainEventPublisher.instance.publish(event)
+	private async publishUserCreatedEvent(user: User): Promise<void> {
+		const event = new UserCreatedEvent({
+			email: user.email,
+			name: user.name,
+		})
+		await DomainEventPublisher.instance.publish(event)
 	}
 
 	private createAuthTokenOutput(user: User): AuthTokenOutputDTO {

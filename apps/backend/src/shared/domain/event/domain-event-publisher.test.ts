@@ -24,6 +24,7 @@ describe("DomainEventPublisher", () => {
 	test("Deve publicar um event", async () => {
 		const event = new UserCreatedEvent({
 			email: "user@mail.com",
+			name: "User Name",
 		})
 		const subscriber = vi.fn()
 		subscribe("userCreated", subscriber)
@@ -40,6 +41,7 @@ describe("DomainEventPublisher", () => {
 	test("Deve notificar um subscriber por tópico", async () => {
 		const userCreatedEvent = new UserCreatedEvent({
 			email: "user@mail.com",
+			name: "User Name",
 		})
 		const passwordChangedEvent = new PasswordChangedEvent({
 			userName: "any-name",
@@ -63,7 +65,10 @@ describe("DomainEventPublisher", () => {
 	})
 
 	test("Deve isolar erro de um subscriber sem afetar os demais nem propagar", async () => {
-		const event = new UserCreatedEvent({ email: "user@mail.com" })
+		const event = new UserCreatedEvent({
+			email: "user@mail.com",
+			name: "User Name",
+		})
 		const failingSubscriber = vi
 			.fn()
 			.mockRejectedValue(new Error("integração externa falhou"))

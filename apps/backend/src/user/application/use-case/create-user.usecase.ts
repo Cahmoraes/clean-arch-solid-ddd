@@ -84,7 +84,7 @@ export class CreateUserUseCase {
 		if (userResult.isFailure()) return failure(userResult.value)
 		await this.userRepository.save(userResult.value)
 		const user = userResult.value
-		void this.publishUserCreatedEvent(user)
+		await this.publishUserCreatedEvent(user)
 		return success({
 			email: user.email,
 		})
@@ -97,10 +97,11 @@ export class CreateUserUseCase {
 		return this.userRepository.get(userQuery)
 	}
 
-	private publishUserCreatedEvent(user: User): void {
+	private async publishUserCreatedEvent(user: User): Promise<void> {
 		const event = new UserCreatedEvent({
 			email: user.email,
+			name: user.name,
 		})
-		DomainEventPublisher.instance.publish(event)
+		await DomainEventPublisher.instance.publish(event)
 	}
 }

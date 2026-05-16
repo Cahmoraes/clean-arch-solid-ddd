@@ -1,6 +1,6 @@
 # Task 2: Adicionar campo `name` ao UserCreatedEvent e atualizar CreateUserUseCase [RF-002]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-user-email-notifications.md`
 **Spec:** `../specs/user-email-notifications-design.md`
 

@@ -3,6 +3,7 @@ import { EVENTS } from "@/shared/domain/event/events"
 
 export interface UserCreatedEventProps {
 	email: string
+	name: string
 }
 
 export class UserCreatedEvent extends DomainEvent<UserCreatedEventProps> {
