@@ -4,10 +4,11 @@ import {
 } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 import { vi } from "vitest"
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
-import { SHARED_TYPES } from "@/shared/infra/ioc/types"
-import { QueueMemoryAdapter } from "@/shared/infra/queue/queue-memory-adapter"
+import { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
 
 import { InvalidCredentialsError } from "../error/invalid-credentials-error"
 import { PasswordNotSetError } from "../error/password-not-set-error"
@@ -21,15 +22,11 @@ import {
 describe("ChangePasswordUseCase", () => {
 	let sut: ChangePasswordUseCase
 	let userRepository: InMemoryUserRepository
-	let queue: QueueMemoryAdapter
 
 	beforeEach(async () => {
 		container.snapshot()
 		const repositories = setupInMemoryRepositories()
 		userRepository = repositories.userRepository
-		queue = new QueueMemoryAdapter()
-		container.unbind(SHARED_TYPES.Queue)
-		container.bind(SHARED_TYPES.Queue).toConstantValue(queue)
 		sut = container.get(ChangePasswordUseCase, { autobind: true })
 	})
 
@@ -53,8 +50,39 @@ describe("ChangePasswordUseCase", () => {
 		expect(result).toBeDefined()
 		expect(result.value).toBeNull()
 		await expect(user.checkPassword(input.newRawPassword)).resolves.toBe(true)
-		expect(queue.queues.has("passwordChanged")).toBe(true)
-		expect(queue.queues.size).toBe(1)
+	})
+
+	test("deve publicar PasswordChangedEvent via DomainEventPublisher ao alterar senha", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "john@mail.com",
+			password: "12345678",
+		})
+
+		let receivedEvent: PasswordChangedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof PasswordChangedEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("passwordChanged", subscriber)
+
+		try {
+			await sut.execute({
+				userId: user.id,
+				currentRawPassword: "12345678",
+				newRawPassword: "87654321",
+			})
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("passwordChanged", subscriber)
+		}
+
+		expect(receivedEvent).not.toBeNull()
+		expect(receivedEvent).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userEmail: "john@mail.com",
+				}),
+			}),
+		)
 	})
 
 	test("Não deve alterar o password de um usuário inexistente", async () => {

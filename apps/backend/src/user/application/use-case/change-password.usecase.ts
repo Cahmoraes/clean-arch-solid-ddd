@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify"
 import type { ValidationError } from "zod-validation-error"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher.js"
 import {
 	type Either,
 	failure,
 	success,
 } from "@/shared/domain/value-object/either"
-import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
-import type { Queue } from "@/shared/infra/queue/queue"
-import { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
+import { USER_TYPES } from "@/shared/infra/ioc/types"
+import type { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
 import type { User } from "@/user/domain/user"
 import { InvalidCredentialsError } from "../error/invalid-credentials-error"
 import { PasswordNotSetError } from "../error/password-not-set-error"
@@ -35,8 +35,6 @@ export class ChangePasswordUseCase {
 	constructor(
 		@inject(USER_TYPES.Repositories.User)
 		private readonly userRepository: UserRepository,
-		@inject(SHARED_TYPES.Queue)
-		private readonly queue: Queue,
 	) {
 		this.bindMethod()
 	}
@@ -74,10 +72,6 @@ export class ChangePasswordUseCase {
 	}
 
 	private handlePasswordChangedEvent(data: PasswordChangedEvent): void {
-		const event = new PasswordChangedEvent({
-			userEmail: data.payload.userEmail,
-			userName: data.payload.userName,
-		})
-		this.queue.publish(event.eventName, event)
+		void DomainEventPublisher.instance.publish(data)
 	}
 }
