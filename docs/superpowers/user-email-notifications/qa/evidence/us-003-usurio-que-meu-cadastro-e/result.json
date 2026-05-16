@@ -1,0 +1,14 @@
+{
+  "us_id": "us-003",
+  "user_story": "Como usuário, eu quero que meu cadastro e minha definição de senha sejam concluídos normalmente mesmo que o serviço de email esteja indisponível, para que problemas de infraestrutura de email não bloqueiem meu acesso à plataforma.",
+  "requirements": ["RF-010", "RF-011"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/user-email-notifications/qa/evidence/us-003-usurio-que-meu-cadastro-e/us-003-email-failure-resilience.acceptance.test.ts"
+  ],
+  "test_output_summary": "Testes existentes de resiliência executados com sucesso: 2 arquivos / 9 testes aprovados (send-welcome-email.notification.test.ts e send-password-alert-email.notification.test.ts). Teste complementar de aceitação executado com sucesso: 1 arquivo / 1 teste aprovado, verificando que UserCreatedEvent e PasswordChangedEvent não propagam erro quando o mailer falha e que ambos registram console.error. Gate obrigatório do backend aprovado: pnpm --filter backend biome:fix, pnpm --filter backend tsc:check, pnpm --filter backend test:run e pnpm --filter backend build.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "As duas notifications implementam try/catch com console.error. Os testes existentes já cobriam RF-010 para os dois fluxos e RF-011 para boas-vindas; foi adicionado um teste complementar na pasta de evidências para registrar RF-010 + RF-011 também no fluxo de alerta de senha. Um config auxiliar local (us-003-vitest.config.ts) foi usado apenas para executar o teste da pasta de evidências sem alterar a source tree do backend."
+}

@@ -1,0 +1,14 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como usuário recém-cadastrado, eu quero receber um email de boas-vindas ao criar minha conta, para que eu tenha confirmação de que o cadastro foi realizado com sucesso.",
+  "requirements": ["RF-001", "RF-002", "RF-003", "RF-004"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "us-001-welcome-email-on-register.acceptance.test.ts"
+  ],
+  "test_output_summary": "Cobertura existente mapeada: send-welcome-email.notification.test.ts (4/4 passando: envio do email, presença de nome, presença de email e resiliência a falha do mailer), create-user.usecase.test.ts (3/3 passando, incluindo publicação de UserCreatedEvent com name no payload) e authenticate-with-google.usecase.test.ts (8/8 passando, incluindo criação de novo usuário via Google). O comando solicitado via pnpm script com filtros por arquivo não selecionou corretamente os testes; para evidência confiável, o mesmo escopo foi rerodado diretamente com Vitest no diretório apps/backend. Cobertura complementar criada em evidência: us-001-welcome-email-on-register.acceptance.test.ts executado com tsx do backend e aprovado, validando RF-001 a RF-004 (destinatário correto, nome e email no HTML, conteúdo em pt-BR e ausência de link de verificação). Validação adicional do backend concluída com sucesso: biome:fix OK, tsc:check OK, test:run OK (418/418 testes), build OK.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Os testes existentes já cobriam RF-001 e RF-002 no subscriber e a publicação do evento no cadastro tradicional. RF-003 e RF-004 não estavam explicitamente assertados, então foi adicionada uma evidência complementar no diretório de QA. A execução do arquivo de evidência fora de apps/backend não foi descoberta pelo Vitest com a configuração atual; por isso, a verificação do arquivo de evidência foi executada diretamente com ./apps/backend/node_modules/.bin/tsx --tsconfig ./apps/backend/tsconfig.json."
+}
