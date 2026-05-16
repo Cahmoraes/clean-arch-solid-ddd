@@ -140,11 +140,7 @@ export class DefinePasswordUseCase {
 	}
 
 	private handlePasswordChangedEvent(data: PasswordChangedEvent): void {
-		const event = new PasswordChangedEvent({
-			userEmail: data.payload.userEmail,
-			userName: data.payload.userName,
-		})
-		void DomainEventPublisher.instance.publish(event)
-		this.queue.publish(event.eventName, event)
+		void DomainEventPublisher.instance.publish(data)
+		this.queue.publish(data.eventName, data)
 	}
 }

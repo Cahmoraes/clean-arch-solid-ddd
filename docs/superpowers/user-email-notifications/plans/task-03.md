@@ -1,6 +1,6 @@
 # Task 3: Publicar PasswordChangedEvent via DomainEventPublisher no DefinePasswordUseCase [RF-005]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-user-email-notifications.md`
 **Spec:** `../specs/user-email-notifications-design.md`
 
