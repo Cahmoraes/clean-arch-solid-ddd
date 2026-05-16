@@ -15,10 +15,10 @@
 
 ## Tarefas
 
-- [ ] 1. Atualizar interface MailerGateway para suporte a HTML + MailerGatewayMemory com sentEmails [RF-010, RF-011] → `task-01.md`
-- [ ] 2. Adicionar campo `name` ao UserCreatedEvent e atualizar CreateUserUseCase [RF-002] → `task-02.md`
-- [ ] 3. Publicar PasswordChangedEvent via DomainEventPublisher no DefinePasswordUseCase [RF-005] → `task-03.md`
-- [ ] 4. Instalar React Email e configurar suporte a TSX → `task-04.md`
+- [x] 1. Atualizar interface MailerGateway para suporte a HTML + MailerGatewayMemory com sentEmails [RF-010, RF-011] → `task-01.md`
+- [x] 2. Adicionar campo `name` ao UserCreatedEvent e atualizar CreateUserUseCase [RF-002] → `task-02.md`
+- [x] 3. Publicar PasswordChangedEvent via DomainEventPublisher no DefinePasswordUseCase [RF-005] → `task-03.md`
+- [x] 4. Instalar React Email e configurar suporte a TSX → `task-04.md`
 - [ ] 5. Criar WelcomeEmailTemplate + SendWelcomeEmailNotification + testes unitários [RF-001, RF-002, RF-003, RF-004, RF-010, RF-011] → `task-05.md`
 - [ ] 6. Criar PasswordAlertEmailTemplate + SendPasswordAlertEmailNotification + testes unitários [RF-005, RF-006, RF-007, RF-008, RF-009, RF-010, RF-011] → `task-06.md`
 - [ ] 7. Registrar notificações no IoC container + bootstrap + configurar SMTP via env vars [RF-001, RF-005] → `task-07.md`

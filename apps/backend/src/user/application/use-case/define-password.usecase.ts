@@ -9,7 +9,7 @@ import {
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db.js"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { Queue } from "@/shared/infra/queue/queue"
-import { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
+import type { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
 import type { User } from "@/user/domain/user"
 import { ExternalProviderNotLinkedError } from "../error/external-provider-not-linked-error"
 import { PasswordAlreadySetError } from "../error/password-already-set-error"

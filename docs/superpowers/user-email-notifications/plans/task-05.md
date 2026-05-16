@@ -1,6 +1,6 @@
 # Task 5: Criar WelcomeEmailTemplate + SendWelcomeEmailNotification + testes unitários [RF-001, RF-002, RF-003, RF-004, RF-010, RF-011]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-user-email-notifications.md`
 **Spec:** `../specs/user-email-notifications-design.md`
 
