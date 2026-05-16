@@ -18,23 +18,35 @@ export class NodeMailerAdapter implements MailerGateway {
 		message: "✅",
 	})
 	private async init(): Promise<void> {
-		const testAccount = await nodemailer.createTestAccount()
-		this.transporter = nodemailer.createTransport({
-			host: testAccount.smtp.host,
-			port: testAccount.smtp.port,
-			secure: testAccount.smtp.secure,
-			auth: {
-				user: testAccount.user,
-				pass: testAccount.pass,
-			},
-		})
+		if (process.env.SMTP_HOST) {
+			this.transporter = nodemailer.createTransport({
+				host: process.env.SMTP_HOST,
+				port: Number(process.env.SMTP_PORT ?? 587),
+				secure: process.env.SMTP_PORT === "465",
+				auth: {
+					user: process.env.SMTP_USER,
+					pass: process.env.SMTP_PASS,
+				},
+			})
+		} else {
+			const testAccount = await nodemailer.createTestAccount()
+			this.transporter = nodemailer.createTransport({
+				host: testAccount.smtp.host,
+				port: testAccount.smtp.port,
+				secure: testAccount.smtp.secure,
+				auth: {
+					user: testAccount.user,
+					pass: testAccount.pass,
+				},
+			})
+		}
 	}
 
 	public async sendMail(input: SendMailInput): Promise<void> {
 		if (!this.transporter) await this.init()
 		if (!this.transporter) throw new Error("Transporter not initialized")
 		const mailOptions = {
-			from: '"No Reply" <no-reply@test.com>',
+			from: process.env.SMTP_FROM ?? '"No Reply" <no-reply@test.com>',
 			to: input.to,
 			subject: input.subject,
 			html: input.html,

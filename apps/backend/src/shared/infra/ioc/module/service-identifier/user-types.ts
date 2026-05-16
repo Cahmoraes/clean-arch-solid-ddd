@@ -37,4 +37,8 @@ export const USER_TYPES = {
 	DAO: {
 		User: Symbol.for("UserDAO"),
 	},
+	Notifications: {
+		SendWelcomeEmail: Symbol.for("SendWelcomeEmailNotification"),
+		SendPasswordAlertEmail: Symbol.for("SendPasswordAlertEmailNotification"),
+	},
 } as const

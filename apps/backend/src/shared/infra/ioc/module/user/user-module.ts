@@ -24,6 +24,8 @@ import { SuspendUserController } from "@/user/infra/controller/suspend-user.cont
 import { UpdateUserProfileController } from "@/user/infra/controller/update-user-profile.controller"
 import { UserMetricsController } from "@/user/infra/controller/user-metrics.controller"
 import { UserProfileController } from "@/user/infra/controller/user-profile.controller"
+import { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
+import { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
 import { AUTH_TYPES, USER_TYPES } from "../../types"
 import { UserDAOProvider } from "./user-dao-provider"
 import { UserRepositoryProvider } from "./user-repository-provider"
@@ -64,4 +66,10 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Controllers.SuspendUser).to(SuspendUserController)
 	bind(USER_TYPES.UseCases.DeleteUser).to(DeleteUserUseCase)
 	bind(SQLiteUserRepository).toSelf()
+	bind(USER_TYPES.Notifications.SendWelcomeEmail)
+		.to(SendWelcomeEmailNotification)
+		.inSingletonScope()
+	bind(USER_TYPES.Notifications.SendPasswordAlertEmail)
+		.to(SendPasswordAlertEmailNotification)
+		.inSingletonScope()
 })

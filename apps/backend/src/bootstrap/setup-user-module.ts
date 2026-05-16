@@ -1,4 +1,6 @@
 import { AUTH_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import type { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
+import type { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
 
 import { type ModuleControllers, resolve } from "./server-build"
 
@@ -8,6 +10,16 @@ import { type ModuleControllers, resolve } from "./server-build"
  */
 
 export function setupUserModule(): ModuleControllers {
+	const welcomeEmail = resolve<SendWelcomeEmailNotification>(
+		USER_TYPES.Notifications.SendWelcomeEmail,
+	)
+	welcomeEmail.subscribe()
+
+	const passwordAlertEmail = resolve<SendPasswordAlertEmailNotification>(
+		USER_TYPES.Notifications.SendPasswordAlertEmail,
+	)
+	passwordAlertEmail.subscribe()
+
 	const controllers = [
 		resolve(USER_TYPES.Controllers.CreateUser),
 		resolve(USER_TYPES.Controllers.UserProfile),
