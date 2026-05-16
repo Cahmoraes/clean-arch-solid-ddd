@@ -33,11 +33,12 @@ export class QueueController implements Controller {
 			QUEUES.SEND_WELCOME_EMAIL,
 			async (message: UserCreatedEvent): Promise<void> => {
 				const payload = message.payload
-				await this.mailer.sendMail(
-					payload.email,
-					"User created",
-					"User created successfully [Async]",
-				)
+				await this.mailer.sendMail({
+					to: payload.email,
+					subject: "User created",
+					html: "<p>User created successfully [Async]</p>",
+					text: "User created successfully [Async]",
+				})
 			},
 		)
 	}
@@ -51,11 +52,12 @@ export class QueueController implements Controller {
 					`Password changed event: ${JSON.stringify(event, null, 2)}`,
 				)
 				const payload = event.payload
-				await this.mailer.sendMail(
-					payload.userEmail,
-					"Password changed",
-					"Password changed successfully [Async]",
-				)
+				await this.mailer.sendMail({
+					to: payload.userEmail,
+					subject: "Password changed",
+					html: "<p>Password changed successfully [Async]</p>",
+					text: "Password changed successfully [Async]",
+				})
 			},
 		)
 	}

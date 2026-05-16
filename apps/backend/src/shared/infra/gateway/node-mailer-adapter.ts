@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify"
-import nodemailer, { type Transporter } from "nodemailer"
+import nodemailer, { type SentMessageInfo, type Transporter } from "nodemailer"
 import { Logger as LoggerDecorate } from "../decorator/logger"
 import { SHARED_TYPES } from "../ioc/types"
 import type { Logger } from "../logger/logger"
-import type { MailerGateway } from "./mailer-gateway"
+import type { MailerGateway, SendMailInput } from "./mailer-gateway"
 import { Retry } from "./retry"
 
 @injectable()
@@ -30,19 +30,15 @@ export class NodeMailerAdapter implements MailerGateway {
 		})
 	}
 
-	public async sendMail(
-		to: string,
-		subject: string,
-		text: string,
-	): Promise<void> {
-		console.log("Sending email... *******")
+	public async sendMail(input: SendMailInput): Promise<void> {
 		if (!this.transporter) await this.init()
 		if (!this.transporter) throw new Error("Transporter not initialized")
 		const mailOptions = {
 			from: '"No Reply" <no-reply@test.com>',
-			to,
-			subject,
-			text,
+			to: input.to,
+			subject: input.subject,
+			html: input.html,
+			text: input.text,
 		}
 		const sendMailWithRetry = Retry.wrap({
 			callback: this.transporter.sendMail.bind(this.transporter),
@@ -54,12 +50,14 @@ export class NodeMailerAdapter implements MailerGateway {
 			.then((mailResponse) => {
 				this.fireAndForgetSendMail(mailResponse)
 			})
-			.catch((e) => {
-				this.logger.error(this, `Failed to send email: ${e}`)
+			.catch((error) => {
+				this.logger.error(this, `Failed to send email: ${error}`)
 			})
 	}
 
-	private async fireAndForgetSendMail(mailResponse: any): Promise<void> {
+	private async fireAndForgetSendMail(
+		mailResponse: SentMessageInfo,
+	): Promise<void> {
 		this.logger.info(this, `Email sent ${mailResponse.messageId}`)
 		const testMessageURL = nodemailer.getTestMessageUrl(mailResponse)
 		this.logger.info(this, `Preview URL: ${testMessageURL}`)
