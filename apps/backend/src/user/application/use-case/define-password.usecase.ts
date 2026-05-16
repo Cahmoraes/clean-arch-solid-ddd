@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify"
 import type { ValidationError } from "zod-validation-error"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher.js"
 import {
 	type Either,
 	failure,
@@ -143,6 +144,7 @@ export class DefinePasswordUseCase {
 			userEmail: data.payload.userEmail,
 			userName: data.payload.userName,
 		})
+		void DomainEventPublisher.instance.publish(event)
 		this.queue.publish(event.eventName, event)
 	}
 }

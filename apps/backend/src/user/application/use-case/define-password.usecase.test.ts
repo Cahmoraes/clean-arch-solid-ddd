@@ -1,10 +1,15 @@
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import {
+	DomainEventPublisher,
+	type Subscriber,
+} from "@/shared/domain/event/domain-event-publisher"
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db.js"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { QueueMemoryAdapter } from "@/shared/infra/queue/queue-memory-adapter"
+import { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
 import { PasswordAlreadySetError } from "../error/password-already-set-error"
 import { ReauthGrantInvalidError } from "../error/reauth-grant-invalid-error"
 import type {
@@ -128,5 +133,46 @@ describe("DefinePasswordUseCase", () => {
 
 		expect(firstResult.isSuccess()).toBe(true)
 		await expect(cacheDB.get("password-reauth:grant-reuse")).resolves.toBeNull()
+	})
+
+	test("deve publicar PasswordChangedEvent via DomainEventPublisher ao definir senha", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "google-only@doe.com",
+			googleId: "google-sub-123",
+		})
+		await cacheDB.set(
+			"password-reauth:grant-domain-pub",
+			{ userId: user.id, provider: "google" },
+			300,
+		)
+
+		let receivedEvent: PasswordChangedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof PasswordChangedEvent) {
+				receivedEvent = event
+			}
+		}
+		DomainEventPublisher.instance.subscribe("passwordChanged", subscriber)
+
+		try {
+			await sut.execute({
+				userId: user.id,
+				provider: "google",
+				reauthGrant: "grant-domain-pub",
+				newRawPassword: "Senha123!",
+			})
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("passwordChanged", subscriber)
+		}
+
+		expect(receivedEvent).not.toBeNull()
+		expect(receivedEvent).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userEmail: "google-only@doe.com",
+				}),
+			}),
+		)
 	})
 })
