@@ -1,7 +1,6 @@
 import request from "supertest"
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
-
 import { serverBuild } from "@/bootstrap/server-build"
 import type { AuthenticateUseCase } from "@/session/application/use-case/authenticate.usecase"
 import { InMemoryCheckInRepository } from "@/shared/infra/database/repository/in-memory/in-memory-check-in-repository"

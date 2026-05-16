@@ -4,7 +4,7 @@
 	"editor.codeActionsOnSave": {
 		"source.organizeImports.biome": "explicit"
 	},
-	// "biome.lsp.bin": "./apps/backend/node_modules/@biomejs/biome/bin/biome",
+	"biome.lsp.bin": "./apps/backend/node_modules/@biomejs/biome/bin/biome",
 	// "typescript.tsdk": "apps/backend/node_modules/typescript/lib",
 	// "typescript.enablePromptUseWorkspaceTsdk": true,
 	"[sql]": {

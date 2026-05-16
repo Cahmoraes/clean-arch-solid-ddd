@@ -91,15 +91,15 @@ export class CheckInUseCase {
 		if (validateDistanceResult.isFailure()) {
 			return failure(validateDistanceResult.value)
 		}
+		DomainEventPublisher.instance.subscribe(
+			"checkInCreated",
+			this.createDomainEventSubscriber,
+		)
 		const checkIn = CheckIn.create(input)
 		const checkInId = await this.unityOfWork.runTransaction(async (tx) => {
 			const { id } = await this.checkInRepository
 				.withTransaction(tx)
 				.save(checkIn)
-			void DomainEventPublisher.instance.subscribe(
-				"checkInCreated",
-				this.createDomainEventSubscriber,
-			)
 			return id
 		})
 		return success({

@@ -5,7 +5,7 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!!**/.github",
+			"!**/.github",
 			"!**/playwright-report",
 			"!**/test-results",
 			"!**/coverage",

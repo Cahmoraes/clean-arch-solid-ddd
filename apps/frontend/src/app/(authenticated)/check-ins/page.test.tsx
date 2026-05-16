@@ -21,7 +21,7 @@ describe("CheckInsPage", () => {
 
 	it("exibe Skeleton durante loading e depois lista os check-ins", async () => {
 		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () =>
+			http.get(`${apiBaseUrl}/check-ins/me`, () =>
 				HttpResponse.json(
 					{
 						items: [
@@ -69,7 +69,7 @@ describe("CheckInsPage", () => {
 
 	it("exibe EmptyState quando histórico está vazio", async () => {
 		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () =>
+			http.get(`${apiBaseUrl}/check-ins/me`, () =>
 				HttpResponse.json({ items: [], page: 1, total: 0 }, { status: 200 }),
 			),
 		)
@@ -82,7 +82,7 @@ describe("CheckInsPage", () => {
 
 	it("exibe mensagem amigável em caso de erro", async () => {
 		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () =>
+			http.get(`${apiBaseUrl}/check-ins/me`, () =>
 				HttpResponse.json({ message: "boom" }, { status: 500 }),
 			),
 		)
@@ -96,7 +96,7 @@ describe("CheckInsPage", () => {
 	it("navega para próxima página quando há paginação", async () => {
 		const calls: string[] = []
 		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, ({ request }) => {
+			http.get(`${apiBaseUrl}/check-ins/me`, ({ request }) => {
 				const url = new URL(request.url)
 				const page = url.searchParams.get("page") ?? "1"
 				calls.push(page)
