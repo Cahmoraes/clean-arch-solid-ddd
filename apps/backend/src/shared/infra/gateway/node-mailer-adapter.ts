@@ -9,9 +9,10 @@ import { Retry } from "./retry"
 @injectable()
 export class NodeMailerAdapter implements MailerGateway {
 	private transporter?: Transporter
+	private initPromise?: Promise<void>
 
 	constructor(@inject(SHARED_TYPES.Logger) private readonly logger: Logger) {
-		this.init()
+		this.initPromise = this.init()
 	}
 
 	@LoggerDecorate({
@@ -43,7 +44,10 @@ export class NodeMailerAdapter implements MailerGateway {
 	}
 
 	public async sendMail(input: SendMailInput): Promise<void> {
-		if (!this.transporter) await this.init()
+		if (!this.transporter) {
+			this.initPromise ??= this.init()
+			await this.initPromise
+		}
 		if (!this.transporter) throw new Error("Transporter not initialized")
 		const mailOptions = {
 			from: process.env.SMTP_FROM ?? '"No Reply" <no-reply@test.com>',
@@ -57,7 +61,7 @@ export class NodeMailerAdapter implements MailerGateway {
 			maxAttempts: 3,
 			time: 1000,
 		})
-		sendMailWithRetry
+		void sendMailWithRetry
 			.run(mailOptions)
 			.then((mailResponse) => {
 				this.fireAndForgetSendMail(mailResponse)
