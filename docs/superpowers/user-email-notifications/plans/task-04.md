@@ -1,6 +1,6 @@
 # Task 4: Instalar React Email e configurar suporte a TSX
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-user-email-notifications.md`
 **Spec:** `../specs/user-email-notifications-design.md`
 

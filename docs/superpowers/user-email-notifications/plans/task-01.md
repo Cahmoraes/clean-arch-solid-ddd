@@ -1,6 +1,6 @@
 # Task 1: Atualizar interface MailerGateway para suporte a HTML + MailerGatewayMemory com sentEmails [RF-010, RF-011]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-user-email-notifications.md`
 **Spec:** `../specs/user-email-notifications-design.md`
 
