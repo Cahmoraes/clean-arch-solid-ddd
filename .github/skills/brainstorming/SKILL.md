@@ -81,6 +81,15 @@ Before formulating your first clarifying question, dispatch all research as back
 Do NOT call `view`, `glob`, `grep`, `bash`, `context7`, or any web-search tool directly in the main agent during this phase. All high-volume retrieval — codebase exploration, library docs, web research, user-provided URLs, and local documents — must be dispatched via the `task` tool as background subagents. The `task` tool is the only permitted mechanism for research during brainstorming.
 </RESEARCH-GATE>
 
+### Corporate Artifacts
+
+Before dispatching research subagents, check whether corporate artifacts are available in context. `using-superpowers` passes them when present (look for a message like _"Corporate artifacts are available: [list]"_). If corporate artifacts exist, include each item as part of the User-referenced resources subagent dispatch — they are treated exactly like user-provided paths and URLs:
+- Local path → inspect via `view`
+- Public URL → fetch
+- Inaccessible URL → ask the user for an excerpt
+
+**Precedence when corporate artifacts conflict with the current design:** Session decisions and the approved spec take priority over corporate artifacts. Corporate artifacts inform and enrich; they do not override what the user and agent agreed during this session. The priority order is: (1) latest user instruction, (2) approved spec / current-session decisions, (3) corporate artifacts, (4) external research.
+
 ### What to dispatch in parallel
 
 All applicable tracks must be launched in the **same tool-calling turn**:
@@ -90,7 +99,7 @@ All applicable tracks must be launched in the **same tool-calling turn**:
 | Codebase exploration | Always for existing projects; skip for clearly greenfield work | `explore` |
 | Library / API docs | Topic involves external libraries or frameworks | `general-purpose` instructed to use `context7` (when available) |
 | Web research | Needs current best practices, comparisons, or technology state | `general-purpose` instructed to use `exa-web-search-free` (when available) |
-| User-referenced resources | User mentions URLs or docs: public URL → fetch; local path → inspect; inaccessible → ask for an excerpt | `general-purpose` |
+| User-referenced resources & corporate artifacts | User mentions URLs or docs, OR corporate artifacts are available in context: public URL → fetch; local path → inspect; inaccessible → ask for an excerpt | `general-purpose` |
 
 If `context7` or `exa-web-search-free` are unavailable or hit quota, continue with best available knowledge — don't block the session.
 

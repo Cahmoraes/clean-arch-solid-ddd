@@ -5,6 +5,15 @@ stateDiagram-v2
     ChecandoPreferencias --> Onboarding : preferencias ausentes
     ChecandoPreferencias --> Triagem : preferencias carregadas
     Onboarding --> Triagem : preferencias salvas
+
+    state Onboarding {
+        direction TB
+        [*] --> ColetandoPreferencias
+        ColetandoPreferencias --> ColetandoArtefatos : preferencias operacionais coletadas
+        ColetandoArtefatos --> SalvandoPreferencias : artefatos registrados (ou etapa pulada)
+        SalvandoPreferencias --> [*]
+    }
+
     Triagem --> PerguntaDeAbertura : saudacao ou pedido ambiguo
     PerguntaDeAbertura --> Triagem : fluxo escolhido
     Triagem --> Explorando : feature, design, migracao ou refactor

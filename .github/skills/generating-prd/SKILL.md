@@ -29,8 +29,11 @@ If the user explicitly skips PRD generation (e.g., says "skip PRD", "go straight
 |--------|-----------------|
 | Design spec (from brainstorming) | Architecture, components, data flow, error handling, testing approach |
 | Brainstorming conversation context | User intent, constraints, decisions made, trade-offs chosen |
+| Corporate artifacts (if available) | Pre-existing user stories, business constraints, domain context, success metrics, and scope boundaries from prior corporate documentation (PRDs, specs, wikis, ADRs, etc.) |
 
-You already have both — the design spec was just written and reviewed in the same session.
+You already have all of the above — the design spec was just written and reviewed in the same session, and corporate artifacts (if provided during onboarding) were passed by `using-superpowers` in context.
+
+**Precedence:** Session decisions and the approved spec are authoritative. Corporate artifacts inform the PRD — especially for user stories and acceptance criteria that may already be documented — but they do not override the approved spec. If a corporate artifact conflicts with the approved design, flag the conflict to the user and follow the spec.
 
 ## Process
 
@@ -40,7 +43,9 @@ You already have both — the design spec was just written and reviewed in the s
 
 The brainstorming phase already performed deep clarification. However, a PRD requires specific artifacts (user stories, acceptance criteria, measurable objectives) that the design spec may not have captured explicitly.
 
-Scan the design spec for:
+If corporate artifacts are available in context (passed by `using-superpowers`), review them first — they may already contain user personas, success metrics, and scope boundaries, reducing or eliminating the need for additional questions.
+
+Scan the design spec (and any corporate artifacts) for:
 - Are user personas and their goals clearly identified?
 - Are success metrics stated?
 - Are scope boundaries (what's in, what's out) explicit?

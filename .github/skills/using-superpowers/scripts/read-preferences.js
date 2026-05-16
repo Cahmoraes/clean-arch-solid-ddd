@@ -49,14 +49,17 @@ Output (JSON to stdout):
     "preferencesPath": string,  // absolute path checked
     "preferences": {            // merged: file values + defaults
       "workflow": {
-        "auto_commit": boolean,              // default: false
+        "auto_commit": boolean,              // default: true
         "confirm_destructive_actions": boolean // default: true
       },
       "communication": {
-        "language": string                   // default: "en"
+        "language": string                   // default: "pt-BR"
       },
       "copilot": {
         "rubber_duck": boolean               // default: false
+      },
+      "context": {
+        "has_corporate_artifacts": boolean   // default: false — true when .superpowers/corporate-artifacts.yml exists
       }
     }
   }
@@ -92,6 +95,9 @@ const DEFAULTS = {
   },
   copilot: {
     rubber_duck: false,
+  },
+  context: {
+    has_corporate_artifacts: false,
   },
 };
 

@@ -26,13 +26,21 @@ On every session start, check for `.superpowers/preferences.yml` in the user's r
 > # or with explicit root:
 > node scripts/read-preferences.js --repo-root <repo-root>
 > ```
-> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, and `preferences.copilot.rubber_duck` directly from the output.
+> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, `preferences.copilot.rubber_duck`, and `preferences.context.has_corporate_artifacts` directly from the output.
 > 
 > **Fallback (if script unavailable):** Read the file directly using `view` — do NOT use `glob` (glob silently misses hidden directories like `.superpowers/`). See `references/copilot-tools.md`.
 
 - **If it exists:** Read it and keep the preferences in context. Inject relevant preferences when dispatching subagents (include them in the subagent prompt context).
 - **If it does NOT exist:** Follow the onboarding wizard in `references/onboarding-preferences.md` (read that file and execute the wizard before proceeding with the user's task).
 - **After preferences are available:** Continue into the opening triage step below. Do not stop after the onboarding confirmation message.
+
+### Corporate Artifacts
+
+If `preferences.context.has_corporate_artifacts` is `true`, read `.superpowers/corporate-artifacts.yml` using `view` (not `glob`) to retrieve the list of corporate artifact paths and URLs. Keep these references in context.
+
+When routing to `brainstorming` or `generating-prd`, include the corporate artifact references in the context you pass to those skills so they can incorporate them into research and requirements gathering. State explicitly in the handoff: _"Corporate artifacts are available: [list of paths/URLs]."_
+
+If the file is missing despite the flag being true, warn the user once and continue without artifacts.
 
 These preferences govern agent behavior throughout the workflow (auto-commit, language, destructive action confirmation). Skills that execute tasks (subagent-driven-development, executing-plans) also read the file directly, but the entry point ensures onboarding happens.
 

@@ -18,4 +18,10 @@ communication:
 # rubber_duck: false (default) uses Copilot CLI's native invocation behavior.
 copilot:
   rubber_duck: false
+
+# Context settings. Optional — added during onboarding if the user provides corporate artifacts.
+# When has_corporate_artifacts is true, the agent reads .superpowers/corporate-artifacts.yml
+# for local paths and public URLs to corporate documents (PRDs, specs, UML diagrams, wikis, etc.)
+context:
+  has_corporate_artifacts: false
 ```
