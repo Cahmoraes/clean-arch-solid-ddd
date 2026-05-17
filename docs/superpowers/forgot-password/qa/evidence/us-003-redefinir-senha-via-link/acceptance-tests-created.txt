@@ -1,0 +1,1 @@
+docs/superpowers/forgot-password/qa/evidence/us-003-redefinir-senha-via-link/us-003-reset-password-min-length.acceptance.test.ts

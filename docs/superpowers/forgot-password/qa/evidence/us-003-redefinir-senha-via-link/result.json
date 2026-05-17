@@ -1,0 +1,61 @@
+{
+	"us_id": "us-003",
+	"user_story": "Como usuário registrado, eu quero redefinir minha senha usando o link recebido por e-mail, para que eu possa recuperar o acesso à minha conta.",
+	"requirements": ["RF-008", "RF-009", "RF-010", "RF-011"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [
+		"docs/superpowers/forgot-password/qa/evidence/us-003-redefinir-senha-via-link/us-003-reset-password-min-length.acceptance.test.ts"
+	],
+	"test_output_summary": {
+		"existing_tests": {
+			"unit": {
+				"file": "apps/backend/src/user/application/use-case/reset-password.usecase.test.ts",
+				"passed": 5,
+				"failed": 0,
+				"requirement_coverage": {
+					"RF-008": 1,
+					"RF-009": 1,
+					"RF-010": 1,
+					"RF-011": 0
+				},
+				"relevant_tests": [
+					"token válido → senha atualizada com sucesso",
+					"token inválido → retorna InvalidResetTokenError",
+					"token de uso único → segundo uso retorna InvalidResetTokenError"
+				]
+			},
+			"business_flow": {
+				"file": "apps/backend/src/user/infra/controller/reset-password.business-flow-test.ts",
+				"passed": 4,
+				"failed": 0,
+				"requirement_coverage": {
+					"RF-008": 1,
+					"RF-009": 1,
+					"RF-010": 1,
+					"RF-011": 0
+				},
+				"relevant_tests": [
+					"Deve redefinir a senha com token válido",
+					"Deve retornar 400 quando o token for inválido ou expirado",
+					"Token de uso único: segundo uso retorna 400"
+				]
+			}
+		},
+		"acceptance_test": {
+			"file": "docs/superpowers/forgot-password/qa/evidence/us-003-redefinir-senha-via-link/us-003-reset-password-min-length.acceptance.test.ts",
+			"passed": 1,
+			"failed": 0,
+			"covers": ["RF-011"]
+		},
+		"validation_gate": {
+			"biome_fix": "passed",
+			"tsc_check": "passed",
+			"test_run": "80 arquivos / 444 testes aprovados",
+			"build": "passed"
+		}
+	},
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "Os comandos pnpm fornecidos com o caminho do arquivo após '--' não filtraram corretamente o alvo nesta workspace; por isso a evidência confiável foi coletada com reruns diretos do Vitest dentro de apps/backend. RF-011 não tinha cobertura automatizada nos arquivos indicados, então foi criado um teste de aceitação em evidência para validar rejeição de nova senha com menos de 8 caracteres. Screenshot não aplicável porque a tarefa pediu explicitamente para pular esta etapa."
+}

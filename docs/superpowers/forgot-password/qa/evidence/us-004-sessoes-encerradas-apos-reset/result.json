@@ -1,0 +1,61 @@
+{
+  "user_story": "US-004",
+  "requirement": "RF-012",
+  "status": "PASSED",
+  "summary": "Cobertura existente confirma a revogação no nível de use case e DAO, e foi adicionada uma aceitação business-flow para provar que um JWT ativo deixa de acessar rota protegida após o reset de senha.",
+  "mapped_tests": [
+    {
+      "file": "apps/backend/src/user/application/use-case/reset-password.usecase.test.ts",
+      "test": "todas as sessões são revogadas após reset bem-sucedido",
+      "result": "PASS",
+      "evidence": "Após ResetPasswordUseCase.execute, revokedTokenDAO.isAllRevokedForUser(user.id) retorna true."
+    },
+    {
+      "file": "apps/backend/src/shared/infra/database/dao/in-memory/revoked-token-dao-memory.test.ts",
+      "tests": [
+        "isAllRevokedForUser retorna false para usuário não revogado",
+        "revokeAllForUser marca o usuário como revogado",
+        "não afeta outros usuários"
+      ],
+      "result": "PASS",
+      "evidence": "A implementação in-memory suporta revokeAllForUser e isAllRevokedForUser corretamente."
+    },
+    {
+      "file": "apps/backend/src/session/application/dao/revoked-token-dao.ts",
+      "result": "PASS",
+      "evidence": "A interface RevokedTokenDAO expõe revokeAllForUser(userId, ttl) e isAllRevokedForUser(userId)."
+    }
+  ],
+  "added_acceptance_test": {
+    "file": "apps/backend/src/user/infra/controller/reset-password.business-flow-test.ts",
+    "test": "Deve encerrar sessões ativas após reset bem-sucedido",
+    "result": "PASS",
+    "evidence": "Usuário autentica, recebe JWT, executa POST /password/reset e depois recebe 401 { message: 'Session already revoked' } ao acessar GET /users/me com o token antigo."
+  },
+  "commands": [
+    {
+      "command": "pnpm exec vitest run --config ./test/vite.config.app-domain.ts src/user/application/use-case/reset-password.usecase.test.ts src/shared/infra/database/dao/in-memory/revoked-token-dao-memory.test.ts --reporter=verbose",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm exec vitest run --config ./test/vite.config.business-flow.ts src/user/infra/controller/reset-password.business-flow-test.ts -t \"Deve encerrar sessões ativas após reset bem-sucedido\"",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm --filter backend biome:fix",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm --filter backend tsc:check",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm --filter backend test:run",
+      "result": "PASS"
+    },
+    {
+      "command": "pnpm --filter backend build",
+      "result": "PASS"
+    }
+  ]
+}
