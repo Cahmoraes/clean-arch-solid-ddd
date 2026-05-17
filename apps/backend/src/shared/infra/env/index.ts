@@ -25,6 +25,7 @@ const envSchema = z.object({
 	DIRECT_URL: z.string().optional(),
 	GOOGLE_CLIENT_ID: z.string().optional(),
 	CORS_ORIGINS: z.string().optional(),
+	FRONTEND_URL: z.string().url().default("http://localhost:3000"),
 	CRON_TIME_TO_UPDATE_CACHE: z.string(),
 	STRIPE_PUBLIC_KEY: z.string(),
 	STRIPE_PRIVATE_KEY: z.string(),

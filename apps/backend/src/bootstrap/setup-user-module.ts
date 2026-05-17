@@ -1,5 +1,6 @@
 import { AUTH_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
+import type { SendPasswordResetEmailNotification } from "@/user/infra/email/send-password-reset-email.notification"
 import type { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
 
 import { type ModuleControllers, resolve } from "./server-build"
@@ -19,6 +20,11 @@ export function setupUserModule(): ModuleControllers {
 		USER_TYPES.Notifications.SendPasswordAlertEmail,
 	)
 	passwordAlertEmail.subscribe()
+
+	const passwordResetEmail = resolve<SendPasswordResetEmailNotification>(
+		USER_TYPES.Notifications.SendPasswordResetEmail,
+	)
+	passwordResetEmail.subscribe()
 
 	const controllers = [
 		resolve(USER_TYPES.Controllers.CreateUser),

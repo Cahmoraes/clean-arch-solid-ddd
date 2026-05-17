@@ -27,6 +27,7 @@ import { UpdateUserProfileController } from "@/user/infra/controller/update-user
 import { UserMetricsController } from "@/user/infra/controller/user-metrics.controller"
 import { UserProfileController } from "@/user/infra/controller/user-profile.controller"
 import { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
+import { SendPasswordResetEmailNotification } from "@/user/infra/email/send-password-reset-email.notification"
 import { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
 import { RedisPasswordResetTokenStore } from "@/user/infra/gateway/redis-password-reset-token-store"
 import { AUTH_TYPES, USER_TYPES } from "../../types"
@@ -79,5 +80,8 @@ export const userModule = new ContainerModule(({ bind }) => {
 		.inSingletonScope()
 	bind(USER_TYPES.Notifications.SendPasswordAlertEmail)
 		.to(SendPasswordAlertEmailNotification)
+		.inSingletonScope()
+	bind(USER_TYPES.Notifications.SendPasswordResetEmail)
+		.to(SendPasswordResetEmailNotification)
 		.inSingletonScope()
 })
