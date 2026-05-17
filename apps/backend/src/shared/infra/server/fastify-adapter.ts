@@ -255,6 +255,7 @@ export class FastifyAdapter implements HttpServer {
 			})
 			await checkSessionRevoked.execute({
 				jwi: request.user.sub.jwi,
+				userId: request.user.sub.id,
 			})
 		}
 	}

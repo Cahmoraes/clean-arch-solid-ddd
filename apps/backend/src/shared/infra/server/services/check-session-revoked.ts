@@ -11,6 +11,7 @@ export interface CheckSessionRevokedHandlerConstructor {
 
 export interface CheckSessionRevokedHandlerExecute {
 	jwi: string
+	userId: string
 }
 
 export class CheckSessionRevokedHandler {
@@ -30,9 +31,17 @@ export class CheckSessionRevokedHandler {
 		input: CheckSessionRevokedHandlerExecute,
 	): Promise<void> {
 		const sessionFound = await this.sessionDAO.revokedTokenById(input.jwi)
-		if (!sessionFound) return
-		this.reply.status(HTTP_STATUS.UNAUTHORIZED).send({
-			message: "Session already revoked",
-		})
+		if (sessionFound) {
+			this.reply.status(HTTP_STATUS.UNAUTHORIZED).send({
+				message: "Session already revoked",
+			})
+			return
+		}
+		const userRevoked = await this.sessionDAO.isAllRevokedForUser(input.userId)
+		if (userRevoked) {
+			this.reply.status(HTTP_STATUS.UNAUTHORIZED).send({
+				message: "Session already revoked",
+			})
+		}
 	}
 }

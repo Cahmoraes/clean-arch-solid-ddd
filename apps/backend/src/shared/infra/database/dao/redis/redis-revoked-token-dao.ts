@@ -44,4 +44,13 @@ export class RedisRevokedTokenDAO implements RevokedTokenDAO {
 	public async delete(session: RevokedTokenData): Promise<void> {
 		return this.cacheDB.delete(session.jwi)
 	}
+
+	public async revokeAllForUser(userId: string, ttl: number): Promise<void> {
+		await this.cacheDB.set(`user:revoked:${userId}`, "1", ttl)
+	}
+
+	public async isAllRevokedForUser(userId: string): Promise<boolean> {
+		const value = await this.cacheDB.get<string>(`user:revoked:${userId}`)
+		return value !== null
+	}
 }

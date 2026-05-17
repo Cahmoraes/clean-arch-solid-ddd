@@ -8,6 +8,7 @@ import type {
 @injectable()
 export class RevokedTokenDAOMemory implements RevokedTokenDAO {
 	public revokedTokenData = new ExtendedSet<RevokedTokenData>()
+	private revokedUsers = new Set<string>()
 
 	public async revoke(session: RevokedTokenData): Promise<void> {
 		this.revokedTokenData.add(session)
@@ -19,5 +20,13 @@ export class RevokedTokenDAOMemory implements RevokedTokenDAO {
 
 	public async delete(session: RevokedTokenData): Promise<void> {
 		this.revokedTokenData.delete(session)
+	}
+
+	public async revokeAllForUser(userId: string, _ttl: number): Promise<void> {
+		this.revokedUsers.add(userId)
+	}
+
+	public async isAllRevokedForUser(userId: string): Promise<boolean> {
+		return this.revokedUsers.has(userId)
 	}
 }
