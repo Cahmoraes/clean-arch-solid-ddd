@@ -10,6 +10,7 @@ import { container } from "@/shared/infra/ioc/container"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import { UserRoutes } from "./routes/user-routes"
 
 const RESET_PASSWORD_ROUTE = "/password/reset"
 const PASSWORD_RESET_TTL = 15 * 60
@@ -104,6 +105,39 @@ describe("Redefinir senha", () => {
 			.send({ token: rawToken, newPassword: "AnotherPass789!" })
 
 		expect(secondResponse.status).toBe(HTTP_STATUS.BAD_REQUEST)
+	})
+
+	test("Deve encerrar sessões ativas após reset bem-sucedido", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "john@test.com",
+			password: "OldPass123!",
+		})
+		const { rawToken, tokenHash } = makeTokenPair()
+		await tokenStore.saveResetToken(user.id, tokenHash, PASSWORD_RESET_TTL)
+		await tokenStore.saveUidMapping(user.id, tokenHash, PASSWORD_RESET_TTL)
+
+		const loginResponse = await request(fastifyServer.server)
+			.post(SessionRoutes.AUTHENTICATE)
+			.send({ email: user.email, password: "OldPass123!" })
+
+		expect(loginResponse.status).toBe(HTTP_STATUS.OK)
+		expect(loginResponse.body.token).toBeDefined()
+
+		const resetResponse = await request(fastifyServer.server)
+			.post(RESET_PASSWORD_ROUTE)
+			.send({ token: rawToken, newPassword: "NewPass456!" })
+
+		expect(resetResponse.status).toBe(HTTP_STATUS.NO_CONTENT)
+
+		const revokedSessionResponse = await request(fastifyServer.server)
+			.get(UserRoutes.ME)
+			.set("Authorization", `Bearer ${loginResponse.body.token}`)
+
+		expect(revokedSessionResponse.status).toBe(HTTP_STATUS.UNAUTHORIZED)
+		expect(revokedSessionResponse.body).toEqual({
+			message: "Session already revoked",
+		})
 	})
 
 	test("Fluxo completo: login com nova senha funciona e com senha antiga falha", async () => {
