@@ -14,6 +14,8 @@ export const USER_TYPES = {
 		ChangePassword: Symbol.for("ChangePasswordUseCase"),
 		CreatePasswordReauthGrant: Symbol.for("CreatePasswordReauthGrantUseCase"),
 		DefinePassword: Symbol.for("DefinePasswordUseCase"),
+		ForgotPassword: Symbol.for("ForgotPasswordUseCase"),
+		ResetPassword: Symbol.for("ResetPasswordUseCase"),
 		ActivateUser: Symbol.for("ActivateUserUseCase"),
 		UpdateUserProfile: Symbol.for("UpdateUserProfileUseCase"),
 		SuspendUser: Symbol.for("SuspendUserUseCase"),
@@ -27,6 +29,8 @@ export const USER_TYPES = {
 			"CreatePasswordReauthGrantController",
 		),
 		DefinePassword: Symbol.for("DefinePasswordController"),
+		ForgotPassword: Symbol.for("ForgotPasswordController"),
+		ResetPassword: Symbol.for("ResetPasswordController"),
 		FetchUsers: Symbol.for("FetchUsersController"),
 		UpdateUserProfile: Symbol.for("UpdateUserProfileController"),
 		ActivateUser: Symbol.for("ActivateUserController"),
@@ -34,11 +38,15 @@ export const USER_TYPES = {
 		MyProfile: Symbol.for("MyProfileController"),
 		UserMetrics: Symbol.for("UserMetricsController"),
 	},
+	Gateways: {
+		PasswordResetTokenStore: Symbol.for("PasswordResetTokenStore"),
+	},
 	DAO: {
 		User: Symbol.for("UserDAO"),
 	},
 	Notifications: {
 		SendWelcomeEmail: Symbol.for("SendWelcomeEmailNotification"),
 		SendPasswordAlertEmail: Symbol.for("SendPasswordAlertEmailNotification"),
+		SendPasswordResetEmail: Symbol.for("SendPasswordResetEmailNotification"),
 	},
 } as const

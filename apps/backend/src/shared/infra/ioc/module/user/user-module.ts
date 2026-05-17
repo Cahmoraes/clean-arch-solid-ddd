@@ -26,6 +26,7 @@ import { UserMetricsController } from "@/user/infra/controller/user-metrics.cont
 import { UserProfileController } from "@/user/infra/controller/user-profile.controller"
 import { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
 import { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
+import { RedisPasswordResetTokenStore } from "@/user/infra/gateway/redis-password-reset-token-store"
 import { AUTH_TYPES, USER_TYPES } from "../../types"
 import { UserDAOProvider } from "./user-dao-provider"
 import { UserRepositoryProvider } from "./user-repository-provider"
@@ -37,6 +38,9 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.PG.User).to(PgUserRepository).inRequestScope()
 	bind(USER_TYPES.DAO.User)
 		.toDynamicValue(UserDAOProvider.provide)
+		.inSingletonScope()
+	bind(USER_TYPES.Gateways.PasswordResetTokenStore)
+		.to(RedisPasswordResetTokenStore)
 		.inSingletonScope()
 	bind(USER_TYPES.Controllers.CreateUser).to(CreateUserController)
 	bind(USER_TYPES.Controllers.UserProfile).to(UserProfileController)
