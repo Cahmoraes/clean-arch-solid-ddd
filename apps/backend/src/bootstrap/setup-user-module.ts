@@ -36,6 +36,8 @@ export function setupUserModule(): ModuleControllers {
 		resolve(USER_TYPES.Controllers.ChangePassword),
 		resolve(USER_TYPES.Controllers.CreatePasswordReauthGrant),
 		resolve(USER_TYPES.Controllers.DefinePassword),
+		resolve(USER_TYPES.Controllers.ForgotPassword),
+		resolve(USER_TYPES.Controllers.ResetPassword),
 		resolve(USER_TYPES.Controllers.FetchUsers),
 		resolve(USER_TYPES.Controllers.ActivateUser),
 		resolve(USER_TYPES.Controllers.SuspendUser),

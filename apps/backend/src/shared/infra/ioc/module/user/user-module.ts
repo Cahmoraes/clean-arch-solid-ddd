@@ -21,7 +21,9 @@ import { CreatePasswordReauthGrantController } from "@/user/infra/controller/cre
 import { CreateUserController } from "@/user/infra/controller/create-user.controller"
 import { DefinePasswordController } from "@/user/infra/controller/define-password.controller"
 import { FetchUsersController } from "@/user/infra/controller/fetch-users.controller"
+import { ForgotPasswordController } from "@/user/infra/controller/forgot-password.controller"
 import { MyProfileController } from "@/user/infra/controller/my-profile.controller"
+import { ResetPasswordController } from "@/user/infra/controller/reset-password.controller"
 import { SuspendUserController } from "@/user/infra/controller/suspend-user.controller"
 import { UpdateUserProfileController } from "@/user/infra/controller/update-user-profile.controller"
 import { UserMetricsController } from "@/user/infra/controller/user-metrics.controller"
@@ -55,6 +57,8 @@ export const userModule = new ContainerModule(({ bind }) => {
 		CreatePasswordReauthGrantController,
 	)
 	bind(USER_TYPES.Controllers.DefinePassword).to(DefinePasswordController)
+	bind(USER_TYPES.Controllers.ForgotPassword).to(ForgotPasswordController)
+	bind(USER_TYPES.Controllers.ResetPassword).to(ResetPasswordController)
 	bind(USER_TYPES.Controllers.FetchUsers).to(FetchUsersController)
 	bind(USER_TYPES.Controllers.UpdateUserProfile).to(UpdateUserProfileController)
 	bind(USER_TYPES.UseCases.CreateUser).to(CreateUserUseCase)

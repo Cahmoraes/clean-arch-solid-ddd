@@ -9,6 +9,8 @@ export const UserRoutes = {
 	CHANGE_PASSWORD: `${PREFIX}/me/change-password`,
 	PASSWORD_REAUTH: `${PREFIX}/me/password/reauth`,
 	PASSWORD: `${PREFIX}/me/password`,
+	FORGOT_PASSWORD: "/password/forgot",
+	RESET_PASSWORD: "/password/reset",
 	ACTIVATE_USER: `${PREFIX}/activate`,
 	SUSPEND_USER: `${PREFIX}/suspend`,
 } as const
