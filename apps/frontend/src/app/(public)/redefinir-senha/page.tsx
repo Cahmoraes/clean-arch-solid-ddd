@@ -3,9 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { type ReactNode, Suspense, useEffect, useId } from "react"
+import { type ReactNode, Suspense, useEffect, useId, useState } from "react"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { useResetPassword } from "@/features/auth/api"
@@ -46,6 +45,7 @@ function ResetPasswordForm() {
 	const searchParams = useSearchParams()
 	const newPasswordId = useId()
 	const confirmPasswordId = useId()
+	const [tokenFailed, setTokenFailed] = useState(false)
 	const { mutateAsync, isPending, isSuccess } = useResetPassword()
 	const {
 		register,
@@ -73,18 +73,16 @@ function ResetPasswordForm() {
 			await mutateAsync({ token, ...values })
 			reset()
 		} catch {
-			toast.error(
-				"Não foi possível redefinir a senha. O link pode ter expirado ou já foi utilizado.",
-			)
+			setTokenFailed(true)
 		}
 	}
 
-	if (!token) {
+	if (!token || tokenFailed) {
 		return (
 			<StatusSection
 				testId="reset-password-invalid-link"
-				title="Link inválido"
-				description="O link de redefinição está ausente ou inválido. Solicite um novo link para continuar."
+				title="Link expirado ou inválido"
+				description="Este link de redefinição expirou ou já foi utilizado. Solicite um novo link para continuar."
 				cta={
 					<Button asChild>
 						<Link href="/recuperar-senha">Solicitar novo link</Link>
