@@ -59,8 +59,24 @@ export const definePasswordSchema = z
 		message: "A confirmação não corresponde à nova senha.",
 	})
 
+export const forgotPasswordSchema = z.object({
+	email: z.email("Informe um e-mail válido."),
+})
+
+export const resetPasswordSchema = z
+	.object({
+		newPassword: passwordSchema,
+		confirmPassword: z.string().min(1, "Confirme a nova senha."),
+	})
+	.refine((data) => data.newPassword === data.confirmPassword, {
+		path: ["confirmPassword"],
+		message: "A confirmação não corresponde à nova senha.",
+	})
+
 export type LoginInput = z.infer<typeof loginSchema>
 export type SignupInput = z.infer<typeof signupSchema>
 export type ActivateInput = z.infer<typeof activateSchema>
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
 export type DefinePasswordInput = z.infer<typeof definePasswordSchema>
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>

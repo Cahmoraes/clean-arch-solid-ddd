@@ -8,7 +8,9 @@ import {
 import type {
 	ActivateInput,
 	ChangePasswordInput,
+	ForgotPasswordInput,
 	LoginInput,
+	ResetPasswordInput,
 	SignupInput,
 } from "@/features/auth/schemas"
 import { profileQueryKeys } from "@/features/profile/api"
@@ -96,6 +98,36 @@ export function useActivateAccount(): UseMutationResult<
 		mutationFn: async (input) => {
 			const { error } = await api.PATCH("/users/activate", {
 				body: input,
+			})
+			if (error) throw toApiError(error)
+		},
+	})
+}
+
+export function useForgotPassword(): UseMutationResult<
+	void,
+	ApiError,
+	ForgotPasswordInput
+> {
+	return useMutation<void, ApiError, ForgotPasswordInput>({
+		mutationFn: async (input) => {
+			const { error } = await api.POST("/password/forgot", {
+				body: input,
+			})
+			if (error) throw toApiError(error)
+		},
+	})
+}
+
+export function useResetPassword(): UseMutationResult<
+	void,
+	ApiError,
+	ResetPasswordInput & { token: string }
+> {
+	return useMutation<void, ApiError, ResetPasswordInput & { token: string }>({
+		mutationFn: async ({ token, newPassword }) => {
+			const { error } = await api.POST("/password/reset", {
+				body: { token, newPassword },
 			})
 			if (error) throw toApiError(error)
 		},

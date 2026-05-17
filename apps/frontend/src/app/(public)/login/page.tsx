@@ -101,6 +101,14 @@ function LoginForm() {
 					error={errors.password?.message}
 					{...register("password")}
 				/>
+				<div className="flex justify-end">
+					<Link
+						href="/recuperar-senha"
+						className="text-sm font-medium text-foreground underline underline-offset-4"
+					>
+						Esqueceu sua senha?
+					</Link>
+				</div>
 
 				{submissionMessage ? (
 					<p
