@@ -42,6 +42,7 @@ export class CheckSessionRevokedHandler {
 			this.reply.status(HTTP_STATUS.UNAUTHORIZED).send({
 				message: "Session already revoked",
 			})
+			return
 		}
 	}
 }
