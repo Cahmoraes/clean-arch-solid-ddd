@@ -15,13 +15,13 @@
 
 ## Tarefas
 
-- [ ] 1. Extend RevokedTokenDAO para revogação em massa por usuário [RF-012] → `task-01.md`
-- [ ] 2. PasswordResetTokenStore – interface e implementação Redis [RF-003, RF-004, RF-005, RF-010] → `task-02.md`
-- [ ] 3. ForgotPasswordUseCase + testes unitários [RF-001, RF-002, RF-003, RF-004, RF-006, RF-007] → `task-03.md`
-- [ ] 4. ResetPasswordUseCase + testes unitários [RF-008, RF-009, RF-010, RF-011, RF-012, RF-013] → `task-04.md`
-- [ ] 5. Email template + SendPasswordResetEmailNotification + bootstrap [RF-014, RF-015, RF-016] → `task-05.md`
-- [ ] 6. Controllers, rotas, rate-limit config e IoC wiring [RF-001, RF-002, RF-007, RF-008, RF-009] → `task-06.md`
-- [ ] 7. Business flow tests (HTTP integration) [RF-001, RF-002, RF-006, RF-007, RF-008, RF-009, RF-010, RF-012, RF-013] → `task-07.md`
-- [ ] 8. Gerar tipos compartilhados (@repo/api-types) → `task-08.md`
+- [x] 1. Extend RevokedTokenDAO para revogação em massa por usuário [RF-012] → `task-01.md`
+- [x] 2. PasswordResetTokenStore – interface e implementação Redis [RF-003, RF-004, RF-005, RF-010] → `task-02.md`
+- [x] 3. ForgotPasswordUseCase + testes unitários [RF-001, RF-002, RF-003, RF-004, RF-006, RF-007] → `task-03.md`
+- [x] 4. ResetPasswordUseCase + testes unitários [RF-008, RF-009, RF-010, RF-011, RF-012, RF-013] → `task-04.md`
+- [x] 5. Email template + SendPasswordResetEmailNotification + bootstrap [RF-014, RF-015, RF-016] → `task-05.md`
+- [x] 6. Controllers, rotas, rate-limit config e IoC wiring [RF-001, RF-002, RF-007, RF-008, RF-009] → `task-06.md`
+- [x] 7. Business flow tests (HTTP integration) [RF-001, RF-002, RF-006, RF-007, RF-008, RF-009, RF-010, RF-012, RF-013] → `task-07.md`
+- [x] 8. Gerar tipos compartilhados (@repo/api-types) → `task-08.md`
 - [ ] 9. Frontend – página /recuperar-senha + link na página de login [RF-017, RF-018, RF-023] → `task-09.md`
 - [ ] 10. Frontend – página /redefinir-senha [RF-019, RF-020, RF-021, RF-022] → `task-10.md`

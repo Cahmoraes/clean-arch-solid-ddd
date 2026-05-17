@@ -1,6 +1,6 @@
 # Task 5: Email template + SendPasswordResetEmailNotification + bootstrap [RF-014, RF-015, RF-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 

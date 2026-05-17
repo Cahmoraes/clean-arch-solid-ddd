@@ -1,6 +1,6 @@
 # Task 1: Extend RevokedTokenDAO para revogação em massa por usuário [RF-012]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 

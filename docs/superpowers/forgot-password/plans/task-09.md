@@ -1,6 +1,6 @@
 # Task 9: Frontend — página /recuperar-senha + link na tela de login [RF-018, RF-019, RF-021, RF-022]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 

@@ -1,6 +1,6 @@
 # Task 8: Gerar tipos compartilhados de API [RF-020]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 

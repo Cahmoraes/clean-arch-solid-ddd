@@ -1,6 +1,6 @@
 # Task 3: ForgotPasswordUseCase + testes unitários [RF-001, RF-002, RF-003, RF-004, RF-006, RF-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 

@@ -1,6 +1,6 @@
 # Task 4: ResetPasswordUseCase + testes unitários [RF-008, RF-009, RF-010, RF-011, RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 

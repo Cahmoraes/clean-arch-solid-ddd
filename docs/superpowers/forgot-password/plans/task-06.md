@@ -1,6 +1,6 @@
 # Task 6: Controllers, rotas, rate-limit config e IoC wiring [RF-001, RF-002, RF-007, RF-008, RF-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 

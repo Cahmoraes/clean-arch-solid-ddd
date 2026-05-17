@@ -1,6 +1,6 @@
 # Task 2: PasswordResetTokenStore – interface e implementação Redis [RF-003, RF-004, RF-005, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 

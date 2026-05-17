@@ -1,6 +1,6 @@
 # Task 10: Frontend — página /redefinir-senha [RF-018, RF-019, RF-023]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-forgot-password.md`
 **Spec:** `../specs/forgot-password-design.md`
 
