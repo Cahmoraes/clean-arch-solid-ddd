@@ -96,29 +96,51 @@ Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-too
 
 ## Context Window Management
 
-When `workflow.auto_compact` is `true` (the default), the agent compacts context at two points:
+When `workflow.auto_compact` is `true` (the default), the agent compacts context at two points.
 
 ### Structural trigger (planning → execution gate)
 
-Fired by `writing-plans` after generating task files and before presenting the execution handoff. This is the highest-accumulation point — PRD, spec, brainstorming content, and all planning templates are in context. `writing-plans` reads preferences itself to check this flag; see that skill for the compact step.
+Fired by `writing-plans` after generating task files and before the execution handoff. See that skill for the compact step.
 
-### Dynamic trigger (best-effort, ~60% context usage)
+### Dynamic trigger (mandatory, ~60% context usage)
 
-At strategic checkpoints — before dispatching subagents, after receiving long subagent results, at the start of each skill — check actual context consumption using the platform's `/context` command (see `-tools.md` for platform-specific command). If usage is at or above ~60% and `auto_compact: true`, execute compact before proceeding.
+**Before routing to any skill**, run `/context` to check actual usage. If usage is at or above ~60% and `auto_compact: true`, compact first, then route.
 
-- **This trigger is best-effort.** If `/context` is unavailable or returns no usage data, skip the compact and continue — do not block work.
+```
+1. Run: /context
+2. If usage ≥ 60% and auto_compact: true → compact (see "How to compact" below)
+3. Route to the appropriate skill
+```
+
+Run the same check at these moments inside long-running skills:
+- Before dispatching research subagents in `brainstorming`
+- After receiving large results back from subagents
+- Before writing any large generated artifact (spec, PRD, task files)
+
+**This check is best-effort.** If `/context` is unavailable or returns no usage data, skip the compact and continue.
 
 ### How to compact
 
-Invoke the platform's native compact command — the platform handles the summarization:
-- **Claude Code**: `/compact`
-- **Copilot CLI**: `/compact`
-- **Gemini CLI**: `save_memory` with a concise orientation summary
-- **Codex**: use the platform's native compact/summarize mechanism
+Pass the current superpowers state to the compact command so the platform preserves continuity after summarization. Without the state, the platform's compaction algorithm has no anchor and the flow may drift.
 
-See the "Context Compaction" section in the relevant `-tools.md` for details.
+**Claude Code / Copilot CLI:**
+```
+/compact Superpowers state: <state-name> | Feature: <feature-name> | Phase: <phase> | Next: <next-action>
+```
 
-**Non-blocking**: if the compact mechanism fails or is unavailable, continue normally. Compaction is an optimization, not a correctness requirement.
+**Example — dynamic trigger during brainstorming:**
+```
+/compact Superpowers state: Explorando | Feature: user-auth | Phase: research subagents returned | Next: ask clarifying questions
+```
+
+**Example — structural gate in writing-plans:**
+```
+/compact Superpowers state: Planejando→Executando | Feature: user-auth | Tasks index: docs/superpowers/user-auth/plans/tasks-user-auth.md | Next: present execution handoff to user
+```
+
+**Gemini CLI:** Use `save_memory` with the same state fields.
+
+**Non-blocking**: if compact fails or `/context` is unavailable, continue normally.
 
 # Using Skills
 

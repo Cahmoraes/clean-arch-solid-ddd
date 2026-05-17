@@ -150,13 +150,16 @@ After the self-review (and optional external review) and before presenting the e
 1. Read preferences: node scripts/read-preferences.js
    (fallback: view .superpowers/preferences.yml directly)
 2. If workflow.auto_compact == true (or key is absent — default is true):
-   Invoke the platform's native compact command
-   (see using-superpowers/references/copilot-tools.md, codex-tools.md, or gemini-tools.md)
+   Run /context — if usage ≥ 60% OR this is the structural gate (always compact here):
+   Invoke compact with the current state:
+
+   /compact Superpowers state: Planejando→Executando | Feature: <feature-name> | Tasks index: <tasks-index-path> | Next: present execution handoff to user
+
    Non-blocking: if compact fails, continue without interruption
 3. If workflow.auto_compact == false: skip compact silently
 ```
 
-This is the structural compact gate. It runs exactly once per planning cycle, at the highest-accumulation point: after all planning context has been written to disk and before the new execution phase begins.
+This is the structural compact gate — it always runs when `auto_compact: true`, regardless of current usage. The planning phase accumulates the most context (PRD, spec, brainstorming, templates), and the agent needs a clean context to coordinate subagents in the execution phase.
 
 ## Execution Handoff
 
