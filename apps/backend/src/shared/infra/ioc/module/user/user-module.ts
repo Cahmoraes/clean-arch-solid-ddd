@@ -10,6 +10,7 @@ import { DefinePasswordUseCase } from "@/user/application/use-case/define-passwo
 import { DeleteUserUseCase } from "@/user/application/use-case/delete-user.usecase"
 import { FetchUsersUseCase } from "@/user/application/use-case/fetch-users.usecase"
 import { ForgotPasswordUseCase } from "@/user/application/use-case/forgot-password.usecase"
+import { ResetPasswordUseCase } from "@/user/application/use-case/reset-password.usecase"
 import { SuspendUserUseCase } from "@/user/application/use-case/suspend-user.usecase"
 import { UpdateUserProfileUseCase } from "@/user/application/use-case/update-user-profile.usecase"
 import { UserMetricsUseCase } from "@/user/application/use-case/user-metrics.usecase"
@@ -64,6 +65,7 @@ export const userModule = new ContainerModule(({ bind }) => {
 	)
 	bind(USER_TYPES.UseCases.DefinePassword).to(DefinePasswordUseCase)
 	bind(USER_TYPES.UseCases.ForgotPassword).to(ForgotPasswordUseCase)
+	bind(USER_TYPES.UseCases.ResetPassword).to(ResetPasswordUseCase)
 	bind(USER_TYPES.UseCases.FetchUsers).to(FetchUsersUseCase)
 	bind(USER_TYPES.UseCases.UpdateUserProfile).to(UpdateUserProfileUseCase)
 	bind(USER_TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
