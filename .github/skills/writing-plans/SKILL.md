@@ -142,6 +142,22 @@ After writing the complete plan, look at the spec with fresh eyes. **Read `./ref
 
 If you want an independent second opinion on the plan's completeness and buildability, dispatch a plan document reviewer subagent using the template in `./plan-document-reviewer-prompt.md`. This is optional — use it for complex or high-stakes plans where a self-review might not be enough.
 
+## Context Compaction Gate
+
+After the self-review (and optional external review) and before presenting the execution handoff, check whether to compact:
+
+```
+1. Read preferences: node scripts/read-preferences.js
+   (fallback: view .superpowers/preferences.yml directly)
+2. If workflow.auto_compact == true (or key is absent — default is true):
+   Invoke the platform's native compact command
+   (see using-superpowers/references/copilot-tools.md, codex-tools.md, or gemini-tools.md)
+   Non-blocking: if compact fails, continue without interruption
+3. If workflow.auto_compact == false: skip compact silently
+```
+
+This is the structural compact gate. It runs exactly once per planning cycle, at the highest-accumulation point: after all planning context has been written to disk and before the new execution phase begins.
+
 ## Execution Handoff
 
 After saving the tasks index and task files, **read `./references/execution-handoff-message.md` and offer its message verbatim to the user**, filling in the feature name and task count.

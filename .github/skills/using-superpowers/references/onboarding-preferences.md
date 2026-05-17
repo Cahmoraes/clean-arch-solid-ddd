@@ -44,7 +44,22 @@ Ask:
 
 Record the answer as `workflow.confirm_destructive_actions` (true/false).
 
-### Step 5 — Corporate Artifacts (Optional)
+### Step 5 — Context Compaction
+
+Ask (in the configured language):
+
+> "Would you like the agent to automatically compact context at the end of the planning phase (before starting execution) and whenever the context window reaches ~60% usage?"
+> - **Yes** (default) — automatic compaction enabled
+> - **No** — you will compact manually whenever needed
+
+pt-BR wording:
+> "Deseja que o agente compacte automaticamente o contexto ao final do planejamento (antes de iniciar a execução) e sempre que a janela de contexto atingir cerca de 60% de uso?"
+> - **Sim** (padrão) — compactação automática habilitada
+> - **Não** — você controlará manualmente quando compactar
+
+Record the answer as `workflow.auto_compact` (true/false).
+
+### Step 6 — Corporate Artifacts (Optional)
 
 Ask:
 > "Do you have any corporate artifacts that could help me understand the project better? For example: PRDs, technical specs, UML diagrams, user stories, wikis, data mappings, API contracts, ADRs, or design mockups created by your team?"
@@ -75,7 +90,7 @@ If the user says **no** or provides nothing, leave `context.has_corporate_artifa
 
 > **Why this matters:** Corporate artifacts contain business constraints, validated user stories, design decisions, and domain context that the agent cannot discover through codebase exploration alone. When provided, they significantly improve the quality of brainstorming questions, research, and PRD generation.
 
-### Step 6 — Generate and Save
+### Step 7 — Generate and Save
 
 1. Read the template from `../template/preferences.md` to get the YAML structure
 2. Fill in the placeholders with the answers collected in the previous steps
@@ -84,7 +99,7 @@ If the user says **no** or provides nothing, leave `context.has_corporate_artifa
 5. Confirm:
 > "Preferences saved to `.superpowers/preferences.yml`. You can edit them manually at any time or ask me to update them."
 
-### Step 7 — Opening Triage
+### Step 8 — Opening Triage
 
 Immediately after saving preferences, decide whether to ask the opening question or route straight into a flow.
 
@@ -105,6 +120,7 @@ The full YAML template is in `../template/preferences.md`. The structure is:
 workflow:
   auto_commit: <true|false>
   confirm_destructive_actions: <true|false>
+  auto_compact: <true|false>
 
 communication:
   language: <language-code>
@@ -122,6 +138,7 @@ context:
 |-----|------|---------|-------------|
 | `workflow.auto_commit` | bool | `true` | Subagents commit automatically after each task |
 | `workflow.confirm_destructive_actions` | bool | `true` | Ask for confirmation before deleting/overwriting files |
+| `workflow.auto_compact` | bool | `true` | Executes compact automatically at the planning→execution gate and whenever context reaches ~60% usage |
 | `communication.language` | string | `pt-BR` | Language for agent communication |
 | `copilot.rubber_duck` | bool | `false` | Forces Rubber Duck at every critical checkpoint. When `false` (or absent), Copilot CLI decides when to invoke it automatically — Copilot CLI only |
 | `context.has_corporate_artifacts` | bool | `false` | When `true`, the agent reads `.superpowers/corporate-artifacts.yml` to load corporate artifact references for brainstorming and PRD generation |
@@ -149,7 +166,7 @@ If the user requests a preference change during a session (e.g., "set auto_commi
 
 ## Copilot CLI: Rubber Duck Additional Step
 
-If running in **Copilot CLI**, add this step **after Step 4** (before Step 5 — Corporate Artifacts):
+If running in **Copilot CLI**, add this step **after Step 4** (before Step 5 — Context Compaction):
 
 > "By default, Copilot CLI decides when to invoke the **Rubber Duck Agent** automatically. You can override this to guarantee it runs at every critical checkpoint (after plan draft, after complex implementations, after writing tests).
 >

@@ -71,6 +71,32 @@ Copilot CLI supports persistent async shell sessions, which have no direct Claud
 
 ---
 
+## Context Compaction
+
+Copilot CLI exposes `/compact` and `/context` as native slash commands.
+
+### Check context usage
+
+Use `/context` to read the current context window consumption:
+```
+/context
+```
+If usage is at or above ~60%, invoke compact.
+
+### How to compact in Copilot CLI
+
+```
+/compact
+```
+
+The platform summarizes the conversation and continues with a compressed context.
+
+### Non-blocking behavior
+
+If `/context` or `/compact` is unavailable or fails, skip and continue. Compaction is an optimization — it must never interrupt the workflow.
+
+---
+
 ## Rubber Duck Agent (Experimental)
 
 **Rubber Duck** is a review agent exclusive to Copilot CLI, available in experimental mode. It uses a model from a different family than the orchestrator — when the orchestrator is Claude, Rubber Duck is GPT-5.4. This means independent perspectives with distinct blind spots, catching errors that self-review would miss.

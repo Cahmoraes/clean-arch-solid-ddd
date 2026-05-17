@@ -26,7 +26,7 @@ On every session start, check for `.superpowers/preferences.yml` in the user's r
 > # or with explicit root:
 > node scripts/read-preferences.js --repo-root <repo-root>
 > ```
-> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, `preferences.copilot.rubber_duck`, and `preferences.context.has_corporate_artifacts` directly from the output.
+> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, `preferences.copilot.rubber_duck`, `preferences.workflow.auto_compact`, and `preferences.context.has_corporate_artifacts` directly from the output.
 > 
 > **Fallback (if script unavailable):** Read the file directly using `view` — do NOT use `glob` (glob silently misses hidden directories like `.superpowers/`). See `references/copilot-tools.md`.
 
@@ -93,6 +93,32 @@ If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "alw
 ## Platform Adaptation
 
 Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-tools.md` (Copilot CLI), `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.
+
+## Context Window Management
+
+When `workflow.auto_compact` is `true` (the default), the agent compacts context at two points:
+
+### Structural trigger (planning → execution gate)
+
+Fired by `writing-plans` after generating task files and before presenting the execution handoff. This is the highest-accumulation point — PRD, spec, brainstorming content, and all planning templates are in context. `writing-plans` reads preferences itself to check this flag; see that skill for the compact step.
+
+### Dynamic trigger (best-effort, ~60% context usage)
+
+At strategic checkpoints — before dispatching subagents, after receiving long subagent results, at the start of each skill — check actual context consumption using the platform's `/context` command (see `-tools.md` for platform-specific command). If usage is at or above ~60% and `auto_compact: true`, execute compact before proceeding.
+
+- **This trigger is best-effort.** If `/context` is unavailable or returns no usage data, skip the compact and continue — do not block work.
+
+### How to compact
+
+Invoke the platform's native compact command — the platform handles the summarization:
+- **Claude Code**: `/compact`
+- **Copilot CLI**: `/compact`
+- **Gemini CLI**: `save_memory` with a concise orientation summary
+- **Codex**: use the platform's native compact/summarize mechanism
+
+See the "Context Compaction" section in the relevant `-tools.md` for details.
+
+**Non-blocking**: if the compact mechanism fails or is unavailable, continue normally. Compaction is an optimization, not a correctness requirement.
 
 # Using Skills
 

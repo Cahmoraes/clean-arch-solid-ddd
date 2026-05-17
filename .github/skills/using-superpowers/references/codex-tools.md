@@ -58,6 +58,22 @@ BRANCH=$(git branch --show-current)
 See `using-git-worktrees` Step 0 and `finishing-a-development-branch`
 Step 1 for how each skill uses these signals.
 
+## Context Compaction
+
+Codex exposes native `/context` and compact commands for context window management.
+
+### Check context usage
+
+Use `/context` to read the current context window consumption. If usage is at or above ~60%, invoke compact.
+
+### How to compact in Codex
+
+Invoke the platform's native compact command. Codex manages the compaction entirely.
+
+### Non-blocking behavior
+
+If the context check or compact command fails, skip and continue without interrupting the workflow.
+
 ## Codex App Finishing
 
 When the sandbox blocks branch/push operations (detached HEAD in an

@@ -50,7 +50,8 @@ Output (JSON to stdout):
     "preferences": {            // merged: file values + defaults
       "workflow": {
         "auto_commit": boolean,              // default: true
-        "confirm_destructive_actions": boolean // default: true
+        "confirm_destructive_actions": boolean, // default: true
+        "auto_compact": boolean              // default: true
       },
       "communication": {
         "language": string                   // default: "pt-BR"
@@ -89,6 +90,7 @@ const DEFAULTS = {
   workflow: {
     auto_commit: true,
     confirm_destructive_actions: true,
+    auto_compact: true,
   },
   communication: {
     language: 'pt-BR',

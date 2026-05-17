@@ -8,6 +8,9 @@
 workflow:
   auto_commit: <true|false>
   confirm_destructive_actions: <true|false>
+  # Automatically compact context at the planning→execution gate and whenever
+  # the context window reaches ~60% usage. Set to false to compact manually.
+  auto_compact: <true|false>
 
 communication:
   language: <language-code>
