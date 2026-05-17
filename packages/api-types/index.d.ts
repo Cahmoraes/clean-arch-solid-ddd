@@ -1023,6 +1023,174 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/password/forgot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Request password reset
+         * @description Accept a password reset request and always return a generic success message to avoid account enumeration.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: email
+                         * @description User email address
+                         * @example john@example.com
+                         */
+                        email: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Password reset request accepted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * @description Generic success message
+                             * @example Se este e-mail estiver cadastrado, você receberá um link em breve.
+                             */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset password
+         * @description Reset the user password using a valid password reset token.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Password reset token
+                         * @example 12ab34cd56ef78gh90ij12kl34mn56op
+                         */
+                        token: string;
+                        /**
+                         * @description New password (min 8 characters)
+                         * @example NewPass456!
+                         */
+                        newPassword: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Password reset successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description User not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/activate": {
         parameters: {
             query?: never;
@@ -1951,6 +2119,90 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/check-ins/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List my check-ins
+         * @description List the authenticated user's own check-in history.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Page number */
+                    page: number;
+                    /** @description Filter by status */
+                    status?: "pending" | "validated" | "rejected";
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Check-ins list retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            items: {
+                                /** @description Check-in ID */
+                                id: string;
+                                /** @description User ID */
+                                userId: string;
+                                /** @description Gym ID */
+                                gymId: string;
+                                /** @description Creation date (ISO) */
+                                createdAt: string;
+                                /** @description Validation date (ISO) or null */
+                                validatedAt: string | null;
+                                /** @description Rejection date (ISO) or null */
+                                rejectedAt: string | null;
+                                /**
+                                 * @description Computed check-in status
+                                 * @enum {string}
+                                 */
+                                status: "pending" | "validated" | "rejected";
+                                /** @description Latitude */
+                                latitude: number;
+                                /** @description Longitude */
+                                longitude: number;
+                            }[];
+                            /** @description Current page */
+                            page: number;
+                            /** @description Total items */
+                            total: number;
+                        };
+                    };
+                };
+                /** @description Invalid query params */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/check-ins/metrics/{userId}": {
