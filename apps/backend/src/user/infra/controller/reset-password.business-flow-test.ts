@@ -3,6 +3,7 @@ import request from "supertest"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
 import { afterEach, beforeEach, describe, expect, test } from "vitest"
+import { SessionRoutes } from "@/session/infra/controller/routes/session-routes"
 import { InMemoryPasswordResetTokenStore } from "@/shared/infra/database/repository/in-memory/in-memory-password-reset-token-store"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
@@ -82,5 +83,54 @@ describe("Redefinir senha", () => {
 		expect(response.body).toEqual({
 			message: "Token inválido ou expirado.",
 		})
+	})
+
+	test("Token de uso único: segundo uso retorna 400", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "john@test.com",
+			password: "OldPass123!",
+		})
+		const { rawToken, tokenHash } = makeTokenPair()
+		await tokenStore.saveResetToken(user.id, tokenHash, PASSWORD_RESET_TTL)
+		await tokenStore.saveUidMapping(user.id, tokenHash, PASSWORD_RESET_TTL)
+
+		await request(fastifyServer.server)
+			.post(RESET_PASSWORD_ROUTE)
+			.send({ token: rawToken, newPassword: "NewPass456!" })
+
+		const secondResponse = await request(fastifyServer.server)
+			.post(RESET_PASSWORD_ROUTE)
+			.send({ token: rawToken, newPassword: "AnotherPass789!" })
+
+		expect(secondResponse.status).toBe(HTTP_STATUS.BAD_REQUEST)
+	})
+
+	test("Fluxo completo: login com nova senha funciona e com senha antiga falha", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "john@test.com",
+			password: "OldPass123!",
+		})
+		const { rawToken, tokenHash } = makeTokenPair()
+		await tokenStore.saveResetToken(user.id, tokenHash, PASSWORD_RESET_TTL)
+		await tokenStore.saveUidMapping(user.id, tokenHash, PASSWORD_RESET_TTL)
+
+		await request(fastifyServer.server)
+			.post(RESET_PASSWORD_ROUTE)
+			.send({ token: rawToken, newPassword: "NewPass456!" })
+
+		const loginWithNew = await request(fastifyServer.server)
+			.post(SessionRoutes.AUTHENTICATE)
+			.send({ email: user.email, password: "NewPass456!" })
+
+		expect(loginWithNew.status).toBe(HTTP_STATUS.OK)
+		expect(loginWithNew.body.token).toBeDefined()
+
+		const loginWithOld = await request(fastifyServer.server)
+			.post(SessionRoutes.AUTHENTICATE)
+			.send({ email: user.email, password: "OldPass123!" })
+
+		expect(loginWithOld.status).toBe(HTTP_STATUS.UNAUTHORIZED)
 	})
 })
