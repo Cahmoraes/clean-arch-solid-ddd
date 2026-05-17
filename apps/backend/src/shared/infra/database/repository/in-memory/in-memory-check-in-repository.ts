@@ -40,13 +40,13 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 	): Promise<boolean> {
 		const startOfDay = new Date(date)
 		startOfDay.setHours(0, 0, 0, 0)
-		const endOfDay = new Date(date)
-		endOfDay.setHours(23, 59, 59, 999)
+		const startOfNextDay = new Date(startOfDay)
+		startOfNextDay.setDate(startOfNextDay.getDate() + 1)
 		return this.checkIns.some((checkIn) => {
 			const checkInDate = checkIn.createdAt
 			const isSameUserId = checkIn.userId === userId
 			const checkInOnRangeDate =
-				checkInDate >= startOfDay && checkInDate <= endOfDay
+				checkInDate >= startOfDay && checkInDate < startOfNextDay
 			return isSameUserId && checkInOnRangeDate
 		})
 	}

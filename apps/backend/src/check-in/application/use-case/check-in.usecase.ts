@@ -25,6 +25,7 @@ import type { Queue } from "@/shared/infra/queue/queue"
 import { UserHasAlreadyCheckedInToday } from "@/user/application/error/user-has-already-checked-in-today"
 import { UserNotFoundError } from "@/user/application/error/user-not-found-error"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
+import { DuplicateCheckInError } from "../error/duplicate-check-in-error.js"
 import { MaxDistanceError } from "../error/max-distance-error"
 import type { CheckInRepository } from "../repository/check-in-repository"
 
@@ -95,17 +96,26 @@ export class CheckInUseCase {
 			"checkInCreated",
 			this.createDomainEventSubscriber,
 		)
-		const checkIn = CheckIn.create(input)
-		const checkInId = await this.unityOfWork.runTransaction(async (tx) => {
-			const { id } = await this.checkInRepository
-				.withTransaction(tx)
-				.save(checkIn)
-			return id
-		})
-		return success({
-			checkInId,
-			date: checkIn.createdAt,
-		})
+		return this.persistCheckIn(CheckIn.create(input))
+	}
+
+	private async persistCheckIn(
+		checkIn: CheckIn,
+	): Promise<CheckInUseCaseOutput> {
+		try {
+			const checkInId = await this.unityOfWork.runTransaction(async (tx) => {
+				const { id } = await this.checkInRepository
+					.withTransaction(tx)
+					.save(checkIn)
+				return id
+			})
+			return success({ checkInId, date: checkIn.createdAt })
+		} catch (error) {
+			if (error instanceof DuplicateCheckInError) {
+				return failure(new UserHasAlreadyCheckedInToday())
+			}
+			throw error
+		}
 	}
 
 	private async validateUserCheckInEligibility(

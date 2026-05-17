@@ -13,6 +13,7 @@ import { CHECKIN_TYPES } from "@/shared/infra/ioc/types"
 import { UserHasAlreadyCheckedInToday } from "@/user/application/error/user-has-already-checked-in-today"
 import { UserNotFoundError } from "@/user/application/error/user-not-found-error"
 
+import { DuplicateCheckInError } from "../error/duplicate-check-in-error"
 import { MaxDistanceError } from "../error/max-distance-error"
 import type { CheckInUseCase, CheckInUseCaseInput } from "./check-in.usecase"
 
@@ -157,6 +158,25 @@ describe("CheckInUseCase", () => {
 		}
 		const result = await sut.execute(input)
 		expect(result.forceFailure().value).toBeInstanceOf(MaxDistanceError)
+	})
+
+	test("Deve retornar UserHasAlreadyCheckedInToday quando o banco rejeitar por unique constraint (concorrência)", async () => {
+		const userId = "any_user_id"
+		await createAndSaveUser({ userRepository, id: userId })
+		await _createAndSaveGym("any_gym_id", -27.0747279, -49.4889672)
+		const input: CheckInUseCaseInput = {
+			userId,
+			gymId: "any_gym_id",
+			userLatitude: -27.0747279,
+			userLongitude: -49.4889672,
+		}
+		vi.spyOn(checkInRepository, "save").mockRejectedValueOnce(
+			new DuplicateCheckInError(),
+		)
+		const result = await sut.execute(input)
+		expect(result.forceFailure().value).toBeInstanceOf(
+			UserHasAlreadyCheckedInToday,
+		)
 	})
 
 	async function _createAndSaveGym(id?: string, latitude = 0, longitude = 0) {

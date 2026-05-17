@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify"
+import { DuplicateCheckInError } from "@/check-in/application/error/duplicate-check-in-error.js"
 import type {
 	CheckInRepository,
 	FindManyInput,
@@ -6,9 +7,9 @@ import type {
 	SaveResponse,
 } from "@/check-in/application/repository/check-in-repository"
 import { CheckIn } from "@/check-in/domain/check-in"
-import type {
+import {
 	Prisma,
-	PrismaClient,
+	type PrismaClient,
 } from "@/shared/infra/database/generated/prisma/client"
 import { PrismaUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/prisma-unit-of-work"
 import { env } from "@/shared/infra/env"
@@ -43,24 +44,39 @@ export class PrismaCheckInRepository implements CheckInRepository {
 	}
 
 	public async save(checkIn: CheckIn): Promise<SaveResponse> {
-		const result = await this.prismaClient.checkIn.upsert({
-			where: { id: checkIn.id },
-			create: {
-				id: checkIn.id,
-				gym_id: checkIn.gymId,
-				user_id: checkIn.userId,
-				validated_at: checkIn.validatedAt ?? null,
-				rejected_at: checkIn.rejectedAt ?? null,
-				latitude: checkIn.latitude,
-				longitude: checkIn.longitude,
-			},
-			update: {
-				validated_at: checkIn.validatedAt ?? null,
-				rejected_at: checkIn.rejectedAt ?? null,
-			},
-			select: { id: true },
-		})
-		return { id: result.id }
+		try {
+			const result = await this.prismaClient.checkIn.upsert({
+				where: { id: checkIn.id },
+				create: {
+					id: checkIn.id,
+					gym_id: checkIn.gymId,
+					user_id: checkIn.userId,
+					created_at: checkIn.createdAt,
+					validated_at: checkIn.validatedAt ?? null,
+					rejected_at: checkIn.rejectedAt ?? null,
+					latitude: checkIn.latitude,
+					longitude: checkIn.longitude,
+				},
+				update: {
+					validated_at: checkIn.validatedAt ?? null,
+					rejected_at: checkIn.rejectedAt ?? null,
+				},
+				select: { id: true },
+			})
+			return { id: result.id }
+		} catch (error) {
+			throw this.mapSaveError(error)
+		}
+	}
+
+	private mapSaveError(error: unknown): unknown {
+		if (
+			error instanceof Prisma.PrismaClientKnownRequestError &&
+			error.code === "P2002"
+		) {
+			return new DuplicateCheckInError()
+		}
+		return error
 	}
 
 	public async checkOfById(id: string): Promise<CheckIn | null> {
@@ -96,14 +112,14 @@ export class PrismaCheckInRepository implements CheckInRepository {
 	): Promise<boolean> {
 		const startOfDay = new Date(date)
 		startOfDay.setHours(0, 0, 0, 0)
-		const endOfDay = new Date(date)
-		endOfDay.setHours(23, 59, 59, 999)
+		const startOfNextDay = new Date(startOfDay)
+		startOfNextDay.setDate(startOfNextDay.getDate() + 1)
 		const checkInOnSameDate = await this.prismaClient.checkIn.count({
 			where: {
 				user_id: userId,
 				created_at: {
 					gte: startOfDay,
-					lt: endOfDay,
+					lt: startOfNextDay,
 				},
 			},
 		})
