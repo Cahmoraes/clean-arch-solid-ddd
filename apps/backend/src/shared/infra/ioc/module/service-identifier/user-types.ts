@@ -19,6 +19,7 @@ export const USER_TYPES = {
 		ActivateUser: Symbol.for("ActivateUserUseCase"),
 		UpdateUserProfile: Symbol.for("UpdateUserProfileUseCase"),
 		SuspendUser: Symbol.for("SuspendUserUseCase"),
+		PromoteToAdmin: Symbol.for("PromoteToAdminUseCase"),
 		UserMetrics: Symbol.for("UserMetricsUseCase"),
 	},
 	Controllers: {
