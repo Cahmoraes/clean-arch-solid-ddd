@@ -2,10 +2,12 @@
 
 import { Activity, KeyRound, UserCircle } from "lucide-react"
 import Link from "next/link"
+import { AdminBadge } from "@/components/ui/admin-badge"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"
+import { useAuthStore } from "@/lib/auth/auth-store"
 
 interface ProfileSectionProps {
 	data: Me | undefined
@@ -137,15 +139,20 @@ function MetricsSection() {
 
 export default function ProfilePage() {
 	const { data, isLoading, isError, refetch, isFetching } = useMe()
+	const { user } = useAuthStore()
+	const isAdmin = user?.role === "ADMIN"
 	const passwordActionLabel =
 		data?.hasPassword === false ? "Definir senha" : "Alterar senha"
 
 	return (
 		<main className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 py-10 sm:px-6">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-semibold text-foreground">
-					Meu perfil
-				</h1>
+				<div className="flex items-center gap-3">
+					<h1 className="font-display text-3xl font-semibold text-foreground">
+						Meu perfil
+					</h1>
+					{isAdmin && <AdminBadge />}
+				</div>
 				<p className="text-sm text-muted-foreground">
 					Visualize e mantenha seus dados de acesso e acompanhe suas métricas.
 				</p>
