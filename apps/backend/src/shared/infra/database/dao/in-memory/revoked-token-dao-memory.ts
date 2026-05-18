@@ -8,7 +8,7 @@ import type {
 @injectable()
 export class RevokedTokenDAOMemory implements RevokedTokenDAO {
 	public revokedTokenData = new ExtendedSet<RevokedTokenData>()
-	private revokedUsers = new Set<string>()
+	private revokedUsersAt = new Map<string, number>()
 
 	public async revoke(session: RevokedTokenData): Promise<void> {
 		this.revokedTokenData.add(session)
@@ -23,10 +23,10 @@ export class RevokedTokenDAOMemory implements RevokedTokenDAO {
 	}
 
 	public async revokeAllForUser(userId: string, _ttl: number): Promise<void> {
-		this.revokedUsers.add(userId)
+		this.revokedUsersAt.set(userId, Math.floor(Date.now() / 1000))
 	}
 
-	public async isAllRevokedForUser(userId: string): Promise<boolean> {
-		return this.revokedUsers.has(userId)
+	public async revokedAfterForUser(userId: string): Promise<number | null> {
+		return this.revokedUsersAt.get(userId) ?? null
 	}
 }

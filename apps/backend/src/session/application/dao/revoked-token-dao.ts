@@ -10,5 +10,5 @@ export interface RevokedTokenDAO {
 	revoke(session: RevokedTokenData, ttl?: number): Promise<void>
 	delete(session: RevokedTokenData): Promise<void>
 	revokeAllForUser(userId: string, ttl: number): Promise<void>
-	isAllRevokedForUser(userId: string): Promise<boolean>
+	revokedAfterForUser(userId: string): Promise<number | null>
 }

@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto"
 import request from "supertest"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
-import { afterEach, beforeEach, describe, expect, test } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { SessionRoutes } from "@/session/infra/controller/routes/session-routes"
 import { InMemoryPasswordResetTokenStore } from "@/shared/infra/database/repository/in-memory/in-memory-password-reset-token-store"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
@@ -117,27 +117,77 @@ describe("Redefinir senha", () => {
 		await tokenStore.saveResetToken(user.id, tokenHash, PASSWORD_RESET_TTL)
 		await tokenStore.saveUidMapping(user.id, tokenHash, PASSWORD_RESET_TTL)
 
-		const loginResponse = await request(fastifyServer.server)
-			.post(SessionRoutes.AUTHENTICATE)
-			.send({ email: user.email, password: "OldPass123!" })
+		try {
+			vi.useFakeTimers({ toFake: ["Date"] })
+			vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"))
 
-		expect(loginResponse.status).toBe(HTTP_STATUS.OK)
-		expect(loginResponse.body.token).toBeDefined()
+			const loginResponse = await request(fastifyServer.server)
+				.post(SessionRoutes.AUTHENTICATE)
+				.send({ email: user.email, password: "OldPass123!" })
 
-		const resetResponse = await request(fastifyServer.server)
-			.post(RESET_PASSWORD_ROUTE)
-			.send({ token: rawToken, newPassword: "NewPass456!" })
+			expect(loginResponse.status).toBe(HTTP_STATUS.OK)
+			expect(loginResponse.body.token).toBeDefined()
 
-		expect(resetResponse.status).toBe(HTTP_STATUS.NO_CONTENT)
+			vi.setSystemTime(new Date("2024-01-01T00:00:01.000Z"))
 
-		const revokedSessionResponse = await request(fastifyServer.server)
-			.get(UserRoutes.ME)
-			.set("Authorization", `Bearer ${loginResponse.body.token}`)
+			const resetResponse = await request(fastifyServer.server)
+				.post(RESET_PASSWORD_ROUTE)
+				.send({ token: rawToken, newPassword: "NewPass456!" })
 
-		expect(revokedSessionResponse.status).toBe(HTTP_STATUS.UNAUTHORIZED)
-		expect(revokedSessionResponse.body).toEqual({
-			message: "Session already revoked",
+			expect(resetResponse.status).toBe(HTTP_STATUS.NO_CONTENT)
+
+			vi.setSystemTime(new Date("2024-01-01T00:00:02.000Z"))
+
+			const revokedSessionResponse = await request(fastifyServer.server)
+				.get(UserRoutes.ME)
+				.set("Authorization", `Bearer ${loginResponse.body.token}`)
+
+			expect(revokedSessionResponse.status).toBe(HTTP_STATUS.UNAUTHORIZED)
+			expect(revokedSessionResponse.body).toEqual({
+				message: "Session already revoked",
+			})
+		} finally {
+			vi.useRealTimers()
+		}
+	})
+
+	test("Token pós-login com nova senha acessa rotas protegidas após reset", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "john@test.com",
+			password: "OldPass123!",
 		})
+		const { rawToken, tokenHash } = makeTokenPair()
+		await tokenStore.saveResetToken(user.id, tokenHash, PASSWORD_RESET_TTL)
+		await tokenStore.saveUidMapping(user.id, tokenHash, PASSWORD_RESET_TTL)
+
+		try {
+			vi.useFakeTimers({ toFake: ["Date"] })
+			vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"))
+
+			await request(fastifyServer.server)
+				.post(RESET_PASSWORD_ROUTE)
+				.send({ token: rawToken, newPassword: "NewPass456!" })
+
+			vi.setSystemTime(new Date("2024-01-01T00:00:01.000Z"))
+
+			const loginResponse = await request(fastifyServer.server)
+				.post(SessionRoutes.AUTHENTICATE)
+				.send({ email: user.email, password: "NewPass456!" })
+
+			expect(loginResponse.status).toBe(HTTP_STATUS.OK)
+			expect(loginResponse.body.token).toBeDefined()
+
+			vi.setSystemTime(new Date("2024-01-01T00:00:02.000Z"))
+
+			const protectedResponse = await request(fastifyServer.server)
+				.get(UserRoutes.ME)
+				.set("Authorization", `Bearer ${loginResponse.body.token}`)
+
+			expect(protectedResponse.status).toBe(HTTP_STATUS.OK)
+		} finally {
+			vi.useRealTimers()
+		}
 	})
 
 	test("Fluxo completo: login com nova senha funciona e com senha antiga falha", async () => {

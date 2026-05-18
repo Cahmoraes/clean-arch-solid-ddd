@@ -129,8 +129,8 @@ describe("ResetPasswordUseCase", () => {
 
 		await sut.execute({ token: rawToken, newPassword: "NewPass456!" })
 
-		await expect(revokedTokenDAO.isAllRevokedForUser(user.id)).resolves.toBe(
-			true,
-		)
+		await expect(
+			revokedTokenDAO.revokedAfterForUser(user.id),
+		).resolves.not.toBeNull()
 	})
 })

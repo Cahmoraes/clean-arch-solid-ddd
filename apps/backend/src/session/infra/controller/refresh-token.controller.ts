@@ -1,6 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
 import { inject } from "inversify"
 import { z } from "zod"
+import type { RevokedTokenDAO } from "@/session/application/dao/revoked-token-dao"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import type {
@@ -9,7 +10,7 @@ import type {
 } from "@/shared/infra/cookie/cookie-manager"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { env } from "@/shared/infra/env"
-import { SHARED_TYPES } from "@/shared/infra/ioc/types"
+import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { Logger as DebugLogger } from "@/shared/infra/logger/logger"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
@@ -25,6 +26,7 @@ interface Sub {
 		role: string
 		jwi: string
 	}
+	iat: number
 }
 
 const refreshTokenRequestSchema = z.object({
@@ -41,6 +43,8 @@ export class RefreshTokenController extends BaseController {
 		private readonly cookieManager: CookieManager,
 		@inject(SHARED_TYPES.Logger)
 		private readonly logger: DebugLogger,
+		@inject(AUTH_TYPES.DAO.RevokedToken)
+		private readonly revokedTokenDAO: RevokedTokenDAO,
 	) {
 		super()
 		this.bindMethods()
@@ -94,7 +98,16 @@ export class RefreshTokenController extends BaseController {
 			})
 		}
 
-		const { token, refreshToken } = this.createTokens(verified.value.sub)
+		const { sub, iat } = verified.value
+		const revokedAfter = await this.revokedTokenDAO.revokedAfterForUser(sub.id)
+		if (revokedAfter !== null && iat <= revokedAfter) {
+			return ResponseFactory.create({
+				status: HTTP_STATUS.UNAUTHORIZED,
+				message: "Session already revoked",
+			})
+		}
+
+		const { token, refreshToken } = this.createTokens(sub)
 		res.header("set-cookie", this.encodeRefreshTokenCookie(refreshToken))
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,

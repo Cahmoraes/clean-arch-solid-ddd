@@ -46,11 +46,14 @@ export class RedisRevokedTokenDAO implements RevokedTokenDAO {
 	}
 
 	public async revokeAllForUser(userId: string, ttl: number): Promise<void> {
-		await this.cacheDB.set(`user:revoked:${userId}`, "1", ttl)
+		const revokedAt = Math.floor(Date.now() / 1000)
+		await this.cacheDB.set(`user:revoked:${userId}`, revokedAt.toString(), ttl)
 	}
 
-	public async isAllRevokedForUser(userId: string): Promise<boolean> {
+	public async revokedAfterForUser(userId: string): Promise<number | null> {
 		const value = await this.cacheDB.get<string>(`user:revoked:${userId}`)
-		return value !== null
+		if (value === null) return null
+		const timestamp = parseInt(value, 10)
+		return Number.isNaN(timestamp) ? null : timestamp
 	}
 }
