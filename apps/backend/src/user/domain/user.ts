@@ -283,4 +283,9 @@ export class User extends Observable {
 	public get isActive(): boolean {
 		return this._status.type === StatusTypes.ACTIVATED
 	}
+
+	public updateRole(role: RoleTypes): void {
+		this._role = Role.restore(role)
+		this.refreshUpdatedAt()
+	}
 }
