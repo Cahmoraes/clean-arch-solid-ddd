@@ -39,6 +39,8 @@ export const USER_TYPES = {
 		SuspendUser: Symbol.for("SuspendUserController"),
 		MyProfile: Symbol.for("MyProfileController"),
 		UserMetrics: Symbol.for("UserMetricsController"),
+		PromoteToAdmin: Symbol.for("PromoteToAdminController"),
+		DemoteFromAdmin: Symbol.for("DemoteFromAdminController"),
 	},
 	Gateways: {
 		PasswordResetTokenStore: Symbol.for("PasswordResetTokenStore"),

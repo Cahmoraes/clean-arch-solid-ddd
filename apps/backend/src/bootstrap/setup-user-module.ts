@@ -41,6 +41,8 @@ export function setupUserModule(): ModuleControllers {
 		resolve(USER_TYPES.Controllers.FetchUsers),
 		resolve(USER_TYPES.Controllers.ActivateUser),
 		resolve(USER_TYPES.Controllers.SuspendUser),
+		resolve(USER_TYPES.Controllers.PromoteToAdmin),
+		resolve(USER_TYPES.Controllers.DemoteFromAdmin),
 	]
 	return { controllers }
 }
