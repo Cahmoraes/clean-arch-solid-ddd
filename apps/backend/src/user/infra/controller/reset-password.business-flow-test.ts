@@ -4,10 +4,11 @@ import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { SessionRoutes } from "@/session/infra/controller/routes/session-routes"
+import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { InMemoryPasswordResetTokenStore } from "@/shared/infra/database/repository/in-memory/in-memory-password-reset-token-store"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
-import { USER_TYPES } from "@/shared/infra/ioc/types"
+import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import { UserRoutes } from "./routes/user-routes"
@@ -25,6 +26,7 @@ describe("Redefinir senha", () => {
 	let fastifyServer: FastifyAdapter
 	let userRepository: InMemoryUserRepository
 	let tokenStore: InMemoryPasswordResetTokenStore
+	let cacheDB: CacheDB
 
 	beforeEach(async () => {
 		container.snapshot()
@@ -36,11 +38,14 @@ describe("Redefinir senha", () => {
 		container
 			.rebind(USER_TYPES.Gateways.PasswordResetTokenStore)
 			.toConstantValue(tokenStore)
+		cacheDB = container.get(SHARED_TYPES.Redis)
+		await cacheDB.clear()
 		fastifyServer = await serverBuildForTest()
 		await fastifyServer.ready()
 	})
 
 	afterEach(async () => {
+		await cacheDB.clear()
 		container.restore()
 		await fastifyServer.close()
 	})
@@ -105,6 +110,28 @@ describe("Redefinir senha", () => {
 			.send({ token: rawToken, newPassword: "AnotherPass789!" })
 
 		expect(secondResponse.status).toBe(HTTP_STATUS.BAD_REQUEST)
+	})
+
+	test("Deve retornar 429 quando exceder rate limit da rota", async () => {
+		for (let index = 0; index < 5; index++) {
+			const response = await request(fastifyServer.server)
+				.post(RESET_PASSWORD_ROUTE)
+				.send({
+					token: `invalid-token-${index}`,
+					newPassword: "NewPass456!",
+				})
+
+			expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+		}
+
+		const blockedResponse = await request(fastifyServer.server)
+			.post(RESET_PASSWORD_ROUTE)
+			.send({
+				token: "invalid-token-blocked",
+				newPassword: "NewPass456!",
+			})
+
+		expect(blockedResponse.status).toBe(HTTP_STATUS.TO_MANY_REQUESTS)
 	})
 
 	test("Deve encerrar sessões ativas após reset bem-sucedido", async () => {

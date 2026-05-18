@@ -11,6 +11,7 @@ import type {
 	HttpServer,
 	Schema,
 } from "@/shared/infra/server/http-server"
+import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
 import type { ResetPasswordUseCase } from "@/user/application/use-case/reset-password.usecase"
 import { UserRoutes } from "./routes/user-routes"
 
@@ -53,6 +54,10 @@ export class ResetPasswordController extends BaseController {
 			UserRoutes.RESET_PASSWORD,
 			{
 				callback: this.callback,
+				rateLimit: {
+					max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAX,
+					timeWindow: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.TIME_WINDOW,
+				},
 			},
 			makeResetPasswordSwaggerSchema(),
 		)
@@ -99,6 +104,7 @@ function makeResetPasswordSwaggerSchema(): Schema {
 			400: { description: "Bad Request", schema: errorResponseSchema },
 			404: { description: "User not found", schema: errorResponseSchema },
 			422: { description: "Unprocessable Entity", schema: errorResponseSchema },
+			429: { description: "Too Many Requests", schema: errorResponseSchema },
 		},
 	})
 }
