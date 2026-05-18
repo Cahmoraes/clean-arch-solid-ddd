@@ -16,7 +16,7 @@ import { inject, injectable } from "inversify"
 import type { z } from "zod"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import { Logger as LoggerDecorate } from "../decorator/logger.js"
-import { env } from "../env"
+import { env, isProduction } from "../env"
 import { SHARED_TYPES } from "../ioc/types.js"
 import type { Logger } from "../logger/logger.js"
 import type { Queue } from "../queue/queue.js"
@@ -69,10 +69,12 @@ export class FastifyAdapter implements HttpServer {
 
 	private registerSwaggerEarly(): void {
 		this._server.register(fastifySwagger, FastifySwaggerSetupFactory.create())
-		this._server.register(
-			fastifySwaggerUI,
-			FastifySwaggerUISetupFactory.create(),
-		)
+		if (!isProduction()) {
+			this._server.register(
+				fastifySwaggerUI,
+				FastifySwaggerUISetupFactory.create(),
+			)
+		}
 	}
 
 	private async initialize(): Promise<void> {
