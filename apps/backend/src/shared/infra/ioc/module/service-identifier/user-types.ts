@@ -20,6 +20,7 @@ export const USER_TYPES = {
 		UpdateUserProfile: Symbol.for("UpdateUserProfileUseCase"),
 		SuspendUser: Symbol.for("SuspendUserUseCase"),
 		PromoteToAdmin: Symbol.for("PromoteToAdminUseCase"),
+		DemoteFromAdmin: Symbol.for("DemoteFromAdminUseCase"),
 		UserMetrics: Symbol.for("UserMetricsUseCase"),
 	},
 	Controllers: {
