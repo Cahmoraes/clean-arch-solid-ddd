@@ -64,13 +64,11 @@ export class ResetPasswordController extends BaseController {
 		if (Array.isArray(error) || error instanceof ZodError) {
 			return undefined
 		}
-
 		if (error.name === "InvalidResetTokenError") {
 			return ResponseFactory.BAD_REQUEST({
 				message: "Token inválido ou expirado.",
 			})
 		}
-
 		return undefined
 	}
 
@@ -79,7 +77,6 @@ export class ResetPasswordController extends BaseController {
 		if (parsedBodyOrError.isFailure()) {
 			return this.createResponseError(parsedBodyOrError)
 		}
-
 		const result = await this.resetPassword.execute({
 			token: parsedBodyOrError.value.token,
 			newPassword: parsedBodyOrError.value.newPassword,
@@ -87,7 +84,6 @@ export class ResetPasswordController extends BaseController {
 		if (result.isFailure()) {
 			return this.createResponseError(result)
 		}
-
 		return ResponseFactory.NO_CONTENT()
 	}
 }

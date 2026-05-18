@@ -52,24 +52,19 @@ export class ResetPasswordUseCase {
 		if (!userId) {
 			return failure(new InvalidResetTokenError())
 		}
-
 		const user = await this.userRepository.userOfId(userId)
 		if (!user) {
 			return failure(new UserNotFoundError())
 		}
-
 		await this.tokenStore.deleteResetToken(tokenHash)
 		await this.tokenStore.deleteUidMapping(userId)
-
 		user.subscribe(this.handlePasswordChangedEvent)
 		const changePasswordResult = await user.changePassword(input.newPassword)
 		if (changePasswordResult.isFailure()) {
 			return failure(changePasswordResult.value)
 		}
-
 		await this.userRepository.update(user)
 		await this.revokedTokenDAO.revokeAllForUser(userId, SEVEN_DAYS_IN_SECONDS)
-
 		return success(null)
 	}
 
