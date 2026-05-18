@@ -501,7 +501,9 @@ function useUserPermissions(
 		currentUserId !== user.id
 	const canActivate = user.status === "suspended"
 	const canPromoteToAdmin =
-		user.status === "activated" && user.role === "MEMBER"
+		user.status === "activated" &&
+		user.role === "MEMBER" &&
+		user.email !== SUPER_ADMIN_EMAIL
 	const canDemoteFromAdmin =
 		user.role === "ADMIN" &&
 		currentUserId !== user.id &&
