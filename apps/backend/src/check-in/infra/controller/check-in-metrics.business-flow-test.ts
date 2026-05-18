@@ -92,4 +92,58 @@ describe("Check-in Metrics (GET /check-ins/metrics/:userId)", () => {
 
 		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
 	})
+
+	describe("Controle de acesso", () => {
+		let attackerToken: string
+		const victimId = "victim-user-id"
+
+		beforeEach(async () => {
+			await createAndSaveUser({
+				userRepository,
+				id: victimId,
+				email: "victim@user.test",
+				password: "any_password",
+			})
+			await createAndSaveUser({
+				userRepository,
+				id: "attacker-user-id",
+				email: "attacker@user.test",
+				password: "any_password",
+			})
+			const attackerResult = await authenticate.execute({
+				email: "attacker@user.test",
+				password: "any_password",
+			})
+			attackerToken = attackerResult.force.success().value.token
+		})
+
+		test("Deve retornar 403 quando MEMBER tenta acessar métricas de outro usuário", async () => {
+			const response = await request(fastifyServer.server)
+				.get(metricsUrl(victimId))
+				.set("Authorization", `Bearer ${attackerToken}`)
+
+			expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
+		})
+
+		test("ADMIN deve poder acessar métricas de qualquer usuário", async () => {
+			await createAndSaveUser({
+				userRepository,
+				id: "admin-user-id",
+				email: "admin@user.test",
+				password: "any_password",
+				role: "ADMIN",
+			})
+			const adminResult = await authenticate.execute({
+				email: "admin@user.test",
+				password: "any_password",
+			})
+			const adminToken = adminResult.force.success().value.token
+
+			const response = await request(fastifyServer.server)
+				.get(metricsUrl(victimId))
+				.set("Authorization", `Bearer ${adminToken}`)
+
+			expect(response.status).toBe(HTTP_STATUS.OK)
+		})
+	})
 })

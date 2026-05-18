@@ -54,6 +54,13 @@ export class MetricsController extends BaseController {
 			return this.createResponseError(parsedRequest)
 		}
 
+		const requesterId = req.user.sub.id
+		const targetId = parsedRequest.value.userId
+		const isAdmin = req.user.sub.role === "ADMIN"
+		if (requesterId !== targetId && !isAdmin) {
+			return ResponseFactory.FORBIDDEN({ message: "Forbidden" })
+		}
+
 		const metrics = await this.userMetricsUseCase.execute(parsedRequest.value)
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
@@ -80,6 +87,12 @@ function makeMetricsSwaggerSchema(): Schema {
 			},
 			400: {
 				description: "Invalid params",
+				schema: z.object({
+					message: z.string().meta({ description: "Error message" }),
+				}),
+			},
+			403: {
+				description: "Forbidden — user can only access their own metrics",
 				schema: z.object({
 					message: z.string().meta({ description: "Error message" }),
 				}),
