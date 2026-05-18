@@ -15,6 +15,7 @@ describe("Demover Administrador", () => {
 	let userRepository: InMemoryUserRepository
 	let authenticate: AuthenticateUseCase
 	let token: string
+	let adminId: string
 
 	beforeEach(async () => {
 		container.snapshot()
@@ -27,9 +28,10 @@ describe("Demover Administrador", () => {
 		)
 		fastifyServer = await serverBuildForTest()
 		await fastifyServer.ready()
+		adminId = randomUUID()
 		await createAndSaveUser({
 			userRepository,
-			id: randomUUID(),
+			id: adminId,
 			email: "auth@demote.test",
 			password: "any_password",
 			role: "ADMIN",
@@ -150,4 +152,15 @@ describe("Demover Administrador", () => {
 		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
 		expect(response.body).toHaveProperty("message")
 	})
+
+	test("Deve retornar 422 ao tentar demover a si próprio", async () => {
+		const response = await request(fastifyServer.server)
+			.patch(UserRoutes.DEMOTE_FROM_ADMIN)
+			.set("Authorization", `Bearer ${token}`)
+			.send({ userId: adminId })
+
+		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
+		expect(response.body).toHaveProperty("message")
+	})
 })
+
