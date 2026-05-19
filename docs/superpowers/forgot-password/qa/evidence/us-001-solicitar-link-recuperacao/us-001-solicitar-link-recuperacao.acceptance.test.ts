@@ -103,8 +103,12 @@ async function verifyTokenTtl(
 	assert.deepEqual(response.body, {
 		message: GENERIC_SUCCESS_MESSAGE,
 	})
-	assert.deepEqual(tokenStore.savedResetTokenTtls, [PASSWORD_RESET_TTL_IN_SECONDS])
-	assert.deepEqual(tokenStore.savedUidMappingTtls, [PASSWORD_RESET_TTL_IN_SECONDS])
+	assert.deepEqual(tokenStore.savedResetTokenTtls, [
+		PASSWORD_RESET_TTL_IN_SECONDS,
+	])
+	assert.deepEqual(tokenStore.savedUidMappingTtls, [
+		PASSWORD_RESET_TTL_IN_SECONDS,
+	])
 }
 
 async function verifyEmailRateLimitResponse(
@@ -144,5 +148,3 @@ run().catch((error) => {
 	console.error(error)
 	process.exitCode = 1
 })
-
-export {}

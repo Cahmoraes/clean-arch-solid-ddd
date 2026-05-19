@@ -1,12 +1,21 @@
 {
-  "us_id": "us-006",
-  "user_story": "Como usuário, eu quero que a resposta do formulário de recuperação seja a mesma independentemente de o e-mail estar ou não cadastrado, para que minha privacidade seja preservada.",
-  "requirements": ["RF-002", "RF-017", "RF-018", "RF-019", "RF-020", "RF-021", "RF-022", "RF-023"],
-  "status": "PASSED",
-  "existing_tests_found": true,
-  "acceptance_tests_created": [],
-  "test_output_summary": "business-flow (3/3), frontend suite (279/279). RF-002 verificado via 'retorna mensagem genérica para e-mail inexistente'. RF-017..RF-021, RF-023 verificados por inspeção de código. RF-022 corrigido em commit 80818dd: página /redefinir-senha agora exibe estado persistente com link para /recuperar-senha quando token API retorna erro.",
-  "screenshot_path": null,
-  "failure_details": null,
-  "notes": "RF-022 estava incompleto na versão inicial (apenas toast temporário). Corrigido adicionando estado 'tokenFailed' que exibe bloco permanente com link para /recuperar-senha quando API retorna 400."
+	"us_id": "us-006",
+	"user_story": "Como usuário, eu quero que a resposta do formulário de recuperação seja a mesma independentemente de o e-mail estar ou não cadastrado, para que minha privacidade seja preservada.",
+	"requirements": [
+		"RF-002",
+		"RF-017",
+		"RF-018",
+		"RF-019",
+		"RF-020",
+		"RF-021",
+		"RF-022",
+		"RF-023"
+	],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "business-flow (3/3), frontend suite (279/279). RF-002 verificado via 'retorna mensagem genérica para e-mail inexistente'. RF-017..RF-021, RF-023 verificados por inspeção de código. RF-022 corrigido em commit 80818dd: página /redefinir-senha agora exibe estado persistente com link para /recuperar-senha quando token API retorna erro.",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "RF-022 estava incompleto na versão inicial (apenas toast temporário). Corrigido adicionando estado 'tokenFailed' que exibe bloco permanente com link para /recuperar-senha quando API retorna 400."
 }

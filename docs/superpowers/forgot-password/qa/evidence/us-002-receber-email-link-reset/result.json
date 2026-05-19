@@ -1,68 +1,68 @@
 {
-  "status": "PASSED",
-  "summary": "Verificado por testes automatizados e inspeção de código que o fluxo de forgot password gera token CSPRNG para e-mail existente, persiste o hash com TTL de 900s, publica/envia e-mail HTML com nome do usuário, link de reset, aviso de expiração em 15 minutos e mensagem de segurança para ignorar o e-mail se a solicitação não foi feita.",
-  "userStory": "US-002",
-  "acceptanceTestCreated": false,
-  "acceptanceTestReason": "Não foi necessário criar teste adicional no diretório de evidências porque apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts já valida o HTML renderizado com nome, link, expiração e aviso de segurança.",
-  "tests": [
-    {
-      "command": "cd apps/backend && npx vitest run src/user/application/use-case/forgot-password.usecase.test.ts --config ./test/vite.config.app-domain.ts --reporter=verbose",
-      "result": "passed",
-      "evidence": "6 testes passaram"
-    },
-    {
-      "command": "cd apps/backend && npx vitest run src/user/infra/controller/forgot-password.business-flow-test.ts --config ./test/vite.config.business-flow.ts --reporter=verbose",
-      "result": "passed",
-      "evidence": "3 testes passaram"
-    },
-    {
-      "command": "cd apps/backend && npx vitest run src/user/infra/email/send-password-reset-email.notification.test.ts --config ./test/vite.config.app-domain.ts --reporter=verbose",
-      "result": "passed",
-      "evidence": "4 testes passaram"
-    }
-  ],
-  "requirements": {
-    "RF-003": {
-      "status": "passed",
-      "evidence": [
-        "apps/backend/src/user/application/use-case/forgot-password.usecase.ts:54-73 usa randomBytes(32) para gerar token bruto, aplica SHA-256 e publica PasswordResetRequestedEvent",
-        "apps/backend/src/user/application/use-case/forgot-password.usecase.test.ts:54-91 valida geração do token/hash e armazenamento do token",
-        "apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts:32-45 valida envio do e-mail quando o evento é publicado"
-      ]
-    },
-    "RF-005": {
-      "status": "passed",
-      "evidence": [
-        "apps/backend/src/user/application/use-case/forgot-password.usecase.ts:11 define PASSWORD_RESET_TTL_IN_SECONDS = 15 * 60",
-        "apps/backend/src/user/application/use-case/forgot-password.usecase.ts:57-66 envia TTL para saveResetToken/saveUidMapping",
-        "apps/backend/src/user/infra/gateway/redis-password-reset-token-store.ts:16-30 persiste ambas as chaves no Redis usando o ttl recebido"
-      ]
-    },
-    "RF-014": {
-      "status": "passed",
-      "evidence": [
-        "apps/backend/src/user/infra/email/templates/password-reset-email.template.tsx:28-39 contém heading, nome do usuário, e-mail, link de reset e texto de expiração em 15 minutos",
-        "apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts:47-62 valida nome, e-mail, link e aviso de expiração no HTML"
-      ]
-    },
-    "RF-015": {
-      "status": "passed",
-      "evidence": [
-        "apps/backend/src/user/infra/email/templates/password-reset-email.template.tsx:40-43 contém a mensagem 'Se você não solicitou... ignore este e-mail'",
-        "apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts:64-76 valida o aviso de segurança no HTML"
-      ]
-    },
-    "RF-016": {
-      "status": "passed",
-      "evidence": [
-        "apps/backend/src/user/infra/email/templates/password-reset-email.template.tsx:1-10 usa @react-email/components",
-        "apps/backend/src/user/infra/email/send-password-reset-email.notification.ts:46-58 usa @react-email/render e envia o campo html para o mailer",
-        "apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts:41-45 confirma que o envio contém html"
-      ]
-    }
-  },
-  "notes": [
-    "Os comandos fornecidos com pnpm não filtraram corretamente os arquivos neste ambiente; a verificação foi concluída com execução direta do vitest no apps/backend, preservando o mesmo config de testes.",
-    "Nenhum screenshot foi gerado porque não havia servidor web em execução, conforme instrução da tarefa."
-  ]
+	"status": "PASSED",
+	"summary": "Verificado por testes automatizados e inspeção de código que o fluxo de forgot password gera token CSPRNG para e-mail existente, persiste o hash com TTL de 900s, publica/envia e-mail HTML com nome do usuário, link de reset, aviso de expiração em 15 minutos e mensagem de segurança para ignorar o e-mail se a solicitação não foi feita.",
+	"userStory": "US-002",
+	"acceptanceTestCreated": false,
+	"acceptanceTestReason": "Não foi necessário criar teste adicional no diretório de evidências porque apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts já valida o HTML renderizado com nome, link, expiração e aviso de segurança.",
+	"tests": [
+		{
+			"command": "cd apps/backend && npx vitest run src/user/application/use-case/forgot-password.usecase.test.ts --config ./test/vite.config.app-domain.ts --reporter=verbose",
+			"result": "passed",
+			"evidence": "6 testes passaram"
+		},
+		{
+			"command": "cd apps/backend && npx vitest run src/user/infra/controller/forgot-password.business-flow-test.ts --config ./test/vite.config.business-flow.ts --reporter=verbose",
+			"result": "passed",
+			"evidence": "3 testes passaram"
+		},
+		{
+			"command": "cd apps/backend && npx vitest run src/user/infra/email/send-password-reset-email.notification.test.ts --config ./test/vite.config.app-domain.ts --reporter=verbose",
+			"result": "passed",
+			"evidence": "4 testes passaram"
+		}
+	],
+	"requirements": {
+		"RF-003": {
+			"status": "passed",
+			"evidence": [
+				"apps/backend/src/user/application/use-case/forgot-password.usecase.ts:54-73 usa randomBytes(32) para gerar token bruto, aplica SHA-256 e publica PasswordResetRequestedEvent",
+				"apps/backend/src/user/application/use-case/forgot-password.usecase.test.ts:54-91 valida geração do token/hash e armazenamento do token",
+				"apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts:32-45 valida envio do e-mail quando o evento é publicado"
+			]
+		},
+		"RF-005": {
+			"status": "passed",
+			"evidence": [
+				"apps/backend/src/user/application/use-case/forgot-password.usecase.ts:11 define PASSWORD_RESET_TTL_IN_SECONDS = 15 * 60",
+				"apps/backend/src/user/application/use-case/forgot-password.usecase.ts:57-66 envia TTL para saveResetToken/saveUidMapping",
+				"apps/backend/src/user/infra/gateway/redis-password-reset-token-store.ts:16-30 persiste ambas as chaves no Redis usando o ttl recebido"
+			]
+		},
+		"RF-014": {
+			"status": "passed",
+			"evidence": [
+				"apps/backend/src/user/infra/email/templates/password-reset-email.template.tsx:28-39 contém heading, nome do usuário, e-mail, link de reset e texto de expiração em 15 minutos",
+				"apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts:47-62 valida nome, e-mail, link e aviso de expiração no HTML"
+			]
+		},
+		"RF-015": {
+			"status": "passed",
+			"evidence": [
+				"apps/backend/src/user/infra/email/templates/password-reset-email.template.tsx:40-43 contém a mensagem 'Se você não solicitou... ignore este e-mail'",
+				"apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts:64-76 valida o aviso de segurança no HTML"
+			]
+		},
+		"RF-016": {
+			"status": "passed",
+			"evidence": [
+				"apps/backend/src/user/infra/email/templates/password-reset-email.template.tsx:1-10 usa @react-email/components",
+				"apps/backend/src/user/infra/email/send-password-reset-email.notification.ts:46-58 usa @react-email/render e envia o campo html para o mailer",
+				"apps/backend/src/user/infra/email/send-password-reset-email.notification.test.ts:41-45 confirma que o envio contém html"
+			]
+		}
+	},
+	"notes": [
+		"Os comandos fornecidos com pnpm não filtraram corretamente os arquivos neste ambiente; a verificação foi concluída com execução direta do vitest no apps/backend, preservando o mesmo config de testes.",
+		"Nenhum screenshot foi gerado porque não havia servidor web em execução, conforme instrução da tarefa."
+	]
 }
