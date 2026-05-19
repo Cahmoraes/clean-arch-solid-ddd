@@ -1,14 +1,14 @@
 {
-  "us_id": "us-002",
-  "user_story": "Como usuário que acabou de definir uma senha, eu quero receber um email de alerta de segurança, para que eu seja notificado de qualquer acesso ou alteração não autorizada em minha conta.",
-  "requirements": ["RF-005", "RF-006", "RF-007", "RF-008", "RF-009"],
-  "status": "PASSED",
-  "existing_tests_found": true,
-  "acceptance_tests_created": [
-    "docs/superpowers/user-email-notifications/qa/evidence/us-002-usurio-que-acabou-de-definir/us-002-password-alert-on-define.acceptance.test.ts"
-  ],
-  "test_output_summary": "Testes existentes mapeados: apps/backend/src/user/infra/email/send-password-alert-email.notification.test.ts e apps/backend/src/user/application/use-case/define-password.usecase.test.ts. Execução direcionada: 2 arquivos, 10 testes aprovados, duração 27.73s. Aceitação adicional criada para cobrir RF-006 (email no HTML) e RF-008 (pt-BR): 1 arquivo, 1 teste aprovado, duração 2.39s.",
-  "screenshot_path": null,
-  "failure_details": null,
-  "notes": "Cobertura verificada por combinação de testes existentes e teste de aceitação em evidência. O teste de aceitação foi executado com config local em evidência porque a config app-domain do backend inclui apenas **/**/*.test.ts dentro do escopo do backend e não descobre arquivos fora de apps/backend."
+	"us_id": "us-002",
+	"user_story": "Como usuário que acabou de definir uma senha, eu quero receber um email de alerta de segurança, para que eu seja notificado de qualquer acesso ou alteração não autorizada em minha conta.",
+	"requirements": ["RF-005", "RF-006", "RF-007", "RF-008", "RF-009"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [
+		"docs/superpowers/user-email-notifications/qa/evidence/us-002-usurio-que-acabou-de-definir/us-002-password-alert-on-define.acceptance.test.ts"
+	],
+	"test_output_summary": "Testes existentes mapeados: apps/backend/src/user/infra/email/send-password-alert-email.notification.test.ts e apps/backend/src/user/application/use-case/define-password.usecase.test.ts. Execução direcionada: 2 arquivos, 10 testes aprovados, duração 27.73s. Aceitação adicional criada para cobrir RF-006 (email no HTML) e RF-008 (pt-BR): 1 arquivo, 1 teste aprovado, duração 2.39s.",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "Cobertura verificada por combinação de testes existentes e teste de aceitação em evidência. O teste de aceitação foi executado com config local em evidência porque a config app-domain do backend inclui apenas **/**/*.test.ts dentro do escopo do backend e não descobre arquivos fora de apps/backend."
 }
