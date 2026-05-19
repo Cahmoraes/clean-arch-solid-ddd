@@ -1,6 +1,6 @@
 # Task 8: Frontend — `UserDetailModal` Seção Permissões + Testes [RF-014, RF-015, RF-016, RF-017]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-role-management.md`
 **Spec:** `../specs/admin-role-management-design.md`
 

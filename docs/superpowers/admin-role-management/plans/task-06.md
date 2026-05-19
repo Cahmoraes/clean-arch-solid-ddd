@@ -1,6 +1,6 @@
 # Task 6: Frontend — Hook `usePromoteToAdmin` + Testes [RF-001, RF-002, RF-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-role-management.md`
 **Spec:** `../specs/admin-role-management-design.md`
 

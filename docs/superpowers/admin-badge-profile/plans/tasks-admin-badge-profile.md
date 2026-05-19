@@ -17,5 +17,5 @@ Spec-only planning; no RF traceability available.
 
 ## Tarefas
 
-- [ ] 1. Criar componente AdminBadge → `task-01.md`
-- [ ] 2. Integrar AdminBadge na página de perfil → `task-02.md`
+- [x] 1. Criar componente AdminBadge → `task-01.md`
+- [x] 2. Integrar AdminBadge na página de perfil → `task-02.md`

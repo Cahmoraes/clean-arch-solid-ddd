@@ -1,6 +1,6 @@
 # Task 4: Backend — Rotas, IoC, Controllers, Bindings [RF-001, RF-007, RF-008, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-role-management.md`
 **Spec:** `../specs/admin-role-management-design.md`
 

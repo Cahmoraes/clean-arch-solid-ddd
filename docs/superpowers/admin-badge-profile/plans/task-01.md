@@ -1,6 +1,6 @@
 # Task 1: Criar componente AdminBadge
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/admin-badge-profile-design.md`
 

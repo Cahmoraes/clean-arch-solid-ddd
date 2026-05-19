@@ -1,6 +1,6 @@
 # Task 3: Backend — `DemoteFromAdminUseCase` + Testes Unitários [RF-008, RF-011, RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-role-management.md`
 **Spec:** `../specs/admin-role-management-design.md`
 

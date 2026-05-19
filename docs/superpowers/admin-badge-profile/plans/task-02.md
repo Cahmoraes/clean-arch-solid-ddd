@@ -1,6 +1,6 @@
 # Task 2: Integrar AdminBadge na página de perfil
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/admin-badge-profile-design.md`
 

@@ -1,6 +1,6 @@
 # Task 1: Domínio — `updateRole` + Erros de Domínio [RF-001, RF-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-role-management.md`
 **Spec:** `../specs/admin-role-management-design.md`
 

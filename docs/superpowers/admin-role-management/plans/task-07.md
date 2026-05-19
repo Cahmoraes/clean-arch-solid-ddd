@@ -1,6 +1,6 @@
 # Task 7: Frontend — Hook `useDemoteFromAdmin` + Testes [RF-008, RF-009, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-role-management.md`
 **Spec:** `../specs/admin-role-management-design.md`
 

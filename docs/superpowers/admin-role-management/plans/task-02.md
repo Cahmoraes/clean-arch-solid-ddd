@@ -1,6 +1,6 @@
 # Task 2: Backend — `PromoteToAdminUseCase` + Testes Unitários [RF-001, RF-004, RF-005, RF-006, RF-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-role-management.md`
 **Spec:** `../specs/admin-role-management-design.md`
 
