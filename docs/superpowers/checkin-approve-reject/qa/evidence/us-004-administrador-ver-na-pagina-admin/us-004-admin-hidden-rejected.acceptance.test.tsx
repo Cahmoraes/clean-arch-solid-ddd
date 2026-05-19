@@ -1,10 +1,10 @@
 /**
  * Acceptance Test for US-004 — RF-014
- * 
- * Requirement: RF-014 - Check-ins com status `rejected` devem ser ocultados 
+ *
+ * Requirement: RF-014 - Check-ins com status `rejected` devem ser ocultados
  * da página admin (já resolvidos).
- * 
- * This test verifies that rejected check-ins are filtered out from the 
+ *
+ * This test verifies that rejected check-ins are filtered out from the
  * admin check-ins page, even when returned by the API.
  */
 
@@ -16,10 +16,10 @@ vi.mock("sonner", () => ({
 	toast: { success: vi.fn(), error: vi.fn() },
 }))
 
+import AdminCheckInsPage from "@/app/(authenticated)/admin/check-ins/page"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
-import AdminCheckInsPage from "@/app/(authenticated)/admin/check-ins/page"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -91,23 +91,15 @@ describe("AdminCheckInsPage — RF-014: Hidden Rejected Check-ins", () => {
 		renderWithProviders(<AdminCheckInsPage />)
 
 		// Verify pending check-in is visible
-		expect(
-			await screen.findByText("Iron Gym"),
-		).toBeInTheDocument()
+		expect(await screen.findByText("Iron Gym")).toBeInTheDocument()
 
 		// Verify validated check-in is visible
-		expect(
-			screen.getByText("Platinum Gym"),
-		).toBeInTheDocument()
+		expect(screen.getByText("Platinum Gym")).toBeInTheDocument()
 
 		// Verify rejected check-ins are NOT visible (hidden)
-		expect(
-			screen.queryByText("Gold Gym"),
-		).not.toBeInTheDocument()
+		expect(screen.queryByText("Gold Gym")).not.toBeInTheDocument()
 
-		expect(
-			screen.queryByText("Diamond Gym"),
-		).not.toBeInTheDocument()
+		expect(screen.queryByText("Diamond Gym")).not.toBeInTheDocument()
 
 		// Verify the list shows exactly 2 items (pending + validated)
 		// excluding the 2 rejected ones
@@ -157,12 +149,8 @@ describe("AdminCheckInsPage — RF-014: Hidden Rejected Check-ins", () => {
 		).toBeInTheDocument()
 
 		// Verify rejected items are not visible
-		expect(
-			screen.queryByText("Iron Gym"),
-		).not.toBeInTheDocument()
+		expect(screen.queryByText("Iron Gym")).not.toBeInTheDocument()
 
-		expect(
-			screen.queryByText("Gold Gym"),
-		).not.toBeInTheDocument()
+		expect(screen.queryByText("Gold Gym")).not.toBeInTheDocument()
 	})
 })

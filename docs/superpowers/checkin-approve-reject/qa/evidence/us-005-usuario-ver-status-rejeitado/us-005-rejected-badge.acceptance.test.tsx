@@ -1,11 +1,10 @@
 import { screen, waitFor } from "@testing-library/react"
 import { HttpResponse, http } from "msw"
 import { beforeEach, describe, expect, it } from "vitest"
-
+import CheckInsPage from "@/app/(authenticated)/check-ins/page"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
-import CheckInsPage from "@/app/(authenticated)/check-ins/page"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -174,11 +173,19 @@ describe("US-005: Como usuário, eu quero ver claramente quando um dos meus chec
 		expect(rejectedBadge).toHaveTextContent(/rejeitado/i)
 
 		// Verify rejected check-in has no action buttons
-		expect(screen.queryByTestId("checkin-approve-rejected-1")).not.toBeInTheDocument()
-		expect(screen.queryByTestId("checkin-reject-rejected-1")).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("checkin-approve-rejected-1"),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("checkin-reject-rejected-1"),
+		).not.toBeInTheDocument()
 
 		// Verify pending check-in also has no action buttons (non-admin user)
-		expect(screen.queryByTestId("checkin-approve-pending-1")).not.toBeInTheDocument()
-		expect(screen.queryByTestId("checkin-reject-pending-1")).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("checkin-approve-pending-1"),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByTestId("checkin-reject-pending-1"),
+		).not.toBeInTheDocument()
 	})
 })

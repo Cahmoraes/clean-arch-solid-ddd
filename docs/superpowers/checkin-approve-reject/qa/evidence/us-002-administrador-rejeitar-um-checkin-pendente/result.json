@@ -1,179 +1,179 @@
 {
-  "user_story": "US-002 — Como administrador, eu quero rejeitar um check-in pendente para que ele seja marcado como rejeitado e não seja contabilizado.",
-  "verification_date": "2025-01-15",
-  "status": "PASSED",
-  "test_results": {
-    "backend": {
-      "total_tests": 345,
-      "passed": 345,
-      "failed": 0,
-      "suites": 61,
-      "suites_passed": 61,
-      "duration_seconds": 27.25
-    },
-    "frontend": {
-      "total_tests": 257,
-      "passed": 257,
-      "failed": 0,
-      "suites": 53,
-      "suites_passed": 53,
-      "duration_seconds": 133.11
-    }
-  },
-  "requirements_verification": {
-    "RF-001": {
-      "description": "O sistema deve expor `PATCH /check-ins/reject` acessível apenas por administradores autenticados.",
-      "status": "PASSED",
-      "evidence": [
-        "RejectCheckInController implementado com @Logger decorator",
-        "Endpoint registrado como 'patch' em CheckInRoutes.REJECT ('/check-ins/reject')",
-        "Configurado com 'isProtected: true' e 'onlyAdmin: true'",
-        "Business flow test: 'should reject a pending check-in' - HTTP 200 OK com admin token",
-        "Business flow test: 'should return 403 when user is not an admin' - HTTP 403 FORBIDDEN",
-        "Business flow test: 'should return 401 when authorization header is missing' - HTTP 401 UNAUTHORIZED"
-      ]
-    },
-    "RF-002": {
-      "description": "O endpoint deve aceitar `{ checkInId: string }` e retornar `{ rejectedAt: string }` em caso de sucesso.",
-      "status": "PASSED",
-      "evidence": [
-        "Request schema: z.object({ checkInId: z.string() })",
-        "Response schema: z.object({ rejectedAt: z.iso.datetime() })",
-        "RejectCheckInController returns: ResponseFactory.create({ status: HTTP_STATUS.OK, body: { rejectedAt: result.value.rejectedAt } })",
-        "Business flow test: 'should reject a pending check-in' - validates rejectedAt property and isValidDate",
-        "Business flow test: 'should reject a validated check-in' - validates rejectedAt property and isValidDate"
-      ]
-    },
-    "RF-003": {
-      "description": "Se o check-in não existir, o sistema deve retornar erro 404.",
-      "status": "PASSED",
-      "evidence": [
-        "RejectCheckInUseCase.execute() returns Either<CheckInNotFoundError, ...>",
-        "RejectCheckInUseCase test: 'Deve retornar CheckInNotFoundError para ID inexistente'",
-        "Business flow test: 'should return 404 for non-existent check-in' - HTTP 404 NOT_FOUND with message property"
-      ]
-    },
-    "RF-004": {
-      "description": "A operação de rejeitar um check-in já rejeitado deve ser idempotente.",
-      "status": "PASSED",
-      "evidence": [
-        "CheckIn.reject() method is idempotent: 'Rejeitar um check-in já rejeitado é idempotente'",
-        "CheckIn entity test: rejects an already rejected check-in and validates that rejectedAt timestamp remains unchanged",
-        "RejectCheckInUseCase test: 'Deve ser idempotente ao rejeitar check-in já rejeitado' - returns success",
-        "Business flow test: 'should be idempotent when rejecting an already rejected check-in' - first rejectedAt timestamp is preserved"
-      ]
-    },
-    "RF-007": {
-      "description": "Um check-in rejeitado não pode ser aprovado.",
-      "status": "PASSED",
-      "evidence": [
-        "CheckIn entity test: 'Não deve validar um check-in rejeitado' - validate() returns CheckInAlreadyRejectedError",
-        "ValidateCheckInUseCase test: 'Não deve validar um check-in rejeitado' - execute() returns failure with CheckInAlreadyRejectedError",
-        "RejectedStatus.validate() method returns: failure(new CheckInAlreadyRejectedError())"
-      ]
-    },
-    "RF-009": {
-      "description": "Check-ins `pending` devem mostrar botões \"Aprovar\" e \"Rejeitar\".",
-      "status": "PASSED",
-      "evidence": [
-        "CheckInActions component renders PendingActions (both approve and reject buttons) when status === 'pending'",
-        "RejectButton component with data-testid='checkin-reject-{checkInId}'",
-        "ApproveButton component with data-testid='checkin-approve-{checkInId}'",
-        "Frontend test: 'rejeita um check-in pendente ao clicar em 'Rejeitar'' - renders both buttons and reject button is clickable",
-        "Frontend test: 'exibe apenas botão rejeitar para check-in validado' - only reject button shown for validated status"
-      ]
-    }
-  },
-  "test_coverage": {
-    "backend": {
-      "domain_layer": {
-        "CheckIn entity": {
-          "total_tests": 14,
-          "relevant_tests": [
-            "Deve rejeitar um check-in pendente",
-            "Deve rejeitar um check-in validado (reversão)",
-            "Rejeitar um check-in já rejeitado é idempotente",
-            "Não deve validar um check-in rejeitado",
-            "Invariante: validatedAt e rejectedAt nunca coexistem"
-          ]
-        }
-      },
-      "application_layer": {
-        "RejectCheckInUseCase": {
-          "total_tests": 4,
-          "relevant_tests": [
-            "Deve rejeitar um check-in pendente",
-            "Deve rejeitar um check-in validado (reversão)",
-            "Deve ser idempotente ao rejeitar check-in já rejeitado",
-            "Deve retornar CheckInNotFoundError para ID inexistente"
-          ]
-        },
-        "ValidateCheckInUseCase": {
-          "total_tests": 4,
-          "new_test": "Não deve validar um check-in rejeitado",
-          "description": "Verifies RF-007 requirement"
-        }
-      },
-      "infrastructure_layer": {
-        "RejectCheckInController": {
-          "total_tests": 6,
-          "test_file": "reject-check-in.controller.business-flow-test.ts",
-          "relevant_tests": [
-            "should reject a pending check-in",
-            "should reject a validated check-in (reversal)",
-            "should return 404 for non-existent check-in",
-            "should be idempotent when rejecting an already rejected check-in",
-            "should return 403 when user is not an admin",
-            "should return 401 when authorization header is missing"
-          ]
-        }
-      }
-    },
-    "frontend": {
-      "admin_check_ins_page": {
-        "total_tests": 7,
-        "relevant_tests": [
-          "lista check-ins pendentes e valida ao clicar em 'Validar'",
-          "exibe EmptyState quando não há check-ins pendentes",
-          "exibe erro amigável ao falhar validação (409)",
-          "rejeita um check-in pendente ao clicar em 'Rejeitar'",
-          "exibe erro amigável ao falhar rejeição",
-          "exibe apenas botão rejeitar para check-in validado"
-        ],
-        "new_tests": [
-          "rejeita um check-in pendente ao clicar em 'Rejeitar'",
-          "exibe erro amigável ao falhar rejeição",
-          "exibe apenas botão rejeitar para check-in validado"
-        ]
-      },
-      "check_in_actions_component": {
-        "implementation": "Fully implements reject functionality with RejectButton component",
-        "features": [
-          "Shows 'Rejeitar' button with destructive styling for pending status",
-          "Shows only reject button for validated status",
-          "Displays 'Rejeitando...' loading state",
-          "Calls useRejectCheckIn() mutation with checkInId",
-          "Shows success toast: 'Check-in rejeitado.'",
-          "Shows error toast with friendly message on failure",
-          "Data-testid: checkin-reject-{checkInId} for testing"
-        ]
-      }
-    }
-  },
-  "files_created_or_modified": {
-    "created": [
-      "apps/backend/src/check-in/infra/controller/reject-check-in.controller.business-flow-test.ts"
-    ],
-    "modified": [
-      "apps/backend/src/check-in/application/use-case/validate-check-in.usecase.test.ts",
-      "apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx"
-    ]
-  },
-  "test_execution_summary": {
-    "backend": "pnpm --filter backend test:run",
-    "frontend": "pnpm --filter frontend test",
-    "all_tests_passed": true,
-    "total_duration_seconds": 160.36
-  },
-  "conclusion": "All requirements for US-002 are fully implemented and tested. The reject check-in functionality works correctly for pending and validated check-ins, is idempotent, enforces admin-only access, and prevents validation of rejected check-ins. The frontend properly displays reject buttons and handles success/error states."
+	"user_story": "US-002 — Como administrador, eu quero rejeitar um check-in pendente para que ele seja marcado como rejeitado e não seja contabilizado.",
+	"verification_date": "2025-01-15",
+	"status": "PASSED",
+	"test_results": {
+		"backend": {
+			"total_tests": 345,
+			"passed": 345,
+			"failed": 0,
+			"suites": 61,
+			"suites_passed": 61,
+			"duration_seconds": 27.25
+		},
+		"frontend": {
+			"total_tests": 257,
+			"passed": 257,
+			"failed": 0,
+			"suites": 53,
+			"suites_passed": 53,
+			"duration_seconds": 133.11
+		}
+	},
+	"requirements_verification": {
+		"RF-001": {
+			"description": "O sistema deve expor `PATCH /check-ins/reject` acessível apenas por administradores autenticados.",
+			"status": "PASSED",
+			"evidence": [
+				"RejectCheckInController implementado com @Logger decorator",
+				"Endpoint registrado como 'patch' em CheckInRoutes.REJECT ('/check-ins/reject')",
+				"Configurado com 'isProtected: true' e 'onlyAdmin: true'",
+				"Business flow test: 'should reject a pending check-in' - HTTP 200 OK com admin token",
+				"Business flow test: 'should return 403 when user is not an admin' - HTTP 403 FORBIDDEN",
+				"Business flow test: 'should return 401 when authorization header is missing' - HTTP 401 UNAUTHORIZED"
+			]
+		},
+		"RF-002": {
+			"description": "O endpoint deve aceitar `{ checkInId: string }` e retornar `{ rejectedAt: string }` em caso de sucesso.",
+			"status": "PASSED",
+			"evidence": [
+				"Request schema: z.object({ checkInId: z.string() })",
+				"Response schema: z.object({ rejectedAt: z.iso.datetime() })",
+				"RejectCheckInController returns: ResponseFactory.create({ status: HTTP_STATUS.OK, body: { rejectedAt: result.value.rejectedAt } })",
+				"Business flow test: 'should reject a pending check-in' - validates rejectedAt property and isValidDate",
+				"Business flow test: 'should reject a validated check-in' - validates rejectedAt property and isValidDate"
+			]
+		},
+		"RF-003": {
+			"description": "Se o check-in não existir, o sistema deve retornar erro 404.",
+			"status": "PASSED",
+			"evidence": [
+				"RejectCheckInUseCase.execute() returns Either<CheckInNotFoundError, ...>",
+				"RejectCheckInUseCase test: 'Deve retornar CheckInNotFoundError para ID inexistente'",
+				"Business flow test: 'should return 404 for non-existent check-in' - HTTP 404 NOT_FOUND with message property"
+			]
+		},
+		"RF-004": {
+			"description": "A operação de rejeitar um check-in já rejeitado deve ser idempotente.",
+			"status": "PASSED",
+			"evidence": [
+				"CheckIn.reject() method is idempotent: 'Rejeitar um check-in já rejeitado é idempotente'",
+				"CheckIn entity test: rejects an already rejected check-in and validates that rejectedAt timestamp remains unchanged",
+				"RejectCheckInUseCase test: 'Deve ser idempotente ao rejeitar check-in já rejeitado' - returns success",
+				"Business flow test: 'should be idempotent when rejecting an already rejected check-in' - first rejectedAt timestamp is preserved"
+			]
+		},
+		"RF-007": {
+			"description": "Um check-in rejeitado não pode ser aprovado.",
+			"status": "PASSED",
+			"evidence": [
+				"CheckIn entity test: 'Não deve validar um check-in rejeitado' - validate() returns CheckInAlreadyRejectedError",
+				"ValidateCheckInUseCase test: 'Não deve validar um check-in rejeitado' - execute() returns failure with CheckInAlreadyRejectedError",
+				"RejectedStatus.validate() method returns: failure(new CheckInAlreadyRejectedError())"
+			]
+		},
+		"RF-009": {
+			"description": "Check-ins `pending` devem mostrar botões \"Aprovar\" e \"Rejeitar\".",
+			"status": "PASSED",
+			"evidence": [
+				"CheckInActions component renders PendingActions (both approve and reject buttons) when status === 'pending'",
+				"RejectButton component with data-testid='checkin-reject-{checkInId}'",
+				"ApproveButton component with data-testid='checkin-approve-{checkInId}'",
+				"Frontend test: 'rejeita um check-in pendente ao clicar em 'Rejeitar'' - renders both buttons and reject button is clickable",
+				"Frontend test: 'exibe apenas botão rejeitar para check-in validado' - only reject button shown for validated status"
+			]
+		}
+	},
+	"test_coverage": {
+		"backend": {
+			"domain_layer": {
+				"CheckIn entity": {
+					"total_tests": 14,
+					"relevant_tests": [
+						"Deve rejeitar um check-in pendente",
+						"Deve rejeitar um check-in validado (reversão)",
+						"Rejeitar um check-in já rejeitado é idempotente",
+						"Não deve validar um check-in rejeitado",
+						"Invariante: validatedAt e rejectedAt nunca coexistem"
+					]
+				}
+			},
+			"application_layer": {
+				"RejectCheckInUseCase": {
+					"total_tests": 4,
+					"relevant_tests": [
+						"Deve rejeitar um check-in pendente",
+						"Deve rejeitar um check-in validado (reversão)",
+						"Deve ser idempotente ao rejeitar check-in já rejeitado",
+						"Deve retornar CheckInNotFoundError para ID inexistente"
+					]
+				},
+				"ValidateCheckInUseCase": {
+					"total_tests": 4,
+					"new_test": "Não deve validar um check-in rejeitado",
+					"description": "Verifies RF-007 requirement"
+				}
+			},
+			"infrastructure_layer": {
+				"RejectCheckInController": {
+					"total_tests": 6,
+					"test_file": "reject-check-in.controller.business-flow-test.ts",
+					"relevant_tests": [
+						"should reject a pending check-in",
+						"should reject a validated check-in (reversal)",
+						"should return 404 for non-existent check-in",
+						"should be idempotent when rejecting an already rejected check-in",
+						"should return 403 when user is not an admin",
+						"should return 401 when authorization header is missing"
+					]
+				}
+			}
+		},
+		"frontend": {
+			"admin_check_ins_page": {
+				"total_tests": 7,
+				"relevant_tests": [
+					"lista check-ins pendentes e valida ao clicar em 'Validar'",
+					"exibe EmptyState quando não há check-ins pendentes",
+					"exibe erro amigável ao falhar validação (409)",
+					"rejeita um check-in pendente ao clicar em 'Rejeitar'",
+					"exibe erro amigável ao falhar rejeição",
+					"exibe apenas botão rejeitar para check-in validado"
+				],
+				"new_tests": [
+					"rejeita um check-in pendente ao clicar em 'Rejeitar'",
+					"exibe erro amigável ao falhar rejeição",
+					"exibe apenas botão rejeitar para check-in validado"
+				]
+			},
+			"check_in_actions_component": {
+				"implementation": "Fully implements reject functionality with RejectButton component",
+				"features": [
+					"Shows 'Rejeitar' button with destructive styling for pending status",
+					"Shows only reject button for validated status",
+					"Displays 'Rejeitando...' loading state",
+					"Calls useRejectCheckIn() mutation with checkInId",
+					"Shows success toast: 'Check-in rejeitado.'",
+					"Shows error toast with friendly message on failure",
+					"Data-testid: checkin-reject-{checkInId} for testing"
+				]
+			}
+		}
+	},
+	"files_created_or_modified": {
+		"created": [
+			"apps/backend/src/check-in/infra/controller/reject-check-in.controller.business-flow-test.ts"
+		],
+		"modified": [
+			"apps/backend/src/check-in/application/use-case/validate-check-in.usecase.test.ts",
+			"apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx"
+		]
+	},
+	"test_execution_summary": {
+		"backend": "pnpm --filter backend test:run",
+		"frontend": "pnpm --filter frontend test",
+		"all_tests_passed": true,
+		"total_duration_seconds": 160.36
+	},
+	"conclusion": "All requirements for US-002 are fully implemented and tested. The reject check-in functionality works correctly for pending and validated check-ins, is idempotent, enforces admin-only access, and prevents validation of rejected check-ins. The frontend properly displays reject buttons and handles success/error states."
 }
