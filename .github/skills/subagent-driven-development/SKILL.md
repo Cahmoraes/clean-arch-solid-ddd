@@ -56,6 +56,24 @@ Before extracting tasks, locate the tasks index:
 > Check `mismatches` — any mismatch between index and task file requires manual resolution before proceeding.  
 > **Fallback:** Read and parse the tasks index file manually if the script is unavailable.
 
+### Caveman Mode Activation
+
+Before dispatching the first task subagent, check session caveman state (defined in `using-superpowers` policy):
+
+1. **If `session_caveman_active = false` AND `session_caveman_prompted = false`:** Ask the dynamic question (see `using-superpowers` Caveman Mode section) and record the result.
+2. **If `session_caveman_active = true`:** Invoke the `caveman` skill at `session_caveman_level` (e.g., `/caveman full`). Caveman stays active through all tasks, spec reviews, code quality reviews, and QA gate.
+3. **Before invoking `finishing-a-development-branch`:** Explicitly deactivate caveman — say "normal mode" or "stop caveman". Finalizando requires clear human-facing communication.
+
+**Subagent propagation:** when caveman is active, include the following block in every subagent prompt dispatched (implementer, spec reviewer, code quality reviewer, QA subagents):
+
+```
+## Caveman Mode
+
+Caveman is active at level: [session_caveman_level]
+Invoke the caveman skill at this level before your first response: `/caveman [level]`
+Maintain caveman throughout your entire execution. Do not revert to normal mode.
+```
+
 **If tracker exists:**
 1. Read the tasks index (`tasks-<feature-name>.md`)
 2. Tasks marked `[x]` are already completed — skip them entirely (session resume)
@@ -165,6 +183,14 @@ This will dispatch parallel subagents to check acceptance criteria and collect e
 | `FAILED` | **STOP.** Report the failing user stories to the user. Do not invoke `finishing-a-development-branch` until the user resolves the failures and re-runs. |
 
 The QA report is saved to `docs/superpowers/<feature-name>/qa/qa-report-<feature-name>.md` by `user-story-verification`.
+
+**Caveman + QA Gate:** `user-story-verification` runs in the `Verificando` state — caveman remains active during QA. Pass the caveman block to the QA skill invocation context so its subagents also use caveman. Deactivate caveman only after QA returns and **before** invoking `finishing-a-development-branch`:
+
+```
+[QA Gate result received]
+→ Deactivate caveman: "normal mode"
+→ Invoke finishing-a-development-branch
+```
 
 ## Model Selection
 

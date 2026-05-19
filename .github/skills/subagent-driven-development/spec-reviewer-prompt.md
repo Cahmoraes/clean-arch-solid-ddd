@@ -14,6 +14,10 @@ Task tool (general-purpose):
 
     [FULL TEXT of task requirements]
 
+    ## Caveman Mode
+
+    [If caveman is active: "Caveman is active at level: [level]. Invoke `/caveman [level]` before your first response and maintain it throughout." | If not active: omit this section entirely]
+
     ## What Implementer Claims They Built
 
     [From implementer's report]

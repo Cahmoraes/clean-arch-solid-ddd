@@ -61,26 +61,3 @@ These tools are available in Gemini CLI but have no Claude Code equivalent:
 | `ask_user` | Request structured input from the user |
 | `tracker_create_task` | Rich task management (create, update, list, visualize) |
 | `enter_plan_mode` / `exit_plan_mode` | Switch to read-only research mode before making changes |
-
----
-
-## Context Compaction
-
-Gemini CLI uses `/context` to check usage and `save_memory` as its compaction mechanism.
-
-### Check context usage
-
-Use `/context` to read the current context window consumption. If usage is at or above ~60%, invoke compact.
-
-### How to compact in Gemini CLI
-
-Invoke `save_memory` with a concise orientation summary:
-```
-save_memory: "superpowers: [feature-name] | state: [current-state] | tasks: [path] | decisions: [key decisions] | next: [next-action]"
-```
-
-The platform persists this to GEMINI.md and uses it as orientation context going forward.
-
-### Non-blocking behavior
-
-If `/context` or `save_memory` fails, skip and continue. Compaction is an optimization — it must never interrupt the workflow.

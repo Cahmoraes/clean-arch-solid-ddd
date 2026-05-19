@@ -45,6 +45,10 @@ Task tool (general-purpose):
     - If the file does not exist → warn the user and ask if they want to create it. Then proceed with defaults.
     - You may suggest overriding a preference if there's a strong reason, but ONLY with user confirmation.
 
+    ## Caveman Mode
+
+    [If caveman is active: "Caveman is active at level: [level]. Invoke `/caveman [level]` before your first response and maintain it throughout your entire execution. Do not revert to normal mode." | If not active: omit this section entirely]
+
     ## Your Job
 
     Once you're clear on requirements:

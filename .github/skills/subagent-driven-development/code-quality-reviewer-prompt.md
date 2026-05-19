@@ -14,6 +14,7 @@ Task tool (general-purpose):
   PLAN_OR_REQUIREMENTS: Task N from [plan-file]
   BASE_SHA: [commit before task]
   HEAD_SHA: [current commit]
+  CAVEMAN: [if active: "Active at level: [level]. Invoke `/caveman [level]` before your first response." | if not: omit]
 ```
 
 **In addition to standard code quality concerns, the reviewer should check:**

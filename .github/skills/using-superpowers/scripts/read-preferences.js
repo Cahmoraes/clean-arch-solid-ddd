@@ -51,7 +51,6 @@ Output (JSON to stdout):
       "workflow": {
         "auto_commit": boolean,              // default: true
         "confirm_destructive_actions": boolean, // default: true
-        "auto_compact": boolean              // default: true
       },
       "communication": {
         "language": string                   // default: "pt-BR"
@@ -61,6 +60,10 @@ Output (JSON to stdout):
       },
       "context": {
         "has_corporate_artifacts": boolean   // default: false — true when .superpowers/corporate-artifacts.yml exists
+      },
+      "optimization": {
+        "caveman": boolean,                  // default: false — activates caveman in execution/review phases
+        "caveman_level": string              // default: "full" — lite | full | ultra | wenyan-lite | wenyan-full | wenyan-ultra
       }
     }
   }
@@ -90,7 +93,6 @@ const DEFAULTS = {
   workflow: {
     auto_commit: true,
     confirm_destructive_actions: true,
-    auto_compact: true,
   },
   communication: {
     language: 'pt-BR',
@@ -100,6 +102,10 @@ const DEFAULTS = {
   },
   context: {
     has_corporate_artifacts: false,
+  },
+  optimization: {
+    caveman: false,
+    caveman_level: 'full',
   },
 };
 

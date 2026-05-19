@@ -110,6 +110,8 @@ You are a QA verification subagent. Your sole job is to verify that one user sto
 **Evidence directory**: docs/superpowers/<feature-name>/qa/evidence/<us-slug>/
 **Acceptance tests location**: if you need to create new tests, save them ONLY inside this evidence directory — never in the project source tree.
 
+**Caveman Mode**: [if session_caveman_active = true → "Active at level: [session_caveman_level]. Invoke `/caveman [level]` before your first response and maintain it throughout." | if false → omit this field]
+
 ---
 
 ### Task 1 — Map to Existing Tests

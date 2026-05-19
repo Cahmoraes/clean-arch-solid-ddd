@@ -24,8 +24,15 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 Before starting the plan, check if a PRD exists:
 
 > **Deterministic file discovery (preferred):**
+> The script lives inside this skill's `scripts/` folder. Your skill context header shows the base directory
+> (e.g. `Base directory for this skill: /path/to/writing-plans`). Use it to build the full path:
 > ```bash
-> node scripts/find-feature-files.js --feature-name <feature-name>
+> node <writing-plans-skill-dir>/scripts/find-feature-files.js --feature-name <feature-name>
+> ```
+> If the base directory is not immediately available, locate the script with:
+> ```bash
+> node "$(find ~/.copilot/installed-plugins -name "find-feature-files.js" -path "*/writing-plans/scripts/*" 2>/dev/null | head -1)" \
+>   --feature-name <feature-name>
 > ```
 > Outputs JSON with `prd.found`, `prd.path`, `spec.found`, `spec.path`, `tasksIndex.found`, `tasksIndex.path`.  
 > Use these to confirm which files exist before referencing them in the plan.  
@@ -132,34 +139,25 @@ Every step must contain the actual content an engineer needs. These are **plan f
 
 After writing the complete plan, look at the spec with fresh eyes. **Read `./references/self-review-checklist.md` and run through all five steps.** Fix issues inline as you find them — no need to re-review after fixing.
 
-> **Deterministic validation (preferred):** Run the validator script to catch format issues automatically:
+> **Deterministic validation (required — do not skip):** Run the validator script to catch format issues
+> before handing off to execution skills. The script lives inside this skill's `scripts/` folder.
+> Your skill context header shows the base directory (e.g. `Base directory for this skill: /path/to/writing-plans`).
+> Use it to build the full path:
 > ```bash
-> node scripts/validate-tasks.js --tasks-index docs/superpowers/<feature-name>/plans/tasks-<feature-name>.md
+> node <writing-plans-skill-dir>/scripts/validate-tasks.js \
+>   --tasks-index docs/superpowers/<feature-name>/plans/tasks-<feature-name>.md
 > ```
-> Fix any `errors` in the output before handing off to execution skills. `warnings` are advisory.
+> If the base directory is not immediately available, locate the script with:
+> ```bash
+> node "$(find ~/.copilot/installed-plugins -name "validate-tasks.js" -path "*/writing-plans/scripts/*" 2>/dev/null | head -1)" \
+>   --tasks-index docs/superpowers/<feature-name>/plans/tasks-<feature-name>.md
+> ```
+> Fix any `errors` in the output before proceeding. `warnings` are advisory.
+> **If the script cannot be found at all, explicitly report that the validator could not run — do not silently skip to manual inspection.**
 
 ### Optional External Review
 
 If you want an independent second opinion on the plan's completeness and buildability, dispatch a plan document reviewer subagent using the template in `./plan-document-reviewer-prompt.md`. This is optional — use it for complex or high-stakes plans where a self-review might not be enough.
-
-## Context Compaction Gate
-
-After the self-review (and optional external review) and before presenting the execution handoff, check whether to compact:
-
-```
-1. Read preferences: node scripts/read-preferences.js
-   (fallback: view .superpowers/preferences.yml directly)
-2. If workflow.auto_compact == true (or key is absent — default is true):
-   Run /context — if usage ≥ 60% OR this is the structural gate (always compact here):
-   Invoke compact with the current state:
-
-   /compact Superpowers state: Planejando→Executando | Feature: <feature-name> | Tasks index: <tasks-index-path> | Next: present execution handoff to user
-
-   Non-blocking: if compact fails, continue without interruption
-3. If workflow.auto_compact == false: skip compact silently
-```
-
-This is the structural compact gate — it always runs when `auto_compact: true`, regardless of current usage. The planning phase accumulates the most context (PRD, spec, brainstorming, templates), and the agent needs a clean context to coordinate subagents in the execution phase.
 
 ## Execution Handoff
 

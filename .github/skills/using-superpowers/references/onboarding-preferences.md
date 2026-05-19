@@ -44,20 +44,28 @@ Ask:
 
 Record the answer as `workflow.confirm_destructive_actions` (true/false).
 
-### Step 5 — Context Compaction
+### Step 5 — Caveman Mode
 
-Ask (in the configured language):
+Present the following explanation and ask (in the configured language):
 
-> "Would you like the agent to automatically compact context at the end of the planning phase (before starting execution) and whenever the context window reaches ~60% usage?"
-> - **Yes** (default) — automatic compaction enabled
-> - **No** — you will compact manually whenever needed
+> "O **Caveman Mode** otimiza o consumo de tokens durante as etapas de implementação. O agente passa a se comunicar de forma telegráfica — sem formalidades, conectores ou explicações redundantes — mantendo 100% da precisão técnica. Isso resulta em ~75% menos tokens nas respostas, permitindo sessões mais longas e econômicas. O modo é aplicado apenas durante implementação, revisão de código e verificações técnicas; planejamento, brainstorming e comunicações com o usuário continuam normais."
+>
+> "Deseja ativar o **Caveman Mode** durante as etapas de implementação para otimizar o consumo de tokens?"
+> - **Não** (padrão) — comunicação normal em todas as fases
+> - **Sim** — ativa caveman nas fases de implementação
 
-pt-BR wording:
-> "Deseja que o agente compacte automaticamente o contexto ao final do planejamento (antes de iniciar a execução) e sempre que a janela de contexto atingir cerca de 60% de uso?"
-> - **Sim** (padrão) — compactação automática habilitada
-> - **Não** — você controlará manualmente quando compactar
+Record the answer as `optimization.caveman` (true/false).
 
-Record the answer as `workflow.auto_compact` (true/false).
+If the user says **yes**, ask:
+
+> "Qual nível de compactação deseja usar?"
+> - **lite** — remove formalidades, mantém gramática
+> - **full** (padrão) — comunicação estilo telegráfico
+> - **ultra** — compactação máxima, mínimo absoluto de tokens
+
+Record the answer as `optimization.caveman_level` (`lite`, `full`, or `ultra`). Wenyan levels (`wenyan-lite`, `wenyan-full`, `wenyan-ultra`) are available for manual configuration in the YAML but are omitted from the onboarding wizard.
+
+If the user says **no**, record `optimization.caveman: false` and `optimization.caveman_level: full` (default).
 
 ### Step 6 — Corporate Artifacts (Optional)
 
@@ -120,7 +128,6 @@ The full YAML template is in `../template/preferences.md`. The structure is:
 workflow:
   auto_commit: <true|false>
   confirm_destructive_actions: <true|false>
-  auto_compact: <true|false>
 
 communication:
   language: <language-code>
@@ -130,6 +137,10 @@ copilot:
 
 context:
   has_corporate_artifacts: <true|false>   # true when .superpowers/corporate-artifacts.yml was created
+
+optimization:
+  caveman: <true|false>         # default: false — activates caveman in execution/review phases
+  caveman_level: <level>        # default: full — lite | full | ultra | wenyan-lite | wenyan-full | wenyan-ultra
 ```
 
 ## Field Reference
@@ -138,10 +149,11 @@ context:
 |-----|------|---------|-------------|
 | `workflow.auto_commit` | bool | `true` | Subagents commit automatically after each task |
 | `workflow.confirm_destructive_actions` | bool | `true` | Ask for confirmation before deleting/overwriting files |
-| `workflow.auto_compact` | bool | `true` | Executes compact automatically at the planning→execution gate and whenever context reaches ~60% usage |
 | `communication.language` | string | `pt-BR` | Language for agent communication |
 | `copilot.rubber_duck` | bool | `false` | Forces Rubber Duck at every critical checkpoint. When `false` (or absent), Copilot CLI decides when to invoke it automatically — Copilot CLI only |
 | `context.has_corporate_artifacts` | bool | `false` | When `true`, the agent reads `.superpowers/corporate-artifacts.yml` to load corporate artifact references for brainstorming and PRD generation |
+| `optimization.caveman` | bool | `false` | When `true`, activates caveman ultra-compressed communication during execution, review, and QA phases. Never activates during planning, brainstorming, or finalization |
+| `optimization.caveman_level` | string | `full` | Compression intensity: `lite` \| `full` \| `ultra` \| `wenyan-lite` \| `wenyan-full` \| `wenyan-ultra`. Onboarding only offers `lite`, `full`, `ultra`; wenyan levels are manual-only |
 
 ## Runtime Mutability
 
@@ -166,7 +178,7 @@ If the user requests a preference change during a session (e.g., "set auto_commi
 
 ## Copilot CLI: Rubber Duck Additional Step
 
-If running in **Copilot CLI**, add this step **after Step 4** (before Step 5 — Context Compaction):
+If running in **Copilot CLI**, add this step **after Step 4** (before Step 5 — Caveman Mode):
 
 > "By default, Copilot CLI decides when to invoke the **Rubber Duck Agent** automatically. You can override this to guarantee it runs at every critical checkpoint (after plan draft, after complex implementations, after writing tests).
 >

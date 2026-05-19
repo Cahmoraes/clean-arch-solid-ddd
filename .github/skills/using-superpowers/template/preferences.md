@@ -8,9 +8,6 @@
 workflow:
   auto_commit: <true|false>
   confirm_destructive_actions: <true|false>
-  # Automatically compact context at the planning→execution gate and whenever
-  # the context window reaches ~60% usage. Set to false to compact manually.
-  auto_compact: <true|false>
 
 communication:
   language: <language-code>
@@ -27,4 +24,12 @@ copilot:
 # for local paths and public URLs to corporate documents (PRDs, specs, UML diagrams, wikis, etc.)
 context:
   has_corporate_artifacts: false
+
+# Token optimization settings.
+# caveman: true activates ultra-compressed communication in execution/review phases only.
+# caveman_level: intensity level (lite | full | ultra | wenyan-lite | wenyan-full | wenyan-ultra).
+# Planning, brainstorming, PRD, and communication with the user always use normal mode.
+optimization:
+  caveman: false
+  caveman_level: full
 ```

@@ -26,7 +26,7 @@ On every session start, check for `.superpowers/preferences.yml` in the user's r
 > # or with explicit root:
 > node scripts/read-preferences.js --repo-root <repo-root>
 > ```
-> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, `preferences.copilot.rubber_duck`, `preferences.workflow.auto_compact`, and `preferences.context.has_corporate_artifacts` directly from the output.
+> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, `preferences.copilot.rubber_duck`, `preferences.context.has_corporate_artifacts`, `preferences.optimization.caveman`, and `preferences.optimization.caveman_level` directly from the output.
 > 
 > **Fallback (if script unavailable):** Read the file directly using `view` — do NOT use `glob` (glob silently misses hidden directories like `.superpowers/`). See `references/copilot-tools.md`.
 
@@ -94,53 +94,60 @@ If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "alw
 
 Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-tools.md` (Copilot CLI), `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.
 
-## Context Window Management
+## Caveman Mode
 
-When `workflow.auto_compact` is `true` (the default), the agent compacts context at two points.
+Caveman Mode reduces agent token consumption ~75% during execution phases by switching to ultra-compressed communication. It is opt-in and never activated automatically.
 
-### Structural trigger (planning → execution gate)
+### Session State
 
-Fired by `writing-plans` after generating task files and before the execution handoff. See that skill for the compact step.
+After reading preferences, track these three session-only variables in memory:
 
-### Dynamic trigger (mandatory, ~60% context usage)
+| Variable | Initial value | Description |
+|----------|--------------|-------------|
+| `session_caveman_active` | `preferences.optimization.caveman` | Whether caveman is currently ON |
+| `session_caveman_level` | `preferences.optimization.caveman_level` (default: `full`) | The intensity level to use |
+| `session_caveman_prompted` | `false` | Whether the dynamic question was already asked this session |
 
-**Before routing to any skill**, run `/context` to check actual usage. If usage is at or above ~60% and `auto_compact: true`, compact first, then route.
+These variables are never written back to `.superpowers/preferences.yml`. They live in the current session context only.
+
+### Activation Rules by State
+
+Caveman activates at the `Planejando → Executando` gate and stays active through the entire `Executando` compound state and into `GateQA → Verificando`. It deactivates at the `GateQA → Finalizando` or `Executando → Finalizando` transition.
 
 ```
-1. Run: /context
-2. If usage ≥ 60% and auto_compact: true → compact (see "How to compact" below)
-3. Route to the appropriate skill
+[Explorando]          → caveman: OFF
+[Formalizando]        → caveman: OFF
+[Planejando]          → caveman: OFF
+─── GATE: Planejando → Executando ─── ← ACTIVATE if session_caveman_active = true
+[Implementando]       → caveman: ON
+[EmRevisao]           → caveman: ON
+[Depurando em Exec]   → caveman: ON
+─── GATE: Executando → GateQA ───
+[Verificando (QA)]    → caveman: ON
+─── GATE: GateQA → Finalizando ─── OR ─── Executando → Finalizando ─── ← DEACTIVATE
+[Finalizando]         → caveman: OFF
+
+[Depurando (estado raiz)] → caveman: OFF — root debugging is investigative and needs clear prose
 ```
 
-Run the same check at these moments inside long-running skills:
-- Before dispatching research subagents in `brainstorming`
-- After receiving large results back from subagents
-- Before writing any large generated artifact (spec, PRD, task files)
+**Invocation:** to activate at the correct level, invoke the `caveman` skill passing the level (e.g., `/caveman full`). To deactivate, say "normal mode" or "stop caveman". Execution skills (`subagent-driven-development`, `executing-plans`) own the actual invocation — this section defines the policy they follow.
 
-**This check is best-effort.** If `/context` is unavailable or returns no usage data, skip the compact and continue.
+### Dynamic Question (R4)
 
-### How to compact
+If `session_caveman_active = false` AND `session_caveman_prompted = false`, the execution skill **may** ask once before starting the `Executando` phase:
 
-Pass the current superpowers state to the compact command so the platform preserves continuity after summarization. Without the state, the platform's compaction algorithm has no anchor and the flow may drift.
+> "Antes de iniciar a implementação, deseja ativar o **Caveman Mode**? Este modo reduz o consumo de tokens em ~75% durante a execução, usando comunicação ultra-compacta enquanto mantém precisão técnica. O modo é aplicado apenas durante implementação, revisão de código e verificações técnicas."
+> - **Sim** — ativa para esta sessão (não altera preferências salvas)
+> - **Não** — continua com comunicação normal
 
-**Claude Code / Copilot CLI:**
-```
-/compact Superpowers state: <state-name> | Feature: <feature-name> | Phase: <phase> | Next: <next-action>
-```
+If yes: set `session_caveman_active = true`, `session_caveman_level = full` (or `preferences.optimization.caveman_level` if set), `session_caveman_prompted = true`.  
+If no: set `session_caveman_prompted = true`. Do not ask again in this session.
 
-**Example — dynamic trigger during brainstorming:**
-```
-/compact Superpowers state: Explorando | Feature: user-auth | Phase: research subagents returned | Next: ask clarifying questions
-```
+**Rule:** The dynamic question is session-only. It never alters `.superpowers/preferences.yml`.
 
-**Example — structural gate in writing-plans:**
-```
-/compact Superpowers state: Planejando→Executando | Feature: user-auth | Tasks index: docs/superpowers/user-auth/plans/tasks-user-auth.md | Next: present execution handoff to user
-```
+### Compaction Continuity
 
-**Gemini CLI:** Use `save_memory` with the same state fields.
-
-**Non-blocking**: if compact fails or `/context` is unavailable, continue normally.
+After a context compaction (whether auto-triggered by the platform at its own threshold or manually by the user), restore `session_caveman_active`, `session_caveman_level`, and `session_caveman_prompted` from the compaction summary **only if those fields are present in it**.
 
 # Using Skills
 

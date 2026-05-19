@@ -27,6 +27,14 @@ Before executing any task, read `.superpowers/preferences.yml` in the user's rep
 - If the file does not exist → warn the user and ask if they want to create it. Then proceed with defaults.
 - You may suggest overriding a preference with justification, but ONLY execute with user confirmation.
 
+## Caveman Mode
+
+Before starting Step 2 (Execute Tasks), check caveman session state (defined in `using-superpowers` Caveman Mode section):
+
+1. **If `session_caveman_active = false` AND `session_caveman_prompted = false`:** Ask the dynamic question once (see `using-superpowers` policy) and record the result.
+2. **If `session_caveman_active = true`:** Invoke the `caveman` skill at `session_caveman_level` (e.g., `/caveman full`). Caveman stays active through all task execution, verifications, and QA gate.
+3. **Before invoking `finishing-a-development-branch`:** Explicitly deactivate caveman — say "normal mode" or "stop caveman". Finalizando requires clear human-facing communication.
+
 ## The Process
 
 ### Step 1: Load Tasks Index
@@ -81,6 +89,7 @@ Before invoking `finishing-a-development-branch`, check whether a PRD exists for
   - **User declines:** Skip the gate and proceed directly to `finishing-a-development-branch`
 
 **Finish the branch:**
+- **If caveman is active:** deactivate first — say "normal mode" or "stop caveman". `finishing-a-development-branch` communicates options to the user and requires normal prose.
 - Announce: "I'm using the finishing-a-development-branch skill to complete this work."
 - **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
 - Pass the tasks index path so it can verify all tasks are `[x]`
