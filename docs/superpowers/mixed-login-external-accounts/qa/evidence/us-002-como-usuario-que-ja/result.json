@@ -1,62 +1,59 @@
 {
-  "us_id": "us-002",
-  "user_story": "Como usuário que já possui senha local, eu quero continuar alterando minha senha com validação da senha atual para proteger minha conta.",
-  "requirements": [
-    "RF-008",
-    "RF-009"
-  ],
-  "status": "PASSED",
-  "existing_tests_found": true,
-  "test_coverage": {
-    "backend_unit_tests": {
-      "file": "apps/backend/src/user/application/use-case/change-password.usecase.test.ts",
-      "total_tests": 9,
-      "passed": 9,
-      "relevant_tests": [
-        "Deve exigir a senha atual correta antes de alterar o password",
-        "Deve falhar quando o usuário não possui senha local",
-        "Deve persistir a senha alterada chamando update no repositório"
-      ]
-    },
-    "backend_business_flow_tests": {
-      "file": "apps/backend/src/user/infra/controller/change-password.business-flow-test.ts",
-      "total_tests": 5,
-      "passed": 5,
-      "relevant_tests": [
-        "Deve alterar a senha de um usuário",
-        "Deve retornar 401 quando a senha atual estiver incorreta",
-        "Deve retornar 409 quando a conta não possui senha local"
-      ]
-    },
-    "frontend_tests": {
-      "files": [
-        "apps/frontend/src/app/(authenticated)/perfil/senha/page.test.tsx",
-        "apps/frontend/src/features/auth/api/index.test.tsx"
-      ],
-      "total_tests": 13,
-      "passed": 13,
-      "relevant_tests": [
-        "submete nova senha quando válida",
-        "renderiza o fluxo de definir senha sem campo de senha atual",
-        "deve enviar currentRawPassword ao alterar senha"
-      ]
-    }
-  },
-  "acceptance_tests_created": [],
-  "test_output_summary": "Cobertura existente foi suficiente. Backend unit: 9/9 testes passaram em change-password.usecase.test.ts (com testTimeout ampliado para 15s nesta execução por lentidão do ambiente). Backend business-flow: 5/5 testes passaram em change-password.business-flow-test.ts. Frontend: 13/13 testes passaram em perfil/senha/page.test.tsx e features/auth/api/index.test.tsx. Validação ampla também passou: backend (pnpm biome:fix, pnpm tsc:check, pnpm test:run, pnpm build) e frontend (pnpm lint:fix, pnpm tsc:check, pnpm test, pnpm build).",
-  "screenshot_path": null,
-  "failure_details": null,
-  "implementation_verification": {
-    "RF-008": {
-      "status": "VERIFIED",
-      "description": "Contas com senha local continuam no fluxo de alteração de senha, enquanto contas sem senha local são excluídas desse fluxo. Evidências: ChangePasswordUseCase retorna PasswordNotSetError para conta sem senha local; o controller HTTP retorna 409/password_not_set; a página /perfil/senha renderiza o formulário de alteração com 'Senha atual' para hasPassword=true e renderiza o fluxo de definição sem esse campo para hasPassword=false."
-    },
-    "RF-009": {
-      "status": "VERIFIED",
-      "description": "O fluxo de alteração exige a senha atual antes de aceitar a nova senha. Evidências: o use case valida currentRawPassword antes de trocar a senha; o controller retorna 401/current_password_invalid quando a senha atual está incorreta; o hook useChangePassword envia currentRawPassword no payload; a UI exibe o campo obrigatório 'Senha atual'."
-    }
-  },
-  "notes": "Não foi necessário criar testes de aceitação adicionais. Screenshot pulado porque os servidores não estavam em execução. As primeiras invocações via pnpm --filter com arquivo-alvo tiveram comportamento inconsistente neste shell; a evidência final foi coletada com invocações diretas equivalentes do Vitest dentro de cada pacote.",
-  "test_execution_timestamp": "2026-05-15T07:48:26-03:00",
-  "platform": "backend + frontend"
+	"us_id": "us-002",
+	"user_story": "Como usuário que já possui senha local, eu quero continuar alterando minha senha com validação da senha atual para proteger minha conta.",
+	"requirements": ["RF-008", "RF-009"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"test_coverage": {
+		"backend_unit_tests": {
+			"file": "apps/backend/src/user/application/use-case/change-password.usecase.test.ts",
+			"total_tests": 9,
+			"passed": 9,
+			"relevant_tests": [
+				"Deve exigir a senha atual correta antes de alterar o password",
+				"Deve falhar quando o usuário não possui senha local",
+				"Deve persistir a senha alterada chamando update no repositório"
+			]
+		},
+		"backend_business_flow_tests": {
+			"file": "apps/backend/src/user/infra/controller/change-password.business-flow-test.ts",
+			"total_tests": 5,
+			"passed": 5,
+			"relevant_tests": [
+				"Deve alterar a senha de um usuário",
+				"Deve retornar 401 quando a senha atual estiver incorreta",
+				"Deve retornar 409 quando a conta não possui senha local"
+			]
+		},
+		"frontend_tests": {
+			"files": [
+				"apps/frontend/src/app/(authenticated)/perfil/senha/page.test.tsx",
+				"apps/frontend/src/features/auth/api/index.test.tsx"
+			],
+			"total_tests": 13,
+			"passed": 13,
+			"relevant_tests": [
+				"submete nova senha quando válida",
+				"renderiza o fluxo de definir senha sem campo de senha atual",
+				"deve enviar currentRawPassword ao alterar senha"
+			]
+		}
+	},
+	"acceptance_tests_created": [],
+	"test_output_summary": "Cobertura existente foi suficiente. Backend unit: 9/9 testes passaram em change-password.usecase.test.ts (com testTimeout ampliado para 15s nesta execução por lentidão do ambiente). Backend business-flow: 5/5 testes passaram em change-password.business-flow-test.ts. Frontend: 13/13 testes passaram em perfil/senha/page.test.tsx e features/auth/api/index.test.tsx. Validação ampla também passou: backend (pnpm biome:fix, pnpm tsc:check, pnpm test:run, pnpm build) e frontend (pnpm lint:fix, pnpm tsc:check, pnpm test, pnpm build).",
+	"screenshot_path": null,
+	"failure_details": null,
+	"implementation_verification": {
+		"RF-008": {
+			"status": "VERIFIED",
+			"description": "Contas com senha local continuam no fluxo de alteração de senha, enquanto contas sem senha local são excluídas desse fluxo. Evidências: ChangePasswordUseCase retorna PasswordNotSetError para conta sem senha local; o controller HTTP retorna 409/password_not_set; a página /perfil/senha renderiza o formulário de alteração com 'Senha atual' para hasPassword=true e renderiza o fluxo de definição sem esse campo para hasPassword=false."
+		},
+		"RF-009": {
+			"status": "VERIFIED",
+			"description": "O fluxo de alteração exige a senha atual antes de aceitar a nova senha. Evidências: o use case valida currentRawPassword antes de trocar a senha; o controller retorna 401/current_password_invalid quando a senha atual está incorreta; o hook useChangePassword envia currentRawPassword no payload; a UI exibe o campo obrigatório 'Senha atual'."
+		}
+	},
+	"notes": "Não foi necessário criar testes de aceitação adicionais. Screenshot pulado porque os servidores não estavam em execução. As primeiras invocações via pnpm --filter com arquivo-alvo tiveram comportamento inconsistente neste shell; a evidência final foi coletada com invocações diretas equivalentes do Vitest dentro de cada pacote.",
+	"test_execution_timestamp": "2026-05-15T07:48:26-03:00",
+	"platform": "backend + frontend"
 }
