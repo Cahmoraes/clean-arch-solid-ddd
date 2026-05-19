@@ -163,4 +163,3 @@ describe("Demover Administrador", () => {
 		expect(response.body).toHaveProperty("message")
 	})
 })
-
