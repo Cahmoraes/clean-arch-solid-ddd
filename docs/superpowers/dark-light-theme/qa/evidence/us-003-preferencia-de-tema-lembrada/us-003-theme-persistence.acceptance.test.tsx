@@ -28,7 +28,11 @@ describe("US-003 - persistência de tema com next-themes", () => {
 
 	test("deve usar light como tema padrão quando não existir preferência salva", async () => {
 		render(
-			<ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+			<ThemeProvider
+				attribute="class"
+				defaultTheme="light"
+				disableTransitionOnChange
+			>
 				<AcceptanceThemeHarness />
 			</ThemeProvider>,
 		)
@@ -43,12 +47,18 @@ describe("US-003 - persistência de tema com next-themes", () => {
 		const setItemSpy = vi.spyOn(Storage.prototype, "setItem")
 
 		render(
-			<ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+			<ThemeProvider
+				attribute="class"
+				defaultTheme="light"
+				disableTransitionOnChange
+			>
 				<AcceptanceThemeHarness />
 			</ThemeProvider>,
 		)
 
-		await userEvent.click(await screen.findByRole("button", { name: "Ativar dark" }))
+		await userEvent.click(
+			await screen.findByRole("button", { name: "Ativar dark" }),
+		)
 
 		await waitFor(() => {
 			expect(setItemSpy).toHaveBeenCalledWith("theme", "dark")
@@ -60,7 +70,11 @@ describe("US-003 - persistência de tema com next-themes", () => {
 		window.localStorage.setItem("theme", "dark")
 
 		render(
-			<ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+			<ThemeProvider
+				attribute="class"
+				defaultTheme="light"
+				disableTransitionOnChange
+			>
 				<AcceptanceThemeHarness />
 			</ThemeProvider>,
 		)

@@ -1,18 +1,16 @@
 {
-  "us_id": "us-002",
-  "user_story": "Como visitante não autenticado (nas páginas de login/cadastro), eu quero alternar o tema para que minha experiência seja consistente com minhas preferências visuais antes mesmo de fazer login.",
-  "requirements": ["RF-001", "RF-002", "RF-003", "RF-004"],
-  "status": "PASSED",
-  "existing_tests_found": true,
-  "acceptance_tests_created": [
-    "apps/frontend/src/app/layout.test.tsx"
-  ],
-  "test_output_summary": "10/10 testes passados. playwright-cli verificou FAB em /login e /cadastro sem autenticação — ícone 🌙 (light) e ☀️ (dark), aria-label dinâmico, toggle funcional.",
-  "screenshot_path": [
-    "evidence/us-002-como-visitante-nao-autenticado/screenshot-login-light.png",
-    "evidence/us-002-como-visitante-nao-autenticado/screenshot-login-dark.png",
-    "evidence/us-002-como-visitante-nao-autenticado/screenshot-cadastro-dark.png"
-  ],
-  "failure_details": null,
-  "notes": "FAB confirmado em /login (tema light: 🌙) e /cadastro (tema dark: ☀️) via playwright-cli sem autenticação — RF-001 a RF-004 atendidos em páginas públicas."
+	"us_id": "us-002",
+	"user_story": "Como visitante não autenticado (nas páginas de login/cadastro), eu quero alternar o tema para que minha experiência seja consistente com minhas preferências visuais antes mesmo de fazer login.",
+	"requirements": ["RF-001", "RF-002", "RF-003", "RF-004"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": ["apps/frontend/src/app/layout.test.tsx"],
+	"test_output_summary": "10/10 testes passados. playwright-cli verificou FAB em /login e /cadastro sem autenticação — ícone 🌙 (light) e ☀️ (dark), aria-label dinâmico, toggle funcional.",
+	"screenshot_path": [
+		"evidence/us-002-como-visitante-nao-autenticado/screenshot-login-light.png",
+		"evidence/us-002-como-visitante-nao-autenticado/screenshot-login-dark.png",
+		"evidence/us-002-como-visitante-nao-autenticado/screenshot-cadastro-dark.png"
+	],
+	"failure_details": null,
+	"notes": "FAB confirmado em /login (tema light: 🌙) e /cadastro (tema dark: ☀️) via playwright-cli sem autenticação — RF-001 a RF-004 atendidos em páginas públicas."
 }

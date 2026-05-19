@@ -6,10 +6,13 @@ import RootLayout from "../../../../../../apps/frontend/src/app/layout"
 import { ThemeToggleFAB } from "../../../../../../apps/frontend/src/components/ui/theme-toggle-fab"
 
 const mockSetTheme = vi.fn()
-const mockThemeProvider = vi.fn(({ children }: { children: ReactNode }) => <>{children}</>)
+const mockThemeProvider = vi.fn(({ children }: { children: ReactNode }) => (
+	<>{children}</>
+))
 
 vi.mock("next-themes", async () => {
-	const actual = await vi.importActual<typeof import("next-themes")>("next-themes")
+	const actual =
+		await vi.importActual<typeof import("next-themes")>("next-themes")
 
 	return {
 		...actual,
@@ -46,7 +49,9 @@ describe("US-003 - configuração e acionamento do tema", () => {
 		useTheme.mockReturnValue({ theme: "light", setTheme: mockSetTheme })
 
 		render(<ThemeToggleFAB />)
-		await userEvent.click(screen.getByRole("button", { name: "Ativar tema escuro" }))
+		await userEvent.click(
+			screen.getByRole("button", { name: "Ativar tema escuro" }),
+		)
 
 		expect(mockSetTheme).toHaveBeenCalledWith("dark")
 	})

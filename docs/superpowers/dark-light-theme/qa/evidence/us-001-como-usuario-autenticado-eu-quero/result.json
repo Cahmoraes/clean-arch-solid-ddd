@@ -1,17 +1,15 @@
 {
-  "us_id": "us-001",
-  "user_story": "Como usuário autenticado, eu quero ativar o modo escuro para que eu possa usar a aplicação confortavelmente à noite ou em ambientes com pouca luz.",
-  "requirements": ["RF-001", "RF-002", "RF-003", "RF-004"],
-  "status": "PASSED",
-  "existing_tests_found": true,
-  "acceptance_tests_created": [
-    "apps/frontend/src/app/layout.test.tsx"
-  ],
-  "test_output_summary": "10/10 testes passados (theme-toggle-fab.test.tsx + layout.test.tsx). Suíte completa: 248 testes OK. playwright-cli confirmou FAB visível em /login com aria-label='Ativar tema escuro' e ícone 🌙 (light) / ☀️ (dark).",
-  "screenshot_path": [
-    "evidence/us-001-como-usuario-autenticado-eu-quero/screenshot-fab-light.png",
-    "evidence/us-001-como-usuario-autenticado-eu-quero/screenshot-fab-dark.png"
-  ],
-  "failure_details": null,
-  "notes": "ThemeToggleFAB está montado no RootLayout (apps/frontend/src/app/layout.tsx), sendo herdado por todas as páginas — autenticadas e públicas. RF-001 a RF-004 cobertos por testes unitários e playwright-cli."
+	"us_id": "us-001",
+	"user_story": "Como usuário autenticado, eu quero ativar o modo escuro para que eu possa usar a aplicação confortavelmente à noite ou em ambientes com pouca luz.",
+	"requirements": ["RF-001", "RF-002", "RF-003", "RF-004"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": ["apps/frontend/src/app/layout.test.tsx"],
+	"test_output_summary": "10/10 testes passados (theme-toggle-fab.test.tsx + layout.test.tsx). Suíte completa: 248 testes OK. playwright-cli confirmou FAB visível em /login com aria-label='Ativar tema escuro' e ícone 🌙 (light) / ☀️ (dark).",
+	"screenshot_path": [
+		"evidence/us-001-como-usuario-autenticado-eu-quero/screenshot-fab-light.png",
+		"evidence/us-001-como-usuario-autenticado-eu-quero/screenshot-fab-dark.png"
+	],
+	"failure_details": null,
+	"notes": "ThemeToggleFAB está montado no RootLayout (apps/frontend/src/app/layout.tsx), sendo herdado por todas as páginas — autenticadas e públicas. RF-001 a RF-004 cobertos por testes unitários e playwright-cli."
 }
