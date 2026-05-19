@@ -1,15 +1,15 @@
 {
-  "us_id": "us-005",
-  "user_story": "Como sistema que recebe um token malformado ou expirado, eu quero rejeitar a solicitação com um erro 401 claro para que tentativas inválidas sejam descartadas com segurança.",
-  "requirements": ["RF-003", "RF-005"],
-  "status": "PASSED",
-  "existing_tests_found": true,
-  "acceptance_tests_created": [
-    "apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts",
-    "apps/backend/src/session/infra/controller/authenticate-with-google.business-flow-test.ts"
-  ],
-  "test_output_summary": "✓ Testes unitários: 8/8 passaram (authenticate-with-google.usecase.test.ts)\n✓ Testes de fluxo: Deve retornar 401 quando token Google for inválido (authenticate-with-google.business-flow-test.ts:76-83)\n✓ Total: 373 testes passaram, 0 falharam",
-  "screenshot_path": null,
-  "failure_details": null,
-  "notes": "US-005 implementada com sucesso. Verificações realizadas:\n\n1. **Teste Unitário (UseCase)**:\n   - Arquivo: apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts\n   - Linha 50-55: 'deve retornar InvalidGoogleTokenError quando o token for inválido'\n   - Resultado: ✓ Passou\n\n2. **Teste de Fluxo (Business Flow Test)**:\n   - Arquivo: apps/backend/src/session/infra/controller/authenticate-with-google.business-flow-test.ts\n   - Linha 76-83: 'Deve retornar 401 quando token Google for inválido'\n   - Verifica: POST /sessions/google com { idToken: 'invalid-token' }\n   - Resposta esperada: HTTP 401 com mensagem 'Invalid Google token'\n   - Resultado: ✓ Passou\n\n3. **Implementação**:\n   - InvalidGoogleTokenError foi criada em @/session/application/error/\n   - O controlador mapeou o erro para HTTP 401\n   - O endpoint é público (RF-005 atendido)\n   - O token inválido retorna 401 (RF-003 atendido)\n\n4. **Evidência de execução**:\n   - pnpm --filter backend test:run executado com sucesso\n   - 373 testes passaram\n   - Nenhuma falha ou erro relacionado a US-005\n\nCONCLUSÃO: US-005 foi implementada corretamente com cobertura de testes automatizados."
+	"us_id": "us-005",
+	"user_story": "Como sistema que recebe um token malformado ou expirado, eu quero rejeitar a solicitação com um erro 401 claro para que tentativas inválidas sejam descartadas com segurança.",
+	"requirements": ["RF-003", "RF-005"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [
+		"apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts",
+		"apps/backend/src/session/infra/controller/authenticate-with-google.business-flow-test.ts"
+	],
+	"test_output_summary": "✓ Testes unitários: 8/8 passaram (authenticate-with-google.usecase.test.ts)\n✓ Testes de fluxo: Deve retornar 401 quando token Google for inválido (authenticate-with-google.business-flow-test.ts:76-83)\n✓ Total: 373 testes passaram, 0 falharam",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "US-005 implementada com sucesso. Verificações realizadas:\n\n1. **Teste Unitário (UseCase)**:\n   - Arquivo: apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts\n   - Linha 50-55: 'deve retornar InvalidGoogleTokenError quando o token for inválido'\n   - Resultado: ✓ Passou\n\n2. **Teste de Fluxo (Business Flow Test)**:\n   - Arquivo: apps/backend/src/session/infra/controller/authenticate-with-google.business-flow-test.ts\n   - Linha 76-83: 'Deve retornar 401 quando token Google for inválido'\n   - Verifica: POST /sessions/google com { idToken: 'invalid-token' }\n   - Resposta esperada: HTTP 401 com mensagem 'Invalid Google token'\n   - Resultado: ✓ Passou\n\n3. **Implementação**:\n   - InvalidGoogleTokenError foi criada em @/session/application/error/\n   - O controlador mapeou o erro para HTTP 401\n   - O endpoint é público (RF-005 atendido)\n   - O token inválido retorna 401 (RF-003 atendido)\n\n4. **Evidência de execução**:\n   - pnpm --filter backend test:run executado com sucesso\n   - 373 testes passaram\n   - Nenhuma falha ou erro relacionado a US-005\n\nCONCLUSÃO: US-005 foi implementada corretamente com cobertura de testes automatizados."
 }

@@ -1,11 +1,11 @@
 /**
  * US-002 Acceptance Test: Login rápido para usuário com Google anteriormente autenticado
- * 
- * User Story: Como usuário que já me autentiquei com Google anteriormente, eu quero 
- * clicar em 'Entrar com Google' e acessar minha conta imediatamente para que o login 
+ *
+ * User Story: Como usuário que já me autentiquei com Google anteriormente, eu quero
+ * clicar em 'Entrar com Google' e acessar minha conta imediatamente para que o login
  * seja rápido e sem fricção.
- * 
- * Requirements: RF-001 (POST /sessions/google), RF-002 (retorna 200 com tokens), 
+ *
+ * Requirements: RF-001 (POST /sessions/google), RF-002 (retorna 200 com tokens),
  *               RF-005 (público), RF-007 (se google_id já existe, retorna tokens)
  */
 
@@ -144,6 +144,8 @@ describe("US-002: Login rápido com Google para usuário existente", () => {
 		// Assert: Resposta rápida (em menos de 500ms)
 		expect(response.status).toBe(HTTP_STATUS.OK)
 		expect(duration).toBeLessThan(500)
-		expect(response.body.token).toMatch(/^[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+\.?[A-Za-z0-9\-_=]*$/) // JWT regex
+		expect(response.body.token).toMatch(
+			/^[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+\.?[A-Za-z0-9\-_=]*$/,
+		) // JWT regex
 	})
 })

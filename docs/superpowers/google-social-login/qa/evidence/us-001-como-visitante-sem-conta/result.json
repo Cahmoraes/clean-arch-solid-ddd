@@ -1,59 +1,59 @@
 {
-  "us_id": "us-001",
-  "user_story": "Como visitante sem conta, eu quero clicar em 'Entrar com Google' e ter minha conta criada automaticamente para que eu não precise preencher um formulário de cadastro.",
-  "requirements": ["RF-001", "RF-002", "RF-005", "RF-009", "RF-011"],
-  "status": "PASSED",
-  "existing_tests_found": true,
-  "acceptance_tests_created": [],
-  "test_output_summary": "18 tests passed (backend unit + business flow), 262 tests passed (frontend)",
-  "screenshot_path": null,
-  "failure_details": null,
-  "notes": "Testes unitários e de business flow existentes cobrem completamente o comportamento de US-001. Testes de novo usuário via Google executados com sucesso em ambas as camadas.",
-  "test_files": [
-    {
-      "file": "apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts",
-      "tests_count": 8,
-      "status": "PASSED",
-      "key_test": "deve criar novo usuário via Google e autenticar"
-    },
-    {
-      "file": "apps/backend/src/session/infra/controller/authenticate-with-google.business-flow-test.ts",
-      "tests_count": 6,
-      "status": "PASSED",
-      "key_test": "Deve criar novo usuário e autenticar via Google"
-    },
-    {
-      "file": "apps/frontend/src/features/auth/api/index.test.tsx",
-      "tests_count": 5,
-      "status": "PASSED",
-      "key_test": "deve popular o auth-store com token ao autenticar via Google"
-    }
-  ],
-  "requirements_verification": {
-    "RF-001": {
-      "description": "POST /sessions/google",
-      "verified": true,
-      "evidence": "authenticate-with-google.business-flow-test.ts linha 57-73"
-    },
-    "RF-002": {
-      "description": "retorna token+refreshToken com 200",
-      "verified": true,
-      "evidence": "authenticate-with-google.business-flow-test.ts linha 117-121"
-    },
-    "RF-005": {
-      "description": "endpoint público (não requer JWT)",
-      "verified": true,
-      "evidence": "controller sem isProtected"
-    },
-    "RF-009": {
-      "description": "nova conta criada se não existe",
-      "verified": true,
-      "evidence": "authenticate-with-google.usecase.test.ts linha 117-132, authenticate-with-google.business-flow-test.ts linha 103-125"
-    },
-    "RF-011": {
-      "description": "google_id armazenado",
-      "verified": true,
-      "evidence": "authenticate-with-google.business-flow-test.ts linha 124"
-    }
-  }
+	"us_id": "us-001",
+	"user_story": "Como visitante sem conta, eu quero clicar em 'Entrar com Google' e ter minha conta criada automaticamente para que eu não precise preencher um formulário de cadastro.",
+	"requirements": ["RF-001", "RF-002", "RF-005", "RF-009", "RF-011"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "18 tests passed (backend unit + business flow), 262 tests passed (frontend)",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "Testes unitários e de business flow existentes cobrem completamente o comportamento de US-001. Testes de novo usuário via Google executados com sucesso em ambas as camadas.",
+	"test_files": [
+		{
+			"file": "apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts",
+			"tests_count": 8,
+			"status": "PASSED",
+			"key_test": "deve criar novo usuário via Google e autenticar"
+		},
+		{
+			"file": "apps/backend/src/session/infra/controller/authenticate-with-google.business-flow-test.ts",
+			"tests_count": 6,
+			"status": "PASSED",
+			"key_test": "Deve criar novo usuário e autenticar via Google"
+		},
+		{
+			"file": "apps/frontend/src/features/auth/api/index.test.tsx",
+			"tests_count": 5,
+			"status": "PASSED",
+			"key_test": "deve popular o auth-store com token ao autenticar via Google"
+		}
+	],
+	"requirements_verification": {
+		"RF-001": {
+			"description": "POST /sessions/google",
+			"verified": true,
+			"evidence": "authenticate-with-google.business-flow-test.ts linha 57-73"
+		},
+		"RF-002": {
+			"description": "retorna token+refreshToken com 200",
+			"verified": true,
+			"evidence": "authenticate-with-google.business-flow-test.ts linha 117-121"
+		},
+		"RF-005": {
+			"description": "endpoint público (não requer JWT)",
+			"verified": true,
+			"evidence": "controller sem isProtected"
+		},
+		"RF-009": {
+			"description": "nova conta criada se não existe",
+			"verified": true,
+			"evidence": "authenticate-with-google.usecase.test.ts linha 117-132, authenticate-with-google.business-flow-test.ts linha 103-125"
+		},
+		"RF-011": {
+			"description": "google_id armazenado",
+			"verified": true,
+			"evidence": "authenticate-with-google.business-flow-test.ts linha 124"
+		}
+	}
 }
