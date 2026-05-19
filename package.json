@@ -1,15 +1,15 @@
 {
-  "name": "monorepo",
-  "private": true,
-  "packageManager": "pnpm@10.23.0",
-  "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "test": "turbo test",
-    "lint": "turbo lint",
-    "generate:types": "pnpm --filter backend openapi:export && pnpm --filter backend openapi:generate-client"
-  },
-  "devDependencies": {
-    "turbo": "latest"
-  }
+	"name": "monorepo",
+	"private": true,
+	"packageManager": "pnpm@10.23.0",
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"test": "turbo test",
+		"lint": "turbo lint",
+		"generate:types": "pnpm --filter backend openapi:export && pnpm --filter backend openapi:generate-client"
+	},
+	"devDependencies": {
+		"turbo": "latest"
+	}
 }
