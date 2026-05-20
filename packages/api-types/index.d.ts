@@ -507,6 +507,17 @@ export interface paths {
                              *     ]
                              */
                             authMethods: string[];
+                            /**
+                             * @description Account creation date (ISO 8601)
+                             * @example 2024-01-15T10:30:00.000Z
+                             */
+                            createdAt: string;
+                            /**
+                             * @description Account status
+                             * @example activated
+                             * @enum {string}
+                             */
+                            status: "activated" | "suspended";
                         };
                     };
                 };
@@ -540,7 +551,93 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update authenticated user name
+         * @description Update the name of the currently authenticated user.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description User name
+                         * @example John Doe
+                         */
+                        name: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Name updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * @description Updated user name
+                             * @example John Doe
+                             */
+                            name: string;
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description User not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/users/me/metrics": {
@@ -1183,6 +1280,18 @@ export interface paths {
                         };
                     };
                 };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
             };
         };
         delete?: never;
@@ -1316,6 +1425,202 @@ export interface paths {
             };
             responses: {
                 /** @description User suspended successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/users/promote-admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Promote a user to admin
+         * @description Promotes an active member to admin role. Requires admin authentication.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description User ID to promote to admin
+                         * @example 550e8400-e29b-41d4-a716-446655440000
+                         */
+                        userId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description User promoted to admin successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/users/demote-admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Demote an admin to member
+         * @description Removes admin privileges from a user. Requires admin authentication. Cannot demote self or super admin.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uuid
+                         * @description User ID to demote from admin
+                         * @example 550e8400-e29b-41d4-a716-446655440000
+                         */
+                        userId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Admin demoted successfully */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1769,6 +2074,8 @@ export interface paths {
                                 userId: string;
                                 /** @description Gym ID */
                                 gymId: string;
+                                /** @description Gym name or null if not found */
+                                gymTitle: string | null;
                                 /** @description Creation date (ISO) */
                                 createdAt: string;
                                 /** @description Validation date (ISO) or null */
@@ -2160,6 +2467,8 @@ export interface paths {
                                 userId: string;
                                 /** @description Gym ID */
                                 gymId: string;
+                                /** @description Gym name or null if not found */
+                                gymTitle: string | null;
                                 /** @description Creation date (ISO) */
                                 createdAt: string;
                                 /** @description Validation date (ISO) or null */
@@ -2245,6 +2554,18 @@ export interface paths {
                 };
                 /** @description Invalid params */
                 400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Forbidden — user can only access their own metrics */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
