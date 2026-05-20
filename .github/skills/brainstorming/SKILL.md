@@ -21,7 +21,7 @@ Every project goes through this process. A todo list, a single-function utility,
 
 You MUST create a task for each of these items and complete them in order:
 
-1. **Explore context + research** — launch parallel subagents in one turn: codebase exploration (existing projects), context7 (external libraries), exa-web-search-free (best practices/web), user-referenced resources. See [Research via Parallel Subagents](#research-via-parallel-subagents) below.
+1. **Memory recall + Explore context + research** — launch parallel subagents in one turn: **memory recall** (persistent-memory search for prior decisions, ADRs, specs on this topic), codebase exploration (existing projects), context7 (external libraries), exa-web-search-free (best practices/web), user-referenced resources. See [Research via Parallel Subagents](#research-via-parallel-subagents) below.
 2. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
@@ -96,6 +96,7 @@ All applicable tracks must be launched in the **same tool-calling turn**:
 
 | Subagent | When | Agent type |
 |----------|------|-----------|
+| **Memory recall** | Always — retrieves prior decisions, ADRs, specs, and constraints from `persistent-memory` | `task` (see template below) |
 | Codebase exploration | Always for existing projects; skip for clearly greenfield work | `explore` |
 | Library / API docs | Topic involves external libraries or frameworks | `general-purpose` instructed to use `context7` (when available) |
 | Web research | Needs current best practices, comparisons, or technology state | `general-purpose` instructed to use `exa-web-search-free` (when available) |
@@ -103,9 +104,36 @@ All applicable tracks must be launched in the **same tool-calling turn**:
 
 If `context7` or `exa-web-search-free` are unavailable or hit quota, continue with best available knowledge — don't block the session.
 
+If `pmem` is unavailable or memory search returns no results, continue without memory context — don't block the session.
+
 ### Subagent prompt templates
 
 Provide only the minimum context each subagent needs. No conversation history, no full file dumps. Cap every response at ~300 words or 8 bullets — summaries, not raw output.
+
+**Memory recall** — dispatch via `task` (task agent):
+
+This subagent uses the `persistent-memory` skill's CLI to check for prior knowledge relevant to the brainstorming topic. It ensures the database exists, then runs targeted searches.
+
+```
+Retrieve prior decisions, specs, and constraints relevant to: [feature-topic].
+
+Steps:
+1. Run: pmem sync
+   - If it fails with "database not found" or similar, run: pmem init
+   - If pmem is not installed or completely unavailable, return: "Memory unavailable — skip."
+2. Run 2-3 targeted searches (adapt queries to the specific domain):
+   - pmem search "[feature-name or domain noun]" --limit 5
+   - pmem search "[bounded-context or component name] architecture decision" --limit 5
+   - pmem search "[feature-name] spec PRD constraint" --limit 3
+3. Deduplicate results and return (max 8 bullets):
+   - Key architectural decisions or rules that constrain this domain
+   - Paths to existing artifacts (specs, PRDs, ADRs) — just paths, not full content
+   - Established scope boundaries or out-of-scope items
+   - Any relevant constraints or patterns previously decided
+
+If all searches return empty, return: "No prior memory found for this topic."
+Do not return raw pmem output — synthesize into actionable bullets.
+```
 
 **Codebase exploration** — dispatch via `task` (explore agent):
 ```
@@ -132,6 +160,14 @@ Return (max ~300 words): key findings, relevant patterns, open questions, and ca
 ### After all subagents complete
 
 Synthesize findings internally before proceeding. Do not relay raw subagent output to the user — let the research inform your questions and approach proposals.
+
+**Memory context precedence:** When recalled memories contain architectural decisions, constraints, or scope boundaries that affect the current topic, respect them as established context. If a recalled constraint materially shapes your recommendations, briefly mention its existence when relevant (e.g., "Based on a prior decision to use Clean Architecture with Inversify..."). The full priority order is:
+
+1. Latest user instruction (highest)
+2. Approved spec / current-session decisions
+3. Recalled memory (prior decisions, ADRs, constraints)
+4. Corporate artifacts
+5. External research (lowest)
 
 **Pre-send check:** Before sending the first clarifying question, verify that you used the `task` tool for all research, not inline tool calls. If you ran any direct `view`, `grep`, or `context7` calls in the main agent, those results are still usable — but note that this violated the gate and will inflate your context for the rest of the session.
 

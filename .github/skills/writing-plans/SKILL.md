@@ -159,6 +159,10 @@ After writing the complete plan, look at the spec with fresh eyes. **Read `./ref
 
 If you want an independent second opinion on the plan's completeness and buildability, dispatch a plan document reviewer subagent using the template in `./plan-document-reviewer-prompt.md`. This is optional — use it for complex or high-stakes plans where a self-review might not be enough.
 
+## Memory Persistence
+
+After self-review passes and before the execution handoff, persist the planning artifacts to `persistent-memory`. **Read `./references/memory-persistence.md`** for the full procedure — graceful degradation, dedupe check, and what to persist.
+
 ## Execution Handoff
 
 After saving the tasks index and task files, **read `./references/execution-handoff-message.md` and offer its message verbatim to the user**, filling in the feature name and task count.
