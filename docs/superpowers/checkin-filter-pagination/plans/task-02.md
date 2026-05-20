@@ -1,6 +1,6 @@
 # Task 2: Componente `CheckInFilterBar` — pills de filtro por status [RF-001, RF-002, RF-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-filter-pagination.md`
 **Spec:** `../specs/checkin-filter-pagination-design.md`
 

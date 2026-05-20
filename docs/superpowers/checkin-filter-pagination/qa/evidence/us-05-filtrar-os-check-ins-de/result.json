@@ -1,0 +1,76 @@
+{
+  "user_story": "US-05 — Como administrador, eu quero filtrar os check-ins de todos os usuários por status no painel admin para que eu possa focar nas pendências ou auditar aprovações e rejeições de forma eficiente.",
+  "requirements": [
+    "RF-001: 4 pills no painel admin",
+    "RF-004: useCheckIns recebe status da URL (sem hardcode de 'pending')",
+    "RF-005: \"Todos\" exibe todos os check-ins (status: undefined)"
+  ],
+  "test_file": "apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx",
+  "implementation_file": "apps/frontend/src/app/(authenticated)/admin/check-ins/page.tsx",
+  "test_results": {
+    "status": "PASS",
+    "total_tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "test_execution_time": "942ms",
+    "tests": [
+      {
+        "name": "renders the filter bar with all 4 pills",
+        "requirement": "RF-001",
+        "status": "PASS",
+        "details": "Verifies 4 button pills exist: 'Todos', 'Pendentes', 'Aprovados', 'Rejeitados'"
+      },
+      {
+        "name": "calls useCheckIns with status from URL params",
+        "requirement": "RF-004",
+        "status": "PASS",
+        "details": "Verifies useCheckIns receives status from URL: 'status=pending&page=2' → { status: 'pending', page: 2 }"
+      },
+      {
+        "name": "calls useCheckIns without status when no filter is active (Todos)",
+        "requirement": "RF-005",
+        "status": "PASS",
+        "details": "Verifies useCheckIns called with status: undefined when no filter active"
+      },
+      {
+        "name": "shows default empty state when no filter is active and list is empty",
+        "status": "PASS",
+        "details": "Shows 'Nenhum check-in encontrado' message"
+      },
+      {
+        "name": "shows contextual empty state when filter is active and list is empty",
+        "status": "PASS",
+        "details": "Shows status-specific message: 'Nenhum check-in pendente encontrado'"
+      },
+      {
+        "name": "shows contextual empty state for rejected filter",
+        "status": "PASS",
+        "details": "Shows status-specific message: 'Nenhum check-in rejeitado encontrado'"
+      }
+    ]
+  },
+  "implementation_verification": {
+    "hardcoded_pending_check": {
+      "command": "grep 'status.*pending|pending.*status' page.tsx",
+      "result": "PASS - No hardcoded 'pending' found",
+      "details": "Status parameter comes from useCheckInFilters() hook via URL params, not hardcoded in implementation"
+    },
+    "status_flow": {
+      "source": "useCheckInFilters() hook reads from useSearchParams()",
+      "passed_to": "useCheckIns({ page, status }) hook",
+      "behavior": "When URL has status=pending, passes 'pending'. When no status in URL, passes undefined for 'Todos' filter"
+    },
+    "filter_bar_integration": {
+      "component": "CheckInFilterBar",
+      "props": "status, onStatusChange",
+      "behavior": "Receives status from hook and calls setStatus on pill click"
+    }
+  },
+  "code_review": {
+    "page_tsx_line_111": "useCheckIns({ page, status }) - status is a variable, not hardcoded",
+    "page_tsx_line_110": "const { status, page, setStatus, setPage } = useCheckInFilters() - hook manages state",
+    "page_tsx_line_134": "CheckInFilterBar status={status} onStatusChange={setStatus} - filter bar integrated"
+  },
+  "qa_verdict": "PASS",
+  "summary": "US-05 fully verified. All 4 filter pills render (RF-001). useCheckIns receives status from URL params without hardcoding (RF-004). 'Todos' filter sends status: undefined (RF-005). 6/6 tests passing."
+}

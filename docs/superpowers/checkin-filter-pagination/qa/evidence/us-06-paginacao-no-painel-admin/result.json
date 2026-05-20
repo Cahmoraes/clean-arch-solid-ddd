@@ -1,0 +1,68 @@
+{
+  "user_story": "US-06 — Como administrador, eu quero paginação no painel admin para que eu possa gerenciar grandes volumes de check-ins sem degradação da experiência.",
+  "test_execution_date": "2026-01-14",
+  "test_environment": "Frontend (Next.js 16, React 19, TanStack Query)",
+  "overall_status": "FAIL",
+  "non_conformances": [
+    {
+      "requirement": "RF-008: Lista paginada",
+      "requirement_detail": "A lista deve exibir no máximo 10 check-ins por página.",
+      "expected": "Max 10 items per page",
+      "actual": "Max 20 items per page (CHECK_INS_DEFAULT_PAGE_SIZE = 20)",
+      "file": "apps/frontend/src/features/check-ins/api/index.ts:48",
+      "severity": "MAJOR",
+      "status": "NON_CONFORMANT"
+    }
+  ],
+  "requirements_verified": [
+    {
+      "requirement": "RF-009: Componente de paginação exibido quando há mais de uma página",
+      "test_file": "apps/frontend/src/features/check-ins/components/check-ins-pager.tsx",
+      "test_details": "Component returns null when pages <= 1 at line 25",
+      "status": "PASS"
+    },
+    {
+      "requirement": "RF-010: Página atual na URL como `page`",
+      "test_file": "apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx",
+      "test_details": "Test at line 55: 'calls useCheckIns with status from URL params' verifies page=2 is parsed from URL and passed to useCheckIns",
+      "status": "PASS"
+    },
+    {
+      "requirement": "RF-011: Navegar entre páginas preserva filtro de status",
+      "test_file": "apps/frontend/src/features/check-ins/hooks/use-check-in-filters.test.ts",
+      "test_details": "Test at line 90-101: 'setPage updates page param and preserves status' verifies that calling setPage(2) with status=pending results in ?status=pending&page=2",
+      "status": "PASS"
+    }
+  ],
+  "implementation_overview": {
+    "component": "CheckInsPager",
+    "location": "apps/frontend/src/features/check-ins/components/check-ins-pager.tsx",
+    "features": [
+      "Returns null when pages <= 1 (RF-009 compliant)",
+      "Has prev/next buttons with data-testid attributes",
+      "Uses 'page' prop for current page",
+      "Calls onChange callback on prev/next click",
+      "Disabled state managed via aria-disabled"
+    ]
+  },
+  "hook_implementation": {
+    "hook": "useCheckInFilters",
+    "location": "apps/frontend/src/features/check-ins/hooks/use-check-in-filters.ts",
+    "features": [
+      "Returns { status, page, setStatus, setPage }",
+      "Parses page and status from URL search params",
+      "setPage preserves status when changing pages (RF-011 compliant)",
+      "setStatus resets page to 1 when filter changes"
+    ]
+  },
+  "page_implementation": {
+    "location": "apps/frontend/src/app/(authenticated)/admin/check-ins/page.tsx",
+    "features": [
+      "Uses useCheckInFilters to get status, page, setStatus, setPage",
+      "Passes page and status to useCheckIns hook",
+      "Calculates total pages using totalCheckInPages utility",
+      "Renders CheckInsPager with page, pages, onChange=setPage"
+    ]
+  },
+  "summary": "US-06 has 1 major non-conformance: RF-008 requires max 10 items per page but implementation uses 20. All other requirements (RF-009, RF-010, RF-011) are properly implemented and verified by existing tests."
+}

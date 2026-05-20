@@ -1,0 +1,18 @@
+{
+  "us_id": "us-01",
+  "user_story": "Como usuário, eu quero filtrar meus check-ins por status (todos, pendentes, aprovados, rejeitados) para que eu encontre rapidamente os check-ins de uma categoria específica sem precisar percorrer a lista inteira.",
+  "requirements": [
+    "RF-001",
+    "RF-002",
+    "RF-003",
+    "RF-004",
+    "RF-005"
+  ],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "8 tests in CheckInFilterBar component (renders 4 pills, aria-pressed states, onStatusChange callbacks) + 7 tests in CheckInsPage (filter bar rendering, status param handling, contextual empty states). Total: 15 tests passed, 0 failed. Full suite: 311 tests passed, 0 failed",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "CheckInFilterBar.test.tsx comprehensively covers: 4 pills render, aria-pressed=true for active pill, aria-pressed=false for inactive, onStatusChange called with correct values (undefined for 'Todos', 'pending' for 'Pendentes', 'validated' for 'Aprovados', 'rejected' for 'Rejeitados'). CheckInsPage.test.tsx verifies filter bar integration: renders in page context, status param read from URL, contextual empty messages per status. All RF requirements validated."
+}

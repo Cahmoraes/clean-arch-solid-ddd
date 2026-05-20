@@ -1,6 +1,6 @@
 # Task 1: Hook `useCheckInFilters` — URL state para filtro e página [RF-006, RF-007, RF-010, RF-011, RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-filter-pagination.md`
 **Spec:** `../specs/checkin-filter-pagination-design.md`
 

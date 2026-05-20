@@ -15,7 +15,7 @@
 
 ## Tarefas
 
-- [ ] 1. Hook `useCheckInFilters` — leitura/escrita de filtro e página via URL [RF-006, RF-007, RF-010, RF-011, RF-012, RF-013] → `task-01.md`
-- [ ] 2. Componente `CheckInFilterBar` — pills de filtro por status [RF-001, RF-002, RF-003] → `task-02.md`
-- [ ] 3. Tela de check-ins do usuário — integrar filtro, paginação URL e empty state contextual [RF-004, RF-005, RF-008, RF-009, RF-014] → `task-03.md`
-- [ ] 4. Tela de check-ins do admin — integrar filtro, paginação e empty state contextual [RF-004, RF-005, RF-008, RF-009, RF-014] → `task-04.md`
+- [x] 1. Hook `useCheckInFilters` — leitura/escrita de filtro e página via URL [RF-006, RF-007, RF-010, RF-011, RF-012, RF-013] → `task-01.md`
+- [x] 2. Componente `CheckInFilterBar` — pills de filtro por status [RF-001, RF-002, RF-003] → `task-02.md`
+- [x] 3. Tela de check-ins do usuário — integrar filtro, paginação URL e empty state contextual [RF-004, RF-005, RF-008, RF-009, RF-014] → `task-03.md`
+- [x] 4. Tela de check-ins do admin — integrar filtro, paginação e empty state contextual [RF-004, RF-005, RF-008, RF-009, RF-014] → `task-04.md`

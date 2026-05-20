@@ -1,6 +1,6 @@
 # Task 4: Tela de check-ins do admin — integrar filtro e paginação via URL [RF-004, RF-005, RF-008, RF-009, RF-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-filter-pagination.md`
 **Spec:** `../specs/checkin-filter-pagination-design.md`
 
