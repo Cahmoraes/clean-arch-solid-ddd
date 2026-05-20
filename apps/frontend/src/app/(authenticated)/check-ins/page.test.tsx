@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/features/check-ins/api", () => ({
 	useMyCheckIns: vi.fn(),
-	CHECK_INS_DEFAULT_PAGE_SIZE: 20,
+	CHECK_INS_DEFAULT_PAGE_SIZE: 10,
 }))
 
 const mockQuerySuccess = (items = [], total = 0) => ({

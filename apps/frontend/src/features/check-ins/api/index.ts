@@ -45,7 +45,7 @@ export const checkInsKeys = {
 		[...checkInsKeys.all, "admin-pending", page] as const,
 }
 
-export const CHECK_INS_DEFAULT_PAGE_SIZE = 20
+export const CHECK_INS_DEFAULT_PAGE_SIZE = 10
 
 export interface CreateCheckInInput {
 	gymId: string
