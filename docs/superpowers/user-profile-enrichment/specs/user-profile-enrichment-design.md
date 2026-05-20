@@ -170,7 +170,7 @@ Todos devem passar com zero erros antes de considerar a tarefa concluída.
 
 - Either pattern para erros de negócio no Use Case
 - Inversify IoC para wiring do novo Use Case e Controller
-- `@/` alias para imports internos com extensão `.js`
+- `@/` alias para imports internos
 - Kebab-case para arquivos, PascalCase para classes
 - TanStack Query com invalidação de cache após mutação
 - shadcn/ui + Tailwind CSS para componentes frontend
