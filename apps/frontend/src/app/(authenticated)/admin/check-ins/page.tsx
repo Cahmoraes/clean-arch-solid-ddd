@@ -113,7 +113,7 @@ function AdminCheckInsEmpty({ status }: { status: CheckInFilterStatus }) {
 	)
 }
 
-function PendingList({ items }: { items: ReadonlyArray<CheckIn> }) {
+function AdminCheckInList({ items }: { items: ReadonlyArray<CheckIn> }) {
 	return (
 		<ul data-testid="admin-checkins-list" className="flex flex-col gap-2">
 			{items.map((checkIn) => (
@@ -156,7 +156,7 @@ function AdminCheckInsBody({ query, status }: BodyProps) {
 	if (!query.isSuccess) return null
 	const items = query.data?.items ?? []
 	if (items.length === 0) return <AdminCheckInsEmpty status={status} />
-	return <PendingList items={items} />
+	return <AdminCheckInList items={items} />
 }
 
 function AdminCheckInsPageContent() {
