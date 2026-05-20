@@ -56,6 +56,19 @@ Before extracting tasks, locate the tasks index:
 > Check `mismatches` — any mismatch between index and task file requires manual resolution before proceeding.  
 > **Fallback:** Read and parse the tasks index file manually if the script is unavailable.
 
+### Memory Gate Check
+
+> **Required — do not skip.** This is the entry guard of the Executando state. Memory must have been persisted at the end of `writing-plans` (exit action of Planejando state). If it wasn't, persist it now before dispatching any subagent.
+
+Before dispatching the first task subagent, verify that planning artifacts were persisted:
+
+```bash
+pmem search "<feature-name>" --limit 3
+```
+
+- **If results include entries for this feature** (decisions, scope, artifacts paths): memory is present — proceed.
+- **If no results found**: memory was not persisted during planning. Run the full persistence procedure now — read `writing-plans/SKILL.md § Memory Persistence` and `writing-plans/references/memory-persistence.md` for the exact `pmem add` calls to make (3 entries: decisions, scope, artifact paths). Do not dispatch any task subagent until all three entries are written.
+
 ### Caveman Mode Activation
 
 Before dispatching the first task subagent, check session caveman state (defined in `using-superpowers` policy):

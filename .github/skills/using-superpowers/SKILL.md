@@ -119,6 +119,7 @@ Caveman activates at the `Planejando → Executando` gate and stays active throu
 [Formalizando]        → caveman: OFF
 [Planejando]          → caveman: OFF
 ─── GATE: Planejando → Executando ─── ← ACTIVATE if session_caveman_active = true
+                                         REQUIRED: memory persisted by writing-plans (exit action)
 [Implementando]       → caveman: ON
 [EmRevisao]           → caveman: ON
 [Depurando em Exec]   → caveman: ON
@@ -129,6 +130,12 @@ Caveman activates at the `Planejando → Executando` gate and stays active throu
 
 [Depurando (estado raiz)] → caveman: OFF — root debugging is investigative and needs clear prose
 ```
+
+> **GATE: Planejando → Executando** has two mandatory exit actions:
+> 1. **Memory persistence** — `writing-plans` must call `pmem add` (3 entries) before handing off to execution. See `writing-plans/SKILL.md § Memory Persistence`.
+> 2. **Caveman activation** — if `session_caveman_active = true`, invoke `/caveman <level>`.
+>
+> Execution skills (`subagent-driven-development`, `executing-plans`) must **verify memory was persisted** before starting tasks. If `pmem search "<feature-name>"` returns no results, run the persistence step before proceeding.
 
 **Invocation:** to activate at the correct level, invoke the `caveman` skill passing the level (e.g., `/caveman full`). To deactivate, say "normal mode" or "stop caveman". Execution skills (`subagent-driven-development`, `executing-plans`) own the actual invocation — this section defines the policy they follow.
 

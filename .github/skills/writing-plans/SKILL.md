@@ -161,7 +161,16 @@ If you want an independent second opinion on the plan's completeness and buildab
 
 ## Memory Persistence
 
-After self-review passes and before the execution handoff, persist the planning artifacts to `persistent-memory`. **Read `./references/memory-persistence.md`** for the full procedure — graceful degradation, dedupe check, and what to persist.
+> **Required — do not skip.** This is the exit action of the Planejando state (see superpowers state diagram). Skipping it means future sessions cannot recall prior decisions, constraints, or artifact paths for this feature.
+
+After self-review passes and **before** the execution handoff, persist the planning artifacts to `persistent-memory`. **Read `./references/memory-persistence.md`** for the full procedure — graceful degradation, dedupe check, and what to persist.
+
+The three entries to write are:
+1. **Architectural decisions + constraints** (key choices from the spec)
+2. **Feature scope + boundaries** (objective, in-scope stories, out-of-scope items)
+3. **Artifact paths** (spec, PRD, tasks index paths + task count)
+
+**Do not proceed to the Execution Handoff step until all three `pmem add` calls have succeeded** (or graceful degradation confirmed `pmem` is unavailable).
 
 ## Execution Handoff
 
