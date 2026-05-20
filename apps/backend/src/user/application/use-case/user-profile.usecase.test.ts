@@ -42,7 +42,7 @@ describe("UserProfile", () => {
 			hasPassword: true,
 			authMethods: ["password"],
 			status: "activated",
-			createdAt: expect.any(String),
+			createdAt: user.createdAt.toISOString(),
 		})
 	})
 

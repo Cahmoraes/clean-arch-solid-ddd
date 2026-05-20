@@ -62,6 +62,8 @@ describe("Obter Meu Perfil", () => {
 			role: "MEMBER",
 			hasPassword: true,
 			authMethods: ["password"],
+			createdAt: user.createdAt.toISOString(),
+			status: "activated",
 		})
 	})
 
