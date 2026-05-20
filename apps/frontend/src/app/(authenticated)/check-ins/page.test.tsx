@@ -90,4 +90,16 @@ describe("CheckInsPage", () => {
 			screen.getByText("Nenhum check-in aprovado encontrado"),
 		).toBeInTheDocument()
 	})
+
+	it("shows contextual empty state for rejected filter", () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("status=rejected") as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		render(<CheckInsPage />)
+		expect(
+			screen.getByText("Nenhum check-in rejeitado encontrado"),
+		).toBeInTheDocument()
+	})
 })
