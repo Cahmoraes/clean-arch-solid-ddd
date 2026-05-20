@@ -4,26 +4,23 @@ import { CalendarCheck } from "lucide-react"
 import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
-import {
-	Pagination,
-	PaginationContent,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
 	CHECK_INS_DEFAULT_PAGE_SIZE,
 	useMyCheckIns,
 } from "@/features/check-ins/api"
 import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
-import { CheckInFilterBar } from "@/features/check-ins/components/check-in-filter-bar.js"
+import { CheckInFilterBar } from "@/features/check-ins/components/check-in-filter-bar"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
+import { CheckInsPager } from "@/features/check-ins/components/check-ins-pager"
 import {
 	type CheckInFilterStatus,
 	useCheckInFilters,
-} from "@/features/check-ins/hooks/use-check-in-filters.js"
+} from "@/features/check-ins/hooks/use-check-in-filters"
+import {
+	CHECK_IN_STATUS_LABELS,
+	totalCheckInPages,
+} from "@/features/check-ins/utils"
 import { useAuthStore } from "@/lib/auth/auth-store"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3", "sk-4"]
@@ -42,11 +39,6 @@ function LoadingState() {
 			))}
 		</ul>
 	)
-}
-
-function totalPages(total: number, pageSize: number): number {
-	if (total <= 0) return 0
-	return Math.max(1, Math.ceil(total / pageSize))
 }
 
 interface ListProps {
@@ -78,51 +70,6 @@ function CheckInsList({ items }: ListProps) {
 	)
 }
 
-interface PagerProps {
-	page: number
-	pages: number
-	onChange: (next: number) => void
-}
-
-function CheckInsPager({ page, pages, onChange }: PagerProps) {
-	if (pages <= 1) return null
-	return (
-		<Pagination>
-			<PaginationContent>
-				<PaginationItem>
-					<PaginationPrevious
-						data-testid="checkins-prev"
-						aria-disabled={page <= 1}
-						onClick={(event) => {
-							event.preventDefault()
-							if (page > 1) onChange(page - 1)
-						}}
-					/>
-				</PaginationItem>
-				<PaginationItem>
-					<PaginationLink isActive>{page}</PaginationLink>
-				</PaginationItem>
-				<PaginationItem>
-					<PaginationNext
-						data-testid="checkins-next"
-						aria-disabled={page >= pages}
-						onClick={(event) => {
-							event.preventDefault()
-							if (page < pages) onChange(page + 1)
-						}}
-					/>
-				</PaginationItem>
-			</PaginationContent>
-		</Pagination>
-	)
-}
-
-const STATUS_LABELS: Record<NonNullable<CheckInFilterStatus>, string> = {
-	pending: "pendente",
-	validated: "aprovado",
-	rejected: "rejeitado",
-}
-
 function HistoryEmpty({ status }: { status: CheckInFilterStatus }) {
 	if (!status) {
 		return (
@@ -136,7 +83,7 @@ function HistoryEmpty({ status }: { status: CheckInFilterStatus }) {
 	return (
 		<EmptyState
 			icon={CalendarCheck}
-			title={`Nenhum check-in ${STATUS_LABELS[status]} encontrado`}
+			title={`Nenhum check-in ${CHECK_IN_STATUS_LABELS[status]} encontrado`}
 			description="Tente selecionar outro filtro."
 		/>
 	)
@@ -177,7 +124,10 @@ function CheckInsBody({ query, status }: BodyProps) {
 function CheckInsPageContent() {
 	const { status, page, setStatus, setPage } = useCheckInFilters()
 	const query = useMyCheckIns({ page, status })
-	const pages = totalPages(query.data?.total ?? 0, CHECK_INS_DEFAULT_PAGE_SIZE)
+	const pages = totalCheckInPages(
+		query.data?.total ?? 0,
+		CHECK_INS_DEFAULT_PAGE_SIZE,
+	)
 
 	return (
 		<section
@@ -200,7 +150,12 @@ function CheckInsPageContent() {
 
 			<CheckInsBody query={query} status={status} />
 
-			<CheckInsPager page={page} pages={pages} onChange={setPage} />
+			<CheckInsPager
+				page={page}
+				pages={pages}
+				onChange={setPage}
+				testId="checkins"
+			/>
 		</section>
 	)
 }

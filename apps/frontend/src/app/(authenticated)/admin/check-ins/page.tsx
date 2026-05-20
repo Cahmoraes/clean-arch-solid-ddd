@@ -4,14 +4,6 @@ import { ShieldCheck } from "lucide-react"
 import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
-import {
-	Pagination,
-	PaginationContent,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
 	CHECK_INS_DEFAULT_PAGE_SIZE,
@@ -21,10 +13,15 @@ import {
 import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
 import { CheckInFilterBar } from "@/features/check-ins/components/check-in-filter-bar"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
+import { CheckInsPager } from "@/features/check-ins/components/check-ins-pager"
 import {
 	type CheckInFilterStatus,
 	useCheckInFilters,
 } from "@/features/check-ins/hooks/use-check-in-filters"
+import {
+	CHECK_IN_STATUS_LABELS,
+	totalCheckInPages,
+} from "@/features/check-ins/utils"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3"]
 
@@ -44,56 +41,6 @@ function LoadingState() {
 	)
 }
 
-function totalPages(total: number, pageSize: number): number {
-	if (total <= 0) return 0
-	return Math.max(1, Math.ceil(total / pageSize))
-}
-
-interface PagerProps {
-	page: number
-	pages: number
-	onChange: (next: number) => void
-}
-
-function AdminCheckInsPager({ page, pages, onChange }: PagerProps) {
-	if (pages <= 1) return null
-	return (
-		<Pagination>
-			<PaginationContent>
-				<PaginationItem>
-					<PaginationPrevious
-						data-testid="admin-checkins-prev"
-						aria-disabled={page <= 1}
-						onClick={(event) => {
-							event.preventDefault()
-							if (page > 1) onChange(page - 1)
-						}}
-					/>
-				</PaginationItem>
-				<PaginationItem>
-					<PaginationLink isActive>{page}</PaginationLink>
-				</PaginationItem>
-				<PaginationItem>
-					<PaginationNext
-						data-testid="admin-checkins-next"
-						aria-disabled={page >= pages}
-						onClick={(event) => {
-							event.preventDefault()
-							if (page < pages) onChange(page + 1)
-						}}
-					/>
-				</PaginationItem>
-			</PaginationContent>
-		</Pagination>
-	)
-}
-
-const STATUS_LABELS: Record<NonNullable<CheckInFilterStatus>, string> = {
-	pending: "pendente",
-	validated: "aprovado",
-	rejected: "rejeitado",
-}
-
 function AdminCheckInsEmpty({ status }: { status: CheckInFilterStatus }) {
 	if (!status) {
 		return (
@@ -107,7 +54,7 @@ function AdminCheckInsEmpty({ status }: { status: CheckInFilterStatus }) {
 	return (
 		<EmptyState
 			icon={ShieldCheck}
-			title={`Nenhum check-in ${STATUS_LABELS[status]} encontrado`}
+			title={`Nenhum check-in ${CHECK_IN_STATUS_LABELS[status]} encontrado`}
 			description="Tente selecionar outro filtro."
 		/>
 	)
@@ -162,7 +109,10 @@ function AdminCheckInsBody({ query, status }: BodyProps) {
 function AdminCheckInsPageContent() {
 	const { status, page, setStatus, setPage } = useCheckInFilters()
 	const query = useCheckIns({ page, status })
-	const pages = totalPages(query.data?.total ?? 0, CHECK_INS_DEFAULT_PAGE_SIZE)
+	const pages = totalCheckInPages(
+		query.data?.total ?? 0,
+		CHECK_INS_DEFAULT_PAGE_SIZE,
+	)
 
 	return (
 		<section
@@ -185,7 +135,12 @@ function AdminCheckInsPageContent() {
 
 			<AdminCheckInsBody query={query} status={status} />
 
-			<AdminCheckInsPager page={page} pages={pages} onChange={setPage} />
+			<CheckInsPager
+				page={page}
+				pages={pages}
+				onChange={setPage}
+				testId="admin-checkins"
+			/>
 		</section>
 	)
 }
