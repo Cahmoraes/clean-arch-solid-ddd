@@ -1,5 +1,6 @@
 import request from "supertest"
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
+import { createAndSaveGym } from "test/factory/create-and-save-gym"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 
 import { serverBuild } from "@/bootstrap/server-build"
@@ -21,12 +22,13 @@ import { CheckInRoutes } from "./routes/check-in-routes"
 describe("Meu Histórico de Check-Ins (GET /check-ins/me)", () => {
 	let fastifyServer: FastifyAdapter
 	let checkInRepository: InMemoryCheckInRepository
+	let gymRepository: InMemoryGymRepository
 	let userRepository: InMemoryUserRepository
 	let authenticate: AuthenticateUseCase
 
 	beforeEach(async () => {
 		container.snapshot()
-		const gymRepository = new InMemoryGymRepository()
+		gymRepository = new InMemoryGymRepository()
 		checkInRepository = new InMemoryCheckInRepository()
 		userRepository = new InMemoryUserRepository()
 		container.unbind(GYM_TYPES.Repositories.Gym)
@@ -171,5 +173,44 @@ describe("Meu Histórico de Check-Ins (GET /check-ins/me)", () => {
 			.query({ page: 1 })
 
 		expect(response.status).toBe(200)
+	})
+
+	test("Deve retornar gymTitle preenchido quando a academia existe", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			id: "user-gym-title",
+			email: "gymtitle@test.com",
+			password: "gymtitle123",
+			role: RoleValues.MEMBER,
+		})
+
+		await createAndSaveGym({
+			gymRepository,
+			id: "gym-titulo",
+			title: "Academia das Flores",
+		})
+
+		await createAndSaveCheckIn({
+			checkInRepository,
+			id: "ci-gym-title",
+			userId: user.id,
+			gymId: "gym-titulo",
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+
+		const authResult = await authenticate.execute({
+			email: "gymtitle@test.com",
+			password: "gymtitle123",
+		})
+		const { token } = authResult.forceSuccess().value
+
+		const response = await request(fastifyServer.server)
+			.get(CheckInRoutes.HISTORY)
+			.auth(token, { type: "bearer" })
+			.query({ page: 1 })
+
+		expect(response.status).toBe(200)
+		expect(response.body.items[0].gymTitle).toBe("Academia das Flores")
 	})
 })

@@ -1,7 +1,9 @@
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
+import { createAndSaveGym } from "test/factory/create-and-save-gym"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 
 import type { InMemoryCheckInRepository } from "@/shared/infra/database/repository/in-memory/in-memory-check-in-repository"
+import type { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { CHECKIN_TYPES } from "@/shared/infra/ioc/types"
 
@@ -10,11 +12,13 @@ import type { FetchCheckInsUseCase } from "./fetch-check-ins.usecase"
 describe("FetchCheckInsUseCase", () => {
 	let sut: FetchCheckInsUseCase
 	let checkInRepository: InMemoryCheckInRepository
+	let gymRepository: InMemoryGymRepository
 
 	beforeEach(() => {
 		container.snapshot()
 		const repositories = setupInMemoryRepositories()
 		checkInRepository = repositories.checkInRepository
+		gymRepository = repositories.gymRepository
 		sut = container.get<FetchCheckInsUseCase>(
 			CHECKIN_TYPES.UseCases.FetchCheckIns,
 		)
@@ -32,6 +36,18 @@ describe("FetchCheckInsUseCase", () => {
 	})
 
 	test("Deve listar todos os check-ins paginados", async () => {
+		await createAndSaveGym({
+			gymRepository,
+			id: "gym-0",
+			title: "Academia Zero",
+		})
+		await createAndSaveGym({ gymRepository, id: "gym-1", title: "Academia Um" })
+		await createAndSaveGym({
+			gymRepository,
+			id: "gym-2",
+			title: "Academia Dois",
+		})
+
 		for (let i = 0; i < 3; i++) {
 			await createAndSaveCheckIn({
 				checkInRepository,
@@ -50,6 +66,39 @@ describe("FetchCheckInsUseCase", () => {
 		expect(result.items[0].userId).toBe("user-1")
 		expect(result.items[0].createdAt).toBeDefined()
 		expect(result.items[0].validatedAt).toBeNull()
+	})
+
+	test("Deve retornar gymTitle quando a academia existe", async () => {
+		await createAndSaveGym({
+			gymRepository,
+			id: "gym-named",
+			title: "Academia das Flores",
+		})
+		await createAndSaveCheckIn({
+			checkInRepository,
+			id: "ci-named",
+			userId: "user-1",
+			gymId: "gym-named",
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+
+		const result = await sut.execute({ page: 1 })
+		expect(result.items[0].gymTitle).toBe("Academia das Flores")
+	})
+
+	test("Deve retornar gymTitle null quando a academia não existe", async () => {
+		await createAndSaveCheckIn({
+			checkInRepository,
+			id: "ci-orphan",
+			userId: "user-1",
+			gymId: "gym-inexistente",
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+
+		const result = await sut.execute({ page: 1 })
+		expect(result.items[0].gymTitle).toBeNull()
 	})
 
 	test("Deve filtrar apenas check-ins pendentes", async () => {

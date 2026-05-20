@@ -3,7 +3,8 @@ import type {
 	CheckInStatus,
 	FindManyOutput,
 } from "@/check-in/application/repository/check-in-repository"
-import { CHECKIN_TYPES } from "@/shared/infra/ioc/types"
+import type { GymRepository } from "@/gym/application/repository/gym-repository"
+import { CHECKIN_TYPES, GYM_TYPES } from "@/shared/infra/ioc/types"
 import type { CheckInRepository } from "../repository/check-in-repository"
 
 export interface FetchCheckInsUseCaseInput {
@@ -16,6 +17,7 @@ export interface CheckInDTO {
 	id: string
 	userId: string
 	gymId: string
+	gymTitle: string | null
 	createdAt: string
 	validatedAt: string | null
 	rejectedAt: string | null
@@ -35,6 +37,8 @@ export class FetchCheckInsUseCase {
 	constructor(
 		@inject(CHECKIN_TYPES.Repositories.CheckIn)
 		private readonly checkInRepository: CheckInRepository,
+		@inject(GYM_TYPES.Repositories.Gym)
+		private readonly gymRepository: GymRepository,
 	) {}
 
 	public async execute(
@@ -45,18 +49,36 @@ export class FetchCheckInsUseCase {
 			status: input.status,
 			userId: input.userId,
 		})
+		const gymTitleMap = await this.buildGymTitleMap(result.items)
 		return {
-			items: this.toDTO(result.items),
+			items: this.toDTO(result.items, gymTitleMap),
 			page: input.page,
 			total: result.total,
 		}
 	}
 
-	private toDTO(items: FindManyOutput["items"]): CheckInDTO[] {
+	private async buildGymTitleMap(
+		items: FindManyOutput["items"],
+	): Promise<Map<string, string>> {
+		const uniqueGymIds = [...new Set(items.map((c) => c.gymId))]
+		const entries = await Promise.all(
+			uniqueGymIds.map(async (id) => {
+				const gym = await this.gymRepository.gymOfId(id)
+				return gym ? ([id, gym.title] as const) : null
+			}),
+		)
+		return new Map(entries.filter((e) => e !== null))
+	}
+
+	private toDTO(
+		items: FindManyOutput["items"],
+		gymTitleMap: Map<string, string>,
+	): CheckInDTO[] {
 		return items.map((checkIn) => ({
 			id: checkIn.id,
 			userId: checkIn.userId,
 			gymId: checkIn.gymId,
+			gymTitle: gymTitleMap.get(checkIn.gymId) ?? null,
 			createdAt: checkIn.createdAt.toISOString(),
 			validatedAt: checkIn.validatedAt?.toISOString() ?? null,
 			rejectedAt: checkIn.rejectedAt?.toISOString() ?? null,

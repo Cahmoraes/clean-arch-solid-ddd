@@ -1,5 +1,6 @@
 import request from "supertest"
 import { createAndSaveCheckIn } from "test/factory/create-and-save-check-in"
+import { createAndSaveGym } from "test/factory/create-and-save-gym"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { serverBuild } from "@/bootstrap/server-build"
 import type { AuthenticateUseCase } from "@/session/application/use-case/authenticate.usecase"
@@ -20,12 +21,13 @@ import { CheckInRoutes } from "./routes/check-in-routes"
 describe("Listar Check-Ins (GET /check-ins)", () => {
 	let fastifyServer: FastifyAdapter
 	let checkInRepository: InMemoryCheckInRepository
+	let gymRepository: InMemoryGymRepository
 	let userRepository: InMemoryUserRepository
 	let authenticate: AuthenticateUseCase
 
 	beforeEach(async () => {
 		container.snapshot()
-		const gymRepository = new InMemoryGymRepository()
+		gymRepository = new InMemoryGymRepository()
 		checkInRepository = new InMemoryCheckInRepository()
 		userRepository = new InMemoryUserRepository()
 		container.unbind(GYM_TYPES.Repositories.Gym)
@@ -144,5 +146,44 @@ describe("Listar Check-Ins (GET /check-ins)", () => {
 			.query({ page: 1 })
 
 		expect(response.status).toBe(401)
+	})
+
+	test("Deve retornar gymTitle preenchido quando a academia existe", async () => {
+		const adminUser = await createAndSaveUser({
+			userRepository,
+			id: "admin-gymtitle",
+			email: "admin-gymtitle@test.com",
+			password: "admin123",
+			role: RoleValues.ADMIN,
+		})
+
+		await createAndSaveGym({
+			gymRepository,
+			id: "gym-admin-titulo",
+			title: "Academia Admin",
+		})
+
+		await createAndSaveCheckIn({
+			checkInRepository,
+			id: "ci-admin-gymtitle",
+			userId: adminUser.id,
+			gymId: "gym-admin-titulo",
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+
+		const authResult = await authenticate.execute({
+			email: "admin-gymtitle@test.com",
+			password: "admin123",
+		})
+		const { token } = authResult.forceSuccess().value
+
+		const response = await request(fastifyServer.server)
+			.get(CheckInRoutes.LIST)
+			.auth(token, { type: "bearer" })
+			.query({ page: 1 })
+
+		expect(response.status).toBe(200)
+		expect(response.body.items[0].gymTitle).toBe("Academia Admin")
 	})
 })

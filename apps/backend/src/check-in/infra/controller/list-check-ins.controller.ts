@@ -87,6 +87,10 @@ function makeListCheckInsSwaggerSchema(): Schema {
 							id: z.string().meta({ description: "Check-in ID" }),
 							userId: z.string().meta({ description: "User ID" }),
 							gymId: z.string().meta({ description: "Gym ID" }),
+							gymTitle: z
+								.string()
+								.nullable()
+								.meta({ description: "Gym name or null if not found" }),
 							createdAt: z
 								.string()
 								.meta({ description: "Creation date (ISO)" }),
