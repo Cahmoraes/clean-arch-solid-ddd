@@ -23,6 +23,9 @@ const buttonVariants = cva(
 	{
 		variants: {
 			variant: {
+				// Default Pill (same as primary) — inverts to light in dark mode for contrast
+				default:
+					"bg-primary text-primary-foreground border border-primary hover:bg-primary/90",
 				// Black Pill (CTA) — inverts to light in dark mode for contrast
 				primary:
 					"bg-primary text-primary-foreground border border-primary hover:bg-primary/90",

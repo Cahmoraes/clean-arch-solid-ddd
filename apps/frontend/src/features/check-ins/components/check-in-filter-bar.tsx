@@ -25,7 +25,7 @@ export function CheckInFilterBar({
 			{FILTERS.map((filter) => (
 				<Button
 					key={filter.label}
-					variant={status === filter.value ? "primary" : "outline"}
+					variant={status === filter.value ? "default" : "outline"}
 					size="sm"
 					className="rounded-full"
 					onClick={() => onStatusChange(filter.value)}
