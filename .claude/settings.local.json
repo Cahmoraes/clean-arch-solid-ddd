@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /home/cahmoraes/projects/estudo/ 2>&1 | head -20)",
+      "Bash(find //wsl.localhost/ubuntu/home/cahmoraes/projects/estudo/clean-arch-solid-ddd -type f -name \"README*\" | head -20)",
+      "Bash(find //wsl.localhost/ubuntu/home/cahmoraes/projects/estudo/clean-arch-solid-ddd/apps -maxdepth 2 -type f \\\\\\( -name \"README*\" -o -name \"package.json\" \\\\\\))"
+    ]
+  }
+}
