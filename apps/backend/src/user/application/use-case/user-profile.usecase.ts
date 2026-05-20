@@ -6,6 +6,7 @@ import {
 } from "@/shared/domain/value-object/either"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
 import type { User } from "@/user/domain/user"
+import type { StatusTypes } from "@/user/domain/value-object/status"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
 
@@ -20,6 +21,8 @@ interface UserProfileUseCaseOutputDTO {
 	role: string
 	hasPassword: boolean
 	authMethods: string[]
+	createdAt: string
+	status: StatusTypes
 }
 
 export type UserProfileUseCaseOutput = Either<
@@ -53,6 +56,8 @@ export class UserProfileUseCase {
 			role: userOrNull.role,
 			hasPassword: Boolean(userOrNull.password),
 			authMethods: this.resolveAuthMethods(userOrNull),
+			createdAt: userOrNull.createdAt.toISOString(),
+			status: userOrNull.status,
 		})
 	}
 }

@@ -69,6 +69,14 @@ const myProfileResponseSchema = z.object({
 		description: "Enabled authentication methods",
 		example: ["google"],
 	}),
+	createdAt: z.string().meta({
+		description: "Account creation date (ISO 8601)",
+		example: "2024-01-15T10:30:00.000Z",
+	}),
+	status: z.enum(["activated", "suspended"]).meta({
+		description: "Account status",
+		example: "activated",
+	}),
 })
 
 const errorResponseSchema = z.object({

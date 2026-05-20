@@ -41,6 +41,8 @@ describe("UserProfile", () => {
 			role: user.role,
 			hasPassword: true,
 			authMethods: ["password"],
+			status: "activated",
+			createdAt: expect.any(String),
 		})
 	})
 
