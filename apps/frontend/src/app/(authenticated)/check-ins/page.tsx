@@ -1,7 +1,7 @@
 "use client"
 
 import { CalendarCheck } from "lucide-react"
-import { useState } from "react"
+import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import {
@@ -18,7 +18,12 @@ import {
 	useMyCheckIns,
 } from "@/features/check-ins/api"
 import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
+import { CheckInFilterBar } from "@/features/check-ins/components/check-in-filter-bar.js"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
+import {
+	type CheckInFilterStatus,
+	useCheckInFilters,
+} from "@/features/check-ins/hooks/use-check-in-filters.js"
 import { useAuthStore } from "@/lib/auth/auth-store"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3", "sk-4"]
@@ -112,11 +117,37 @@ function CheckInsPager({ page, pages, onChange }: PagerProps) {
 	)
 }
 
-interface BodyProps {
-	query: ReturnType<typeof useMyCheckIns>
+const STATUS_LABELS: Record<NonNullable<CheckInFilterStatus>, string> = {
+	pending: "pendente",
+	validated: "aprovado",
+	rejected: "rejeitado",
 }
 
-function HistoryError({ query }: BodyProps) {
+function HistoryEmpty({ status }: { status: CheckInFilterStatus }) {
+	if (!status) {
+		return (
+			<EmptyState
+				icon={CalendarCheck}
+				title="Você ainda não fez check-in"
+				description="Procure uma academia próxima e registre sua presença."
+			/>
+		)
+	}
+	return (
+		<EmptyState
+			icon={CalendarCheck}
+			title={`Nenhum check-in ${STATUS_LABELS[status]} encontrado`}
+			description="Tente selecionar outro filtro."
+		/>
+	)
+}
+
+interface BodyProps {
+	query: ReturnType<typeof useMyCheckIns>
+	status: CheckInFilterStatus
+}
+
+function HistoryError({ query }: Pick<BodyProps, "query">) {
 	return (
 		<EmptyState
 			title="Não foi possível carregar seu histórico"
@@ -134,28 +165,18 @@ function HistoryError({ query }: BodyProps) {
 	)
 }
 
-function HistoryEmpty() {
-	return (
-		<EmptyState
-			icon={CalendarCheck}
-			title="Você ainda não fez check-in"
-			description="Procure uma academia próxima e registre sua presença."
-		/>
-	)
-}
-
-function CheckInsBody({ query }: BodyProps) {
+function CheckInsBody({ query, status }: BodyProps) {
 	if (query.isLoading) return <LoadingState />
 	if (query.isError) return <HistoryError query={query} />
 	if (!query.isSuccess) return null
 	const items = query.data?.items ?? []
-	if (items.length === 0) return <HistoryEmpty />
+	if (items.length === 0) return <HistoryEmpty status={status} />
 	return <CheckInsList items={items} />
 }
 
-export default function CheckInsPage() {
-	const [page, setPage] = useState(1)
-	const query = useMyCheckIns({ page })
+function CheckInsPageContent() {
+	const { status, page, setStatus, setPage } = useCheckInFilters()
+	const query = useMyCheckIns({ page, status })
 	const pages = totalPages(query.data?.total ?? 0, CHECK_INS_DEFAULT_PAGE_SIZE)
 
 	return (
@@ -175,9 +196,19 @@ export default function CheckInsPage() {
 				</p>
 			</header>
 
-			<CheckInsBody query={query} />
+			<CheckInFilterBar status={status} onStatusChange={setStatus} />
+
+			<CheckInsBody query={query} status={status} />
 
 			<CheckInsPager page={page} pages={pages} onChange={setPage} />
 		</section>
+	)
+}
+
+export default function CheckInsPage() {
+	return (
+		<Suspense fallback={<LoadingState />}>
+			<CheckInsPageContent />
+		</Suspense>
 	)
 }

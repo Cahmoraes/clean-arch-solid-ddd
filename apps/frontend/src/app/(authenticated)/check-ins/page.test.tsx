@@ -1,131 +1,93 @@
-import { screen, waitFor } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { HttpResponse, http } from "msw"
-import { beforeEach, describe, expect, it } from "vitest"
+import { render, screen } from "@testing-library/react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { useMyCheckIns } from "@/features/check-ins/api"
+import CheckInsPage from "./page.js"
 
-import { useAuthStore } from "@/lib/auth/auth-store"
-import { server } from "@/test/msw/server"
-import { renderWithProviders } from "@/test/render"
-import CheckInsPage from "./page"
+vi.mock("next/navigation", () => ({
+	useRouter: vi.fn(),
+	useSearchParams: vi.fn(),
+}))
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
+vi.mock("@/features/check-ins/api", () => ({
+	useMyCheckIns: vi.fn(),
+	CHECK_INS_DEFAULT_PAGE_SIZE: 20,
+}))
+
+const mockQuerySuccess = (items = [], total = 0) => ({
+	isLoading: false,
+	isError: false,
+	isSuccess: true,
+	data: { items, total, page: 1 },
+	error: null,
+	refetch: vi.fn(),
+})
 
 describe("CheckInsPage", () => {
 	beforeEach(() => {
-		useAuthStore.setState({
-			accessToken: "fake",
-			expiresAt: Date.now() + 60_000,
-			user: { id: "user-1", role: "MEMBER" },
-		})
-	})
-
-	it("exibe Skeleton durante loading e depois lista os check-ins", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins/me`, () =>
-				HttpResponse.json(
-					{
-						items: [
-							{
-								id: "c1",
-								gymId: "g1",
-								gymTitle: "Iron Gym",
-								validatedAt: null,
-								rejectedAt: null,
-								status: "pending",
-								createdAt: "2024-01-01T10:00:00Z",
-							},
-							{
-								id: "c2",
-								gymId: "g2",
-								gymTitle: "Power House",
-								validatedAt: "2024-01-02T11:00:00Z",
-								rejectedAt: null,
-								status: "validated",
-								createdAt: "2024-01-02T10:00:00Z",
-							},
-						],
-						page: 1,
-						total: 2,
-					},
-					{ status: 200 },
-				),
-			),
+		vi.mocked(useRouter).mockReturnValue({
+			replace: vi.fn(),
+		} as unknown as ReturnType<typeof useRouter>)
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("") as unknown as ReturnType<typeof useSearchParams>,
 		)
-		renderWithProviders(<CheckInsPage />)
-
-		expect(await screen.findByTestId("checkins-skeleton")).toBeInTheDocument()
-		await waitFor(() => {
-			expect(screen.getByTestId("checkins-list")).toBeInTheDocument()
-		})
-		expect(screen.getByText("Iron Gym")).toBeInTheDocument()
-		expect(screen.getByText("Power House")).toBeInTheDocument()
-		expect(screen.getByTestId("checkin-status-c1")).toHaveTextContent(
-			/pendente/i,
-		)
-		expect(screen.getByTestId("checkin-status-c2")).toHaveTextContent(
-			/validado/i,
+		vi.mocked(useMyCheckIns).mockReturnValue(
+			mockQuerySuccess() as unknown as ReturnType<typeof useMyCheckIns>,
 		)
 	})
 
-	it("exibe EmptyState quando histórico está vazio", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins/me`, () =>
-				HttpResponse.json({ items: [], page: 1, total: 0 }, { status: 200 }),
-			),
-		)
-		renderWithProviders(<CheckInsPage />)
-
+	it("renders the filter bar with all 4 pills", () => {
+		render(<CheckInsPage />)
+		expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument()
 		expect(
-			await screen.findByText(/você ainda não fez check-in/i),
+			screen.getByRole("button", { name: "Pendentes" }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: "Aprovados" }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: "Rejeitados" }),
 		).toBeInTheDocument()
 	})
 
-	it("exibe mensagem amigável em caso de erro", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins/me`, () =>
-				HttpResponse.json({ message: "boom" }, { status: 500 }),
-			),
+	it("calls useMyCheckIns with status from URL params", () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("status=pending&page=2") as ReturnType<
+				typeof useSearchParams
+			>,
 		)
-		renderWithProviders(<CheckInsPage />)
+		render(<CheckInsPage />)
+		expect(vi.mocked(useMyCheckIns)).toHaveBeenCalledWith(
+			expect.objectContaining({ status: "pending", page: 2 }),
+		)
+	})
 
+	it("shows default empty state when no filter is active and list is empty", () => {
+		render(<CheckInsPage />)
+		expect(screen.getByText("Você ainda não fez check-in")).toBeInTheDocument()
+	})
+
+	it("shows contextual empty state when filter is active and list is empty", () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("status=pending") as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		render(<CheckInsPage />)
 		expect(
-			await screen.findByText(/não foi possível carregar seu histórico/i),
+			screen.getByText("Nenhum check-in pendente encontrado"),
 		).toBeInTheDocument()
 	})
 
-	it("navega para próxima página quando há paginação", async () => {
-		const calls: string[] = []
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins/me`, ({ request }) => {
-				const url = new URL(request.url)
-				const page = url.searchParams.get("page") ?? "1"
-				calls.push(page)
-				return HttpResponse.json(
-					{
-						items: [
-							{
-								id: `c-${page}`,
-								gymId: "g1",
-								gymTitle: `Gym page ${page}`,
-								validatedAt: null,
-								rejectedAt: null,
-								status: "pending",
-								createdAt: "2024-01-01T10:00:00Z",
-							},
-						],
-						page: Number(page),
-						total: 50,
-					},
-					{ status: 200 },
-				)
-			}),
+	it("shows contextual empty state for validated filter", () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("status=validated") as ReturnType<
+				typeof useSearchParams
+			>,
 		)
-		const user = userEvent.setup()
-		renderWithProviders(<CheckInsPage />)
-
-		await waitFor(() => expect(calls).toContain("1"))
-		const next = await screen.findByTestId("checkins-next")
-		await user.click(next)
-		await waitFor(() => expect(calls).toContain("2"))
+		render(<CheckInsPage />)
+		expect(
+			screen.getByText("Nenhum check-in aprovado encontrado"),
+		).toBeInTheDocument()
 	})
 })
