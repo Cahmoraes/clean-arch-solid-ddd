@@ -1,13 +1,30 @@
 "use client"
 
 import { ShieldCheck } from "lucide-react"
-import { useState } from "react"
+import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
+import {
+	Pagination,
+	PaginationContent,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from "@/components/ui/pagination"
 import { Skeleton } from "@/components/ui/skeleton"
-import { type CheckIn, useCheckIns } from "@/features/check-ins/api"
+import {
+	CHECK_INS_DEFAULT_PAGE_SIZE,
+	type CheckIn,
+	useCheckIns,
+} from "@/features/check-ins/api"
 import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
+import { CheckInFilterBar } from "@/features/check-ins/components/check-in-filter-bar"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
+import {
+	type CheckInFilterStatus,
+	useCheckInFilters,
+} from "@/features/check-ins/hooks/use-check-in-filters"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3"]
 
@@ -15,7 +32,7 @@ function LoadingState() {
 	return (
 		<ul
 			data-testid="admin-checkins-skeleton"
-			aria-label="Carregando check-ins pendentes"
+			aria-label="Carregando check-ins"
 			className="flex flex-col gap-2"
 		>
 			{SKELETON_KEYS.map((key) => (
@@ -27,34 +44,71 @@ function LoadingState() {
 	)
 }
 
-interface BodyProps {
-	query: ReturnType<typeof useCheckIns>
+function totalPages(total: number, pageSize: number): number {
+	if (total <= 0) return 0
+	return Math.max(1, Math.ceil(total / pageSize))
 }
 
-function PendingError({ query }: BodyProps) {
+interface PagerProps {
+	page: number
+	pages: number
+	onChange: (next: number) => void
+}
+
+function AdminCheckInsPager({ page, pages, onChange }: PagerProps) {
+	if (pages <= 1) return null
 	return (
-		<EmptyState
-			title="Não foi possível carregar os check-ins pendentes"
-			description={query.error?.userMessage}
-			action={
-				<Button
-					variant="outline"
-					onClick={() => query.refetch()}
-					data-testid="admin-checkins-retry"
-				>
-					Tentar novamente
-				</Button>
-			}
-		/>
+		<Pagination>
+			<PaginationContent>
+				<PaginationItem>
+					<PaginationPrevious
+						data-testid="admin-checkins-prev"
+						aria-disabled={page <= 1}
+						onClick={(event) => {
+							event.preventDefault()
+							if (page > 1) onChange(page - 1)
+						}}
+					/>
+				</PaginationItem>
+				<PaginationItem>
+					<PaginationLink isActive>{page}</PaginationLink>
+				</PaginationItem>
+				<PaginationItem>
+					<PaginationNext
+						data-testid="admin-checkins-next"
+						aria-disabled={page >= pages}
+						onClick={(event) => {
+							event.preventDefault()
+							if (page < pages) onChange(page + 1)
+						}}
+					/>
+				</PaginationItem>
+			</PaginationContent>
+		</Pagination>
 	)
 }
 
-function PendingEmpty() {
+const STATUS_LABELS: Record<NonNullable<CheckInFilterStatus>, string> = {
+	pending: "pendente",
+	validated: "aprovado",
+	rejected: "rejeitado",
+}
+
+function AdminCheckInsEmpty({ status }: { status: CheckInFilterStatus }) {
+	if (!status) {
+		return (
+			<EmptyState
+				icon={ShieldCheck}
+				title="Nenhum check-in encontrado"
+				description="Ainda não há check-ins registrados."
+			/>
+		)
+	}
 	return (
 		<EmptyState
 			icon={ShieldCheck}
-			title="Nenhum check-in pendente ou a revisar"
-			description="Todos os check-ins foram validados ou rejeitados."
+			title={`Nenhum check-in ${STATUS_LABELS[status]} encontrado`}
+			description="Tente selecionar outro filtro."
 		/>
 	)
 }
@@ -73,20 +127,42 @@ function PendingList({ items }: { items: ReadonlyArray<CheckIn> }) {
 	)
 }
 
-function AdminCheckInsBody({ query }: BodyProps) {
-	if (query.isLoading) return <LoadingState />
-	if (query.isError) return <PendingError query={query} />
-	if (!query.isSuccess) return null
-	const items = (query.data?.items ?? []).filter(
-		(item) => item.status !== "rejected",
+interface BodyProps {
+	query: ReturnType<typeof useCheckIns>
+	status: CheckInFilterStatus
+}
+
+function AdminCheckInsError({ query }: Pick<BodyProps, "query">) {
+	return (
+		<EmptyState
+			title="Não foi possível carregar os check-ins"
+			description={query.error?.userMessage}
+			action={
+				<Button
+					variant="outline"
+					onClick={() => query.refetch()}
+					data-testid="admin-checkins-retry"
+				>
+					Tentar novamente
+				</Button>
+			}
+		/>
 	)
-	if (items.length === 0) return <PendingEmpty />
+}
+
+function AdminCheckInsBody({ query, status }: BodyProps) {
+	if (query.isLoading) return <LoadingState />
+	if (query.isError) return <AdminCheckInsError query={query} />
+	if (!query.isSuccess) return null
+	const items = query.data?.items ?? []
+	if (items.length === 0) return <AdminCheckInsEmpty status={status} />
 	return <PendingList items={items} />
 }
 
-export default function AdminCheckInsPage() {
-	const [page] = useState(1)
-	const query = useCheckIns({ page, status: "pending" })
+function AdminCheckInsPageContent() {
+	const { status, page, setStatus, setPage } = useCheckInFilters()
+	const query = useCheckIns({ page, status })
+	const pages = totalPages(query.data?.total ?? 0, CHECK_INS_DEFAULT_PAGE_SIZE)
 
 	return (
 		<section
@@ -98,14 +174,26 @@ export default function AdminCheckInsPage() {
 					id="admin-checkins-title"
 					className="font-display text-3xl font-medium text-foreground"
 				>
-					Check-ins pendentes
+					Check-ins
 				</h1>
 				<p className="text-sm text-muted-foreground">
-					Aprove ou rejeite as presenças registradas pelos membros.
+					Gerencie e valide os check-ins registrados pelos membros.
 				</p>
 			</header>
 
-			<AdminCheckInsBody query={query} />
+			<CheckInFilterBar status={status} onStatusChange={setStatus} />
+
+			<AdminCheckInsBody query={query} status={status} />
+
+			<AdminCheckInsPager page={page} pages={pages} onChange={setPage} />
 		</section>
+	)
+}
+
+export default function AdminCheckInsPage() {
+	return (
+		<Suspense fallback={<LoadingState />}>
+			<AdminCheckInsPageContent />
+		</Suspense>
 	)
 }

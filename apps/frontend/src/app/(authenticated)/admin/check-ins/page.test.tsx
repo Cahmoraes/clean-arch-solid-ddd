@@ -1,243 +1,100 @@
-import { screen, waitFor } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { HttpResponse, http } from "msw"
+import { render, screen } from "@testing-library/react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import { useCheckIns } from "@/features/check-ins/api"
+import AdminCheckInsPage from "./page.js"
 
-vi.mock("sonner", () => ({
-	toast: { success: vi.fn(), error: vi.fn() },
+vi.mock("next/navigation", () => ({
+	useRouter: vi.fn(),
+	useSearchParams: vi.fn(),
 }))
 
-import { toast } from "sonner"
-import { useAuthStore } from "@/lib/auth/auth-store"
-import { server } from "@/test/msw/server"
-import { renderWithProviders } from "@/test/render"
-import AdminCheckInsPage from "./page"
+vi.mock("@/features/check-ins/api", () => ({
+	useCheckIns: vi.fn(),
+	CHECK_INS_DEFAULT_PAGE_SIZE: 20,
+}))
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
+const mockQuerySuccess = (items = [], total = 0) => ({
+	isLoading: false,
+	isError: false,
+	isSuccess: true,
+	data: { items, total, page: 1 },
+	error: null,
+	refetch: vi.fn(),
+})
 
 describe("AdminCheckInsPage", () => {
 	beforeEach(() => {
-		vi.mocked(toast.success).mockClear()
-		vi.mocked(toast.error).mockClear()
-		useAuthStore.setState({
-			accessToken: "fake",
-			expiresAt: Date.now() + 60_000,
-			user: { id: "admin-1", role: "ADMIN" },
-		})
+		vi.mocked(useRouter).mockReturnValue({
+			replace: vi.fn(),
+		} as unknown as ReturnType<typeof useRouter>)
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("") as unknown as ReturnType<typeof useSearchParams>,
+		)
+		vi.mocked(useCheckIns).mockReturnValue(
+			mockQuerySuccess() as unknown as ReturnType<typeof useCheckIns>,
+		)
 	})
 
-	it("lista check-ins pendentes e valida ao clicar em 'Validar'", async () => {
-		let listCalls = 0
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () => {
-				listCalls += 1
-				const items =
-					listCalls === 1
-						? [
-								{
-									id: "c1",
-									gymId: "g1",
-									gymTitle: "Iron Gym",
-									validatedAt: null,
-									rejectedAt: null,
-									status: "pending",
-									createdAt: "2024-01-01T10:00:00Z",
-								},
-							]
-						: []
-				return HttpResponse.json(
-					{ items, page: 1, total: items.length },
-					{ status: 200 },
-				)
-			}),
-			http.patch(`${apiBaseUrl}/check-ins/validate`, () =>
-				HttpResponse.json({ checkInId: "c1" }, { status: 200 }),
-			),
-		)
-
-		const user = userEvent.setup()
-		renderWithProviders(<AdminCheckInsPage />)
-
-		const validateButton = await screen.findByTestId("checkin-approve-c1")
-		await user.click(validateButton)
-
-		await waitFor(() => {
-			expect(toast.success).toHaveBeenCalledWith(
-				"Check-in aprovado com sucesso.",
-			)
-		})
-
-		await waitFor(() => {
-			expect(screen.getByText(/nenhum check-in pendente/i)).toBeInTheDocument()
-		})
-		expect(listCalls).toBeGreaterThanOrEqual(2)
-	})
-
-	it("exibe EmptyState quando não há check-ins pendentes", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () =>
-				HttpResponse.json({ items: [], page: 1, total: 0 }, { status: 200 }),
-			),
-		)
-		renderWithProviders(<AdminCheckInsPage />)
+	it("renders the filter bar with all 4 pills", () => {
+		render(<AdminCheckInsPage />)
+		expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument()
 		expect(
-			await screen.findByText(/nenhum check-in pendente/i),
+			screen.getByRole("button", { name: "Pendentes" }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: "Aprovados" }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: "Rejeitados" }),
 		).toBeInTheDocument()
 	})
 
-	it("exibe erro amigável ao falhar validação (409)", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () =>
-				HttpResponse.json(
-					{
-						items: [
-							{
-								id: "c1",
-								gymId: "g1",
-								gymTitle: "Iron Gym",
-								validatedAt: null,
-								rejectedAt: null,
-								status: "pending",
-								createdAt: "2024-01-01T10:00:00Z",
-							},
-						],
-						page: 1,
-						total: 1,
-					},
-					{ status: 200 },
-				),
-			),
-			http.patch(`${apiBaseUrl}/check-ins/validate`, () =>
-				HttpResponse.json({ message: "expired" }, { status: 409 }),
-			),
+	it("calls useCheckIns with status from URL params", () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("status=pending&page=2") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
 		)
-		const user = userEvent.setup()
-		renderWithProviders(<AdminCheckInsPage />)
-		const validateButton = await screen.findByTestId("checkin-approve-c1")
-		await user.click(validateButton)
-		await waitFor(() => {
-			expect(toast.error).toHaveBeenCalledWith(
-				"Conflito ao processar a solicitação.",
-			)
-		})
-	})
-
-	it("rejeita um check-in pendente ao clicar em 'Rejeitar'", async () => {
-		let listCalls = 0
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () => {
-				listCalls += 1
-				const items =
-					listCalls === 1
-						? [
-								{
-									id: "c2",
-									gymId: "g1",
-									gymTitle: "Iron Gym",
-									validatedAt: null,
-									rejectedAt: null,
-									status: "pending",
-									createdAt: "2024-01-01T10:00:00Z",
-								},
-							]
-						: []
-				return HttpResponse.json(
-					{ items, page: 1, total: items.length },
-					{ status: 200 },
-				)
-			}),
-			http.patch(`${apiBaseUrl}/check-ins/reject`, () =>
-				HttpResponse.json(
-					{ rejectedAt: "2024-01-01T11:00:00Z" },
-					{ status: 200 },
-				),
-			),
-		)
-
-		const user = userEvent.setup()
-		renderWithProviders(<AdminCheckInsPage />)
-
-		const rejectButton = await screen.findByTestId("checkin-reject-c2")
-		await user.click(rejectButton)
-
-		await waitFor(() => {
-			expect(toast.success).toHaveBeenCalledWith("Check-in rejeitado.")
-		})
-
-		await waitFor(() => {
-			expect(screen.getByText(/nenhum check-in pendente/i)).toBeInTheDocument()
-		})
-		expect(listCalls).toBeGreaterThanOrEqual(2)
-	})
-
-	it("exibe erro amigável ao falhar rejeição", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () =>
-				HttpResponse.json(
-					{
-						items: [
-							{
-								id: "c3",
-								gymId: "g1",
-								gymTitle: "Iron Gym",
-								validatedAt: null,
-								rejectedAt: null,
-								status: "pending",
-								createdAt: "2024-01-01T10:00:00Z",
-							},
-						],
-						page: 1,
-						total: 1,
-					},
-					{ status: 200 },
-				),
-			),
-			http.patch(`${apiBaseUrl}/check-ins/reject`, () =>
-				HttpResponse.json({ message: "not found" }, { status: 404 }),
-			),
-		)
-		const user = userEvent.setup()
-		renderWithProviders(<AdminCheckInsPage />)
-		const rejectButton = await screen.findByTestId("checkin-reject-c3")
-		await user.click(rejectButton)
-		await waitFor(
-			() => {
-				expect(toast.error).toHaveBeenCalled()
-			},
-			{ timeout: 3000 },
+		render(<AdminCheckInsPage />)
+		expect(vi.mocked(useCheckIns)).toHaveBeenCalledWith(
+			expect.objectContaining({ status: "pending", page: 2 }),
 		)
 	})
 
-	it("exibe apenas botão rejeitar para check-in validado", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/check-ins`, () =>
-				HttpResponse.json(
-					{
-						items: [
-							{
-								id: "c4",
-								gymId: "g1",
-								gymTitle: "Iron Gym",
-								validatedAt: "2024-01-01T10:30:00Z",
-								rejectedAt: null,
-								status: "validated",
-								createdAt: "2024-01-01T10:00:00Z",
-							},
-						],
-						page: 1,
-						total: 1,
-					},
-					{ status: 200 },
-				),
-			),
+	it("calls useCheckIns without status when no filter is active (Todos)", () => {
+		render(<AdminCheckInsPage />)
+		expect(vi.mocked(useCheckIns)).toHaveBeenCalledWith(
+			expect.objectContaining({ status: undefined }),
 		)
+	})
 
-		renderWithProviders(<AdminCheckInsPage />)
+	it("shows default empty state when no filter is active and list is empty", () => {
+		render(<AdminCheckInsPage />)
+		expect(screen.getByText("Nenhum check-in encontrado")).toBeInTheDocument()
+	})
 
-		const rejectButton = await screen.findByTestId("checkin-reject-c4")
-		expect(rejectButton).toBeInTheDocument()
+	it("shows contextual empty state when filter is active and list is empty", () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("status=pending") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		render(<AdminCheckInsPage />)
+		expect(
+			screen.getByText("Nenhum check-in pendente encontrado"),
+		).toBeInTheDocument()
+	})
 
-		const approveButton = screen.queryByTestId("checkin-approve-c4")
-		expect(approveButton).not.toBeInTheDocument()
+	it("shows contextual empty state for rejected filter", () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("status=rejected") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		render(<AdminCheckInsPage />)
+		expect(
+			screen.getByText("Nenhum check-in rejeitado encontrado"),
+		).toBeInTheDocument()
 	})
 })
