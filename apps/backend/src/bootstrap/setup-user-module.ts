@@ -31,6 +31,7 @@ export function setupUserModule(): ModuleControllers {
 		resolve(USER_TYPES.Controllers.UserProfile),
 		resolve(USER_TYPES.Controllers.UpdateUserProfile),
 		resolve(USER_TYPES.Controllers.MyProfile),
+		resolve(USER_TYPES.Controllers.UpdateMyProfile),
 		resolve(USER_TYPES.Controllers.UserMetrics),
 		resolve(AUTH_TYPES.Controllers.RefreshToken),
 		resolve(USER_TYPES.Controllers.ChangePassword),

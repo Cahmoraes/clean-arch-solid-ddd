@@ -14,6 +14,7 @@ import { ForgotPasswordUseCase } from "@/user/application/use-case/forgot-passwo
 import { PromoteToAdminUseCase } from "@/user/application/use-case/promote-to-admin.usecase"
 import { ResetPasswordUseCase } from "@/user/application/use-case/reset-password.usecase"
 import { SuspendUserUseCase } from "@/user/application/use-case/suspend-user.usecase"
+import { UpdateMyProfileUseCase } from "@/user/application/use-case/update-my-profile.usecase"
 import { UpdateUserProfileUseCase } from "@/user/application/use-case/update-user-profile.usecase"
 import { UserMetricsUseCase } from "@/user/application/use-case/user-metrics.usecase"
 import { UserProfileUseCase } from "@/user/application/use-case/user-profile.usecase"
@@ -29,6 +30,7 @@ import { MyProfileController } from "@/user/infra/controller/my-profile.controll
 import { PromoteToAdminController } from "@/user/infra/controller/promote-to-admin.controller"
 import { ResetPasswordController } from "@/user/infra/controller/reset-password.controller"
 import { SuspendUserController } from "@/user/infra/controller/suspend-user.controller"
+import { UpdateMyProfileController } from "@/user/infra/controller/update-my-profile.controller"
 import { UpdateUserProfileController } from "@/user/infra/controller/update-user-profile.controller"
 import { UserMetricsController } from "@/user/infra/controller/user-metrics.controller"
 import { UserProfileController } from "@/user/infra/controller/user-profile.controller"
@@ -54,6 +56,7 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Controllers.CreateUser).to(CreateUserController)
 	bind(USER_TYPES.Controllers.UserProfile).to(UserProfileController)
 	bind(USER_TYPES.Controllers.MyProfile).to(MyProfileController)
+	bind(USER_TYPES.Controllers.UpdateMyProfile).to(UpdateMyProfileController)
 	bind(USER_TYPES.Controllers.UserMetrics).to(UserMetricsController)
 	bind(AUTH_TYPES.Controllers.RefreshToken).to(RefreshTokenController)
 	bind(USER_TYPES.Controllers.ChangePassword).to(ChangePasswordController)
@@ -76,6 +79,7 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.UseCases.ForgotPassword).to(ForgotPasswordUseCase)
 	bind(USER_TYPES.UseCases.ResetPassword).to(ResetPasswordUseCase)
 	bind(USER_TYPES.UseCases.FetchUsers).to(FetchUsersUseCase)
+	bind(USER_TYPES.UseCases.UpdateMyProfile).to(UpdateMyProfileUseCase)
 	bind(USER_TYPES.UseCases.UpdateUserProfile).to(UpdateUserProfileUseCase)
 	bind(USER_TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
 	bind(USER_TYPES.UseCases.PromoteToAdmin).to(PromoteToAdminUseCase)
