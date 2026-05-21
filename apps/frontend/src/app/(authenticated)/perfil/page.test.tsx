@@ -1,4 +1,5 @@
 import { screen, waitFor } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import { beforeEach, describe, expect, test } from "vitest"
 
@@ -36,10 +37,23 @@ function mockProfileApis({
 	me?: Record<string, unknown>
 	metrics?: { checkInsCount: number }
 } = {}) {
+	let currentMe = { ...me }
+
 	server.use(
 		http.get(`${apiBaseUrl}/users/me`, () =>
-			HttpResponse.json(me, { status: 200 }),
+			HttpResponse.json(currentMe, { status: 200 }),
 		),
+		http.patch(`${apiBaseUrl}/users/me`, async ({ request }) => {
+			const body = (await request.json()) as { name?: string }
+			currentMe = {
+				...currentMe,
+				name: body.name ?? currentMe.name,
+			}
+			return HttpResponse.json(
+				{ name: String(currentMe.name ?? "") },
+				{ status: 200 },
+			)
+		}),
 		http.get(`${apiBaseUrl}/users/me/metrics`, () =>
 			HttpResponse.json(metrics, { status: 200 }),
 		),
@@ -92,5 +106,65 @@ describe("ProfilePage", () => {
 
 		expect(screen.queryByText("ADMIN")).not.toBeInTheDocument()
 		expect(screen.getByText("MS")).toBeInTheDocument()
+	})
+
+	test("abre modal, valida nome, salva perfil e atualiza nome sem reload", async () => {
+		const user = userEvent.setup()
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-edit-button")).toBeInTheDocument()
+		})
+
+		await user.click(screen.getByTestId("profile-edit-button"))
+
+		const nameInput = screen.getByTestId("edit-profile-name-input")
+		expect(nameInput).toHaveValue("Admin User")
+		expect(screen.getByTestId("edit-profile-password-link")).toHaveTextContent(
+			"Alterar senha",
+		)
+
+		await user.clear(nameInput)
+		await user.type(nameInput, "A")
+		await user.click(screen.getByTestId("edit-profile-save"))
+
+		expect(await screen.findByRole("alert")).toHaveTextContent(
+			"Informe seu nome (mínimo 2 caracteres).",
+		)
+
+		await user.clear(nameInput)
+		await user.type(nameInput, "Nome Atualizado")
+		await user.click(screen.getByTestId("edit-profile-save"))
+
+		await waitFor(() => {
+			expect(
+				screen.queryByTestId("edit-profile-name-input"),
+			).not.toBeInTheDocument()
+		})
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-name")).toHaveTextContent(
+				"Nome Atualizado",
+			)
+		})
+	})
+
+	test("exibe link para definir senha quando usuário não tem senha", async () => {
+		const user = userEvent.setup()
+		mockProfileApis({
+			me: buildMeResponse({ hasPassword: false }),
+		})
+
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-edit-button")).toBeInTheDocument()
+		})
+
+		await user.click(screen.getByTestId("profile-edit-button"))
+
+		expect(screen.getByTestId("edit-profile-password-link")).toHaveTextContent(
+			"Definir senha",
+		)
 	})
 })

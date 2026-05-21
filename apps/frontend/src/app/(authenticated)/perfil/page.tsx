@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"
+import { EditProfileModal } from "@/features/profile/components/EditProfileModal"
 
 function getInitials(name: string): string {
 	return name
@@ -310,7 +311,14 @@ export default function ProfilePage() {
 				}}
 			/>
 
-			{/* EditProfileModal será adicionado na Task 6 */}
+			{me ? (
+				<EditProfileModal
+					open={editOpen}
+					onOpenChange={setEditOpen}
+					currentName={me.name}
+					hasPassword={me.hasPassword}
+				/>
+			) : null}
 		</main>
 	)
 }
