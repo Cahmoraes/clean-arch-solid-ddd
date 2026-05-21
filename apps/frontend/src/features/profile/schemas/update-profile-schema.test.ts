@@ -16,12 +16,12 @@ describe("updateProfileSchema", () => {
 		const result = updateProfileSchema.safeParse({ name: "A" })
 		expect(result.success).toBe(false)
 		if (!result.success) {
-			expect(result.error.issues[0]?.message).toMatch(/mínimo 2/i)
+			expect(result.error.issues[0]?.message).toMatch(/mínimo 5/i)
 		}
 	})
 
 	it("rejeita nome muito longo", () => {
-		const result = updateProfileSchema.safeParse({ name: "x".repeat(121) })
+		const result = updateProfileSchema.safeParse({ name: "x".repeat(31) })
 		expect(result.success).toBe(false)
 	})
 })

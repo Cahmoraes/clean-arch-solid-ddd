@@ -129,7 +129,7 @@ describe("ProfilePage", () => {
 		await user.click(screen.getByTestId("edit-profile-save"))
 
 		expect(await screen.findByRole("alert")).toHaveTextContent(
-			"Informe seu nome (mínimo 2 caracteres).",
+			"Informe seu nome (mínimo 5 caracteres).",
 		)
 
 		await user.clear(nameInput)

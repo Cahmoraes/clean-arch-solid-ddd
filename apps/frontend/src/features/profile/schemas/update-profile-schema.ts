@@ -3,18 +3,14 @@ import { z } from "zod"
 /**
  * updateProfileSchema — validates editable profile fields.
  *
- * Backend (OpenAPI) currently exposes no PATCH /users/me endpoint, so this
- * schema is kept ready for the day an edit endpoint is published. The only
- * editable field practical today is "name" (email/role are immutable per the
- * existing GET /users/me contract). Tests assert this shape so a future
- * regression in the backend contract surfaces here.
+ * Rules mirror the backend domain Name VO: min(5).max(30).
  */
 export const updateProfileSchema = z.object({
 	name: z
 		.string()
 		.trim()
-		.min(2, "Informe seu nome (mínimo 2 caracteres).")
-		.max(120, "Nome muito longo."),
+		.min(5, "Informe seu nome (mínimo 5 caracteres).")
+		.max(30, "Nome muito longo (máximo 30 caracteres)."),
 })
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>

@@ -17,7 +17,8 @@ import { UserRoutes } from "./routes/user-routes"
 const updateMyProfileBodySchema = z.object({
 	name: z
 		.string()
-		.min(2)
+		.min(5)
+		.max(30)
 		.meta({ description: "User name", example: "John Doe" }),
 })
 
