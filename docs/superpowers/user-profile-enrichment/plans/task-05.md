@@ -1,6 +1,6 @@
 # Task 5: Redesenhar página `/perfil` [RF-001, RF-002, RF-003, RF-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-profile-enrichment.md`
 **Spec:** `../specs/user-profile-enrichment-design.md`
 

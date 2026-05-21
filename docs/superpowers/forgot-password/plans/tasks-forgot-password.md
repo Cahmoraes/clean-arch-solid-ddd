@@ -23,5 +23,5 @@
 - [x] 6. Controllers, rotas, rate-limit config e IoC wiring [RF-001, RF-002, RF-007, RF-008, RF-009] → `task-06.md`
 - [x] 7. Business flow tests (HTTP integration) [RF-001, RF-002, RF-006, RF-007, RF-008, RF-009, RF-010, RF-012, RF-013] → `task-07.md`
 - [x] 8. Gerar tipos compartilhados (@repo/api-types) → `task-08.md`
-- [ ] 9. Frontend – página /recuperar-senha + link na página de login [RF-017, RF-018, RF-023] → `task-09.md`
-- [ ] 10. Frontend – página /redefinir-senha [RF-019, RF-020, RF-021, RF-022] → `task-10.md`
+- [x] 9. Frontend – página /recuperar-senha + link na página de login [RF-017, RF-018, RF-023] → `task-09.md`
+- [x] 10. Frontend – página /redefinir-senha [RF-019, RF-020, RF-021, RF-022] → `task-10.md`

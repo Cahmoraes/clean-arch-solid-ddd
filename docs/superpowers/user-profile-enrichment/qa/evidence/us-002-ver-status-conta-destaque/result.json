@@ -1,0 +1,106 @@
+{
+  "us_id": "US-002",
+  "user_story": "Como usuário autenticado, eu quero ver o status da minha conta em destaque para entender imediatamente se ela está ativa, inativa ou suspensa.",
+  "requirements": ["RF-002", "RF-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": {
+    "targeted_runs": [
+      {
+        "command": "cd apps/backend && npx vitest run --config test/vite.config.app-domain.ts src/user/application/use-case/user-profile.usecase.test.ts",
+        "result": "passed",
+        "test_files": 1,
+        "tests_passed": 4,
+        "tests_failed": 0
+      },
+      {
+        "command": "cd apps/backend && npx vitest run --config test/vite.config.business-flow.ts src/user/infra/controller/my-profile.business-flow-test.ts",
+        "result": "passed",
+        "test_files": 1,
+        "tests_passed": 3,
+        "tests_failed": 0
+      },
+      {
+        "command": "cd apps/frontend && npx vitest run 'src/app/(authenticated)/perfil/page.test.tsx'",
+        "result": "passed",
+        "test_files": 1,
+        "tests_passed": 4,
+        "tests_failed": 0
+      }
+    ],
+    "validation_gate": {
+      "backend_biome_fix": "passed",
+      "backend_tsc_check": "passed",
+      "backend_test_run": {
+        "result": "passed",
+        "test_files": 83,
+        "tests_passed": 463,
+        "tests_failed": 0
+      },
+      "frontend_lint_fix": "passed",
+      "frontend_tsc_check": "passed",
+      "frontend_test": {
+        "result": "passed",
+        "test_files": 61,
+        "tests_passed": 329,
+        "tests_failed": 0
+      },
+      "pnpm_build": "passed"
+    }
+  },
+  "requirements_coverage": {
+    "RF-002": {
+      "status": "COVERED",
+      "evidence": [
+        "apps/frontend/src/app/(authenticated)/perfil/page.test.tsx:85 valida label 'Ativo' para status 'activated'",
+        "apps/frontend/src/app/(authenticated)/perfil/page.test.tsx:104 valida label 'Suspenso' para status 'suspended'",
+        "apps/frontend/src/app/(authenticated)/perfil/page.tsx:33 usa classes verdes para 'activated'",
+        "apps/frontend/src/app/(authenticated)/perfil/page.tsx:37 usa classes vermelhas para 'suspended'"
+      ]
+    },
+    "RF-005": {
+      "status": "COVERED",
+      "evidence": [
+        "apps/backend/src/user/application/use-case/user-profile.usecase.test.ts:44 valida retorno com status 'activated'",
+        "apps/backend/src/user/infra/controller/my-profile.business-flow-test.ts:66 valida GET /users/me com status 'activated' no payload",
+        "apps/backend/src/user/infra/controller/my-profile.controller.ts:76 define schema status: z.enum([\"activated\", \"suspended\"])"
+      ]
+    }
+  },
+  "mapped_tests": [
+    {
+      "file": "apps/backend/src/user/application/use-case/user-profile.usecase.test.ts",
+      "coverage": [
+        "UserProfileUseCase expõe status 'activated' no output",
+        "UserProfileUseCase expõe createdAt junto do status"
+      ]
+    },
+    {
+      "file": "apps/backend/src/user/infra/controller/my-profile.business-flow-test.ts",
+      "coverage": [
+        "GET /users/me retorna status 'activated' no response body",
+        "RF-005 validado em nível HTTP"
+      ]
+    },
+    {
+      "file": "apps/frontend/src/app/(authenticated)/perfil/page.test.tsx",
+      "coverage": [
+        "renderiza badge com texto 'Ativo' para status 'activated'",
+        "renderiza badge com texto 'Suspenso' para status 'suspended'"
+      ]
+    },
+    {
+      "file": "apps/backend/src/user/infra/controller/my-profile.controller.ts",
+      "coverage": [
+        "schema OpenAPI declara status: z.enum([\"activated\", \"suspended\"])"
+      ],
+      "verification_type": "code-inspection",
+      "automated_test_found": false
+    }
+  ],
+  "screenshot_path": null,
+  "screenshot_notes": "screenshot skipped — server not running",
+  "failure_details": null,
+  "notes": "Nenhum teste de aceitação extra necessário. Cobertura existente já valida textos 'Ativo'/'Suspenso' na página de perfil. Não encontrei teste automatizado dedicado ao contrato z.enum do schema; item validado por inspeção de código no controller."
+}

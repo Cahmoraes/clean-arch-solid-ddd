@@ -64,6 +64,9 @@ Output (JSON to stdout):
       "optimization": {
         "caveman": boolean,                  // default: false — activates caveman in execution/review phases
         "caveman_level": string              // default: "full" — lite | full | ultra | wenyan-lite | wenyan-full | wenyan-ultra
+      },
+      "memory": {
+        "persistent_memory": boolean         // default: false
       }
     }
   }
@@ -106,6 +109,9 @@ const DEFAULTS = {
   optimization: {
     caveman: false,
     caveman_level: 'full',
+  },
+  memory: {
+    persistent_memory: false,
   },
 };
 

@@ -26,7 +26,12 @@ describe("CheckInsPager", () => {
 
 	it("uses custom testId prefix", () => {
 		render(
-			<CheckInsPager page={2} pages={3} onChange={vi.fn()} testId="admin-checkins" />,
+			<CheckInsPager
+				page={2}
+				pages={3}
+				onChange={vi.fn()}
+				testId="admin-checkins"
+			/>,
 		)
 		expect(screen.getByTestId("admin-checkins-prev")).toBeInTheDocument()
 		expect(screen.getByTestId("admin-checkins-next")).toBeInTheDocument()

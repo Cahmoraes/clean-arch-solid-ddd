@@ -1,5 +1,7 @@
 # Memory Persistence
 
+> **Guard:** If `session_memory_enabled = false`, skip this entire document and return to the calling skill — proceed directly to Execution Handoff. The rest of this procedure applies only when persistent memory is enabled.
+
 After self-review passes and before the execution handoff, persist the key planning artifacts to `persistent-memory` so future brainstorming sessions can recall them. This ensures prior decisions, constraints, and scope boundaries are available across sessions.
 
 ## Graceful Degradation

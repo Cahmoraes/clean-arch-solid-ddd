@@ -1,6 +1,6 @@
 # Task 1: Enriquecer `UserProfileUseCase` e `MyProfileController` [RF-001, RF-002, RF-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-profile-enrichment.md`
 **Spec:** `../specs/user-profile-enrichment-design.md`
 

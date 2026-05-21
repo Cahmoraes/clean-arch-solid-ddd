@@ -27,6 +27,21 @@ Before executing any task, read `.superpowers/preferences.yml` in the user's rep
 - If the file does not exist → warn the user and ask if they want to create it. Then proceed with defaults.
 - You may suggest overriding a preference with justification, but ONLY execute with user confirmation.
 
+## Memory Gate Check
+
+> **Conditional on `session_memory_enabled`.** If `session_memory_enabled = false`, skip this entire section and proceed directly to Caveman Mode.
+
+> **When enabled — do not skip.** This is the entry guard of the Executando state. Memory must have been persisted at the end of `writing-plans` (exit action of Planejando state). If it wasn't, persist it now before executing any task.
+
+Before starting task execution, verify that planning artifacts were persisted:
+
+```bash
+pmem search "<feature-name>" --limit 3
+```
+
+- **If results include entries for this feature** (decisions, scope, artifacts paths): memory is present — proceed.
+- **If no results found**: memory was not persisted during planning. Run the full persistence procedure now — read `writing-plans/SKILL.md § Memory Persistence` and `writing-plans/references/memory-persistence.md` for the exact `pmem add` calls to make (3 entries: decisions, scope, artifact paths). Do not start task execution until all three entries are written.
+
 ## Caveman Mode
 
 Before starting Step 2 (Execute Tasks), check caveman session state (defined in `using-superpowers` Caveman Mode section):

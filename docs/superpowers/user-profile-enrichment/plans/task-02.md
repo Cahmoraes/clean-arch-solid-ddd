@@ -1,6 +1,6 @@
 # Task 2: Criar `UpdateMyProfileUseCase` e `UpdateMyProfileController` [RF-009, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-profile-enrichment.md`
 **Spec:** `../specs/user-profile-enrichment-design.md`
 

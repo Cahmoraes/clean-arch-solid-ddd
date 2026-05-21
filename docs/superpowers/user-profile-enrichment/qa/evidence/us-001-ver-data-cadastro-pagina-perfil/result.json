@@ -1,0 +1,12 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como usuário autenticado, eu quero ver minha data de cadastro na página de perfil para saber há quanto tempo tenho conta na plataforma.",
+  "requirements": ["RF-001", "RF-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "11 tests passed, 0 failed (backend use case: 4; backend business flow: 3; frontend page: 4)",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Teste existente já cobre profile-created-at com data formatada em pt-BR. Nenhum teste automatizado específico encontrado para schema OpenAPI do MyProfileController; inspeção manual confirma createdAt em my-profile.controller.ts. Screenshot skipped — server not running."
+}

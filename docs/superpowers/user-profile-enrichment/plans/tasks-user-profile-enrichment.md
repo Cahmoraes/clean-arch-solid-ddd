@@ -15,9 +15,9 @@
 
 ## Tarefas
 
-- [ ] 1. Enriquecer `UserProfileUseCase` e `MyProfileController` [RF-001, RF-002, RF-005] → `task-01.md`
-- [ ] 2. Criar `UpdateMyProfileUseCase` e `UpdateMyProfileController` [RF-009, RF-010] → `task-02.md`
-- [ ] 3. Regenerar shared API types [RF-005, RF-009, RF-010] → `task-03.md`
-- [ ] 4. Adicionar hook `useUpdateProfile` no frontend [RF-006, RF-009, RF-010] → `task-04.md`
-- [ ] 5. Redesenhar página `/perfil` [RF-001, RF-002, RF-003, RF-004] → `task-05.md`
-- [ ] 6. Criar `EditProfileModal` e integrar na página [RF-006, RF-007, RF-008, RF-009, RF-010] → `task-06.md`
+- [x] 1. Enriquecer `UserProfileUseCase` e `MyProfileController` [RF-001, RF-002, RF-005] → `task-01.md`
+- [x] 2. Criar `UpdateMyProfileUseCase` e `UpdateMyProfileController` [RF-009, RF-010] → `task-02.md`
+- [x] 3. Regenerar shared API types [RF-005, RF-009, RF-010] → `task-03.md`
+- [x] 4. Adicionar hook `useUpdateProfile` no frontend [RF-006, RF-009, RF-010] → `task-04.md`
+- [x] 5. Redesenhar página `/perfil` [RF-001, RF-002, RF-003, RF-004] → `task-05.md`
+- [x] 6. Criar `EditProfileModal` e integrar na página [RF-006, RF-007, RF-008, RF-009, RF-010] → `task-06.md`

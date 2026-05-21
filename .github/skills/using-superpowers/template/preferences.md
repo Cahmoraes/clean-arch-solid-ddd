@@ -32,4 +32,11 @@ context:
 optimization:
   caveman: false
   caveman_level: full
+
+# Persistent memory settings.
+# persistent_memory: true enables cross-session memory recall and persistence via .memory/ SQLite database.
+# When false (default), all persistent-memory operations (recall and persist) are skipped.
+# Disabling does NOT delete existing .memory/ data — it only prevents future reads/writes.
+memory:
+  persistent_memory: false
 ```

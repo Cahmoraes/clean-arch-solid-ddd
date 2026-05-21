@@ -1,6 +1,6 @@
 # Task 3: Regenerar shared API types [RF-005, RF-009, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-profile-enrichment.md`
 **Spec:** `../specs/user-profile-enrichment-design.md`
 

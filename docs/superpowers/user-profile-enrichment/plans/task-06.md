@@ -1,6 +1,6 @@
 # Task 6: Criar `EditProfileModal` e integrar na página [RF-006, RF-007, RF-008, RF-009, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-profile-enrichment.md`
 **Spec:** `../specs/user-profile-enrichment-design.md`
 

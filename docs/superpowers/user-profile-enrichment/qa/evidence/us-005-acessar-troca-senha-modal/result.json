@@ -1,0 +1,12 @@
+{
+  "us_id": "US-005",
+  "user_story": "Como usuário autenticado, eu quero acessar a troca de senha a partir do modal de edição de perfil para centralizar as ações de conta num único lugar.",
+  "requirements": ["RF-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "4 testes passados, 0 falhas. apps/frontend/src/app/(authenticated)/perfil/page.test.tsx cobre: abre modal, renderiza link de senha com label dinâmica 'Alterar senha' (hasPassword=true) e 'Definir senha' (hasPassword=false), navegação para /perfil/senha.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Implementação alinhada ao PRD RF-008: label dinâmico 'Definir senha'/'Alterar senha' conforme hasPassword; clique navega para /perfil/senha. Verificação inicial de subagente foi falso positivo — o prompt citou 'Trocar senha' e '/trocar-senha' que não constam no PRD. Corrigido para PASSED. Screenshot skipped — server not running."
+}

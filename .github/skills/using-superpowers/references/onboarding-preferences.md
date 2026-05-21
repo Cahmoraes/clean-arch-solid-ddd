@@ -67,7 +67,18 @@ Record the answer as `optimization.caveman_level` (`lite`, `full`, or `ultra`). 
 
 If the user says **no**, record `optimization.caveman: false` and `optimization.caveman_level: full` (default).
 
-### Step 6 — Corporate Artifacts (Optional)
+### Step 6 — Persistent Memory
+
+Ask:
+> "Would you like to enable **persistent memory**? When enabled, the agent stores architectural decisions, feature scope, and artifact paths in a local SQLite database (`.memory/`). This allows future sessions to recall prior decisions and constraints automatically. All data stays local to this repository."
+> - **No** (default) — memory is not persisted between sessions
+> - **Yes** — enables persistent memory for cross-session recall
+
+Record the answer as `memory.persistent_memory` (true/false).
+
+> **Note:** Disabling persistent memory does NOT delete any existing `.memory/` data — it only prevents future reads and writes. To remove stored data, delete the `.memory/` directory manually.
+
+### Step 7 — Corporate Artifacts (Optional)
 
 Ask:
 > "Do you have any corporate artifacts that could help me understand the project better? For example: PRDs, technical specs, UML diagrams, user stories, wikis, data mappings, API contracts, ADRs, or design mockups created by your team?"
@@ -98,7 +109,7 @@ If the user says **no** or provides nothing, leave `context.has_corporate_artifa
 
 > **Why this matters:** Corporate artifacts contain business constraints, validated user stories, design decisions, and domain context that the agent cannot discover through codebase exploration alone. When provided, they significantly improve the quality of brainstorming questions, research, and PRD generation.
 
-### Step 7 — Generate and Save
+### Step 8 — Generate and Save
 
 1. Read the template from `../template/preferences.md` to get the YAML structure
 2. Fill in the placeholders with the answers collected in the previous steps
@@ -107,7 +118,7 @@ If the user says **no** or provides nothing, leave `context.has_corporate_artifa
 5. Confirm:
 > "Preferences saved to `.superpowers/preferences.yml`. You can edit them manually at any time or ask me to update them."
 
-### Step 8 — Opening Triage
+### Step 9 — Opening Triage
 
 Immediately after saving preferences, decide whether to ask the opening question or route straight into a flow.
 
@@ -141,6 +152,9 @@ context:
 optimization:
   caveman: <true|false>         # default: false — activates caveman in execution/review phases
   caveman_level: <level>        # default: full — lite | full | ultra | wenyan-lite | wenyan-full | wenyan-ultra
+
+memory:
+  persistent_memory: <true|false>
 ```
 
 ## Field Reference
@@ -154,6 +168,7 @@ optimization:
 | `context.has_corporate_artifacts` | bool | `false` | When `true`, the agent reads `.superpowers/corporate-artifacts.yml` to load corporate artifact references for brainstorming and PRD generation |
 | `optimization.caveman` | bool | `false` | When `true`, activates caveman ultra-compressed communication during execution, review, and QA phases. Never activates during planning, brainstorming, or finalization |
 | `optimization.caveman_level` | string | `full` | Compression intensity: `lite` \| `full` \| `ultra` \| `wenyan-lite` \| `wenyan-full` \| `wenyan-ultra`. Onboarding only offers `lite`, `full`, `ultra`; wenyan levels are manual-only |
+| `memory.persistent_memory` | bool | `false` | When `true`, enables cross-session memory recall and persistence via `.memory/` SQLite database. When `false`, all persistent-memory operations are skipped |
 
 ## Runtime Mutability
 

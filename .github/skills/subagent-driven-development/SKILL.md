@@ -58,7 +58,9 @@ Before extracting tasks, locate the tasks index:
 
 ### Memory Gate Check
 
-> **Required — do not skip.** This is the entry guard of the Executando state. Memory must have been persisted at the end of `writing-plans` (exit action of Planejando state). If it wasn't, persist it now before dispatching any subagent.
+> **Conditional on `session_memory_enabled`.** If `session_memory_enabled = false`, skip this entire section and proceed directly to Caveman Mode Activation.
+
+> **When enabled — do not skip.** This is the entry guard of the Executando state. Memory must have been persisted at the end of `writing-plans` (exit action of Planejando state). If it wasn't, persist it now before dispatching any subagent.
 
 Before dispatching the first task subagent, verify that planning artifacts were persisted:
 

@@ -23,12 +23,12 @@ stateDiagram-v2
 
     Explorando --> Formalizando : spec aprovada (default)
     Explorando --> Planejando : PRD pulado
-    note right of Explorando : entry / memory recall (persistent-memory search)
+    note right of Explorando : entry / memory recall [if session_memory_enabled] (persistent-memory search)
 
     Formalizando --> Planejando : PRD aprovado
 
     Planejando --> Executando : plano criado, workspace isolado
-    note right of Planejando : exit / memory persist (persistent-memory add)
+    note right of Planejando : exit / memory persist [if session_memory_enabled] (persistent-memory add)
 
     state Executando {
         direction TB

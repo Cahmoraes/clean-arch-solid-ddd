@@ -21,7 +21,7 @@ Every project goes through this process. A todo list, a single-function utility,
 
 You MUST create a task for each of these items and complete them in order:
 
-1. **Memory recall + Explore context + research** — launch parallel subagents in one turn: **memory recall** (persistent-memory search for prior decisions, ADRs, specs on this topic), codebase exploration (existing projects), context7 (external libraries), exa-web-search-free (best practices/web), user-referenced resources. See [Research via Parallel Subagents](#research-via-parallel-subagents) below.
+1. **Memory recall (conditional) + Explore context + research** — launch parallel subagents in one turn: **memory recall** (if `session_memory_enabled = true`: persistent-memory search for prior decisions, ADRs, specs on this topic), codebase exploration (existing projects), context7 (external libraries), exa-web-search-free (best practices/web), user-referenced resources. See [Research via Parallel Subagents](#research-via-parallel-subagents) below.
 2. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
@@ -96,7 +96,7 @@ All applicable tracks must be launched in the **same tool-calling turn**:
 
 | Subagent | When | Agent type |
 |----------|------|-----------|
-| **Memory recall** | Always — retrieves prior decisions, ADRs, specs, and constraints from `persistent-memory` | `task` (see template below) |
+| **Memory recall** | If `session_memory_enabled = true` — retrieves prior decisions, ADRs, specs, and constraints from `persistent-memory`. Skip entirely when memory is disabled. | `task` (see template below) |
 | Codebase exploration | Always for existing projects; skip for clearly greenfield work | `explore` |
 | Library / API docs | Topic involves external libraries or frameworks | `general-purpose` instructed to use `context7` (when available) |
 | Web research | Needs current best practices, comparisons, or technology state | `general-purpose` instructed to use `exa-web-search-free` (when available) |
@@ -104,11 +104,13 @@ All applicable tracks must be launched in the **same tool-calling turn**:
 
 If `context7` or `exa-web-search-free` are unavailable or hit quota, continue with best available knowledge — don't block the session.
 
-If `pmem` is unavailable or memory search returns no results, continue without memory context — don't block the session.
+If `session_memory_enabled = false`, skip the memory recall subagent entirely — do not dispatch it. If memory is enabled but `pmem` is unavailable or memory search returns no results, continue without memory context — don't block the session.
 
 ### Subagent prompt templates
 
 Provide only the minimum context each subagent needs. No conversation history, no full file dumps. Cap every response at ~300 words or 8 bullets — summaries, not raw output.
+
+> **Guard:** Only dispatch the memory recall subagent if `session_memory_enabled = true`. If memory is disabled, skip this template entirely and continue with the other parallel subagents.
 
 **Memory recall** — dispatch via `task` (task agent):
 

@@ -30,12 +30,28 @@ except Exception:
 
 
 def _detect_workspace_root() -> Path:
-    """Find the workspace root by walking upward from this script file."""
-    here = Path(__file__).resolve()
-    for parent in [here.parent] + list(here.parents):
+    """Find the workspace root by walking upward from the current working directory.
+
+    Resolution order:
+      1. PMEM_ROOT environment variable (explicit override)
+      2. Walk cwd upward looking for .git or AGENTS.md
+      3. Fall back to cwd itself
+
+    Using cwd (not __file__) ensures the database is always created in the
+    project the agent is currently operating on, regardless of where the
+    skill scripts are installed.
+    """
+    import os
+
+    override = os.environ.get("PMEM_ROOT")
+    if override:
+        return Path(override).resolve()
+
+    cwd = Path.cwd().resolve()
+    for parent in [cwd] + list(cwd.parents):
         if (parent / ".git").exists() or (parent / "AGENTS.md").exists():
             return parent
-    return here.parents[4]
+    return cwd
 
 
 ROOT = _detect_workspace_root()

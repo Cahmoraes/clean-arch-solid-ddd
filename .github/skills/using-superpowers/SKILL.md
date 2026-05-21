@@ -26,7 +26,7 @@ On every session start, check for `.superpowers/preferences.yml` in the user's r
 > # or with explicit root:
 > node scripts/read-preferences.js --repo-root <repo-root>
 > ```
-> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, `preferences.copilot.rubber_duck`, `preferences.context.has_corporate_artifacts`, `preferences.optimization.caveman`, and `preferences.optimization.caveman_level` directly from the output.
+> The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, `preferences.copilot.rubber_duck`, `preferences.context.has_corporate_artifacts`, `preferences.optimization.caveman`, `preferences.optimization.caveman_level`, and `preferences.memory.persistent_memory` directly from the output.
 > 
 > **Fallback (if script unavailable):** Read the file directly using `view` — do NOT use `glob` (glob silently misses hidden directories like `.superpowers/`). See `references/copilot-tools.md`.
 
@@ -100,13 +100,14 @@ Caveman Mode reduces agent token consumption ~75% during execution phases by swi
 
 ### Session State
 
-After reading preferences, track these three session-only variables in memory:
+After reading preferences, track these four session-only variables in memory:
 
 | Variable | Initial value | Description |
 |----------|--------------|-------------|
 | `session_caveman_active` | `preferences.optimization.caveman` | Whether caveman is currently ON |
 | `session_caveman_level` | `preferences.optimization.caveman_level` (default: `full`) | The intensity level to use |
 | `session_caveman_prompted` | `false` | Whether the dynamic question was already asked this session |
+| `session_memory_enabled` | `preferences.memory.persistent_memory` (default: `false`) | Whether persistent memory recall/persist operations are active |
 
 These variables are never written back to `.superpowers/preferences.yml`. They live in the current session context only.
 
@@ -119,7 +120,7 @@ Caveman activates at the `Planejando → Executando` gate and stays active throu
 [Formalizando]        → caveman: OFF
 [Planejando]          → caveman: OFF
 ─── GATE: Planejando → Executando ─── ← ACTIVATE if session_caveman_active = true
-                                         REQUIRED: memory persisted by writing-plans (exit action)
+                                         CONDITIONAL: memory persisted by writing-plans (if session_memory_enabled)
 [Implementando]       → caveman: ON
 [EmRevisao]           → caveman: ON
 [Depurando em Exec]   → caveman: ON
@@ -132,10 +133,10 @@ Caveman activates at the `Planejando → Executando` gate and stays active throu
 ```
 
 > **GATE: Planejando → Executando** has two mandatory exit actions:
-> 1. **Memory persistence** — `writing-plans` must call `pmem add` (3 entries) before handing off to execution. See `writing-plans/SKILL.md § Memory Persistence`.
+> 1. **Memory persistence** (if `session_memory_enabled = true`) — `writing-plans` must call `pmem add` (3 entries) before handing off to execution. See `writing-plans/SKILL.md § Memory Persistence`. If `session_memory_enabled = false`, skip this action entirely.
 > 2. **Caveman activation** — if `session_caveman_active = true`, invoke `/caveman <level>`.
 >
-> Execution skills (`subagent-driven-development`, `executing-plans`) must **verify memory was persisted** before starting tasks. If `pmem search "<feature-name>"` returns no results, run the persistence step before proceeding.
+> Execution skills (`subagent-driven-development`, `executing-plans`) must **verify memory was persisted** before starting tasks — but only if `session_memory_enabled = true`. If memory is disabled, skip the verification and proceed directly.
 
 **Invocation:** to activate at the correct level, invoke the `caveman` skill passing the level (e.g., `/caveman full`). To deactivate, say "normal mode" or "stop caveman". Execution skills (`subagent-driven-development`, `executing-plans`) own the actual invocation — this section defines the policy they follow.
 
@@ -154,7 +155,7 @@ If no: set `session_caveman_prompted = true`. Do not ask again in this session.
 
 ### Compaction Continuity
 
-After a context compaction (whether auto-triggered by the platform at its own threshold or manually by the user), restore `session_caveman_active`, `session_caveman_level`, and `session_caveman_prompted` from the compaction summary **only if those fields are present in it**.
+After a context compaction (whether auto-triggered by the platform at its own threshold or manually by the user), restore `session_caveman_active`, `session_caveman_level`, `session_caveman_prompted`, and `session_memory_enabled` from the compaction summary **only if those fields are present in it**. If `session_memory_enabled` is not found in the compaction summary, derive it from `preferences.memory.persistent_memory` (default: `false`).
 
 # Using Skills
 
