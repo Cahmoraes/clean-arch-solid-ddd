@@ -100,7 +100,7 @@ Caveman Mode reduces agent token consumption ~75% during execution phases by swi
 
 ### Session State
 
-After reading preferences, track these four session-only variables in memory:
+After reading preferences, track these five session-only variables in memory:
 
 | Variable | Initial value | Description |
 |----------|--------------|-------------|
@@ -108,8 +108,48 @@ After reading preferences, track these four session-only variables in memory:
 | `session_caveman_level` | `preferences.optimization.caveman_level` (default: `full`) | The intensity level to use |
 | `session_caveman_prompted` | `false` | Whether the dynamic question was already asked this session |
 | `session_memory_enabled` | `preferences.memory.persistent_memory` (default: `false`) | Whether persistent memory recall/persist operations are active |
+| `session_resync_completed` | `false` | Whether the re-sync gate was already processed this session |
 
 These variables are never written back to `.superpowers/preferences.yml`. They live in the current session context only.
+
+## Memory Re-Sync Gate
+
+When multiple developers work on the same repository, each developer's local `.memory/` database can become stale as others commit artifacts to `docs/superpowers/`. The re-sync gate ensures the local memory stays current with committed artifacts.
+
+### When It Activates
+
+The re-sync gate runs **after preferences are loaded** (or after onboarding completes for new users) and **before Triagem**, only when:
+1. `session_memory_enabled = true`
+2. `session_resync_completed = false`
+
+### Behavior
+
+1. **Dirty detection (silent):** Check `.memory/resync-manifest.json` against the current state of `docs/superpowers/` using git tree hash or file timestamps. If nothing changed since last sync, skip silently — do not ask the user.
+
+2. **Ask user (only if changes detected):** Present the re-sync question in the configured language. See `references/memory-resync.md` for exact wording.
+
+3. **On accept:** Execute the sync algorithm (scan artifacts, diff against manifest, prune stale entries, add new/changed entries). Report summary.
+
+4. **On decline:** Skip sync, proceed to Triagem.
+
+5. **Set `session_resync_completed = true`** regardless of outcome (prevents re-asking).
+
+### Full Algorithm
+
+Read `references/memory-resync.md` for the complete re-sync algorithm including:
+- Dirty detection via manifest + git tree hash
+- Per-feature inventory and content hashing
+- Prune-before-add strategy with `source="artifact-sync"`
+- Content synthesis rules for each artifact type
+- Deduplication guarantees
+- Graceful degradation
+
+### Integration with Existing Memory Flow
+
+The re-sync gate complements (does not replace) existing memory operations:
+- **Explorando entry:** `pmem search` for recall — benefits from re-synced data
+- **Planejando exit:** `pmem add` with `source="assistant"` — unaffected by re-sync
+- **Re-sync:** `pmem add` with `source="artifact-sync"` — isolated namespace, no conflicts
 
 ### Activation Rules by State
 
@@ -155,7 +195,7 @@ If no: set `session_caveman_prompted = true`. Do not ask again in this session.
 
 ### Compaction Continuity
 
-After a context compaction (whether auto-triggered by the platform at its own threshold or manually by the user), restore `session_caveman_active`, `session_caveman_level`, `session_caveman_prompted`, and `session_memory_enabled` from the compaction summary **only if those fields are present in it**. If `session_memory_enabled` is not found in the compaction summary, derive it from `preferences.memory.persistent_memory` (default: `false`).
+After a context compaction (whether auto-triggered by the platform at its own threshold or manually by the user), restore `session_caveman_active`, `session_caveman_level`, `session_caveman_prompted`, `session_memory_enabled`, and `session_resync_completed` from the compaction summary **only if those fields are present in it**. If `session_memory_enabled` is not found in the compaction summary, derive it from `preferences.memory.persistent_memory` (default: `false`). If `session_resync_completed` is not found, default to `false`.
 
 # Using Skills
 

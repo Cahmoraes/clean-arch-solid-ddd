@@ -1,16 +1,29 @@
+/** biome-ignore-all lint/suspicious/useIterableCallbackReturn: <explanation> */
 type State = "idle" | "loading" | "playing" | "paused" | "error" | "finished"
 type EventState = "PLAY" | "PAUSE" | "STOP" | "ERROR" | "LOADED" | "FINISHED"
-type Guard = () => boolean
 
-type StateWithGuard = {
-	state: State
-	guard?: Guard
+type Context = {
+	volume: number
+	currentTime: number
+	retryCount: number
+	hasFinished: boolean
 }
 
+type StateWithGuardAndContext = {
+	state: State
+	guard?: Guard
+	assingAction?: AssignAction
+}
+
+type Guard = (context: Context) => boolean
+type Assign = (context: Context) => void
+type AssignAction = (context: Context) => Context
+
 type StateConfig = {
-	on?: Partial<Record<EventState, StateWithGuard>>
-	entry?: CallableFunction[]
-	exit?: CallableFunction[]
+	on?: Partial<Record<EventState, StateWithGuardAndContext>>
+	assingAction?: AssignAction
+	entry?: Assign[]
+	exit?: Assign[]
 }
 
 type FSM = Record<State, StateConfig>
@@ -78,33 +91,56 @@ const machine: FSM = {
 	finished: {},
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: intencional
-function transition(machine: FSM, current: State, event: EventState): State {
-	const transition = machine[current].on?.[event]
-	if (!transition) return current
-	// Guard primeiro — sem side effects se bloquear
-	if (transition.guard && !transition.guard()) return current
-	const exits = machine[current].exit
-	if (exits) {
-		for (const exit of exits) {
-			exit()
-		}
-	}
+type TransitionOutput = {
+	state: State
+	context: Context
+}
 
-	const entries = machine[transition.state].entry
-	if (entries) {
-		for (const entry of entries) {
-			entry()
-		}
-	}
+function transition(
+	machine: FSM,
+	current: State,
+	event: EventState,
+	context: Context,
+): TransitionOutput {
+	const t = machine[current].on?.[event]
+	if (!t) return { state: current, context }
 
-	return transition.state
+	if (t.guard && !t.guard(context)) return { state: current, context }
+
+	// Transforma context antes dos side effects
+	const newContext = t.assingAction ? t.assingAction(context) : context
+
+	machine[current].exit?.forEach((fn) => fn(newContext))
+	machine[t.state].entry?.forEach((fn) => fn(newContext))
+
+	return { state: t.state, context: newContext }
 }
 
 const initial_state: State = "idle"
-const state_1 = transition(machine, initial_state, "PLAY")
+const initialContext: Context = {
+	currentTime: 0,
+	hasFinished: false,
+	retryCount: 3,
+	volume: 10,
+}
+const { state: state_1, context: second_context } = transition(
+	machine,
+	initial_state,
+	"PLAY",
+	initialContext,
+)
 console.log("state 1:", state_1)
-const state_2 = transition(machine, state_1, "LOADED")
+const { state: state_2, context: third_context } = transition(
+	machine,
+	state_1,
+	"LOADED",
+	second_context,
+)
 console.log("state 2:", state_2)
-const state_3 = transition(machine, state_2, "FINISHED")
-console.log("state 3:", state_3)
+const { state: state_3, context: fourty_context } = transition(
+	machine,
+	state_2,
+	"FINISHED",
+	third_context,
+)
+console.log("state 3:", state_3, fourty_context)

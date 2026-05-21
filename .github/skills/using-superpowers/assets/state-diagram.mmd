@@ -3,8 +3,10 @@ stateDiagram-v2
 
     [*] --> ChecandoPreferencias
     ChecandoPreferencias --> Onboarding : preferencias ausentes
-    ChecandoPreferencias --> Triagem : preferencias carregadas
-    Onboarding --> Triagem : preferencias salvas
+    ChecandoPreferencias --> GateResync : preferencias carregadas AND session_memory_enabled
+    ChecandoPreferencias --> Triagem : preferencias carregadas AND NOT session_memory_enabled
+    Onboarding --> GateResync : preferencias salvas AND session_memory_enabled
+    Onboarding --> Triagem : preferencias salvas AND NOT session_memory_enabled
 
     state Onboarding {
         direction TB
@@ -13,6 +15,19 @@ stateDiagram-v2
         ColetandoArtefatos --> SalvandoPreferencias : artefatos registrados (ou etapa pulada)
         SalvandoPreferencias --> [*]
     }
+
+    state GateResync {
+        direction TB
+        [*] --> DetectandoMudancas
+        DetectandoMudancas --> [*] : nenhuma mudanca detectada (skip silencioso)
+        DetectandoMudancas --> PerguntandoResync : mudancas detectadas em docs/superpowers
+        PerguntandoResync --> SincronizandoMemoria : usuario aceita re-sync
+        PerguntandoResync --> [*] : usuario recusa re-sync
+        SincronizandoMemoria --> [*] : sync concluido
+    }
+    note right of GateResync : entry / dirty check via manifest + git tree hash\nexit / session_resync_completed = true
+
+    GateResync --> Triagem : gate concluido
 
     Triagem --> PerguntaDeAbertura : saudacao ou pedido ambiguo
     PerguntaDeAbertura --> Triagem : fluxo escolhido
