@@ -1,6 +1,6 @@
 # Task 7: DashboardPage — composição, estados de erro/vazio e validação final [RF-029, RF-030, RF-031]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-dashboard-inicio.md`
 **Spec:** `../specs/dashboard-inicio-design.md`
 

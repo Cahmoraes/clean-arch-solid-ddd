@@ -1,0 +1,38 @@
+{
+  "userStory": "US-09",
+  "title": "Seção admin na sidebar",
+  "status": "PASSED",
+  "requirement": "RF-008",
+  "verifiedAt": "2026-05-25",
+  "implementation": {
+    "file": "apps/frontend/src/components/layout/authenticated-shell.tsx",
+    "findings": [
+      "ADMIN_NAV_ITEMS definido com links para /admin/usuarios (Usuários) e /admin/check-ins (Check-ins)",
+      "Seção admin renderizada condicionalmente com `{role === 'ADMIN' && ...}` — apenas visível para administradores",
+      "Nav admin com aria-label='Administração' para acessibilidade",
+      "MEMBER não vê a seção admin (renderização condicional correta)"
+    ]
+  },
+  "tests": {
+    "file": "apps/frontend/src/components/layout/authenticated-shell.test.tsx",
+    "existingTests": [
+      {
+        "name": "exibe seção admin na sidebar quando role é ADMIN",
+        "result": "PASSED",
+        "validates": "Admin nav com aria-label=/administração/i é renderizado para role ADMIN, incluindo link /admin/usuarios"
+      },
+      {
+        "name": "oculta seção admin quando role é MEMBER",
+        "result": "PASSED",
+        "validates": "Nav de administração não é exibido para role MEMBER"
+      }
+    ],
+    "allTestsPassed": true,
+    "newTestCreated": false
+  },
+  "notes": [
+    "Testes já existiam no projeto source e cobrem completamente o requisito RF-008",
+    "Nenhum teste adicional foi necessário criar no diretório de evidências",
+    "ADMIN_NAV_ITEMS inclui /admin/usuarios e /admin/check-ins (Academias admin não presente como item separado, mas check-ins admin está)"
+  ]
+}

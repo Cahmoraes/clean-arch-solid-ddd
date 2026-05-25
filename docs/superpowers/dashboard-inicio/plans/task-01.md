@@ -1,6 +1,6 @@
 # Task 1: Refatorar AuthenticatedShell → AppSidebar [RF-004, RF-005, RF-006, RF-007, RF-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-dashboard-inicio.md`
 **Spec:** `../specs/dashboard-inicio-design.md`
 

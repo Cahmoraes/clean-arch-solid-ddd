@@ -1,6 +1,6 @@
 # Task 4: ProfileHeroCard + KpiCards [RF-009, RF-010, RF-011, RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-dashboard-inicio.md`
 **Spec:** `../specs/dashboard-inicio-design.md`
 

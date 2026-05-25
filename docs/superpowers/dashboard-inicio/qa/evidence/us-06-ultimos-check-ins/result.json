@@ -1,0 +1,59 @@
+{
+  "userStory": "US-06",
+  "title": "Últimos check-ins",
+  "status": "PASSED",
+  "verifiedAt": "2026-05-25",
+  "component": "apps/frontend/src/features/dashboard/components/checkins-timeline.tsx",
+  "acceptanceTest": "docs/superpowers/dashboard-inicio/qa/evidence/us-06-ultimos-check-ins/us-06-checkins-timeline.acceptance.test.tsx",
+  "testResults": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "requirements": [
+    {
+      "id": "RF-022",
+      "description": "Exibir: nome da academia, data/hora relativa e badge de status (Validado / Pendente / Rejeitado)",
+      "status": "PASSED",
+      "evidence": [
+        "checkIns.slice(0, 5) limita a exibição a 5 itens (linha 74)",
+        "ci.gymTitle ?? 'Academia' exibe o nome com fallback (linha 99)",
+        "formatRelativeDate(ci.createdAt) exibe data relativa em PT-BR (linhas 26-44)",
+        "STATUS_LABEL exibe os textos 'Validado', 'Pendente', 'Rejeitado' (linhas 8-12)",
+        "Testes: 'deve exibir o nome da academia', 'deve exibir no máximo 5 check-ins', 'deve exibir data relativa Hoje'"
+      ]
+    },
+    {
+      "id": "RF-023",
+      "description": "Badge de status deve ter cor semântica: verde (validado), amarelo (pendente), vermelho (rejeitado)",
+      "status": "PASSED",
+      "evidence": [
+        "STATUS_BADGE_CLASS.validated = 'border-green-800/30 bg-green-900/20 text-green-400' (linha 21)",
+        "STATUS_BADGE_CLASS.pending = 'border-yellow-800/30 bg-yellow-900/20 text-yellow-400' (linha 22)",
+        "STATUS_BADGE_CLASS.rejected = 'border-red-800/30 bg-red-900/20 text-red-400' (linha 23)",
+        "STATUS_DOT_CLASS também usa bg-green-400/bg-yellow-400/bg-red-400 (linhas 14-18)",
+        "Testes: 'deve exibir badge verde/amarelo/vermelho para check-in validado/pendente/rejeitado'"
+      ]
+    },
+    {
+      "id": "RF-024",
+      "description": "Exibir link 'Ver todos' direcionando para /check-ins",
+      "status": "PASSED",
+      "evidence": [
+        "Link href='/check-ins' com texto 'Ver todos' presente (linhas 119-125)",
+        "Link exibido tanto no estado vazio quanto com check-ins",
+        "Testes: 'deve exibir link Ver todos apontando para /check-ins'"
+      ]
+    },
+    {
+      "id": "RF-025",
+      "description": "Quando não houver check-ins, exibir empty state com mensagem orientativa",
+      "status": "PASSED",
+      "evidence": [
+        "Mensagem 'Nenhum check-in registrado ainda.' exibida quando recent.length === 0 (linhas 82-85)",
+        "Teste: 'deve exibir mensagem orientativa quando não há check-ins'"
+      ]
+    }
+  ],
+  "notes": "Nenhum teste pré-existente encontrado para CheckinsTimeline. Foram criados 11 testes de aceitação que cobrem todos os 4 requisitos funcionais. Todos os testes passaram com sucesso."
+}

@@ -1,6 +1,6 @@
 # Task 2: Criar rota `/inicio` e atualizar redirect pós-login [RF-001, RF-002, RF-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-dashboard-inicio.md`
 **Spec:** `../specs/dashboard-inicio-design.md`
 

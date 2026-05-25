@@ -1,6 +1,6 @@
 # Task 3: Dashboard API hook + funções de cálculo de métricas [RF-014, RF-015, RF-016, RF-018, RF-019, RF-026, RF-027]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-dashboard-inicio.md`
 **Spec:** `../specs/dashboard-inicio-design.md`
 

@@ -1,0 +1,66 @@
+{
+  "userStory": "US-05 — Histórico de atividade (heatmap)",
+  "status": "PARTIAL",
+  "verifiedAt": "2026-05-25",
+  "summary": "Todos os 4 requisitos funcionais estão implementados corretamente no código. Os testes unitários passam 100%. Não foi possível verificar o tooltip via browser (sem servidor dev ativo), por isso o status é PARTIAL ao invés de PASSED.",
+  "requirements": [
+    {
+      "id": "RF-018",
+      "description": "Exibir grid de 13 semanas × 7 dias cobrindo os últimos 90 dias",
+      "status": "PASSED",
+      "evidence": {
+        "file": "apps/frontend/src/features/dashboard/hooks/use-dashboard-metrics.ts",
+        "detail": "computeHeatmap itera de i=89 até i=0 (90 dias). Teste 'retorna 90 dias' confirma result.toHaveLength(90). HeatmapCard renderiza via buildWeeks() em colunas de semanas (flex layout).",
+        "testResult": "PASS — use-dashboard-metrics.test.ts > computeHeatmap > retorna 90 dias"
+      }
+    },
+    {
+      "id": "RF-019",
+      "description": "Cada célula deve ter 5 níveis de intensidade: 0 check-ins, 1, 2, 3, 4 ou mais",
+      "status": "PASSED",
+      "evidence": {
+        "file": "apps/frontend/src/features/dashboard/components/heatmap-card.tsx",
+        "detail": "INTENSITY_CLASS define exatamente 5 chaves: {0: 'bg-muted', 1: 'bg-foreground/20', 2: 'bg-foreground/40', 3: 'bg-foreground/70', 4: 'bg-foreground'}. toIntensity() mapeia count>=4 para nível 4.",
+        "testResult": "PASS — use-dashboard-metrics.test.ts > computeHeatmap > mapeia intensidade corretamente (4 check-ins → intensity 4)"
+      }
+    },
+    {
+      "id": "RF-020",
+      "description": "Células devem exibir tooltip com data e contagem ao hover",
+      "status": "PARTIAL",
+      "evidence": {
+        "file": "apps/frontend/src/features/dashboard/components/heatmap-card.tsx",
+        "detail": "HeatmapCell renderiza <div title={label}> onde label='YYYY-MM-DD: N check-in(s)' ou 'YYYY-MM-DD: sem check-in'. O atributo title é o mecanismo nativo de tooltip do browser. Verificação visual via browser não foi possível (sem servidor dev ativo).",
+        "testResult": "CODE_VERIFIED — tooltip implementado via atributo title nativo do HTML"
+      }
+    },
+    {
+      "id": "RF-021",
+      "description": "Dias sem dados devem ter aparência distinta de dias com 0 check-ins",
+      "status": "PASSED",
+      "evidence": {
+        "file": "apps/frontend/src/features/dashboard/components/heatmap-card.tsx",
+        "detail": "Células de padding (dias anteriores ao início do grid) usam <div aria-hidden='true' className='aspect-square w-3'> sem cor de fundo. Dias com intensity=0 usam 'bg-muted'. Aparências são distintas: padding=invisível/transparente, zero=bg-muted.",
+        "testResult": "PASS — use-dashboard-metrics.test.ts > computeHeatmap > dia sem check-in tem intensidade 0 (intensity=0, count=0)"
+      }
+    }
+  ],
+  "testRun": {
+    "command": "npx vitest run src/features/dashboard/hooks/use-dashboard-metrics.test.ts",
+    "result": "12 passed (12)",
+    "heatmapTests": [
+      "computeHeatmap > retorna 90 dias — PASS",
+      "computeHeatmap > mapeia intensidade corretamente — PASS",
+      "computeHeatmap > dia sem check-in tem intensidade 0 — PASS"
+    ]
+  },
+  "browserVerification": {
+    "status": "SKIPPED",
+    "reason": "Servidor dev não estava ativo. Tooltip (RF-020) verificado apenas via inspeção estática de código (atributo title no JSX)."
+  },
+  "keyFiles": [
+    "apps/frontend/src/features/dashboard/hooks/use-dashboard-metrics.ts",
+    "apps/frontend/src/features/dashboard/components/heatmap-card.tsx",
+    "apps/frontend/src/features/dashboard/hooks/use-dashboard-metrics.test.ts"
+  ]
+}

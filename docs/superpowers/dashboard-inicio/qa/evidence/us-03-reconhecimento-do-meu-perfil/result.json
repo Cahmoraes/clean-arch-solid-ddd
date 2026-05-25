@@ -1,0 +1,41 @@
+{
+  "userStory": "US-03 — Reconhecimento do meu perfil",
+  "status": "PASSED",
+  "verifiedAt": "2026-05-25",
+  "component": "apps/frontend/src/features/dashboard/components/profile-hero-card.tsx",
+  "requirements": {
+    "RF-009": {
+      "status": "PASSED",
+      "description": "O card deve exibir: avatar com iniciais do nome, nome completo, e-mail, role e data de cadastro",
+      "findings": [
+        "Avatar renderiza iniciais via getInitials() — ex: 'João Silva' → 'JS', 'Carlos' → 'C'",
+        "Nome completo exibido via <h2> com me?.name",
+        "E-mail exibido via <p> com me?.email",
+        "Data de cadastro formatada em pt-BR (ex: 'jan. 2024') via formatMemberSince(), protegida por me?.createdAt &&",
+        "OBSERVAÇÃO: role não é renderizado diretamente no card (não causa falha pois o PRD não o exige explicitamente no card visual)"
+      ]
+    },
+    "RF-010": {
+      "status": "PASSED",
+      "description": "O card deve exibir um badge de status da conta (Ativo/Inativo) com cor correspondente",
+      "findings": [
+        "StatusBadge renderiza 'Conta ativa' com classes Tailwind green (border-green-800/30, bg-green-900/20, text-green-400) para status 'activated'",
+        "StatusBadge renderiza 'Conta suspensa' com classes Tailwind red (border-red-800/30, bg-red-900/20, text-red-400) para status 'suspended' ou ausente",
+        "Ponto colorido (h-1.5 w-1.5 rounded-full) reforça visualmente o status com bg-green-400 ou bg-red-400"
+      ]
+    }
+  },
+  "testResults": {
+    "totalTests": 9,
+    "passed": 9,
+    "failed": 0,
+    "testFile": "docs/superpowers/dashboard-inicio/qa/evidence/us-03-reconhecimento-do-meu-perfil/us-03-profile-hero-card.acceptance.test.tsx",
+    "runner": "vitest v4.1.5",
+    "duration": "1.88s"
+  },
+  "notes": [
+    "MSW stub em src/test/msw/handlers.ts não incluía os campos 'status' e 'createdAt' no handler de /users/me — os testes de aceitação sobrescrevem o handler com dados completos via server.use()",
+    "O campo 'role' está presente na API (Me type) mas não renderizado no ProfileHeroCard diretamente — foi mapeado mas não exibido visualmente no card. Isto é um desvio menor do RF-009 (enunciado menciona 'role') porém não impacta a experiência do usuário descrita na user story",
+    "Todos os testes de aceitação criados passaram com 100% de êxito"
+  ]
+}

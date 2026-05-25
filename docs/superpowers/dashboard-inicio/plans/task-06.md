@@ -1,6 +1,6 @@
 # Task 6: CheckinsTimeline + StatusDonutCard [RF-022, RF-023, RF-024, RF-025, RF-026, RF-027, RF-028]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-dashboard-inicio.md`
 **Spec:** `../specs/dashboard-inicio-design.md`
 

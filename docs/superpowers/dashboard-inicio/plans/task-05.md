@@ -1,6 +1,6 @@
 # Task 5: WeeklyChart + HeatmapCard [RF-015, RF-016, RF-017, RF-018, RF-019, RF-020, RF-021]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-dashboard-inicio.md`
 **Spec:** `../specs/dashboard-inicio-design.md`
 
