@@ -35,19 +35,20 @@ function Avatar({ name }: { name?: string }) {
 }
 
 function StatusBadge({ isActive }: { isActive: boolean }) {
+	const statusClass = isActive
+		? "bg-accent text-accent-foreground"
+		: "bg-muted text-muted-foreground"
 	return (
 		<span
 			className={cn(
-				"mt-1 inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-				isActive
-					? "border-green-800/30 bg-green-900/20 text-green-400"
-					: "border-red-800/30 bg-red-900/20 text-red-400",
+				"mt-1 inline-flex w-fit items-center gap-1.5 rounded-full border border-transparent px-2.5 py-0.5 text-xs font-medium",
+				statusClass,
 			)}
 		>
 			<span
 				className={cn(
 					"h-1.5 w-1.5 rounded-full",
-					isActive ? "bg-green-400" : "bg-red-400",
+					isActive ? "bg-accent-foreground/70" : "bg-muted-foreground/70",
 				)}
 				aria-hidden="true"
 			/>
@@ -60,7 +61,9 @@ function UserInfo({ me }: { me?: Me }) {
 	const isActive = me?.status === "activated"
 	return (
 		<div className="flex flex-col gap-1">
-			<h2 className="text-base font-semibold">{me?.name ?? "—"}</h2>
+			<h2 className="text-base font-semibold text-primary">
+				{me?.name ?? "—"}
+			</h2>
 			<p className="text-sm text-muted-foreground">{me?.email}</p>
 			{me?.createdAt && (
 				<p className="text-xs text-muted-foreground">
@@ -84,15 +87,15 @@ function InlineStats({
 	return (
 		<div className="ml-auto flex gap-6">
 			<div className="text-center">
-				<p className="text-xl font-bold">{total}</p>
+				<p className="text-xl font-semibold text-primary">{total}</p>
 				<p className="text-xs text-muted-foreground">Total</p>
 			</div>
 			<div className="text-center">
-				<p className="text-xl font-bold">{thisMonth}</p>
+				<p className="text-xl font-semibold text-primary">{thisMonth}</p>
 				<p className="text-xs text-muted-foreground">Este mês</p>
 			</div>
 			<div className="text-center">
-				<p className="text-xl font-bold">{streak}</p>
+				<p className="text-xl font-semibold text-primary">{streak}</p>
 				<p className="text-xs text-muted-foreground">Sequência</p>
 			</div>
 		</div>
@@ -131,7 +134,7 @@ export function ProfileHeroCard({ thisMonth, streak }: ProfileHeroCardProps) {
 	}
 
 	return (
-		<div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-5">
+		<div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm">
 			<Avatar name={me?.name} />
 			<UserInfo me={me} />
 			<InlineStats

@@ -20,7 +20,7 @@ function KpiCard({
 	valueClassName,
 }: KpiCardProps) {
 	return (
-		<div className="rounded-xl border border-border bg-card p-4">
+		<div className="rounded-xl border border-border bg-card p-4 shadow-sm">
 			<p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
 				{label}
 			</p>
@@ -31,7 +31,14 @@ function KpiCard({
 				</>
 			) : (
 				<>
-					<p className={cn("text-2xl font-bold", valueClassName)}>{value}</p>
+					<p
+						className={cn(
+							"text-2xl font-semibold text-primary",
+							valueClassName,
+						)}
+					>
+						{value}
+					</p>
 					{sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
 				</>
 			)}
@@ -81,7 +88,7 @@ export function KpiCards({
 			<KpiCard
 				label="Status"
 				value="Ativo"
-				valueClassName="text-green-400"
+				valueClassName="text-accent-foreground"
 				isLoading={false}
 			/>
 		</div>

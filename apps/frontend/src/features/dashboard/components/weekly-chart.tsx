@@ -45,8 +45,7 @@ function Bar({ count, dayIndex, heightPct }: BarProps) {
 				className="w-full rounded-t-sm"
 				style={{
 					height: `${Math.max(heightPct, 4)}%`,
-					background:
-						count > 0 ? "hsl(var(--foreground))" : "hsl(var(--muted))",
+					background: count > 0 ? "var(--color-primary)" : "hsl(var(--muted))",
 				}}
 				title={`${DAY_LABELS[dayIndex]}: ${count} check-in${count !== 1 ? "s" : ""}`}
 			/>

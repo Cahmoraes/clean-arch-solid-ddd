@@ -3,13 +3,13 @@ import { Skeleton } from "@/components/ui/skeleton"
 import type { HeatmapDay } from "@/features/dashboard/hooks/use-dashboard-metrics"
 import { cn } from "@/lib/cn"
 
-// Intensidade mapeada para opacidade do foreground
+// Intensidade mapeada para opacidade do primary
 const INTENSITY_CLASS: Record<0 | 1 | 2 | 3 | 4, string> = {
 	0: "bg-muted",
-	1: "bg-foreground/20",
-	2: "bg-foreground/40",
-	3: "bg-foreground/70",
-	4: "bg-foreground",
+	1: "bg-primary/20",
+	2: "bg-primary/40",
+	3: "bg-primary/80",
+	4: "bg-primary",
 }
 
 interface HeatmapCellProps {
