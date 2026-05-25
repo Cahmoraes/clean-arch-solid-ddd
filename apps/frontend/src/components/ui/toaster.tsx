@@ -16,9 +16,9 @@ export function Toaster(props: ToasterProps) {
 					title: "text-card-foreground font-medium",
 					description: "text-muted-foreground",
 					actionButton:
-						"rounded-full bg-primary text-primary-foreground px-3 py-1 text-sm",
+						"rounded-md bg-primary text-primary-foreground px-3 py-1 text-sm",
 					cancelButton:
-						"rounded-full bg-secondary text-secondary-foreground px-3 py-1 text-sm",
+						"rounded-md bg-secondary text-secondary-foreground px-3 py-1 text-sm",
 				},
 			}}
 			{...props}

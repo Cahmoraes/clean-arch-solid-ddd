@@ -24,7 +24,7 @@ const DropdownMenuContent = forwardRef<
 			ref={ref}
 			sideOffset={sideOffset}
 			className={cn(
-				"z-50 min-w-[10rem] overflow-hidden rounded-[12px] border border-border bg-popover p-1 text-popover-foreground",
+				"z-50 min-w-[10rem] overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md",
 				className,
 			)}
 			{...props}
@@ -42,7 +42,7 @@ const DropdownMenuItem = forwardRef<
 	<DropdownMenuPrimitive.Item
 		ref={ref}
 		className={cn(
-			"relative flex cursor-pointer select-none items-center gap-2 rounded-full px-3 py-1.5 text-sm",
+			"relative flex cursor-pointer select-none items-center gap-2 rounded-md px-3 py-1.5 text-sm",
 			"focus:bg-accent focus:text-accent-foreground focus:outline-none",
 			"data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
 			inset && "pl-8",
