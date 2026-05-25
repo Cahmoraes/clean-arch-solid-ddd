@@ -16,6 +16,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { type ReactNode, useState } from "react"
 import { toast } from "sonner"
 import { useLogout } from "@/features/auth/api"
+import { useMe } from "@/features/profile/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { cn } from "@/lib/cn"
 
@@ -70,9 +71,20 @@ function SidebarNavItem({ item, pathname, onClick }: SidebarNavItemProps) {
 	)
 }
 
+function getInitials(name: string): string {
+	return name
+		.split(" ")
+		.filter(Boolean)
+		.map((word) => word[0])
+		.join("")
+		.toUpperCase()
+		.slice(0, 2)
+}
+
 interface SidebarContentProps {
 	pathname: string | null
 	role: "MEMBER" | "ADMIN" | undefined
+	name?: string
 	onNavigate?: () => void
 	onLogout: () => void
 }
@@ -80,6 +92,7 @@ interface SidebarContentProps {
 function SidebarContent({
 	pathname,
 	role,
+	name,
 	onNavigate,
 	onLogout,
 }: SidebarContentProps) {
@@ -128,13 +141,22 @@ function SidebarContent({
 			<div className="mt-auto border-t border-border pt-4">
 				<div className="flex items-center gap-2 px-2 py-1">
 					<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent">
-						<User
-							className="h-4 w-4 text-muted-foreground"
-							aria-hidden="true"
-						/>
+						{name ? (
+							<span
+								className="text-xs font-medium text-muted-foreground"
+								aria-hidden="true"
+							>
+								{getInitials(name)}
+							</span>
+						) : (
+							<User
+								className="h-4 w-4 text-muted-foreground"
+								aria-hidden="true"
+							/>
+						)}
 					</div>
 					<span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
-						{role === "ADMIN" ? "Administrador" : "Membro"}
+						{name ?? (role === "ADMIN" ? "Administrador" : "Membro")}
 					</span>
 					<button
 						type="button"
@@ -164,6 +186,7 @@ export function AuthenticatedShell({
 	const pathname = usePathname()
 	const [mobileOpen, setMobileOpen] = useState(false)
 	const logout = useLogout()
+	const { data: meData } = useMe()
 
 	function handleLogout() {
 		logout.mutate(undefined, {
@@ -190,6 +213,7 @@ export function AuthenticatedShell({
 					<SidebarContent
 						pathname={pathname}
 						role={user?.role}
+						name={meData?.name}
 						onLogout={handleLogout}
 					/>
 				</div>
@@ -225,6 +249,7 @@ export function AuthenticatedShell({
 				<SidebarContent
 					pathname={pathname}
 					role={user?.role}
+					name={meData?.name}
 					onNavigate={() => setMobileOpen(false)}
 					onLogout={handleLogout}
 				/>

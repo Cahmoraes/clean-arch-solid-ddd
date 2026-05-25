@@ -94,6 +94,14 @@ describe("AuthenticatedShell", () => {
 		expect(mobileSidebar).toHaveAttribute("aria-hidden", "true")
 	})
 
+	test("exibe nome do usuário no rodapé da sidebar (RF-006)", async () => {
+		setUser("MEMBER")
+		renderShell()
+		await waitFor(() => {
+			expect(screen.getAllByText("Stub User")[0]).toBeInTheDocument()
+		})
+	})
+
 	test("logout redireciona para /login", async () => {
 		setUser("MEMBER")
 		const user = userEvent.setup()
