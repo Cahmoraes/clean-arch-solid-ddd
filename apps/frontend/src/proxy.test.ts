@@ -62,4 +62,21 @@ describe("Edge proxy", () => {
 		expect(res.status).toBeGreaterThanOrEqual(300)
 		expect(res.headers.get("location")).toContain("/login")
 	})
+
+	it("redireciona /inicio para /login quando não autenticado (RF-003)", () => {
+		const req = makeRequest("/inicio")
+		const res = proxy(req)
+
+		expect(res.status).toBeGreaterThanOrEqual(300)
+		expect(res.headers.get("location")).toContain("/login")
+		expect(res.headers.get("location")).toContain("redirect=%2Finicio")
+	})
+
+	it("passa em /inicio quando autenticado (RF-003)", () => {
+		const req = makeRequest("/inicio", { refreshToken: "abc" })
+		const res = proxy(req)
+
+		expect(res.headers.get("location")).toBeNull()
+		expect(res.status).toBe(200)
+	})
 })

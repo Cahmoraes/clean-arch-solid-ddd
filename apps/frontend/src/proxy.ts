@@ -24,6 +24,7 @@ export function proxy(request: NextRequest): NextResponse {
 
 export const config = {
 	matcher: [
+		"/inicio/:path*",
 		"/perfil/:path*",
 		"/academias/:path*",
 		"/check-ins/:path*",
