@@ -1,6 +1,6 @@
 # Task 8: Substituição do DESIGN.md + validação final
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/design-system-migration-design.md`
 

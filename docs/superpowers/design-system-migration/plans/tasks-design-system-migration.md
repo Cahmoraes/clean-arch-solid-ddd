@@ -17,11 +17,11 @@
 
 ## Tarefas
 
-- [ ] 1. Tokens base — globals.css + Inter Variable em layout.tsx → `task-01.md`
-- [ ] 2. Button + Input — rounded-md e nova paleta → `task-02.md`
-- [ ] 3. Card, Dialog, AlertDialog, Skeleton — elevação e radius → `task-03.md`
-- [ ] 4. Tabs, Pagination, EmptyState — componentes interativos secundários → `task-04.md`
-- [ ] 5. AuthenticatedShell — sidebar com identidade indigo → `task-05.md`
-- [ ] 6. PublicShell + páginas de autenticação — hero indigo → `task-06.md`
-- [ ] 7. Componentes do Dashboard — nova paleta cromática → `task-07.md`
-- [ ] 8. Substituição do DESIGN.md + validação final → `task-08.md`
+- [x] 1. Tokens base — globals.css + Inter Variable em layout.tsx → `task-01.md`
+- [x] 2. Button + Input — rounded-md e nova paleta → `task-02.md`
+- [x] 3. Card, Dialog, AlertDialog, Skeleton — elevação e radius → `task-03.md`
+- [x] 4. Tabs, Pagination, EmptyState — componentes interativos secundários → `task-04.md`
+- [x] 5. AuthenticatedShell — sidebar com identidade indigo → `task-05.md`
+- [x] 6. PublicShell + páginas de autenticação — hero indigo → `task-06.md`
+- [x] 7. Componentes do Dashboard — nova paleta cromática → `task-07.md`
+- [x] 8. Substituição do DESIGN.md + validação final → `task-08.md`

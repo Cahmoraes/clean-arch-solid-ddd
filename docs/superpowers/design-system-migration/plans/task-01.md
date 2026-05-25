@@ -1,6 +1,6 @@
 # Task 1: Tokens base — globals.css + Inter Variable em layout.tsx
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/design-system-migration-design.md`
 

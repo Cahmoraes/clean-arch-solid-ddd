@@ -1,6 +1,6 @@
 # Task 6: PublicShell + páginas de autenticação — hero indigo
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/design-system-migration-design.md`
 

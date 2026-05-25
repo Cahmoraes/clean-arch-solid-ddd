@@ -1,6 +1,6 @@
 # Task 2: Button + Input — rounded-md e nova paleta
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/design-system-migration-design.md`
 

@@ -2,7 +2,6 @@
 	"name": "monorepo",
 	"private": true,
 	"packageManager": "pnpm@10.23.0",
-	"type": "module",
 	"scripts": {
 		"dev": "turbo dev",
 		"build": "turbo build",

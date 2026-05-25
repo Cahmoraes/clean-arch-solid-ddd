@@ -1,6 +1,6 @@
 # Task 7: Componentes do Dashboard — nova paleta cromática
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/design-system-migration-design.md`
 

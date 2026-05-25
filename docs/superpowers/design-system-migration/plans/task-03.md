@@ -1,6 +1,6 @@
 # Task 3: Card, Dialog, AlertDialog, Skeleton — elevação e radius
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/design-system-migration-design.md`
 
