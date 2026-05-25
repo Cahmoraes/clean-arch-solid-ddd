@@ -7,12 +7,6 @@ export interface PublicShellProps {
 	className?: string
 }
 
-/**
- * PublicShell — shell mínimo para superfícies não autenticadas.
- *
- * Header monocromático com logotipo textual e CTAs para login/cadastro.
- * Server Component (sem `"use client"`).
- */
 export function PublicShell({ children, className }: PublicShellProps) {
 	return (
 		<div
@@ -22,12 +16,12 @@ export function PublicShell({ children, className }: PublicShellProps) {
 				className,
 			)}
 		>
-			<header className="border-b border-border">
+			<header className="bg-primary">
 				<div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
 					<Link
 						href="/"
 						aria-label="Página inicial"
-						className="font-display text-xl font-medium tracking-tight"
+						className="font-display text-xl font-semibold tracking-tight text-primary-foreground"
 					>
 						GymPass
 					</Link>
@@ -37,13 +31,13 @@ export function PublicShell({ children, className }: PublicShellProps) {
 					>
 						<Link
 							href="/login"
-							className="rounded-full border border-transparent px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+							className="rounded-md border border-primary-foreground/30 px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-foreground/10 transition-colors"
 						>
 							Entrar
 						</Link>
 						<Link
 							href="/cadastro"
-							className="rounded-full border border-primary bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+							className="rounded-md border border-primary-foreground bg-primary-foreground px-4 py-2 text-sm font-medium text-primary hover:bg-primary-foreground/90 transition-colors"
 						>
 							Criar conta
 						</Link>
@@ -54,7 +48,7 @@ export function PublicShell({ children, className }: PublicShellProps) {
 			<footer className="border-t border-border">
 				<div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-1 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
 					<span>© {new Date().getFullYear()} GymPass</span>
-					<span>Frontend monocromático inspirado em Ollama</span>
+					<span>Plataforma de acesso a academias</span>
 				</div>
 			</footer>
 		</div>

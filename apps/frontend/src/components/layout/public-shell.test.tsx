@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, test } from "vitest"
 import { PublicShell } from "./public-shell"
 
 describe("PublicShell", () => {
-	it("renderiza header com CTAs de login e cadastro", () => {
+	test("renderiza header com CTAs de login e cadastro", () => {
 		render(
 			<PublicShell>
 				<p>conteúdo</p>
@@ -19,12 +19,18 @@ describe("PublicShell", () => {
 		expect(cadastrar).toHaveAttribute("href", "/cadastro")
 	})
 
-	it("renderiza conteúdo no slot principal", () => {
+	test("renderiza conteúdo no slot principal", () => {
 		render(
 			<PublicShell>
 				<p>conteúdo de demo</p>
 			</PublicShell>,
 		)
 		expect(screen.getByText("conteúdo de demo")).toBeInTheDocument()
+	})
+
+	test("header do PublicShell deve ter bg-primary", () => {
+		render(<PublicShell>conteúdo</PublicShell>)
+		const header = screen.getByRole("banner")
+		expect(header).toHaveClass("bg-primary")
 	})
 })
