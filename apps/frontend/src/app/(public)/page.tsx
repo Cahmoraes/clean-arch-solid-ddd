@@ -11,7 +11,7 @@ export default function LandingPage() {
 				aria-labelledby="hero-title"
 				className="flex flex-col items-start gap-8"
 			>
-				<span className="rounded-full border border-border bg-accent px-3 py-1 text-xs font-medium text-muted-foreground">
+				<span className="rounded-full border border-border bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">
 					Demo monocromática
 				</span>
 				<h1
@@ -31,14 +31,14 @@ export default function LandingPage() {
 					<Link
 						href="/cadastro"
 						data-testid="cta-signup"
-						className="inline-flex items-center justify-center rounded-full border border-primary bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:bg-primary/90"
+						className="inline-flex items-center justify-center rounded-md border border-primary bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:bg-primary/90"
 					>
 						Criar conta
 					</Link>
 					<Link
 						href="/login"
 						data-testid="cta-login"
-						className="inline-flex items-center justify-center rounded-full border border-border bg-card px-6 py-3 text-base font-medium text-card-foreground hover:bg-accent"
+						className="inline-flex items-center justify-center rounded-md border border-border bg-card px-6 py-3 text-base font-medium text-card-foreground hover:bg-accent"
 					>
 						Entrar
 					</Link>

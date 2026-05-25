@@ -12,7 +12,7 @@ const STATUS_LABEL: Record<CheckInStatus, string> = {
 }
 
 const STATUS_DOT_CLASS: Record<CheckInStatus, string> = {
-	validated: "bg-accent-foreground",
+	validated: "bg-accent-foreground dark:bg-accent",
 	pending: "bg-amber-400",
 	rejected: "bg-destructive",
 }

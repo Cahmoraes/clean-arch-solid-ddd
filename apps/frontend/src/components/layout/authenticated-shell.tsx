@@ -61,8 +61,8 @@ function SidebarNavItem({ item, pathname, onClick }: SidebarNavItemProps) {
 			className={cn(
 				"flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors",
 				active
-					? "bg-primary-foreground text-primary"
-					: "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground",
+					? "bg-primary-foreground dark:bg-card-foreground text-primary dark:text-card"
+					: "text-primary-foreground/70 dark:text-card-foreground/70 hover:bg-primary-foreground/10 dark:hover:bg-card-foreground/10 hover:text-primary-foreground dark:hover:text-card-foreground",
 			)}
 		>
 			<Icon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
@@ -98,18 +98,18 @@ function SidebarContent({
 }: SidebarContentProps) {
 	return (
 		<div className="flex h-full flex-col px-3 py-4">
-			<div className="mb-4 border-b border-primary-foreground/20 px-2 pb-4">
+			<div className="mb-4 border-b border-primary-foreground/20 dark:border-card-foreground/20 px-2 pb-4">
 				<Link
 					href="/inicio"
 					onClick={onNavigate}
-					className="font-display text-lg font-semibold tracking-tight text-primary-foreground"
+					className="font-display text-lg font-semibold tracking-tight text-primary-foreground dark:text-card-foreground"
 				>
 					GymPass
 				</Link>
 			</div>
 
 			<nav aria-label="Navegação principal" className="flex flex-col gap-1">
-				<p className="mb-1 px-3 text-xs font-medium uppercase tracking-wider text-primary-foreground/50">
+				<p className="mb-1 px-3 text-xs font-medium uppercase tracking-wider text-primary-foreground/50 dark:text-card-foreground/50">
 					Principal
 				</p>
 				{MAIN_NAV_ITEMS.map((item) => (
@@ -138,31 +138,31 @@ function SidebarContent({
 				</nav>
 			)}
 
-			<div className="mt-auto border-t border-primary-foreground/20 pt-4">
+			<div className="mt-auto border-t border-primary-foreground/20 dark:border-card-foreground/20 pt-4">
 				<div className="flex items-center gap-2 px-2 py-1">
-					<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-foreground/20">
+					<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-foreground/20 dark:bg-card-foreground/20">
 						{name ? (
 							<span
-								className="text-xs font-medium text-primary-foreground"
+								className="text-xs font-medium text-primary-foreground dark:text-card-foreground"
 								aria-hidden="true"
 							>
 								{getInitials(name)}
 							</span>
 						) : (
 							<User
-								className="h-4 w-4 text-primary-foreground/70"
+								className="h-4 w-4 text-primary-foreground/70 dark:text-card-foreground/70"
 								aria-hidden="true"
 							/>
 						)}
 					</div>
-					<span className="min-w-0 flex-1 truncate text-xs text-primary-foreground/70">
+					<span className="min-w-0 flex-1 truncate text-xs text-primary-foreground/70 dark:text-card-foreground/70">
 						{name ?? (role === "ADMIN" ? "Administrador" : "Membro")}
 					</span>
 					<button
 						type="button"
 						aria-label="Sair"
 						onClick={onLogout}
-						className="rounded-full p-1 text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+						className="rounded-full p-1 text-primary-foreground/70 dark:text-card-foreground/70 hover:bg-primary-foreground/10 dark:hover:bg-card-foreground/10 hover:text-primary-foreground dark:hover:text-card-foreground"
 					>
 						<LogOut className="h-4 w-4" />
 					</button>
@@ -242,7 +242,7 @@ export function AuthenticatedShell({
 					type="button"
 					aria-label="Fechar menu"
 					onClick={() => setMobileOpen(false)}
-					className="absolute right-3 top-3 rounded-full p-1 text-primary-foreground/70 hover:bg-primary-foreground/10"
+					className="absolute right-3 top-3 rounded-full p-1 text-primary-foreground/70 dark:text-card-foreground/70 hover:bg-primary-foreground/10 dark:hover:bg-card-foreground/10"
 				>
 					<X className="h-4 w-4" />
 				</button>

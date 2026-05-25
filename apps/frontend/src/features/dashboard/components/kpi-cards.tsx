@@ -88,7 +88,7 @@ export function KpiCards({
 			<KpiCard
 				label="Status"
 				value="Ativo"
-				valueClassName="text-accent-foreground"
+				valueClassName="text-accent-foreground dark:text-accent"
 				isLoading={false}
 			/>
 		</div>

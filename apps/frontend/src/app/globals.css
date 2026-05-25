@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 /*
+ * Dark mode variant: uses .dark class (via next-themes), not OS preference.
+ * Without this, Tailwind's dark: utilities fire on @media prefers-color-scheme
+ * and never match when theme is controlled by class toggle.
+ */
+@custom-variant dark (&:is(.dark *));
+
+/*
  * Design tokens — see apps/frontend/DESIGN.md
  *
  * Chromatic palette: indigo navy / violet / teal.
@@ -92,6 +99,11 @@
 	a {
 		color: inherit;
 		text-decoration: none;
+	}
+
+	button,
+	[role="button"] {
+		cursor: pointer;
 	}
 
 	::placeholder {

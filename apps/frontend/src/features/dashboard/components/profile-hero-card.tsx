@@ -24,7 +24,7 @@ function formatMemberSince(createdAt: string): string {
 
 function Avatar({ name }: { name?: string }) {
 	return (
-		<div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold">
+		<div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground text-lg font-bold">
 			{name ? (
 				getInitials(name)
 			) : (
@@ -36,19 +36,21 @@ function Avatar({ name }: { name?: string }) {
 
 function StatusBadge({ isActive }: { isActive: boolean }) {
 	const statusClass = isActive
-		? "bg-accent text-accent-foreground"
-		: "bg-muted text-muted-foreground"
+		? "border-transparent bg-accent text-accent-foreground dark:bg-accent/15 dark:text-accent dark:border-accent/30"
+		: "border-transparent bg-muted text-muted-foreground"
 	return (
 		<span
 			className={cn(
-				"mt-1 inline-flex w-fit items-center gap-1.5 rounded-full border border-transparent px-2.5 py-0.5 text-xs font-medium",
+				"mt-1 inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
 				statusClass,
 			)}
 		>
 			<span
 				className={cn(
 					"h-1.5 w-1.5 rounded-full",
-					isActive ? "bg-accent-foreground/70" : "bg-muted-foreground/70",
+					isActive
+						? "bg-accent-foreground/70 dark:bg-accent"
+						: "bg-muted-foreground/70",
 				)}
 				aria-hidden="true"
 			/>

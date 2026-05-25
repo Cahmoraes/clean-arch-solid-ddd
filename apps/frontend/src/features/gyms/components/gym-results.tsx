@@ -84,7 +84,7 @@ function ResultsList({ items }: { items: Gym[] }) {
 	return (
 		<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{items.map((gym) => (
-				<li key={gym.id}>
+				<li key={gym.id} className="flex flex-col">
 					<GymCard gym={gym} />
 				</li>
 			))}
