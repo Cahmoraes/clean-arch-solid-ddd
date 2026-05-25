@@ -188,10 +188,13 @@ describe("useLogin", () => {
 - Complexidade cognitiva maxima: 5
 
 ### Design System
-O projeto segue um design system minimalista monocromatico inspirado no Ollama (documentado em `DESIGN.md`):
-- Paleta exclusivamente grayscale (sem cores cromaticas na interface)
-- Geometria pill-shaped (border-radius 9999px em elementos interativos)
-- Zero shadows — separacao via background color e borders
+O projeto segue um design system cromático inspirado no Superhumon (documentado em `DESIGN.md`):
+- Paleta cromática: indigo navy (`#1b1938`), violet (`#c9b4fa`), teal (`#155555`)
+- Tipografia: Inter Variable via `next/font/google`
+- Escala gradual de border-radius: 4px / 6px / 8px / 12px / 16px / 9999px
+- Sombras em 3 níveis: flat / sm (1px) / md (8px)
+- Sidebar usa `bg-primary` (indigo) como identidade de marca
+- Dark mode via `next-themes` com tokens derivados da paleta cromática
 - Componentes base em `src/components/ui/` (shadcn/ui customizado)
 
 ### API Client

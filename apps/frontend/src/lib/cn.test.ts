@@ -1,27 +1,27 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, test } from "vitest"
 import { cn } from "./cn"
 
 describe("cn", () => {
-	it("concatenates string class names", () => {
+	test("concatena class names em string", () => {
 		expect(cn("a", "b", "c")).toBe("a b c")
 	})
 
-	it("filters falsy values", () => {
+	test("filtra valores falsy", () => {
 		expect(cn("a", false, null, undefined, 0, "b")).toBe("a b")
 	})
 
-	it("supports clsx object syntax", () => {
+	test("suporta sintaxe de objeto clsx", () => {
 		expect(cn("base", { active: true, disabled: false })).toBe("base active")
 	})
 
-	it("resolves Tailwind conflicts via tailwind-merge", () => {
+	test("resolve conflitos Tailwind via tailwind-merge", () => {
 		expect(cn("p-2", "p-4")).toBe("p-4")
-		expect(cn("text-sm text-stone", "text-near-black")).toBe(
-			"text-sm text-near-black",
+		expect(cn("text-sm text-muted-foreground", "text-foreground")).toBe(
+			"text-sm text-foreground",
 		)
 	})
 
-	it("merges arrays", () => {
+	test("mescla arrays de classes", () => {
 		expect(cn(["a", "b"], ["c"])).toBe("a b c")
 	})
 })
