@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { Inter } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 import type { ReactNode } from "react"
 import { ThemeToggleFAB } from "@/components/ui/theme-toggle-fab"
@@ -7,9 +8,15 @@ import { Providers } from "./providers"
 import { WebVitalsReporter } from "./web-vitals"
 import "./globals.css"
 
+const inter = Inter({
+	subsets: ["latin"],
+	variable: "--font-inter",
+	display: "swap",
+})
+
 export const metadata: Metadata = {
 	title: "GymPass-like",
-	description: "Frontend monocromático inspirado em Ollama",
+	description: "Plataforma de acesso a academias",
 }
 
 export default function RootLayout({
@@ -18,7 +25,7 @@ export default function RootLayout({
 	children: ReactNode
 }>) {
 	return (
-		<html lang="pt-BR" suppressHydrationWarning>
+		<html lang="pt-BR" suppressHydrationWarning className={inter.variable}>
 			<body className="font-sans antialiased bg-background text-foreground">
 				<ThemeProvider
 					attribute="class"

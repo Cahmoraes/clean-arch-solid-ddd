@@ -3,62 +3,55 @@
 /*
  * Design tokens — see apps/frontend/DESIGN.md
  *
- * Strict monochrome palette (zero chromatic colors except focus ring).
- * Binary radius system: 12px (containers) | 9999px (interactive).
- * Zero shadows, zero gradients.
+ * Chromatic palette: indigo navy / violet / teal.
+ * Graduated radius: xs 4px → full 9999px.
+ * Shadow levels: flat | sm (1px) | md (8px).
+ * Dark mode: .dark selector with indigo-deep surface.
  */
 
 @theme {
-	/* Palette */
-	--color-pure-white: #ffffff;
-	--color-snow: #fafafa;
-	--color-light-gray: #e5e5e5;
-	--color-border-light: #d4d4d4;
-	--color-silver: #a3a3a3;
-	--color-stone: #737373;
-	--color-mid-gray: #525252;
-	--color-button-text-dark: #404040;
-	--color-near-black: #262626;
-	--color-darkest-surface: #090909;
-	--color-pure-black: #000000;
-	--color-ring-blue: #3b82f6;
-
-	/* Semantic aliases (shadcn-compatible) */
-	--color-background: #ffffff;
-	--color-foreground: #000000;
-	--color-muted: #fafafa;
-	--color-muted-foreground: #737373;
-	--color-border: #e5e5e5;
-	--color-input: #e5e5e5;
-	--color-ring: #3b82f6;
-	--color-primary: #000000;
-	--color-primary-foreground: #ffffff;
-	--color-secondary: #e5e5e5;
-	--color-secondary-foreground: #262626;
-	--color-accent: #e5e5e5;
-	--color-accent-foreground: #262626;
-	--color-destructive: #262626;
-	--color-destructive-foreground: #ffffff;
-	--color-popover: #ffffff;
-	--color-popover-foreground: #000000;
-	--color-card: #ffffff;
-	--color-card-foreground: #000000;
-
-	/* Typography */
-	--font-display: "SF Pro Rounded", system-ui, -apple-system, system-ui;
-	--font-sans:
-		ui-sans-serif, system-ui, "Apple Color Emoji", "Segoe UI Emoji",
-		"Segoe UI Symbol", "Noto Color Emoji";
+	/* Font — Inter Variable loaded via next/font/google */
+	--font-inter: var(--font-inter), system-ui, sans-serif;
+	--font-display: var(--font-inter), system-ui, sans-serif;
+	--font-sans: var(--font-inter), system-ui, sans-serif;
 	--font-mono:
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
 		"Courier New";
 
-	/* Border radius — strict binary system */
-	--radius-container: 12px;
-	--radius-pill: 9999px;
+	/* Semantic color tokens — light mode */
+	--color-background: #ffffff;
+	--color-foreground: #292827;
+	--color-card: #fafaf8;
+	--color-card-foreground: #292827;
+	--color-popover: #ffffff;
+	--color-popover-foreground: #292827;
+	--color-primary: #1b1938;
+	--color-primary-foreground: #ffffff;
+	--color-secondary: #f0edf8;
+	--color-secondary-foreground: #1b1938;
+	--color-muted: #f5f3f0;
+	--color-muted-foreground: #73706d;
+	--color-accent: #c9b4fa;
+	--color-accent-foreground: #1b1938;
+	--color-destructive: #dc2626;
+	--color-destructive-foreground: #ffffff;
+	--color-border: #e8e4dd;
+	--color-input: #e8e4dd;
+	--color-ring: #1b1938;
+	--color-teal: #155555;
 
-	/* Shadows — explicitly disabled */
+	/* Border radius — graduated scale */
+	--radius-xs: 4px;
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 12px;
+	--radius-xl: 16px;
+	--radius-full: 9999px;
+
+	/* Shadows */
 	--shadow-none: 0 0 #0000;
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+	--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 @layer base {
@@ -91,7 +84,9 @@
 	h5,
 	h6 {
 		font-family: var(--font-display);
-		font-weight: 500;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 0.96;
 	}
 
 	a {
@@ -100,7 +95,7 @@
 	}
 
 	::placeholder {
-		color: var(--color-silver);
+		color: var(--color-muted-foreground);
 	}
 
 	*:focus-visible {
@@ -110,22 +105,25 @@
 }
 
 .dark {
-	--color-background: #1c1c1e;
-	--color-foreground: #f5f5f7;
-	--color-card: #2c2c2e;
-	--color-card-foreground: #f5f5f7;
-	--color-popover: #2c2c2e;
-	--color-popover-foreground: #f5f5f7;
-	--color-muted: #2c2c2e;
-	--color-muted-foreground: #8e8e93;
-	--color-border: #3a3a3c;
-	--color-input: #3a3a3c;
-	--color-primary: #f5f5f7;
-	--color-primary-foreground: #1c1c1e;
-	--color-secondary: #3a3a3c;
-	--color-secondary-foreground: #ebebf5;
-	--color-accent: #3a3a3c;
-	--color-accent-foreground: #ebebf5;
-	--color-destructive: #ebebf5;
-	--color-destructive-foreground: #1c1c1e;
+	color-scheme: dark;
+	--color-background: #0e0c1f;
+	--color-foreground: #f5f3f0;
+	--color-card: #1b1938;
+	--color-card-foreground: #f5f3f0;
+	--color-popover: #1b1938;
+	--color-popover-foreground: #f5f3f0;
+	--color-primary: #c9b4fa;
+	--color-primary-foreground: #0e0c1f;
+	--color-secondary: #262240;
+	--color-secondary-foreground: #c9b4fa;
+	--color-muted: #262240;
+	--color-muted-foreground: #9a8fc4;
+	--color-accent: #c9b4fa;
+	--color-accent-foreground: #0e0c1f;
+	--color-destructive: #f87171;
+	--color-destructive-foreground: #0e0c1f;
+	--color-border: #2e2a4a;
+	--color-input: #2e2a4a;
+	--color-ring: #c9b4fa;
+	--color-teal: #0e3030;
 }

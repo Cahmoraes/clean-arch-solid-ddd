@@ -12,6 +12,10 @@ export default defineConfig({
 				__dirname,
 				"./src/test/mocks/next-dynamic.tsx",
 			),
+			"next/font/google": path.resolve(
+				__dirname,
+				"./src/test/mocks/next-font-google.ts",
+			),
 		},
 	},
 	test: {
