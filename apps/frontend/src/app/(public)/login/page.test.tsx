@@ -52,7 +52,7 @@ describe("LoginPage", () => {
 		searchParamsGet.mockImplementation(() => null)
 	})
 
-	test("submete credenciais válidas e redireciona para /academias", async () => {
+	test("submete credenciais válidas e redireciona para /inicio", async () => {
 		const token = makeTestJwt({ sub: "user-7", role: "MEMBER" })
 		server.use(
 			http.post(`${apiBaseUrl}/sessions`, () =>
@@ -70,7 +70,7 @@ describe("LoginPage", () => {
 		await user.click(screen.getByTestId("login-submit"))
 
 		await waitFor(() => {
-			expect(replace).toHaveBeenCalledWith("/academias")
+			expect(replace).toHaveBeenCalledWith("/inicio")
 		})
 		expect(useAuthStore.getState().accessToken).toBe(token)
 	})
@@ -156,7 +156,7 @@ describe("LoginPage", () => {
 		expect(screen.getByTestId("google-sign-in-button")).toBeInTheDocument()
 	})
 
-	test("redireciona para /academias após login Google bem-sucedido", async () => {
+	test("redireciona para /inicio após login Google bem-sucedido", async () => {
 		const token = makeTestJwt({ sub: "google-user", role: "MEMBER" })
 		server.use(
 			http.post(`${apiBaseUrl}/sessions/google`, () =>
@@ -172,7 +172,7 @@ describe("LoginPage", () => {
 		await user.click(screen.getByTestId("google-login-mock"))
 
 		await waitFor(() => {
-			expect(replace).toHaveBeenCalledWith("/academias")
+			expect(replace).toHaveBeenCalledWith("/inicio")
 		})
 		expect(useAuthStore.getState().accessToken).toBe(token)
 	})

@@ -13,7 +13,7 @@ import { GoogleSignInButton } from "@/features/auth/components/google-sign-in-bu
 import { type LoginInput, loginSchema } from "@/features/auth/schemas"
 import { ApiError } from "@/lib/errors"
 
-const DEFAULT_REDIRECT = "/academias"
+const DEFAULT_REDIRECT = "/inicio"
 
 function loginErrorMessage(error: unknown): string {
 	if (error instanceof ApiError) {
