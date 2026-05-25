@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, expect, it } from "vitest"
+import { describe, expect, test } from "vitest"
 import { Button } from "./button"
 import {
 	Dialog,
@@ -28,7 +28,18 @@ function ControlledDialog() {
 }
 
 describe("Dialog", () => {
-	it("opens via trigger and closes via close button", async () => {
+	test("DialogContent deve ter rounded-xl e shadow-md", () => {
+		render(
+			<Dialog open>
+				<DialogContent>conteúdo</DialogContent>
+			</Dialog>,
+		)
+		const content = screen.getByRole("dialog")
+		expect(content).toHaveClass("rounded-xl")
+		expect(content).toHaveClass("shadow-md")
+	})
+
+	test("opens via trigger and closes via close button", async () => {
 		const user = userEvent.setup()
 		render(<ControlledDialog />)
 
@@ -43,7 +54,7 @@ describe("Dialog", () => {
 		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
 	})
 
-	it("closes when pressing Escape", async () => {
+	test("closes when pressing Escape", async () => {
 		const user = userEvent.setup()
 		render(<ControlledDialog />)
 		await user.click(screen.getByRole("button", { name: "Open" }))

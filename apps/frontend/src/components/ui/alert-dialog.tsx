@@ -38,7 +38,7 @@ const AlertDialogContent = forwardRef<
 		<AlertDialogPrimitive.Content
 			ref={ref}
 			className={cn(
-				"fixed left-1/2 top-1/2 z-50 grid w-full max-w-md -translate-x-1/2 -translate-y-1/2 gap-4 rounded-[12px] border border-border bg-card p-6",
+				"fixed left-1/2 top-1/2 z-50 grid w-full max-w-md -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl shadow-md border border-border bg-card p-6",
 				className,
 			)}
 			{...props}
