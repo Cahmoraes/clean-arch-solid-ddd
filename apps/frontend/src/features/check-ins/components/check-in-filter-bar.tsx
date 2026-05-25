@@ -27,7 +27,7 @@ export function CheckInFilterBar({
 					key={filter.label}
 					variant={status === filter.value ? "primary" : "outline"}
 					size="sm"
-					className="rounded-full"
+					className="rounded-md"
 					onClick={() => onStatusChange(filter.value)}
 					aria-pressed={status === filter.value}
 				>
