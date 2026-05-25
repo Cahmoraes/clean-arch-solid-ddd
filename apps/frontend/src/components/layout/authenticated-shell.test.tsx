@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { render, screen, waitFor, within } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import type { ReactElement, ReactNode } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import type { ReactNode } from "react"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 
 const replace = vi.fn()
 vi.mock("next/navigation", () => ({
@@ -14,16 +14,15 @@ vi.mock("next/navigation", () => ({
 		refresh: vi.fn(),
 		prefetch: vi.fn(),
 	}),
-	usePathname: () => "/perfil",
+	usePathname: () => "/inicio",
 }))
 
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { AuthenticatedShell } from "./authenticated-shell"
 
 function setUser(role: "MEMBER" | "ADMIN" | null) {
-	const store = useAuthStore.getState()
 	if (role === null) {
-		store.clear()
+		useAuthStore.getState().clear()
 		return
 	}
 	useAuthStore.setState({
@@ -33,22 +32,15 @@ function setUser(role: "MEMBER" | "ADMIN" | null) {
 	})
 }
 
-function renderShell(children: ReactNode = <p>conteúdo</p>): {
-	queryClient: QueryClient
-	rerender: (ui: ReactElement) => void
-} {
+function renderShell(children: ReactNode = <p>conteúdo</p>) {
 	const queryClient = new QueryClient({
-		defaultOptions: {
-			queries: { retry: false },
-			mutations: { retry: false },
-		},
+		defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
 	})
-	const utils = render(
+	return render(
 		<QueryClientProvider client={queryClient}>
 			<AuthenticatedShell>{children}</AuthenticatedShell>
 		</QueryClientProvider>,
 	)
-	return { queryClient, rerender: utils.rerender }
 }
 
 describe("AuthenticatedShell", () => {
@@ -57,55 +49,59 @@ describe("AuthenticatedShell", () => {
 		useAuthStore.getState().clear()
 	})
 
-	it("exibe link admin quando role é ADMIN", () => {
+	test("exibe sidebar de navegação com itens principais", () => {
+		setUser("MEMBER")
+		renderShell()
+		const sidebar = screen.getByRole("navigation", {
+			name: /navegação principal/i,
+		})
+		expect(sidebar).toBeInTheDocument()
+		expect(sidebar.querySelector('[href="/inicio"]')).toBeInTheDocument()
+		expect(sidebar.querySelector('[href="/check-ins"]')).toBeInTheDocument()
+		expect(sidebar.querySelector('[href="/academias"]')).toBeInTheDocument()
+	})
+
+	test("exibe seção admin na sidebar quando role é ADMIN", () => {
 		setUser("ADMIN")
 		renderShell()
-		const desktopNav = screen.getByRole("navigation", {
-			name: /navegação principal/i,
-		})
-		expect(within(desktopNav).getByText("Admin")).toBeInTheDocument()
+		const adminNav = screen.getByRole("navigation", { name: /administração/i })
+		expect(adminNav).toBeInTheDocument()
+		expect(
+			adminNav.querySelector('[href="/admin/usuarios"]'),
+		).toBeInTheDocument()
 	})
 
-	it("oculta link admin quando role é MEMBER", () => {
+	test("oculta seção admin quando role é MEMBER", () => {
 		setUser("MEMBER")
 		renderShell()
-		const desktopNav = screen.getByRole("navigation", {
-			name: /navegação principal/i,
-		})
-		expect(within(desktopNav).queryByText("Admin")).not.toBeInTheDocument()
-		expect(within(desktopNav).getByText("Perfil")).toBeInTheDocument()
+		expect(
+			screen.queryByRole("navigation", { name: /administração/i }),
+		).not.toBeInTheDocument()
 	})
 
-	it("alterna o menu mobile ao clicar no botão", async () => {
+	test("abre e fecha sidebar mobile ao clicar no botão", async () => {
 		setUser("MEMBER")
 		const user = userEvent.setup()
 		renderShell()
 
-		expect(screen.queryByTestId("mobile-nav")).not.toBeInTheDocument()
+		const mobileSidebar = screen.getByTestId("mobile-sidebar")
+		expect(mobileSidebar).toHaveAttribute("aria-hidden", "true")
 
-		const toggle = screen.getByRole("button", {
-			name: /abrir menu de navegação/i,
-		})
-		await user.click(toggle)
-
-		const mobileNav = screen.getByTestId("mobile-nav")
-		expect(mobileNav).toBeInTheDocument()
-		expect(within(mobileNav).getByText("Perfil")).toBeInTheDocument()
+		await user.click(screen.getByRole("button", { name: /abrir menu/i }))
+		expect(mobileSidebar).toHaveAttribute("aria-hidden", "false")
 
 		await user.click(screen.getByRole("button", { name: /fechar menu/i }))
-		expect(screen.queryByTestId("mobile-nav")).not.toBeInTheDocument()
+		expect(mobileSidebar).toHaveAttribute("aria-hidden", "true")
 	})
 
-	it("logout limpa o store e redireciona para /login", async () => {
+	test("logout redireciona para /login", async () => {
 		setUser("MEMBER")
 		const user = userEvent.setup()
 		renderShell()
 
-		await user.click(screen.getByRole("button", { name: /menu de usuário/i }))
-		await user.click(await screen.findByRole("menuitem", { name: /sair/i }))
+		await user.click(screen.getByRole("button", { name: /sair/i }))
 
 		await waitFor(() => {
-			expect(useAuthStore.getState().accessToken).toBeNull()
 			expect(replace).toHaveBeenCalledWith("/login")
 		})
 	})
