@@ -102,6 +102,13 @@ describe("AuthenticatedShell", () => {
 		})
 	})
 
+	test("sidebar desktop deve ter fundo bg-primary", () => {
+		setUser("MEMBER")
+		renderShell()
+		const sidebar = document.querySelector("aside.hidden")
+		expect(sidebar).toHaveClass("bg-primary")
+	})
+
 	test("logout redireciona para /login", async () => {
 		setUser("MEMBER")
 		const user = userEvent.setup()
