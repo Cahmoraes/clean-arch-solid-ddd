@@ -5,15 +5,10 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { type ButtonHTMLAttributes, forwardRef } from "react"
 import { cn } from "@/lib/cn"
 
-/**
- * Pill-shaped buttons aligned with DESIGN.md.
- * No shadows. Strict monochrome palette. Border-radius is always 9999px (pill).
- * Padding matches the design system spec: 10px 24px.
- */
 const buttonVariants = cva(
 	[
 		"inline-flex items-center justify-center gap-2",
-		"rounded-full",
+		"rounded-md",
 		"font-medium leading-none",
 		"transition-colors",
 		"disabled:pointer-events-none disabled:opacity-50",
@@ -31,9 +26,9 @@ const buttonVariants = cva(
 					"bg-secondary text-secondary-foreground border border-secondary hover:bg-secondary/80",
 				// Surface Pill
 				outline:
-					"bg-card text-card-foreground border border-border hover:bg-accent",
+					"bg-card text-card-foreground border border-border hover:bg-muted",
 				ghost:
-					"bg-transparent text-foreground border border-transparent hover:bg-accent",
+					"bg-transparent text-foreground border border-transparent hover:bg-muted",
 				link: "bg-transparent text-foreground underline-offset-4 hover:underline border border-transparent px-0",
 				destructive:
 					"bg-destructive text-destructive-foreground border border-destructive hover:bg-destructive/90",
