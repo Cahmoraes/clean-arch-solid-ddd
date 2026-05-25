@@ -3,6 +3,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 const DAY_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
 
+const SKELETON_BAR_HEIGHTS = [60, 45, 75, 55, 80, 40, 65]
+
 interface WeeklyChartProps {
 	/**
 	 * Array de 7 posições indexadas por dayOfWeek (0=Dom, 6=Sáb).
@@ -17,12 +19,12 @@ function WeeklyChartSkeleton() {
 		<div className="rounded-xl border border-border bg-card p-4">
 			<Skeleton className="mb-3 h-4 w-36" />
 			<div className="flex items-end gap-2 pt-2" style={{ height: 80 }}>
-				{Array.from({ length: 7 }).map((_, i) => (
+				{SKELETON_BAR_HEIGHTS.map((height, i) => (
 					<Skeleton
 						// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton
 						key={i}
 						className="flex-1 rounded-sm"
-						style={{ height: `${30 + Math.random() * 50}%` }}
+						style={{ height: `${height}%` }}
 					/>
 				))}
 			</div>
