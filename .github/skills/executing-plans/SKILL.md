@@ -17,7 +17,7 @@ Load plan, review critically, execute all tasks, report when complete.
 
 Before executing any task, read `.superpowers/preferences.yml` in the user's repository root.
 
-> **Deterministic reading (preferred):** `node ../using-superpowers/scripts/read-preferences.js`  
+> **Deterministic reading (preferred):** Your skill context header shows the base directory — use it to build the absolute path: `node <executing-plans-base-dir>/../using-superpowers/scripts/read-preferences.cjs --repo-root "$(git rev-parse --show-toplevel)"`  
 > Outputs JSON with `preferences.workflow.auto_commit`, `preferences.communication.language`, etc.  
 > **Fallback:** Read via `view` directly — do NOT use `glob` (misses hidden dirs).
 

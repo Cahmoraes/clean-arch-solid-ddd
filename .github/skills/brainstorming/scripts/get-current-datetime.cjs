@@ -9,8 +9,8 @@
  * set at session start and drifts as the session progresses.
  *
  * Usage:
- *   node scripts/get-current-datetime.js
- *   node ../brainstorming/scripts/get-current-datetime.js
+ *   node scripts/get-current-datetime.cjs
+ *   node ../brainstorming/scripts/get-current-datetime.cjs
  */
 
 function pad(n) {

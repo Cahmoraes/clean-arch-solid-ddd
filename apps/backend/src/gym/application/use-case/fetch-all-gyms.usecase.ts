@@ -1,8 +1,6 @@
 import { inject, injectable } from "inversify"
-
 import type { Gym } from "@/gym/domain/gym"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
-
 import type { GymRepository } from "../repository/gym-repository"
 
 export interface FetchAllGymsUseCaseInput {

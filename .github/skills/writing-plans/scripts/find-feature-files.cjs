@@ -9,7 +9,7 @@ const HELP = `
 find-feature-files.js — Locate PRD, spec, tasks index, and QA report files for a feature.
 
 Usage:
-  node scripts/find-feature-files.js --feature-name <name> [--repo-root <path>] [--base-dir <path>]
+  node scripts/find-feature-files.cjs --feature-name <name> [--repo-root <path>] [--base-dir <path>]
 
 Options:
   --feature-name <name>  Feature slug/name to resolve

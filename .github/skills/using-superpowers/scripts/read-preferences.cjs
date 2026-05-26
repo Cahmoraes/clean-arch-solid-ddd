@@ -3,7 +3,7 @@
  * read-preferences.js — Read .superpowers/preferences.yml from the repository root.
  *
  * Usage:
- *   node scripts/read-preferences.js [--repo-root <path>]
+ *   node scripts/read-preferences.cjs [--repo-root <path>]
  *
  * Root resolution (in order):
  *   1. --repo-root flag
@@ -30,7 +30,7 @@ const HELP = `
 read-preferences.js — Read .superpowers/preferences.yml from the repository root.
 
 Usage:
-  node scripts/read-preferences.js [--repo-root <path>]
+  node scripts/read-preferences.cjs [--repo-root <path>]
 
 Options:
   --repo-root <path>  Explicit path to the repository root (overrides git detection)

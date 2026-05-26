@@ -8,8 +8,8 @@ const HELP = `
 frontmatter-utils.js — Read or update markdown YAML frontmatter.
 
 Usage:
-  node scripts/frontmatter-utils.js --file <path> --get-key <key>
-  node scripts/frontmatter-utils.js --file <path> --set-key <key> --set-value <value>
+  node scripts/frontmatter-utils.cjs --file <path> --get-key <key>
+  node scripts/frontmatter-utils.cjs --file <path> --set-key <key> --set-value <value>
 
 Options:
   --file <path>         Markdown file path

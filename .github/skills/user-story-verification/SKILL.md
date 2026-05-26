@@ -207,12 +207,12 @@ Save the report to `docs/superpowers/<feature-name>/qa/qa-report-<feature-name>.
 
 **Date rules:** if the report file does not exist yet, set both `created_at` and `updated_at` in the frontmatter to the current date/time from the host clock (ISO 8601 with timezone). If the file already exists (re-run scenario), preserve `created_at` and update only `updated_at`.
 
-> **Deterministic frontmatter (preferred):**
+> **Deterministic frontmatter (preferred):** Your skill context header shows the base directory (e.g. `Base directory for this skill: /path/to/user-story-verification`) — use it to build absolute paths to the brainstorming scripts:
 > ```bash
 > # Preserve created_at if file exists:
-> node ../brainstorming/scripts/frontmatter-utils.js --file <report-path> --get-key created_at
+> node <user-story-verification-base-dir>/../brainstorming/scripts/frontmatter-utils.cjs --file <report-path> --get-key created_at
 > # Update updated_at using the host clock:
-> node ../brainstorming/scripts/frontmatter-utils.js --file <report-path> --set-key updated_at --set-value "$(node ../brainstorming/scripts/get-current-datetime.js)"
+> node <user-story-verification-base-dir>/../brainstorming/scripts/frontmatter-utils.cjs --file <report-path> --set-key updated_at --set-value "$(node <user-story-verification-base-dir>/../brainstorming/scripts/get-current-datetime.cjs)"
 > ```
 > **Fallback:** Write frontmatter manually.
 

@@ -8,7 +8,7 @@ const HELP = `
 validate-tasks.js — Validate a writing-plans tasks index file.
 
 Usage:
-  node scripts/validate-tasks.js --tasks-index <path>
+  node scripts/validate-tasks.cjs --tasks-index <path>
 
 Options:
   --tasks-index <path>  Path to tasks index markdown file

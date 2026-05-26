@@ -27,11 +27,11 @@ Before starting the plan, check if a PRD exists:
 > The script lives inside this skill's `scripts/` folder. Your skill context header shows the base directory
 > (e.g. `Base directory for this skill: /path/to/writing-plans`). Use it to build the full path:
 > ```bash
-> node <writing-plans-skill-dir>/scripts/find-feature-files.js --feature-name <feature-name>
+> node <writing-plans-skill-dir>/scripts/find-feature-files.cjs --feature-name <feature-name>
 > ```
 > If the base directory is not immediately available, locate the script with:
 > ```bash
-> node "$(find ~/.copilot/installed-plugins -name "find-feature-files.js" -path "*/writing-plans/scripts/*" 2>/dev/null | head -1)" \
+> node "$(find ~/.copilot/installed-plugins -name "find-feature-files.cjs" -path "*/writing-plans/scripts/*" 2>/dev/null | head -1)" \
 >   --feature-name <feature-name>
 > ```
 > Outputs JSON with `prd.found`, `prd.path`, `spec.found`, `spec.path`, `tasksIndex.found`, `tasksIndex.path`.  
@@ -144,12 +144,12 @@ After writing the complete plan, look at the spec with fresh eyes. **Read `./ref
 > Your skill context header shows the base directory (e.g. `Base directory for this skill: /path/to/writing-plans`).
 > Use it to build the full path:
 > ```bash
-> node <writing-plans-skill-dir>/scripts/validate-tasks.js \
+> node <writing-plans-skill-dir>/scripts/validate-tasks.cjs \
 >   --tasks-index docs/superpowers/<feature-name>/plans/tasks-<feature-name>.md
 > ```
 > If the base directory is not immediately available, locate the script with:
 > ```bash
-> node "$(find ~/.copilot/installed-plugins -name "validate-tasks.js" -path "*/writing-plans/scripts/*" 2>/dev/null | head -1)" \
+> node "$(find ~/.copilot/installed-plugins -name "validate-tasks.cjs" -path "*/writing-plans/scripts/*" 2>/dev/null | head -1)" \
 >   --tasks-index docs/superpowers/<feature-name>/plans/tasks-<feature-name>.md
 > ```
 > Fix any `errors` in the output before proceeding. `warnings` are advisory.

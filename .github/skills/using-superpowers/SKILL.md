@@ -20,11 +20,9 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 On every session start, check for `.superpowers/preferences.yml` in the user's repository root.
 
-> **Deterministic reading (preferred):** Run the shared script to avoid hidden-directory glob failures and parse YAML correctly:
+> **Deterministic reading (preferred):** Run the shared script to avoid hidden-directory glob failures and parse YAML correctly. Your skill context header shows the base directory (e.g. `Base directory for this skill: /path/to/using-superpowers`) — use it to build the absolute path:
 > ```bash
-> node scripts/read-preferences.js
-> # or with explicit root:
-> node scripts/read-preferences.js --repo-root <repo-root>
+> node <using-superpowers-base-dir>/scripts/read-preferences.cjs --repo-root "$(git rev-parse --show-toplevel)"
 > ```
 > The script outputs JSON with `found`, `preferences`, and `malformed` fields. Use `preferences.workflow.auto_commit`, `preferences.communication.language`, `preferences.copilot.rubber_duck`, `preferences.context.has_corporate_artifacts`, `preferences.optimization.caveman`, `preferences.optimization.caveman_level`, and `preferences.memory.persistent_memory` directly from the output.
 > 

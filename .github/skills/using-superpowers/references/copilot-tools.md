@@ -26,12 +26,11 @@ The `glob` tool **does not return files inside hidden directories** (directories
 **Preferred method — use the deterministic script:**
 
 ```bash
-node scripts/read-preferences.js
-# or with explicit root:
-node scripts/read-preferences.js --repo-root /path/to/repo
+# Your skill context header shows the base directory — use it to build the absolute path:
+node <using-superpowers-base-dir>/scripts/read-preferences.cjs --repo-root "$(git rev-parse --show-toplevel)"
 ```
 
-The script uses `git rev-parse --show-toplevel` for root detection, handles nested YAML correctly, returns defaults for missing keys, and marks malformed files. See `scripts/read-preferences.js --help` for the full JSON output schema.
+The script uses `git rev-parse --show-toplevel` for root detection, handles nested YAML correctly, returns defaults for missing keys, and marks malformed files. See `scripts/read-preferences.cjs --help` for the full JSON output schema.
 
 **Fallback — use `view` directly (NOT `glob`):**
 
