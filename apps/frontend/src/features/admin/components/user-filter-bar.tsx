@@ -37,7 +37,7 @@ export function UserFilterBar({
 }: UserFilterBarProps) {
 	return (
 		<fieldset
-			className="flex flex-wrap gap-2 border-0 p-0"
+			className="flex w-full gap-2 border-0 p-0"
 			aria-label="Filtrar usuários por categoria"
 		>
 			{FILTERS.map((filter) => (
@@ -45,7 +45,7 @@ export function UserFilterBar({
 					key={filter.value}
 					variant={activeFilter === filter.value ? "primary" : "outline"}
 					size="sm"
-					className="rounded-md gap-1.5"
+					className="flex-1 rounded-md gap-1.5"
 					onClick={() => onFilterChange(filter.value)}
 					aria-pressed={activeFilter === filter.value}
 					aria-label={filter.ariaLabel}

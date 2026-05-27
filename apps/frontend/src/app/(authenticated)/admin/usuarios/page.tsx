@@ -291,7 +291,7 @@ export default function AdminUsersPage() {
 					placeholder="Buscar por nome ou e-mail..."
 					value={inputQuery}
 					onChange={(e) => setInputQuery(e.target.value)}
-					className="max-w-sm"
+					className="w-full"
 				/>
 			</header>
 
