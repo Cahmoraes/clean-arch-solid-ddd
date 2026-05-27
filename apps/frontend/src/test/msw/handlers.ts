@@ -69,6 +69,18 @@ export const handlers = [
 	http.get(endpoint("/users/me/metrics"), () =>
 		HttpResponse.json({ checkInsCount: 0 }, { status: 200 }),
 	),
+	http.get(endpoint("/users/stats"), () =>
+		HttpResponse.json(
+			{
+				total: 0,
+				members: 0,
+				admins: 0,
+				active: 0,
+				inactive: 0,
+			},
+			{ status: 200 },
+		),
+	),
 	http.get(endpoint("/users/:userId"), () =>
 		HttpResponse.json({ id: "user-stub", name: "Stub User" }, { status: 200 }),
 	),
