@@ -1,0 +1,48 @@
+{
+  "user_story": "US-005",
+  "title": "Como administrador, quero que a paginação seja reiniciada ao trocar de filtro, para não ver resultados deslocados de uma navegação anterior.",
+  "requirements": ["RF-012"],
+  "status": "PASS",
+  "date": "2026-05-27",
+  "test_runner": "pnpm --filter frontend test",
+  "evidence": {
+    "source_code_verification": {
+      "file": "apps/frontend/src/app/(authenticated)/admin/usuarios/page.tsx",
+      "lines": "265-268",
+      "finding": "handleFilterChange calls setActiveFilter(filter) then setPage(1) — RF-012 enforced at source level",
+      "snippet": "function handleFilterChange(filter: UserFilter) {\n  setActiveFilter(filter)\n  setPage(1)\n}"
+    },
+    "existing_tests": {
+      "files_checked": [
+        "apps/frontend/src/app/(authenticated)/admin/usuarios/page.test.tsx",
+        "apps/frontend/src/app/(authenticated)/admin/usuarios/admin-users-page.test.tsx",
+        "apps/frontend/src/features/admin/components/user-filter-bar.test.tsx"
+      ],
+      "rf_012_covered_before": false,
+      "note": "No prior test verified page reset on filter change — acceptance test created"
+    },
+    "acceptance_tests": {
+      "file": "apps/frontend/src/app/(authenticated)/admin/usuarios/us-005-pagination-reset.acceptance.test.tsx",
+      "also_in_evidence_dir": "docs/superpowers/users-list-filters/qa/evidence/us-005-paginacao-reiniciada-trocar-filtro/us-005-pagination-reset.acceptance.test.tsx",
+      "tests": [
+        {
+          "name": "deve enviar page=1 na requisição após trocar de filtro quando estava em página maior",
+          "result": "PASS",
+          "duration_ms": 6510
+        },
+        {
+          "name": "deve enviar page=1 imediatamente ao clicar em qualquer filtro (independente de navegação prévia)",
+          "result": "PASS",
+          "duration_ms": 3174
+        },
+        {
+          "name": "deve enviar page=1 ao trocar entre filtros diferentes consecutivamente",
+          "result": "PASS",
+          "duration_ms": 4512
+        }
+      ],
+      "summary": "3 passed (3)"
+    }
+  },
+  "verdict": "RF-012 implementado corretamente. handleFilterChange reseta page=1 na source. 3 acceptance tests criados e passando, cobrindo: navegação prévia + troca de filtro, troca simples, e trocas consecutivas."
+}

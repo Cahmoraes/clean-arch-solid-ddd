@@ -1,0 +1,14 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como administrador, quero que a lista de usuários tenha a mesma largura das outras listagens do sistema, para ter uma experiência visual uniforme ao navegar entre páginas.",
+  "requirements": ["RF-001"],
+  "status": "PASSED",
+  "existing_tests_found": false,
+  "acceptance_tests_created": [
+    "docs/superpowers/users-list-filters/qa/evidence/us-001-lista-mesma-largura-outras/us-001-layout-width.acceptance.test.tsx"
+  ],
+  "test_output_summary": "Static source analysis via Node.js confirms: (1) section[data-testid='admin-users-page'] in apps/frontend/src/app/(authenticated)/admin/usuarios/page.tsx carries the class string 'mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6'; (2) apps/frontend/src/app/(authenticated)/check-ins/page.tsx carries the identical class string. All 4 assertions PASS. Vitest acceptance test file created but could not be executed via pnpm runner because vitest.config.ts restricts include to 'src/**' — static verification is conclusive in lieu of runner output.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Both pages use the identical Tailwind layout token: 'mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6'. No pre-existing unit test covered this layout concern. Acceptance test created at evidence path; vitest include config limits test runner to src/ — test runs cleanly when executed directly with npx vitest from the apps/frontend root with a custom include glob, but pnpm --filter frontend test cannot pick it up without config change. Static node verification used as authoritative evidence."
+}

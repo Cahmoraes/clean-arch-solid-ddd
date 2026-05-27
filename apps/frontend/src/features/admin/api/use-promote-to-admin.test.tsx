@@ -5,6 +5,7 @@ import type { ReactNode } from "react"
 import { describe, expect, test } from "vitest"
 import { server } from "@/test/msw/server"
 import { usePromoteToAdmin } from "./use-promote-to-admin"
+import { USER_STATS_QUERY_KEY } from "./use-user-stats"
 import { adminUsersQueryKey, type UseUsersResult } from "./use-users"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
@@ -156,5 +157,73 @@ describe("usePromoteToAdmin", () => {
 			adminUsersQueryKey(QUERY_PARAMS),
 		)
 		expect(queryState?.isInvalidated).toBe(true)
+	})
+
+	test("RF-016: invalida USER_STATS_QUERY_KEY após promoção bem-sucedida", async () => {
+		const queryClient = makeQueryClient()
+		queryClient.setQueryData(adminUsersQueryKey(QUERY_PARAMS), {
+			users: [MEMBER_USER],
+			pagination: { total: 1, page: 1, limit: 10 },
+		})
+		queryClient.setQueryData([USER_STATS_QUERY_KEY], {
+			total: 10,
+			members: 10,
+			admins: 0,
+			active: 10,
+			inactive: 0,
+		})
+
+		server.use(
+			http.patch(`${apiBaseUrl}/users/promote-admin`, () =>
+				HttpResponse.json({}, { status: 200 }),
+			),
+		)
+
+		const { result } = renderHook(() => usePromoteToAdmin(), {
+			wrapper: wrapper(queryClient),
+		})
+
+		act(() => {
+			result.current.mutate("u1")
+		})
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+		const statsState = queryClient.getQueryState([USER_STATS_QUERY_KEY])
+		expect(statsState?.isInvalidated).toBe(true)
+	})
+
+	test("RF-016: invalida USER_STATS_QUERY_KEY mesmo quando promoção falha", async () => {
+		const queryClient = makeQueryClient()
+		queryClient.setQueryData(adminUsersQueryKey(QUERY_PARAMS), {
+			users: [MEMBER_USER],
+			pagination: { total: 1, page: 1, limit: 10 },
+		})
+		queryClient.setQueryData([USER_STATS_QUERY_KEY], {
+			total: 10,
+			members: 10,
+			admins: 0,
+			active: 10,
+			inactive: 0,
+		})
+
+		server.use(
+			http.patch(`${apiBaseUrl}/users/promote-admin`, () =>
+				HttpResponse.json({ message: "Erro" }, { status: 500 }),
+			),
+		)
+
+		const { result } = renderHook(() => usePromoteToAdmin(), {
+			wrapper: wrapper(queryClient),
+		})
+
+		act(() => {
+			result.current.mutate("u1")
+		})
+
+		await waitFor(() => expect(result.current.isError).toBe(true))
+
+		const statsState = queryClient.getQueryState([USER_STATS_QUERY_KEY])
+		expect(statsState?.isInvalidated).toBe(true)
 	})
 })

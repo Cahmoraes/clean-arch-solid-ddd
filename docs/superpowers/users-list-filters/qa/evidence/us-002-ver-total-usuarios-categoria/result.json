@@ -1,0 +1,14 @@
+{
+  "us_id": "us-002",
+  "user_story": "Como administrador, quero ver o total de usuários por categoria (todos, membros, administradores, ativos, inativos) no topo da página, para ter uma visão imediata do estado da base de usuários sem precisar paginar.",
+  "requirements": ["RF-002", "RF-003", "RF-004", "RF-005", "RF-006"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/users-list-filters/qa/evidence/us-002-ver-total-usuarios-categoria/us-002-counters.acceptance.test.tsx"
+  ],
+  "test_output_summary": "369 tests passed (65 files) — includes user-filter-bar.test.tsx (5 tests) and use-user-stats.test.tsx (2 tests)",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "RF-002: 5 tabs renderizadas confirmadas por testes e análise estática (FILTERS array, user-filter-bar.tsx L4-10). RF-003: badges numéricos via countForFilter(), testados com valores 48/41/7/45/3. RF-004: useUserStats() e useUsers() chamados independentemente em page.tsx L225+L234 — endpoints distintos (GET /users/stats vs GET /users); acceptance test confirma badges mostram totais reais (120) mesmo quando lista tem 1 item paginado. RF-005: useState<UserFilter>('all') hardcoded em page.tsx L224. RF-006: controlled component com prop activeFilter única — aria-pressed=true apenas para tab ativa, verificado por teste."
+}
