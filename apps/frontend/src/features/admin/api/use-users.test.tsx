@@ -188,6 +188,25 @@ describe("useUsers", () => {
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
 	})
 
+	test("deve enviar status=inactive quando filter='inactive'", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				expect(url.searchParams.get("status")).toBe("inactive")
+				expect(url.searchParams.has("role")).toBe(false)
+				return HttpResponse.json(
+					{ users: [], pagination: { page: 1, limit: 10, total: 0 } },
+					{ status: 200 },
+				)
+			}),
+		)
+		const { result } = renderHook(
+			() => useUsers({ page: 1, limit: 10, filter: "inactive" }),
+			{ wrapper: wrapper() },
+		)
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+	})
+
 	test("não deve enviar role nem status quando filter='all'", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users`, ({ request }) => {
