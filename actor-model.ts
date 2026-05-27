@@ -6,7 +6,7 @@ interface Message<T = unknown> {
 	replyTo?: Actor
 }
 
-type Behavior = (message: Message) => void
+type Behavior = (message: Message) => void | Promise<void>
 
 class Actor {
 	private mailbox: Message[] = []
@@ -34,8 +34,11 @@ class Actor {
 		while (this.mailbox.length > 0) {
 			const message = this.mailbox.shift()!
 			try {
-				this.behavior(message)
+				await this.behavior(message)
 			} catch (err) {
+				if (!message.reject) {
+					console.error(`[Actor] erro não tratado no tipo "${message.type}":`, err)
+				}
 				message.reject?.(err)
 			}
 			await new Promise((resolve) => setTimeout(resolve, 0))
@@ -84,6 +87,7 @@ async function init() {
 	const counter = createCounterActor()
 	counter.send({ type: "INCREMENT", payload: "4" })
 	counter.send({ type: "INCREMENT", payload: "2" })
+	counter.send({ type: "INCREMENT", payload: "5" })
 	const ask = await counter.ask({ type: "GET" })
 	counter.send({ type: "LOGGER", replyTo: logger })
 	console.log(ask)
