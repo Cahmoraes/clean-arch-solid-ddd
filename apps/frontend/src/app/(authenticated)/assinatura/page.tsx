@@ -29,7 +29,7 @@ function DemoBanner({ className }: DemoBannerProps) {
 			aria-label="Aviso de demonstração"
 			data-testid="subscription-demo-banner"
 			className={cn(
-				"flex items-start gap-3 rounded-[12px] border border-primary bg-accent px-4 py-3 text-sm text-foreground",
+				"flex items-start gap-3 rounded-[12px] border border-primary bg-accent px-4 py-3 text-sm text-accent-foreground",
 				className,
 			)}
 		>
@@ -38,7 +38,7 @@ function DemoBanner({ className }: DemoBannerProps) {
 				<strong className="font-medium">
 					Demonstração — sem cobrança real.
 				</strong>
-				<span className="text-muted-foreground">
+				<span className="text-accent-foreground/70">
 					Esta tela simula o fluxo de assinatura. Nenhum pagamento será
 					processado e nenhum cartão será cobrado.
 				</span>
@@ -199,7 +199,7 @@ function ErrorAlert({ message }: ErrorAlertProps) {
 		<p
 			role="alert"
 			data-testid="subscription-error"
-			className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-foreground"
+			className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-accent-foreground"
 		>
 			{message}
 		</p>
@@ -291,7 +291,7 @@ export default function SubscriptionPage() {
 				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Assinatura Premium
 				</h1>
-				<p className="text-sm text-muted-foreground">
+				<p className="text-sm text-accent-foreground/70">
 					Escolha um plano para experimentar o fluxo de assinatura.
 				</p>
 			</header>

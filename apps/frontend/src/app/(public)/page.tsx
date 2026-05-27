@@ -38,7 +38,7 @@ export default function LandingPage() {
 					<Link
 						href="/login"
 						data-testid="cta-login"
-						className="inline-flex items-center justify-center rounded-md border border-border bg-card px-6 py-3 text-base font-medium text-card-foreground hover:bg-accent"
+						className="inline-flex items-center justify-center rounded-md border border-border bg-card px-6 py-3 text-base font-medium text-card-foreground hover:bg-accent hover:text-accent-foreground"
 					>
 						Entrar
 					</Link>
