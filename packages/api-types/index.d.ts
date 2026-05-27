@@ -60,6 +60,10 @@ export interface paths {
                     page: number;
                     /** @description Search by name or email */
                     query?: string;
+                    /** @description Filter by role */
+                    role?: "MEMBER" | "ADMIN";
+                    /** @description Filter by status */
+                    status?: "active" | "inactive";
                 };
                 header?: never;
                 path?: never;
@@ -1294,6 +1298,79 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get user statistics
+         * @description Returns user counts by category. Requires authentication and admin role.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User statistics retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Total de usuários */
+                            total: number;
+                            /** @description Total de membros */
+                            members: number;
+                            /** @description Total de administradores */
+                            admins: number;
+                            /** @description Total de usuários ativos */
+                            active: number;
+                            /** @description Total de usuários inativos */
+                            inactive: number;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
