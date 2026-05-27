@@ -1,6 +1,6 @@
 # Task 1: Backend — Estender UserDAO com método de stats e filtros role/status [RF-014, RF-017, RF-018, RF-019, RF-020]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 

@@ -1,6 +1,6 @@
 # Task 4: Backend — GetUserStatsController + IoC [RF-014, RF-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 

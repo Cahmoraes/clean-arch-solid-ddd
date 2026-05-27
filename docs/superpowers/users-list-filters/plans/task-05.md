@@ -1,6 +1,6 @@
 # Task 5: Backend — Estender FetchUsersController com params role/status [RF-017, RF-018, RF-019, RF-020]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 

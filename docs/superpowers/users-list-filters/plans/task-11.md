@@ -1,6 +1,6 @@
 # Task 11: Frontend — Integrar tudo na AdminUsersPage [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-012, RF-013, RF-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 

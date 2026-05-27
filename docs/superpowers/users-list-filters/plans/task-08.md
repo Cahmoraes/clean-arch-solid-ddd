@@ -1,6 +1,6 @@
 # Task 8: Frontend — Tipos UserFilter + componente UserFilterBar [RF-002, RF-003, RF-005, RF-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 

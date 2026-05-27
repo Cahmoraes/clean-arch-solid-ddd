@@ -1,6 +1,6 @@
 # Task 9: Frontend — Hook useUserStats [RF-003, RF-004, RF-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 

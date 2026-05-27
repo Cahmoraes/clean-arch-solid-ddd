@@ -1,6 +1,6 @@
 # Task 7: Frontend — Ajuste de largura do layout [RF-001]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 

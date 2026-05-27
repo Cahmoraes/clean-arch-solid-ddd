@@ -1,6 +1,6 @@
 # Task 10: Frontend — Estender useUsers com filtro de categoria [RF-007, RF-008, RF-009, RF-010, RF-011, RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 

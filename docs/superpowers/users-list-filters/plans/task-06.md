@@ -1,6 +1,6 @@
 # Task 6: Shared — Regenerar tipos da API [RF-003, RF-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-users-list-filters.md`
 **Spec:** `../specs/users-list-filters-design.md`
 
