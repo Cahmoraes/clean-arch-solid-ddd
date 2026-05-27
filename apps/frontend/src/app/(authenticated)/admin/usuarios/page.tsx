@@ -14,13 +14,16 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useUserStats } from "@/features/admin/api/use-user-stats"
 import {
 	ADMIN_USERS_DEFAULT_LIMIT,
 	type AdminUser,
 	useUsers,
 } from "@/features/admin/api/use-users"
 import { UserDetailModal } from "@/features/admin/components/user-detail-modal"
+import { UserFilterBar } from "@/features/admin/components/user-filter-bar"
 import { UserRow } from "@/features/admin/components/user-row"
+import type { UserFilter, UserStats } from "@/features/admin/types"
 import { useDebounce } from "@/hooks/use-debounce"
 import type { ApiError } from "@/lib/errors"
 
@@ -210,6 +213,17 @@ export default function AdminUsersPage() {
 	const [inputQuery, setInputQuery] = useState("")
 	const debouncedQuery = useDebounce(inputQuery, 500)
 	const limit = ADMIN_USERS_DEFAULT_LIMIT
+	const [activeFilter, setActiveFilter] = useState<UserFilter>("all")
+	const { data: statsData } = useUserStats()
+
+	const emptyStats: UserStats = {
+		total: 0,
+		members: 0,
+		admins: 0,
+		active: 0,
+		inactive: 0,
+	}
+	const stats: UserStats = statsData ?? emptyStats
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: debouncedQuery é o gatilho intencional para resetar a página; não é consumido no corpo do efeito
 	useEffect(() => {
@@ -220,6 +234,7 @@ export default function AdminUsersPage() {
 		page,
 		limit,
 		query: debouncedQuery || undefined,
+		filter: activeFilter,
 	})
 
 	const totalPages = useMemo(() => {
@@ -246,10 +261,15 @@ export default function AdminUsersPage() {
 		setSelectedUser(null)
 	}
 
+	function handleFilterChange(filter: UserFilter) {
+		setActiveFilter(filter)
+		setPage(1)
+	}
+
 	return (
 		<section
 			data-testid="admin-users-page"
-			className="flex flex-col gap-8"
+			className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6"
 			aria-busy={isFetching}
 		>
 			<header className="flex flex-col gap-2">
@@ -259,6 +279,11 @@ export default function AdminUsersPage() {
 				<p className="text-sm text-muted-foreground">
 					Visualize todas as contas cadastradas na plataforma.
 				</p>
+				<UserFilterBar
+					activeFilter={activeFilter}
+					counts={stats}
+					onFilterChange={handleFilterChange}
+				/>
 				<Input
 					data-testid="admin-users-search"
 					type="search"

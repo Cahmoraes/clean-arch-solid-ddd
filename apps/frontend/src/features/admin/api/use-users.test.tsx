@@ -131,4 +131,79 @@ describe("useUsers", () => {
 
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
 	})
+
+	test("deve enviar role=MEMBER quando filter='member'", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				expect(url.searchParams.get("role")).toBe("MEMBER")
+				expect(url.searchParams.has("status")).toBe(false)
+				return HttpResponse.json(
+					{ users: [], pagination: { page: 1, limit: 10, total: 0 } },
+					{ status: 200 },
+				)
+			}),
+		)
+		const { result } = renderHook(
+			() => useUsers({ page: 1, limit: 10, filter: "member" }),
+			{ wrapper: wrapper() },
+		)
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+	})
+
+	test("deve enviar role=ADMIN quando filter='admin'", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				expect(url.searchParams.get("role")).toBe("ADMIN")
+				return HttpResponse.json(
+					{ users: [], pagination: { page: 1, limit: 10, total: 0 } },
+					{ status: 200 },
+				)
+			}),
+		)
+		const { result } = renderHook(
+			() => useUsers({ page: 1, limit: 10, filter: "admin" }),
+			{ wrapper: wrapper() },
+		)
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+	})
+
+	test("deve enviar status=active quando filter='active'", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				expect(url.searchParams.get("status")).toBe("active")
+				expect(url.searchParams.has("role")).toBe(false)
+				return HttpResponse.json(
+					{ users: [], pagination: { page: 1, limit: 10, total: 0 } },
+					{ status: 200 },
+				)
+			}),
+		)
+		const { result } = renderHook(
+			() => useUsers({ page: 1, limit: 10, filter: "active" }),
+			{ wrapper: wrapper() },
+		)
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+	})
+
+	test("não deve enviar role nem status quando filter='all'", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				expect(url.searchParams.has("role")).toBe(false)
+				expect(url.searchParams.has("status")).toBe(false)
+				return HttpResponse.json(
+					{ users: [], pagination: { page: 1, limit: 10, total: 0 } },
+					{ status: 200 },
+				)
+			}),
+		)
+		const { result } = renderHook(
+			() => useUsers({ page: 1, limit: 10, filter: "all" }),
+			{ wrapper: wrapper() },
+		)
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+	})
 })

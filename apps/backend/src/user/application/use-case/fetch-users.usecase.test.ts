@@ -240,4 +240,68 @@ describe("FetchUsersUseCase", () => {
 		expect(mariaResult.data[0].id).toBe("u-maria")
 		expect(mariaResult.data[0].id).not.toBe("u-joao")
 	})
+
+	test("Deve filtrar usuários por role MEMBER", async () => {
+		userDAO.createFakeUser({ id: "u-member", role: "MEMBER" })
+		userDAO.createFakeUser({ id: "u-admin", role: "ADMIN" })
+		const result = await sut.execute({ page: 1, limit: 10, role: "MEMBER" })
+		expect(result.data).toHaveLength(1)
+		expect(result.data[0].id).toBe("u-member")
+		expect(result.pagination.total).toBe(1)
+	})
+
+	test("Deve filtrar usuários por role ADMIN", async () => {
+		userDAO.createFakeUser({ id: "u-member", role: "MEMBER" })
+		userDAO.createFakeUser({ id: "u-admin", role: "ADMIN" })
+		const result = await sut.execute({ page: 1, limit: 10, role: "ADMIN" })
+		expect(result.data).toHaveLength(1)
+		expect(result.data[0].id).toBe("u-admin")
+	})
+
+	test("Deve filtrar usuários ativos (status active)", async () => {
+		userDAO.createFakeUser({ id: "u-active", status: StatusTypes.ACTIVATED })
+		userDAO.createFakeUser({ id: "u-inactive", status: StatusTypes.SUSPENDED })
+		const result = await sut.execute({ page: 1, limit: 10, status: "active" })
+		expect(result.data).toHaveLength(1)
+		expect(result.data[0].id).toBe("u-active")
+	})
+
+	test("Deve filtrar usuários inativos (status inactive)", async () => {
+		userDAO.createFakeUser({ id: "u-active", status: StatusTypes.ACTIVATED })
+		userDAO.createFakeUser({ id: "u-inactive", status: StatusTypes.SUSPENDED })
+		const result = await sut.execute({ page: 1, limit: 10, status: "inactive" })
+		expect(result.data).toHaveLength(1)
+		expect(result.data[0].id).toBe("u-inactive")
+	})
+
+	test("Deve combinar filtro de role com busca por texto", async () => {
+		userDAO.createFakeUser({
+			id: "u-joao-member",
+			name: "João",
+			role: "MEMBER",
+		})
+		userDAO.createFakeUser({ id: "u-joao-admin", name: "João", role: "ADMIN" })
+		userDAO.createFakeUser({
+			id: "u-maria-member",
+			name: "Maria",
+			role: "MEMBER",
+		})
+		const result = await sut.execute({
+			page: 1,
+			limit: 10,
+			query: "joão",
+			role: "MEMBER",
+		})
+		expect(result.data).toHaveLength(1)
+		expect(result.data[0].id).toBe("u-joao-member")
+	})
+
+	test("Não deve colidir cache entre filtros diferentes (role diferente)", async () => {
+		userDAO.createFakeUser({ id: "u-member", role: "MEMBER" })
+		userDAO.createFakeUser({ id: "u-admin", role: "ADMIN" })
+		const members = await sut.execute({ page: 1, limit: 10, role: "MEMBER" })
+		const admins = await sut.execute({ page: 1, limit: 10, role: "ADMIN" })
+		expect(members.data[0].id).toBe("u-member")
+		expect(admins.data[0].id).toBe("u-admin")
+	})
 })

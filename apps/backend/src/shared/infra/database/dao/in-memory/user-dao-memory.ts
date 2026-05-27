@@ -6,6 +6,7 @@ import type {
 	FetchUsersInput,
 	FetchUsersOutput,
 	UserDAO,
+	UserStatsOutput,
 } from "@/user/application/persistence/dao/user-dao"
 import type { RoleTypes } from "@/user/domain/value-object/role"
 import {
@@ -73,13 +74,24 @@ export class UserDAOMemory implements UserDAO {
 		input: FetchUsersInput,
 	): Promise<FetchUsersOutput> {
 		const allUsers = this.usersData.toArray()
-		const filtered = input.query
+		let filtered = input.query
 			? allUsers.filter(
 					(u) =>
 						u.name.toLowerCase().includes(input.query?.toLowerCase() ?? "") ||
 						u.email.toLowerCase().includes(input.query?.toLowerCase() ?? ""),
 				)
 			: allUsers
+
+		if (input.role) {
+			filtered = filtered.filter((u) => u.role === input.role)
+		}
+
+		if (input.status === "active") {
+			filtered = filtered.filter((u) => u.status === UserStatusTypes.ACTIVATED)
+		} else if (input.status === "inactive") {
+			filtered = filtered.filter((u) => u.status === UserStatusTypes.SUSPENDED)
+		}
+
 		const usersData = filtered.slice(
 			(input.page - 1) * input.limit,
 			input.page * input.limit,
@@ -87,6 +99,18 @@ export class UserDAOMemory implements UserDAO {
 		return {
 			usersData,
 			total: filtered.length,
+		}
+	}
+
+	public async countUserStats(): Promise<UserStatsOutput> {
+		const all = this.usersData.toArray()
+		return {
+			total: all.length,
+			members: all.filter((u) => u.role === "MEMBER").length,
+			admins: all.filter((u) => u.role === "ADMIN").length,
+			active: all.filter((u) => u.status === UserStatusTypes.ACTIVATED).length,
+			inactive: all.filter((u) => u.status === UserStatusTypes.SUSPENDED)
+				.length,
 		}
 	}
 }

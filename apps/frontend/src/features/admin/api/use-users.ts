@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
+import type { UserFilter } from "../types"
 
 type UsersResponse =
 	paths["/users"]["get"]["responses"][200]["content"]["application/json"]
@@ -19,6 +20,7 @@ export interface UseUsersParams {
 	page: number
 	limit: number
 	query?: string
+	filter?: UserFilter
 }
 
 export interface UseUsersResult {
@@ -36,6 +38,7 @@ export function adminUsersQueryKey(params: UseUsersParams) {
 		params.page,
 		params.limit,
 		params.query ?? "",
+		params.filter ?? "all",
 	] as const
 }
 
@@ -46,18 +49,37 @@ function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 	return new ApiError(fallbackStatus, "network_error", message)
 }
 
+type FilterParams =
+	| { role: "MEMBER" | "ADMIN" }
+	| { status: "active" | "inactive" }
+	| Record<string, never>
+
+const FILTER_PARAMS_MAP: Record<UserFilter, FilterParams> = {
+	all: {},
+	member: { role: "MEMBER" },
+	admin: { role: "ADMIN" },
+	active: { status: "active" },
+	inactive: { status: "inactive" },
+}
+
+function buildFilterParams(filter?: UserFilter): FilterParams {
+	return FILTER_PARAMS_MAP[filter ?? "all"]
+}
+
 export function useUsers(
 	params: UseUsersParams,
 ): UseQueryResult<UseUsersResult, ApiError> {
 	return useQuery<UseUsersResult, ApiError>({
 		queryKey: adminUsersQueryKey(params),
 		queryFn: async () => {
+			const filterParams = buildFilterParams(params.filter)
 			const { data, error } = await api.GET("/users", {
 				params: {
 					query: {
 						page: params.page,
 						limit: params.limit,
 						query: params.query,
+						...filterParams,
 					},
 				},
 			})

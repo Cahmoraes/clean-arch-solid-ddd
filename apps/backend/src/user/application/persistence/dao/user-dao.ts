@@ -5,6 +5,8 @@ export interface FetchUsersInput {
 	page: number
 	limit: number
 	query?: string
+	role?: RoleTypes
+	status?: "active" | "inactive"
 }
 
 export interface FetchUsersData {
@@ -21,6 +23,15 @@ export interface FetchUsersOutput {
 	total: number
 }
 
+export interface UserStatsOutput {
+	total: number
+	members: number
+	admins: number
+	active: number
+	inactive: number
+}
+
 export interface UserDAO {
 	fetchAndCountUsers(input: FetchUsersInput): Promise<FetchUsersOutput>
+	countUserStats(): Promise<UserStatsOutput>
 }

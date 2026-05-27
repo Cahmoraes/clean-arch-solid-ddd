@@ -4,6 +4,7 @@ import type { QueryKey, UseMutationResult } from "@tanstack/react-query"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
+import { USER_STATS_QUERY_KEY } from "./use-user-stats"
 import { ADMIN_USERS_QUERY_KEY, type UseUsersResult } from "./use-users"
 
 type Context = [QueryKey, UseUsersResult | undefined][]
@@ -55,6 +56,7 @@ export function usePromoteToAdmin(): UseMutationResult<void, ApiError, string> {
 		},
 		onSettled: () => {
 			void queryClient.invalidateQueries({ queryKey: [ADMIN_USERS_QUERY_KEY] })
+			void queryClient.invalidateQueries({ queryKey: [USER_STATS_QUERY_KEY] })
 		},
 	})
 }
