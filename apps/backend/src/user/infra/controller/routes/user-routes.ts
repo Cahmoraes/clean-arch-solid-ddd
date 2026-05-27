@@ -3,6 +3,7 @@ const PREFIX = "/users"
 export const UserRoutes = {
 	CREATE: PREFIX,
 	FETCH: PREFIX,
+	STATS: `${PREFIX}/stats`,
 	PROFILE: `${PREFIX}/:userId`,
 	ME: `${PREFIX}/me`,
 	METRICS: `${PREFIX}/me/metrics`,

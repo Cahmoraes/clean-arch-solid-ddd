@@ -23,6 +23,7 @@ export const USER_TYPES = {
 		PromoteToAdmin: Symbol.for("PromoteToAdminUseCase"),
 		DemoteFromAdmin: Symbol.for("DemoteFromAdminUseCase"),
 		UserMetrics: Symbol.for("UserMetricsUseCase"),
+		GetUserStats: Symbol.for("GetUserStatsUseCase"),
 	},
 	Controllers: {
 		CreateUser: Symbol.for("UserController"),
@@ -43,6 +44,7 @@ export const USER_TYPES = {
 		UserMetrics: Symbol.for("UserMetricsController"),
 		PromoteToAdmin: Symbol.for("PromoteToAdminController"),
 		DemoteFromAdmin: Symbol.for("DemoteFromAdminController"),
+		GetUserStats: Symbol.for("GetUserStatsController"),
 	},
 	Gateways: {
 		PasswordResetTokenStore: Symbol.for("PasswordResetTokenStore"),

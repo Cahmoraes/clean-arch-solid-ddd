@@ -11,6 +11,7 @@ import { DeleteUserUseCase } from "@/user/application/use-case/delete-user.useca
 import { DemoteFromAdminUseCase } from "@/user/application/use-case/demote-from-admin.usecase"
 import { FetchUsersUseCase } from "@/user/application/use-case/fetch-users.usecase"
 import { ForgotPasswordUseCase } from "@/user/application/use-case/forgot-password.usecase"
+import { GetUserStatsUseCase } from "@/user/application/use-case/get-user-stats.usecase"
 import { PromoteToAdminUseCase } from "@/user/application/use-case/promote-to-admin.usecase"
 import { ResetPasswordUseCase } from "@/user/application/use-case/reset-password.usecase"
 import { SuspendUserUseCase } from "@/user/application/use-case/suspend-user.usecase"
@@ -26,6 +27,7 @@ import { DefinePasswordController } from "@/user/infra/controller/define-passwor
 import { DemoteFromAdminController } from "@/user/infra/controller/demote-from-admin.controller"
 import { FetchUsersController } from "@/user/infra/controller/fetch-users.controller"
 import { ForgotPasswordController } from "@/user/infra/controller/forgot-password.controller"
+import { GetUserStatsController } from "@/user/infra/controller/get-user-stats.controller"
 import { MyProfileController } from "@/user/infra/controller/my-profile.controller"
 import { PromoteToAdminController } from "@/user/infra/controller/promote-to-admin.controller"
 import { ResetPasswordController } from "@/user/infra/controller/reset-password.controller"
@@ -67,10 +69,12 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Controllers.ForgotPassword).to(ForgotPasswordController)
 	bind(USER_TYPES.Controllers.ResetPassword).to(ResetPasswordController)
 	bind(USER_TYPES.Controllers.FetchUsers).to(FetchUsersController)
+	bind(USER_TYPES.Controllers.GetUserStats).to(GetUserStatsController)
 	bind(USER_TYPES.Controllers.UpdateUserProfile).to(UpdateUserProfileController)
 	bind(USER_TYPES.UseCases.CreateUser).to(CreateUserUseCase)
 	bind(USER_TYPES.UseCases.UserProfile).to(UserProfileUseCase)
 	bind(USER_TYPES.UseCases.UserMetrics).to(UserMetricsUseCase)
+	bind(USER_TYPES.UseCases.GetUserStats).to(GetUserStatsUseCase)
 	bind(USER_TYPES.UseCases.ChangePassword).to(ChangePasswordUseCase)
 	bind(USER_TYPES.UseCases.CreatePasswordReauthGrant).to(
 		CreatePasswordReauthGrantUseCase,

@@ -226,4 +226,70 @@ describe("Buscar Usuários", () => {
 		expect(response.body.users).toHaveLength(0)
 		expect(response.body.pagination.total).toBe(0)
 	})
+
+	test("Deve retornar apenas membros quando role=MEMBER", async () => {
+		userDAO.createFakeUser({ id: "u-member", role: "MEMBER" })
+		userDAO.createFakeUser({ id: "u-admin", role: "ADMIN" })
+
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10, role: "MEMBER" })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.users).toHaveLength(1)
+		expect(response.body.users[0].id).toBe("u-member")
+		expect(response.body.pagination.total).toBe(1)
+	})
+
+	test("Deve retornar apenas admins quando role=ADMIN", async () => {
+		userDAO.createFakeUser({ id: "u-member", role: "MEMBER" })
+		userDAO.createFakeUser({ id: "u-admin", role: "ADMIN" })
+
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10, role: "ADMIN" })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.users).toHaveLength(1)
+		expect(response.body.users[0].id).toBe("u-admin")
+	})
+
+	test("Deve retornar apenas ativos quando status=active", async () => {
+		userDAO.createFakeUser({ id: "u-active", status: StatusTypes.ACTIVATED })
+		userDAO.createFakeUser({ id: "u-inactive", status: StatusTypes.SUSPENDED })
+
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10, status: "active" })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.users).toHaveLength(1)
+		expect(response.body.users[0].id).toBe("u-active")
+	})
+
+	test("Deve retornar apenas inativos quando status=inactive", async () => {
+		userDAO.createFakeUser({ id: "u-active", status: StatusTypes.ACTIVATED })
+		userDAO.createFakeUser({ id: "u-inactive", status: StatusTypes.SUSPENDED })
+
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10, status: "inactive" })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.users).toHaveLength(1)
+		expect(response.body.users[0].id).toBe("u-inactive")
+	})
+
+	test("Deve retornar 400 para valor de role inválido", async () => {
+		const response = await request(fastifyServer.server)
+			.get(UserRoutes.FETCH)
+			.query({ page: 1, limit: 10, role: "SUPERUSER" })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+	})
 })

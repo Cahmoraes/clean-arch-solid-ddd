@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
-import { inject } from "inversify"
+import { inject, injectable } from "inversify"
 import { z } from "zod"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
@@ -24,8 +24,17 @@ const fetchUsersRequestSchema = z.object({
 		.max(100)
 		.optional()
 		.meta({ description: "Search by name or email", example: "joao" }),
+	role: z
+		.enum(["MEMBER", "ADMIN"])
+		.optional()
+		.meta({ description: "Filter by role", example: "MEMBER" }),
+	status: z
+		.enum(["active", "inactive"])
+		.optional()
+		.meta({ description: "Filter by status", example: "active" }),
 })
 
+@injectable()
 export class FetchUsersController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
@@ -41,18 +50,12 @@ export class FetchUsersController extends BaseController {
 		this.callback = this.callback.bind(this)
 	}
 
-	@Logger({
-		message: "✅",
-	})
+	@Logger({ message: "✅" })
 	public async init(): Promise<void> {
 		this.httpServer.register(
 			"get",
 			UserRoutes.FETCH,
-			{
-				callback: this.callback,
-				isProtected: true,
-				onlyAdmin: true,
-			},
+			{ callback: this.callback, isProtected: true, onlyAdmin: true },
 			makeFetchUsersSwaggerSchema(),
 		)
 	}
@@ -66,11 +69,13 @@ export class FetchUsersController extends BaseController {
 			return this.createResponseError(parsedQueryParamsOrError)
 		}
 
-		const { limit, page, query } = parsedQueryParamsOrError.value
+		const { limit, page, query, role, status } = parsedQueryParamsOrError.value
 		const result = await this.fetchUsers.execute({
 			limit,
 			page,
 			query,
+			role,
+			status,
 		})
 		const users = this.presenter(req.headers.accept).format(result.data)
 		if (req.headers.accept === MimeType.CSV) {
@@ -87,8 +92,7 @@ export class FetchUsersController extends BaseController {
 	}
 
 	private presenter(header?: string) {
-		const presenter = PresenterFactory.create(header)
-		return presenter
+		return PresenterFactory.create(header)
 	}
 }
 
