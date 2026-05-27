@@ -207,6 +207,14 @@ function UsersContent({
 	)
 }
 
+const EMPTY_STATS: UserStats = {
+	total: 0,
+	members: 0,
+	admins: 0,
+	active: 0,
+	inactive: 0,
+}
+
 export default function AdminUsersPage() {
 	const [page, setPage] = useState(1)
 	const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
@@ -216,14 +224,7 @@ export default function AdminUsersPage() {
 	const [activeFilter, setActiveFilter] = useState<UserFilter>("all")
 	const { data: statsData } = useUserStats()
 
-	const emptyStats: UserStats = {
-		total: 0,
-		members: 0,
-		admins: 0,
-		active: 0,
-		inactive: 0,
-	}
-	const stats: UserStats = statsData ?? emptyStats
+	const stats: UserStats = statsData ?? EMPTY_STATS
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: debouncedQuery é o gatilho intencional para resetar a página; não é consumido no corpo do efeito
 	useEffect(() => {
