@@ -13,8 +13,8 @@ updated_at: "2026-05-28T12:42:04-03:00"
 - **Stories Aprovadas**: 7 PASSED + 1 PARTIAL (zero FAILED)
 - **Total de Requisitos Funcionais**: 20 (RF-001 a RF-020)
 - **Requisitos Atendidos**: 18/20 com cobertura completa; 2 com gap de cobertura
-- **Bugs Encontrados**: 1 (RF-006 — resposta distinta para PasswordNotSetError)
-- **Novos Testes Criados**: 10 (6 para US-002, 4 para US-005)
+- **Bugs Encontrados**: 2 (BUG-01: RF-006 resposta distinta para PasswordNotSetError; BUG-02: status `locked` inacessível na UI admin — ver addendum 28/05/2026)
+- **Novos Testes Criados**: 12 (6 para US-002, 4 para US-005, 2 para UI `locked` US-004/US-005)
 
 ---
 
@@ -79,9 +79,11 @@ updated_at: "2026-05-28T12:42:04-03:00"
 
 ## Acessibilidade
 
-- [ ] Navegação por teclado verificada *(N/A — feature backend-only)*
-- [ ] Contraste de cores adequado *(N/A — feature backend-only)*
-- [ ] Labels e ARIA roles presentes *(N/A — feature backend-only)*
+- [ ] Navegação por teclado verificada *(N/A no QA original — feature tratada como backend-only)*
+- [ ] Contraste de cores adequado *(N/A no QA original — feature tratada como backend-only)*
+- [ ] Labels e ARIA roles presentes *(N/A no QA original — feature tratada como backend-only)*
+
+> **Atualização (28/05/2026):** a feature **não** era backend-only. O status `locked` não havia sido propagado ao contrato OpenAPI nem à UI admin, deixando o desbloqueio inacessível pela interface. Ver addendum abaixo.
 
 ---
 
@@ -122,3 +124,29 @@ Feature `login-security-lockout` está **aprovada com ressalva** para merge.
 **Aprovada:** 7/8 user stories com cobertura de testes completa. RF-005, RF-008 a RF-020 completamente implementados e testados. Sistema de bloqueio (Redis + DB), notificação por e-mail, desbloqueio via reset, controle admin, e eliminação de magic strings todos verificados e funcionais.
 
 **Ressalva (BUG-01):** RF-006 tem violação ativa no `authenticate.controller.ts` — `PasswordNotSetError` expõe distinção de estado via resposta HTTP diferente. Recomenda-se corrigir antes do merge ou registrar como issue de acompanhamento imediato pós-merge. A violação não é nova (pré-existente), mas o PRD desta feature exige padronização.
+
+---
+
+## Addendum (28/05/2026) — Gap de UI Admin no status `locked`
+
+### BUG-02 — Status `locked` inacessível pela interface admin
+
+| ID | Descrição | Severidade | Status |
+|----|-----------|------------|--------|
+| BUG-02 | O status `locked` não era exposto pelo contrato OpenAPI (`fetch-users` e `my-profile` declaravam `enum(["activated", "suspended"])`), então `@repo/api-types` tipava `status` sem `locked`. No modal admin (`user-detail-modal.tsx`), as permissões `canActivate`/`canSuspend` eram condicionadas a `suspended`/`activated`, fazendo a seção de ações renderizar `null` para contas `locked` — **nenhum botão de desbloqueio aparecia**, embora o backend (`PATCH /users/activate`) já suportasse `locked → activated` e limpasse o lock no Redis. | Alta | ✅ CORRIGIDO |
+
+**Causa raiz:** a feature foi implementada apenas no backend; o estado `locked` nunca foi propagado ao contrato OpenAPI nem à UI admin. O QA original tratou a feature como backend-only e não verificou as user stories US-004/US-005 na interface.
+
+**Correção aplicada:**
+- Backend: `"locked"` adicionado aos enums de resposta em `fetch-users.controller.ts` e `my-profile.controller.ts`.
+- Tipos: `@repo/api-types` regenerado (`pnpm generate:types`).
+- Frontend: `user-detail-modal.tsx` e `user-row.tsx` reconhecem `locked` — badge "Bloqueado" (âmbar, distinto de "Inativo"), botão **Desbloquear** (activate, US-004) e **Inativar** (suspend, US-005).
+- Testes: 2 testes de unidade adicionados ao `user-detail-modal.test.tsx` cobrindo o estado `locked`.
+
+**Verificação:** todos os gates passaram — backend (`biome:fix`, `tsc:check`, `test:run` 497, `build`) e frontend (`lint:fix`, `tsc:check`, `test` 366, `build`).
+
+### Lacunas de cobertura remanescentes (não-bloqueantes)
+
+| Item | Lacuna | Impacto |
+|------|--------|---------|
+| US-004/US-005 na UI | Sem teste E2E (Playwright) do fluxo admin de desbloqueio/suspensão de conta `locked` | Médio — coberto por testes de unidade do modal; E2E recomendado |

@@ -17,6 +17,7 @@ function roleLabel(role: string): string {
 function statusLabel(status: string): string {
 	if (status === "activated") return "Ativo"
 	if (status === "suspended") return "Inativo"
+	if (status === "locked") return "Bloqueado"
 	return status
 }
 
@@ -26,6 +27,9 @@ function statusBadgeClassName(status: string): string {
 	}
 	if (status === "suspended") {
 		return "border-red-200 bg-red-50 text-red-700"
+	}
+	if (status === "locked") {
+		return "border-amber-200 bg-amber-50 text-amber-700"
 	}
 	return "border-border bg-card text-muted-foreground"
 }

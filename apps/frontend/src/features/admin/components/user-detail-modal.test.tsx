@@ -111,6 +111,27 @@ describe("UserDetailModal", () => {
 		).not.toBeInTheDocument()
 	})
 
+	test("exibe botões de desbloquear e inativar para usuário bloqueado", () => {
+		renderModal(buildUser({ status: "locked", role: "MEMBER" }))
+
+		expect(
+			screen.getByRole("button", { name: "Desbloquear" }),
+		).toBeInTheDocument()
+		expect(screen.getByRole("button", { name: "Inativar" })).toBeInTheDocument()
+		expect(screen.getByText("Bloqueado")).toBeInTheDocument()
+	})
+
+	test("chama a mutação de ativação ao desbloquear usuário bloqueado", async () => {
+		const user = userEvent.setup()
+		renderModal(buildUser({ id: "user-55", status: "locked", role: "MEMBER" }))
+
+		await user.click(screen.getByRole("button", { name: "Desbloquear" }))
+
+		expect(mockActivate).toHaveBeenCalledTimes(1)
+		expect(mockActivate).toHaveBeenCalledWith("user-55")
+		expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+	})
+
 	test("abre o AlertDialog ao clicar em inativar", async () => {
 		const user = userEvent.setup()
 		renderModal(buildUser())

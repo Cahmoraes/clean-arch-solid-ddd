@@ -45,6 +45,7 @@ function roleLabel(role: string): string {
 function statusLabel(status: string): string {
 	if (status === "activated") return "Ativo"
 	if (status === "suspended") return "Inativo"
+	if (status === "locked") return "Bloqueado"
 	return status
 }
 
@@ -54,6 +55,9 @@ function statusBadgeClassName(status: string): string {
 	}
 	if (status === "suspended") {
 		return "border-red-200 bg-red-50 text-red-700"
+	}
+	if (status === "locked") {
+		return "border-amber-200 bg-amber-50 text-amber-700"
 	}
 	return "border-border bg-muted text-muted-foreground"
 }
@@ -133,14 +137,18 @@ function SectionLabel({ children }: SectionLabelProps) {
 interface ActivateActionButtonProps {
 	isPending: boolean
 	isActivating: boolean
+	unlockMode: boolean
 	onActivate: () => void
 }
 
 function ActivateActionButton({
 	isPending,
 	isActivating,
+	unlockMode,
 	onActivate,
 }: ActivateActionButtonProps) {
+	const idleLabel = unlockMode ? "Desbloquear" : "Ativar"
+	const busyLabel = unlockMode ? "Desbloqueando..." : "Ativando..."
 	return (
 		<Button
 			onClick={onActivate}
@@ -148,7 +156,7 @@ function ActivateActionButton({
 			aria-busy={isActivating}
 			className="bg-green-600 text-white hover:bg-green-700"
 		>
-			{isActivating ? "Ativando..." : "Ativar"}
+			{isActivating ? busyLabel : idleLabel}
 		</Button>
 	)
 }
@@ -179,6 +187,7 @@ function SuspendActionButton({
 interface UserStatusActionsProps {
 	canActivate: boolean
 	canSuspend: boolean
+	unlockMode: boolean
 	isPending: boolean
 	isActivating: boolean
 	isSuspending: boolean
@@ -189,6 +198,7 @@ interface UserStatusActionsProps {
 function UserStatusActions({
 	canActivate,
 	canSuspend,
+	unlockMode,
 	isPending,
 	isActivating,
 	isSuspending,
@@ -204,6 +214,7 @@ function UserStatusActions({
 					<ActivateActionButton
 						isPending={isPending}
 						isActivating={isActivating}
+						unlockMode={unlockMode}
 						onActivate={onActivate}
 					/>
 				) : null}
@@ -325,6 +336,7 @@ function UserActionsSection(props: UserActionsSectionProps) {
 			<UserStatusActions
 				canActivate={props.canActivate}
 				canSuspend={props.canSuspend}
+				unlockMode={props.unlockMode}
 				isPending={props.isPending}
 				isActivating={props.isActivating}
 				isSuspending={props.isSuspending}
@@ -495,11 +507,12 @@ function useUserPermissions(
 	user: AdminUser,
 	currentUserId: string | null | undefined,
 ) {
+	const isLocked = user.status === "locked"
 	const canSuspend =
-		user.status === "activated" &&
+		(user.status === "activated" || isLocked) &&
 		user.role !== "ADMIN" &&
 		currentUserId !== user.id
-	const canActivate = user.status === "suspended"
+	const canActivate = user.status === "suspended" || isLocked
 	const canPromoteToAdmin =
 		user.status === "activated" &&
 		user.role === "MEMBER" &&
@@ -509,7 +522,13 @@ function useUserPermissions(
 		currentUserId !== user.id &&
 		user.email !== SUPER_ADMIN_EMAIL
 
-	return { canSuspend, canActivate, canPromoteToAdmin, canDemoteFromAdmin }
+	return {
+		canSuspend,
+		canActivate,
+		canPromoteToAdmin,
+		canDemoteFromAdmin,
+		isLocked,
+	}
 }
 
 interface UseUserMutationsReturn {
@@ -625,6 +644,7 @@ export function UserDetailModal({ user, open, onClose }: UserDetailModalProps) {
 					<UserActionsSection
 						canActivate={permissions.canActivate}
 						canSuspend={permissions.canSuspend}
+						unlockMode={permissions.isLocked}
 						canPromoteToAdmin={permissions.canPromoteToAdmin}
 						canDemoteFromAdmin={permissions.canDemoteFromAdmin}
 						isPending={mutations.isPending}

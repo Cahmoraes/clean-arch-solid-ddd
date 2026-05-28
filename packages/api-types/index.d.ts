@@ -101,7 +101,7 @@ export interface paths {
                                  * @description User status
                                  * @enum {string}
                                  */
-                                status: "activated" | "suspended";
+                                status: "activated" | "suspended" | "locked";
                                 /** @description User creation date */
                                 createdAt: string;
                             }[];
@@ -521,7 +521,7 @@ export interface paths {
                              * @example activated
                              * @enum {string}
                              */
-                            status: "activated" | "suspended";
+                            status: "activated" | "suspended" | "locked";
                         };
                     };
                 };
@@ -2740,8 +2740,6 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /** @description Error code */
-                            code?: string;
                             /** @description Error message */
                             message: string;
                         };

@@ -106,7 +106,7 @@ const userItemSchema = z.object({
 	email: z.email().meta({ description: "User email" }),
 	role: z.enum(["ADMIN", "MEMBER"]).meta({ description: "User role" }),
 	status: z
-		.enum(["activated", "suspended"])
+		.enum(["activated", "suspended", "locked"])
 		.meta({ description: "User status" }),
 	createdAt: z.string().meta({ description: "User creation date" }),
 })
