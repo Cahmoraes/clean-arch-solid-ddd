@@ -12,8 +12,6 @@ import { UserIsSuperAdminError } from "../error/user-is-super-admin-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
 
-const SUPER_ADMIN_EMAIL = "admin@admin.com"
-
 export interface DemoteFromAdminUseCaseInput {
 	userId: string
 	requesterId: string
@@ -47,8 +45,7 @@ export class DemoteFromAdminUseCase {
 
 		const user = await this.userRepository.userOfId(input.userId)
 		if (!user) return failure(new UserNotFoundError())
-		if (user.email === SUPER_ADMIN_EMAIL)
-			return failure(new UserIsSuperAdminError())
+		if (user.isSuperAdmin) return failure(new UserIsSuperAdminError())
 		if (user.role !== "ADMIN") return failure(new UserIsNotAdminError())
 
 		user.updateRole("MEMBER")

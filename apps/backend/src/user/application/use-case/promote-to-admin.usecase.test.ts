@@ -56,16 +56,17 @@ describe("PromoteToAdminUseCase", () => {
 		expect(result.value).toBeInstanceOf(UserNotFoundError)
 	})
 
-	test("Não deve promover admin@admin.com (super admin protegido)", async () => {
-		const user = (
-			await User.create({
-				id: "super-id",
-				email: "admin@admin.com",
-				name: "Super Admin",
-				password: "password",
-				role: "MEMBER",
-			})
-		).forceSuccess().value
+	test("Não deve promover usuário com isSuperAdmin=true", async () => {
+		const user = User.restore({
+			id: "super-id",
+			email: "super@test.com",
+			name: "Super Admin",
+			password: "hashed_password",
+			role: "MEMBER",
+			status: "activated",
+			createdAt: new Date(),
+			isSuperAdmin: true,
+		})
 		await userRepository.save(user)
 
 		const result = await sut.execute({ userId: "super-id" })

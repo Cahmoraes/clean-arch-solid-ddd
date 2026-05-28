@@ -12,8 +12,6 @@ import { UserIsSuperAdminError } from "../error/user-is-super-admin-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
 
-const SUPER_ADMIN_EMAIL = "admin@admin.com"
-
 export interface PromoteToAdminUseCaseInput {
 	userId: string
 }
@@ -42,8 +40,7 @@ export class PromoteToAdminUseCase {
 	): PromoteToAdminUseCaseOutput {
 		const user = await this.userRepository.userOfId(input.userId)
 		if (!user) return failure(new UserNotFoundError())
-		if (user.email === SUPER_ADMIN_EMAIL)
-			return failure(new UserIsSuperAdminError())
+		if (user.isSuperAdmin) return failure(new UserIsSuperAdminError())
 		if (!user.isActive) return failure(new UserIsNotActiveError())
 		if (user.role === "ADMIN") return failure(new UserAlreadyAdminError())
 

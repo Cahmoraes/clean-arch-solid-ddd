@@ -71,16 +71,17 @@ describe("DemoteFromAdminUseCase", () => {
 		expect(result.value).toBeInstanceOf(CannotDemoteSelfError)
 	})
 
-	test("Não deve demover admin@admin.com (super admin protegido)", async () => {
-		const user = (
-			await User.create({
-				id: "super-id",
-				email: "admin@admin.com",
-				name: "Super Admin",
-				password: "password",
-				role: "ADMIN",
-			})
-		).forceSuccess().value
+	test("Não deve demover usuário com isSuperAdmin=true", async () => {
+		const user = User.restore({
+			id: "super-id",
+			email: "super@test.com",
+			name: "Super Admin",
+			password: "hashed_password",
+			role: "ADMIN",
+			status: "activated",
+			createdAt: new Date(),
+			isSuperAdmin: true,
+		})
 		await userRepository.save(user)
 
 		const result = await sut.execute({
