@@ -48,6 +48,7 @@ export const USER_TYPES = {
 	},
 	Gateways: {
 		PasswordResetTokenStore: Symbol.for("PasswordResetTokenStore"),
+		LoginAttemptStore: Symbol.for("LoginAttemptStore"),
 	},
 	DAO: {
 		User: Symbol.for("UserDAO"),
@@ -56,5 +57,6 @@ export const USER_TYPES = {
 		SendWelcomeEmail: Symbol.for("SendWelcomeEmailNotification"),
 		SendPasswordAlertEmail: Symbol.for("SendPasswordAlertEmailNotification"),
 		SendPasswordResetEmail: Symbol.for("SendPasswordResetEmailNotification"),
+		SendAccountLockedEmail: Symbol.for("SendAccountLockedEmailNotification"),
 	},
 } as const

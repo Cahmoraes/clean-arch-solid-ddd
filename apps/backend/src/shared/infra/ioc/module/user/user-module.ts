@@ -36,9 +36,11 @@ import { UpdateMyProfileController } from "@/user/infra/controller/update-my-pro
 import { UpdateUserProfileController } from "@/user/infra/controller/update-user-profile.controller"
 import { UserMetricsController } from "@/user/infra/controller/user-metrics.controller"
 import { UserProfileController } from "@/user/infra/controller/user-profile.controller"
+import { SendAccountLockedEmailNotification } from "@/user/infra/email/send-account-locked-email.notification"
 import { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
 import { SendPasswordResetEmailNotification } from "@/user/infra/email/send-password-reset-email.notification"
 import { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
+import { RedisLoginAttemptStore } from "@/user/infra/gateway/redis-login-attempt-store"
 import { RedisPasswordResetTokenStore } from "@/user/infra/gateway/redis-password-reset-token-store"
 import { AUTH_TYPES, USER_TYPES } from "../../types"
 import { UserDAOProvider } from "./user-dao-provider"
@@ -54,6 +56,9 @@ export const userModule = new ContainerModule(({ bind }) => {
 		.inSingletonScope()
 	bind(USER_TYPES.Gateways.PasswordResetTokenStore)
 		.to(RedisPasswordResetTokenStore)
+		.inSingletonScope()
+	bind(USER_TYPES.Gateways.LoginAttemptStore)
+		.to(RedisLoginAttemptStore)
 		.inSingletonScope()
 	bind(USER_TYPES.Controllers.CreateUser).to(CreateUserController)
 	bind(USER_TYPES.Controllers.UserProfile).to(UserProfileController)
@@ -103,5 +108,8 @@ export const userModule = new ContainerModule(({ bind }) => {
 		.inSingletonScope()
 	bind(USER_TYPES.Notifications.SendPasswordResetEmail)
 		.to(SendPasswordResetEmailNotification)
+		.inSingletonScope()
+	bind(USER_TYPES.Notifications.SendAccountLockedEmail)
+		.to(SendAccountLockedEmailNotification)
 		.inSingletonScope()
 })

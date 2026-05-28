@@ -1,4 +1,5 @@
 import { AUTH_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import type { SendAccountLockedEmailNotification } from "@/user/infra/email/send-account-locked-email.notification"
 import type { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
 import type { SendPasswordResetEmailNotification } from "@/user/infra/email/send-password-reset-email.notification"
 import type { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
@@ -25,6 +26,11 @@ export function setupUserModule(): ModuleControllers {
 		USER_TYPES.Notifications.SendPasswordResetEmail,
 	)
 	passwordResetEmail.subscribe()
+
+	const accountLockedEmail = resolve<SendAccountLockedEmailNotification>(
+		USER_TYPES.Notifications.SendAccountLockedEmail,
+	)
+	accountLockedEmail.subscribe()
 
 	const controllers = [
 		resolve(USER_TYPES.Controllers.CreateUser),
