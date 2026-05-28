@@ -1,6 +1,6 @@
 # Task 6: Eliminar `SUPER_ADMIN_EMAIL` magic string em promote/demote use cases [RF-017, RF-020]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

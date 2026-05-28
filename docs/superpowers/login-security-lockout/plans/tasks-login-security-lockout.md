@@ -17,13 +17,13 @@
 
 - [x] 1. Prisma migration — `locked` no enum UserStatus + campo `isSuperAdmin` [RF-018, RF-019] → `task-01.md`
 - [x] 2. User domain — `isSuperAdmin` property + `LockedStatus` no State Pattern + método `lock()` [RF-002, RF-005, RF-016, RF-020] → `task-02.md`
-- [ ] 3. Domain event `AccountLockedBySecurityEvent` [RF-008, RF-009] → `task-03.md`
-- [ ] 4. `LoginAttemptStore` interface + `RedisLoginAttemptStore` + IoC [RF-001, RF-002, RF-003, RF-004] → `task-04.md`
-- [ ] 5. `AuthenticateUseCase` — lógica de lockout completa [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007] → `task-05.md`
-- [ ] 6. Eliminar `SUPER_ADMIN_EMAIL` magic string em promote/demote use cases [RF-017, RF-020] → `task-06.md`
-- [ ] 7. `ForgotPasswordUseCase` — bloquear `suspended` silenciosamente [RF-012, RF-013] → `task-07.md`
-- [ ] 8. `ResetPasswordUseCase` — desbloquear `locked` + rejeitar `suspended` [RF-011, RF-012, RF-013] → `task-08.md`
-- [ ] 9. `ActiveUserUseCase` — limpar Redis lock ao ativar [RF-014, RF-015] → `task-09.md`
-- [ ] 10. Template React Email `AccountLockedEmailTemplate` [RF-008, RF-009, RF-010] → `task-10.md`
-- [ ] 11. `SendAccountLockedEmailNotification` + IoC + bootstrap [RF-008, RF-009, RF-010] → `task-11.md`
-- [ ] 12. Validation gate — biome:fix + tsc:check + test:run + build [todos os RFs] → `task-12.md`
+- [x] 3. Domain event `AccountLockedBySecurityEvent` [RF-008, RF-009] → `task-03.md`
+- [x] 4. `LoginAttemptStore` interface + `RedisLoginAttemptStore` + IoC [RF-001, RF-002, RF-003, RF-004] → `task-04.md`
+- [x] 5. `AuthenticateUseCase` — lógica de lockout completa [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007] → `task-05.md`
+- [x] 6. Eliminar `SUPER_ADMIN_EMAIL` magic string em promote/demote use cases [RF-017, RF-020] → `task-06.md`
+- [x] 7. `ForgotPasswordUseCase` — bloquear `suspended` silenciosamente [RF-012, RF-013] → `task-07.md`
+- [x] 8. `ResetPasswordUseCase` — desbloquear `locked` + rejeitar `suspended` [RF-011, RF-012, RF-013] → `task-08.md`
+- [x] 9. `ActiveUserUseCase` — limpar Redis lock ao ativar [RF-014, RF-015] → `task-09.md`
+- [x] 10. Template React Email `AccountLockedEmailTemplate` [RF-008, RF-009, RF-010] → `task-10.md`
+- [x] 11. `SendAccountLockedEmailNotification` + IoC + bootstrap [RF-008, RF-009, RF-010] → `task-11.md`
+- [x] 12. Validation gate — biome:fix + tsc:check + test:run + build [todos os RFs] → `task-12.md`

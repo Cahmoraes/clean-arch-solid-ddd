@@ -1,6 +1,6 @@
 # Task 12: Validation gate — biome:fix + tsc:check + test:run + build [todos os RFs]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

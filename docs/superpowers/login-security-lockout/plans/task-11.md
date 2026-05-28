@@ -1,6 +1,6 @@
 # Task 11: `SendAccountLockedEmailNotification` + IoC + bootstrap [RF-008, RF-009, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

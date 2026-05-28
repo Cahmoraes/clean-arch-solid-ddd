@@ -1,6 +1,6 @@
 # Task 9: `ActiveUserUseCase` — limpar Redis lock ao ativar [RF-014, RF-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

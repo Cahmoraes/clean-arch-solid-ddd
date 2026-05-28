@@ -1,6 +1,6 @@
 # Task 5: `AuthenticateUseCase` — lógica de lockout completa [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

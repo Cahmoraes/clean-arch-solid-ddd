@@ -1,6 +1,6 @@
 # Task 4: `LoginAttemptStore` interface + `RedisLoginAttemptStore` + IoC [RF-001, RF-002, RF-003, RF-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

@@ -1,6 +1,6 @@
 # Task 8: `ResetPasswordUseCase` — desbloquear `locked` + rejeitar `suspended` [RF-011, RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

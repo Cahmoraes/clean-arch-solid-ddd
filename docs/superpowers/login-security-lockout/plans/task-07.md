@@ -1,6 +1,6 @@
 # Task 7: `ForgotPasswordUseCase` — bloquear `suspended` silenciosamente [RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 
