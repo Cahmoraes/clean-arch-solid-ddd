@@ -42,12 +42,10 @@ export class DemoteFromAdminUseCase {
 		if (input.userId === input.requesterId) {
 			return failure(new CannotDemoteSelfError())
 		}
-
 		const user = await this.userRepository.userOfId(input.userId)
 		if (!user) return failure(new UserNotFoundError())
 		if (user.isSuperAdmin) return failure(new UserIsSuperAdminError())
 		if (user.role !== "ADMIN") return failure(new UserIsNotAdminError())
-
 		user.updateRole("MEMBER")
 		await this.userRepository.update(user)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
