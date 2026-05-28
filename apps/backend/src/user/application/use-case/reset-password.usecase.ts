@@ -12,6 +12,7 @@ import { AUTH_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { PasswordChangedEvent } from "@/user/domain/event/password-changed-event"
 import { InvalidResetTokenError } from "../error/invalid-reset-token-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
+import type { LoginAttemptStore } from "../persistence/login-attempt-store"
 import type { PasswordResetTokenStore } from "../persistence/password-reset-token-store"
 import type { UserRepository } from "../persistence/repository/user-repository"
 
@@ -36,6 +37,8 @@ export class ResetPasswordUseCase {
 		private readonly tokenStore: PasswordResetTokenStore,
 		@inject(AUTH_TYPES.DAO.RevokedToken)
 		private readonly revokedTokenDAO: RevokedTokenDAO,
+		@inject(USER_TYPES.Gateways.LoginAttemptStore)
+		private readonly loginAttemptStore: LoginAttemptStore,
 	) {
 		this.bindMethod()
 	}
@@ -56,12 +59,20 @@ export class ResetPasswordUseCase {
 		if (!user) {
 			return failure(new UserNotFoundError())
 		}
+		if (user.isSuspend) {
+			return failure(new InvalidResetTokenError())
+		}
+		const wasLocked = user.isLocked
 		await this.tokenStore.deleteResetToken(tokenHash)
 		await this.tokenStore.deleteUidMapping(userId)
 		user.subscribe(this.handlePasswordChangedEvent)
 		const changePasswordResult = await user.changePassword(input.newPassword)
 		if (changePasswordResult.isFailure()) {
 			return failure(changePasswordResult.value)
+		}
+		if (wasLocked) {
+			user.activate()
+			await this.loginAttemptStore.deleteLock(user.id)
 		}
 		await this.userRepository.update(user)
 		await this.revokedTokenDAO.revokeAllForUser(userId, SEVEN_DAYS_IN_SECONDS)

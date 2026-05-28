@@ -2,11 +2,14 @@ import { createHash, randomBytes } from "node:crypto"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 import { RevokedTokenDAOMemory } from "@/shared/infra/database/dao/in-memory/revoked-token-dao-memory"
+import type { InMemoryLoginAttemptStore } from "@/shared/infra/database/repository/in-memory/in-memory-login-attempt-store"
 import { InMemoryPasswordResetTokenStore } from "@/shared/infra/database/repository/in-memory/in-memory-password-reset-token-store"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { AUTH_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { InvalidResetTokenError } from "@/user/application/error/invalid-reset-token-error"
+import { User } from "@/user/domain/user"
+import { StatusTypes } from "@/user/domain/value-object/status"
 import type { ResetPasswordUseCase } from "./reset-password.usecase"
 
 const PASSWORD_RESET_TTL = 900
@@ -22,11 +25,13 @@ describe("ResetPasswordUseCase", () => {
 	let userRepository: InMemoryUserRepository
 	let tokenStore: InMemoryPasswordResetTokenStore
 	let revokedTokenDAO: RevokedTokenDAOMemory
+	let loginAttemptStore: InMemoryLoginAttemptStore
 
 	beforeEach(() => {
 		container.snapshot()
 		const repos = setupInMemoryRepositories()
 		userRepository = repos.userRepository
+		loginAttemptStore = repos.loginAttemptStore
 
 		tokenStore = new InMemoryPasswordResetTokenStore()
 		container
@@ -132,5 +137,75 @@ describe("ResetPasswordUseCase", () => {
 		await expect(
 			revokedTokenDAO.revokedAfterForUser(user.id),
 		).resolves.not.toBeNull()
+	})
+
+	describe("lockout integration", () => {
+		test("Deve desbloquear conta locked após reset bem-sucedido", async () => {
+			const lockedUser = User.restore({
+				id: "locked-user-id",
+				name: "Locked User",
+				email: "locked@test.com",
+				role: "MEMBER",
+				status: StatusTypes.LOCKED,
+				createdAt: new Date(),
+			})
+			await userRepository.save(lockedUser)
+			await loginAttemptStore.setLocked("locked-user-id")
+
+			const { rawToken, tokenHash } = makeTokenPair()
+			await tokenStore.saveResetToken(
+				"locked-user-id",
+				tokenHash,
+				PASSWORD_RESET_TTL,
+			)
+			await tokenStore.saveUidMapping(
+				"locked-user-id",
+				tokenHash,
+				PASSWORD_RESET_TTL,
+			)
+
+			const result = await sut.execute({
+				token: rawToken,
+				newPassword: "NewPass123!",
+			})
+
+			expect(result.isSuccess()).toBe(true)
+			const user = await userRepository.userOfId("locked-user-id")
+			expect(user?.isActive).toBe(true)
+			expect(user?.isLocked).toBe(false)
+			expect(await loginAttemptStore.isLocked("locked-user-id")).toBe(false)
+		})
+
+		test("Deve rejeitar reset de senha para usuário suspended", async () => {
+			const suspendedUser = User.restore({
+				id: "suspended-user-id",
+				name: "Suspended User",
+				email: "suspended@test.com",
+				role: "MEMBER",
+				status: StatusTypes.SUSPENDED,
+				createdAt: new Date(),
+			})
+			await userRepository.save(suspendedUser)
+
+			const { rawToken, tokenHash } = makeTokenPair()
+			await tokenStore.saveResetToken(
+				"suspended-user-id",
+				tokenHash,
+				PASSWORD_RESET_TTL,
+			)
+			await tokenStore.saveUidMapping(
+				"suspended-user-id",
+				tokenHash,
+				PASSWORD_RESET_TTL,
+			)
+
+			const result = await sut.execute({
+				token: rawToken,
+				newPassword: "NewPass123!",
+			})
+
+			expect(result.isFailure()).toBe(true)
+			expect(result.forceFailure().value).toBeInstanceOf(InvalidResetTokenError)
+		})
 	})
 })
