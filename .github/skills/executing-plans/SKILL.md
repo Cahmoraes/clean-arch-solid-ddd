@@ -44,7 +44,19 @@ pmem search "<feature-name>" --limit 3
 
 ## Caveman Mode
 
-Before starting Step 2 (Execute Tasks), check caveman session state (defined in `using-superpowers` Caveman Mode section):
+### Compaction Re-Entry Guard
+
+Run this check **first**, before any caveman state evaluation. It is the mechanism that keeps execution correct after an auto-compact wipes session memory.
+
+1. **Is `session_caveman_active` known?** If not (e.g., mid-execution resume after auto-compact):
+   - Re-read preferences: `node <using-superpowers-base-dir>/scripts/read-preferences.cjs --repo-root "$(git rev-parse --show-toplevel)"`
+   - Set `session_caveman_active = preferences.optimization.caveman` (default: `false`)
+   - Set `session_caveman_level = preferences.optimization.caveman_level` (default: `full`)
+2. **Are there tasks in `IN_PROGRESS` state?** Run the task parser or check task files directly. A task file showing `**Status:** IN_PROGRESS` was interrupted mid-execution. Resume it from the last completed subtask (the last `- [x]` line in its `## Passos` section) — not from the beginning. The file on disk is the authoritative record of what was done before compaction.
+
+### Caveman State Check
+
+After the re-entry guard:
 
 1. **If `session_caveman_active = false` AND `session_caveman_prompted = false`:** Ask the dynamic question once (see `using-superpowers` policy) and record the result.
 2. **If `session_caveman_active = true`:** Invoke the `caveman` skill at `session_caveman_level` (e.g., `/caveman full`). Caveman stays active through all task execution, verifications, and QA gate.
@@ -71,6 +83,8 @@ Before starting Step 2 (Execute Tasks), check caveman session state (defined in 
 7. If no concerns: Create TodoWrite and proceed
 
 ### Step 2: Execute Tasks
+
+> **Compaction invariant:** The physical file state of task files is the authoritative record — not memory, not TodoWrite. After resuming from compaction, always re-read `task-NN.md` to determine the actual current state. A task is `IN_PROGRESS` if and only if its file says so on disk. An individual subtask is done if and only if its line reads `[x]` in the file on disk. Never assume based on session memory alone.
 
 For each task:
 1. **Physically edit** `task-NN.md` using your file-editing tool: change `**Status:** PENDING` to `**Status:** IN_PROGRESS`. This is a real disk write — not a TodoWrite entry or a mental note — and must happen before any implementation begins.

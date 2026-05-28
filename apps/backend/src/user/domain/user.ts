@@ -40,6 +40,7 @@ export interface UserConstructor {
 	updatedAt?: Date
 	status: StatusTypes
 	billingCustomerId?: string
+	isSuperAdmin?: boolean
 }
 
 export interface CreateUserDto {
@@ -66,6 +67,7 @@ export interface UserRestore {
 	createdAt: Date
 	updatedAt?: Date
 	billingCustomerId?: string
+	isSuperAdmin?: boolean
 }
 
 export type UserUpdateProps = Partial<Pick<CreateUserDto, "name" | "email">>
@@ -95,6 +97,7 @@ export class User extends Observable {
 	private _updatedAt?: Date
 	private _status: UserStatus
 	private _billingCustomerId?: string
+	private _isSuperAdmin: boolean
 
 	private constructor(props: UserConstructor) {
 		super()
@@ -108,6 +111,7 @@ export class User extends Observable {
 		this._updatedAt = props.updatedAt
 		this._status = UserStatusFactory.create(this, props.status)
 		this._billingCustomerId = props.billingCustomerId
+		this._isSuperAdmin = props.isSuperAdmin ?? false
 	}
 
 	public static async create(
@@ -150,6 +154,7 @@ export class User extends Observable {
 			updatedAt: userRestoreProps.updatedAt,
 			status: userRestoreProps.status,
 			billingCustomerId: userRestoreProps.billingCustomerId,
+			isSuperAdmin: userRestoreProps.isSuperAdmin ?? false,
 		})
 	}
 
@@ -191,6 +196,10 @@ export class User extends Observable {
 
 	get billingCustomerId(): string | undefined {
 		return this._billingCustomerId
+	}
+
+	get isSuperAdmin(): boolean {
+		return this._isSuperAdmin
 	}
 
 	public assignBillingCustomerId(billingCustomerId: string): void {
@@ -282,6 +291,14 @@ export class User extends Observable {
 
 	public get isActive(): boolean {
 		return this._status.type === StatusTypes.ACTIVATED
+	}
+
+	public lock(): void {
+		this._status.lock()
+	}
+
+	public get isLocked(): boolean {
+		return this._status.type === StatusTypes.LOCKED
 	}
 
 	public updateRole(role: RoleTypes): void {

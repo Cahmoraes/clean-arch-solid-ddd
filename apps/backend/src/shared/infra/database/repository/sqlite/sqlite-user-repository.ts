@@ -20,6 +20,7 @@ interface UserData {
 	role: RoleTypes
 	status: StatusTypes
 	billingCustomerId?: string
+	is_super_admin?: boolean | number | null
 }
 
 @injectable()
@@ -83,6 +84,7 @@ export class SQLiteUserRepository implements UserRepository {
 			role: userData.role,
 			status: userData.status,
 			billingCustomerId: userData.billingCustomerId,
+			isSuperAdmin: Boolean(userData.is_super_admin ?? false),
 		})
 	}
 
@@ -103,18 +105,19 @@ export class SQLiteUserRepository implements UserRepository {
 	public async save(user: User): Promise<void> {
 		this.sqliteConnection
 			.query(/*SQL*/ `
-      INSERT INTO 
+      INSERT INTO
         "users" (
-          "email", 
-          "name", 
+          "email",
+          "name",
           "password_hash",
-          "google_id", 
-          "created_at", 
-          "role", 
-          "status", 
-          "billing_customer_id"
+          "google_id",
+          "created_at",
+          "role",
+          "status",
+          "billing_customer_id",
+          "is_super_admin"
         )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?); 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
     `)
 			.run(
 				user.email,
@@ -125,15 +128,16 @@ export class SQLiteUserRepository implements UserRepository {
 				user.role,
 				user.status,
 				user.billingCustomerId ?? null,
+				user.isSuperAdmin ? 1 : 0,
 			)
 	}
 
 	public async update(user: User): Promise<void> {
 		this.sqliteConnection
 			.query(/*SQL*/ `
-      UPDATE 
+      UPDATE
         "users"
-      SET 
+      SET
         "email" = ?,
         "name" = ?,
         "password_hash" = ?,
@@ -142,8 +146,9 @@ export class SQLiteUserRepository implements UserRepository {
         "role" = ?,
         "status" = ?,
         "billing_customer_id" = ?,
+        "is_super_admin" = ?,
         "updated_at" = ?
-      WHERE 
+      WHERE
         "id" = ?
     `)
 			.run(
@@ -155,6 +160,7 @@ export class SQLiteUserRepository implements UserRepository {
 				user.role,
 				user.status,
 				user.billingCustomerId ?? null,
+				user.isSuperAdmin ? 1 : 0,
 				user.updatedAt
 					? user.updatedAt.toISOString()
 					: new Date().toISOString(),

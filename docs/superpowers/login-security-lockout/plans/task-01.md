@@ -1,6 +1,6 @@
 # Task 1: Prisma migration — `locked` no enum UserStatus + campo `isSuperAdmin` [RF-018, RF-019]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

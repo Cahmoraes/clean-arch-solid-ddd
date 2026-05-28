@@ -97,6 +97,49 @@ Generate task tracking artifacts **immediately after** decomposing tasks and **b
 
 If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
 
+## Research Phase
+
+Before writing any task file, gather the codebase-specific information each task needs: exact file paths, function signatures, test patterns, naming conventions, import paths, and API contracts. Task files require zero placeholders — every step must contain real code, real paths, and real commands. That standard can only be met with thorough upfront research.
+
+### Inline vs. Parallel Research
+
+**Research inline in the main thread** when:
+- The PRD has fewer than 5 functional requirements
+- The feature touches a single subsystem or a small cluster of files
+- The total codebase area to explore is small enough to hold in context while writing tasks
+
+**Dispatch parallel read-only research subagents** when:
+- The PRD has 5 or more functional requirements **or** spans multiple clearly independent subsystems (e.g., auth + billing + notifications)
+- Codebase exploration would consume significant context before task-writing even begins — this risks hitting limits during the subsequent, more important task-writing phase
+- Multiple unrelated file clusters need investigation (each cluster maps to a different task group)
+
+Research agents are safe to parallelize: they perform only reads (no disk writes) and their domains do not overlap.
+
+### Research Subagent Pattern
+
+Each research subagent is scoped to one domain or functional requirement cluster. Give it a focused scope and ask for a structured report:
+
+```
+Research the [subsystem] for the [feature] implementation plan.
+
+Return a structured markdown report covering:
+1. Relevant existing files with their exact paths and key exports
+2. Current test patterns in this subsystem (with real examples from the codebase)
+3. Import path conventions and naming patterns
+4. Existing types, interfaces, or schemas relevant to this feature
+5. Integration points with other subsystems (what they expose, what they expect)
+
+Read-only. Do not create or edit any files. Return findings only.
+```
+
+Dispatch all research subagents in the same turn. When all return, synthesize their reports in the main thread — one structured reference per subsystem. Then write all task files sequentially, with the full synthesized research available.
+
+### Why Task Files Must Be Written Sequentially
+
+Do NOT dispatch parallel subagents to write individual task files.
+
+Tasks are self-contained by design — but they are not independent. Task N+1 may extend a data model introduced in task N, call a function defined in task N, or import from a file created in task N. A subagent writing task 3 in isolation cannot know the exact type signatures, function names, or file paths that task 1 and task 2 will produce. Parallel task writers produce cross-task inconsistencies (mismatched types, wrong import paths, duplicated code) that `validate-tasks.cjs` may not fully catch. Write tasks sequentially in the main thread, using the full synthesized research as your reference.
+
 ## File Structure
 
 Before defining tasks, map out which files will be created or modified and what each one is responsible for. This is where decomposition decisions get locked in.

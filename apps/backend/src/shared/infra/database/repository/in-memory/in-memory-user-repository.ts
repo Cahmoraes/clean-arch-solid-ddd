@@ -24,6 +24,7 @@ export class InMemoryUserRepository implements UserRepository {
 			role: user.role,
 			status: user.status,
 			billingCustomerId: user.billingCustomerId,
+			isSuperAdmin: user.isSuperAdmin,
 		})
 		this.users.add(userWithId)
 	}

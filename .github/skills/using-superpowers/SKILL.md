@@ -193,7 +193,17 @@ If no: set `session_caveman_prompted = true`. Do not ask again in this session.
 
 ### Compaction Continuity
 
-After a context compaction (whether auto-triggered by the platform at its own threshold or manually by the user), restore `session_caveman_active`, `session_caveman_level`, `session_caveman_prompted`, `session_memory_enabled`, and `session_resync_completed` from the compaction summary **only if those fields are present in it**. If `session_memory_enabled` is not found in the compaction summary, derive it from `preferences.memory.persistent_memory` (default: `false`). If `session_resync_completed` is not found, default to `false`.
+After a context compaction (whether auto-triggered by the platform at its own threshold or manually by the user), restore `session_caveman_active`, `session_caveman_level`, `session_caveman_prompted`, `session_memory_enabled`, and `session_resync_completed` from the compaction summary **only if those fields are present in it**. For any field absent from the compaction summary, apply these fallbacks:
+
+| Variable | Fallback when absent from compaction summary |
+|----------|---------------------------------------------|
+| `session_caveman_active` | Re-read `.superpowers/preferences.yml` and derive from `preferences.optimization.caveman` (default: `false`) |
+| `session_caveman_level` | Re-read `.superpowers/preferences.yml` and derive from `preferences.optimization.caveman_level` (default: `full`) |
+| `session_caveman_prompted` | `false` |
+| `session_memory_enabled` | Re-read `.superpowers/preferences.yml` and derive from `preferences.memory.persistent_memory` (default: `false`) |
+| `session_resync_completed` | `false` |
+
+**Post-restore re-activation:** If `session_caveman_active` resolves to `true` (from compaction summary or from preferences fallback) **and** the current execution context is the `Executando` state (mid-task execution), re-invoke the `caveman` skill at `session_caveman_level` immediately — do not wait for the next caveman check in the execution skill. This prevents a gap in caveman coverage caused by compaction.
 
 # Using Skills
 

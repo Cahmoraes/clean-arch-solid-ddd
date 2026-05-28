@@ -1,6 +1,6 @@
 # Task 2: User domain — `isSuperAdmin` property + `LockedStatus` no State Pattern + método `lock()` [RF-002, RF-005, RF-016, RF-020]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

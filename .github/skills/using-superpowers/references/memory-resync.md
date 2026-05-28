@@ -18,18 +18,40 @@ ChecandoPreferencias
       → user declines → Triagem
 ```
 
-## Dirty Detection (Cheap Check)
+## Deterministic Scripts
 
-Before asking the user, determine if there are new/changed artifacts:
+The GateResync uses three shared scripts that collapse sequential tool calls into single bash invocations. They follow the same interface as `read-preferences.cjs`: JSON to stdout, warnings to stderr, exit codes 0/1, `--repo-root` flag.
 
-1. Read `.memory/resync-manifest.json` (if it exists)
-2. List all directories in `docs/superpowers/`
-3. For each feature directory, compute a lightweight fingerprint:
-   - File list + last modification timestamps (via `git log -1 --format=%H -- <path>` or stat)
-   - Or simpler: `git log -1 --format=%H -- docs/superpowers/` for the whole tree
-4. Compare with manifest's `last_synced_tree_hash`
-5. If identical → skip silently (no question asked)
-6. If different → proceed to ask user
+Use the `using-superpowers` base directory from your skill context header to build absolute paths:
+
+```
+<using-superpowers-base-dir>/scripts/check-resync.cjs
+<using-superpowers-base-dir>/scripts/compute-inventory.cjs
+<using-superpowers-base-dir>/scripts/update-manifest.cjs
+```
+
+---
+
+## Step 1 — Dirty Detection (Single Tool Call)
+
+Run the dirty-check script before asking the user anything:
+
+```bash
+node <using-superpowers-base-dir>/scripts/check-resync.cjs \
+  --repo-root "$(git rev-parse --show-toplevel)"
+```
+
+Inspect the output fields:
+
+| Field | Action when true/false |
+|-------|------------------------|
+| `repoNotFound: true` | Skip silently — not a git repo |
+| `docsExists: false` | Skip silently — nothing to sync |
+| `dirty: false` | Skip silently — no changes since last sync |
+| `memoryExists: false` | Run `pmem init` first, then continue |
+| `dirty: true` | Proceed to ask the user |
+
+The script reads the manifest and computes the tree hash in one call, replacing the previous 2–3 sequential tool calls.
 
 ### Manifest Schema (`.memory/resync-manifest.json`)
 
@@ -37,20 +59,25 @@ Before asking the user, determine if there are new/changed artifacts:
 {
   "last_synced_at": "2026-05-20T14:30:00Z",
   "last_synced_tree_hash": "abc123...",
+  "last_synced_hash_method": "git",
   "synced_features": {
     "checkin-approve-reject": {
-      "spec_hash": "sha256...",
-      "prd_hash": "sha256...",
-      "qa_hash": "sha256..."
+      "spec_hash": "sha256:...",
+      "prd_hash": "sha256:...",
+      "qa_hash": "sha256:...",
+      "adr_hash": "sha256:..."
     },
     "winston-to-pino-migration": {
-      "spec_hash": "sha256...",
+      "spec_hash": "sha256:...",
       "prd_hash": null,
-      "qa_hash": null
+      "qa_hash": null,
+      "adr_hash": null
     }
   }
 }
 ```
+
+---
 
 ## The Re-Sync Question
 
@@ -66,60 +93,95 @@ Ask in the configured language (`preferences.communication.language`):
 > - **Yes** — sync memory with current artifacts
 > - **No** — skip and proceed normally
 
-## Sync Algorithm
+---
 
-### Phase 1: Inventory
+## Step 2 — Inventory and Diff (Single Tool Call)
 
-Scan `docs/superpowers/` and build an inventory of all features and their artifacts:
+After the user accepts, get the full classified inventory:
 
-```
-For each directory in docs/superpowers/:
-  feature_slug = directory name
-  artifacts = {
-    spec: docs/superpowers/<slug>/specs/<slug>-design.md (if exists)
-    prd:  docs/superpowers/<slug>/prd/prd-<slug>.md (if exists)
-    qa:   docs/superpowers/<slug>/qa/qa-report-<slug>.md (if exists)
-  }
+```bash
+node <using-superpowers-base-dir>/scripts/compute-inventory.cjs \
+  --repo-root "$(git rev-parse --show-toplevel)"
 ```
 
-**Skip:** Individual task files (`task-NN.md`), evidence directories, and non-markdown files.
+The output contains a `features` array where each entry has:
+- `slug`: directory name
+- `status`: `"new"` | `"changed"` | `"unchanged"` | `"deleted"`
+- `artifacts.spec`, `artifacts.prd`, `artifacts.qa`, `artifacts.adrs`: per-artifact `{ path, hash, exists, readable }`
 
-### Phase 2: Diff Against Manifest
+Artifact paths per feature slug:
 
-For each feature in inventory:
-- Compute SHA-256 of each artifact's content
-- Compare with `synced_features[slug]` in manifest
-- Classify as: `new` (not in manifest), `changed` (hash differs), or `unchanged`
+```
+spec:  docs/superpowers/<slug>/specs/<slug>-design.md
+prd:   docs/superpowers/<slug>/prd/prd-<slug>.md
+qa:    docs/superpowers/<slug>/qa/qa-report-<slug>.md
+adrs:  docs/superpowers/<slug>/adrs/*.md  (combined hash of all .md files, sorted)
+```
 
-### Phase 3: Sync Changed/New Features
+This replaces the previous O(N_features) sequential view + shasum calls.
 
-For each feature classified as `new` or `changed`:
+---
 
-1. **Prune old entries for this feature:**
+## Step 3 — Sync (For New/Changed/Deleted Features)
+
+### Parallelization: Batch reads across features
+
+After getting the inventory, batch all `view` calls for different features **in a single LLM turn**. For example, if features A, B, C are `new` or `changed`, issue all `view` calls for their artifacts at once — do not wait for one feature before reading the next.
+
+### For each `new` or `changed` feature
+
+1. **Prune old entries:**
    ```bash
    pmem prune --source "artifact-sync" --tags "<feature-slug>"
    ```
-   Note: If `pmem prune` doesn't support `--tags` filter, use search + manual delete, or prune all artifact-sync entries and re-add everything.
 
-2. **Read relevant artifacts** and extract memory-worthy content:
+2. **Read artifacts** — use the `path` from the inventory output. Skip any artifact where `readable: false` (warn in the summary). Skip artifacts where `exists: false` entirely (they simply haven't been created yet).
 
-   | Artifact | What to extract |
-   |----------|----------------|
-   | `*-design.md` (spec) | Architecture decisions, technology choices, constraints, interfaces, patterns chosen |
-   | `prd-*.md` (PRD) | Feature objective, user stories summary, functional requirements IDs, out-of-scope items |
-   | `qa-report-*.md` (QA) | Quality status (PASSED/PARTIAL/FAILED), verified behaviors count, known issues |
-
-3. **Persist to memory:**
+3. **Synthesize and persist** — see Content Synthesis Rules below:
    ```bash
-   pmem add "<synthesized content>" --tags "artifact-sync,<feature-slug>,<artifact-type>" --source "artifact-sync"
+   pmem add "<synthesized content>" \
+     --tags "artifact-sync,<feature-slug>,<artifact-type>" \
+     --source "artifact-sync"
    ```
 
-### Phase 4: Update Manifest
+### For each `deleted` feature
 
-After successful sync, write updated `.memory/resync-manifest.json` with:
-- Current timestamp
-- Current tree hash
-- Updated per-feature hashes
+The feature directory was removed from `docs/superpowers/` since the last sync. Prune its stale memory entries:
+
+```bash
+pmem prune --source "artifact-sync" --tags "<feature-slug>"
+```
+
+No `pmem add` is needed — the feature no longer exists.
+
+---
+
+## Step 4 — Update Manifest (Single Tool Call)
+
+After all pmem operations complete, write the updated manifest in one call. Pass the `treeHash` and `hashMethod` from the compute-inventory output, plus only the features that were actually synced (new/changed) and any deleted slugs:
+
+```bash
+node <using-superpowers-base-dir>/scripts/update-manifest.cjs \
+  --repo-root "$(git rev-parse --show-toplevel)" << 'EOF'
+{
+  "treeHash": "<from compute-inventory output: treeHash>",
+  "hashMethod": "<from compute-inventory output: hashMethod>",
+  "syncedFeatures": {
+    "<new-or-changed-slug>": {
+      "spec_hash": "<from compute-inventory output: features[].artifacts.spec.hash>",
+      "prd_hash":  "<from compute-inventory output: features[].artifacts.prd.hash>",
+      "qa_hash":   "<from compute-inventory output: features[].artifacts.qa.hash>",
+      "adr_hash":  "<from compute-inventory output: features[].artifacts.adrs.hash>"
+    }
+  },
+  "deletedSlugs": ["<deleted-slug-1>", "<deleted-slug-2>"]
+}
+EOF
+```
+
+The script merges the update into the existing manifest, preserving unchanged features. Unchanged features do not need to be included in `syncedFeatures`.
+
+---
 
 ## Content Synthesis Rules
 
@@ -140,6 +202,13 @@ Feature: <feature-slug>. Objective: <one-line goal>. User stories: <count> stori
 Feature: <feature-slug>. QA status: <PASSED|PARTIAL|FAILED>. Stories verified: <N>/<total>. Known issues: <summary or "none">. Artifact: docs/superpowers/<slug>/qa/qa-report-<slug>.md
 ```
 
+**From ADR files (`adrs/*.md`):**
+```
+Feature: <feature-slug>. Architecture decisions: <count> ADRs. <ADR-001 title>: <one-line decision>. <ADR-002 title>: <one-line decision>. [...] Artifact: docs/superpowers/<slug>/adrs/
+```
+
+---
+
 ## Deduplication Guarantees
 
 1. **Source-based isolation:** All resync entries use `source="artifact-sync"`. Normal planning entries use `source="assistant"`. They never conflict.
@@ -147,16 +216,26 @@ Feature: <feature-slug>. QA status: <PASSED|PARTIAL|FAILED>. Stories verified: <
 3. **Prune-before-add:** For changed features, old entries are pruned before new ones are added. This prevents accumulation.
 4. **Manifest-based skip:** Unchanged features are not re-processed at all.
 
+---
+
 ## Graceful Degradation
 
-| Failure | Behavior |
-|---------|----------|
-| `pmem` not installed or unavailable | Warn user once, skip sync, proceed to Triagem |
-| `.memory/` directory missing | Run `pmem init` first, then proceed with sync |
-| `docs/superpowers/` doesn't exist | Skip silently (nothing to sync) |
-| Individual artifact unreadable | Log warning, skip that artifact, continue with others |
-| Sync interrupted mid-way | Partial sync is acceptable — memory entries already added remain valid. Manifest is written only after full completion, so next session will re-detect diffs and re-process all changed features (including already-synced ones). This is safe because prune-before-add is idempotent. |
-| Git not available (for tree hash) | Fall back to file stat timestamps for dirty detection |
+The scripts handle all failure cases and surface them via the JSON output:
+
+| Failure | Script behavior | LLM action |
+|---------|----------------|------------|
+| `pmem` not installed or unavailable | (not in scripts) | Warn user once, skip sync, proceed to Triagem |
+| `.memory/` directory missing | `check-resync`: `memoryExists: false` | Run `pmem init` first, then continue |
+| `docs/superpowers/` doesn't exist | `check-resync`: `docsExists: false` | Skip silently — `dirty` will be false |
+| Not a git repo | `check-resync`: `repoNotFound: true` | Skip silently |
+| Git not available | Both scripts fall back to stat fingerprint automatically (`hashMethod: "stat"`) | No action needed |
+| Individual artifact unreadable | `compute-inventory`: artifact `readable: false` + entry in `errors[]` | Skip that artifact, warn in summary |
+| All artifacts for a feature unreadable | Feature still listed with error artifacts | Skip feature, warn in summary |
+| Sync interrupted mid-way | Partial sync is acceptable — manifest is written only after full completion | Next session will re-detect and re-process |
+| Manifest corrupt/unparseable | Script warns to stderr, treats as missing → `dirty: true` | Re-sync proceeds cleanly |
+| Feature removed from filesystem | `compute-inventory`: `status: "deleted"` | Prune pmem entries, include in `deletedSlugs` |
+
+---
 
 ## Summary Report
 
@@ -167,6 +246,10 @@ After sync completes, report to the user:
 
 **en:**
 > "✅ Memory synced: **X** features updated, **Y** new entries added, **Z** entries replaced."
+
+Include a note for any artifacts that were skipped due to read errors.
+
+---
 
 ## Session Variables
 

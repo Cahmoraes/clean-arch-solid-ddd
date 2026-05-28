@@ -1,6 +1,6 @@
 # Task 3: Domain event `AccountLockedBySecurityEvent` [RF-008, RF-009]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-login-security-lockout.md`
 **Spec:** `../specs/login-security-lockout-design.md`
 

@@ -122,6 +122,7 @@ export class PrismaUserRepository implements UserRepository {
 				role: user.role,
 				status: user.status,
 				billing_customer_id: user.billingCustomerId,
+				is_super_admin: user.isSuperAdmin,
 				updated_at: user.updatedAt ? user.updatedAt : new Date(),
 			},
 		})

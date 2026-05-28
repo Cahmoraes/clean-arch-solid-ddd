@@ -15,8 +15,8 @@
 
 ## Tarefas
 
-- [ ] 1. Prisma migration — `locked` no enum UserStatus + campo `isSuperAdmin` [RF-018, RF-019] → `task-01.md`
-- [ ] 2. User domain — `isSuperAdmin` property + `LockedStatus` no State Pattern + método `lock()` [RF-002, RF-005, RF-016, RF-020] → `task-02.md`
+- [x] 1. Prisma migration — `locked` no enum UserStatus + campo `isSuperAdmin` [RF-018, RF-019] → `task-01.md`
+- [x] 2. User domain — `isSuperAdmin` property + `LockedStatus` no State Pattern + método `lock()` [RF-002, RF-005, RF-016, RF-020] → `task-02.md`
 - [ ] 3. Domain event `AccountLockedBySecurityEvent` [RF-008, RF-009] → `task-03.md`
 - [ ] 4. `LoginAttemptStore` interface + `RedisLoginAttemptStore` + IoC [RF-001, RF-002, RF-003, RF-004] → `task-04.md`
 - [ ] 5. `AuthenticateUseCase` — lógica de lockout completa [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007] → `task-05.md`

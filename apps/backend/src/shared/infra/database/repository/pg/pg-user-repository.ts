@@ -38,6 +38,7 @@ export class PgUserRepository implements UserRepository {
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
 			status: row.status,
+			isSuperAdmin: row.is_super_admin ?? false,
 		})
 	}
 
@@ -58,6 +59,7 @@ export class PgUserRepository implements UserRepository {
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
 			status: row.status,
+			isSuperAdmin: row.is_super_admin ?? false,
 		})
 	}
 
@@ -77,18 +79,20 @@ export class PgUserRepository implements UserRepository {
 			createdAt: row.created_at,
 			updatedAt: row.updated_at,
 			status: row.status,
+			isSuperAdmin: row.is_super_admin ?? false,
 		})
 	}
 
 	public async save(user: User): Promise<void> {
 		await this.pgClient.query(
-			"INSERT INTO users (id, name, email, password_hash, google_id, role, created_at, updated_at) VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, now(), now())",
+			"INSERT INTO users (id, name, email, password_hash, google_id, role, created_at, updated_at, is_super_admin) VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, now(), now(), $6)",
 			[
 				user.name,
 				user.email,
 				user.password ?? null,
 				user.googleId ?? null,
 				user.role,
+				user.isSuperAdmin ?? false,
 			],
 		)
 	}

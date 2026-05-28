@@ -73,7 +73,21 @@ pmem search "<feature-name>" --limit 3
 
 ### Caveman Mode Activation
 
-Before dispatching the first task subagent, check session caveman state (defined in `using-superpowers` policy):
+#### Compaction Re-Entry Guard
+
+Run this **first**, before any caveman state evaluation. It is the mechanism that keeps execution correct after an auto-compact wipes session memory.
+
+1. **Is `session_caveman_active` known?** If not (e.g., mid-execution resume after auto-compact):
+   - Re-read preferences: `node <using-superpowers-base-dir>/scripts/read-preferences.cjs --repo-root "$(git rev-parse --show-toplevel)"`
+   - Set `session_caveman_active = preferences.optimization.caveman` (default: `false`)
+   - Set `session_caveman_level = preferences.optimization.caveman_level` (default: `full`)
+2. **Are there tasks in `IN_PROGRESS` state?** Check the task files directly (or use `parse-tasks.js`). A task file with `**Status:** IN_PROGRESS` was interrupted before compaction. The last `[x]`-marked subtask line in that file is the furthest verified point — resume from the next unmarked subtask. Do not re-dispatch the implementer for subtasks already marked `[x]`; their file edits are the authoritative proof of completion.
+
+> **Compaction invariant:** The physical state of task files (`task-NN.md` and `tasks-<feature-name>.md`) is the single source of truth. After compaction, the coordinator must re-read these files to establish state. A task is complete only if its file says `Status: DONE` and `tasks-<feature>.md` shows `[x]` for that task. TodoWrite entries and session memory do not count as completion evidence.
+
+#### Caveman State Check
+
+After the re-entry guard, check session caveman state (defined in `using-superpowers` policy):
 
 1. **If `session_caveman_active = false` AND `session_caveman_prompted = false`:** Ask the dynamic question (see `using-superpowers` Caveman Mode section) and record the result.
 2. **If `session_caveman_active = true`:** Invoke the `caveman` skill at `session_caveman_level` (e.g., `/caveman full`). Caveman stays active through all tasks, spec reviews, code quality reviews, and QA gate.

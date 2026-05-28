@@ -18,6 +18,7 @@ model User {
   updated_at          DateTime   @updatedAt
   status              UserStatus @default(activated)
   billing_customer_id String?    @unique
+  is_super_admin      Boolean    @default(false)
 
   checkIns     CheckIn[]
   subscription Subscription[]
@@ -90,6 +91,7 @@ enum Role {
 enum UserStatus {
   activated
   suspended
+  locked
 }
 
 enum SubscriptionStatus {

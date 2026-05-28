@@ -15,8 +15,9 @@ CREATE TABLE IF NOT EXISTS
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     role TEXT CHECK (role IN ('ADMIN', 'MEMBER')) NOT NULL DEFAULT 'MEMBER',
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    status TEXT CHECK (status IN ('activated', 'suspended')) NOT NULL DEFAULT 'activated',
-    billing_customer_id TEXT UNIQUE
+    status TEXT CHECK (status IN ('activated', 'suspended', 'locked')) NOT NULL DEFAULT 'activated',
+    billing_customer_id TEXT UNIQUE,
+    is_super_admin INTEGER NOT NULL DEFAULT 0
   ) WITHOUT ROWID,
   STRICT;
 
