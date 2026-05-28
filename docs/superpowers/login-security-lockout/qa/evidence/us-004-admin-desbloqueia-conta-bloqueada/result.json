@@ -1,0 +1,52 @@
+{
+  "userStory": "US-004 — Admin desbloqueia conta bloqueada",
+  "status": "PASSED",
+  "requirements": {
+    "RF-014": {
+      "description": "O admin pode ativar (desbloquear) uma conta com status locked, restaurando-a para activated",
+      "status": "PASSED",
+      "evidence": [
+        "LockedStatus.activate() em status.ts (linha 70-73) cria ActivatedStatus via UserStatusFactory.create",
+        "ActiveUserUseCase.execute() chama userFound.activate() e persiste via userRepository.update()",
+        "Teste 'Deve limpar o Redis lock ao ativar uma conta bloqueada por segurança' (linha 62-84 de active-user.usecase.test.ts) cobre transição locked → activated diretamente: User.restore com StatusTypes.LOCKED, execute(), expect(user?.isActive).toBe(true)",
+        "loginAttemptStore.deleteLock(userFound.id) chamado em active-user.usecase.ts linha 38"
+      ]
+    },
+    "RF-015": {
+      "description": "A ativação de uma conta locked pelo admin não exige redefinição de senha pelo usuário",
+      "status": "PASSED",
+      "evidence": [
+        "ActiveUserUseCase.execute() não manipula senha em nenhum momento — apenas chama userFound.activate() e persiste",
+        "Nenhum campo de password presente em ActiveUserUseCaseInput",
+        "Teste de ativação completo sem qualquer interação de senha"
+      ]
+    }
+  },
+  "testsFound": [
+    {
+      "file": "apps/backend/src/user/application/use-case/active-user.usecase.test.ts",
+      "tests": [
+        "Deve ativar um usuário (status suspended → activated)",
+        "Não deve ativar um usuário inexistente",
+        "Deve limpar o Redis lock ao ativar uma conta bloqueada por segurança (LOCKED → activated + deleteLock)",
+        "Não deve falhar ao ativar usuário que não tem lock no Redis",
+        "Deve invalidar o cache fetch-users após ativar um usuário"
+      ]
+    }
+  ],
+  "keyFindings": [
+    "LockedStatus.activate() implementado corretamente em status.ts — retorna ActivatedStatus",
+    "ActiveUserUseCase chama loginAttemptStore.deleteLock após ativar conta locked (limpeza Redis)",
+    "Não há redefinição de senha no fluxo de ativação admin",
+    "Todos os 497 testes passam incluindo os 5 testes do ActiveUserUseCase"
+  ],
+  "missingTests": [],
+  "testRunResult": {
+    "totalFiles": 85,
+    "totalTests": 497,
+    "passed": 497,
+    "failed": 0,
+    "command": "pnpm --filter backend test:run"
+  },
+  "verifiedAt": "2026-05-28T15:33:00Z"
+}

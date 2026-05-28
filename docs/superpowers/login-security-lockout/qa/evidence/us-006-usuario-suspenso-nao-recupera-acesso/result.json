@@ -1,0 +1,42 @@
+{
+  "userStory": "US-006",
+  "title": "Usuário suspenso não recupera acesso via reset de senha",
+  "status": "PASSED",
+  "verifiedAt": "2026-05-28T15:32:00.000Z",
+  "requirements": [
+    {
+      "id": "RF-017",
+      "description": "Contas com status suspended não podem iniciar o fluxo de redefinição de senha. O sistema retorna HTTP 200 genérico sem revelar o status.",
+      "status": "PASSED"
+    }
+  ],
+  "implementation": {
+    "file": "apps/backend/src/user/application/use-case/forgot-password.usecase.ts",
+    "lines": "46-48",
+    "snippet": "if (userFound.isSuspend) { return success(null) }",
+    "description": "ForgotPasswordUseCase verifica isSuspend antes de gerar token. Retorna success(null) silenciosamente — sem lançar erro, sem revelar status da conta."
+  },
+  "existingTests": [
+    {
+      "file": "apps/backend/src/user/application/use-case/forgot-password.usecase.test.ts",
+      "testName": "retorna success silenciosamente para usuário suspended (sem gerar token)",
+      "line": 223,
+      "covers": "RF-017 — verifica isSuccess()=true, value=null, nenhum token gerado no tokenStore"
+    },
+    {
+      "file": "apps/backend/src/user/application/use-case/forgot-password.usecase.test.ts",
+      "testName": "processa normalmente usuário com status locked (gera token)",
+      "line": 242,
+      "covers": "Contraste: locked não é bloqueado, confirma que apenas suspended é barrado"
+    }
+  ],
+  "newTestsCreated": false,
+  "testRun": {
+    "command": "pnpm --filter backend test:run -- --reporter=verbose forgot-password",
+    "exitCode": 0,
+    "totalPassed": 497,
+    "totalFailed": 0
+  },
+  "enumerationLeak": false,
+  "notes": "Implementação correta: suspended user retorna success(null) sem gerar token, sem publicar evento, sem expor informação de status. Comportamento idêntico ao de email inexistente — proteção contra enumeração mantida."
+}

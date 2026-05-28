@@ -1,0 +1,12 @@
+{
+  "us_id": "us-003",
+  "user_story": "Como usuário com conta bloqueada por segurança, quero redefinir minha senha usando o link recebido no e-mail, para que minha conta seja desbloqueada automaticamente sem precisar de intervenção de um administrador.",
+  "requirements": ["RF-011", "RF-012", "RF-013"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "85 test files, 497 tests — all passed. reset-password.usecase.test.ts covers all 3 RFs: RF-011 via 'Deve desbloquear conta locked após reset bem-sucedido' (user.activate() + loginAttemptStore.deleteLock called, status → activated, isActive=true, isLocked=false); RF-012 via 'todas as sessões são revogadas após reset bem-sucedido' (revokedTokenDAO.revokeAllForUser called); RF-013 via 'Deve rejeitar reset de senha para usuário suspended' (returns InvalidResetTokenError for suspended users).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "ResetPasswordUseCase implementation at apps/backend/src/user/application/use-case/reset-password.usecase.ts lines 62-78 explicitly: checks isSuspend → InvalidResetTokenError (RF-013); checks wasLocked → user.activate() + loginAttemptStore.deleteLock (RF-011); calls revokedTokenDAO.revokeAllForUser(userId, SEVEN_DAYS_IN_SECONDS) unconditionally (RF-012). All 3 requirements fully implemented and tested."
+}

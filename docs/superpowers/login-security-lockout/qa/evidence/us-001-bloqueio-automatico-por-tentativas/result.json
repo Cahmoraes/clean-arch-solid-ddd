@@ -1,0 +1,16 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como sistema de segurança, quero bloquear automaticamente uma conta após 3 tentativas de login inválidas dentro de 15 minutos, para que ataques de força bruta sejam impedidos antes de comprometer contas.",
+  "requirements": ["RF-001", "RF-002", "RF-003", "RF-004", "RF-006", "RF-007"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "497 tests passed (85 test files). AuthenticateUseCase lockout suite: 5 tests all passing — 2 falhas não bloqueiam, 3ª trava conta, locked+senha correta retorna InvalidCredentialsError, contador limpo após login bem-sucedido, isSuperAdmin isento. Business-flow suite: 3 testes passando — autenticação OK, 401 para inválido, 401 para password_not_set.",
+  "screenshot_path": null,
+  "failure_details": {
+    "RF-003": "Sem teste explícito que verifica que o contador de tentativas é deletado ao atingir o limite de bloqueio (3ª tentativa). A implementação cobre (lockAccount chama deleteFailedAttempts), mas nenhum teste asserta diretamente esse comportamento.",
+    "RF-006": "O controller retorna mensagem distinta para PasswordNotSetError: { code: 'password_not_set', message: 'Password not set for this account' }. RF-006 exige mensagem genérica 'Credenciais inválidas' para todas as falhas de autenticação sem distinção. Além disso, a mensagem para InvalidCredentialsError é 'Invalid credentials' (inglês) em vez de 'Credenciais inválidas'. Teste business-flow (linha 117-120) asserta explicitamente a mensagem distinta, confirmando o desvio. Nota: PasswordNotSetError não está listado nos casos enumerados pelo RF-006, mas o princípio anti-enumeração do PRD se aplica.",
+    "RF-007": "Implementação confirmada — checkLockStatus (linha 72 de authenticate.usecase.ts) sempre executa user.checkPassword(password) antes de retornar InvalidCredentialsError para conta bloqueada. Sem teste unitário explícito que asserta execução do bcrypt para cada path de falha."
+  },
+  "notes": "RF-001 e RF-002 têm cobertura sólida e explícita. RF-004 também coberto. Os gaps são: RF-003 (sem assert de deleção de contador no lockout), RF-006 (mensagem não-genérica para PasswordNotSetError + idioma inglês), RF-007 (sem teste explícito de timing/bcrypt). A implementação em si parece correta para todos os RFs — os gaps são de cobertura de teste ou de detalhe de mensagem HTTP."
+}

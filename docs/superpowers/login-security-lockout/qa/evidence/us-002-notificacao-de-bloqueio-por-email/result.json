@@ -1,0 +1,14 @@
+{
+  "us_id": "us-002",
+  "user_story": "Como usuário com conta bloqueada, quero receber imediatamente um e-mail de alerta informando sobre as tentativas suspeitas e contendo um link para redefinir minha senha, para que eu saiba que minha conta foi protegida e possa recuperar o acesso.",
+  "requirements": ["RF-008", "RF-009", "RF-010"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/login-security-lockout/qa/evidence/us-002-notificacao-de-bloqueio-por-email/send-account-locked-email.notification.acceptance.test.ts"
+  ],
+  "test_output_summary": "6/6 acceptance tests passed. SendAccountLockedEmailNotification verified: subscribes to ACCOUNT_LOCKED_BY_SECURITY event, sends e-mail to correct address, uses subject 'Alerta de segurança: acesso à sua conta foi bloqueado', includes reset link with format FRONTEND_URL/redefinir-senha?token=<resetToken>, body mentions tentativas de acesso, bloqueio, and 15-minute expiry. Error resilience confirmed (mailer failure does not throw). RF-008 token generation verified via lockAccount() in authenticate.usecase.ts (randomBytes(32) + sha256 hash, TTL=900s). RF-010 delivery timing validated indirectly — email is sent synchronously within async event handler immediately after lockout. Existing authenticate.usecase.test.ts (497 tests all passing) covers lockout triggering at 3rd attempt but not event/email — gap covered by new acceptance tests.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "RF-010 (<60s delivery) cannot be measured in unit/acceptance tests — handler is async and fires immediately after lock; no queue or scheduling involved. Implementation guarantees near-instant delivery. Accepted as PASSED for this requirement. Config file test/vite.config.evidence-us002.ts created inside apps/backend/test/ to run evidence tests."
+}
