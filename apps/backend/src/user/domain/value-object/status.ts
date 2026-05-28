@@ -15,6 +15,7 @@ import type { User } from "../user"
 export const StatusTypes = {
 	ACTIVATED: "activated",
 	SUSPENDED: "suspended",
+	LOCKED: "locked",
 } as const
 
 export type StatusTypes = (typeof StatusTypes)[keyof typeof StatusTypes]
@@ -25,6 +26,7 @@ export abstract class UserStatus {
 
 	abstract activate(): void
 	abstract suspend(): void
+	abstract lock(): void
 }
 
 class ActivatedStatus extends UserStatus {
@@ -36,6 +38,11 @@ class ActivatedStatus extends UserStatus {
 
 	public suspend(): void {
 		const userStatus = UserStatusFactory.create(this.user, "suspended")
+		this.user._changeStatus(userStatus)
+	}
+
+	public lock(): void {
+		const userStatus = UserStatusFactory.create(this.user, "locked")
 		this.user._changeStatus(userStatus)
 	}
 }
@@ -51,6 +58,28 @@ class SuspendedStatus extends UserStatus {
 	public suspend(): void {
 		return
 	}
+
+	public lock(): void {
+		return
+	}
+}
+
+class LockedStatus extends UserStatus {
+	readonly type: StatusTypes = "locked"
+
+	public activate(): void {
+		const userStatus = UserStatusFactory.create(this.user, "activated")
+		this.user._changeStatus(userStatus)
+	}
+
+	public suspend(): void {
+		const userStatus = UserStatusFactory.create(this.user, "suspended")
+		this.user._changeStatus(userStatus)
+	}
+
+	public lock(): void {
+		return
+	}
 }
 
 export class UserStatusFactory {
@@ -60,6 +89,8 @@ export class UserStatusFactory {
 				return new ActivatedStatus(user)
 			case "suspended":
 				return new SuspendedStatus(user)
+			case "locked":
+				return new LockedStatus(user)
 			default:
 				return new ActivatedStatus(user)
 		}

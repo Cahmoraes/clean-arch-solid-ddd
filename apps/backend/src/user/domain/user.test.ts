@@ -5,6 +5,7 @@ import { InvalidNameLengthError } from "./error/invalid-name-length-error"
 import { type CreateUserDto, User, type UserRestore } from "./user"
 import { GoogleId } from "./value-object/google-id.js"
 import { RoleValues } from "./value-object/role"
+import { StatusTypes } from "./value-object/status"
 
 describe("User Entity", () => {
 	test("Deve criar um usuário", async () => {
@@ -298,5 +299,82 @@ describe("User Entity", () => {
 		expect(user.googleId).toBeUndefined()
 		user.linkGoogleAccount(GoogleId.restore("google-sub-999"))
 		expect(user.googleId).toBe("google-sub-999")
+	})
+
+	describe("User — status locked e isSuperAdmin", () => {
+		function makeLockedUser() {
+			return User.restore({
+				id: "user-id-1",
+				name: "Test User",
+				email: "test@test.com",
+				role: "MEMBER",
+				status: StatusTypes.LOCKED,
+				createdAt: new Date(),
+			})
+		}
+
+		function makeActivatedUser(isSuperAdmin = false) {
+			return User.restore({
+				id: "user-id-2",
+				name: "Test User",
+				email: "test@test.com",
+				role: "MEMBER",
+				status: StatusTypes.ACTIVATED,
+				createdAt: new Date(),
+				isSuperAdmin,
+			})
+		}
+
+		test("lock() deve transicionar activated → locked", () => {
+			const user = makeActivatedUser()
+			user.lock()
+			expect(user.isLocked).toBe(true)
+			expect(user.isActive).toBe(false)
+			expect(user.status).toBe("locked")
+		})
+
+		test("activate() em locked deve transicionar para activated", () => {
+			const user = makeLockedUser()
+			user.activate()
+			expect(user.isActive).toBe(true)
+			expect(user.isLocked).toBe(false)
+		})
+
+		test("suspend() em locked deve transicionar para suspended", () => {
+			const user = makeLockedUser()
+			user.suspend()
+			expect(user.isSuspend).toBe(true)
+			expect(user.isLocked).toBe(false)
+		})
+
+		test("lock() em locked deve ser no-op", () => {
+			const user = makeLockedUser()
+			user.lock()
+			expect(user.isLocked).toBe(true)
+		})
+
+		test("lock() em suspended deve ser no-op", () => {
+			const user = User.restore({
+				id: "user-id-3",
+				name: "Test User",
+				email: "test@test.com",
+				role: "MEMBER",
+				status: StatusTypes.SUSPENDED,
+				createdAt: new Date(),
+			})
+			user.lock()
+			expect(user.isSuspend).toBe(true)
+			expect(user.isLocked).toBe(false)
+		})
+
+		test("isSuperAdmin deve retornar true quando restaurado com isSuperAdmin=true", () => {
+			const user = makeActivatedUser(true)
+			expect(user.isSuperAdmin).toBe(true)
+		})
+
+		test("isSuperAdmin deve retornar false por padrão", () => {
+			const user = makeActivatedUser()
+			expect(user.isSuperAdmin).toBe(false)
+		})
 	})
 })
