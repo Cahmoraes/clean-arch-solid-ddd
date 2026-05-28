@@ -3,10 +3,14 @@ import { loginViaUi, provisionUser } from "./helpers/auth"
 import { seedCheckIn, seedGym } from "./helpers/seed"
 
 /**
- * Admin valida check-in (RF-18).
+ * Admin aprova check-in (RF-18).
+ *
+ * A ação de "validar" foi renomeada para "aprovar" pela feature
+ * checkin-approve-reject: o botão usa testid `checkin-approve-<id>` e o
+ * toast de sucesso é "Check-in aprovado com sucesso.".
  */
-test.describe("Admin valida check-in", () => {
-	test("admin vê check-in pendente, valida e recebe confirmação", async ({
+test.describe("Admin aprova check-in", () => {
+	test("admin vê check-in pendente, aprova e recebe confirmação", async ({
 		page,
 		request,
 	}) => {
@@ -30,13 +34,11 @@ test.describe("Admin valida check-in", () => {
 		const list = page.getByTestId("admin-checkins-list")
 		await expect(list).toBeVisible({ timeout: 15_000 })
 
-		const validateButton = list.locator(
-			'[data-testid^="admin-checkin-validate-"]',
-		)
-		await expect(validateButton.first()).toBeVisible()
-		await validateButton.first().click()
+		const approveButton = list.locator('[data-testid^="checkin-approve-"]')
+		await expect(approveButton.first()).toBeVisible()
+		await approveButton.first().click()
 
-		await expect(page.getByText(/check-in validado com sucesso/i)).toBeVisible({
+		await expect(page.getByText(/check-in aprovado com sucesso/i)).toBeVisible({
 			timeout: 10_000,
 		})
 	})
