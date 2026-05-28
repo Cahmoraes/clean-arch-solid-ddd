@@ -68,6 +68,16 @@ export async function promoteToAdminInDb(email: string): Promise<void> {
 }
 
 /**
+ * Force the given user into the `locked` status directly via SQL, simulating
+ * an account blocked by the login-security-lockout mechanism (3 failed logins).
+ */
+export async function lockUserInDb(email: string): Promise<void> {
+	psql(
+		`UPDATE users SET status = 'locked' WHERE email = '${escapeSql(email)}';`,
+	)
+}
+
+/**
  * Provision an active user (and optionally admin) ready for login.
  */
 export async function provisionUser(
