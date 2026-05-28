@@ -43,17 +43,16 @@ export class ForgotPasswordUseCase {
 		if (!userFound) {
 			return success(null)
 		}
-
+		if (userFound.isSuspend) {
+			return success(null)
+		}
 		const emailRateLimitExceeded = await this.checkEmailRateLimit(input.email)
 		if (emailRateLimitExceeded) {
 			return success(null)
 		}
-
 		await this.invalidatePreviousToken(userFound.id)
-
 		const rawToken = randomBytes(32).toString("hex")
 		const tokenHash = createHash("sha256").update(rawToken).digest("hex")
-
 		await this.tokenStore.saveResetToken(
 			userFound.id,
 			tokenHash,
@@ -71,7 +70,6 @@ export class ForgotPasswordUseCase {
 				rawToken,
 			}),
 		)
-
 		return success(null)
 	}
 

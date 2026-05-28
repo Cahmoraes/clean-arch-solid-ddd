@@ -12,6 +12,8 @@ import type { InMemoryUserRepository } from "@/shared/infra/database/repository/
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { PasswordResetRequestedEvent } from "@/user/domain/event/password-reset-requested-event"
+import { User } from "@/user/domain/user"
+import { StatusTypes } from "@/user/domain/value-object/status"
 import type { ForgotPasswordUseCase } from "./forgot-password.usecase"
 
 describe("ForgotPasswordUseCase", () => {
@@ -210,6 +212,64 @@ describe("ForgotPasswordUseCase", () => {
 			expect(result.value).toBeNull()
 			expect(hashAfterLimitExceeded).toBe(hashBeforeLimitExceeded)
 			expect(publishedEventsCount).toBe(3)
+		} finally {
+			DomainEventPublisher.instance.unsubscribe(
+				"passwordResetRequested",
+				subscriber,
+			)
+		}
+	})
+
+	test("retorna success silenciosamente para usuário suspended (sem gerar token)", async () => {
+		const suspendedUser = User.restore({
+			id: "suspended-id",
+			name: "Suspended User",
+			email: "suspended@test.com",
+			role: "MEMBER",
+			status: StatusTypes.SUSPENDED,
+			createdAt: new Date(),
+		})
+		await userRepository.save(suspendedUser)
+
+		const result = await sut.execute({ email: "suspended@test.com" })
+
+		expect(result.isSuccess()).toBe(true)
+		expect(result.value).toBeNull()
+		const tokenHash = await tokenStore.findTokenHashByUserId("suspended-id")
+		expect(tokenHash).toBeNull()
+	})
+
+	test("processa normalmente usuário com status locked (gera token)", async () => {
+		const lockedUser = User.restore({
+			id: "locked-id",
+			name: "Locked User",
+			email: "locked@test.com",
+			role: "MEMBER",
+			status: StatusTypes.LOCKED,
+			createdAt: new Date(),
+		})
+		await userRepository.save(lockedUser)
+
+		let receivedEvent: PasswordResetRequestedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof PasswordResetRequestedEvent) {
+				receivedEvent = event
+			}
+		}
+		DomainEventPublisher.instance.subscribe(
+			"passwordResetRequested",
+			subscriber,
+		)
+
+		try {
+			const result = await sut.execute({ email: "locked@test.com" })
+
+			expect(result.isSuccess()).toBe(true)
+			expect(result.value).toBeNull()
+			const publishedEvent = getPublishedEventOrThrow(receivedEvent)
+			expect(publishedEvent.payload.rawToken).toHaveLength(64)
+			const storedHash = await tokenStore.findTokenHashByUserId("locked-id")
+			expect(storedHash).not.toBeNull()
 		} finally {
 			DomainEventPublisher.instance.unsubscribe(
 				"passwordResetRequested",
