@@ -5,7 +5,6 @@ import type { GoogleAuthProvider } from "@/session/application/provider/google-a
 import { InMemoryGoogleAuthProvider } from "@/session/infra/provider/in-memory-google-auth-provider.js"
 import { BaseController } from "@/shared/infra/controller/base-controller.js"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory.js"
-import { isProduction } from "@/shared/infra/env/index.js"
 import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types.js"
 import type { HttpServer } from "@/shared/infra/server/http-server.js"
 import { SessionRoutes } from "./routes/session-routes.js"
@@ -31,7 +30,10 @@ export class DevGoogleTokenController extends BaseController {
 	}
 
 	public async init(): Promise<void> {
-		if (isProduction()) return
+		// A rota só existe quando o seam de teste do Google está ativo, ou seja,
+		// quando o provider injetado é o in-memory (test ou GOOGLE_AUTH_PROVIDER
+		// = in-memory). Em produção com o provider real, a rota não é registrada.
+		if (!(this.googleAuthProvider instanceof InMemoryGoogleAuthProvider)) return
 		this.server.register("post", SessionRoutes.DEV_GOOGLE_TOKEN, {
 			callback: this.callback,
 		})

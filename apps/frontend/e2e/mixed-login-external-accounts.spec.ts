@@ -27,7 +27,9 @@ test.describe("Login misto para contas externas", () => {
 		const session = await loginViaSeededGoogleApi(request, page, seeded.idToken)
 
 		await page.goto("/perfil")
-		await expect(page.getByTestId("profile-change-password-link")).toHaveText(
+		// O link de senha vive dentro do modal de edição de perfil.
+		await page.getByTestId("profile-edit-button").click()
+		await expect(page.getByTestId("edit-profile-password-link")).toHaveText(
 			/definir senha/i,
 		)
 
@@ -45,12 +47,14 @@ test.describe("Login misto para contas externas", () => {
 		)
 
 		await page.reload()
-		await expect(page.getByTestId("profile-change-password-link")).toHaveText(
+		await page.getByTestId("profile-edit-button").click()
+		await expect(page.getByTestId("edit-profile-password-link")).toHaveText(
 			/alterar senha/i,
 		)
+		// Fecha o modal antes do logout — o overlay do dialog bloquearia o clique.
+		await page.getByTestId("edit-profile-cancel").click()
 
-		await page.getByLabel("Menu de usuário").click()
-		await page.getByText("Sair").click()
+		await page.getByRole("button", { name: "Sair" }).click()
 		await expect(page).toHaveURL(/\/login/)
 
 		await loginViaEmailUi(page, {

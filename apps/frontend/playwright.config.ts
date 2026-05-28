@@ -30,6 +30,9 @@ export default defineConfig({
 			timeout: SERVER_TIMEOUT_MS,
 			stdout: "pipe",
 			stderr: "pipe",
+			// Habilita o provider Google in-memory + rota dev-token mantendo
+			// Prisma/Postgres (NODE_ENV=production), necessário ao spec mixed-login.
+			env: { GOOGLE_AUTH_PROVIDER: "in-memory" },
 		},
 		{
 			command: "pnpm --filter frontend dev",

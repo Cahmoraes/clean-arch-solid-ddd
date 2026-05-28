@@ -43,6 +43,13 @@ test.describe("Onboarding completo", () => {
 		// O login cai em /inicio; a busca de academia vive em /academias.
 		await page.goto("/academias")
 		await expect(page).toHaveURL(/\/academias/)
+		// Aguarda o auth-boot (refresh transparente) terminar antes de interagir:
+		// caso contrário o submit da busca é perdido no remount da página.
+		await page
+			.getByTestId("auth-boot-skeleton")
+			.waitFor({ state: "hidden", timeout: 10_000 })
+			.catch(() => undefined)
+		await page.waitForLoadState("networkidle")
 
 		await page.getByTestId("gym-search-input").fill(gym.title)
 		await page.getByTestId("gym-search-submit").click()
