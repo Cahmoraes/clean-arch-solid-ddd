@@ -9,6 +9,9 @@ test.describe("Renovação transparente de sessão", () => {
 		const user = await provisionUser(request, { role: "MEMBER" })
 
 		await loginViaUi(page, user)
+		// A busca de academia (ação autenticada deste teste) vive em /academias;
+		// o login agora cai em /inicio, então navegamos explicitamente.
+		await page.goto("/academias")
 		await expect(page).toHaveURL(/\/academias/)
 
 		// Simula a expiração do access token em memória limpando o auth-store

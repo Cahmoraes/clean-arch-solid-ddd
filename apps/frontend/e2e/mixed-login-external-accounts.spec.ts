@@ -57,6 +57,6 @@ test.describe("Login misto para contas externas", () => {
 			email: user.email,
 			password: user.password,
 		})
-		await expect(page).toHaveURL(/\/academias/)
+		await expect(page).toHaveURL(/\/inicio/)
 	})
 })

@@ -20,7 +20,7 @@ test.describe("Admin gerencia usuário bloqueado", () => {
 
 		await lockUserInDb(member.email)
 
-		await loginViaUi(page, admin, "/inicio")
+		await loginViaUi(page, admin)
 		await page.goto("/admin/usuarios")
 
 		await page.getByTestId("admin-users-search").fill(member.email)

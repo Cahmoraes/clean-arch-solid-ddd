@@ -97,7 +97,7 @@ export async function provisionUser(
 export async function loginViaUi(
 	page: Page,
 	user: TestUser,
-	expectedRedirect = "/academias",
+	expectedRedirect = "/inicio",
 ): Promise<void> {
 	await page.goto("/login")
 	await page.getByLabel("E-mail").fill(user.email)
@@ -265,7 +265,7 @@ export async function defineFirstPasswordViaApi(
 export async function loginViaEmailUi(
 	page: Page,
 	user: { email: string; password: string },
-	expectedRedirect = "/academias",
+	expectedRedirect = "/inicio",
 ): Promise<void> {
 	await page.goto("/login")
 	await page.getByLabel("E-mail").fill(user.email)

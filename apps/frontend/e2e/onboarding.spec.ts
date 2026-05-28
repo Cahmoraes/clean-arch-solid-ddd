@@ -40,6 +40,8 @@ test.describe("Onboarding completo", () => {
 		const gym = seedGym({ title: `Onboarding-${Date.now()}` })
 
 		await loginViaUi(page, user)
+		// O login cai em /inicio; a busca de academia vive em /academias.
+		await page.goto("/academias")
 		await expect(page).toHaveURL(/\/academias/)
 
 		await page.getByTestId("gym-search-input").fill(gym.title)
