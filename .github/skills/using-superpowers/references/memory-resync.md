@@ -122,15 +122,21 @@ This replaces the previous O(N_features) sequential view + shasum calls.
 
 ---
 
-## Step 3 — Sync (For New/Changed/Deleted Features)
+## Step 3 — Sync (selective, per feature)
+
+> **No global prune.** `pmem prune --source "artifact-sync"` (without `--tags`) wipes the entire artifact-sync namespace before anything is re-added. If the re-add then fails partway (e.g. a transient subagent error), every synced feature is lost until the next session — even features that never changed. Instead, touch only the features that actually changed or were deleted, and leave `unchanged` features alone. `pmem prune` supports `--tags "<slug>"` to scope a prune to a single feature.
+
+### Skip `unchanged` features
+
+Features classified `unchanged` already have correct, current entries in memory. Do **not** prune or re-add them — leave their entries untouched. This is the manifest-based skip: identical content is never reprocessed.
 
 ### Parallelization: Batch reads across features
 
-After getting the inventory, batch all `view` calls for different features **in a single LLM turn**. For example, if features A, B, C are `new` or `changed`, issue all `view` calls for their artifacts at once — do not wait for one feature before reading the next.
+Batch all `view` calls for `new` and `changed` features **in a single LLM turn**. Issue `view` calls for their artifacts at once — do not wait for one feature before reading the next. Keep each feature's prune + re-add together (one agent owns one feature) so a failure is isolated to that single feature.
 
 ### For each `new` or `changed` feature
 
-1. **Prune old entries:**
+1. **Prune this feature's stale entries** (skip for `new` — nothing to prune yet, but harmless to run):
    ```bash
    pmem prune --source "artifact-sync" --tags "<feature-slug>"
    ```
@@ -144,15 +150,15 @@ After getting the inventory, batch all `view` calls for different features **in 
      --source "artifact-sync"
    ```
 
+> **Failure isolation:** if a feature's re-add fails, do **not** include that slug in `syncedFeatures` when writing the manifest (Step 4). Its manifest hash stays stale, so the next session re-detects it as `changed` and retries — and only that one feature was ever briefly affected.
+
 ### For each `deleted` feature
 
-The feature directory was removed from `docs/superpowers/` since the last sync. Prune its stale memory entries:
+The feature directory was removed from `docs/superpowers/` since the last sync. Prune its stale entries (no `pmem add` — the feature no longer exists):
 
 ```bash
 pmem prune --source "artifact-sync" --tags "<feature-slug>"
 ```
-
-No `pmem add` is needed — the feature no longer exists.
 
 ---
 
@@ -213,8 +219,8 @@ Feature: <feature-slug>. Architecture decisions: <count> ADRs. <ADR-001 title>: 
 
 1. **Source-based isolation:** All resync entries use `source="artifact-sync"`. Normal planning entries use `source="assistant"`. They never conflict.
 2. **Content hash:** `pmem add` already deduplicates by `content_hash` (SHA-256 of normalized content). Identical entries are silently skipped.
-3. **Prune-before-add:** For changed features, old entries are pruned before new ones are added. This prevents accumulation.
-4. **Manifest-based skip:** Unchanged features are not re-processed at all.
+3. **Per-feature prune-before-add:** For each `changed` feature, only that feature's old entries are pruned (via `--tags "<slug>"`) before its new ones are added. This prevents accumulation without touching other features.
+4. **Manifest-based skip:** Unchanged features are not pruned or re-processed at all — their existing entries stay intact.
 
 ---
 
@@ -231,7 +237,7 @@ The scripts handle all failure cases and surface them via the JSON output:
 | Git not available | Both scripts fall back to stat fingerprint automatically (`hashMethod: "stat"`) | No action needed |
 | Individual artifact unreadable | `compute-inventory`: artifact `readable: false` + entry in `errors[]` | Skip that artifact, warn in summary |
 | All artifacts for a feature unreadable | Feature still listed with error artifacts | Skip feature, warn in summary |
-| Sync interrupted mid-way | Partial sync is acceptable — manifest is written only after full completion | Next session will re-detect and re-process |
+| Sync interrupted mid-way | Selective per-feature prune isolates failures — only the in-flight feature is affected, never the whole namespace | Omit failed slugs from the manifest; next session re-detects and re-processes only those |
 | Manifest corrupt/unparseable | Script warns to stderr, treats as missing → `dirty: true` | Re-sync proceeds cleanly |
 | Feature removed from filesystem | `compute-inventory`: `status: "deleted"` | Prune pmem entries, include in `deletedSlugs` |
 

@@ -184,25 +184,42 @@ if (fs.existsSync(manifestPath)) {
 
 const existingSynced = (existingManifest && existingManifest.synced_features) ? existingManifest.synced_features : {};
 
+// Canonicalize every stored hash to the "sha256:<hex>" form. This migrates legacy
+// bare-hex entries on the next write, so the manifest stops mixing formats — which
+// is what made compute-inventory's strict comparison misfire in the first place.
+function canonicalHash(hash) {
+  if (hash === null || hash === undefined) return null;
+  const str = String(hash);
+  return str.startsWith('sha256:') ? str : `sha256:${str}`;
+}
+
+function canonicalizeEntry(entry) {
+  const e = (entry && typeof entry === 'object') ? entry : {};
+  return {
+    spec_hash: canonicalHash(e.spec_hash ?? null),
+    prd_hash: canonicalHash(e.prd_hash ?? null),
+    qa_hash: canonicalHash(e.qa_hash ?? null),
+    adr_hash: canonicalHash(e.adr_hash ?? null),
+  };
+}
+
 // ─── Merge ────────────────────────────────────────────────────────────────────
 //
-// 1. Start with all existing entries
+// 1. Start with all existing entries (canonicalized)
 // 2. Remove deleted slugs
-// 3. Overlay new/changed entries
+// 3. Overlay new/changed entries (canonicalized)
 
-const mergedSynced = { ...existingSynced };
+const mergedSynced = {};
+for (const [slug, entry] of Object.entries(existingSynced)) {
+  mergedSynced[slug] = canonicalizeEntry(entry);
+}
 
 for (const slug of deletedSlugs) {
   delete mergedSynced[slug];
 }
 
 for (const [slug, entry] of Object.entries(syncedFeatures)) {
-  mergedSynced[slug] = {
-    spec_hash: entry.spec_hash ?? null,
-    prd_hash: entry.prd_hash ?? null,
-    qa_hash: entry.qa_hash ?? null,
-    adr_hash: entry.adr_hash ?? null,
-  };
+  mergedSynced[slug] = canonicalizeEntry(entry);
 }
 
 const timestamp = new Date().toISOString();

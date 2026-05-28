@@ -266,6 +266,15 @@ function normalizeManifestEntry(entry) {
   };
 }
 
+// Strip the optional "sha256:" prefix so legacy manifests (bare hex) and current
+// manifests (prefixed) compare equal when their content is identical. Without this,
+// every legacy-format entry is falsely classified as "changed", defeating the
+// manifest-based skip and forcing a full re-process on every sync.
+function bareDigest(hash) {
+  if (hash === null || hash === undefined) return null;
+  return String(hash).replace(/^sha256:/, '');
+}
+
 // ─── Feature classification ───────────────────────────────────────────────────
 
 function classifyFeature(slug, artifacts, manifestEntry) {
@@ -273,10 +282,10 @@ function classifyFeature(slug, artifacts, manifestEntry) {
 
   const norm = normalizeManifestEntry(manifestEntry);
 
-  const specChanged = artifacts.spec.hash !== norm.spec_hash;
-  const prdChanged = artifacts.prd.hash !== norm.prd_hash;
-  const qaChanged = artifacts.qa.hash !== norm.qa_hash;
-  const adrsChanged = artifacts.adrs.hash !== norm.adr_hash;
+  const specChanged = bareDigest(artifacts.spec.hash) !== bareDigest(norm.spec_hash);
+  const prdChanged = bareDigest(artifacts.prd.hash) !== bareDigest(norm.prd_hash);
+  const qaChanged = bareDigest(artifacts.qa.hash) !== bareDigest(norm.qa_hash);
+  const adrsChanged = bareDigest(artifacts.adrs.hash) !== bareDigest(norm.adr_hash);
 
   return specChanged || prdChanged || qaChanged || adrsChanged ? 'changed' : 'unchanged';
 }

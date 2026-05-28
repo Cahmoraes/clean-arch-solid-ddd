@@ -74,10 +74,21 @@ def utc_now() -> str:
 
 
 def connect() -> sqlite3.Connection:
-    """Open the SQLite database connection."""
+    """Open the SQLite database connection.
+
+    timeout=30 causes Python's sqlite3 to retry acquiring the write lock for
+    up to 30 seconds before raising OperationalError. This is essential when
+    multiple background agents write to the same database concurrently (e.g.,
+    parallel pmem add batches during artifact-sync).
+
+    WAL (Write-Ahead Logging) mode further reduces contention: readers never
+    block writers and writers never block readers. Combined with the timeout,
+    concurrent writers simply queue instead of failing immediately.
+    """
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
     return conn
 
 
@@ -641,11 +652,20 @@ def cmd_backfill_embeddings(conn: sqlite3.Connection, args: argparse.Namespace) 
 
 
 def cmd_prune(conn: sqlite3.Connection, args: argparse.Namespace) -> None:
-    """Delete notes by source with optional age threshold in days."""
+    """Delete notes by source, optionally narrowed by tags and/or age.
+
+    When --tags is given, only notes whose tag set contains ALL of the requested
+    tags are pruned. This enables selective, per-feature pruning during the
+    artifact-sync re-sync (e.g. `--source artifact-sync --tags <slug>`), so the
+    sync never needs a destructive global prune that would empty the namespace
+    before the re-add completes.
+    """
     init_db(conn)
     source = (args.source or "").strip()
     if not source:
         raise ValueError("--source is required")
+
+    requested_tags = _tags_set(args.tags) if getattr(args, "tags", None) else set()
 
     params: list[Any] = [source]
     where = "source = ?"
@@ -660,10 +680,17 @@ def cmd_prune(conn: sqlite3.Connection, args: argparse.Namespace) -> None:
         params.append(cutoff)
 
     rows = conn.execute(
-        f"SELECT id FROM notes WHERE {where}",
+        f"SELECT id, tags FROM notes WHERE {where}",
         params,
     ).fetchall()
-    note_ids = [int(row["id"]) for row in rows]
+    if requested_tags:
+        note_ids = [
+            int(row["id"])
+            for row in rows
+            if requested_tags.issubset(_tags_set(row["tags"]))
+        ]
+    else:
+        note_ids = [int(row["id"]) for row in rows]
     if note_ids:
         conn.execute(
             f"DELETE FROM memory_embeddings WHERE note_id IN ({','.join(['?'] * len(note_ids))})",
@@ -676,6 +703,8 @@ def cmd_prune(conn: sqlite3.Connection, args: argparse.Namespace) -> None:
     conn.commit()
     print(f"pruned_notes: {len(note_ids)}")
     print(f"source: {source}")
+    if requested_tags:
+        print(f"tags: {','.join(sorted(requested_tags))}")
     if cutoff is not None:
         print(f"older_than_days: {args.older_than}")
         print(f"cutoff: {cutoff}")
@@ -801,6 +830,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="delete notes by source, optionally older than N days",
     )
     prune_parser.add_argument("--source", required=True, help="exact source label to delete")
+    prune_parser.add_argument(
+        "--tags",
+        default=None,
+        help="comma-separated tags; prune only notes whose tags contain ALL given tags",
+    )
     prune_parser.add_argument(
         "--older-than",
         type=int,
