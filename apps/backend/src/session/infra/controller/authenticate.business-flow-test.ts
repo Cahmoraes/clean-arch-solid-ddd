@@ -94,11 +94,11 @@ describe("Autenticar Usuário", () => {
 				password: "inexistent_password",
 			})
 		expect(response.body).toHaveProperty("message")
-		expect(response.body.message).toEqual("Invalid credentials")
+		expect(response.body.message).toEqual("Credenciais inválidas")
 		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
 	})
 
-	test("Deve retornar 401 com code password_not_set quando a conta existir sem senha local", async () => {
+	test("Deve retornar 401 genérico quando a conta existir sem senha local", async () => {
 		await createAndSaveUser({
 			userRepository,
 			email: "google-only@email.com",
@@ -115,8 +115,7 @@ describe("Autenticar Usuário", () => {
 
 		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
 		expect(response.body).toEqual({
-			code: "password_not_set",
-			message: "Password not set for this account",
+			message: "Credenciais inválidas",
 		})
 	})
 })
