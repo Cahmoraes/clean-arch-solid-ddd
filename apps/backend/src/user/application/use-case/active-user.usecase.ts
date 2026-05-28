@@ -7,6 +7,7 @@ import {
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { UserNotFoundError } from "../error/user-not-found-error"
+import type { LoginAttemptStore } from "../persistence/login-attempt-store"
 import type { UserRepository } from "../persistence/repository/user-repository"
 
 export interface ActiveUserUseCaseInput {
@@ -22,6 +23,8 @@ export class ActiveUserUseCase {
 		private readonly userRepository: UserRepository,
 		@inject(SHARED_TYPES.Redis)
 		private readonly cacheDB: CacheDB,
+		@inject(USER_TYPES.Gateways.LoginAttemptStore)
+		private readonly loginAttemptStore: LoginAttemptStore,
 	) {}
 
 	public async execute(
@@ -32,6 +35,9 @@ export class ActiveUserUseCase {
 		userFound.activate()
 		await this.userRepository.update(userFound)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
+		this.loginAttemptStore.deleteLock(userFound.id).catch((err) => {
+			console.error("[ActiveUserUseCase] Falha ao limpar Redis lock:", err)
+		})
 		return success(null)
 	}
 }
