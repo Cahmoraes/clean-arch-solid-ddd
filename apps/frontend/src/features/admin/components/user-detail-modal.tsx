@@ -46,13 +46,13 @@ function statusLabel(status: string): string {
 
 function statusBadgeClassName(status: string): string {
 	if (status === "activated") {
-		return "border-green-200 bg-green-50 text-green-700"
+		return "border-transparent bg-success-soft text-success"
 	}
 	if (status === "suspended") {
-		return "border-red-200 bg-red-50 text-red-700"
+		return "border-transparent bg-destructive-soft text-destructive"
 	}
 	if (status === "locked") {
-		return "border-amber-200 bg-amber-50 text-amber-700"
+		return "border-transparent bg-warning-soft text-warning"
 	}
 	return "border-border bg-muted text-muted-foreground"
 }
@@ -109,7 +109,7 @@ function InlineError({ message }: { message: string | null }) {
 	return (
 		<p
 			role="alert"
-			className="rounded-[12px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+			className="rounded-[12px] border border-transparent bg-destructive-soft px-4 py-3 text-sm text-destructive"
 		>
 			{message}
 		</p>
@@ -425,7 +425,7 @@ function PromoteConfirmationDialog({
 							onClick={onConfirm}
 							disabled={isPending}
 							aria-busy={isPromoting}
-							className="bg-blue-600 text-white hover:bg-blue-700"
+							className="bg-accent text-accent-foreground hover:bg-primary-strong"
 						>
 							{isPromoting ? "Promovendo..." : "Confirmar"}
 						</Button>

@@ -13,14 +13,13 @@ const STATUS_LABEL: Record<CheckInStatus, string> = {
 
 const STATUS_DOT_CLASS: Record<CheckInStatus, string> = {
 	validated: "bg-accent-foreground dark:bg-accent",
-	pending: "bg-amber-400",
+	pending: "bg-warning",
 	rejected: "bg-destructive",
 }
 
 const STATUS_BADGE_CLASS: Record<CheckInStatus, string> = {
 	validated: "border-transparent bg-accent text-accent-foreground",
-	pending:
-		"border-transparent bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+	pending: "border-transparent bg-warning-soft text-warning",
 	rejected: "border-transparent bg-destructive/10 text-destructive",
 }
 
