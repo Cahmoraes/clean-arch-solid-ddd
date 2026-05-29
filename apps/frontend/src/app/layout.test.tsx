@@ -56,7 +56,6 @@ describe("RootLayout", () => {
 			name: "Ativar tema escuro",
 		})
 		expect(toggle).toBeInTheDocument()
-		expect(toggle).toHaveTextContent("🌙")
 	})
 
 	test("deve exibir o toggle de tema ao renderizar o shell autenticado", async () => {
@@ -71,6 +70,5 @@ describe("RootLayout", () => {
 			name: "Ativar tema escuro",
 		})
 		expect(toggle).toBeInTheDocument()
-		expect(toggle).toHaveTextContent("🌙")
 	})
 })

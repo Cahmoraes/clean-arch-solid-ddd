@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 import type { ReactNode } from "react"
-import { ThemeToggleFAB } from "@/components/ui/theme-toggle-fab"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Toaster } from "@/components/ui/toaster"
 import { Providers } from "./providers"
 import { WebVitalsReporter } from "./web-vitals"
@@ -52,7 +52,9 @@ export default function RootLayout({
 					<WebVitalsReporter />
 					<Providers>{children}</Providers>
 					<Toaster />
-					<ThemeToggleFAB />
+					<div className="fixed bottom-6 right-6 z-50">
+						<ThemeToggle />
+					</div>
 				</ThemeProvider>
 			</body>
 		</html>
