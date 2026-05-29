@@ -35,7 +35,7 @@ export function CheckInItem({ checkIn, action }: CheckInItemProps) {
 	return (
 		<li
 			data-testid={`checkin-item-${checkIn.id}`}
-			className="flex items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 transition-[transform,border-color] hover:translate-x-0.5 hover:border-border-strong"
+			className="flex items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 transition-[transform,border-color] duration-300 ease-out hover:translate-x-0.5 hover:border-border-strong"
 		>
 			<span
 				data-status={checkIn.status}
