@@ -147,7 +147,7 @@ export function AuthenticatedShell({
 						type="button"
 						aria-label="Sair"
 						onClick={handleLogout}
-						className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors max-[860px]:justify-center text-sidebar-muted hover:bg-white/5 hover:text-destructive"
+						className="mt-4 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors max-[860px]:justify-center text-sidebar-muted hover:bg-white/5 hover:text-destructive"
 					>
 						<LogOut
 							className="h-[18px] w-[18px] flex-shrink-0"
