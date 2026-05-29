@@ -31,4 +31,15 @@ describe("SegmentedControl", () => {
 		)
 		expect(screen.getByText("8")).toBeInTheDocument()
 	})
+	test("expõe o nome acessível via aria-label", () => {
+		render(
+			<SegmentedControl
+				items={ITEMS}
+				value="todos"
+				onValueChange={vi.fn()}
+				aria-label="Filtrar"
+			/>,
+		)
+		expect(screen.getByRole("group", { name: "Filtrar" })).toBeInTheDocument()
+	})
 })

@@ -11,6 +11,7 @@ export interface SegmentedControlProps<T extends string = string> {
 	value: T
 	onValueChange: (value: T) => void
 	className?: string
+	"aria-label"?: string
 }
 
 export function SegmentedControl<T extends string = string>({
@@ -18,11 +19,13 @@ export function SegmentedControl<T extends string = string>({
 	value,
 	onValueChange,
 	className,
+	"aria-label": ariaLabel,
 }: SegmentedControlProps<T>) {
 	return (
-		<div
+		<fieldset
+			aria-label={ariaLabel}
 			className={cn(
-				"flex w-fit max-w-full flex-wrap gap-1.5 rounded-md border border-border bg-surface-2 p-1.5",
+				"m-0 flex w-fit min-w-0 max-w-full flex-wrap gap-1.5 rounded-md border border-border bg-surface-2 p-1.5",
 				className,
 			)}
 		>
@@ -57,6 +60,6 @@ export function SegmentedControl<T extends string = string>({
 					</button>
 				)
 			})}
-		</div>
+		</fieldset>
 	)
 }
