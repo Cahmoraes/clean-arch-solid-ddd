@@ -4,7 +4,8 @@ import { Plus, Search } from "lucide-react"
 import Link from "next/link"
 import { useId, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { PageHeader } from "@/components/ui/page-header"
+import { SearchBar } from "@/components/ui/search-bar"
 import { useAllGyms, useGymsByName } from "@/features/gyms/api"
 import { GymPagination } from "@/features/gyms/components/gym-pagination"
 import { GymResults } from "@/features/gyms/components/gym-results"
@@ -38,44 +39,39 @@ export default function AcademiasPage() {
 	return (
 		<section
 			aria-labelledby="academias-title"
-			className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6"
+			className="mx-auto flex w-full max-w-6xl flex-col px-4 py-10 sm:px-6"
 		>
-			<header className="flex items-start justify-between gap-4">
-				<div className="flex flex-col gap-2">
-					<h1
-						id="academias-title"
-						className="font-display text-3xl font-medium text-foreground"
-					>
-						Academias
-					</h1>
-					<p className="text-sm text-muted-foreground">
-						Busque por nome ou navegue pelas academias disponíveis.
-					</p>
-				</div>
-				{user?.role === "ADMIN" ? (
-					<Button asChild variant="primary" size="sm">
-						<Link href="/admin/academias/nova" data-testid="gym-create-link">
-							<Plus aria-hidden className="h-4 w-4" />
-							Cadastrar
-						</Link>
-					</Button>
-				) : null}
-			</header>
+			<PageHeader
+				eyebrow="Rede"
+				title="Academias"
+				subtitle="Busque por nome ou navegue pelas academias disponíveis."
+				action={
+					user?.role === "ADMIN" ? (
+						<Button asChild variant="primary" size="sm">
+							<Link href="/admin/academias/nova" data-testid="gym-create-link">
+								<Plus aria-hidden className="h-4 w-4" />
+								Cadastrar
+							</Link>
+						</Button>
+					) : undefined
+				}
+			/>
 
 			<form
 				onSubmit={onSearch}
-				className="flex flex-col gap-2 sm:flex-row sm:items-center"
+				className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center"
 				aria-label="Buscar academias"
 			>
 				<label htmlFor={inputId} className="sr-only">
 					Buscar academias por nome
 				</label>
-				<Input
+				<SearchBar
 					id={inputId}
 					data-testid="gym-search-input"
-					placeholder="Ex.: Iron Gym"
+					placeholder="Buscar academia por nome"
 					value={draftQuery}
 					onChange={(event) => setDraftQuery(event.target.value)}
+					className="w-full sm:max-w-md"
 				/>
 				<Button type="submit" data-testid="gym-search-submit">
 					<Search aria-hidden className="h-4 w-4" />
@@ -96,13 +92,15 @@ export default function AcademiasPage() {
 			</div>
 
 			{showPagination ? (
-				<GymPagination
-					page={page}
-					hasPrevious={page > 1}
-					hasNext={items.length >= RESULTS_PER_PAGE}
-					onPrevious={() => setPage((current) => Math.max(1, current - 1))}
-					onNext={() => setPage((current) => current + 1)}
-				/>
+				<div className="mt-8">
+					<GymPagination
+						page={page}
+						hasPrevious={page > 1}
+						hasNext={items.length >= RESULTS_PER_PAGE}
+						onPrevious={() => setPage((current) => Math.max(1, current - 1))}
+						onNext={() => setPage((current) => current + 1)}
+					/>
+				</div>
 			) : null}
 		</section>
 	)

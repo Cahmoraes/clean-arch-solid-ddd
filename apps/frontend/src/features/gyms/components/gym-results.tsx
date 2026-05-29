@@ -23,13 +23,13 @@ function ResultsLoading() {
 	return (
 		<div
 			data-testid="gym-results-loading"
-			className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+			className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]"
 		>
 			{Array.from({ length: SKELETON_COUNT }).map((_, index) => (
 				<Skeleton
 					// biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholders are not reorderable
 					key={index}
-					className="h-32 w-full"
+					className="h-[260px] w-full rounded-lg"
 				/>
 			))}
 		</div>
@@ -82,7 +82,7 @@ function ResultsEmptyBrowse() {
 
 function ResultsList({ items }: { items: Gym[] }) {
 	return (
-		<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<ul className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]">
 			{items.map((gym) => (
 				<li key={gym.id} className="flex flex-col">
 					<GymCard gym={gym} />

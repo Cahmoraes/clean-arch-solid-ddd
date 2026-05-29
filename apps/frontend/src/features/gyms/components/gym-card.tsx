@@ -1,3 +1,4 @@
+import { MapPin } from "lucide-react"
 import Link from "next/link"
 import type { Gym } from "@/features/gyms/api"
 
@@ -5,26 +6,47 @@ export interface GymCardProps {
 	gym: Gym
 }
 
+function resolveLocation(gym: Gym): string {
+	if (gym.address) return gym.address
+	return `${gym.latitude.toFixed(4)}, ${gym.longitude.toFixed(4)}`
+}
+
 export function GymCard({ gym }: GymCardProps) {
 	return (
 		<Link
 			href={`/academias/${gym.id}`}
 			data-testid={`gym-card-${gym.id}`}
-			className="flex h-full flex-col gap-2 rounded-[12px] border border-border bg-card p-5 transition-colors hover:border-accent hover:bg-accent/20 dark:hover:border-primary dark:hover:bg-secondary"
+			className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[transform,border-color] hover:-translate-y-0.5 hover:border-border-strong"
 		>
-			<h3 className="font-display text-lg font-medium text-card-foreground">
-				{gym.title}
-			</h3>
-			{gym.description ? (
-				<p className="flex-1 line-clamp-2 text-sm text-muted-foreground">
-					{gym.description}
-				</p>
-			) : null}
-			<div className="mt-auto flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-				{gym.phone ? <span>📞 {gym.phone}</span> : null}
-				<span>
-					{gym.latitude.toFixed(4)}, {gym.longitude.toFixed(4)}
+			<div className="relative flex h-[140px] items-center justify-center bg-[repeating-linear-gradient(135deg,var(--color-surface-2)_0_10px,var(--color-surface-3)_10px_20px)]">
+				<span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
+					<span className="h-1.5 w-1.5 rounded-full bg-current" /> Disponível
 				</span>
+				<span className="text-[11px] text-subtle">foto</span>
+			</div>
+			<div className="flex flex-1 flex-col gap-2.5 p-[18px]">
+				<p className="font-display text-base font-semibold text-card-foreground">
+					{gym.title}
+				</p>
+				{gym.description ? (
+					<p className="line-clamp-2 text-[13px] text-muted-foreground">
+						{gym.description}
+					</p>
+				) : null}
+				<p className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+					<MapPin className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+					<span className="line-clamp-1">{resolveLocation(gym)}</span>
+				</p>
+				<div className="mt-auto flex items-center justify-between border-t border-border pt-3.5">
+					{gym.phone ? (
+						<span className="text-[12.5px] text-subtle">{gym.phone}</span>
+					) : (
+						<span className="text-[12.5px] text-subtle">Ver detalhes</span>
+					)}
+					<span className="rounded-md bg-accent px-3 py-1.5 text-[13px] font-semibold text-accent-foreground">
+						Check-in
+					</span>
+				</div>
 			</div>
 		</Link>
 	)
