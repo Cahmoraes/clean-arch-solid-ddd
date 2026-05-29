@@ -15,8 +15,8 @@
 
 ## Tarefas
 
-- [ ] 1. Fundação de tokens VOLT + fontes + tema dark [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007] → `task-01.md`
-- [ ] 2. Rebranding GymPass → VOLT (marca, metadados, internos) [RF-008, RF-009, RF-010] → `task-02.md`
+- [x] 1. Fundação de tokens VOLT + fontes + tema dark [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007] → `task-01.md`
+- [x] 2. Rebranding GymPass → VOLT (marca, metadados, internos) [RF-008, RF-009, RF-010] → `task-02.md`
 - [ ] 3. Primitivos VOLT: BrandMark, Eyebrow, Avatar, RoleBadge/StatusBadge [RF-008, RF-017] → `task-03.md`
 - [ ] 4. Componentes de composição: SegmentedControl, PageHeader, SearchBar, StatCard [RF-016, RF-017, RF-018] → `task-04.md`
 - [ ] 5. ThemeToggle deslizante (substitui o FAB) [RF-002] → `task-05.md`

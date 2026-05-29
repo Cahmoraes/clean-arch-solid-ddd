@@ -1,6 +1,6 @@
 # Task 2: Rebranding GymPass → VOLT (marca, metadados, internos) [RF-008, RF-009, RF-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

@@ -1,6 +1,6 @@
 # Task 1: Fundação de tokens VOLT + fontes + tema dark [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 
