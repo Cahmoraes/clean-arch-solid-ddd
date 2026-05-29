@@ -1,6 +1,6 @@
 # Task 3: Campo de busca de usuários em largura total
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/frontend-ui-adjustments-design.md`
 **Depends on:** N/A

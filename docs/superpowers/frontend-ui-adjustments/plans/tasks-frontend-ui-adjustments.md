@@ -17,10 +17,10 @@ Spec-only planning; no RF traceability available.
 
 ## Tarefas
 
-- [ ] 1. Logout como nav item na sidebar → `task-01.md`
-- [ ] 2. Filtro de check-ins em largura total → `task-02.md`
-- [ ] 3. Campo de busca de usuários em largura total → `task-03.md`
-- [ ] 4. Suavizar animação de hover nas listagens → `task-04.md`
+- [x] 1. Logout como nav item na sidebar → `task-01.md`
+- [x] 2. Filtro de check-ins em largura total → `task-02.md`
+- [x] 3. Campo de busca de usuários em largura total → `task-03.md`
+- [x] 4. Suavizar animação de hover nas listagens → `task-04.md`
 
 ## Execution Waves
 

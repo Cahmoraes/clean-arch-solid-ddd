@@ -1,6 +1,6 @@
 # Task 4: Suavizar animação de hover nas listagens
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/frontend-ui-adjustments-design.md`
 **Depends on:** N/A

@@ -1,6 +1,6 @@
 # Task 2: Filtro de check-ins em largura total
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/frontend-ui-adjustments-design.md`
 **Depends on:** N/A
