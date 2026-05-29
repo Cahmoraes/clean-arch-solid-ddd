@@ -1,64 +1,118 @@
 @import "tailwindcss";
 
 /*
- * Dark mode variant: uses .dark class (via next-themes), not OS preference.
- * Without this, Tailwind's dark: utilities fire on @media prefers-color-scheme
- * and never match when theme is controlled by class toggle.
+ * VOLT — design tokens (Tailwind v4 @theme)
+ * Accent verde-esmeralda #39e58c. Dark é o tema padrão (classe .dark via next-themes).
+ * Nomes semânticos --color-* consumidos pelos componentes shadcn + tokens estendidos
+ * (surface-*, border-strong, primary-strong, success/warning + soft, sidebar-*).
  */
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design tokens — see apps/frontend/DESIGN.md
- *
- * Chromatic palette: indigo navy / violet / teal.
- * Graduated radius: xs 4px → full 9999px.
- * Shadow levels: flat | sm (1px) | md (8px).
- * Dark mode: .dark selector with indigo-deep surface.
- */
-
 @theme {
-	/* Font — Inter Variable loaded via next/font/google */
-	--font-inter: var(--font-inter), system-ui, sans-serif;
-	--font-display: var(--font-inter), system-ui, sans-serif;
+	/* Fontes — carregadas via next/font/google em layout.tsx */
+	--font-display: var(--font-space-grotesk), system-ui, sans-serif;
 	--font-sans: var(--font-inter), system-ui, sans-serif;
 	--font-mono:
-		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-		"Courier New";
+		var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-	/* Semantic color tokens — light mode */
-	--color-background: #ffffff;
-	--color-foreground: #292827;
-	--color-card: #fafaf8;
-	--color-card-foreground: #292827;
+	/* Cores semânticas — LIGHT */
+	--color-background: #f1f1ec;
+	--color-foreground: #111110;
+	--color-card: #ffffff;
+	--color-card-foreground: #111110;
 	--color-popover: #ffffff;
-	--color-popover-foreground: #292827;
-	--color-primary: #1b1938;
-	--color-primary-foreground: #ffffff;
-	--color-secondary: #f0edf8;
-	--color-secondary-foreground: #1b1938;
-	--color-muted: #f5f3f0;
-	--color-muted-foreground: #6b6864;
-	--color-accent: #c9b4fa;
-	--color-accent-foreground: #1b1938;
-	--color-destructive: #dc2626;
-	--color-destructive-foreground: #ffffff;
-	--color-border: #e8e4dd;
-	--color-input: #e8e4dd;
-	--color-ring: #1b1938;
-	--color-teal: #155555;
+	--color-popover-foreground: #111110;
 
-	/* Border radius — graduated scale */
-	--radius-xs: 4px;
-	--radius-sm: 6px;
-	--radius-md: 8px;
-	--radius-lg: 12px;
-	--radius-xl: 16px;
+	--color-primary: #39e58c;
+	--color-primary-strong: #22c976;
+	--color-primary-foreground: #0a0a0a;
+
+	--color-secondary: #f7f7f3;
+	--color-secondary-foreground: #111110;
+	--color-muted: #f7f7f3;
+	--color-muted-foreground: #57574f;
+	--color-subtle: #8a8a80;
+	--color-accent: #39e58c;
+	--color-accent-foreground: #0a0a0a;
+
+	--color-surface: #ffffff;
+	--color-surface-2: #f7f7f3;
+	--color-surface-3: #efefe9;
+
+	--color-success: #2fcf80;
+	--color-success-soft: rgba(47, 207, 128, 0.14);
+	--color-warning: #ffb443;
+	--color-warning-soft: rgba(255, 180, 67, 0.16);
+	--color-destructive: #ff5a4d;
+	--color-destructive-foreground: #ffffff;
+	--color-destructive-soft: rgba(255, 90, 77, 0.14);
+
+	--color-border: #e4e4dc;
+	--color-border-strong: #d3d3c9;
+	--color-input: #e4e4dc;
+	--color-ring: #39e58c;
+
+	--color-sidebar: #111110;
+	--color-sidebar-foreground: #f3f3ee;
+	--color-sidebar-muted: #8d8d84;
+	--color-sidebar-border: #262622;
+	--color-sidebar-active: #ffffff;
+	--color-sidebar-active-foreground: #111110;
+
+	/* Radius */
+	--radius-sm: 8px;
+	--radius-md: 14px;
+	--radius-lg: 22px;
 	--radius-full: 9999px;
 
-	/* Shadows */
-	--shadow-none: 0 0 #0000;
-	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-	--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+	/* Sombras */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 10px 30px -12px rgba(0, 0, 0, 0.18);
+	--shadow-pop: 0 24px 60px -20px rgba(0, 0, 0, 0.35);
+}
+
+/* DARK (tema padrão) */
+.dark {
+	color-scheme: dark;
+	--color-background: #080808;
+	--color-foreground: #f6f6f4;
+	--color-card: #161616;
+	--color-card-foreground: #f6f6f4;
+	--color-popover: #161616;
+	--color-popover-foreground: #f6f6f4;
+
+	--color-primary: #39e58c;
+	--color-primary-strong: #22c976;
+	--color-primary-foreground: #0a0a0a;
+
+	--color-secondary: #1d1d1d;
+	--color-secondary-foreground: #f6f6f4;
+	--color-muted: #1d1d1d;
+	--color-muted-foreground: #a3a39c;
+	--color-subtle: #6f6f68;
+	--color-accent: #39e58c;
+	--color-accent-foreground: #0a0a0a;
+
+	--color-surface: #161616;
+	--color-surface-2: #1d1d1d;
+	--color-surface-3: #242424;
+
+	--color-success: #2fcf80;
+	--color-warning: #ffb443;
+	--color-destructive: #ff5a4d;
+	--color-destructive-foreground: #0a0a0a;
+
+	--color-border: #2a2a2a;
+	--color-border-strong: #3a3a3a;
+	--color-input: #2a2a2a;
+	--color-ring: #39e58c;
+
+	--color-sidebar: #0f0f0f;
+	--color-sidebar-foreground: #f3f3ee;
+	--color-sidebar-muted: #79796f;
+	--color-sidebar-border: #232323;
+	--color-sidebar-active: #39e58c;
+	--color-sidebar-active-foreground: #0a0a0a;
 }
 
 @layer base {
@@ -80,6 +134,8 @@
 		background-color: var(--color-background);
 		color: var(--color-foreground);
 		font-family: var(--font-sans);
+		font-size: 15px;
+		line-height: 1.5;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
@@ -93,7 +149,8 @@
 		font-family: var(--font-display);
 		font-weight: 600;
 		letter-spacing: -0.02em;
-		line-height: 0.96;
+		line-height: 1.05;
+		color: var(--color-foreground);
 	}
 
 	a {
@@ -107,35 +164,22 @@
 	}
 
 	::placeholder {
-		color: var(--color-muted-foreground);
+		color: var(--color-subtle);
+	}
+
+	::selection {
+		background: var(--color-primary);
+		color: var(--color-primary-foreground);
 	}
 
 	*:focus-visible {
-		outline: 2px solid color-mix(in srgb, var(--color-ring) 50%, transparent);
+		outline: 2px solid color-mix(in srgb, var(--color-ring) 55%, transparent);
 		outline-offset: 2px;
 	}
 }
 
-.dark {
-	color-scheme: dark;
-	--color-background: #0e0c1f;
-	--color-foreground: #f5f3f0;
-	--color-card: #1b1938;
-	--color-card-foreground: #f5f3f0;
-	--color-popover: #1b1938;
-	--color-popover-foreground: #f5f3f0;
-	--color-primary: #c9b4fa;
-	--color-primary-foreground: #0e0c1f;
-	--color-secondary: #262240;
-	--color-secondary-foreground: #c9b4fa;
-	--color-muted: #262240;
-	--color-muted-foreground: #9a8fc4;
-	--color-accent: #c9b4fa;
-	--color-accent-foreground: #0e0c1f;
-	--color-destructive: #f87171;
-	--color-destructive-foreground: #0e0c1f;
-	--color-border: #2e2a4a;
-	--color-input: #2e2a4a;
-	--color-ring: #c9b4fa;
-	--color-teal: #0e3030;
+/* Numerais tabulares para mono */
+.font-mono,
+.tabular {
+	font-feature-settings: "tnum" 1;
 }
