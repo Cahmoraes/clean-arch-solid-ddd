@@ -70,4 +70,14 @@ describe("AuthenticatedShell — VOLT", () => {
 		)
 		expect(screen.getByRole("button", { name: /tema/i })).toBeInTheDocument()
 	})
+
+	test("exibe o botão Sair na sidebar para MEMBER", () => {
+		setRole("MEMBER")
+		render(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		expect(screen.getByRole("button", { name: /sair/i })).toBeInTheDocument()
+	})
 })

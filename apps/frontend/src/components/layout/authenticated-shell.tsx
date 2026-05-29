@@ -142,6 +142,18 @@ export function AuthenticatedShell({
 							))}
 						</>
 					)}
+
+					<button
+						type="button"
+						onClick={handleLogout}
+						className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors max-[860px]:justify-center text-sidebar-muted hover:bg-white/5 hover:text-destructive"
+					>
+						<LogOut
+							className="h-[18px] w-[18px] flex-shrink-0"
+							aria-hidden="true"
+						/>
+						<span className="flex-1 max-[860px]:hidden">Sair</span>
+					</button>
 				</nav>
 
 				<div className="mt-2 flex items-center gap-2 border-t border-sidebar-border pt-4">
@@ -156,14 +168,6 @@ export function AuthenticatedShell({
 							</p>
 						</div>
 					</div>
-					<button
-						type="button"
-						aria-label="Sair"
-						onClick={handleLogout}
-						className="inline-flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-md border border-sidebar-border text-sidebar-muted transition-colors hover:border-destructive hover:text-destructive max-[860px]:hidden"
-					>
-						<LogOut className="h-4 w-4" />
-					</button>
 				</div>
 			</aside>
 
