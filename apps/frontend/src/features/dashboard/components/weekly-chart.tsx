@@ -44,7 +44,7 @@ function Bar({ count, dayIndex, heightPct, isCurrentDay }: BarProps) {
 		<div className="flex h-full flex-1 flex-col items-center gap-2.5">
 			<div className="flex w-full flex-1 items-end">
 				<div
-					className="w-full origin-bottom rounded-t-lg bg-surface-3 data-[current=true]:bg-accent"
+					className="volt-bar w-full origin-bottom rounded-t-lg bg-surface-3 data-[current=true]:bg-accent"
 					data-current={isCurrentDay}
 					style={{ height: `${Math.max(heightPct, 4)}%` }}
 					title={`${DAY_LABELS[dayIndex]}: ${count} check-in${count !== 1 ? "s" : ""}`}

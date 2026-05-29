@@ -186,7 +186,8 @@
 	font-feature-settings: "tnum" 1;
 }
 
-/* Movimento VOLT — transform-only, estado-base sempre visível */
+/* Movimento VOLT — transform-only, estado-base sempre visível.
+   Opt-in: anima apenas quando o usuário não pede movimento reduzido. */
 @keyframes voltFade {
 	from {
 		transform: translateY(10px);
@@ -205,16 +206,12 @@
 	}
 }
 
-.route-fade {
-	animation: voltFade 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
+@media (prefers-reduced-motion: no-preference) {
+	.route-fade {
+		animation: voltFade 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
 
-@media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
+	.volt-bar {
+		animation: voltBar 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
 }
