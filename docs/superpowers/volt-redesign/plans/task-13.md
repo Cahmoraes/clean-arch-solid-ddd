@@ -1,6 +1,6 @@
 # Task 13: Redesign Academias (gym-grid, gym-card) [RF-021, RF-024]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

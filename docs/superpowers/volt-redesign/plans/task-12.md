@@ -1,6 +1,6 @@
 # Task 12: Redesign Assinatura (billing-banner, plan-grid) [RF-020]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

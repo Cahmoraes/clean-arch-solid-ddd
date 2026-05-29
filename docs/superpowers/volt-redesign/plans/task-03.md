@@ -1,6 +1,6 @@
 # Task 3: Primitivos VOLT — BrandMark, Eyebrow, Avatar, RoleBadge/StatusBadge [RF-008, RF-017]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

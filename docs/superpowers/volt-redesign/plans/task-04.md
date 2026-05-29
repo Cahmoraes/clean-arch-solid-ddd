@@ -1,6 +1,6 @@
 # Task 4: Componentes de composição — SegmentedControl, PageHeader, SearchBar, StatCard [RF-016, RF-017, RF-018]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 
