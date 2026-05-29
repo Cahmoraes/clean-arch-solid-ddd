@@ -11,14 +11,25 @@
  *
  * Output (stdout): JSON
  * Diagnostics (stderr): warnings for per-artifact read errors
+ *
+ * Artifact hashing is imported from lib/artifact-hash.cjs — the SAME module
+ * check-resync.cjs uses for dirty detection, so the two never drift apart.
  */
 
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const { execFileSync } = require('child_process');
+const {
+  hashFile,
+  hashAdrs,
+  bareDigest,
+  normalizeManifestEntry,
+  listFeatureSlugs,
+  computeDiskMap,
+  fingerprintOfMap,
+} = require('./lib/artifact-hash.cjs');
 
 // ─── CLI ─────────────────────────────────────────────────────────────────────
 
@@ -41,8 +52,8 @@ Artifact paths per feature (slug = directory name):
 
 Output (JSON to stdout):
   {
-    "treeHash": string | null,
-    "hashMethod": "git" | "stat" | "none",
+    "treeHash": string | null,   // content fingerprint of the canonical artifact set
+    "hashMethod": "artifact-content" | "none",
     "docsPath": string,
     "repoRoot": string,
     "features": Feature[],
@@ -130,151 +141,6 @@ function detectGitRoot() {
   }
 }
 
-// ─── Tree hash (same logic as check-resync.cjs) ───────────────────────────────
-
-function getGitTreeHash(docsPath, root) {
-  const relDocs = path.relative(root, docsPath);
-  try {
-    const result = execFileSync(
-      'git',
-      ['log', '-1', '--format=%H', '--', relDocs],
-      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], cwd: root }
-    );
-    const hash = result.trim();
-    return hash.length > 0 ? hash : null;
-  } catch {
-    return null;
-  }
-}
-
-function walkDir(dir, base, entries) {
-  let items;
-  try {
-    items = fs.readdirSync(dir);
-  } catch {
-    return;
-  }
-  for (const item of items.sort()) {
-    const full = path.join(dir, item);
-    let stat;
-    try {
-      stat = fs.statSync(full);
-    } catch {
-      continue;
-    }
-    const rel = path.relative(base, full);
-    if (stat.isDirectory()) {
-      walkDir(full, base, entries);
-    } else {
-      entries.push(`${rel}:${stat.mtimeMs}:${stat.size}`);
-    }
-  }
-}
-
-function getStatTreeHash(docsPath) {
-  const entries = [];
-  walkDir(docsPath, docsPath, entries);
-  if (entries.length === 0) return null;
-  const combined = entries.join('\n');
-  return crypto.createHash('sha256').update(combined, 'utf8').digest('hex');
-}
-
-// ─── Artifact hashing ─────────────────────────────────────────────────────────
-
-function hashFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return { hash: null, exists: false, readable: false, error: null };
-  }
-  try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    const hash = 'sha256:' + crypto.createHash('sha256').update(content, 'utf8').digest('hex');
-    return { hash, exists: true, readable: true, error: null };
-  } catch (err) {
-    // File exists but could not be read (permissions, encoding, etc.)
-    return { hash: null, exists: true, readable: false, error: err.message };
-  }
-}
-
-function hashAdrs(adrsDir) {
-  if (!fs.existsSync(adrsDir)) {
-    return { hash: null, exists: false, readable: true, files: [], error: null };
-  }
-
-  let allEntries;
-  try {
-    allEntries = fs.readdirSync(adrsDir);
-  } catch (err) {
-    return { hash: null, exists: true, readable: false, files: [], error: err.message };
-  }
-
-  // Only direct .md files (non-recursive, no subdirectories)
-  const mdFiles = allEntries
-    .filter((name) => {
-      if (!name.endsWith('.md')) return false;
-      try {
-        return !fs.statSync(path.join(adrsDir, name)).isDirectory();
-      } catch {
-        return false;
-      }
-    })
-    .sort(); // sort by filename for determinism
-
-  if (mdFiles.length === 0) {
-    return { hash: null, exists: true, readable: true, files: [], error: null };
-  }
-
-  const parts = [];
-  const readErrors = [];
-  for (const name of mdFiles) {
-    try {
-      const content = fs.readFileSync(path.join(adrsDir, name), 'utf8');
-      // Use "name\ncontent" per file so filename changes also affect the hash
-      parts.push(`${name}\n${content}`);
-    } catch (err) {
-      readErrors.push(`${name}: ${err.message}`);
-      process.stderr.write(`Warning: could not read ADR ${name}: ${err.message}\n`);
-    }
-  }
-
-  if (parts.length === 0) {
-    return {
-      hash: null,
-      exists: true,
-      readable: false,
-      files: mdFiles,
-      error: `all ADR files unreadable: ${readErrors.join('; ')}`,
-    };
-  }
-
-  const combined = parts.join('\n---\n');
-  const hash = 'sha256:' + crypto.createHash('sha256').update(combined, 'utf8').digest('hex');
-  return { hash, exists: true, readable: true, files: mdFiles, error: null };
-}
-
-// ─── Manifest hash normalization ──────────────────────────────────────────────
-//
-// Older manifests may lack adr_hash. Normalize missing fields to null so that
-// a feature with no ADRs and no adr_hash entry does NOT get classified as changed.
-
-function normalizeManifestEntry(entry) {
-  if (!entry || typeof entry !== 'object') return { spec_hash: null, prd_hash: null, qa_hash: null, adr_hash: null };
-  return {
-    spec_hash: entry.spec_hash ?? null,
-    prd_hash: entry.prd_hash ?? null,
-    qa_hash: entry.qa_hash ?? null,
-    adr_hash: entry.adr_hash ?? null,
-  };
-}
-
-// Strip the optional "sha256:" prefix so legacy manifests (bare hex) and current
-// manifests (prefixed) compare equal when their content is identical. Without this,
-// every legacy-format entry is falsely classified as "changed", defeating the
-// manifest-based skip and forcing a full re-process on every sync.
-function bareDigest(hash) {
-  if (hash === null || hash === undefined) return null;
-  return String(hash).replace(/^sha256:/, '');
-}
-
 // ─── Feature classification ───────────────────────────────────────────────────
 
 function classifyFeature(slug, artifacts, manifestEntry) {
@@ -330,31 +196,15 @@ if (fs.existsSync(manifestPath)) {
 
 const synced = (manifest && manifest.synced_features) ? manifest.synced_features : {};
 
-// Get tree hash
-let treeHash = getGitTreeHash(docsPath, repoRoot);
-let hashMethod = 'git';
-if (treeHash === null) {
-  process.stderr.write('Warning: git not available or path not yet committed, using stat fingerprint\n');
-  treeHash = getStatTreeHash(docsPath);
-  hashMethod = treeHash ? 'stat' : 'none';
-}
+// Content fingerprint of the canonical artifact set — identical computation to
+// check-resync.cjs (shared lib), so a value written here matches what dirty
+// detection reads next session.
+const diskMap = computeDiskMap(docsPath);
+const treeHash = fingerprintOfMap(diskMap);
+const hashMethod = treeHash === null ? 'none' : 'artifact-content';
 
 // List feature directories
-let slugDirs;
-try {
-  slugDirs = fs.readdirSync(docsPath)
-    .filter((name) => {
-      try {
-        return fs.statSync(path.join(docsPath, name)).isDirectory();
-      } catch {
-        return false;
-      }
-    })
-    .sort();
-} catch (err) {
-  process.stderr.write(`Error: could not read docs/superpowers/: ${err.message}\n`);
-  process.exit(1);
-}
+const slugDirs = listFeatureSlugs(docsPath);
 
 const features = [];
 const errors = [];

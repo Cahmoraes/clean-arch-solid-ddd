@@ -25,7 +25,7 @@ stateDiagram-v2
         PerguntandoResync --> [*] : usuario recusa re-sync
         SincronizandoMemoria --> [*] : sync concluido
     }
-    note right of GateResync : entry / dirty check via manifest + git tree hash\nexit / session_resync_completed = true
+    note right of GateResync : entry / dirty check via check-resync.cjs (artifact content fingerprint, NOT a git tree/commit hash — never reconstruct by hand)\nexit / session_resync_completed = true
 
     GateResync --> Triagem : gate concluido
 

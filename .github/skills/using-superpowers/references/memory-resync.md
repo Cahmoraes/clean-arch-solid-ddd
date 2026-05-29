@@ -51,15 +51,19 @@ Inspect the output fields:
 | `memoryExists: false` | Run `pmem init` first, then continue |
 | `dirty: true` | Proceed to ask the user |
 
-The script reads the manifest and computes the tree hash in one call, replacing the previous 2–3 sequential tool calls.
+The script reads the manifest and computes the artifact content fingerprint in one call, replacing the previous 2–3 sequential tool calls.
+
+> **`dirty` is content-based — never reconstruct it by hand.** The script hashes the *content* of the canonical artifacts (spec/prd/qa/adrs) on disk and compares it to what the manifest recorded, feature by feature — the exact same hashing `compute-inventory.cjs` uses (shared `lib/artifact-hash.cjs`). It is **not** a git tree object hash and **not** a commit sha. Do not run `git rev-parse HEAD:docs/superpowers` or `git log -1 -- docs/superpowers` to "double-check" — a tree object and a commit sha live in different namespaces and will never equal each other, and the commit sha also flips on changes to non-artifact files like `plans/`. Both produce spurious dirty results. Trust `check-resync.cjs`'s `dirty` field and nothing else.
 
 ### Manifest Schema (`.memory/resync-manifest.json`)
+
+The `last_synced_tree_hash` field stores the **artifact content fingerprint** (`sha256:<hex>` over the canonical artifact set), and `last_synced_hash_method` is `"artifact-content"`. The names retain the historical `tree_hash` spelling for backward compatibility, but the value is content-addressed — dirty detection actually derives from the per-feature hashes in `synced_features`, so the top-level field is informational only.
 
 ```json
 {
   "last_synced_at": "2026-05-20T14:30:00Z",
-  "last_synced_tree_hash": "abc123...",
-  "last_synced_hash_method": "git",
+  "last_synced_tree_hash": "sha256:abc123...",
+  "last_synced_hash_method": "artifact-content",
   "synced_features": {
     "checkin-approve-reject": {
       "spec_hash": "sha256:...",
@@ -234,7 +238,7 @@ The scripts handle all failure cases and surface them via the JSON output:
 | `.memory/` directory missing | `check-resync`: `memoryExists: false` | Run `pmem init` first, then continue |
 | `docs/superpowers/` doesn't exist | `check-resync`: `docsExists: false` | Skip silently — `dirty` will be false |
 | Not a git repo | `check-resync`: `repoNotFound: true` | Skip silently |
-| Git not available | Both scripts fall back to stat fingerprint automatically (`hashMethod: "stat"`) | No action needed |
+| Git not available | No effect — dirty detection reads artifact files directly (`hashMethod: "artifact-content"`), it does not use git | No action needed |
 | Individual artifact unreadable | `compute-inventory`: artifact `readable: false` + entry in `errors[]` | Skip that artifact, warn in summary |
 | All artifacts for a feature unreadable | Feature still listed with error artifacts | Skip feature, warn in summary |
 | Sync interrupted mid-way | Selective per-feature prune isolates failures — only the in-flight feature is affected, never the whole namespace | Omit failed slugs from the manifest; next session re-detects and re-processes only those |

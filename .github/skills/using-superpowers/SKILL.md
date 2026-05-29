@@ -122,7 +122,7 @@ The re-sync gate runs **after preferences are loaded** (or after onboarding comp
 
 ### Behavior
 
-1. **Dirty detection (silent):** Check `.memory/resync-manifest.json` against the current state of `docs/superpowers/` using git tree hash or file timestamps. If nothing changed since last sync, skip silently — do not ask the user.
+1. **Dirty detection (silent):** Run `check-resync.cjs`, which compares the **content** of the canonical artifacts (spec/prd/qa/adrs) on disk against what the manifest recorded. Trust its `dirty` field — do **not** reconstruct any hash yourself with `git rev-parse`/`git log`; those measure unrelated things (tree objects / last commit touching the whole dir, including non-artifact files) and produce false positives. If `dirty` is false, skip silently — do not ask the user.
 
 2. **Ask user (only if changes detected):** Present the re-sync question in the configured language. See `references/memory-resync.md` for exact wording.
 
@@ -135,7 +135,7 @@ The re-sync gate runs **after preferences are loaded** (or after onboarding comp
 ### Full Algorithm
 
 Read `references/memory-resync.md` for the complete re-sync algorithm including:
-- Dirty detection via manifest + git tree hash
+- Dirty detection via manifest + artifact content fingerprint (content-based, NOT a git tree/commit hash)
 - Per-feature inventory and content hashing
 - Prune-before-add strategy with `source="artifact-sync"`
 - Content synthesis rules for each artifact type

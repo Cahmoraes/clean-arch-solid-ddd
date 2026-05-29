@@ -10,6 +10,18 @@
  *   2. git rev-parse --show-toplevel (git root of cwd)
  *   3. If not in a git repo → {dirty: false, docsExists: false, repoNotFound: true}
  *
+ * Dirty detection (IMPORTANT — read before changing):
+ *   Dirty is computed by comparing the CONTENT of the canonical artifact set
+ *   (spec/prd/qa/adrs per feature) on disk against the same content recorded in
+ *   the manifest's synced_features. This is the SAME hashing compute-inventory
+ *   uses, imported from lib/artifact-hash.cjs, so the two can never disagree.
+ *
+ *   It is NOT a git tree hash and NOT a commit sha. Do not reconstruct it by hand
+ *   (e.g. `git rev-parse HEAD:docs/superpowers` or `git log -1`); those measure
+ *   unrelated things (a tree object / the last commit touching the whole dir,
+ *   including non-artifact files like plans/) and will report spurious changes.
+ *   Only this script is authoritative for the dirty decision.
+ *
  * Exit codes:
  *   0 — success (including "nothing changed" or "docs don't exist")
  *   1 — usage error or unrecoverable runtime failure
@@ -22,8 +34,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const { execFileSync } = require('child_process');
+const {
+  computeDiskMap,
+  deriveManifestMap,
+  mapsEqual,
+  fingerprintOfMap,
+} = require('./lib/artifact-hash.cjs');
 
 // ─── CLI ─────────────────────────────────────────────────────────────────────
 
@@ -43,8 +60,8 @@ Output (JSON to stdout):
     "docsExists": boolean,       // false → skip GateResync silently (nothing to sync)
     "memoryExists": boolean,     // false → run pmem init before syncing
     "manifest": {...} | null,    // current manifest content, or null if missing
-    "currentTreeHash": string|null,
-    "hashMethod": "git"|"stat"|"none",
+    "currentArtifactHash": string|null,  // content fingerprint of artifacts on disk
+    "hashMethod": "artifact-content"|"none",
     "manifestPath": string,
     "docsPath": string,
     "repoRoot": string,
@@ -52,10 +69,13 @@ Output (JSON to stdout):
   }
 
 Dirty flag is set when ANY of:
-  - manifest file does not exist
-  - manifest has no last_synced_tree_hash
-  - manifest hash method differs from current method (triggers one-time upgrade sync)
-  - current tree hash differs from manifest's last_synced_tree_hash
+  - manifest file does not exist / is unparseable
+  - the on-disk artifact content map differs from the manifest's recorded content
+    (a feature is new, changed, or deleted)
+
+Dirty detection is content-based over spec/prd/qa/adrs only; commits that touch
+plans/ or other non-artifact files never trigger a re-sync, and uncommitted
+artifact edits ARE detected.
 
 Exit codes:
   0  success
@@ -90,63 +110,6 @@ function detectGitRoot() {
   }
 }
 
-// ─── Tree hash via git ────────────────────────────────────────────────────────
-
-function getGitTreeHash(docsPath, root) {
-  // Use the relative path from repo root to make the command portable.
-  const relDocs = path.relative(root, docsPath);
-  try {
-    const result = execFileSync(
-      'git',
-      ['log', '-1', '--format=%H', '--', relDocs],
-      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], cwd: root }
-    );
-    const hash = result.trim();
-    // Empty string means no commits have touched the path yet.
-    return hash.length > 0 ? hash : null;
-  } catch {
-    return null;
-  }
-}
-
-// ─── Tree hash via stat (fallback when git is unavailable) ───────────────────
-//
-// Walk docs/superpowers/ recursively, collect (relPath, mtimeMs, size) tuples
-// sorted by relative path, then SHA-256 of the concatenated string.
-// Using mtimeMs (float ms) + size gives better precision than mtime-seconds alone.
-
-function walkDir(dir, base, entries) {
-  let items;
-  try {
-    items = fs.readdirSync(dir);
-  } catch {
-    return;
-  }
-  for (const item of items.sort()) {
-    const full = path.join(dir, item);
-    let stat;
-    try {
-      stat = fs.statSync(full);
-    } catch {
-      continue;
-    }
-    const rel = path.relative(base, full);
-    if (stat.isDirectory()) {
-      walkDir(full, base, entries);
-    } else {
-      entries.push(`${rel}:${stat.mtimeMs}:${stat.size}`);
-    }
-  }
-}
-
-function getStatTreeHash(docsPath) {
-  const entries = [];
-  walkDir(docsPath, docsPath, entries);
-  if (entries.length === 0) return null;
-  const combined = entries.join('\n');
-  return crypto.createHash('sha256').update(combined, 'utf8').digest('hex');
-}
-
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 if (!repoRoot) {
@@ -157,7 +120,7 @@ if (!repoRoot) {
       docsExists: false,
       memoryExists: false,
       manifest: null,
-      currentTreeHash: null,
+      currentArtifactHash: null,
       hashMethod: 'none',
       manifestPath: null,
       docsPath: null,
@@ -180,7 +143,7 @@ if (!fs.existsSync(docsPath)) {
     docsExists: false,
     memoryExists: fs.existsSync(memoryDir),
     manifest: null,
-    currentTreeHash: null,
+    currentArtifactHash: null,
     hashMethod: 'none',
     manifestPath,
     docsPath,
@@ -203,40 +166,25 @@ if (fs.existsSync(manifestPath)) {
   }
 }
 
-// Get current tree hash
-let currentTreeHash = getGitTreeHash(docsPath, repoRoot);
-let hashMethod = 'git';
+// Build content maps and compare. dirty == any feature new/changed/deleted.
+const diskMap = computeDiskMap(docsPath);
+const currentArtifactHash = fingerprintOfMap(diskMap);
+const hashMethod = currentArtifactHash === null ? 'none' : 'artifact-content';
 
-if (currentTreeHash === null) {
-  // git not available or path has no commits yet — fall back to stat fingerprint
-  process.stderr.write('Warning: git not available or path not yet committed, using stat fingerprint\n');
-  currentTreeHash = getStatTreeHash(docsPath);
-  hashMethod = 'stat';
+let dirty;
+if (manifest === null) {
+  dirty = true; // no manifest → never synced
+} else {
+  const manifestMap = deriveManifestMap(manifest);
+  dirty = !mapsEqual(diskMap, manifestMap);
 }
-
-// Determine dirty state
-function isDirty() {
-  if (manifest === null) return true;
-  if (!manifest.last_synced_tree_hash) return true;
-  // Hash method mismatch → one-time upgrade sync (conservative)
-  if (manifest.last_synced_hash_method && manifest.last_synced_hash_method !== hashMethod) {
-    process.stderr.write(
-      `Warning: hash method changed (${manifest.last_synced_hash_method} → ${hashMethod}), marking dirty for upgrade sync\n`
-    );
-    return true;
-  }
-  if (currentTreeHash === null) return false; // empty docs dir, no fingerprint
-  return manifest.last_synced_tree_hash !== currentTreeHash;
-}
-
-const dirty = isDirty();
 
 const result = {
   dirty,
   docsExists: true,
   memoryExists: fs.existsSync(memoryDir),
   manifest,
-  currentTreeHash,
+  currentArtifactHash,
   hashMethod,
   manifestPath,
   docsPath,
