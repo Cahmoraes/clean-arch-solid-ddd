@@ -1,6 +1,6 @@
 # Task 14: Polimento global — movimento, acessibilidade, responsividade e gate final [RF-025, RF-026, RF-027, RF-028]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

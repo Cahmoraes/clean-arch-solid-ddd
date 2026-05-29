@@ -1,6 +1,6 @@
 # Task 6: Redesign do shell autenticado (sidebar dark + topbar + responsivo) [RF-011, RF-012, RF-013, RF-022]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 
