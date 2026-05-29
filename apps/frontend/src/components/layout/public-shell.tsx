@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
+import { BrandMark } from "@/components/ui/brand-mark"
 import { cn } from "@/lib/cn"
 
 export interface PublicShellProps {
@@ -16,14 +17,10 @@ export function PublicShell({ children, className }: PublicShellProps) {
 				className,
 			)}
 		>
-			<header className="bg-primary dark:bg-card dark:border-b dark:border-border">
+			<header className="border-b border-border">
 				<div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-					<Link
-						href="/"
-						aria-label="Página inicial VOLT"
-						className="font-display text-xl font-semibold tracking-tight text-primary-foreground dark:text-card-foreground"
-					>
-						VOLT
+					<Link href="/" aria-label="Página inicial VOLT">
+						<BrandMark />
 					</Link>
 					<nav
 						aria-label="Ações de autenticação"
@@ -31,13 +28,13 @@ export function PublicShell({ children, className }: PublicShellProps) {
 					>
 						<Link
 							href="/login"
-							className="rounded-md border border-primary-foreground/30 dark:border-card-foreground/30 px-4 py-2 text-sm font-medium text-primary-foreground dark:text-card-foreground hover:bg-primary-foreground/10 dark:hover:bg-card-foreground/10 transition-colors"
+							className="rounded-md border border-border-strong px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-surface-2"
 						>
 							Entrar
 						</Link>
 						<Link
 							href="/cadastro"
-							className="rounded-md border border-primary-foreground dark:border-card-foreground bg-primary-foreground dark:bg-card-foreground px-4 py-2 text-sm font-medium text-primary dark:text-card hover:bg-primary-foreground/90 dark:hover:bg-card-foreground/90 transition-colors"
+							className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-primary-strong"
 						>
 							Criar conta
 						</Link>

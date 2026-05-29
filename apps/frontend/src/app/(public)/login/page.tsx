@@ -6,7 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useId } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { BrandMark } from "@/components/ui/brand-mark"
 import { Button } from "@/components/ui/button"
+import { Eyebrow } from "@/components/ui/eyebrow"
 import { FormField } from "@/components/ui/form-field"
 import { useLogin, useLoginWithGoogle } from "@/features/auth/api"
 import { GoogleSignInButton } from "@/features/auth/components/google-sign-in-button"
@@ -69,99 +71,140 @@ function LoginForm() {
 	const submissionMessage = error ? loginErrorMessage(error) : null
 
 	return (
-		<section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6">
-			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
-					Entrar
-				</h1>
-				<p className="text-sm text-muted-foreground">
-					Use suas credenciais para acessar a plataforma.
-				</p>
-			</header>
-
-			<form
-				noValidate
-				className="flex flex-col gap-4"
-				onSubmit={handleSubmit(onSubmit)}
-				aria-busy={isPending || isGooglePending}
-			>
-				<FormField
-					id={emailId}
-					label="E-mail"
-					type="email"
-					autoComplete="email"
-					error={errors.email?.message}
-					{...register("email")}
-				/>
-				<FormField
-					id={passwordId}
-					label="Senha"
-					type="password"
-					autoComplete="current-password"
-					error={errors.password?.message}
-					{...register("password")}
-				/>
-				<div className="flex justify-end">
-					<Link
-						href="/recuperar-senha"
-						className="text-sm font-medium text-foreground underline underline-offset-4"
-					>
-						Esqueceu sua senha?
-					</Link>
+		<div className="grid min-h-[calc(100vh-8rem)] grid-cols-[1.05fr_1fr] max-[860px]:grid-cols-1">
+			<aside className="relative flex flex-col justify-between overflow-hidden bg-[#0a0a0a] p-12 text-[#f3f3ee] max-[860px]:hidden">
+				<div className="flex items-center justify-between">
+					<BrandMark className="text-white" />
+					<Eyebrow className="text-white/40">v3.0</Eyebrow>
 				</div>
+				<h2 className="font-display text-[clamp(48px,7vw,92px)] font-bold leading-[0.92] tracking-[-0.03em]">
+					Treine onde
+					<br />
+					<span className="text-accent">você</span> estiver.
+				</h2>
+				<div className="flex flex-wrap gap-9">
+					<div className="flex flex-col gap-0.5">
+						<span className="font-mono text-3xl font-bold text-accent tabular-nums">
+							312
+						</span>
+						<span className="max-w-[110px] text-xs text-white/55">
+							academias parceiras
+						</span>
+					</div>
+					<div className="flex flex-col gap-0.5">
+						<span className="font-mono text-3xl font-bold text-accent tabular-nums">
+							48k
+						</span>
+						<span className="max-w-[110px] text-xs text-white/55">
+							check-ins por mês
+						</span>
+					</div>
+					<div className="flex flex-col gap-0.5">
+						<span className="font-mono text-3xl font-bold text-accent tabular-nums">
+							4.9
+						</span>
+						<span className="max-w-[110px] text-xs text-white/55">
+							avaliação média
+						</span>
+					</div>
+				</div>
+			</aside>
 
-				{submissionMessage ? (
-					<p
-						role="alert"
-						data-testid="login-submit-error"
-						className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-foreground"
+			<div className="flex flex-col justify-center p-12 max-[560px]:p-6">
+				<div className="mx-auto flex w-full max-w-[400px] flex-col gap-8">
+					<header className="flex flex-col gap-2">
+						<Eyebrow>Acesse sua conta</Eyebrow>
+						<h1 className="font-display text-[30px] font-semibold tracking-tight text-foreground">
+							Entrar
+						</h1>
+					</header>
+
+					<form
+						noValidate
+						className="flex flex-col gap-4"
+						onSubmit={handleSubmit(onSubmit)}
+						aria-busy={isPending || isGooglePending}
 					>
-						{submissionMessage}
+						<FormField
+							id={emailId}
+							label="E-mail"
+							type="email"
+							autoComplete="email"
+							error={errors.email?.message}
+							{...register("email")}
+						/>
+						<FormField
+							id={passwordId}
+							label="Senha"
+							type="password"
+							autoComplete="current-password"
+							error={errors.password?.message}
+							{...register("password")}
+						/>
+						<div className="flex justify-end">
+							<Link
+								href="/recuperar-senha"
+								className="text-sm font-medium text-foreground underline underline-offset-4"
+							>
+								Esqueceu sua senha?
+							</Link>
+						</div>
+
+						{submissionMessage ? (
+							<p
+								role="alert"
+								data-testid="login-submit-error"
+								className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-foreground"
+							>
+								{submissionMessage}
+							</p>
+						) : null}
+
+						<Button
+							type="submit"
+							disabled={isPending || isGooglePending}
+							data-testid="login-submit"
+						>
+							{isPending ? "Entrando…" : "Entrar"}
+						</Button>
+					</form>
+
+					<div className="flex items-center gap-3">
+						<div className="flex-1 border-t border-border" />
+						<span className="text-xs text-muted-foreground">ou</span>
+						<div className="flex-1 border-t border-border" />
+					</div>
+
+					<GoogleSignInButton
+						onSuccess={async (idToken) => {
+							try {
+								await mutateAsyncGoogle(idToken)
+								const redirect =
+									searchParams?.get("redirect") ?? DEFAULT_REDIRECT
+								router.replace(redirect)
+							} catch (submitError) {
+								toast.error(googleLoginErrorMessage(submitError))
+							}
+						}}
+						onError={(submitError) =>
+							toast.error(googleLoginErrorMessage(submitError))
+						}
+						disabled={isPending}
+						isPending={isGooglePending}
+					/>
+
+					<p className="text-sm text-muted-foreground">
+						Não tem conta?{" "}
+						<Link
+							href="/cadastro"
+							className="font-medium text-foreground underline underline-offset-4"
+						>
+							Crie agora
+						</Link>
 					</p>
-				) : null}
-
-				<Button
-					type="submit"
-					disabled={isPending || isGooglePending}
-					data-testid="login-submit"
-				>
-					{isPending ? "Entrando…" : "Entrar"}
-				</Button>
-			</form>
-
-			<div className="flex items-center gap-3">
-				<div className="flex-1 border-t border-border" />
-				<span className="text-xs text-muted-foreground">ou</span>
-				<div className="flex-1 border-t border-border" />
+				</div>
 			</div>
-
-			<GoogleSignInButton
-				onSuccess={async (idToken) => {
-					try {
-						await mutateAsyncGoogle(idToken)
-						const redirect = searchParams?.get("redirect") ?? DEFAULT_REDIRECT
-						router.replace(redirect)
-					} catch (submitError) {
-						toast.error(googleLoginErrorMessage(submitError))
-					}
-				}}
-				onError={(submitError) =>
-					toast.error(googleLoginErrorMessage(submitError))
-				}
-				disabled={isPending}
-				isPending={isGooglePending}
-			/>
-
-			<p className="text-sm text-muted-foreground">
-				Não tem conta?{" "}
-				<Link
-					href="/cadastro"
-					className="font-medium text-foreground underline underline-offset-4"
-				>
-					Crie agora
-				</Link>
-			</p>
-		</section>
+		</div>
 	)
 }
 

@@ -28,10 +28,11 @@ describe("PublicShell", () => {
 		expect(screen.getByText("conteúdo de demo")).toBeInTheDocument()
 	})
 
-	test("header do PublicShell deve ter bg-primary", () => {
+	test("header do PublicShell usa borda inferior VOLT (sem bloco primary)", () => {
 		render(<PublicShell>conteúdo</PublicShell>)
 		const header = screen.getByRole("banner")
-		expect(header).toHaveClass("bg-primary")
+		expect(header).toHaveClass("border-b", "border-border")
+		expect(header).not.toHaveClass("bg-primary")
 	})
 })
 
