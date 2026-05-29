@@ -85,4 +85,12 @@ describe("CheckInFilterBar", () => {
 		await user.click(screen.getByRole("button", { name: "Rejeitados" }))
 		expect(onStatusChange).toHaveBeenCalledWith("rejected")
 	})
+
+	it("aplica classe w-full ao fieldset do SegmentedControl", () => {
+		const { container } = render(
+			<CheckInFilterBar status={undefined} onStatusChange={vi.fn()} />,
+		)
+		const fieldset = container.querySelector("fieldset")
+		expect(fieldset?.className).toContain("w-full")
+	})
 })
