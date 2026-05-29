@@ -49,7 +49,7 @@ export function UserRow({ user, onSelect, className }: UserRowProps) {
 			role={isInteractive ? "button" : undefined}
 			tabIndex={isInteractive ? 0 : undefined}
 			className={cn(
-				"flex w-full items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 text-left transition-[transform,border-color]",
+				"flex w-full items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 text-left transition-[transform,border-color] duration-300 ease-out",
 				isInteractive &&
 					"cursor-pointer hover:translate-x-0.5 hover:border-border-strong",
 				className,
