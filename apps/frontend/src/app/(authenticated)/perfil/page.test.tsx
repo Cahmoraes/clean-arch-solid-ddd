@@ -81,7 +81,7 @@ describe("ProfilePage", () => {
 			formatCreatedAt("2024-01-15T12:00:00.000Z"),
 		)
 		expect(screen.getByTestId("metric-checkins")).toHaveTextContent("5")
-		expect(screen.getByText("ADMIN")).toBeInTheDocument()
+		expect(screen.getByText("Admin")).toBeInTheDocument()
 		expect(screen.getByText("Ativo")).toBeInTheDocument()
 		expect(screen.getByTestId("profile-edit-button")).toHaveTextContent(
 			"Editar perfil",
@@ -104,7 +104,7 @@ describe("ProfilePage", () => {
 			expect(screen.getByText("Suspenso")).toBeInTheDocument()
 		})
 
-		expect(screen.queryByText("ADMIN")).not.toBeInTheDocument()
+		expect(screen.queryByText("Admin")).not.toBeInTheDocument()
 		expect(screen.getByText("MS")).toBeInTheDocument()
 	})
 

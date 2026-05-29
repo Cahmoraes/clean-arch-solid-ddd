@@ -2,22 +2,25 @@
 
 import { UserCircle } from "lucide-react"
 import React from "react"
-import { AdminBadge } from "@/components/ui/admin-badge"
+import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Eyebrow } from "@/components/ui/eyebrow"
+import { RoleBadge } from "@/components/ui/role-badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { StatusBadge } from "@/components/ui/status-badge"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"
 import { EditProfileModal } from "@/features/profile/components/EditProfileModal"
 
-function getInitials(name: string): string {
-	return name
-		.trim()
-		.split(/\s+/)
-		.filter(Boolean)
-		.slice(0, 2)
-		.map((word) => word[0].toUpperCase())
-		.join("")
-}
+const WEEK_DAYS = [
+	{ id: "dom", label: "D" },
+	{ id: "seg", label: "S" },
+	{ id: "ter", label: "T" },
+	{ id: "qua", label: "Q" },
+	{ id: "qui", label: "Q" },
+	{ id: "sex", label: "S" },
+	{ id: "sab", label: "S" },
+] as const
 
 function formatDate(isoString: string): string {
 	return new Intl.DateTimeFormat("pt-BR", {
@@ -27,28 +30,21 @@ function formatDate(isoString: string): string {
 	}).format(new Date(isoString))
 }
 
-const statusConfig = {
-	activated: {
-		label: "Ativo",
-		className: "bg-green-950 text-green-400 border border-green-800",
-	},
-	suspended: {
-		label: "Suspenso",
-		className: "bg-red-950 text-red-400 border border-red-800",
-	},
+function toRole(role: string): "ADMIN" | "MEMBER" {
+	return role === "ADMIN" ? "ADMIN" : "MEMBER"
+}
+
+const STATUS_CONFIG = {
+	activated: { tone: "success", label: "Ativo" },
+	suspended: { tone: "danger", label: "Suspenso" },
+	locked: { tone: "warning", label: "Bloqueado" },
 } as const
 
-function StatusBadge({ status }: { status: string }) {
+function ProfileStatusBadge({ status }: { status: string }) {
 	const config =
-		statusConfig[status as keyof typeof statusConfig] ?? statusConfig.activated
-	return (
-		<span
-			className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${config.className}`}
-		>
-			<span className="h-1.5 w-1.5 rounded-full bg-current" />
-			{config.label}
-		</span>
-	)
+		STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] ??
+		STATUS_CONFIG.activated
+	return <StatusBadge tone={config.tone}>{config.label}</StatusBadge>
 }
 
 interface ProfileCardProps {
@@ -66,18 +62,22 @@ interface ProfileCardProps {
 
 function ProfileCardLoading() {
 	return (
-		<div className="rounded-[12px] border border-border bg-card p-6">
-			<div className="mb-4 flex items-center gap-3">
-				<Skeleton className="h-12 w-12 rounded-full" />
-				<div className="flex flex-col gap-2">
-					<Skeleton className="h-4 w-36" />
-					<Skeleton className="h-3 w-48" />
+		<div className="grid grid-cols-[1.5fr_1fr] items-start gap-[18px] max-[1100px]:grid-cols-1">
+			<div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+				<Skeleton className="h-[92px] rounded-none" />
+				<div className="flex flex-col gap-3 p-7">
+					<Skeleton className="h-12 w-12 rounded-full" />
+					<Skeleton className="h-6 w-48" />
+					<Skeleton className="h-4 w-64" />
+					<div className="grid grid-cols-2 gap-3 pt-2">
+						<Skeleton className="h-16 rounded-md" />
+						<Skeleton className="h-16 rounded-md" />
+					</div>
 				</div>
 			</div>
-			<div className="grid grid-cols-2 gap-3">
-				<Skeleton className="h-16 rounded-lg" />
-				<Skeleton className="h-16 rounded-lg" />
-				<Skeleton className="col-span-2 h-20 rounded-lg" />
+			<div className="rounded-lg border border-border bg-card p-7 shadow-sm">
+				<Skeleton className="h-16 w-32" />
+				<Skeleton className="mt-6 h-10 w-full" />
 			</div>
 		</div>
 	)
@@ -106,38 +106,7 @@ function ProfileCardError({
 	)
 }
 
-function ProfileCardHeader({ me }: { me: Me }) {
-	return (
-		<div className="flex items-center gap-3">
-			<div
-				aria-hidden="true"
-				className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground"
-			>
-				{getInitials(me.name)}
-			</div>
-			<div className="flex min-w-0 flex-1 flex-col gap-0.5">
-				<span
-					data-testid="profile-name"
-					className="truncate font-semibold text-foreground"
-				>
-					{me.name}
-				</span>
-				<span
-					data-testid="profile-email"
-					className="truncate text-sm text-muted-foreground"
-				>
-					{me.email}
-				</span>
-			</div>
-			<div className="flex shrink-0 flex-col items-end gap-1">
-				{me.role === "ADMIN" && <AdminBadge />}
-				{me.status && <StatusBadge status={me.status} />}
-			</div>
-		</div>
-	)
-}
-
-function CheckInsMetric({
+function CheckInsValue({
 	checkInsCount,
 	metricsLoading,
 	metricsError,
@@ -147,7 +116,7 @@ function CheckInsMetric({
 	"checkInsCount" | "metricsLoading" | "metricsError" | "onMetricsRetry"
 >) {
 	if (metricsLoading) {
-		return <Skeleton className="h-7 w-12" />
+		return <Skeleton className="h-5 w-10" />
 	}
 
 	if (metricsError) {
@@ -166,15 +135,15 @@ function CheckInsMetric({
 
 	return (
 		<span
-			data-testid="metric-checkins"
-			className="font-display text-2xl font-semibold text-primary"
+			data-testid="profile-checkins"
+			className="tabular font-mono text-[15px] font-semibold text-foreground"
 		>
 			{checkInsCount ?? 0}
 		</span>
 	)
 }
 
-function ProfileCardInfoGrid({
+function ProfileFactsGrid({
 	me,
 	checkInsCount,
 	metricsLoading,
@@ -187,37 +156,87 @@ function ProfileCardInfoGrid({
 	if (!me) return null
 
 	return (
-		<div className="grid grid-cols-2 gap-3">
-			<div className="rounded-lg bg-muted/50 p-3">
-				<p className="mb-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-					ID
-				</p>
+		<div className="grid grid-cols-2 gap-3 p-7">
+			<div className="rounded-md border border-border bg-surface-2 p-4">
+				<Eyebrow className="mb-2 block">ID</Eyebrow>
 				<p
 					data-testid="profile-id"
-					className="truncate text-xs font-mono text-foreground"
+					className="truncate font-mono text-[13px] font-semibold text-foreground"
 				>
 					{me.id}
 				</p>
 			</div>
-			<div className="rounded-lg bg-muted/50 p-3">
-				<p className="mb-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-					Membro desde
-				</p>
-				<p data-testid="profile-created-at" className="text-sm text-foreground">
+			<div className="rounded-md border border-border bg-surface-2 p-4">
+				<Eyebrow className="mb-2 block">Membro desde</Eyebrow>
+				<p
+					data-testid="profile-created-at"
+					className="text-[15px] font-semibold text-foreground"
+				>
 					{me.createdAt ? formatDate(me.createdAt) : "—"}
 				</p>
 			</div>
-			<div className="col-span-2 flex items-center justify-between rounded-lg bg-muted/50 p-3">
-				<div>
-					<p className="mb-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-						Check-ins realizados
-					</p>
-					<CheckInsMetric
-						checkInsCount={checkInsCount}
-						metricsLoading={metricsLoading}
-						metricsError={metricsError}
-						onMetricsRetry={onMetricsRetry}
-					/>
+			<div className="col-span-2 flex items-center justify-between rounded-md border border-border bg-surface-2 p-4">
+				<Eyebrow className="block">Check-ins realizados</Eyebrow>
+				<CheckInsValue
+					checkInsCount={checkInsCount}
+					metricsLoading={metricsLoading}
+					metricsError={metricsError}
+					onMetricsRetry={onMetricsRetry}
+				/>
+			</div>
+		</div>
+	)
+}
+
+function MetricCard({
+	checkInsCount,
+	metricsLoading,
+	metricsError,
+	onMetricsRetry,
+}: Pick<
+	ProfileCardProps,
+	"checkInsCount" | "metricsLoading" | "metricsError" | "onMetricsRetry"
+>) {
+	return (
+		<div className="rounded-lg border border-border bg-card p-7 shadow-sm">
+			<div className="flex flex-col border-b border-border pb-6">
+				{metricsLoading ? (
+					<Skeleton className="h-16 w-32" />
+				) : metricsError ? (
+					<Button
+						type="button"
+						variant="secondary"
+						size="sm"
+						onClick={onMetricsRetry}
+					>
+						Tentar novamente
+					</Button>
+				) : (
+					<span
+						data-testid="metric-checkins"
+						className="tabular font-mono text-[68px] font-bold leading-[0.9] tracking-tight text-accent"
+					>
+						{checkInsCount ?? 0}
+					</span>
+				)}
+				<span className="mt-1.5 text-sm text-muted-foreground">
+					check-ins realizados
+				</span>
+			</div>
+			<div className="pt-[22px]">
+				<p className="mb-3.5 text-sm font-semibold text-foreground">
+					Esta semana
+				</p>
+				<div className="flex gap-2">
+					{WEEK_DAYS.map((day) => (
+						<span
+							key={day.id}
+							className="flex aspect-square flex-1 items-center justify-center rounded-[10px] border border-border bg-surface-2 text-xs font-semibold text-subtle data-[on=true]:border-transparent data-[on=true]:bg-accent data-[on=true]:text-accent-foreground"
+							data-on={false}
+						>
+							{day.label}
+						</span>
+					))}
 				</div>
 			</div>
 		</div>
@@ -242,27 +261,59 @@ function ProfileCard({
 	}
 
 	return (
-		<div
-			data-testid="profile-card"
-			className="flex flex-col gap-5 rounded-[12px] border border-border bg-card p-6"
-		>
-			<ProfileCardHeader me={me} />
-			<ProfileCardInfoGrid
-				me={me}
+		<div className="grid grid-cols-[1.5fr_1fr] items-start gap-[18px] max-[1100px]:grid-cols-1">
+			<div
+				data-testid="profile-card"
+				className="overflow-hidden rounded-lg border border-border bg-card shadow-sm"
+			>
+				<div className="h-[92px] bg-gradient-to-r from-accent to-accent/40" />
+				<div className="-mt-10 flex items-start justify-between gap-[18px] px-7">
+					<Avatar name={me.name} size="lg" className="border-4 border-card" />
+					<div className="mt-[46px] flex items-center gap-2">
+						<RoleBadge role={toRole(me.role)} />
+						<ProfileStatusBadge status={me.status} />
+					</div>
+				</div>
+				<div className="px-7 pt-2">
+					<h1
+						data-testid="profile-name"
+						className="font-display text-2xl font-semibold text-foreground"
+					>
+						{me.name}
+					</h1>
+					<p
+						data-testid="profile-email"
+						className="font-mono text-[13px] text-subtle"
+					>
+						{me.email}
+					</p>
+				</div>
+				<ProfileFactsGrid
+					me={me}
+					checkInsCount={checkInsCount}
+					metricsLoading={metricsLoading}
+					metricsError={metricsError}
+					onMetricsRetry={onMetricsRetry}
+				/>
+				<div className="px-7 pb-7">
+					<Button
+						type="button"
+						variant="secondary"
+						onClick={onEdit}
+						data-testid="profile-edit-button"
+						className="w-full"
+					>
+						Editar perfil
+					</Button>
+				</div>
+			</div>
+
+			<MetricCard
 				checkInsCount={checkInsCount}
 				metricsLoading={metricsLoading}
 				metricsError={metricsError}
 				onMetricsRetry={onMetricsRetry}
 			/>
-			<Button
-				type="button"
-				variant="secondary"
-				onClick={onEdit}
-				data-testid="profile-edit-button"
-				className="w-full"
-			>
-				✏️ Editar perfil
-			</Button>
 		</div>
 	)
 }
@@ -284,8 +335,9 @@ export default function ProfilePage() {
 	} = useMetrics()
 
 	return (
-		<main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-10 sm:px-6">
+		<main className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-10 sm:px-6">
 			<header className="flex flex-col gap-1">
+				<Eyebrow>Conta</Eyebrow>
 				<h1 className="font-display text-3xl font-semibold text-foreground">
 					Meu perfil
 				</h1>
