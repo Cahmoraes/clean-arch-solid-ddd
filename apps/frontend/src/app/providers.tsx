@@ -57,7 +57,7 @@ const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""
 
 if (process.env.NODE_ENV !== "production" && !googleClientId) {
 	console.warn(
-		"[GoogleOAuthProvider] NEXT_PUBLIC_GOOGLE_CLIENT_ID não está definido. O login com Google estará desabilitado.",
+		"[VOLT][GoogleOAuthProvider] NEXT_PUBLIC_GOOGLE_CLIENT_ID não está definido. O login com Google estará desabilitado.",
 	)
 }
 

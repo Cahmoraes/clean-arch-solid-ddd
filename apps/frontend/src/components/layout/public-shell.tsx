@@ -20,10 +20,10 @@ export function PublicShell({ children, className }: PublicShellProps) {
 				<div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
 					<Link
 						href="/"
-						aria-label="Página inicial"
+						aria-label="Página inicial VOLT"
 						className="font-display text-xl font-semibold tracking-tight text-primary-foreground dark:text-card-foreground"
 					>
-						GymPass
+						VOLT
 					</Link>
 					<nav
 						aria-label="Ações de autenticação"
@@ -47,7 +47,7 @@ export function PublicShell({ children, className }: PublicShellProps) {
 			<main className="flex-1">{children}</main>
 			<footer className="border-t border-border">
 				<div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-1 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
-					<span>© {new Date().getFullYear()} GymPass</span>
+					<span>© {new Date().getFullYear()} VOLT</span>
 					<span>Plataforma de acesso a academias</span>
 				</div>
 			</footer>

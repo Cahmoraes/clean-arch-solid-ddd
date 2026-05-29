@@ -34,3 +34,24 @@ describe("PublicShell", () => {
 		expect(header).toHaveClass("bg-primary")
 	})
 })
+
+describe("PublicShell — marca VOLT", () => {
+	test("exibe o wordmark VOLT no header", () => {
+		render(
+			<PublicShell>
+				<p>conteúdo</p>
+			</PublicShell>,
+		)
+		const marks = screen.getAllByText("VOLT")
+		expect(marks.length).toBeGreaterThanOrEqual(1)
+	})
+
+	test("não exibe mais a marca antiga GymPass", () => {
+		render(
+			<PublicShell>
+				<p>conteúdo</p>
+			</PublicShell>,
+		)
+		expect(screen.queryByText(/GymPass/i)).not.toBeInTheDocument()
+	})
+})

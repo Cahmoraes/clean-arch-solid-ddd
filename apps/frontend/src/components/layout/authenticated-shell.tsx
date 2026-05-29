@@ -104,7 +104,7 @@ function SidebarContent({
 					onClick={onNavigate}
 					className="font-display text-lg font-semibold tracking-tight text-primary-foreground dark:text-card-foreground"
 				>
-					GymPass
+					VOLT
 				</Link>
 			</div>
 
@@ -272,7 +272,7 @@ export function AuthenticatedShell({
 						href="/inicio"
 						className="ml-3 font-display text-lg font-semibold tracking-tight"
 					>
-						GymPass
+						VOLT
 					</Link>
 				</header>
 

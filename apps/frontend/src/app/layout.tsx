@@ -27,8 +27,9 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-	title: "GymPass-like",
-	description: "Plataforma de acesso a academias",
+	title: "VOLT — Plataforma de acesso a academias",
+	description:
+		"VOLT — treine onde você estiver. Acesso a academias e check-ins.",
 }
 
 export default function RootLayout({
