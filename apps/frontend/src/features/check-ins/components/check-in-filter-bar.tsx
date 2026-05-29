@@ -36,6 +36,7 @@ export function CheckInFilterBar({
 			items={ITEMS}
 			value={toFilterValue(status)}
 			onValueChange={(value) => onStatusChange(toStatus(value))}
+			className="w-full [&>button]:flex-1 [&>button]:justify-center"
 		/>
 	)
 }
