@@ -143,18 +143,20 @@ export function AuthenticatedShell({
 						</>
 					)}
 
-					<button
-						type="button"
-						aria-label="Sair"
-						onClick={handleLogout}
-						className="mt-4 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors max-[860px]:justify-center text-sidebar-muted hover:bg-white/5 hover:text-destructive"
-					>
-						<LogOut
-							className="h-[18px] w-[18px] flex-shrink-0"
-							aria-hidden="true"
-						/>
-						<span className="flex-1 max-[860px]:hidden">Sair</span>
-					</button>
+					<div className="mt-4 border-t border-sidebar-border pt-3">
+						<button
+							type="button"
+							aria-label="Sair"
+							onClick={handleLogout}
+							className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors max-[860px]:justify-center text-sidebar-muted hover:bg-white/5 hover:text-destructive"
+						>
+							<LogOut
+								className="h-[18px] w-[18px] flex-shrink-0"
+								aria-hidden="true"
+							/>
+							<span className="max-[860px]:hidden">Sair</span>
+						</button>
+					</div>
 				</nav>
 
 				<div className="mt-2 flex items-center gap-2 border-t border-sidebar-border pt-4">
