@@ -36,20 +36,21 @@ interface BarProps {
 	count: number
 	dayIndex: number
 	heightPct: number
+	isCurrentDay: boolean
 }
 
-function Bar({ count, dayIndex, heightPct }: BarProps) {
+function Bar({ count, dayIndex, heightPct, isCurrentDay }: BarProps) {
 	return (
-		<div className="flex flex-1 flex-col items-center gap-1">
-			<div
-				className="w-full rounded-t-sm"
-				style={{
-					height: `${Math.max(heightPct, 4)}%`,
-					background: count > 0 ? "var(--color-primary)" : "hsl(var(--muted))",
-				}}
-				title={`${DAY_LABELS[dayIndex]}: ${count} check-in${count !== 1 ? "s" : ""}`}
-			/>
-			<span className="text-xs text-muted-foreground">
+		<div className="flex h-full flex-1 flex-col items-center gap-2.5">
+			<div className="flex w-full flex-1 items-end">
+				<div
+					className="w-full origin-bottom rounded-t-lg bg-surface-3 data-[current=true]:bg-accent"
+					data-current={isCurrentDay}
+					style={{ height: `${Math.max(heightPct, 4)}%` }}
+					title={`${DAY_LABELS[dayIndex]}: ${count} check-in${count !== 1 ? "s" : ""}`}
+				/>
+			</div>
+			<span className="text-xs font-medium text-subtle">
 				{DAY_LABELS[dayIndex]}
 			</span>
 		</div>
@@ -62,6 +63,7 @@ export function WeeklyChart({ frequency, isLoading }: WeeklyChartProps) {
 	}
 
 	const max = Math.max(...frequency, 1)
+	const currentDay = new Date().getDay()
 
 	return (
 		<div className="rounded-xl border border-border bg-card p-4">
@@ -71,8 +73,7 @@ export function WeeklyChart({ frequency, isLoading }: WeeklyChartProps) {
 			<div
 				role="img"
 				aria-label="Gráfico de barras de frequência semanal"
-				className="flex items-end gap-2"
-				style={{ height: 80 }}
+				className="flex h-[200px] items-end gap-2.5"
 			>
 				{frequency.map((count, dayIndex) => (
 					<Bar
@@ -81,6 +82,7 @@ export function WeeklyChart({ frequency, isLoading }: WeeklyChartProps) {
 						count={count}
 						dayIndex={dayIndex}
 						heightPct={(count / max) * 100}
+						isCurrentDay={dayIndex === currentDay}
 					/>
 				))}
 			</div>

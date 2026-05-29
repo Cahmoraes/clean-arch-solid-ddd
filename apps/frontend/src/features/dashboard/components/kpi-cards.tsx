@@ -1,48 +1,42 @@
 "use client"
 
+import {
+	Activity,
+	CalendarDays,
+	CheckCircle,
+	Flame,
+	type LucideIcon,
+} from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { StatCard } from "@/components/ui/stat-card"
 import { useMetrics } from "@/features/profile/api"
-import { cn } from "@/lib/cn"
 
-interface KpiCardProps {
-	label: string
-	value: string | number
-	sub?: string
-	isLoading?: boolean
-	valueClassName?: string
+function KpiSkeleton() {
+	return (
+		<div className="rounded-lg border border-border bg-card p-[22px] shadow-sm">
+			<div className="mb-[18px] flex items-center justify-between">
+				<Skeleton className="h-[42px] w-[42px] rounded-md" />
+			</div>
+			<Skeleton className="mb-2 h-[38px] w-20" />
+			<Skeleton className="h-4 w-28" />
+		</div>
+	)
 }
 
-function KpiCard({
-	label,
-	value,
-	sub,
-	isLoading,
-	valueClassName,
-}: KpiCardProps) {
+interface KpiSlotProps {
+	icon: LucideIcon
+	value: string
+	label: string
+	isLoading?: boolean
+	highlight?: boolean
+}
+
+function KpiSlot({ icon, value, label, isLoading, highlight }: KpiSlotProps) {
+	if (isLoading) {
+		return <KpiSkeleton />
+	}
 	return (
-		<div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-			<p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-				{label}
-			</p>
-			{isLoading ? (
-				<>
-					<Skeleton className="mb-1 h-8 w-16" />
-					<Skeleton className="h-3 w-24" />
-				</>
-			) : (
-				<>
-					<p
-						className={cn(
-							"text-2xl font-semibold text-primary",
-							valueClassName,
-						)}
-					>
-						{value}
-					</p>
-					{sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
-				</>
-			)}
-		</div>
+		<StatCard icon={icon} value={value} label={label} highlight={highlight} />
 	)
 }
 
@@ -59,38 +53,28 @@ export function KpiCards({
 }: KpiCardsProps) {
 	const { data: metrics, isLoading: isMetricsLoading } = useMetrics()
 
-	const now = new Date()
-	const monthLabel = now.toLocaleDateString("pt-BR", {
-		month: "short",
-		year: "numeric",
-	})
-
 	return (
-		<div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-			<KpiCard
+		<>
+			<KpiSlot
+				icon={CheckCircle}
+				value={String(metrics?.checkInsCount ?? 0)}
 				label="Total check-ins"
-				value={metrics?.checkInsCount ?? 0}
-				sub="Desde o início"
 				isLoading={isMetricsLoading}
+				highlight
 			/>
-			<KpiCard
+			<KpiSlot
+				icon={CalendarDays}
+				value={String(thisMonth)}
 				label="Este mês"
-				value={thisMonth}
-				sub={monthLabel}
 				isLoading={isHistoryLoading}
 			/>
-			<KpiCard
-				label="Sequência atual"
-				value={streak === 0 ? "—" : `${streak} dias`}
-				sub="dias consecutivos"
+			<KpiSlot
+				icon={Flame}
+				value={streak === 0 ? "—" : String(streak)}
+				label="Sequência (dias)"
 				isLoading={isHistoryLoading}
 			/>
-			<KpiCard
-				label="Status"
-				value="Ativo"
-				valueClassName="text-accent-foreground dark:text-accent"
-				isLoading={false}
-			/>
-		</div>
+			<KpiSlot icon={Activity} value="Ativo" label="Status" />
+		</>
 	)
 }

@@ -2,6 +2,7 @@
 
 import { AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/ui/page-header"
 import { useDashboardHistory } from "@/features/dashboard/api"
 import {
 	computeHeatmap,
@@ -59,36 +60,37 @@ export function DashboardPage() {
 	const formattedDate = dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1)
 
 	return (
-		<div className="flex flex-col gap-4">
-			<div>
-				<h1 className="text-xl font-semibold">Dashboard</h1>
-				<p className="text-sm text-muted-foreground">{formattedDate}</p>
-			</div>
+		<div className="flex flex-col gap-[18px]">
+			<PageHeader
+				eyebrow="Visão geral"
+				title="Dashboard"
+				subtitle={formattedDate}
+			/>
 
 			<ProfileHeroCard thisMonth={thisMonth} streak={streak} />
 
 			{isHistoryError && <ErrorBanner onRetry={refetch} />}
 
-			<KpiCards
-				thisMonth={thisMonth}
-				streak={streak}
-				isHistoryLoading={isHistoryLoading}
-			/>
+			<div
+				data-testid="dashboard-stat-grid"
+				className="grid grid-cols-4 gap-4 max-[1100px]:grid-cols-2 max-[560px]:grid-cols-1"
+			>
+				<KpiCards
+					thisMonth={thisMonth}
+					streak={streak}
+					isHistoryLoading={isHistoryLoading}
+				/>
+			</div>
 
-			<div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-				<div className="lg:col-span-2">
-					<WeeklyChart
-						frequency={weeklyFrequency}
-						isLoading={isHistoryLoading}
-					/>
-				</div>
+			<div className="grid grid-cols-[1.6fr_1fr] gap-[18px] max-[1100px]:grid-cols-1">
+				<WeeklyChart frequency={weeklyFrequency} isLoading={isHistoryLoading} />
 				<StatusDonutCard
 					distribution={statusDistribution}
 					isLoading={isHistoryLoading}
 				/>
 			</div>
 
-			<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+			<div className="grid grid-cols-1 gap-[18px] lg:grid-cols-2">
 				<HeatmapCard days={heatmapDays} isLoading={isHistoryLoading} />
 				<CheckinsTimeline checkIns={history} isLoading={isHistoryLoading} />
 			</div>

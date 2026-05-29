@@ -85,21 +85,24 @@ export function CheckinsTimeline({
 					Nenhum check-in registrado ainda.
 				</p>
 			) : (
-				<ul className="flex flex-col gap-3">
+				<ul className="flex flex-col">
 					{recent.map((ci) => (
-						<li key={ci.id} className="flex items-start gap-3">
+						<li
+							key={ci.id}
+							className="flex items-center gap-3.5 border-b border-border py-3 last:border-b-0"
+						>
 							<span
 								className={cn(
-									"mt-1.5 h-2 w-2 flex-shrink-0 rounded-full",
+									"h-2 w-2 flex-shrink-0 rounded-full",
 									STATUS_DOT_CLASS[ci.status],
 								)}
 								aria-hidden="true"
 							/>
 							<div className="min-w-0 flex-1">
-								<p className="truncate text-sm font-medium">
+								<p className="truncate text-[14.5px] font-semibold">
 									{ci.gymTitle ?? "Academia"}
 								</p>
-								<p className="text-xs text-muted-foreground">
+								<p className="text-xs text-subtle">
 									{formatRelativeDate(ci.createdAt)}
 								</p>
 							</div>
