@@ -1,6 +1,6 @@
 # Task 9: Redesign Admin Usuários (page-header, segmented, search, user-row) [RF-017]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

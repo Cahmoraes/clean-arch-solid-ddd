@@ -1,6 +1,6 @@
 # Task 11: Redesign Perfil (profile-card, metric-card, streak) [RF-019]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

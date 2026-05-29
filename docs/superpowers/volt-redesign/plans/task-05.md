@@ -1,6 +1,6 @@
 # Task 5: ThemeToggle deslizante (substitui o FAB) [RF-002]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

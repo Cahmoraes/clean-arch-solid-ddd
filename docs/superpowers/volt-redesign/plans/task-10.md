@@ -1,6 +1,6 @@
 # Task 10: Redesign Admin Check-ins (segmented, checkin-row, ações inline) [RF-018]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

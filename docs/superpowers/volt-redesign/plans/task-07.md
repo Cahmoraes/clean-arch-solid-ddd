@@ -1,6 +1,6 @@
 # Task 7: Redesign do shell público + tela de Login [RF-014, RF-015, RF-023]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 

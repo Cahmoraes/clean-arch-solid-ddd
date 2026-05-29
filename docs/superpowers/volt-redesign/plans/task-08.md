@@ -1,6 +1,6 @@
 # Task 8: Redesign do Dashboard (stat-grid, week-chart, rank-list, atividade) [RF-016, RF-024]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-volt-redesign.md`
 **Spec:** `../specs/volt-redesign-design.md`
 
