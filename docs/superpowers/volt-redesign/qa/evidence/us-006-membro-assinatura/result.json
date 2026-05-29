@@ -1,0 +1,23 @@
+{
+  "userStory": "us-006",
+  "title": "Como membro, quero ver a página de assinatura (banner do plano ativo + grade de planos) no visual VOLT, para entender meu plano.",
+  "requirements": ["RF-020"],
+  "status": "PASSED",
+  "summary": "RF-020 verificado. A página de assinatura renderiza o banner de cobrança (data-testid=\"billing-banner\", page.tsx:57) e a grade de planos (data-testid=\"plan-grid\", page.tsx:213) no visual VOLT. Teste de aceitação assinatura-volt.test.tsx passou (2/2) cobrindo ambos os testids. Teste pré-existente page.test.tsx também passou (4/4: aviso de demonstração, envio de priceId/confirmação, estado de loading, erro amigável). Total 6/6 testes verdes.",
+  "tests": [
+    {
+      "file": "apps/frontend/src/app/(authenticated)/assinatura/assinatura-volt.test.tsx",
+      "result": "PASSED",
+      "count": "2/2",
+      "cases": ["exibe o banner de cobranca", "renderiza a grade de planos"]
+    },
+    {
+      "file": "apps/frontend/src/app/(authenticated)/assinatura/page.test.tsx",
+      "result": "PASSED",
+      "count": "4/4",
+      "note": "Teste pré-existente de assinatura, executado conforme instrução."
+    }
+  ],
+  "screenshot": null,
+  "notes": "Screenshot INDISPONÍVEL (playwright-cli não disponível neste ambiente de QA) → etapa de evidência visual pulada. Tasks 1, 2 e 4 concluídas. Task 2: cobertura de teste já existente (assinatura-volt.test.tsx presente, não foi necessário criar). Comando executado: npx vitest run em ambos os arquivos a partir de apps/frontend."
+}

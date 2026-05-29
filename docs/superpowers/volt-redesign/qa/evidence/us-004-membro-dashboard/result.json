@@ -1,0 +1,28 @@
+{
+  "userStory": "us-004",
+  "title": "Como membro, quero ver meu dashboard com KPIs, gráfico semanal, ranking de academias e atividade recente no visual VOLT, para acompanhar meu uso.",
+  "status": "PARTIAL",
+  "requirements": ["RF-016", "RF-024"],
+  "summary": "Testes existentes passam (4/4 total). dashboard-page.test.tsx (2/2) cobre heading 'Dashboard' e grade de KPIs (data-testid='dashboard-stat-grid'). stat-card.test.tsx (2/2) cobre o componente StatCard (RF-016). Cobertura PARCIAL: dashboard-page.test.tsx valida presença de heading e stat-grid, mas não assere conteúdo dos KPIs, gráfico semanal, ranking de academias nem atividade recente. RF-024 (grids reflow) verificado por inspeção das classes responsivas no código, não por teste automatizado.",
+  "screenshot": null,
+  "tests": [
+    {
+      "file": "src/features/dashboard/components/dashboard-page.test.tsx",
+      "result": "PASSED",
+      "count": "2/2",
+      "covers": "heading 'Dashboard' + grade de KPIs (dashboard-stat-grid)"
+    },
+    {
+      "file": "src/components/ui/stat-card.test.tsx",
+      "result": "PASSED",
+      "count": "2/2",
+      "covers": "RF-016 StatCard"
+    }
+  ],
+  "notes": [
+    "Status PARTIAL: dashboard-page.test.tsx cobre apenas heading + presença de stat-grid; não cobre conteúdo de KPIs, gráfico semanal, ranking de academias nem atividade recente.",
+    "Novo teste de StatCard NAO criado: RF-016 já coberto por src/components/ui/stat-card.test.tsx (rodado para evidência, 2/2 PASSED).",
+    "Screenshot INDISPONÍVEL (playwright-cli não disponível neste ambiente) -> pulado. screenshot=null.",
+    "RF-024 (grids reflow) é CSS, verificado por classes responsivas em dashboard-page.tsx: stat-grid 'grid grid-cols-4 ... max-[1100px]:grid-cols-2 max-[560px]:grid-cols-1' (linha 76); grid principal 'grid-cols-[1.6fr_1fr] ... max-[1100px]:grid-cols-1' (linha 85); grid 'grid-cols-1 ... lg:grid-cols-2' (linha 93). Reflow responsivo confirmado por inspeção de código."
+  ]
+}

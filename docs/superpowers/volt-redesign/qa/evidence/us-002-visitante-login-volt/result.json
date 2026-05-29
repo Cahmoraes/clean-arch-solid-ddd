@@ -1,0 +1,10 @@
+{
+  "user_story": "us-002",
+  "title": "Como visitante, quero fazer login em uma tela VOLT (split marca/formulário, com opção Google), para entrar na plataforma.",
+  "requirements": ["RF-015", "RF-023"],
+  "status": "PASSED",
+  "test_output_summary": "npx vitest run login-volt.test.tsx page.test.tsx => 2 test files passed, 9 tests passed, 0 failed (duration 3.02s). login-volt.test.tsx valida: painel-marca com hero (texto 'Treine onde'), campos E-mail/Senha preservados, data-testid 'login-submit'. page.test.tsx valida fluxo submit/redirect pré-existente.",
+  "coverage_notes": "RF-015 (login split marca/formulário): coberto. page.tsx usa grid-cols-[1.05fr_1fr] com <aside> painel-marca (hero 'Treine onde') + formulário, opção Google via GoogleLogin mockado. RF-023 (coluna única <860px): coberto. page.tsx usa max-[860px]:grid-cols-1 (colapsa para coluna única) e max-[860px]:hidden (oculta painel-marca abaixo de 860px). Cobertura de split + form preservado já existente; nenhum teste novo criado (não ausente).",
+  "screenshot": null,
+  "notes": "Screenshot INDISPONÍVEL: app não estava em execução durante a verificação, etapa pulada conforme instrução. Validação visual responsiva apoiada em inspeção das classes de layout em page.tsx (linhas 74-75)."
+}

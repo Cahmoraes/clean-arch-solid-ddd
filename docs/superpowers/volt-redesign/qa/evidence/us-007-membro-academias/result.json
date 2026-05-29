@@ -1,0 +1,28 @@
+{
+  "userStory": "us-007",
+  "title": "Como membro, quero ver a listagem de academias (grade de cards com status, rating e ação de check-in) no visual VOLT, para encontrar onde treinar.",
+  "requisitos": ["RF-021", "RF-024"],
+  "status": "PASSED",
+  "summary": "Listagem de academias no visual VOLT verificada. GymCard (RF-021) exibe nome, localização (address ou lat/long), badge de status neutro 'Disponível' e ação 'Check-in'. Grade fluida (RF-024) implementada via CSS grid auto-fill `repeat(auto-fill,minmax(280px,1fr))` em GymResults (ResultsList + ResultsLoading). Testes: gym-card.test.tsx 3/3 PASS (nome, link navegável /academias/{id}, localização); academias/page.test.tsx 8/8 PASS (render da grade, links dos cards apontam para detalhe). Cobertura existente suficiente — nenhum teste novo necessário.",
+  "tasks": {
+    "task1_tests": {
+      "gym-card.test.tsx": { "passed": 3, "failed": 0, "status": "PASS" },
+      "academias/page.test.tsx": { "passed": 8, "failed": 0, "status": "PASS" }
+    },
+    "task2_coverage": "Cobertura existente. GymCard testado diretamente; GymResults coberto indiretamente pelo page test (render da grade + links). Nenhum teste criado.",
+    "task3_screenshot": "SKIPPED — screenshot indisponível neste ambiente (sem servidor renderizado). Reflow verificado por classe CSS, não por captura visual."
+  },
+  "screenshot": null,
+  "notes": [
+    "Backend não fornece status aberto/fechado nem rating. Implementação usa status neutro 'Disponível' e omite rating — sem dado inventado. Card mostra nome/localização/ação Check-in, conforme. Não exigido 'Aberto/4.9'.",
+    "RF-024 reflow: grade fluida via CSS `grid-cols-[repeat(auto-fill,minmax(280px,1fr))]` (auto-fill) — verificada por inspeção de classe nos componentes ResultsList e ResultsLoading de gym-results.tsx, não por screenshot.",
+    "resolveLocation faz fallback de address para coordenadas lat/long formatadas (4 casas)."
+  ],
+  "files": [
+    "apps/frontend/src/features/gyms/components/gym-card.tsx",
+    "apps/frontend/src/features/gyms/components/gym-card.test.tsx",
+    "apps/frontend/src/features/gyms/components/gym-results.tsx",
+    "apps/frontend/src/app/(authenticated)/academias/page.tsx",
+    "apps/frontend/src/app/(authenticated)/academias/page.test.tsx"
+  ]
+}

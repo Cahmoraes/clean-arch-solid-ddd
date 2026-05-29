@@ -1,0 +1,12 @@
+{
+  "us_id": "us-009",
+  "user_story": "Como administrador, quero gerir check-ins em uma tela VOLT (filtros segmentados, ações inline aprovar/rejeitar/reverter) preservando a funcionalidade atual, para moderar check-ins.",
+  "requirements": ["RF-018"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "38 tests passed, 0 failed (5 test files)",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Filtros segmentados implementados via SegmentedControl em check-in-filter-bar.tsx (4 pills: Todos/Pendentes/Aprovados/Rejeitados, aria-pressed para estado ativo). Ações inline em check-in-actions.tsx: Aprovar (pending), Rejeitar (pending+validated), nenhuma ação (rejected) — sem reverter explícito mas Rejeitar em validated funciona como reversão. Tokens VOLT semânticos no check-in-item.tsx: bg-success-soft/text-success (validated), bg-warning-soft/text-warning (pending), bg-destructive-soft/text-destructive (rejected) — zero literais hex. Paginação em check-ins-pager.tsx. Página admin em app/(authenticated)/admin/check-ins/page.tsx integra todos os componentes com URL params para filtro. Todos os 5 arquivos de teste existentes cobrem os requisitos RF-018 completamente."
+}

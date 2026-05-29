@@ -1,0 +1,14 @@
+{
+  "us_id": "us-010",
+  "user_story": "Como qualquer usuário, quero alternar entre tema claro e escuro (toggle no shell), para usar a interface conforme minha preferência.",
+  "requirements": ["RF-002"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/volt-redesign/qa/evidence/us-010-toggle-tema/us-010-toggle-tema-volt.acceptance.test.tsx"
+  ],
+  "test_output_summary": "Existing unit tests: 2 passed (dark→light, light→dark toggle). Acceptance tests: 6 passed (defaultTheme config, shell integration, toggle shape, useTheme hook, aria-pressed/aria-label, unit test coverage verification).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "defaultTheme='dark' configurado em apps/frontend/src/app/layout.tsx via ThemeProvider do next-themes. ThemeToggle visível no authenticated-shell.tsx (linha 179). Componente é toggle deslizante (h-[42px] w-[132px] rounded-full), não FAB. Alternância dark↔light verificada via setTheme() nos testes unitários em src/components/ui/theme-toggle.test.tsx. Acceptance tests usam inspeção estática de código-fonte por limitação do vitest (include pattern `src/**`) que impede execução de testes com renderização React fora do diretório src/."
+}

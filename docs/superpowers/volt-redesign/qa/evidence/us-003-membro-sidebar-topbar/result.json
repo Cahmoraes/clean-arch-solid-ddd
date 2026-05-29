@@ -1,0 +1,25 @@
+{
+  "userStory": "us-003",
+  "title": "Como membro autenticado, quero navegar por uma sidebar VOLT (grupos Principal/Admin quando aplicável) e topbar, para acessar as seções.",
+  "status": "PASSED",
+  "requirements": {
+    "RF-011": "PASSED — sidebar + topbar renderizam (teste: marca VOLT + nav principal + ThemeToggle na topbar)",
+    "RF-012": "PASSED — rota ativa derivada de usePathname (mock /inicio); links Dashboard/Academias presentes",
+    "RF-013": "PASSED — seção Admin oculta para MEMBER, visível para ADMIN (2 testes de gating de role)",
+    "RF-022": "PASSED (verificação por código) — icon-rail <860px implementado via media query CSS Tailwind"
+  },
+  "summary": "4/4 testes passaram em authenticated-shell.test.tsx (marca+nav, Admin oculto MEMBER, Admin visível ADMIN, ThemeToggle topbar). Cobertura de navegação e gating de role já existente — nenhum teste novo necessário. RF-022 verificado por inspeção de código.",
+  "tests": {
+    "file": "apps/frontend/src/components/layout/authenticated-shell.test.tsx",
+    "command": "npx vitest run src/components/layout/authenticated-shell.test.tsx",
+    "passed": 4,
+    "failed": 0,
+    "duration": "1.60s"
+  },
+  "screenshot": null,
+  "notes": [
+    "Screenshot INDISPONÍVEL (playwright-cli não disponível neste ambiente) — etapa pulada.",
+    "RF-022 (icon-rail <860px) é media query CSS, não testável em happy-dom. Verificado por código em apps/frontend/src/components/layout/authenticated-shell.tsx: grid colapsa para 76px via 'max-[860px]:grid-cols-[76px_1fr]' (linha 105); labels de nav, header de grupo e branding text escondem via 'max-[860px]:hidden' (linhas 71, 124, 133, 116); itens centralizam via 'max-[860px]:justify-center'.",
+    "Nenhum teste novo criado — cobertura de nav + gating de role já existe (Task 2)."
+  ]
+}
