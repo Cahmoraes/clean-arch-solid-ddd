@@ -31,7 +31,7 @@ const envSchema = z.object({
 	STRIPE_PRIVATE_KEY: z.string(),
 	STRIPE_PRICE_ID: z.string(),
 	STRIPE_WEBHOOK_SECRET: z.string(),
-	DATABASE_PROVIDER: z.enum(["prisma", "sqlite"]).default("sqlite"),
+	DATABASE_PROVIDER: z.enum(["prisma", "sqlite"]).default("prisma"),
 	SUBSCRIPTION_GATEWAY: z.enum(["stripe", "testing"]).default("stripe"),
 	GOOGLE_AUTH_PROVIDER: z.enum(["google", "in-memory"]).default("google"),
 })

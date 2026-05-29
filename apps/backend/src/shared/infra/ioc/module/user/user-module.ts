@@ -1,7 +1,6 @@
 import { ContainerModule } from "inversify"
 import { RefreshTokenController } from "@/session/infra/controller/refresh-token.controller"
 import { PgUserRepository } from "@/shared/infra/database/repository/pg/pg-user-repository"
-import { SQLiteUserRepository } from "@/shared/infra/database/repository/sqlite/sqlite-user-repository"
 import { ActiveUserUseCase } from "@/user/application/use-case/active-user.usecase"
 import { ChangePasswordUseCase } from "@/user/application/use-case/change-password.usecase"
 import { CreatePasswordReauthGrantUseCase } from "@/user/application/use-case/create-password-reauth-grant.usecase"
@@ -99,7 +98,6 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Controllers.PromoteToAdmin).to(PromoteToAdminController)
 	bind(USER_TYPES.Controllers.DemoteFromAdmin).to(DemoteFromAdminController)
 	bind(USER_TYPES.UseCases.DeleteUser).to(DeleteUserUseCase)
-	bind(SQLiteUserRepository).toSelf()
 	bind(USER_TYPES.Notifications.SendWelcomeEmail)
 		.to(SendWelcomeEmailNotification)
 		.inSingletonScope()
