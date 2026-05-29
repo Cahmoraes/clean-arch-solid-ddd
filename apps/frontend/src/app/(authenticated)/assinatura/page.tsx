@@ -47,6 +47,36 @@ function DemoBanner({ className }: DemoBannerProps) {
 	)
 }
 
+interface BillingBannerProps {
+	plan: DemoPlan | undefined
+}
+
+function BillingBanner({ plan }: BillingBannerProps) {
+	return (
+		<div
+			data-testid="billing-banner"
+			className="mb-5 flex flex-wrap items-center justify-between gap-6 rounded-lg border border-border bg-card p-7 shadow-sm"
+		>
+			<div>
+				<p className="font-mono text-[10.5px] uppercase tracking-wider text-subtle">
+					Plano atual
+				</p>
+				<p className="mt-1 font-display text-xl font-semibold">
+					{plan?.name ?? "Nenhum plano selecionado"}
+				</p>
+				<p className="text-sm text-muted-foreground">
+					Próxima cobrança em 30 dias
+				</p>
+			</div>
+			<div className="flex flex-col items-end gap-2">
+				<span className="tabular font-mono text-[28px] font-bold leading-none">
+					{plan?.priceLabel ?? "—"}
+				</span>
+			</div>
+		</div>
+	)
+}
+
 interface PlanCardProps {
 	plan: DemoPlan
 	selected: boolean
@@ -69,10 +99,12 @@ function PlanCard({
 			data-testid={`subscription-plan-${plan.id}`}
 			data-selected={selected ? "true" : "false"}
 			className={cn(
-				"flex cursor-pointer flex-col gap-3 rounded-[16px] border bg-card p-5 text-left transition-colors",
+				"relative flex cursor-pointer flex-col rounded-lg border bg-card p-7 text-left shadow-sm transition-colors",
 				"focus-within:outline-none focus-within:ring-2 focus-within:ring-ring/50 focus-within:ring-offset-2",
 				disabled ? "cursor-not-allowed opacity-60" : "",
-				selected ? "border-primary" : "border-border hover:border-mid-gray",
+				selected
+					? "border-accent shadow-[0_0_0_1px_var(--color-accent)]"
+					: "border-border hover:border-border-strong",
 			)}
 		>
 			<input
@@ -85,23 +117,28 @@ function PlanCard({
 				onChange={() => onSelect(plan)}
 				className="sr-only"
 			/>
-			<div className="flex items-center justify-between">
-				<h3 className="font-display text-lg font-medium text-foreground">
-					{plan.name}
-				</h3>
-				{selected ? (
-					<BadgeCheck className="h-5 w-5 text-foreground" aria-hidden="true" />
-				) : null}
-			</div>
-			<p className="text-sm text-muted-foreground">{plan.tagline}</p>
-			<p className="font-display text-2xl font-medium text-foreground">
+			{selected ? (
+				<span className="absolute right-[18px] top-[18px] rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
+					Plano atual
+				</span>
+			) : null}
+			<p className="mb-3.5 font-display text-lg font-bold text-foreground">
+				{plan.name}
+			</p>
+			<p className="mb-3.5 text-sm text-muted-foreground">{plan.tagline}</p>
+			<p className="tabular font-display text-2xl font-semibold text-foreground">
 				{plan.priceLabel}
 			</p>
-			<ul className="flex flex-col gap-1.5 text-sm text-foreground">
+			<ul className="mt-5 flex flex-1 flex-col gap-3">
 				{plan.features.map((feature) => (
-					<li key={feature} className="flex items-start gap-2">
-						<Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-						<span>{feature}</span>
+					<li
+						key={feature}
+						className="flex items-center gap-2.5 text-sm text-muted-foreground"
+					>
+						<span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground">
+							<Check className="h-3 w-3" aria-hidden="true" />
+						</span>
+						{feature}
 					</li>
 				))}
 			</ul>
@@ -173,6 +210,7 @@ function PlansList({
 	return (
 		<fieldset
 			aria-label="Planos disponíveis"
+			data-testid="plan-grid"
 			className="grid grid-cols-1 gap-4 border-0 p-0 md:grid-cols-2"
 		>
 			{DEMO_PLANS.map((plan) => (
@@ -199,7 +237,7 @@ function ErrorAlert({ message }: ErrorAlertProps) {
 		<p
 			role="alert"
 			data-testid="subscription-error"
-			className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-accent-foreground"
+			className="rounded-[12px] bg-destructive-soft px-4 py-3 text-sm text-destructive"
 		>
 			{message}
 		</p>
@@ -225,6 +263,7 @@ function SubscribeActions({
 				disabled={disabled}
 				onClick={onSubscribe}
 				aria-busy={isPending}
+				className="h-11 rounded-md bg-accent px-5 font-semibold text-accent-foreground hover:bg-primary-strong disabled:opacity-60"
 			>
 				{isPending ? "Processando…" : "Assinar plano demo"}
 			</Button>
@@ -296,7 +335,7 @@ export default function SubscriptionPage() {
 				</p>
 			</header>
 
-			<DemoBanner />
+			<BillingBanner plan={flow.selectedPlan} />
 
 			<PlansList
 				selectedPlanId={flow.selectedPlan?.id ?? ""}
