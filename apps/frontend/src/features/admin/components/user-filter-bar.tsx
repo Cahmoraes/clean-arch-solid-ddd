@@ -20,12 +20,14 @@ export interface UserFilterBarProps {
 	activeFilter: UserFilter
 	counts: UserStats
 	onFilterChange: (filter: UserFilter) => void
+	className?: string
 }
 
 export function UserFilterBar({
 	activeFilter,
 	counts,
 	onFilterChange,
+	className,
 }: UserFilterBarProps) {
 	return (
 		<SegmentedControl
@@ -33,6 +35,7 @@ export function UserFilterBar({
 			items={buildItems(counts)}
 			value={activeFilter}
 			onValueChange={onFilterChange}
+			className={className}
 		/>
 	)
 }

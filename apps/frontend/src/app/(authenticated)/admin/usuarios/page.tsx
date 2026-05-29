@@ -286,6 +286,7 @@ export default function AdminUsersPage() {
 						activeFilter={activeFilter}
 						counts={stats}
 						onFilterChange={handleFilterChange}
+						className="w-full [&>button]:flex-1 [&>button]:justify-center"
 					/>
 					<SearchBar
 						data-testid="admin-users-search"
