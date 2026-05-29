@@ -190,7 +190,7 @@ export function AuthenticatedShell({
 				</header>
 
 				<main className="flex-1 overflow-y-auto">
-					<div className="mx-auto max-w-[1180px] px-8 pb-20 pt-9 max-[560px]:px-[18px]">
+					<div className="route-fade mx-auto max-w-[1180px] px-8 pb-20 pt-9 max-[560px]:px-[18px]">
 						{children}
 					</div>
 				</main>

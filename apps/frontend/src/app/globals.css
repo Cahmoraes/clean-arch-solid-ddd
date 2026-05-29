@@ -185,3 +185,36 @@
 .tabular {
 	font-feature-settings: "tnum" 1;
 }
+
+/* Movimento VOLT — transform-only, estado-base sempre visível */
+@keyframes voltFade {
+	from {
+		transform: translateY(10px);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+@keyframes voltBar {
+	from {
+		transform: scaleY(0);
+	}
+	to {
+		transform: scaleY(1);
+	}
+}
+
+.route-fade {
+	animation: voltFade 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
