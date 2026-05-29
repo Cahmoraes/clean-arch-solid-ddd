@@ -44,7 +44,7 @@ function renderRootLayoutContent(children: ReactNode) {
 }
 
 describe("RootLayout", () => {
-	test("deve exibir o toggle de tema ao renderizar o shell público", async () => {
+	test("deve renderizar o shell público sem o toggle de tema flutuante", () => {
 		renderRootLayoutContent(
 			<PublicLayout>
 				<div>conteúdo público</div>
@@ -52,13 +52,12 @@ describe("RootLayout", () => {
 		)
 
 		expect(screen.getByTestId("public-shell")).toBeInTheDocument()
-		const toggle = await screen.findByRole("button", {
-			name: "Ativar tema escuro",
-		})
-		expect(toggle).toBeInTheDocument()
+		expect(
+			screen.queryByRole("button", { name: "Ativar tema escuro" }),
+		).not.toBeInTheDocument()
 	})
 
-	test("deve exibir o toggle de tema ao renderizar o shell autenticado", async () => {
+	test("deve renderizar o shell autenticado sem o toggle de tema flutuante", () => {
 		renderRootLayoutContent(
 			<AuthenticatedLayout>
 				<div>conteúdo autenticado</div>
@@ -66,9 +65,8 @@ describe("RootLayout", () => {
 		)
 
 		expect(screen.getByTestId("authenticated-shell")).toBeInTheDocument()
-		const toggle = await screen.findByRole("button", {
-			name: "Ativar tema escuro",
-		})
-		expect(toggle).toBeInTheDocument()
+		expect(
+			screen.queryByRole("button", { name: "Ativar tema escuro" }),
+		).not.toBeInTheDocument()
 	})
 })

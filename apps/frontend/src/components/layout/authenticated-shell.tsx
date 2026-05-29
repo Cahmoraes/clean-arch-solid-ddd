@@ -1,20 +1,23 @@
 "use client"
 
 import {
+	Bell,
 	Building2,
 	CheckCircle,
 	CreditCard,
 	LayoutDashboard,
 	LogOut,
-	Menu,
 	User,
 	Users,
-	X,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { type ReactNode, useState } from "react"
+import type { ReactNode } from "react"
 import { toast } from "sonner"
+import { Avatar } from "@/components/ui/avatar"
+import { BrandMark } from "@/components/ui/brand-mark"
+import { SearchBar } from "@/components/ui/search-bar"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useLogout } from "@/features/auth/api"
 import { useMe } from "@/features/profile/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
@@ -44,131 +47,29 @@ function isPathActive(pathname: string | null, href: string): boolean {
 	return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-interface SidebarNavItemProps {
+function SidebarNavItem({
+	item,
+	pathname,
+}: {
 	item: NavItem
 	pathname: string | null
-	onClick?: () => void
-}
-
-function SidebarNavItem({ item, pathname, onClick }: SidebarNavItemProps) {
+}) {
 	const active = isPathActive(pathname, item.href)
 	const Icon = item.icon
 	return (
 		<Link
 			href={item.href}
-			onClick={onClick}
 			aria-current={active ? "page" : undefined}
 			className={cn(
-				"flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors",
+				"flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors max-[860px]:justify-center",
 				active
-					? "bg-primary-foreground dark:bg-card-foreground text-primary dark:text-card"
-					: "text-primary-foreground/70 dark:text-card-foreground/70 hover:bg-primary-foreground/10 dark:hover:bg-card-foreground/10 hover:text-primary-foreground dark:hover:text-card-foreground",
+					? "bg-sidebar-active font-semibold text-sidebar-active-foreground"
+					: "text-sidebar-muted hover:bg-white/5 hover:text-sidebar-foreground",
 			)}
 		>
-			<Icon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-			{item.label}
+			<Icon className="h-[18px] w-[18px] flex-shrink-0" aria-hidden="true" />
+			<span className="flex-1 max-[860px]:hidden">{item.label}</span>
 		</Link>
-	)
-}
-
-function getInitials(name: string): string {
-	return name
-		.split(" ")
-		.filter(Boolean)
-		.map((word) => word[0])
-		.join("")
-		.toUpperCase()
-		.slice(0, 2)
-}
-
-interface SidebarContentProps {
-	pathname: string | null
-	role: "MEMBER" | "ADMIN" | undefined
-	name?: string
-	onNavigate?: () => void
-	onLogout: () => void
-}
-
-function SidebarContent({
-	pathname,
-	role,
-	name,
-	onNavigate,
-	onLogout,
-}: SidebarContentProps) {
-	return (
-		<div className="flex h-full flex-col px-3 py-4">
-			<div className="mb-4 border-b border-primary-foreground/20 dark:border-card-foreground/20 px-2 pb-4">
-				<Link
-					href="/inicio"
-					onClick={onNavigate}
-					className="font-display text-lg font-semibold tracking-tight text-primary-foreground dark:text-card-foreground"
-				>
-					VOLT
-				</Link>
-			</div>
-
-			<nav aria-label="Navegação principal" className="flex flex-col gap-1">
-				<p className="mb-1 px-3 text-xs font-medium uppercase tracking-wider text-primary-foreground/50 dark:text-card-foreground/50">
-					Principal
-				</p>
-				{MAIN_NAV_ITEMS.map((item) => (
-					<SidebarNavItem
-						key={item.href}
-						item={item}
-						pathname={pathname}
-						onClick={onNavigate}
-					/>
-				))}
-			</nav>
-
-			{role === "ADMIN" && (
-				<nav aria-label="Administração" className="mt-4 flex flex-col gap-1">
-					<p className="mb-1 px-3 text-xs font-medium uppercase tracking-wider text-accent">
-						Admin
-					</p>
-					{ADMIN_NAV_ITEMS.map((item) => (
-						<SidebarNavItem
-							key={item.href}
-							item={item}
-							pathname={pathname}
-							onClick={onNavigate}
-						/>
-					))}
-				</nav>
-			)}
-
-			<div className="mt-auto border-t border-primary-foreground/20 dark:border-card-foreground/20 pt-4">
-				<div className="flex items-center gap-2 px-2 py-1">
-					<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-foreground/20 dark:bg-card-foreground/20">
-						{name ? (
-							<span
-								className="text-xs font-medium text-primary-foreground dark:text-card-foreground"
-								aria-hidden="true"
-							>
-								{getInitials(name)}
-							</span>
-						) : (
-							<User
-								className="h-4 w-4 text-primary-foreground/70 dark:text-card-foreground/70"
-								aria-hidden="true"
-							/>
-						)}
-					</div>
-					<span className="min-w-0 flex-1 truncate text-xs text-primary-foreground/70 dark:text-card-foreground/70">
-						{name ?? (role === "ADMIN" ? "Administrador" : "Membro")}
-					</span>
-					<button
-						type="button"
-						aria-label="Sair"
-						onClick={onLogout}
-						className="rounded-full p-1 text-primary-foreground/70 dark:text-card-foreground/70 hover:bg-primary-foreground/10 dark:hover:bg-card-foreground/10 hover:text-primary-foreground dark:hover:text-card-foreground"
-					>
-						<LogOut className="h-4 w-4" />
-					</button>
-				</div>
-			</div>
-		</div>
 	)
 }
 
@@ -184,18 +85,16 @@ export function AuthenticatedShell({
 	const user = useAuthStore((state) => state.user)
 	const router = useRouter()
 	const pathname = usePathname()
-	const [mobileOpen, setMobileOpen] = useState(false)
 	const logout = useLogout()
 	const { data: meData } = useMe()
+	const isAdmin = user?.role === "ADMIN"
+	const displayName = meData?.name ?? (isAdmin ? "Administrador" : "Membro")
 
 	function handleLogout() {
 		logout.mutate(undefined, {
-			onSettled: () => {
-				router.replace("/login")
-			},
-			onError: () => {
-				toast.error("Não foi possível sair da sessão. Tente novamente.")
-			},
+			onSettled: () => router.replace("/login"),
+			onError: () =>
+				toast.error("Não foi possível sair da sessão. Tente novamente."),
 		})
 	}
 
@@ -203,80 +102,98 @@ export function AuthenticatedShell({
 		<div
 			data-testid="authenticated-shell"
 			className={cn(
-				"flex min-h-screen bg-background text-foreground",
+				"grid h-screen grid-cols-[268px_1fr] bg-background text-foreground max-[860px]:grid-cols-[76px_1fr]",
 				className,
 			)}
 		>
-			{/* Desktop sidebar */}
-			<aside className="hidden w-56 flex-shrink-0 bg-primary dark:bg-card dark:border-r dark:border-border lg:block">
-				<div className="sticky top-0 h-screen overflow-y-auto">
-					<SidebarContent
-						pathname={pathname}
-						role={user?.role}
-						name={meData?.name}
-						onLogout={handleLogout}
+			<aside className="flex flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground max-[860px]:px-3">
+				<Link
+					href="/inicio"
+					className="mb-6 flex items-center px-2 max-[860px]:justify-center"
+				>
+					<BrandMark
+						wordmark
+						className="text-white max-[860px]:[&>span:last-child]:hidden"
 					/>
+				</Link>
+
+				<nav
+					aria-label="Navegação principal"
+					className="flex flex-1 flex-col gap-1 overflow-y-auto"
+				>
+					<p className="px-3 pb-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden">
+						Principal
+					</p>
+					{MAIN_NAV_ITEMS.map((item) => (
+						<SidebarNavItem key={item.href} item={item} pathname={pathname} />
+					))}
+
+					{isAdmin && (
+						<>
+							<p className="mt-4 px-3 pb-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden">
+								Admin
+							</p>
+							{ADMIN_NAV_ITEMS.map((item) => (
+								<SidebarNavItem
+									key={item.href}
+									item={item}
+									pathname={pathname}
+								/>
+							))}
+						</>
+					)}
+				</nav>
+
+				<div className="mt-2 flex items-center gap-2 border-t border-sidebar-border pt-4">
+					<div className="flex min-w-0 flex-1 items-center gap-3 max-[860px]:justify-center">
+						<Avatar name={meData?.name} size="sm" />
+						<div className="min-w-0 max-[860px]:hidden">
+							<p className="truncate text-sm font-semibold text-sidebar-foreground">
+								{displayName}
+							</p>
+							<p className="text-[10.5px] tracking-wider text-sidebar-muted">
+								{isAdmin ? "ADMIN" : "MEMBRO"}
+							</p>
+						</div>
+					</div>
+					<button
+						type="button"
+						aria-label="Sair"
+						onClick={handleLogout}
+						className="inline-flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-md border border-sidebar-border text-sidebar-muted transition-colors hover:border-destructive hover:text-destructive max-[860px]:hidden"
+					>
+						<LogOut className="h-4 w-4" />
+					</button>
 				</div>
 			</aside>
 
-			{/* Mobile overlay */}
-			{mobileOpen && (
-				<div
-					aria-hidden="true"
-					className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
-					onClick={() => setMobileOpen(false)}
-				/>
-			)}
-
-			{/* Mobile sidebar panel */}
-			<aside
-				data-testid="mobile-sidebar"
-				aria-label="Menu de navegação móvel"
-				aria-hidden={!mobileOpen}
-				className={cn(
-					"fixed inset-y-0 left-0 z-50 w-56 bg-primary dark:bg-card dark:border-r dark:border-border transition-transform duration-200 lg:hidden",
-					mobileOpen ? "translate-x-0" : "-translate-x-full",
-				)}
-			>
-				<button
-					type="button"
-					aria-label="Fechar menu"
-					onClick={() => setMobileOpen(false)}
-					className="absolute right-3 top-3 rounded-full p-1 text-primary-foreground/70 dark:text-card-foreground/70 hover:bg-primary-foreground/10 dark:hover:bg-card-foreground/10"
-				>
-					<X className="h-4 w-4" />
-				</button>
-				<SidebarContent
-					pathname={pathname}
-					role={user?.role}
-					name={meData?.name}
-					onNavigate={() => setMobileOpen(false)}
-					onLogout={handleLogout}
-				/>
-			</aside>
-
-			{/* Main */}
-			<div className="flex min-w-0 flex-1 flex-col">
-				{/* Mobile header */}
-				<header className="sticky top-0 z-30 flex h-14 items-center border-b border-border bg-background px-4 lg:hidden">
-					<button
-						type="button"
-						aria-label="Abrir menu de navegação"
-						aria-expanded={mobileOpen}
-						onClick={() => setMobileOpen(true)}
-						className="rounded-full p-2 text-foreground hover:bg-muted"
-					>
-						<Menu className="h-5 w-5" />
-					</button>
-					<Link
-						href="/inicio"
-						className="ml-3 font-display text-lg font-semibold tracking-tight"
-					>
-						VOLT
-					</Link>
+			<div className="flex min-w-0 flex-col">
+				<header className="sticky top-0 z-20 flex items-center gap-4 border-b border-border bg-background/80 px-8 py-4 backdrop-blur-md max-[560px]:px-4">
+					<SearchBar
+						showShortcut
+						placeholder="Buscar..."
+						aria-label="Buscar"
+						className="max-w-[460px] flex-1 max-[560px]:hidden"
+					/>
+					<div className="ml-auto flex items-center gap-3">
+						<ThemeToggle />
+						<button
+							type="button"
+							aria-label="Notificações"
+							className="relative inline-flex h-[42px] w-[42px] items-center justify-center rounded-md border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground"
+						>
+							<Bell className="h-4 w-4" />
+							<span className="absolute right-2.5 top-2.5 h-[7px] w-[7px] rounded-full border-2 border-surface bg-accent" />
+						</button>
+						<Avatar name={meData?.name} size="sm" />
+					</div>
 				</header>
 
-				<main className="flex-1 p-6">{children}</main>
+				<main className="flex-1 overflow-y-auto">
+					<div className="mx-auto max-w-[1180px] px-8 pb-20 pt-9 max-[560px]:px-[18px]">
+						{children}
+					</div>
+				</main>
 			</div>
 		</div>
 	)
