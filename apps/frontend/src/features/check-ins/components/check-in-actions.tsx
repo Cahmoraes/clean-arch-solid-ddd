@@ -1,7 +1,6 @@
 "use client"
 
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
 import type { CheckIn } from "@/features/check-ins/api"
 import { useRejectCheckIn, useValidateCheckIn } from "@/features/check-ins/api"
 import { ApiError } from "@/lib/errors"
@@ -29,17 +28,16 @@ function RejectButton({
 	isPending,
 }: RejectButtonProps) {
 	return (
-		<Button
+		<button
 			type="button"
-			variant="destructive"
-			size="sm"
 			onClick={onClick}
 			disabled={isLoading}
 			aria-busy={isPending}
 			data-testid={`checkin-reject-${checkInId}`}
+			className="h-[38px] rounded-md bg-destructive-soft px-3.5 text-[13.5px] font-semibold text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground disabled:opacity-60"
 		>
 			{isPending ? "Rejeitando..." : "Rejeitar"}
-		</Button>
+		</button>
 	)
 }
 
@@ -57,16 +55,16 @@ function ApproveButton({
 	isPending,
 }: ApproveButtonProps) {
 	return (
-		<Button
+		<button
 			type="button"
-			size="sm"
 			onClick={onClick}
 			disabled={isLoading}
 			aria-busy={isPending}
 			data-testid={`checkin-approve-${checkInId}`}
+			className="h-[38px] rounded-md bg-accent px-3.5 text-[13.5px] font-semibold text-accent-foreground transition-colors hover:bg-primary-strong disabled:opacity-60"
 		>
 			{isPending ? "Aprovando..." : "Aprovar"}
-		</Button>
+		</button>
 	)
 }
 
@@ -88,7 +86,7 @@ function PendingActions({
 	isRejecting,
 }: PendingActionsProps) {
 	return (
-		<div className="flex gap-2">
+		<div className="flex gap-2 max-[560px]:flex-col">
 			<ApproveButton
 				checkInId={checkInId}
 				onClick={onValidate}
@@ -130,12 +128,14 @@ export function CheckInActions({ checkIn }: CheckInActionsProps) {
 
 	if (checkIn.status === "validated") {
 		return (
-			<RejectButton
-				checkInId={checkIn.id}
-				onClick={handleReject}
-				isLoading={isLoading}
-				isPending={reject.isPending}
-			/>
+			<div className="flex gap-2 max-[560px]:flex-col">
+				<RejectButton
+					checkInId={checkIn.id}
+					onClick={handleReject}
+					isLoading={isLoading}
+					isPending={reject.isPending}
+				/>
+			</div>
 		)
 	}
 

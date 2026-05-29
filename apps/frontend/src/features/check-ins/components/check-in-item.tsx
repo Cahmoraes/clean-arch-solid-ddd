@@ -1,50 +1,26 @@
-import { CheckCircle2, Clock, XCircle } from "lucide-react"
+import { Check, Clock, X } from "lucide-react"
+import type { ComponentType } from "react"
 import type { CheckIn } from "@/features/check-ins/api"
+import { cn } from "@/lib/cn"
+
+const STATUS_CHIP: Record<
+	CheckIn["status"],
+	{ cls: string; Icon: ComponentType<{ className?: string }> }
+> = {
+	validated: { cls: "bg-success-soft text-success", Icon: Check },
+	pending: { cls: "bg-warning-soft text-warning", Icon: Clock },
+	rejected: { cls: "bg-destructive-soft text-destructive", Icon: X },
+}
 
 function formatDate(iso: string): string {
 	try {
-		return new Date(iso).toLocaleString("pt-BR", {
+		return new Intl.DateTimeFormat("pt-BR", {
 			dateStyle: "short",
 			timeStyle: "short",
-		})
+		}).format(new Date(iso))
 	} catch {
 		return iso
 	}
-}
-
-function StatusBadge({ checkIn }: { checkIn: CheckIn }) {
-	const status = checkIn.status
-	if (status === "validated") {
-		return (
-			<span
-				data-testid={`checkin-status-${checkIn.id}`}
-				className="inline-flex items-center gap-1 text-xs text-emerald-600"
-			>
-				<CheckCircle2 aria-hidden className="h-4 w-4" />
-				Validado
-			</span>
-		)
-	}
-	if (status === "rejected") {
-		return (
-			<span
-				data-testid={`checkin-status-${checkIn.id}`}
-				className="inline-flex items-center gap-1 text-xs text-muted-foreground"
-			>
-				<XCircle aria-hidden className="h-4 w-4" />
-				Rejeitado
-			</span>
-		)
-	}
-	return (
-		<span
-			data-testid={`checkin-status-${checkIn.id}`}
-			className="inline-flex items-center gap-1 text-xs text-muted-foreground"
-		>
-			<Clock aria-hidden className="h-4 w-4" />
-			Pendente
-		</span>
-	)
 }
 
 export interface CheckInItemProps {
@@ -53,23 +29,35 @@ export interface CheckInItemProps {
 }
 
 export function CheckInItem({ checkIn, action }: CheckInItemProps) {
+	const chip = STATUS_CHIP[checkIn.status] ?? STATUS_CHIP.pending
+	const { Icon } = chip
+
 	return (
 		<li
 			data-testid={`checkin-item-${checkIn.id}`}
-			className="flex flex-col gap-3 rounded-[12px] border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
+			className="flex items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 transition-[transform,border-color] hover:translate-x-0.5 hover:border-border-strong"
 		>
-			<div className="flex flex-col gap-1">
-				<p className="text-sm font-medium text-card-foreground">
+			<span
+				data-status={checkIn.status}
+				className={cn(
+					"inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[13px]",
+					chip.cls,
+				)}
+			>
+				<Icon className="h-5 w-5" aria-hidden="true" />
+			</span>
+			<div className="min-w-0 flex-1">
+				<p className="truncate text-[15px] font-semibold text-card-foreground">
 					{checkIn.gymTitle ?? `Academia ${checkIn.gymId}`}
 				</p>
-				<p className="text-xs text-muted-foreground">
+				<p className="text-[13px] text-muted-foreground">
 					Realizado em {formatDate(checkIn.createdAt)}
 				</p>
 			</div>
-			<div className="flex items-center gap-3">
-				<StatusBadge checkIn={checkIn} />
-				{action}
-			</div>
+			<time className="font-mono text-xs text-subtle tabular max-[560px]:hidden">
+				{formatDate(checkIn.createdAt)}
+			</time>
+			{action}
 		</li>
 	)
 }

@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react"
 import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
+import { PageHeader } from "@/components/ui/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
 	CHECK_INS_DEFAULT_PAGE_SIZE,
@@ -116,20 +117,15 @@ function AdminCheckInsPageContent() {
 
 	return (
 		<section
-			aria-labelledby="admin-checkins-title"
+			aria-label="Check-ins"
 			className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6"
 		>
-			<header className="flex flex-col gap-1">
-				<h1
-					id="admin-checkins-title"
-					className="font-display text-3xl font-medium text-foreground"
-				>
-					Check-ins
-				</h1>
-				<p className="text-sm text-muted-foreground">
-					Gerencie e valide os check-ins registrados pelos membros.
-				</p>
-			</header>
+			<PageHeader
+				eyebrow="Admin"
+				title="Check-ins"
+				subtitle="Gerencie e valide os check-ins registrados pelos membros."
+				className="mb-0"
+			/>
 
 			<CheckInFilterBar status={status} onStatusChange={setStatus} />
 

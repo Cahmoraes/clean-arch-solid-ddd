@@ -1,12 +1,25 @@
-import { Button } from "@/components/ui/button"
+import {
+	SegmentedControl,
+	type SegmentedItem,
+} from "@/components/ui/segmented-control"
 import type { CheckInFilterStatus } from "../hooks/use-check-in-filters.js"
 
-const FILTERS: { label: string; value: CheckInFilterStatus }[] = [
-	{ label: "Todos", value: undefined },
-	{ label: "Pendentes", value: "pending" },
-	{ label: "Aprovados", value: "validated" },
-	{ label: "Rejeitados", value: "rejected" },
+type FilterValue = "todos" | "pending" | "validated" | "rejected"
+
+const ITEMS: ReadonlyArray<SegmentedItem<FilterValue>> = [
+	{ value: "todos", label: "Todos" },
+	{ value: "pending", label: "Pendentes" },
+	{ value: "validated", label: "Aprovados" },
+	{ value: "rejected", label: "Rejeitados" },
 ]
+
+function toFilterValue(status: CheckInFilterStatus): FilterValue {
+	return status ?? "todos"
+}
+
+function toStatus(value: FilterValue): CheckInFilterStatus {
+	return value === "todos" ? undefined : value
+}
 
 export interface CheckInFilterBarProps {
 	status: CheckInFilterStatus
@@ -18,22 +31,11 @@ export function CheckInFilterBar({
 	onStatusChange,
 }: CheckInFilterBarProps) {
 	return (
-		<fieldset
-			className="flex flex-wrap gap-2 border-0 p-0"
+		<SegmentedControl
 			aria-label="Filtrar check-ins por status"
-		>
-			{FILTERS.map((filter) => (
-				<Button
-					key={filter.label}
-					variant={status === filter.value ? "primary" : "outline"}
-					size="sm"
-					className="rounded-md"
-					onClick={() => onStatusChange(filter.value)}
-					aria-pressed={status === filter.value}
-				>
-					{filter.label}
-				</Button>
-			))}
-		</fieldset>
+			items={ITEMS}
+			value={toFilterValue(status)}
+			onValueChange={(value) => onStatusChange(toStatus(value))}
+		/>
 	)
 }
