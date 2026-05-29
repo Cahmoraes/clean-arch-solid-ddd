@@ -7,7 +7,7 @@ import { UserRow } from "./user-row"
 function buildUser(overrides: Partial<AdminUser> = {}): AdminUser {
 	return {
 		id: "u1",
-		name: "Ana",
+		name: "Ana Silva",
 		email: "ana@example.com",
 		role: "MEMBER",
 		status: "activated",
@@ -16,68 +16,52 @@ function buildUser(overrides: Partial<AdminUser> = {}): AdminUser {
 	}
 }
 
-describe("UserRow", () => {
-	test("renderiza nome, e-mail e label legível para role MEMBER", () => {
+describe("UserRow VOLT", () => {
+	test("exibe nome, e-mail e badge de role Membro", () => {
 		render(
 			<ul>
 				<UserRow user={buildUser()} />
 			</ul>,
 		)
-		expect(screen.getByText("Ana")).toBeInTheDocument()
+		expect(screen.getByText("Ana Silva")).toBeInTheDocument()
 		expect(screen.getByText("ana@example.com")).toBeInTheDocument()
-		expect(screen.getByTestId("user-row-u1-role")).toHaveTextContent("Membro")
+		expect(screen.getByText("Membro")).toBeInTheDocument()
 	})
 
-	test("renderiza label legível para role ADMIN", () => {
+	test("exibe badge de role Admin para usuário ADMIN", () => {
 		render(
 			<ul>
 				<UserRow user={buildUser({ role: "ADMIN" })} />
 			</ul>,
 		)
-		expect(screen.getByTestId("user-row-u1-role")).toHaveTextContent(
-			"Administrador",
-		)
+		expect(screen.getByText("Admin")).toBeInTheDocument()
 	})
 
-	test("mantém o valor original para roles desconhecidas", () => {
-		render(
-			<ul>
-				<UserRow user={buildUser({ role: "OWNER" as AdminUser["role"] })} />
-			</ul>,
-		)
-		expect(screen.getByTestId("user-row-u1-role")).toHaveTextContent("OWNER")
-	})
-
-	test("exibe badge verde com texto ativo para usuário ativado", () => {
+	test("exibe status Ativo para usuário ativado", () => {
 		render(
 			<ul>
 				<UserRow user={buildUser({ status: "activated" })} />
 			</ul>,
 		)
-
-		const statusBadge = screen.getByTestId("user-row-u1-status")
-		expect(statusBadge).toHaveTextContent("Ativo")
-		expect(statusBadge).toHaveClass(
-			"border-green-200",
-			"bg-green-50",
-			"text-green-700",
-		)
+		expect(screen.getByText("Ativo")).toBeInTheDocument()
 	})
 
-	test("exibe badge vermelho com texto inativo para usuário suspenso", () => {
+	test("exibe status Inativo para usuário suspenso", () => {
 		render(
 			<ul>
 				<UserRow user={buildUser({ status: "suspended" })} />
 			</ul>,
 		)
+		expect(screen.getByText("Inativo")).toBeInTheDocument()
+	})
 
-		const statusBadge = screen.getByTestId("user-row-u1-status")
-		expect(statusBadge).toHaveTextContent("Inativo")
-		expect(statusBadge).toHaveClass(
-			"border-red-200",
-			"bg-red-50",
-			"text-red-700",
+	test("exibe status Bloqueado para usuário locked", () => {
+		render(
+			<ul>
+				<UserRow user={buildUser({ status: "locked" })} />
+			</ul>,
 		)
+		expect(screen.getByText("Bloqueado")).toBeInTheDocument()
 	})
 
 	test("chama onSelect com os dados do usuário ao clicar na linha", async () => {

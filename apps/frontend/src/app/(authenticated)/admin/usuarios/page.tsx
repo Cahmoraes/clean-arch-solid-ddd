@@ -4,7 +4,7 @@ import { Users } from "lucide-react"
 import type { MouseEvent } from "react"
 import { useEffect, useMemo, useState } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Input } from "@/components/ui/input"
+import { PageHeader } from "@/components/ui/page-header"
 import {
 	Pagination,
 	PaginationContent,
@@ -13,6 +13,7 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@/components/ui/pagination"
+import { SearchBar } from "@/components/ui/search-bar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useUserStats } from "@/features/admin/api/use-user-stats"
 import {
@@ -273,27 +274,28 @@ export default function AdminUsersPage() {
 			className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6"
 			aria-busy={isFetching}
 		>
-			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
-					Usuários
-				</h1>
-				<p className="text-sm text-muted-foreground">
-					Visualize todas as contas cadastradas na plataforma.
-				</p>
-				<UserFilterBar
-					activeFilter={activeFilter}
-					counts={stats}
-					onFilterChange={handleFilterChange}
+			<div className="flex flex-col gap-5">
+				<PageHeader
+					eyebrow="Admin"
+					title="Usuários"
+					subtitle="Gerencie membros e administradores da plataforma"
+					className="mb-0"
 				/>
-				<Input
-					data-testid="admin-users-search"
-					type="search"
-					placeholder="Buscar por nome ou e-mail..."
-					value={inputQuery}
-					onChange={(e) => setInputQuery(e.target.value)}
-					className="w-full"
-				/>
-			</header>
+				<div className="flex flex-wrap items-center justify-between gap-3">
+					<UserFilterBar
+						activeFilter={activeFilter}
+						counts={stats}
+						onFilterChange={handleFilterChange}
+					/>
+					<SearchBar
+						data-testid="admin-users-search"
+						placeholder="Buscar por nome ou e-mail..."
+						value={inputQuery}
+						onChange={(e) => setInputQuery(e.target.value)}
+						className="w-full max-w-xs"
+					/>
+				</div>
+			</div>
 
 			<UsersContent
 				isLoading={isLoading}

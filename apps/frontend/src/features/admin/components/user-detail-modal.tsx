@@ -20,6 +20,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog"
+import { RoleBadge } from "@/components/ui/role-badge"
 import { useActivateUser } from "@/features/admin/api/use-activate-user"
 import { useDemoteFromAdmin } from "@/features/admin/api/use-demote-from-admin"
 import { usePromoteToAdmin } from "@/features/admin/api/use-promote-to-admin"
@@ -34,12 +35,6 @@ export interface UserDetailModalProps {
 	user: AdminUser
 	open: boolean
 	onClose: () => void
-}
-
-function roleLabel(role: string): string {
-	if (role === "ADMIN") return "Administrador"
-	if (role === "MEMBER") return "Membro"
-	return role
 }
 
 function statusLabel(status: string): string {
@@ -88,7 +83,6 @@ function UserDetailsList({ user }: { user: AdminUser }) {
 		<dl className="grid gap-4 sm:grid-cols-2">
 			<InfoItem label="Nome" value={user.name} />
 			<InfoItem label="E-mail" value={user.email} />
-			<InfoItem label="Papel" value={roleLabel(user.role)} />
 			<InfoItem
 				label="Status"
 				value={
@@ -154,7 +148,7 @@ function ActivateActionButton({
 			onClick={onActivate}
 			disabled={isPending}
 			aria-busy={isActivating}
-			className="bg-green-600 text-white hover:bg-green-700"
+			className="h-11 rounded-md bg-accent px-4 font-semibold text-accent-foreground hover:bg-primary-strong"
 		>
 			{isActivating ? busyLabel : idleLabel}
 		</Button>
@@ -174,10 +168,10 @@ function SuspendActionButton({
 }: SuspendActionButtonProps) {
 	return (
 		<Button
-			variant="destructive"
 			onClick={onOpenSuspendConfirm}
 			disabled={isPending}
 			aria-busy={isSuspending}
+			className="h-11 rounded-md bg-destructive-soft px-4 font-semibold text-destructive hover:bg-destructive hover:text-destructive-foreground"
 		>
 			{isSuspending ? "Inativando..." : "Inativar"}
 		</Button>
@@ -243,11 +237,10 @@ function PromoteToAdminButton({
 }: PromoteToAdminButtonProps) {
 	return (
 		<Button
-			variant="outline"
 			onClick={onOpenPromoteConfirm}
 			disabled={isPending}
 			aria-busy={isPromoting}
-			className="border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+			className="h-11 rounded-md bg-accent px-4 font-semibold text-accent-foreground hover:bg-primary-strong"
 		>
 			{isPromoting ? "Promovendo..." : "Tornar Administrador"}
 		</Button>
@@ -267,11 +260,10 @@ function DemoteFromAdminButton({
 }: DemoteFromAdminButtonProps) {
 	return (
 		<Button
-			variant="outline"
 			onClick={onOpenDemoteConfirm}
 			disabled={isPending}
 			aria-busy={isDemoting}
-			className="border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100"
+			className="h-11 rounded-md bg-destructive-soft px-4 font-semibold text-destructive hover:bg-destructive hover:text-destructive-foreground"
 		>
 			{isDemoting ? "Removendo..." : "Remover Administrador"}
 		</Button>
@@ -633,7 +625,12 @@ export function UserDetailModal({ user, open, onClose }: UserDetailModalProps) {
 			<Dialog open={open} onOpenChange={handleDialogOpenChange}>
 				<DialogContent className="max-w-2xl">
 					<DialogHeader>
-						<DialogTitle>Detalhes do usuário</DialogTitle>
+						<div className="flex items-center gap-3">
+							<DialogTitle>Detalhes do usuário</DialogTitle>
+							{user.role === "ADMIN" || user.role === "MEMBER" ? (
+								<RoleBadge role={user.role} />
+							) : null}
+						</div>
 						<DialogDescription>
 							Visualize os dados da conta e altere o status quando permitido.
 						</DialogDescription>

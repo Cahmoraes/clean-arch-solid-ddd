@@ -1,4 +1,8 @@
+import { MoreHorizontal } from "lucide-react"
 import type { KeyboardEvent } from "react"
+import { Avatar } from "@/components/ui/avatar"
+import { RoleBadge } from "@/components/ui/role-badge"
+import { StatusBadge } from "@/components/ui/status-badge"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { cn } from "@/lib/cn"
 
@@ -8,11 +12,7 @@ export interface UserRowProps {
 	className?: string
 }
 
-function roleLabel(role: string): string {
-	if (role === "ADMIN") return "Administrador"
-	if (role === "MEMBER") return "Membro"
-	return role
-}
+type StatusTone = "success" | "warning" | "neutral"
 
 function statusLabel(status: string): string {
 	if (status === "activated") return "Ativo"
@@ -21,17 +21,10 @@ function statusLabel(status: string): string {
 	return status
 }
 
-function statusBadgeClassName(status: string): string {
-	if (status === "activated") {
-		return "border-green-200 bg-green-50 text-green-700"
-	}
-	if (status === "suspended") {
-		return "border-red-200 bg-red-50 text-red-700"
-	}
-	if (status === "locked") {
-		return "border-amber-200 bg-amber-50 text-amber-700"
-	}
-	return "border-border bg-card text-muted-foreground"
+function statusTone(status: string): StatusTone {
+	if (status === "activated") return "success"
+	if (status === "locked") return "warning"
+	return "neutral"
 }
 
 export function UserRow({ user, onSelect, className }: UserRowProps) {
@@ -56,32 +49,29 @@ export function UserRow({ user, onSelect, className }: UserRowProps) {
 			role={isInteractive ? "button" : undefined}
 			tabIndex={isInteractive ? 0 : undefined}
 			className={cn(
-				"flex flex-col gap-1 rounded-[12px] border border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between",
-				isInteractive && "cursor-pointer",
+				"flex w-full items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 text-left transition-[transform,border-color]",
+				isInteractive &&
+					"cursor-pointer hover:translate-x-0.5 hover:border-border-strong",
 				className,
 			)}
 		>
-			<div className="flex flex-col gap-0.5">
-				<span className="font-medium text-card-foreground">{user.name}</span>
-				<span className="text-sm text-muted-foreground">{user.email}</span>
-			</div>
-			<div className="flex flex-wrap items-center gap-2">
-				<span
-					data-testid={`user-row-${user.id}-role`}
-					className="inline-flex w-fit items-center rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground"
-				>
-					{roleLabel(user.role)}
+			<Avatar name={user.name} size="sm" />
+			<div className="flex min-w-0 flex-1 flex-col gap-0.5">
+				<span className="text-[15.5px] font-semibold text-card-foreground">
+					{user.name}
 				</span>
-				<span
-					data-testid={`user-row-${user.id}-status`}
-					className={cn(
-						"inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-xs font-medium",
-						statusBadgeClassName(user.status),
-					)}
-				>
-					{statusLabel(user.status)}
+				<span className="truncate font-mono text-[13px] text-subtle">
+					{user.email}
 				</span>
 			</div>
+			<RoleBadge role={user.role} />
+			<StatusBadge tone={statusTone(user.status)}>
+				{statusLabel(user.status)}
+			</StatusBadge>
+			<MoreHorizontal
+				className="h-4 w-4 flex-shrink-0 text-subtle"
+				aria-hidden="true"
+			/>
 		</li>
 	)
 }
