@@ -1,6 +1,6 @@
 # Task 7: CreateNotificationOnCheckIn event handler + queue setup [RF-001, RF-020, RF-021, RF-024]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-01, task-04

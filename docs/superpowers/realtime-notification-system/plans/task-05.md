@@ -1,6 +1,6 @@
 # Task 5: Get notifications + unread count use cases [RF-025, RF-026]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-04
