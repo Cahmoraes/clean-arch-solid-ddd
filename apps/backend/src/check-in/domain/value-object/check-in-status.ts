@@ -7,6 +7,7 @@ import {
 import type { CheckIn } from "../check-in.js"
 import { CheckInAlreadyRejectedError } from "../error/check-in-already-rejected-error.js"
 import { CheckInTimeExceededError } from "../error/check-in-time-exceeded-error.js"
+import { CheckInApprovedEvent } from "../event/check-in-approved-event.js"
 import { CheckInRejectedEvent } from "../event/check-in-rejected-event.js"
 
 export const CheckInStatusTypes = {
@@ -40,6 +41,13 @@ class PendingStatus extends CheckInStatus {
 		this.checkIn._setValidatedAt(new Date())
 		this.checkIn._changeStatus(
 			CheckInStatusFactory.create(this.checkIn, CheckInStatusTypes.VALIDATED),
+		)
+		DomainEventPublisher.instance.publish(
+			new CheckInApprovedEvent({
+				checkInId: this.checkIn.id,
+				userId: this.checkIn.userId,
+				gymId: this.checkIn.gymId,
+			}),
 		)
 		return success(true)
 	}
