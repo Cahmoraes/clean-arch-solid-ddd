@@ -22,7 +22,7 @@
 - [ ] 5. Get notifications + unread count use cases [RF-025, RF-026] → `task-05.md`
 - [ ] 6. Mark as read use cases [RF-016, RF-017, RF-018, RF-019] → `task-06.md`
 - [ ] 7. CreateNotificationOnCheckIn event handler + queue setup [RF-001, RF-020, RF-021, RF-024] → `task-07.md`
-- [ ] 8. Prisma schema + migration [RF-024, RF-027] → `task-08.md`
+- [x] 8. Prisma schema + migration [RF-024, RF-027] → `task-08.md`
 - [ ] 9. PrismaNotificationRepository [RF-024, RF-025, RF-026, RF-027] → `task-09.md`
 - [ ] 10. SseManager + RedisNotificationPublisher + RedisNotificationSubscriber [RF-001, RF-002, RF-004] → `task-10.md`
 - [ ] 11. IoC wiring + bootstrap [RF-001, RF-002] → `task-11.md`

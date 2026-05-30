@@ -8,20 +8,21 @@ datasource db {
 }
 
 model User {
-  id                  String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                String
-  email               String     @unique
+  email               String             @unique
   password_hash       String?
-  google_id           String?    @unique
-  created_at          DateTime   @default(now())
-  role                Role       @default(MEMBER)
-  updated_at          DateTime   @updatedAt
-  status              UserStatus @default(activated)
-  billing_customer_id String?    @unique
-  is_super_admin      Boolean    @default(false)
+  google_id           String?            @unique
+  created_at          DateTime           @default(now())
+  role                Role               @default(MEMBER)
+  updated_at          DateTime           @updatedAt
+  status              UserStatus         @default(activated)
+  billing_customer_id String?            @unique
+  is_super_admin      Boolean            @default(false)
 
-  checkIns     CheckIn[]
-  subscription Subscription[]
+  checkIns          CheckIn[]
+  subscription      Subscription[]
+  userNotifications UserNotification[]
 
   @@map("users")
 }
@@ -81,6 +82,46 @@ model StripeWebhookEvent {
   processed_at DateTime @default(now())
 
   @@map("stripe_webhook_events")
+}
+
+model Notification {
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  title     String
+  message   String
+  gymName   String?          @map("gym_name")
+  reason    String?
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  userNotifications UserNotification[]
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+model UserNotification {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  notificationId String       @map("notification_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  readAt         DateTime?    @map("read_at")
+  deletedAt      DateTime?    @map("deleted_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_notifications")
+}
+
+enum NotificationType {
+  CHECK_IN_APPROVED
+  CHECK_IN_REJECTED
+  SECURITY_ALERT
+  PROMOTION
 }
 
 enum Role {
