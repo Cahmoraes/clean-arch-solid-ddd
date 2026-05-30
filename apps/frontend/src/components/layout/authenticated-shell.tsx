@@ -1,7 +1,6 @@
 "use client"
 
 import {
-	Bell,
 	Building2,
 	CheckCircle,
 	CreditCard,
@@ -14,6 +13,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import type { ReactNode } from "react"
 import { toast } from "sonner"
+import { NotificationBell } from "@/components/notification/notification-bell"
 import { Avatar } from "@/components/ui/avatar"
 import { BrandMark } from "@/components/ui/brand-mark"
 import { SearchBar } from "@/components/ui/search-bar"
@@ -184,14 +184,7 @@ export function AuthenticatedShell({
 					/>
 					<div className="ml-auto flex items-center gap-3">
 						<ThemeToggle />
-						<button
-							type="button"
-							aria-label="Notificações"
-							className="relative inline-flex h-[42px] w-[42px] items-center justify-center rounded-md border border-border bg-surface text-muted-foreground transition-colors hover:text-foreground"
-						>
-							<Bell className="h-4 w-4" />
-							<span className="absolute right-2.5 top-2.5 h-[7px] w-[7px] rounded-full border-2 border-surface bg-accent" />
-						</button>
+						<NotificationBell />
 						<Avatar name={meData?.name} size="sm" />
 					</div>
 				</header>
