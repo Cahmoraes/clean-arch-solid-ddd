@@ -4,6 +4,7 @@ export const QUEUES = {
 	LOG: "log",
 	CHECK_IN: "checkIn",
 	STRIPE_WEBHOOK: "stripeWebhook",
+	NOTIFICATION_CREATED: "notificationCreated",
 } as const
 
 export type Queues = (typeof QUEUES)[keyof typeof QUEUES]

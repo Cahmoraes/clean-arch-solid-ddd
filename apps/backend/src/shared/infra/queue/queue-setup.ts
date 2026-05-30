@@ -17,12 +17,14 @@ async function queueSetup() {
 	await createExchange(channel, EXCHANGES.PASSWORD_CHANGED)
 	await createExchange(channel, EXCHANGES.CHECK_IN_CREATED)
 	await createExchange(channel, EXCHANGES.STRIPE_WEBHOOK)
+	await createExchange(channel, EXCHANGES.NOTIFICATION_CREATED)
 	//  Create queues
 	await createQueue(channel, QUEUES.SEND_WELCOME_EMAIL)
 	await createQueue(channel, QUEUES.LOG)
 	await createQueue(channel, QUEUES.NOTIFY_PASSWORD_CHANGED)
 	await createQueue(channel, QUEUES.CHECK_IN)
 	await createQueue(channel, QUEUES.STRIPE_WEBHOOK)
+	await createQueue(channel, QUEUES.NOTIFICATION_CREATED)
 	// Bind queues to exchanges
 	await bindQueueToExchange(
 		channel,
@@ -39,6 +41,11 @@ async function queueSetup() {
 		channel,
 		QUEUES.STRIPE_WEBHOOK,
 		EXCHANGES.STRIPE_WEBHOOK,
+	)
+	await bindQueueToExchange(
+		channel,
+		QUEUES.NOTIFICATION_CREATED,
+		EXCHANGES.NOTIFICATION_CREATED,
 	)
 	// Close connection
 	await channel.close()
