@@ -269,6 +269,7 @@ export class FastifyAdapter implements HttpServer {
 			reply: FastifyReply,
 		): Promise<void> => {
 			const result = await handlers.callback(request, reply)
+			if (reply.sent) return
 			reply.status(result.status).send(result.body)
 		}
 	}
