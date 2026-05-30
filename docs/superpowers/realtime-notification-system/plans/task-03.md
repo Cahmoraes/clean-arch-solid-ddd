@@ -1,6 +1,6 @@
 # Task 3: NotificationRepository interface [RF-024, RF-025, RF-026, RF-027]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-02
