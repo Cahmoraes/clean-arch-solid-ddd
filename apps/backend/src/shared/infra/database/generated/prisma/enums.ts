@@ -9,6 +9,16 @@
 * 🟢 You can import this file directly.
 */
 
+export const NotificationType = {
+  CHECK_IN_APPROVED: 'CHECK_IN_APPROVED',
+  CHECK_IN_REJECTED: 'CHECK_IN_REJECTED',
+  SECURITY_ALERT: 'SECURITY_ALERT',
+  PROMOTION: 'PROMOTION'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
 export const Role = {
   ADMIN: 'ADMIN',
   MEMBER: 'MEMBER'
