@@ -29,13 +29,21 @@ export class RedisNotificationPublisher {
 		await this.client.quit()
 	}
 
+	private connectingPromise: Promise<void> | null = null
+
 	private async ensureConnected(): Promise<void> {
 		if (this.client.status === "end") {
 			throw new Error("RedisNotificationPublisher is disconnected")
 		}
 
-		if (this.client.status === "wait") {
-			await this.client.connect()
+		if (this.client.status !== "wait") return
+
+		if (!this.connectingPromise) {
+			this.connectingPromise = this.client.connect().finally(() => {
+				this.connectingPromise = null
+			})
 		}
+
+		await this.connectingPromise
 	}
 }
