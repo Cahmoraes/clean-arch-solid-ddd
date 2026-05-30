@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import type { NotificationRepository } from "@/notification/application/repository/notification.repository.js"
 import { NotificationNotFoundError } from "@/notification/domain/errors/notification-not-found-error.js"
 import {
@@ -38,7 +37,6 @@ export class MarkAsReadUseCase {
 		if (notification.userId !== input.userId) {
 			return failure(new NotificationNotFoundError())
 		}
-
 		notification.markAsRead()
 		await this.notificationRepository.save(notification)
 		return success({ readAt: notification.readAt ?? new Date() })

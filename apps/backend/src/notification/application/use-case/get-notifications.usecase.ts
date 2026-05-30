@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import type {
 	FindManyNotificationsOutput,
 	NotificationRepository,

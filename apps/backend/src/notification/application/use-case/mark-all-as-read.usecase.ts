@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify"
-
 import type { NotificationRepository } from "@/notification/application/repository/notification.repository.js"
 import { type Either, success } from "@/shared/domain/value-object/either.js"
 import { NOTIFICATION_TYPES } from "@/shared/infra/ioc/types.js"
