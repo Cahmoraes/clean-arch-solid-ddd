@@ -1,6 +1,6 @@
 # Task 2: Notification entity + domain errors [RF-020, RF-021, RF-022, RF-023]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** N/A

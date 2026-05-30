@@ -1,6 +1,6 @@
 # Task 8: Prisma schema + migration [RF-024, RF-027]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** N/A

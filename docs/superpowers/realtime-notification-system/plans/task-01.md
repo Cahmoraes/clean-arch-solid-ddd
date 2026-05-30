@@ -1,6 +1,6 @@
 # Task 1: CheckInApprovedEvent + events.ts update [RF-020, RF-021]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** N/A
