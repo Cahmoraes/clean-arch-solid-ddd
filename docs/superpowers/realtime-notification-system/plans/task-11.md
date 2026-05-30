@@ -1,6 +1,6 @@
 # Task 11: IoC wiring + bootstrap [RF-001, RF-002]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-05, task-06, task-07, task-09, task-10

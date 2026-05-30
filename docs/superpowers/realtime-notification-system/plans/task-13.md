@@ -1,6 +1,6 @@
 # Task 13: SSE stream controller [RF-001, RF-002, RF-004, RF-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-11, task-12

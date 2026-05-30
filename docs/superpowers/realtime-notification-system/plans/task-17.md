@@ -1,6 +1,6 @@
 # Task 17: Frontend NotificationBell + Dropdown components [RF-006, RF-007, RF-008, RF-009, RF-010, RF-011, RF-012, RF-013, RF-014, RF-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-16

@@ -1,6 +1,6 @@
 # Task 12: REST notification controllers [RF-003, RF-025, RF-026]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-11

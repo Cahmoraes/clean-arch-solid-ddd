@@ -1,6 +1,6 @@
 # Task 14: Generate shared API types [RF-003, RF-025]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-13

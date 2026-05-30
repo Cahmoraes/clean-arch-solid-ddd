@@ -1,6 +1,6 @@
 # Task 15: Frontend SSE hook + @microsoft/fetch-event-source [RF-001, RF-002, RF-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-14

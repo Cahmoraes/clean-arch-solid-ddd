@@ -1,6 +1,6 @@
 # Task 16: Frontend useNotifications hook [RF-006, RF-007, RF-008, RF-009, RF-016, RF-017, RF-018, RF-019]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-realtime-notification-system.md`
 **Spec:** `../specs/realtime-notification-system-design.md`
 **Depends on:** task-15
