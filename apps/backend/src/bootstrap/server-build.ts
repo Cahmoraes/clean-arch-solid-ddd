@@ -8,6 +8,7 @@ import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 import { setupCheckInModule } from "./setup-check-in-module"
 import { setupGymModule } from "./setup-gym-module"
 import { setupHealthCheckModule } from "./setup-health-check-module"
+import { setupNotificationModule } from "./setup-notification-module"
 import { setupSessionModule } from "./setup-session-module"
 import { setupSubscriptionModule } from "./setup-subscription-module"
 import { setupUserModule } from "./setup-user-module"
@@ -23,21 +24,22 @@ export async function serverBuild() {
 	const queue = resolve<Queue>(SHARED_TYPES.Queue)
 	await queue.connect()
 	const queueController = resolve(SHARED_TYPES.Controllers.Queue)
-	queueController.init()
+	await queueController.init()
 
 	const modules = [
-		setupUserModule(),
-		setupGymModule(),
-		setupCheckInModule(),
-		setupSessionModule(),
-		setupHealthCheckModule(),
-		setupSubscriptionModule(),
+		await setupUserModule(),
+		await setupGymModule(),
+		await setupCheckInModule(),
+		await setupSessionModule(),
+		await setupHealthCheckModule(),
+		await setupSubscriptionModule(),
+		await setupNotificationModule(),
 	]
 
-	initializeControllers(modules.flatMap((m) => m.controllers))
-	initializeWorkers(modules.flatMap((m) => m.workers ?? []))
+	await initializeControllers(modules.flatMap((m) => m.controllers))
+	await initializeWorkers(modules.flatMap((m) => m.workers ?? []))
 
-	queue.publish(EXCHANGES.LOG, {
+	await queue.publish(EXCHANGES.LOG, {
 		message: "Server started",
 	})
 	return server
@@ -46,15 +48,15 @@ export async function serverBuild() {
 /**
  * Initialize all controllers by calling their init method
  */
-function initializeControllers(controllers: Controller[]): void {
+async function initializeControllers(controllers: Controller[]): Promise<void> {
 	for (const controller of controllers) {
-		controller.init()
+		await controller.init()
 	}
 }
 
-function initializeWorkers(workers: Controller[]): void {
+async function initializeWorkers(workers: Controller[]): Promise<void> {
 	for (const worker of workers) {
-		worker.init()
+		await worker.init()
 	}
 }
 

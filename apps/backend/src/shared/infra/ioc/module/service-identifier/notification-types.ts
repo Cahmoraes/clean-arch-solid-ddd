@@ -9,8 +9,11 @@ export const NOTIFICATION_TYPES = {
 		MarkAllAsRead: Symbol.for("MarkAllAsReadUseCase"),
 	},
 	Controllers: {
-		Notification: Symbol.for("NotificationController"),
-		SseStream: Symbol.for("SseStreamController"),
+		GetNotifications: Symbol.for("GetNotificationsController"),
+		GetUnreadCount: Symbol.for("GetUnreadCountController"),
+		MarkAsRead: Symbol.for("MarkAsReadController"),
+		MarkAllAsRead: Symbol.for("MarkAllAsReadController"),
+		NotificationStream: Symbol.for("NotificationStreamController"),
 	},
 	EventHandlers: {
 		CreateNotificationOnCheckIn: Symbol.for(
