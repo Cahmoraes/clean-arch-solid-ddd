@@ -10,6 +10,7 @@ export interface CreateAndSaveUserProps {
 	password?: string
 	googleId?: string
 	role?: RoleTypes
+	isSuperAdmin?: boolean
 }
 
 function resolvePassword(props: CreateAndSaveUserProps): string | undefined {
@@ -18,11 +19,19 @@ function resolvePassword(props: CreateAndSaveUserProps): string | undefined {
 	return "any_password"
 }
 
+function resolveIsSuperAdmin(
+	props: CreateAndSaveUserProps,
+	email: string,
+): boolean {
+	if (props.isSuperAdmin !== undefined) return props.isSuperAdmin
+	return email === "admin@admin.com"
+}
+
 export async function createAndSaveUser(props: CreateAndSaveUserProps) {
 	const userId = props.id ?? "any_user_id"
 	const name = props.name ?? "any_name"
 	const email = props.email ?? "john@doe.com.br"
-	const user = (
+	const createdUser = (
 		await User.create({
 			id: userId,
 			name,
@@ -32,6 +41,21 @@ export async function createAndSaveUser(props: CreateAndSaveUserProps) {
 			role: props.role ?? "MEMBER",
 		})
 	).force.success().value
+	const user = resolveIsSuperAdmin(props, email)
+		? User.restore({
+				id: createdUser.id,
+				name: createdUser.name,
+				email: createdUser.email,
+				password: createdUser.password,
+				googleId: createdUser.googleId,
+				role: createdUser.role,
+				status: createdUser.status,
+				createdAt: createdUser.createdAt,
+				updatedAt: createdUser.updatedAt,
+				billingCustomerId: createdUser.billingCustomerId,
+				isSuperAdmin: true,
+			})
+		: createdUser
 	await props.userRepository.save(user)
 	// biome-ignore lint/style/noNonNullAssertion: for testing
 	return props.userRepository.users.find((user) => user.id === userId)!

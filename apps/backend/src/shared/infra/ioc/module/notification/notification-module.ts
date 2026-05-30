@@ -4,6 +4,10 @@ import { GetNotificationsUseCase } from "@/notification/application/use-case/get
 import { GetUnreadCountUseCase } from "@/notification/application/use-case/get-unread-count.usecase"
 import { MarkAllAsReadUseCase } from "@/notification/application/use-case/mark-all-as-read.usecase"
 import { MarkAsReadUseCase } from "@/notification/application/use-case/mark-as-read.usecase"
+import { GetNotificationsController } from "@/notification/infra/controller/get-notifications.controller.js"
+import { GetUnreadCountController } from "@/notification/infra/controller/get-unread-count.controller.js"
+import { MarkAllAsReadController } from "@/notification/infra/controller/mark-all-as-read.controller.js"
+import { MarkAsReadController } from "@/notification/infra/controller/mark-as-read.controller.js"
 import { RedisNotificationPublisher } from "@/notification/infra/redis/redis-notification-publisher"
 import { RedisNotificationSubscriber } from "@/notification/infra/redis/redis-notification-subscriber"
 import { NotificationRepositoryProvider } from "@/notification/infra/repository/notification-repository-provider"
@@ -32,5 +36,16 @@ export const notificationModule = new ContainerModule(({ bind }) => {
 	bind(NOTIFICATION_TYPES.Infra.NotificationQueueWorker)
 		.to(NotificationQueueWorker)
 		.inSingletonScope()
-	// Controllers are intentionally bound in task 12, when the concrete classes are introduced.
+	bind(NOTIFICATION_TYPES.Controllers.GetNotifications)
+		.to(GetNotificationsController)
+		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Controllers.GetUnreadCount)
+		.to(GetUnreadCountController)
+		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Controllers.MarkAsRead)
+		.to(MarkAsReadController)
+		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Controllers.MarkAllAsRead)
+		.to(MarkAllAsReadController)
+		.inSingletonScope()
 })
