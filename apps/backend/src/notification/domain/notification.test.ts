@@ -11,7 +11,9 @@ describe("Notification.create()", () => {
 			message: "Seu check-in foi aprovado.",
 		})
 
-		expect(notification.id).toBeDefined()
+		expect(notification.id).toMatch(
+			/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+		)
 		expect(notification.userId).toBe("user-1")
 		expect(notification.type).toBe("CHECK_IN_APPROVED")
 		expect(notification.title).toBe("Check-in aprovado")
@@ -63,6 +65,7 @@ describe("Notification.markAsRead()", () => {
 		notification.markAsRead()
 		expect(notification.isRead).toBe(true)
 		expect(notification.readAt).toBeInstanceOf(Date)
+		expect(notification.updatedAt).toBeInstanceOf(Date)
 	})
 
 	test("should be idempotent when marking already-read notification", () => {
@@ -75,9 +78,11 @@ describe("Notification.markAsRead()", () => {
 
 		notification.markAsRead()
 		const firstReadAt = notification.readAt
+		const firstUpdatedAt = notification.updatedAt
 
 		notification.markAsRead()
 		expect(notification.readAt).toEqual(firstReadAt)
+		expect(notification.updatedAt).toEqual(firstUpdatedAt)
 	})
 })
 
