@@ -41,6 +41,7 @@ export interface UserConstructor {
 	status: StatusTypes
 	billingCustomerId?: string
 	isSuperAdmin?: boolean
+	deletedAt?: Date
 }
 
 export interface CreateUserDto {
@@ -68,6 +69,7 @@ export interface UserRestore {
 	updatedAt?: Date
 	billingCustomerId?: string
 	isSuperAdmin?: boolean
+	deletedAt?: Date
 }
 
 export type UserUpdateProps = Partial<Pick<CreateUserDto, "name" | "email">>
@@ -98,6 +100,7 @@ export class User extends Observable {
 	private _status: UserStatus
 	private _billingCustomerId?: string
 	private _isSuperAdmin: boolean
+	private _deletedAt?: Date
 
 	private constructor(props: UserConstructor) {
 		super()
@@ -112,6 +115,7 @@ export class User extends Observable {
 		this._status = UserStatusFactory.create(this, props.status)
 		this._billingCustomerId = props.billingCustomerId
 		this._isSuperAdmin = props.isSuperAdmin ?? false
+		this._deletedAt = props.deletedAt
 	}
 
 	public static async create(
@@ -155,6 +159,7 @@ export class User extends Observable {
 			status: userRestoreProps.status,
 			billingCustomerId: userRestoreProps.billingCustomerId,
 			isSuperAdmin: userRestoreProps.isSuperAdmin ?? false,
+			deletedAt: userRestoreProps.deletedAt,
 		})
 	}
 
@@ -200,6 +205,19 @@ export class User extends Observable {
 
 	get isSuperAdmin(): boolean {
 		return this._isSuperAdmin
+	}
+
+	get deletedAt(): Date | undefined {
+		return this._deletedAt
+	}
+
+	get isDeleted(): boolean {
+		return this._deletedAt != null
+	}
+
+	public delete(): void {
+		this._deletedAt = new Date()
+		this.refreshUpdatedAt()
 	}
 
 	public assignBillingCustomerId(billingCustomerId: string): void {

@@ -377,4 +377,46 @@ describe("User Entity", () => {
 			expect(user.isSuperAdmin).toBe(false)
 		})
 	})
+
+	describe("User soft delete", () => {
+		test("Deve iniciar não-excluído (isDeleted=false, deletedAt=undefined)", async () => {
+			const user = (
+				await User.create({
+					email: "user@email.com",
+					name: "any_name",
+					password: "any_password",
+				})
+			).forceSuccess().value
+			expect(user.isDeleted).toBe(false)
+			expect(user.deletedAt).toBeUndefined()
+		})
+
+		test("Deve marcar o usuário como excluído ao chamar delete()", async () => {
+			const user = (
+				await User.create({
+					email: "user@email.com",
+					name: "any_name",
+					password: "any_password",
+				})
+			).forceSuccess().value
+			user.delete()
+			expect(user.isDeleted).toBe(true)
+			expect(user.deletedAt).toBeInstanceOf(Date)
+		})
+
+		test("Deve preservar deletedAt ao restaurar um usuário excluído", () => {
+			const deletedAt = new Date("2026-01-01T00:00:00.000Z")
+			const user = User.restore({
+				id: "user-id",
+				email: "user@email.com",
+				name: "any_name",
+				role: "MEMBER",
+				status: "activated",
+				createdAt: new Date(),
+				deletedAt,
+			})
+			expect(user.isDeleted).toBe(true)
+			expect(user.deletedAt).toEqual(deletedAt)
+		})
+	})
 })
