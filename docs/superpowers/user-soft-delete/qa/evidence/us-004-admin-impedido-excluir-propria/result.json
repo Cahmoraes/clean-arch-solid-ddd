@@ -1,0 +1,51 @@
+{
+  "us_id": "us-004",
+  "title": "Admin impedido de excluir a própria conta",
+  "requirements": ["RF-007", "RF-013", "RF-019"],
+  "status": "PASSED",
+  "verified_at": "2026-05-31T15:59:00.000Z",
+  "test_output_summary": {
+    "unit_tests": {
+      "suite": "DeleteUserUseCase (soft delete)",
+      "filter": "DeleteUserUseCase",
+      "total_tests_run": 554,
+      "total_test_files": 95,
+      "exit_code": 0,
+      "self_delete_test": "Não deve permitir auto-exclusão (userId === requesterId) → CannotDeleteSelfError — PASSED"
+    },
+    "business_flow_tests": {
+      "suite": "Excluir Usuário (soft delete)",
+      "filter": "Excluir Usuário",
+      "self_delete_test": "Deve retornar 403 ao tentar excluir a si mesmo → HTTP 403 com .message — PASSED",
+      "exit_code": 0
+    }
+  },
+  "rf_evidence": {
+    "RF-007": {
+      "description": "Auto-exclusão rejeitada com erro de negócio específico",
+      "location": "apps/backend/src/user/application/use-case/delete-user.usecase.ts:37-39",
+      "guard": "if (input.userId === input.requesterId) return failure(new CannotDeleteSelfError())",
+      "error_class": "CannotDeleteSelfError",
+      "http_status": 403
+    },
+    "RF-013": {
+      "description": "requesterId extraído do JWT (req.user.sub.id)",
+      "location": "apps/backend/src/user/infra/controller/delete-user.controller.ts:90-93",
+      "evidence": "requesterId: req.user.sub.id"
+    },
+    "RF-019": {
+      "description": "Frontend oculta botão de exclusão para o próprio admin",
+      "location": "apps/frontend/src/features/admin/components/user-detail/use-user-detail-actions.ts:46",
+      "evidence": "canDelete = !isProtectedAccount(user, currentUserId) where isProtectedAccount returns true when currentUserId === user.id"
+    }
+  },
+  "notes": [
+    "requesterId from JWT confirmed via req.user.sub.id in DeleteUserController.callback()",
+    "Frontend canDelete hides self via isProtectedAccount() checking currentUserId === user.id from useAuthStore",
+    "isProtectedAccount also blocks super admin (admin@admin.com) from deletion",
+    "CannotDeleteSelfError mapped to HTTP 403 FORBIDDEN in DeleteUserController.mapResponseError()",
+    "Unit test: guard fires BEFORE any DB lookup — early return before userRepository.userOfId()",
+    "Task 2 skipped: backend unit test coverage already exists, no new src tests added",
+    "Task 3 skipped: screenshot not applicable (backend-focused)"
+  ]
+}

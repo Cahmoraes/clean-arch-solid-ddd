@@ -1,0 +1,24 @@
+{
+  "us_id": "us-008",
+  "requirements": ["RF-006", "RF-010"],
+  "status": "PASSED",
+  "test_output_summary": {
+    "suite": "DeleteUserUseCase (soft delete)",
+    "file": "apps/backend/src/user/application/use-case/delete-user.usecase.test.ts",
+    "tests_total": 6,
+    "tests_passed": 6,
+    "tests_failed": 0,
+    "runner_output": "Test Files 95 passed (95) | Tests 554 passed (554) | Duration 135.15s",
+    "key_tests": [
+      "Deve soft-deletar um usuário (ele some das leituras)",
+      "Deve soft-deletar mesmo com check-ins (sem bloqueio)"
+    ]
+  },
+  "notes": {
+    "RF-006_physical_preservation": "UseCase calls user.delete() [sets _deletedAt = new Date()] then userRepository.update(user) — UPDATE path, no physical DELETE. No userRepository.delete() call anywhere in soft-delete path. Row stays in DB.",
+    "RF-006_inmemory_filter": "InMemoryUserRepository.update() replaces entity in-set via delete+add. userOfId() filters: !user.isDeleted && user.id === id — returns null only because isDeleted=true, NOT because row was removed. users Set still contains the entity.",
+    "RF-006_migration": "Migration 20260531140844_add_user_deleted_at adds only: ALTER TABLE users ADD COLUMN deleted_at TIMESTAMP(3). No CASCADE DELETE. Additive-only schema change preserves all existing rows and FK relationships.",
+    "RF-010_checkin_unblocked": "DeleteUserUseCase has zero dependency on CheckInRepository or UnitOfWork. No FK constraint check on check-ins before soft-delete. Test 'Deve soft-deletar mesmo com check-ins (sem bloqueio)' confirms success with check-in data present.",
+    "user_entity": "User.isDeleted getter: return this._deletedAt != null. User.delete() method: this._deletedAt = new Date(). Pure in-memory mutation, persisted via update()."
+  }
+}

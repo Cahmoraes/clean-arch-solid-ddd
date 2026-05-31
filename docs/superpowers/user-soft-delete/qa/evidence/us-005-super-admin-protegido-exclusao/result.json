@@ -1,0 +1,44 @@
+{
+  "us_id": "us-005",
+  "title": "Super admin protegido contra exclusão",
+  "requirements": ["RF-008", "RF-019"],
+  "status": "PASSED",
+  "verified_at": "2026-05-31T15:00:00.000Z",
+  "test_output_summary": {
+    "unit_tests": {
+      "suite": "DeleteUserUseCase (soft delete)",
+      "command": "pnpm --filter backend test:run -- -t 'DeleteUserUseCase (soft delete)'",
+      "result": "PASSED",
+      "test_files": 95,
+      "tests_total": 554,
+      "super_admin_test": "Não deve soft-deletar um super admin → failure(UserIsSuperAdminError) ✓"
+    },
+    "business_flow_tests": {
+      "suite": "Excluir Usuário (soft delete)",
+      "command": "pnpm --filter backend test:business-flow -- -t 'Excluir Usuário'",
+      "result": "PASSED",
+      "test_files": 38,
+      "tests_total": 157,
+      "super_admin_test": "Deve retornar 403 ao tentar excluir o super admin → HTTP 403 ✓"
+    }
+  },
+  "rf_008_evidence": {
+    "file": "apps/backend/src/user/application/use-case/delete-user.usecase.ts",
+    "guard_line": 42,
+    "guard_code": "if (user.isSuperAdmin) return failure(new UserIsSuperAdminError())",
+    "error_class": "UserIsSuperAdminError",
+    "http_mapping": "403 FORBIDDEN"
+  },
+  "rf_019_evidence": {
+    "file": "apps/frontend/src/features/admin/components/user-detail/use-user-detail-actions.ts",
+    "mechanism": "isProtectedAccount(user, currentUserId) → canDelete = false when user.email === 'admin@admin.com'",
+    "const": "SUPER_ADMIN_EMAIL = 'admin@admin.com'",
+    "lines": "23-28 (isProtectedAccount), 46 (canDelete)"
+  },
+  "notes": [
+    "FE gate: email-based (user.email === SUPER_ADMIN_EMAIL). AdminUser type lacks isSuperAdmin field → email proxy used instead.",
+    "BE gate: entity flag (user.isSuperAdmin). Authoritative source of truth.",
+    "Gap: FE could be bypassed if super admin email changes, but BE guard is unconditional — server-side protection holds regardless.",
+    "Both layers independently block deletion: FE hides button (RF-019), BE returns UserIsSuperAdminError → 403 (RF-008)."
+  ]
+}

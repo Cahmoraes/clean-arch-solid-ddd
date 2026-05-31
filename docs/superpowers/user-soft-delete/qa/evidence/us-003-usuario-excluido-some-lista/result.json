@@ -1,0 +1,9 @@
+{
+  "us_id": "us-003",
+  "requirements": ["RF-003", "RF-004", "RF-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "test_output_summary": "95 test files, 554 tests — all passed (exit 0). Targeted suites: 'UserDAOMemory soft delete filter' (2 tests: fetchAndCountUsers ignores soft-deleted, countUserStats excludes soft-deleted) and 'InMemoryUserRepository soft delete filter' (4 tests: userOfId/userOfEmail/get return null for deleted, update persists delete). Business-flow coverage: 'Excluir Usuário (soft delete)' in delete-user.business-flow-test.ts verifies userOfId returns null post-delete (HTTP 204).",
+  "screenshot_path": null,
+  "notes": "Prisma/SQLite parity confirmed by code inspection. PrismaUserDAO.buildWhereClause always injects deleted_at:null (RF-004/RF-005). PrismaUserRepository.userOfId/userOfEmail/userOfGoogleId/get all append deleted_at:null (RF-003). SQLiteUserRepository mirrors with AND 'deleted_at' IS NULL in every SELECT. InMemoryUserRepository checks !user.isDeleted on all read methods. Full symmetry across all three persistence implementations."
+}

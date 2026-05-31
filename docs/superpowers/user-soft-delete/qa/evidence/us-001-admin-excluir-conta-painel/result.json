@@ -1,0 +1,73 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como administrador, quero excluir uma conta de usuário a partir do painel de detalhes, para que contas indevidas ou inativas sejam removidas da aplicação.",
+  "requirements": ["RF-016", "RF-018"],
+  "status": "PARTIAL",
+  "existing_tests_found": [
+    {
+      "file": "apps/frontend/src/features/admin/api/use-delete-user.test.tsx",
+      "suite": "useDeleteUser",
+      "tests": [
+        "remove o usuário do cache otimisticamente antes de a requisição completar",
+        "restaura o usuário no cache em caso de erro 403 da API",
+        "invalida queries de listagem e stats após a mutação (onSettled)"
+      ],
+      "result": "3/3 PASSED"
+    },
+    {
+      "file": "apps/frontend/src/features/admin/components/user-detail/user-actions-footer.test.tsx",
+      "suite": "UserActionsFooter",
+      "tests": [
+        "renderiza o botão Editar e dispara onEdit",
+        "abre confirmação ao clicar em Inativar",
+        "botão Excluir habilitado dispara onOpenDelete",
+        "oculta botão Excluir quando canDelete é false",
+        "oculta Inativar quando não permitido"
+      ],
+      "result": "5/5 PASSED",
+      "rf_coverage": "RF-016 (botão Excluir habilitado/visível baseado em canDelete)"
+    },
+    {
+      "file": "apps/frontend/src/features/admin/components/user-detail/use-user-detail-actions.test.tsx",
+      "suite": "useUserDetailActions",
+      "tests": [
+        "expõe permissão de promover para membro ativo",
+        "não permite suspender o próprio usuário logado",
+        "controla o estado de abertura do diálogo de suspensão",
+        "executa a ativação chamando o endpoint"
+      ],
+      "result": "4/4 PASSED",
+      "note": "Não cobre onConfirmDelete diretamente"
+    }
+  ],
+  "acceptance_tests_created": [
+    {
+      "file": "docs/superpowers/user-soft-delete/qa/evidence/us-001-admin-excluir-conta-painel/us-001-confirm-delete-closes-panel.acceptance.test.tsx",
+      "suite": "US-001 RF-018 — confirmar exclusão fecha painel",
+      "tests": [
+        "onConfirmDelete chama deleteUser.mutate e dispara onDeleteSuccess → onClose",
+        "canDelete true para usuário de outro id (RF-016 botão habilitado)"
+      ],
+      "result": "2/2 PASSED",
+      "gap_addressed": "RF-018: caminho onConfirmDelete → onDeleteSuccess callback (fecha painel) não coberto pelos testes existentes",
+      "run_command": "Copiar para src/test/ temporariamente e: cd apps/frontend && npx vitest run 'us-001-confirm'"
+    }
+  ],
+  "test_output_summary": {
+    "use_delete_user": "3/3 passed — otimismo cache, rollback 403, invalidação queries+stats",
+    "user_actions_footer": "5/5 passed — RF-016 botão Excluir habilitado/oculto por canDelete, dispara onOpenDelete",
+    "use_user_detail_actions": "4/4 passed — permissões/flags, proteção self-delete ausente nos testes mas lógica em resolvePermissions",
+    "acceptance_us001": "2/2 passed — RF-018 onConfirmDelete→onDeleteSuccess→onClose wiring verificado",
+    "total_tests_run": "14 passed, 0 failed"
+  },
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": [
+    "App não está rodando em localhost:3000 — screenshot pulado (app-not-running).",
+    "Status PARTIAL: cobertura funcional completa via testes unitários; screenshot ausente por falta de servidor.",
+    "Wiring onDeleteSuccess: onClose confirmado em user-detail-panel.tsx linha 158.",
+    "canDelete = !isProtectedAccount(user, currentUserId) — lógica em use-user-detail-actions.ts linha 46.",
+    "Acceptance test criado em evidence dir; roda via cópia temporária em src/test/ (vitest include limita a src/**).",
+    "Arquivo vitest.evidence.config.ts criado e removido após uso (artefato de infraestrutura não necessário)."
+  ]
+}
