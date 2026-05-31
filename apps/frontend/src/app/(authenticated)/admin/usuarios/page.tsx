@@ -1,8 +1,9 @@
 "use client"
 
 import { Users } from "lucide-react"
-import type { MouseEvent } from "react"
+import type { KeyboardEvent, MouseEvent } from "react"
 import { useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
 import {
@@ -21,7 +22,7 @@ import {
 	type AdminUser,
 	useUsers,
 } from "@/features/admin/api/use-users"
-import { UserDetailModal } from "@/features/admin/components/user-detail-modal"
+import { UserDetailContainer } from "@/features/admin/components/user-detail/user-detail-container"
 import { UserFilterBar } from "@/features/admin/components/user-filter-bar"
 import { UserRow } from "@/features/admin/components/user-row"
 import type { UserFilter, UserStats } from "@/features/admin/types"
@@ -143,6 +144,7 @@ interface UsersListProps {
 	users: ReadonlyArray<AdminUser>
 	page: number
 	totalPages: number
+	selectedUserId: string | null
 	onPageChange: (target: number) => void
 	onSelect: (user: AdminUser) => void
 }
@@ -151,6 +153,7 @@ function UsersList({
 	users,
 	page,
 	totalPages,
+	selectedUserId,
 	onPageChange,
 	onSelect,
 }: UsersListProps) {
@@ -158,7 +161,12 @@ function UsersList({
 		<>
 			<ul data-testid="admin-users-list" className="flex flex-col gap-2">
 				{users.map((user) => (
-					<UserRow key={user.id} user={user} onSelect={onSelect} />
+					<UserRow
+						key={user.id}
+						user={user}
+						onSelect={onSelect}
+						isSelected={user.id === selectedUserId}
+					/>
 				))}
 			</ul>
 			{totalPages > 1 ? (
@@ -179,6 +187,7 @@ interface UsersContentProps {
 	users: ReadonlyArray<AdminUser> | undefined
 	page: number
 	totalPages: number
+	selectedUserId: string | null
 	onPageChange: (target: number) => void
 	onSelect: (user: AdminUser) => void
 }
@@ -190,6 +199,7 @@ function UsersContent({
 	users,
 	page,
 	totalPages,
+	selectedUserId,
 	onPageChange,
 	onSelect,
 }: UsersContentProps) {
@@ -202,10 +212,27 @@ function UsersContent({
 			users={users}
 			page={page}
 			totalPages={totalPages}
+			selectedUserId={selectedUserId}
 			onPageChange={onPageChange}
 			onSelect={onSelect}
 		/>
 	)
+}
+
+function isArrowKey(key: string): boolean {
+	return key === "ArrowDown" || key === "ArrowUp"
+}
+
+function resolveNextIndex(
+	list: ReadonlyArray<AdminUser>,
+	current: AdminUser | null,
+	key: string,
+): number {
+	const currentIndex = current
+		? list.findIndex((user) => user.id === current.id)
+		: -1
+	const delta = key === "ArrowDown" ? 1 : -1
+	return Math.min(Math.max(currentIndex + delta, 0), list.length - 1)
 }
 
 const EMPTY_STATS: UserStats = {
@@ -268,10 +295,22 @@ export default function AdminUsersPage() {
 		setPage(1)
 	}
 
+	function handleEditUser(user: AdminUser) {
+		toast.info(`Edição de ${user.name} estará disponível em breve.`)
+	}
+
+	function handleListKeyNavigation(event: KeyboardEvent<HTMLDivElement>) {
+		const list = data?.users
+		if (!isArrowKey(event.key) || !list || list.length === 0) return
+		event.preventDefault()
+		const nextIndex = resolveNextIndex(list, activeSelectedUser, event.key)
+		setSelectedUser(list[nextIndex])
+	}
+
 	return (
 		<section
 			data-testid="admin-users-page"
-			className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6"
+			className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6"
 			aria-busy={isFetching}
 		>
 			<div className="flex flex-col gap-5">
@@ -298,24 +337,28 @@ export default function AdminUsersPage() {
 				</div>
 			</div>
 
-			<UsersContent
-				isLoading={isLoading}
-				isError={isError}
-				error={error ?? null}
-				users={data?.users}
-				page={page}
-				totalPages={totalPages}
-				onPageChange={handlePageChange}
-				onSelect={handleUserSelect}
-			/>
+			<div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+				{/* biome-ignore lint/a11y/noStaticElementInteractions: navegação por teclado entre linhas da lista */}
+				<div onKeyDown={handleListKeyNavigation}>
+					<UsersContent
+						isLoading={isLoading}
+						isError={isError}
+						error={error ?? null}
+						users={data?.users}
+						page={page}
+						totalPages={totalPages}
+						selectedUserId={activeSelectedUser?.id ?? null}
+						onPageChange={handlePageChange}
+						onSelect={handleUserSelect}
+					/>
+				</div>
 
-			{activeSelectedUser ? (
-				<UserDetailModal
+				<UserDetailContainer
 					user={activeSelectedUser}
-					open={activeSelectedUser !== null}
 					onClose={handleModalClose}
+					onEdit={handleEditUser}
 				/>
-			) : null}
+			</div>
 		</section>
 	)
 }

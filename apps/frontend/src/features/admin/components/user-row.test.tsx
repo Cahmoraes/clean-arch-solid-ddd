@@ -117,4 +117,16 @@ describe("UserRow VOLT", () => {
 		expect(rowElement).not.toHaveAttribute("role", "button")
 		expect(rowElement).not.toHaveAttribute("tabindex")
 	})
+
+	test("aplica aria-pressed quando isSelected é verdadeiro", () => {
+		render(
+			<ul>
+				<UserRow user={buildUser()} onSelect={() => {}} isSelected={true} />
+			</ul>,
+		)
+		expect(screen.getByTestId("user-row-u1")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
+	})
 })

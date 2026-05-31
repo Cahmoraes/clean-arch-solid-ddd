@@ -9,6 +9,7 @@ import { cn } from "@/lib/cn"
 export interface UserRowProps {
 	user: AdminUser
 	onSelect?: (user: AdminUser) => void
+	isSelected?: boolean
 	className?: string
 }
 
@@ -27,7 +28,12 @@ function statusTone(status: string): StatusTone {
 	return "neutral"
 }
 
-export function UserRow({ user, onSelect, className }: UserRowProps) {
+export function UserRow({
+	user,
+	onSelect,
+	isSelected,
+	className,
+}: UserRowProps) {
 	const isInteractive = typeof onSelect === "function"
 
 	function handleSelect() {
@@ -35,22 +41,29 @@ export function UserRow({ user, onSelect, className }: UserRowProps) {
 	}
 
 	function handleKeyDown(event: KeyboardEvent<HTMLLIElement>) {
-		if (!isInteractive) return
 		if (event.key !== "Enter" && event.key !== " ") return
 		event.preventDefault()
 		handleSelect()
 	}
 
+	const interactiveProps = isInteractive
+		? {
+				onClick: handleSelect,
+				onKeyDown: handleKeyDown,
+				role: "button" as const,
+				tabIndex: 0,
+				"aria-pressed": Boolean(isSelected),
+			}
+		: {}
+
 	return (
 		<li
 			data-testid={`user-row-${user.id}`}
-			onClick={isInteractive ? handleSelect : undefined}
-			onKeyDown={isInteractive ? handleKeyDown : undefined}
-			role={isInteractive ? "button" : undefined}
-			tabIndex={isInteractive ? 0 : undefined}
+			{...interactiveProps}
 			className={cn(
 				"flex w-full items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 text-left transition-[border-color] duration-300 ease-out",
 				isInteractive && "cursor-pointer hover:border-border-strong",
+				isSelected && "border-accent bg-accent/40",
 				className,
 			)}
 		>

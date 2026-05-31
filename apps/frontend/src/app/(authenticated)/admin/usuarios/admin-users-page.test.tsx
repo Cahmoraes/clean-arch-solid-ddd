@@ -1,11 +1,16 @@
 import { screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
-import { beforeEach, describe, expect, test } from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import AdminUsersPage from "./page"
+
+const isDesktopMock = vi.fn<() => boolean>(() => true)
+vi.mock("@/lib/hooks/use-is-desktop", () => ({
+	useIsDesktop: () => isDesktopMock(),
+}))
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -54,6 +59,7 @@ function renderPage() {
 
 describe("AdminUsersPage modal integration", () => {
 	beforeEach(() => {
+		isDesktopMock.mockReturnValue(true)
 		useAuthStore.setState({
 			accessToken: "token",
 			expiresAt: Date.now() + 60_000,
@@ -61,17 +67,64 @@ describe("AdminUsersPage modal integration", () => {
 		})
 	})
 
-	test("não exibe o modal inicialmente", async () => {
+	test("não exibe o painel de detalhes inicialmente", async () => {
 		mockUsersList()
 		renderPage()
 
 		await waitFor(() => {
 			expect(screen.getByTestId("admin-users-list")).toBeInTheDocument()
 		})
+		expect(screen.getByText(/selecione um usuário/i)).toBeInTheDocument()
 		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
 	})
 
-	test("abre o modal ao clicar em um usuário da listagem", async () => {
+	test("abre o painel de detalhes inline ao clicar em um usuário (desktop)", async () => {
+		const user = userEvent.setup()
+		mockUsersList()
+		renderPage()
+
+		await user.click(await screen.findByTestId("user-row-user-1"))
+
+		expect(screen.getByRole("tab", { name: "Detalhes" })).toBeInTheDocument()
+		expect(screen.getByTestId("user-row-user-1")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
+		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+	})
+
+	test("troca o usuário do painel ao clicar em outra linha sem fechar (desktop)", async () => {
+		const user = userEvent.setup()
+		mockUsersList([
+			buildUser(),
+			buildUser({
+				id: "user-2",
+				name: "Carlos Lima",
+				email: "carlos@example.com",
+			}),
+		])
+		renderPage()
+
+		await user.click(await screen.findByTestId("user-row-user-1"))
+		expect(screen.getByTestId("user-row-user-1")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
+
+		await user.click(screen.getByTestId("user-row-user-2"))
+		expect(screen.getByTestId("user-row-user-2")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
+		expect(screen.getByTestId("user-row-user-1")).toHaveAttribute(
+			"aria-pressed",
+			"false",
+		)
+		expect(screen.getByRole("tab", { name: "Detalhes" })).toBeInTheDocument()
+	})
+
+	test("no mobile, exibe o painel em Dialog e fecha no botão X", async () => {
+		isDesktopMock.mockReturnValue(false)
 		const user = userEvent.setup()
 		mockUsersList()
 		renderPage()
@@ -79,36 +132,13 @@ describe("AdminUsersPage modal integration", () => {
 		await user.click(await screen.findByTestId("user-row-user-1"))
 
 		const dialog = screen.getByRole("dialog")
-		expect(dialog).toBeInTheDocument()
-		expect(screen.getByText("Detalhes do usuário")).toBeInTheDocument()
-		expect(within(dialog).getByText("Ana Silva")).toBeInTheDocument()
-	})
+		expect(within(dialog).getByText("Detalhes do usuário")).toBeInTheDocument()
 
-	test("fecha o modal ao clicar no botão X", async () => {
-		const user = userEvent.setup()
-		mockUsersList()
-		renderPage()
-
-		await user.click(await screen.findByTestId("user-row-user-1"))
 		await user.click(screen.getByRole("button", { name: /close/i }))
 
 		await waitFor(() => {
 			expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
 		})
-	})
-
-	test("reseta o usuário selecionado ao fechar o modal", async () => {
-		const user = userEvent.setup()
-		mockUsersList()
-		renderPage()
-
-		await user.click(await screen.findByTestId("user-row-user-1"))
-		await user.click(screen.getByRole("button", { name: /close/i }))
-
-		await waitFor(() => {
-			expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
-		})
-		expect(screen.queryByText("Detalhes do usuário")).not.toBeInTheDocument()
 	})
 
 	test("renderiza o campo de busca na página", async () => {
