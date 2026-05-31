@@ -36,5 +36,6 @@ describe("UserDAOMemory soft delete filter", () => {
 		expect(stats.members).toBe(1)
 		expect(stats.admins).toBe(1)
 		expect(stats.active).toBe(2)
+		expect(stats.inactive).toBe(0)
 	})
 })

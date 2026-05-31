@@ -109,6 +109,7 @@ export class PrismaUserRepository implements UserRepository {
 				role: user.role,
 				status: user.status,
 				billing_customer_id: user.billingCustomerId,
+				deleted_at: user.deletedAt ?? null,
 			},
 		})
 	}
