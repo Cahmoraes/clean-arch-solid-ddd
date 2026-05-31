@@ -499,10 +499,6 @@ export type CheckInUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.CheckInScalarWhereInput | Prisma.CheckInScalarWhereInput[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type DecimalFieldUpdateOperationsInput = {
   set?: runtime.Decimal | runtime.DecimalJsLike | number | string
   increment?: runtime.Decimal | runtime.DecimalJsLike | number | string

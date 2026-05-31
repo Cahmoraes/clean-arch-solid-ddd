@@ -19,6 +19,7 @@ model User {
   status              UserStatus         @default(activated)
   billing_customer_id String?            @unique
   is_super_admin      Boolean            @default(false)
+  deleted_at          DateTime?          @map("deleted_at")
 
   checkIns          CheckIn[]
   subscription      Subscription[]

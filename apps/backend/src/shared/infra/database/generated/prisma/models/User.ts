@@ -36,6 +36,7 @@ export type UserMinAggregateOutputType = {
   status: $Enums.UserStatus | null
   billing_customer_id: string | null
   is_super_admin: boolean | null
+  deleted_at: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -50,6 +51,7 @@ export type UserMaxAggregateOutputType = {
   status: $Enums.UserStatus | null
   billing_customer_id: string | null
   is_super_admin: boolean | null
+  deleted_at: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -64,6 +66,7 @@ export type UserCountAggregateOutputType = {
   status: number
   billing_customer_id: number
   is_super_admin: number
+  deleted_at: number
   _all: number
 }
 
@@ -80,6 +83,7 @@ export type UserMinAggregateInputType = {
   status?: true
   billing_customer_id?: true
   is_super_admin?: true
+  deleted_at?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -94,6 +98,7 @@ export type UserMaxAggregateInputType = {
   status?: true
   billing_customer_id?: true
   is_super_admin?: true
+  deleted_at?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -108,6 +113,7 @@ export type UserCountAggregateInputType = {
   status?: true
   billing_customer_id?: true
   is_super_admin?: true
+  deleted_at?: true
   _all?: true
 }
 
@@ -195,6 +201,7 @@ export type UserGroupByOutputType = {
   status: $Enums.UserStatus
   billing_customer_id: string | null
   is_super_admin: boolean
+  deleted_at: Date | null
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -230,6 +237,7 @@ export type UserWhereInput = {
   status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
   billing_customer_id?: Prisma.StringNullableFilter<"User"> | string | null
   is_super_admin?: Prisma.BoolFilter<"User"> | boolean
+  deleted_at?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   checkIns?: Prisma.CheckInListRelationFilter
   subscription?: Prisma.SubscriptionListRelationFilter
   userNotifications?: Prisma.UserNotificationListRelationFilter
@@ -247,6 +255,7 @@ export type UserOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   billing_customer_id?: Prisma.SortOrderInput | Prisma.SortOrder
   is_super_admin?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrderInput | Prisma.SortOrder
   checkIns?: Prisma.CheckInOrderByRelationAggregateInput
   subscription?: Prisma.SubscriptionOrderByRelationAggregateInput
   userNotifications?: Prisma.UserNotificationOrderByRelationAggregateInput
@@ -267,6 +276,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updated_at?: Prisma.DateTimeFilter<"User"> | Date | string
   status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
   is_super_admin?: Prisma.BoolFilter<"User"> | boolean
+  deleted_at?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   checkIns?: Prisma.CheckInListRelationFilter
   subscription?: Prisma.SubscriptionListRelationFilter
   userNotifications?: Prisma.UserNotificationListRelationFilter
@@ -284,6 +294,7 @@ export type UserOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   billing_customer_id?: Prisma.SortOrderInput | Prisma.SortOrder
   is_super_admin?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
@@ -304,6 +315,7 @@ export type UserScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumUserStatusWithAggregatesFilter<"User"> | $Enums.UserStatus
   billing_customer_id?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   is_super_admin?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  deleted_at?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -318,6 +330,7 @@ export type UserCreateInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   subscription?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
   userNotifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -335,6 +348,7 @@ export type UserUncheckedCreateInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   subscription?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
   userNotifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -352,6 +366,7 @@ export type UserUpdateInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   subscription?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
   userNotifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -369,6 +384,7 @@ export type UserUncheckedUpdateInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   subscription?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
   userNotifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -386,6 +402,7 @@ export type UserCreateManyInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -400,6 +417,7 @@ export type UserUpdateManyMutationInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -414,6 +432,7 @@ export type UserUncheckedUpdateManyInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -428,6 +447,7 @@ export type UserCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   billing_customer_id?: Prisma.SortOrder
   is_super_admin?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -442,6 +462,7 @@ export type UserMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   billing_customer_id?: Prisma.SortOrder
   is_super_admin?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -456,6 +477,7 @@ export type UserMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   billing_customer_id?: Prisma.SortOrder
   is_super_admin?: Prisma.SortOrder
+  deleted_at?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -485,6 +507,10 @@ export type EnumUserStatusFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type UserCreateNestedOneWithoutCheckInsInput = {
@@ -541,6 +567,7 @@ export type UserCreateWithoutCheckInsInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
   subscription?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
   userNotifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
@@ -557,6 +584,7 @@ export type UserUncheckedCreateWithoutCheckInsInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
   subscription?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
   userNotifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
@@ -589,6 +617,7 @@ export type UserUpdateWithoutCheckInsInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   subscription?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
   userNotifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
@@ -605,6 +634,7 @@ export type UserUncheckedUpdateWithoutCheckInsInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   subscription?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
   userNotifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -621,6 +651,7 @@ export type UserCreateWithoutSubscriptionInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   userNotifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
 }
@@ -637,6 +668,7 @@ export type UserUncheckedCreateWithoutSubscriptionInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   userNotifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
 }
@@ -669,6 +701,7 @@ export type UserUpdateWithoutSubscriptionInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   userNotifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
 }
@@ -685,6 +718,7 @@ export type UserUncheckedUpdateWithoutSubscriptionInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   userNotifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -701,6 +735,7 @@ export type UserCreateWithoutUserNotificationsInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   subscription?: Prisma.SubscriptionCreateNestedManyWithoutUserInput
 }
@@ -717,6 +752,7 @@ export type UserUncheckedCreateWithoutUserNotificationsInput = {
   status?: $Enums.UserStatus
   billing_customer_id?: string | null
   is_super_admin?: boolean
+  deleted_at?: Date | string | null
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   subscription?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutUserInput
 }
@@ -749,6 +785,7 @@ export type UserUpdateWithoutUserNotificationsInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   subscription?: Prisma.SubscriptionUpdateManyWithoutUserNestedInput
 }
@@ -765,6 +802,7 @@ export type UserUncheckedUpdateWithoutUserNotificationsInput = {
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   billing_customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   is_super_admin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   subscription?: Prisma.SubscriptionUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -830,6 +868,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   status?: boolean
   billing_customer_id?: boolean
   is_super_admin?: boolean
+  deleted_at?: boolean
   checkIns?: boolean | Prisma.User$checkInsArgs<ExtArgs>
   subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>
   userNotifications?: boolean | Prisma.User$userNotificationsArgs<ExtArgs>
@@ -848,6 +887,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   status?: boolean
   billing_customer_id?: boolean
   is_super_admin?: boolean
+  deleted_at?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -862,6 +902,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   status?: boolean
   billing_customer_id?: boolean
   is_super_admin?: boolean
+  deleted_at?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -876,9 +917,10 @@ export type UserSelectScalar = {
   status?: boolean
   billing_customer_id?: boolean
   is_super_admin?: boolean
+  deleted_at?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password_hash" | "google_id" | "created_at" | "role" | "updated_at" | "status" | "billing_customer_id" | "is_super_admin", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password_hash" | "google_id" | "created_at" | "role" | "updated_at" | "status" | "billing_customer_id" | "is_super_admin" | "deleted_at", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   checkIns?: boolean | Prisma.User$checkInsArgs<ExtArgs>
   subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>
@@ -907,6 +949,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     status: $Enums.UserStatus
     billing_customer_id: string | null
     is_super_admin: boolean
+    deleted_at: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1344,6 +1387,7 @@ export interface UserFieldRefs {
   readonly status: Prisma.FieldRef<"User", 'UserStatus'>
   readonly billing_customer_id: Prisma.FieldRef<"User", 'String'>
   readonly is_super_admin: Prisma.FieldRef<"User", 'Boolean'>
+  readonly deleted_at: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 
