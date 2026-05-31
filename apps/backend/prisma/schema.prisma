@@ -24,6 +24,7 @@ model User {
   checkIns          CheckIn[]
   subscription      Subscription[]
   userNotifications UserNotification[]
+  notifications     Notification[]
 
   @@map("users")
 }
@@ -96,6 +97,7 @@ model Notification {
   createdAt DateTime         @default(now()) @map("created_at")
   updatedAt DateTime         @updatedAt @map("updated_at")
 
+  user              User               @relation(fields: [userId], references: [id], onDelete: Restrict)
   userNotifications UserNotification[]
 
   @@index([userId])
