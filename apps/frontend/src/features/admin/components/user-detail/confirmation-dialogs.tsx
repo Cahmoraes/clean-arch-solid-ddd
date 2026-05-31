@@ -145,3 +145,48 @@ export function DemoteConfirmationDialog({
 		</AlertDialog>
 	)
 }
+
+export interface DeleteConfirmationDialogProps {
+	open: boolean
+	userName: string
+	onOpenChange: (open: boolean) => void
+	isPending: boolean
+	isDeleting: boolean
+	onConfirm: (event: MouseEvent<HTMLButtonElement>) => void
+}
+
+export function DeleteConfirmationDialog({
+	open,
+	userName,
+	onOpenChange,
+	isPending,
+	isDeleting,
+	onConfirm,
+}: DeleteConfirmationDialogProps) {
+	return (
+		<AlertDialog open={open} onOpenChange={onOpenChange}>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Excluir usuário?</AlertDialogTitle>
+					<AlertDialogDescription>
+						Tem certeza que deseja excluir {userName}? Esta ação não pode ser
+						desfeita pela interface e o usuário perderá o acesso imediatamente.
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
+					<AlertDialogAction asChild>
+						<Button
+							variant="destructive"
+							onClick={onConfirm}
+							disabled={isPending}
+							aria-busy={isDeleting}
+						>
+							{isDeleting ? "Excluindo..." : "Confirmar exclusão"}
+						</Button>
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+	)
+}
