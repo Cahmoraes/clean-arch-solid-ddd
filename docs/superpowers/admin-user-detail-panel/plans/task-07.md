@@ -1,6 +1,6 @@
 # Task 7: `UserDetailPanel` (header + Tabs + footer) [RF-007, RF-012, RF-013, RF-022]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-user-detail-panel.md`
 **Spec:** `../specs/admin-user-detail-panel-design.md`
 **Depends on:** task-02, task-03, task-04, task-05, task-06

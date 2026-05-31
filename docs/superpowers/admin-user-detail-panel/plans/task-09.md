@@ -1,6 +1,6 @@
 # Task 9: Integração `page.tsx` + `user-row.tsx` (layout, seleção, linha ativa, teclado) [RF-001, RF-004, RF-005, RF-020]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-user-detail-panel.md`
 **Spec:** `../specs/admin-user-detail-panel-design.md`
 **Depends on:** task-08

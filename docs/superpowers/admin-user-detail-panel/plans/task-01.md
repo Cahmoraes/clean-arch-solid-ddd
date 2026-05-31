@@ -1,6 +1,6 @@
 # Task 1: Hook `useIsDesktop` (responsividade) [RF-002, RF-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-user-detail-panel.md`
 **Spec:** `../specs/admin-user-detail-panel-design.md`
 **Depends on:** N/A

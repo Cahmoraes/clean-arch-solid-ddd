@@ -1,6 +1,6 @@
 # Task 8: `UserDetailContainer` responsivo (split-view vs Dialog + EmptyState) [RF-001, RF-002, RF-003, RF-006, RF-021]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-user-detail-panel.md`
 **Spec:** `../specs/admin-user-detail-panel-design.md`
 **Depends on:** task-01, task-07

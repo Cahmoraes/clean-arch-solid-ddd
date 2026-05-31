@@ -1,6 +1,6 @@
 # Task 4: `PermissionsTab` [RF-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-user-detail-panel.md`
 **Spec:** `../specs/admin-user-detail-panel-design.md`
 **Depends on:** task-02

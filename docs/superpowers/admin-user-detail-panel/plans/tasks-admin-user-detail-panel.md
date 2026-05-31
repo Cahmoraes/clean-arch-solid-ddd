@@ -15,15 +15,15 @@
 
 ## Tarefas
 
-- [ ] 1. Hook `useIsDesktop` (responsividade) [RF-002, RF-003] → `task-01.md`
-- [ ] 2. Extrair `useUserDetailActions` + ConfirmationDialogs [RF-014, RF-016, RF-018] → `task-02.md`
-- [ ] 3. `DetailsTab` + helpers de formatação [RF-008, RF-011] → `task-03.md`
-- [ ] 4. `PermissionsTab` [RF-009] → `task-04.md`
-- [ ] 5. `ActivityTab` (estado vazio gracioso) [RF-010, RF-011] → `task-05.md`
-- [ ] 6. `UserActionsFooter` (ações + confirmações + excluir desabilitado) [RF-014, RF-015, RF-016, RF-017, RF-018, RF-019] → `task-06.md`
-- [ ] 7. `UserDetailPanel` (header + Tabs + footer) [RF-007, RF-012, RF-013, RF-022] → `task-07.md`
-- [ ] 8. `UserDetailContainer` responsivo (split-view vs Dialog + EmptyState) [RF-001, RF-002, RF-003, RF-006, RF-021] → `task-08.md`
-- [ ] 9. Integração `page.tsx` + `user-row.tsx` (layout, seleção, linha ativa, teclado) [RF-001, RF-004, RF-005, RF-020] → `task-09.md`
+- [x] 1. Hook `useIsDesktop` (responsividade) [RF-002, RF-003] → `task-01.md`
+- [x] 2. Extrair `useUserDetailActions` + ConfirmationDialogs [RF-014, RF-016, RF-018] → `task-02.md`
+- [x] 3. `DetailsTab` + helpers de formatação [RF-008, RF-011] → `task-03.md`
+- [x] 4. `PermissionsTab` [RF-009] → `task-04.md`
+- [x] 5. `ActivityTab` (estado vazio gracioso) [RF-010, RF-011] → `task-05.md`
+- [x] 6. `UserActionsFooter` (ações + confirmações + excluir desabilitado) [RF-014, RF-015, RF-016, RF-017, RF-018, RF-019] → `task-06.md`
+- [x] 7. `UserDetailPanel` (header + Tabs + footer) [RF-007, RF-012, RF-013, RF-022] → `task-07.md`
+- [x] 8. `UserDetailContainer` responsivo (split-view vs Dialog + EmptyState) [RF-001, RF-002, RF-003, RF-006, RF-021] → `task-08.md`
+- [x] 9. Integração `page.tsx` + `user-row.tsx` (layout, seleção, linha ativa, teclado) [RF-001, RF-004, RF-005, RF-020] → `task-09.md`
 
 ## Ondas de Execução
 

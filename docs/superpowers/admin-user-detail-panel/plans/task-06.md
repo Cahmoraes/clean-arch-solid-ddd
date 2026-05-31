@@ -1,6 +1,6 @@
 # Task 6: `UserActionsFooter` (ações + confirmações + excluir desabilitado) [RF-014, RF-015, RF-016, RF-017, RF-019]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-user-detail-panel.md`
 **Spec:** `../specs/admin-user-detail-panel-design.md`
 **Depends on:** task-02

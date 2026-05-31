@@ -1,6 +1,6 @@
 # Task 5: `ActivityTab` (estado vazio gracioso) [RF-010, RF-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-user-detail-panel.md`
 **Spec:** `../specs/admin-user-detail-panel-design.md`
 **Depends on:** N/A

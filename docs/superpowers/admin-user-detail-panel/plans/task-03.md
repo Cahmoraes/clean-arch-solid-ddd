@@ -1,6 +1,6 @@
 # Task 3: `DetailsTab` + helpers de formatação [RF-008, RF-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-user-detail-panel.md`
 **Spec:** `../specs/admin-user-detail-panel-design.md`
 **Depends on:** N/A
