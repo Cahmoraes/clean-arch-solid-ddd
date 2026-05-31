@@ -91,6 +91,27 @@ describe("AuthenticateUseCase", () => {
 		expect(result.forceFailure().value).toBeInstanceOf(InvalidCredentialsError)
 	})
 
+	test("Não deve autenticar um usuário soft-deleted (login por senha)", async () => {
+		const user = (
+			await User.create({
+				id: "deleted-user",
+				email: "deleted@mail.com",
+				name: "Deleted User",
+				password: "12345678",
+			})
+		).force.success().value
+		user.delete()
+		await userRepository.save(user)
+
+		const result = await sut.execute({
+			email: "deleted@mail.com",
+			password: "12345678",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(InvalidCredentialsError)
+	})
+
 	test("Não deve autenticar por email/senha quando o usuário ainda não possui senha local", async () => {
 		await createAndSaveUser({
 			name: "John Doe",
