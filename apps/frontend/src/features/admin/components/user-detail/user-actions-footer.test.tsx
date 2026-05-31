@@ -24,6 +24,7 @@ function baseProps() {
 			canSuspend: true,
 			canPromoteToAdmin: true,
 			canDemoteFromAdmin: false,
+			canDelete: true,
 			isLocked: false,
 		},
 		flags: {
@@ -32,12 +33,14 @@ function baseProps() {
 			isSuspending: false,
 			isPromoting: false,
 			isDemoting: false,
+			isDeleting: false,
 		},
 		onEdit: vi.fn(),
 		onActivate: vi.fn(),
 		onOpenSuspend: vi.fn(),
 		onOpenPromote: vi.fn(),
 		onOpenDemote: vi.fn(),
+		onOpenDelete: vi.fn(),
 	}
 }
 
@@ -58,10 +61,23 @@ describe("UserActionsFooter", () => {
 		expect(props.onOpenSuspend).toHaveBeenCalledTimes(1)
 	})
 
-	test("mantém o botão Excluir desabilitado (sem endpoint)", () => {
+	test("botão Excluir habilitado dispara onOpenDelete", async () => {
+		const user = userEvent.setup()
 		const props = baseProps()
 		render(<UserActionsFooter {...props} />)
-		expect(screen.getByRole("button", { name: /excluir/i })).toBeDisabled()
+		const btn = screen.getByRole("button", { name: /excluir/i })
+		expect(btn).not.toBeDisabled()
+		await user.click(btn)
+		expect(props.onOpenDelete).toHaveBeenCalledTimes(1)
+	})
+
+	test("oculta botão Excluir quando canDelete é false", () => {
+		const props = baseProps()
+		props.permissions.canDelete = false
+		render(<UserActionsFooter {...props} />)
+		expect(
+			screen.queryByRole("button", { name: /excluir/i }),
+		).not.toBeInTheDocument()
 	})
 
 	test("oculta Inativar quando não permitido", () => {

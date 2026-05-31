@@ -10,6 +10,7 @@ interface ActionFlags {
 	isSuspending: boolean
 	isPromoting: boolean
 	isDemoting: boolean
+	isDeleting: boolean
 }
 
 export interface UserActionsFooterProps {
@@ -21,6 +22,7 @@ export interface UserActionsFooterProps {
 	onOpenSuspend: () => void
 	onOpenPromote: () => void
 	onOpenDemote: () => void
+	onOpenDelete: () => void
 }
 
 interface ContextualAction {
@@ -35,11 +37,17 @@ interface ContextualAction {
 
 const OUTLINE_CLASS = "h-11 rounded-md px-4 font-semibold"
 const SUSPEND_CLASS =
-	"h-11 rounded-md bg-destructive-soft px-4 font-semibold text-destructive hover:bg-destructive hover:text-destructive-foreground"
+	"h-11 rounded-md border border-destructive/30 bg-destructive-soft px-4 font-semibold text-destructive hover:bg-destructive hover:text-destructive-foreground"
+const DELETE_CLASS =
+	"ml-auto h-11 rounded-md border border-destructive/30 bg-destructive-soft px-4 font-semibold text-destructive hover:bg-destructive hover:text-destructive-foreground"
 
 type ActionHandlers = Pick<
 	UserActionsFooterProps,
-	"onActivate" | "onOpenSuspend" | "onOpenPromote" | "onOpenDemote"
+	| "onActivate"
+	| "onOpenSuspend"
+	| "onOpenPromote"
+	| "onOpenDemote"
+	| "onOpenDelete"
 >
 
 function buildContextualActions(
@@ -84,6 +92,14 @@ function buildContextualActions(
 			variant: "outline",
 			className: OUTLINE_CLASS,
 		},
+		{
+			key: "delete",
+			visible: permissions.canDelete,
+			label: flags.isDeleting ? "Excluindo..." : "Excluir",
+			onClick: handlers.onOpenDelete,
+			busy: flags.isDeleting,
+			className: DELETE_CLASS,
+		},
 	]
 }
 
@@ -122,12 +138,14 @@ export function UserActionsFooter({
 	onOpenSuspend,
 	onOpenPromote,
 	onOpenDemote,
+	onOpenDelete,
 }: UserActionsFooterProps) {
 	const actions = buildContextualActions(permissions, flags, {
 		onActivate,
 		onOpenSuspend,
 		onOpenPromote,
 		onOpenDemote,
+		onOpenDelete,
 	})
 	return (
 		<div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
@@ -140,15 +158,6 @@ export function UserActionsFooter({
 			</Button>
 
 			<ContextualActions actions={actions} isPending={flags.isPending} />
-
-			<Button
-				type="button"
-				disabled
-				title="Exclusão indisponível: endpoint não implementado"
-				className="ml-auto h-11 rounded-md bg-destructive-soft px-4 font-semibold text-destructive opacity-60"
-			>
-				Excluir
-			</Button>
 		</div>
 	)
 }

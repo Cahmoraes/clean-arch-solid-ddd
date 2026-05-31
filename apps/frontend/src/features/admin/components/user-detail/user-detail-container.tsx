@@ -21,9 +21,11 @@ export interface UserDetailContainerProps {
 
 function DesktopView({
 	user,
+	onClose,
 	onEdit,
 }: {
 	user: AdminUser | null
+	onClose: () => void
 	onEdit: (user: AdminUser) => void
 }) {
 	if (!user) {
@@ -37,7 +39,11 @@ function DesktopView({
 	}
 	return (
 		<div className="rounded-lg border border-border bg-card p-5">
-			<UserDetailPanel user={user} onEdit={() => onEdit(user)} />
+			<UserDetailPanel
+				user={user}
+				onClose={onClose}
+				onEdit={() => onEdit(user)}
+			/>
 		</div>
 	)
 }
@@ -66,7 +72,11 @@ function MobileView({
 					</DialogDescription>
 				</DialogHeader>
 				{user ? (
-					<UserDetailPanel user={user} onEdit={() => onEdit(user)} />
+					<UserDetailPanel
+						user={user}
+						onClose={onClose}
+						onEdit={() => onEdit(user)}
+					/>
 				) : null}
 			</DialogContent>
 		</Dialog>
@@ -80,7 +90,7 @@ export function UserDetailContainer({
 }: UserDetailContainerProps) {
 	const isDesktop = useIsDesktop()
 	if (isDesktop) {
-		return <DesktopView user={user} onEdit={onEdit} />
+		return <DesktopView user={user} onClose={onClose} onEdit={onEdit} />
 	}
 	return <MobileView user={user} onClose={onClose} onEdit={onEdit} />
 }

@@ -7,6 +7,7 @@ import type { AdminUser } from "@/features/admin/api/use-users"
 import { cn } from "@/lib/cn"
 import { ActivityTab } from "./activity-tab"
 import {
+	DeleteConfirmationDialog,
 	DemoteConfirmationDialog,
 	PromoteConfirmationDialog,
 	SuspendConfirmationDialog,
@@ -21,6 +22,7 @@ import { statusBadgeClassName, statusLabel } from "./user-detail-format"
 export interface UserDetailPanelProps {
 	user: AdminUser
 	onEdit: () => void
+	onClose?: () => void
 }
 
 function InlineError({ message }: { message: string | null }) {
@@ -134,12 +136,26 @@ function ConfirmationDialogs({
 					onConfirm={actions.onConfirmDemote}
 				/>
 			) : null}
+			{actions.confirm.deleteOpen ? (
+				<DeleteConfirmationDialog
+					open={actions.confirm.deleteOpen}
+					userName={user.name}
+					onOpenChange={actions.confirm.setDeleteOpen}
+					isPending={actions.flags.isPending}
+					isDeleting={actions.flags.isDeleting}
+					onConfirm={actions.onConfirmDelete}
+				/>
+			) : null}
 		</>
 	)
 }
 
-export function UserDetailPanel({ user, onEdit }: UserDetailPanelProps) {
-	const actions = useUserDetailActions(user)
+export function UserDetailPanel({
+	user,
+	onEdit,
+	onClose,
+}: UserDetailPanelProps) {
+	const actions = useUserDetailActions(user, { onDeleteSuccess: onClose })
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -155,6 +171,7 @@ export function UserDetailPanel({ user, onEdit }: UserDetailPanelProps) {
 				onOpenSuspend={() => actions.confirm.setSuspendOpen(true)}
 				onOpenPromote={() => actions.confirm.setPromoteOpen(true)}
 				onOpenDemote={() => actions.confirm.setDemoteOpen(true)}
+				onOpenDelete={() => actions.confirm.setDeleteOpen(true)}
 			/>
 			<ConfirmationDialogs user={user} actions={actions} />
 		</div>
