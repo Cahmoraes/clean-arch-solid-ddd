@@ -23,6 +23,7 @@ import { ChangePasswordController } from "@/user/infra/controller/change-passwor
 import { CreatePasswordReauthGrantController } from "@/user/infra/controller/create-password-reauth-grant.controller"
 import { CreateUserController } from "@/user/infra/controller/create-user.controller"
 import { DefinePasswordController } from "@/user/infra/controller/define-password.controller"
+import { DeleteUserController } from "@/user/infra/controller/delete-user.controller"
 import { DemoteFromAdminController } from "@/user/infra/controller/demote-from-admin.controller"
 import { FetchUsersController } from "@/user/infra/controller/fetch-users.controller"
 import { ForgotPasswordController } from "@/user/infra/controller/forgot-password.controller"
@@ -98,6 +99,7 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Controllers.PromoteToAdmin).to(PromoteToAdminController)
 	bind(USER_TYPES.Controllers.DemoteFromAdmin).to(DemoteFromAdminController)
 	bind(USER_TYPES.UseCases.DeleteUser).to(DeleteUserUseCase)
+	bind(USER_TYPES.Controllers.DeleteUser).to(DeleteUserController)
 	bind(USER_TYPES.Notifications.SendWelcomeEmail)
 		.to(SendWelcomeEmailNotification)
 		.inSingletonScope()

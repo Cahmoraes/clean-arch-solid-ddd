@@ -45,6 +45,7 @@ export const USER_TYPES = {
 		PromoteToAdmin: Symbol.for("PromoteToAdminController"),
 		DemoteFromAdmin: Symbol.for("DemoteFromAdminController"),
 		GetUserStats: Symbol.for("GetUserStatsController"),
+		DeleteUser: Symbol.for("DeleteUserController"),
 	},
 	Gateways: {
 		PasswordResetTokenStore: Symbol.for("PasswordResetTokenStore"),

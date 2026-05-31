@@ -16,6 +16,7 @@ export const UserRoutes = {
 	SUSPEND_USER: `${PREFIX}/suspend`,
 	PROMOTE_TO_ADMIN: `${PREFIX}/promote-admin`,
 	DEMOTE_FROM_ADMIN: `${PREFIX}/demote-admin`,
+	DELETE: `${PREFIX}/:userId`,
 } as const
 
 export type UserRoutesType = (typeof UserRoutes)[keyof typeof UserRoutes]
