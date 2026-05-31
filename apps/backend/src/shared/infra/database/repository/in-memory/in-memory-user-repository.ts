@@ -25,6 +25,7 @@ export class InMemoryUserRepository implements UserRepository {
 			status: user.status,
 			billingCustomerId: user.billingCustomerId,
 			isSuperAdmin: user.isSuperAdmin,
+			deletedAt: user.deletedAt,
 		})
 		this.users.add(userWithId)
 	}
@@ -39,6 +40,7 @@ export class InMemoryUserRepository implements UserRepository {
 	public async get(objectQuery: UserQuery): Promise<User | null> {
 		const fields = objectQuery.fields
 		return this.users.find((user) => {
+			if (user.isDeleted) return false
 			return Object.keys(fields).every((field) => {
 				return (user as any)[field] === (fields as any)[field]
 			})
@@ -46,15 +48,17 @@ export class InMemoryUserRepository implements UserRepository {
 	}
 
 	public async userOfEmail(email: string): Promise<User | null> {
-		return this.users.find((user) => user.email === email)
+		return this.users.find((user) => !user.isDeleted && user.email === email)
 	}
 
 	public async userOfGoogleId(googleId: string): Promise<User | null> {
-		return this.users.find((user) => user.googleId === googleId)
+		return this.users.find(
+			(user) => !user.isDeleted && user.googleId === googleId,
+		)
 	}
 
 	public async userOfId(id: string): Promise<User | null> {
-		return this.users.find((user) => user.id === id)
+		return this.users.find((user) => !user.isDeleted && user.id === id)
 	}
 
 	public async delete(user: User): Promise<void> {

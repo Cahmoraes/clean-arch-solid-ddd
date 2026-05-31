@@ -21,6 +21,7 @@ interface UserData {
 	status: StatusTypes
 	billingCustomerId?: string
 	is_super_admin?: boolean | number | null
+	deleted_at?: string | null
 }
 
 @injectable()
@@ -33,10 +34,10 @@ export class SQLiteUserRepository implements UserRepository {
 	public async get(userQuery: UserQuery): Promise<User | null> {
 		const userDataOrNull = this.sqliteConnection
 			.query(/*SQL*/ `
-        SELECT * FROM 
+        SELECT * FROM
           "users"
         WHERE
-          ${userQuery.sql}  
+          ${userQuery.sql} AND "deleted_at" IS NULL
       `)
 			.get(...userQuery.values)
 		if (!userDataOrNull) return null
@@ -47,7 +48,7 @@ export class SQLiteUserRepository implements UserRepository {
 	public async userOfEmail(email: string): Promise<User | null> {
 		const userDataOrNull = this.sqliteConnection
 			.query(/*SQL*/ `
-      SELECT * FROM "users" WHERE "email" = ?  
+      SELECT * FROM "users" WHERE "email" = ? AND "deleted_at" IS NULL
     `)
 			.get(email)
 		if (!userDataOrNull) return null
@@ -58,7 +59,7 @@ export class SQLiteUserRepository implements UserRepository {
 	public async userOfGoogleId(googleId: string): Promise<User | null> {
 		const userDataOrNull = this.sqliteConnection
 			.query(/*SQL*/ `
-      SELECT * FROM "users" WHERE "google_id" = ?
+      SELECT * FROM "users" WHERE "google_id" = ? AND "deleted_at" IS NULL
     `)
 			.get(googleId)
 		if (!userDataOrNull) return null
@@ -85,21 +86,28 @@ export class SQLiteUserRepository implements UserRepository {
 			status: userData.status,
 			billingCustomerId: userData.billingCustomerId,
 			isSuperAdmin: Boolean(userData.is_super_admin ?? false),
+			deletedAt: userData.deleted_at
+				? new Date(userData.deleted_at)
+				: undefined,
 		})
 	}
 
 	public async userOfId(id: string): Promise<User | null> {
 		const userDataOrNull = this.sqliteConnection
 			.query(/*SQL*/ `
-        SELECT * FROM 
-          "users" 
-        WHERE 
-          "id" = ?  
+        SELECT * FROM
+          "users"
+        WHERE
+          "id" = ? AND "deleted_at" IS NULL
       `)
 			.get(id)
 		if (!userDataOrNull) return null
 		this.assertUserData(userDataOrNull)
 		return this.restoreUser(userDataOrNull)
+	}
+
+	private serializeDate(date?: Date): string | null {
+		return date ? date.toISOString() : null
 	}
 
 	public async save(user: User): Promise<void> {
@@ -115,9 +123,10 @@ export class SQLiteUserRepository implements UserRepository {
           "role",
           "status",
           "billing_customer_id",
-          "is_super_admin"
+          "is_super_admin",
+          "deleted_at"
         )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `)
 			.run(
 				user.email,
@@ -129,6 +138,7 @@ export class SQLiteUserRepository implements UserRepository {
 				user.status,
 				user.billingCustomerId ?? null,
 				user.isSuperAdmin ? 1 : 0,
+				this.serializeDate(user.deletedAt),
 			)
 	}
 
@@ -147,7 +157,8 @@ export class SQLiteUserRepository implements UserRepository {
         "status" = ?,
         "billing_customer_id" = ?,
         "is_super_admin" = ?,
-        "updated_at" = ?
+        "updated_at" = ?,
+        "deleted_at" = ?
       WHERE
         "id" = ?
     `)
@@ -164,6 +175,7 @@ export class SQLiteUserRepository implements UserRepository {
 				user.updatedAt
 					? user.updatedAt.toISOString()
 					: new Date().toISOString(),
+				this.serializeDate(user.deletedAt),
 				user.id,
 			)
 	}

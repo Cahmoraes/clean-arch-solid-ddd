@@ -23,6 +23,7 @@ interface UserData {
 	role: RoleTypes
 	status: StatusTypes
 	billing_customer_id?: string | null
+	deleted_at?: Date | null
 }
 
 @injectable()
@@ -41,16 +42,17 @@ export class PrismaUserRepository implements UserRepository {
 
 	public async get(userQuery: UserQuery): Promise<User | null> {
 		const userDataOrNull = await this.prisma.user.findFirst({
-			where: userQuery.fields,
+			where: { ...userQuery.fields, deleted_at: null },
 		})
 		if (!userDataOrNull) return null
 		return this.restoreUser(userDataOrNull)
 	}
 
 	public async userOfId(id: string): Promise<User | null> {
-		const userDataOrNull = await this.prisma.user.findUnique({
+		const userDataOrNull = await this.prisma.user.findFirst({
 			where: {
 				id,
+				deleted_at: null,
 			},
 		})
 		if (!userDataOrNull) return null
@@ -58,9 +60,10 @@ export class PrismaUserRepository implements UserRepository {
 	}
 
 	public async userOfEmail(email: string): Promise<User | null> {
-		const userDataOrNull = await this.prisma.user.findUnique({
+		const userDataOrNull = await this.prisma.user.findFirst({
 			where: {
 				email,
+				deleted_at: null,
 			},
 		})
 		if (!userDataOrNull) return null
@@ -68,9 +71,10 @@ export class PrismaUserRepository implements UserRepository {
 	}
 
 	public async userOfGoogleId(googleId: string): Promise<User | null> {
-		const userDataOrNull = await this.prisma.user.findUnique({
+		const userDataOrNull = await this.prisma.user.findFirst({
 			where: {
 				google_id: googleId,
+				deleted_at: null,
 			},
 		})
 		if (!userDataOrNull) return null
@@ -89,6 +93,7 @@ export class PrismaUserRepository implements UserRepository {
 			role: userData.role,
 			status: userData.status,
 			billingCustomerId: userData.billing_customer_id ?? undefined,
+			deletedAt: userData.deleted_at ?? undefined,
 		})
 	}
 
@@ -124,6 +129,7 @@ export class PrismaUserRepository implements UserRepository {
 				billing_customer_id: user.billingCustomerId,
 				is_super_admin: user.isSuperAdmin,
 				updated_at: user.updatedAt ? user.updatedAt : new Date(),
+				deleted_at: user.deletedAt ?? null,
 			},
 		})
 	}

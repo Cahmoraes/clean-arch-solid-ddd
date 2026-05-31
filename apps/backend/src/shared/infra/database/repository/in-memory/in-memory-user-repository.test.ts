@@ -1,3 +1,4 @@
+import { UserQuery } from "@/user/application/persistence/repository/user-query"
 import { User } from "@/user/domain/user"
 import { InMemoryUserRepository } from "./in-memory-user-repository"
 
@@ -51,5 +52,53 @@ describe("InMemoryUserRepository", () => {
 
 			expect(result).toBeNull()
 		})
+	})
+})
+
+describe("InMemoryUserRepository soft delete filter", () => {
+	let repository: InMemoryUserRepository
+
+	beforeEach(() => {
+		repository = new InMemoryUserRepository()
+	})
+
+	async function saveDeletedUser(id: string, email: string): Promise<void> {
+		const user = (
+			await User.create({ id, email, name: "any_name", password: "12345678" })
+		).forceSuccess().value
+		user.delete()
+		await repository.save(user)
+	}
+
+	test("userOfId não retorna usuário soft-deleted", async () => {
+		await saveDeletedUser("user-1", "a@mail.com")
+		expect(await repository.userOfId("user-1")).toBeNull()
+	})
+
+	test("userOfEmail não retorna usuário soft-deleted", async () => {
+		await saveDeletedUser("user-2", "b@mail.com")
+		expect(await repository.userOfEmail("b@mail.com")).toBeNull()
+	})
+
+	test("get não retorna usuário soft-deleted", async () => {
+		await saveDeletedUser("user-3", "c@mail.com")
+		const query = UserQuery.from({ email: "c@mail.com" }).addField("email")
+		expect(await repository.get(query)).toBeNull()
+	})
+
+	test("update persiste o soft delete e o usuário some das leituras", async () => {
+		const user = (
+			await User.create({
+				id: "user-4",
+				email: "d@mail.com",
+				name: "any_name",
+				password: "12345678",
+			})
+		).forceSuccess().value
+		await repository.save(user)
+		expect(await repository.userOfId("user-4")).not.toBeNull()
+		user.delete()
+		await repository.update(user)
+		expect(await repository.userOfId("user-4")).toBeNull()
 	})
 })
