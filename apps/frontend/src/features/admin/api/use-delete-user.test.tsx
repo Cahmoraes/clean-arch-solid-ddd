@@ -5,6 +5,7 @@ import type { ReactNode } from "react"
 import { describe, expect, test } from "vitest"
 import { server } from "@/test/msw/server"
 import { useDeleteUser } from "./use-delete-user"
+import { USER_STATS_QUERY_KEY } from "./use-user-stats"
 import { adminUsersQueryKey, type UseUsersResult } from "./use-users"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
@@ -111,6 +112,7 @@ describe("useDeleteUser", () => {
 			users: [ACTIVE_USER],
 			pagination: { total: 1, page: 1, limit: 10 },
 		})
+		queryClient.setQueryData([USER_STATS_QUERY_KEY], { total: 1 })
 
 		server.use(
 			http.delete(
@@ -133,5 +135,8 @@ describe("useDeleteUser", () => {
 			adminUsersQueryKey(QUERY_PARAMS),
 		)
 		expect(queryState?.isInvalidated).toBe(true)
+		expect(
+			queryClient.getQueryState([USER_STATS_QUERY_KEY])?.isInvalidated,
+		).toBe(true)
 	})
 })
