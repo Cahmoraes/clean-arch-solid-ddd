@@ -52,14 +52,14 @@ export class PrismaUserDAO implements UserDAO {
 
 	public async countUserStats(): Promise<UserStatsOutput> {
 		const [total, members, admins, active, inactive] = await Promise.all([
-			this.prisma.user.count(),
-			this.prisma.user.count({ where: { role: "MEMBER" } }),
-			this.prisma.user.count({ where: { role: "ADMIN" } }),
+			this.prisma.user.count({ where: { deleted_at: null } }),
+			this.prisma.user.count({ where: { deleted_at: null, role: "MEMBER" } }),
+			this.prisma.user.count({ where: { deleted_at: null, role: "ADMIN" } }),
 			this.prisma.user.count({
-				where: { status: $Enums.UserStatus.activated },
+				where: { deleted_at: null, status: $Enums.UserStatus.activated },
 			}),
 			this.prisma.user.count({
-				where: { status: $Enums.UserStatus.suspended },
+				where: { deleted_at: null, status: $Enums.UserStatus.suspended },
 			}),
 		])
 		return { total, members, admins, active, inactive }
@@ -68,6 +68,7 @@ export class PrismaUserDAO implements UserDAO {
 	private buildWhereClause(input: FetchUsersInput) {
 		const statusValue = this.resolveStatusValue(input.status)
 		return {
+			deleted_at: null,
 			...(input.query && {
 				OR: [
 					{ name: { contains: input.query, mode: "insensitive" as const } },

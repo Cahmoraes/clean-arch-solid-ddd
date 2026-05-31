@@ -21,6 +21,7 @@ export interface CreateUserInput {
 	role?: RoleTypes
 	status?: StatusTypes
 	createdAt?: string
+	deletedAt?: string | null
 }
 
 const USER_ROLES: RoleTypes[] = ["ADMIN", "MEMBER"]
@@ -60,6 +61,7 @@ export class UserDAOMemory implements UserDAO {
 			createdAt: new Date().toISOString(),
 			name: `User ${randomSuffix}`,
 			email: `user_${randomSuffix}@test.com`,
+			deletedAt: null,
 			...createUserInput,
 		}
 		this.usersData.add(fakeUser)
@@ -73,7 +75,7 @@ export class UserDAOMemory implements UserDAO {
 	public async fetchAndCountUsers(
 		input: FetchUsersInput,
 	): Promise<FetchUsersOutput> {
-		const allUsers = this.usersData.toArray()
+		const allUsers = this.usersData.toArray().filter((u) => u.deletedAt == null)
 		let filtered = input.query
 			? allUsers.filter(
 					(u) =>
@@ -92,10 +94,16 @@ export class UserDAOMemory implements UserDAO {
 			filtered = filtered.filter((u) => u.status === UserStatusTypes.SUSPENDED)
 		}
 
-		const usersData = filtered.slice(
-			(input.page - 1) * input.limit,
-			input.page * input.limit,
-		)
+		const usersData = filtered
+			.slice((input.page - 1) * input.limit, input.page * input.limit)
+			.map((u) => ({
+				id: u.id,
+				email: u.email,
+				name: u.name,
+				role: u.role,
+				status: u.status,
+				createdAt: u.createdAt,
+			}))
 		return {
 			usersData,
 			total: filtered.length,
@@ -103,7 +111,7 @@ export class UserDAOMemory implements UserDAO {
 	}
 
 	public async countUserStats(): Promise<UserStatsOutput> {
-		const all = this.usersData.toArray()
+		const all = this.usersData.toArray().filter((u) => u.deletedAt == null)
 		return {
 			total: all.length,
 			members: all.filter((u) => u.role === "MEMBER").length,
