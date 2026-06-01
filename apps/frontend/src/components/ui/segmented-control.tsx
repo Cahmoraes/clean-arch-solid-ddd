@@ -12,6 +12,30 @@ export interface SegmentedControlProps<T extends string = string> {
 	onValueChange: (value: T) => void
 	className?: string
 	"aria-label"?: string
+	countFloat?: boolean
+}
+
+function InlineBadge({ count, active }: { count: number; active: boolean }) {
+	return (
+		<span
+			className={cn(
+				"rounded-full px-1.5 py-0.5 font-mono text-[11.5px]",
+				active
+					? "bg-background/20 dark:bg-accent-foreground/20"
+					: "bg-foreground/10",
+			)}
+		>
+			{count}
+		</span>
+	)
+}
+
+function FloatBadge({ count }: { count: number }) {
+	return (
+		<span className="pointer-events-none absolute -right-1 -top-2 min-w-[18px] rounded-full border border-background bg-primary px-1 py-0 text-center font-mono text-[10px] font-bold leading-[18px] text-primary-foreground">
+			{count}
+		</span>
+	)
 }
 
 export function SegmentedControl<T extends string = string>({
@@ -20,6 +44,7 @@ export function SegmentedControl<T extends string = string>({
 	onValueChange,
 	className,
 	"aria-label": ariaLabel,
+	countFloat = false,
 }: SegmentedControlProps<T>) {
 	return (
 		<fieldset
@@ -42,20 +67,15 @@ export function SegmentedControl<T extends string = string>({
 							active
 								? "bg-foreground text-background dark:bg-accent dark:text-accent-foreground"
 								: "text-muted-foreground hover:text-foreground",
+							countFloat && "relative",
 						)}
 					>
 						{item.label}
-						{typeof item.count === "number" && (
-							<span
-								className={cn(
-									"rounded-full px-1.5 py-0.5 font-mono text-[11.5px]",
-									active
-										? "bg-background/20 dark:bg-accent-foreground/20"
-										: "bg-foreground/10",
-								)}
-							>
-								{item.count}
-							</span>
+						{typeof item.count === "number" && !countFloat && (
+							<InlineBadge count={item.count} active={active} />
+						)}
+						{typeof item.count === "number" && countFloat && (
+							<FloatBadge count={item.count} />
 						)}
 					</button>
 				)

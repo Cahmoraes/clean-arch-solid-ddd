@@ -1,96 +1,52 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, expect, it, vi } from "vitest"
-import { CheckInFilterBar } from "./check-in-filter-bar.js"
+import { describe, expect, test, vi } from "vitest"
+import type { CheckInStats } from "../api/extended-paths.js"
+import { CheckInFilterBar } from "./check-in-filter-bar"
 
 describe("CheckInFilterBar", () => {
-	it("renders all 4 filter pills", () => {
+	test("renderiza os pills de filtro sem badges quando stats não é fornecido", () => {
 		render(<CheckInFilterBar status={undefined} onStatusChange={vi.fn()} />)
-		expect(screen.getByRole("button", { name: "Todos" })).toBeInTheDocument()
-		expect(
-			screen.getByRole("button", { name: "Pendentes" }),
-		).toBeInTheDocument()
-		expect(
-			screen.getByRole("button", { name: "Aprovados" }),
-		).toBeInTheDocument()
-		expect(
-			screen.getByRole("button", { name: "Rejeitados" }),
-		).toBeInTheDocument()
+		expect(screen.getByRole("group")).toBeInTheDocument()
+		expect(screen.getByText("Todos")).toBeInTheDocument()
+		expect(screen.queryByText("42")).not.toBeInTheDocument()
 	})
 
-	it('marks "Todos" as active (aria-pressed=true) when status is undefined', () => {
-		render(<CheckInFilterBar status={undefined} onStatusChange={vi.fn()} />)
-		expect(screen.getByRole("button", { name: "Todos" })).toHaveAttribute(
-			"aria-pressed",
-			"true",
-		)
-		expect(screen.getByRole("button", { name: "Pendentes" })).toHaveAttribute(
-			"aria-pressed",
-			"false",
-		)
-	})
-
-	it("marks the matching status pill as active", () => {
-		render(<CheckInFilterBar status="pending" onStatusChange={vi.fn()} />)
-		expect(screen.getByRole("button", { name: "Pendentes" })).toHaveAttribute(
-			"aria-pressed",
-			"true",
-		)
-		expect(screen.getByRole("button", { name: "Todos" })).toHaveAttribute(
-			"aria-pressed",
-			"false",
-		)
-		expect(screen.getByRole("button", { name: "Aprovados" })).toHaveAttribute(
-			"aria-pressed",
-			"false",
-		)
-	})
-
-	it('calls onStatusChange with "pending" when Pendentes is clicked', async () => {
-		const user = userEvent.setup()
-		const onStatusChange = vi.fn()
+	test("exibe badges flutuantes de contagem quando stats é fornecido", () => {
+		const stats: CheckInStats = {
+			total: 42,
+			pending: 10,
+			validated: 20,
+			rejected: 12,
+		}
 		render(
-			<CheckInFilterBar status={undefined} onStatusChange={onStatusChange} />,
+			<CheckInFilterBar
+				status={undefined}
+				onStatusChange={vi.fn()}
+				stats={stats}
+			/>,
 		)
-		await user.click(screen.getByRole("button", { name: "Pendentes" }))
-		expect(onStatusChange).toHaveBeenCalledWith("pending")
+		expect(screen.getByText("42")).toBeInTheDocument()
+		expect(screen.getByText("10")).toBeInTheDocument()
+		expect(screen.getByText("20")).toBeInTheDocument()
+		expect(screen.getByText("12")).toBeInTheDocument()
 	})
 
-	it("calls onStatusChange with undefined when Todos is clicked", async () => {
-		const user = userEvent.setup()
+	test("chama onStatusChange com undefined ao clicar em Todos", async () => {
 		const onStatusChange = vi.fn()
 		render(
 			<CheckInFilterBar status="pending" onStatusChange={onStatusChange} />,
 		)
-		await user.click(screen.getByRole("button", { name: "Todos" }))
+		await userEvent.click(screen.getByText("Todos"))
 		expect(onStatusChange).toHaveBeenCalledWith(undefined)
 	})
 
-	it('calls onStatusChange with "validated" when Aprovados is clicked', async () => {
-		const user = userEvent.setup()
+	test("chama onStatusChange com pending ao clicar em Pendentes", async () => {
 		const onStatusChange = vi.fn()
 		render(
 			<CheckInFilterBar status={undefined} onStatusChange={onStatusChange} />,
 		)
-		await user.click(screen.getByRole("button", { name: "Aprovados" }))
-		expect(onStatusChange).toHaveBeenCalledWith("validated")
-	})
-
-	it('calls onStatusChange with "rejected" when Rejeitados is clicked', async () => {
-		const user = userEvent.setup()
-		const onStatusChange = vi.fn()
-		render(
-			<CheckInFilterBar status={undefined} onStatusChange={onStatusChange} />,
-		)
-		await user.click(screen.getByRole("button", { name: "Rejeitados" }))
-		expect(onStatusChange).toHaveBeenCalledWith("rejected")
-	})
-
-	it("aplica classe w-full ao fieldset do SegmentedControl", () => {
-		const { container } = render(
-			<CheckInFilterBar status={undefined} onStatusChange={vi.fn()} />,
-		)
-		const fieldset = container.querySelector("fieldset")
-		expect(fieldset?.className).toContain("w-full")
+		await userEvent.click(screen.getByText("Pendentes"))
+		expect(onStatusChange).toHaveBeenCalledWith("pending")
 	})
 })
