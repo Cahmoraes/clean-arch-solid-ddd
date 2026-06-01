@@ -1,12 +1,12 @@
 export const RATE_LIMIT_CONFIG = {
 	AUTH: {
 		MAX_MEMBER: 20,
-		MAX_ADMIN: 60,
+		MAX_ADMIN: 200,
 		TIME_WINDOW: 15 * 60 * 1000, // 15 minutes in ms
 	},
 	GENERAL: {
 		MAX_MEMBER: 100,
-		MAX_ADMIN: 300,
+		MAX_ADMIN: 1000,
 		TIME_WINDOW: 15 * 60 * 1000, // 15 minutes in ms
 	},
 	FORGOT_PASSWORD: {
@@ -15,7 +15,8 @@ export const RATE_LIMIT_CONFIG = {
 		EMAIL_MAX: 3,
 		EMAIL_TIME_WINDOW_SECONDS: 60 * 60, // 1 hour in seconds for Redis TTL
 	},
-	ADMIN_MULTIPLIER: 3,
+	// Per-route admin limit = route baseMax * ADMIN_MULTIPLIER.
+	ADMIN_MULTIPLIER: 10,
 	REDIS_NAMESPACE: "rl:",
 } as const
 

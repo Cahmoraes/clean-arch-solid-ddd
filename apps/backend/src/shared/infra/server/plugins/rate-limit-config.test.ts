@@ -7,7 +7,7 @@ describe("RateLimitConfig", () => {
 	})
 
 	test("auth limits are correct for ADMIN", () => {
-		expect(RATE_LIMIT_CONFIG.AUTH.MAX_ADMIN).toBe(60)
+		expect(RATE_LIMIT_CONFIG.AUTH.MAX_ADMIN).toBe(200)
 	})
 
 	test("general limits are correct for MEMBER", () => {
@@ -15,7 +15,7 @@ describe("RateLimitConfig", () => {
 	})
 
 	test("general limits are correct for ADMIN", () => {
-		expect(RATE_LIMIT_CONFIG.GENERAL.MAX_ADMIN).toBe(300)
+		expect(RATE_LIMIT_CONFIG.GENERAL.MAX_ADMIN).toBe(1000)
 	})
 
 	test("time window is 15 minutes in milliseconds", () => {
@@ -24,8 +24,8 @@ describe("RateLimitConfig", () => {
 		expect(RATE_LIMIT_CONFIG.GENERAL.TIME_WINDOW).toBe(fifteenMinutesMs)
 	})
 
-	test("admin multiplier is 3x", () => {
-		expect(RATE_LIMIT_CONFIG.ADMIN_MULTIPLIER).toBe(3)
+	test("admin multiplier is 10x", () => {
+		expect(RATE_LIMIT_CONFIG.ADMIN_MULTIPLIER).toBe(10)
 	})
 
 	test("admin limits equal member limits times multiplier", () => {
