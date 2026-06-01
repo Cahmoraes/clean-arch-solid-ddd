@@ -1,4 +1,3 @@
-import { MoreHorizontal } from "lucide-react"
 import type { KeyboardEvent } from "react"
 import { Avatar } from "@/components/ui/avatar"
 import { RoleBadge } from "@/components/ui/role-badge"
@@ -80,10 +79,6 @@ export function UserRow({
 			<StatusBadge tone={statusTone(user.status)}>
 				{statusLabel(user.status)}
 			</StatusBadge>
-			<MoreHorizontal
-				className="h-4 w-4 flex-shrink-0 text-subtle"
-				aria-hidden="true"
-			/>
 		</li>
 	)
 }

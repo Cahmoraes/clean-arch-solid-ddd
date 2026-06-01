@@ -108,7 +108,7 @@ function UsersPagination({ page, totalPages, onChange }: UsersPaginationProps) {
 		onChange(target)
 	}
 	return (
-		<Pagination data-testid="admin-users-pagination">
+		<Pagination data-testid="admin-users-pagination" className="mt-6">
 			<PaginationContent>
 				<PaginationItem>
 					<PaginationPrevious
