@@ -1,6 +1,6 @@
 # Task 1: Backend — Estender listagem com gymName e sortOrder [RF-006, RF-007, RF-008, RF-009, RF-012, RF-013, RF-014, RF-015, RF-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-badges-search-sort.md`
 **Spec:** `../specs/checkin-badges-search-sort-design.md`
 **Depends on:** N/A

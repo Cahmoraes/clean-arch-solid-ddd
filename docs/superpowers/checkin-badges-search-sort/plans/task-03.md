@@ -1,6 +1,6 @@
 # Task 3: Frontend — Contrato de API e hooks de dados [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-011, RF-012, RF-015, RF-017]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-badges-search-sort.md`
 **Spec:** `../specs/checkin-badges-search-sort-design.md`
 **Depends on:** task-01, task-02

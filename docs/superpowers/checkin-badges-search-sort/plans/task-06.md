@@ -1,6 +1,6 @@
 # Task 6: Frontend — Criar CheckInSearchInput e CheckInSortToggle [RF-006, RF-008, RF-010, RF-012, RF-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-badges-search-sort.md`
 **Spec:** `../specs/checkin-badges-search-sort-design.md`
 **Depends on:** N/A

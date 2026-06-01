@@ -1,6 +1,6 @@
 # Task 7: Frontend — Integrar tudo nas páginas de check-in [RF-001..RF-019]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-badges-search-sort.md`
 **Spec:** `../specs/checkin-badges-search-sort-design.md`
 **Depends on:** task-03, task-04, task-05, task-06

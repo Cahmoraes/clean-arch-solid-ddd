@@ -1,6 +1,6 @@
 # Task 4: Frontend — Estender useCheckInFilters com gymName e sortOrder [RF-006, RF-011, RF-012, RF-015, RF-017]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-badges-search-sort.md`
 **Spec:** `../specs/checkin-badges-search-sort-design.md`
 **Depends on:** N/A

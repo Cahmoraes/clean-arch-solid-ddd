@@ -15,13 +15,13 @@
 
 ## Tarefas
 
-- [ ] 1. Backend — Estender listagem com gymName e sortOrder [RF-006, RF-007, RF-008, RF-009, RF-012, RF-013, RF-014, RF-015, RF-016] → `task-01.md`
-- [ ] 2. Backend — Stats de check-ins (countByStatus + use case + controllers + IoC) [RF-001, RF-002, RF-003, RF-004, RF-005] → `task-02.md`
-- [ ] 3. Frontend — Contrato de API e hooks de dados (extended-paths + useCheckIns + useStats) [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-011, RF-012, RF-015, RF-017] → `task-03.md`
-- [ ] 4. Frontend — Estender useCheckInFilters com gymName e sortOrder [RF-006, RF-011, RF-012, RF-015, RF-017] → `task-04.md`
-- [ ] 5. Frontend — Atualizar CheckInFilterBar com badges de contagem [RF-001, RF-002, RF-003, RF-004] → `task-05.md`
-- [ ] 6. Frontend — Criar CheckInSearchInput e CheckInSortToggle [RF-006, RF-008, RF-010, RF-012, RF-013] → `task-06.md`
-- [ ] 7. Frontend — Integrar tudo nas páginas de check-in [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-008, RF-009, RF-010, RF-011, RF-012, RF-013, RF-014, RF-015, RF-016, RF-017, RF-018, RF-019] → `task-07.md`
+- [x] 1. Backend — Estender listagem com gymName e sortOrder [RF-006, RF-007, RF-008, RF-009, RF-012, RF-013, RF-014, RF-015, RF-016] → `task-01.md`
+- [x] 2. Backend — Stats de check-ins (countByStatus + use case + controllers + IoC) [RF-001, RF-002, RF-003, RF-004, RF-005] → `task-02.md`
+- [x] 3. Frontend — Contrato de API e hooks de dados (extended-paths + useCheckIns + useStats) [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-011, RF-012, RF-015, RF-017] → `task-03.md`
+- [x] 4. Frontend — Estender useCheckInFilters com gymName e sortOrder [RF-006, RF-011, RF-012, RF-015, RF-017] → `task-04.md`
+- [x] 5. Frontend — Atualizar CheckInFilterBar com badges de contagem [RF-001, RF-002, RF-003, RF-004] → `task-05.md`
+- [x] 6. Frontend — Criar CheckInSearchInput e CheckInSortToggle [RF-006, RF-008, RF-010, RF-012, RF-013] → `task-06.md`
+- [x] 7. Frontend — Integrar tudo nas páginas de check-in [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-008, RF-009, RF-010, RF-011, RF-012, RF-013, RF-014, RF-015, RF-016, RF-017, RF-018, RF-019] → `task-07.md`
 
 ---
 

@@ -1,6 +1,6 @@
 # Task 2: Backend — Stats de check-ins (countByStatus + use case + controllers + IoC) [RF-001, RF-002, RF-003, RF-004, RF-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-checkin-badges-search-sort.md`
 **Spec:** `../specs/checkin-badges-search-sort-design.md`
 **Depends on:** N/A
