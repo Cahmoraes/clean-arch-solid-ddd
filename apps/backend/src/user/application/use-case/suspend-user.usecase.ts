@@ -8,6 +8,7 @@ import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
+import { USER_STATS_CACHE_KEY } from "./get-user-stats.usecase"
 
 export interface SuspendUserUseCaseInput {
 	userId: string
@@ -32,6 +33,7 @@ export class SuspendUserUseCase {
 		userFound.suspend()
 		await this.userRepository.update(userFound)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
+		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
 		return success(null)
 	}
 }

@@ -5,7 +5,7 @@ import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { Logger } from "@/shared/infra/logger/logger"
 import type { UserDAO, UserStatsOutput } from "../persistence/dao/user-dao"
 
-const CACHE_KEY = "user-stats"
+export const USER_STATS_CACHE_KEY = "user-stats"
 
 @injectable()
 export class GetUserStatsUseCase {
@@ -19,12 +19,12 @@ export class GetUserStatsUseCase {
 	) {}
 
 	public async execute(): Promise<UserStatsOutput> {
-		const cached = await this.cacheDB.get<UserStatsOutput>(CACHE_KEY)
+		const cached = await this.cacheDB.get<UserStatsOutput>(USER_STATS_CACHE_KEY)
 		this.logger.info(this, { cached })
 		if (cached) return cached
 		const stats = await this.userDAO.countUserStats()
 		void this.cacheDB
-			.set(CACHE_KEY, stats, env.TTL)
+			.set(USER_STATS_CACHE_KEY, stats, env.TTL)
 			.catch((error) =>
 				this.logger.warn(this, `Falha ao salvar cache de stats: ${error}`),
 			)

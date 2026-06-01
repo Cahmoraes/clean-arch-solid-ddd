@@ -75,4 +75,23 @@ describe("SuspendUserUseCase", () => {
 		expect(page1).toBeNull()
 		expect(page2).toBeNull()
 	})
+
+	test("Deve invalidar o cache user-stats após suspender um usuário", async () => {
+		const input: SuspendUserUseCaseInput = {
+			userId: "any_user_id",
+		}
+		const user = (
+			await User.create({
+				email: "user@email.com",
+				name: "any_name",
+				password: "any_password",
+				id: input.userId,
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+		await cacheDB.set("user-stats", { total: 1, inactive: 0 }, 60)
+		await sut.execute(input)
+		const cachedStats = await cacheDB.get("user-stats")
+		expect(cachedStats).toBeNull()
+	})
 })

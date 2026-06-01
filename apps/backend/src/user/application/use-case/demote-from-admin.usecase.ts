@@ -11,6 +11,7 @@ import { UserIsNotAdminError } from "../error/user-is-not-admin-error"
 import { UserIsSuperAdminError } from "../error/user-is-super-admin-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
+import { USER_STATS_CACHE_KEY } from "./get-user-stats.usecase"
 
 export interface DemoteFromAdminUseCaseInput {
 	userId: string
@@ -49,6 +50,7 @@ export class DemoteFromAdminUseCase {
 		user.updateRole("MEMBER")
 		await this.userRepository.update(user)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
+		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
 		return success(null)
 	}
 }

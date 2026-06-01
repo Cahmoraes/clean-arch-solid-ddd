@@ -130,4 +130,26 @@ describe("DemoteFromAdminUseCase", () => {
 		const cached = await cacheDB.get("fetch-users:1:10")
 		expect(cached).toBeNull()
 	})
+
+	test("Deve invalidar o cache user-stats após demover", async () => {
+		const user = (
+			await User.create({
+				id: "cache-stats-admin-id",
+				email: "cache-stats-admin@test.com",
+				name: "Cache Stats Admin",
+				password: "password",
+				role: "ADMIN",
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+		await cacheDB.set("user-stats", { total: 1, members: 0, admins: 1 }, 60)
+
+		await sut.execute({
+			userId: "cache-stats-admin-id",
+			requesterId: "requester-id",
+		})
+
+		const cachedStats = await cacheDB.get("user-stats")
+		expect(cachedStats).toBeNull()
+	})
 })

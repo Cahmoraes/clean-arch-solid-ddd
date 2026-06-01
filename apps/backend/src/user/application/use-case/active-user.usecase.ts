@@ -9,6 +9,7 @@ import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { LoginAttemptStore } from "../persistence/login-attempt-store"
 import type { UserRepository } from "../persistence/repository/user-repository"
+import { USER_STATS_CACHE_KEY } from "./get-user-stats.usecase"
 
 export interface ActiveUserUseCaseInput {
 	userId: string
@@ -35,6 +36,7 @@ export class ActiveUserUseCase {
 		userFound.activate()
 		await this.userRepository.update(userFound)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
+		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
 		this.loginAttemptStore.deleteLock(userFound.id).catch((err) => {
 			console.error("[ActiveUserUseCase] Falha ao limpar Redis lock:", err)
 		})

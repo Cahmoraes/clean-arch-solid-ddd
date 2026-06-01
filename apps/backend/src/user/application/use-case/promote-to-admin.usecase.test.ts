@@ -127,4 +127,23 @@ describe("PromoteToAdminUseCase", () => {
 		const cached = await cacheDB.get("fetch-users:1:10")
 		expect(cached).toBeNull()
 	})
+
+	test("Deve invalidar o cache user-stats após promover", async () => {
+		const user = (
+			await User.create({
+				id: "cache-stats-id",
+				email: "cache-stats@test.com",
+				name: "Cache Stats",
+				password: "password",
+				role: "MEMBER",
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+		await cacheDB.set("user-stats", { total: 1, members: 1, admins: 0 }, 60)
+
+		await sut.execute({ userId: "cache-stats-id" })
+
+		const cachedStats = await cacheDB.get("user-stats")
+		expect(cachedStats).toBeNull()
+	})
 })
