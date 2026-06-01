@@ -5,37 +5,38 @@ import {
 import type { UserFilter, UserStats } from "../types"
 
 function buildItems(
-	counts: UserStats,
+	stats?: UserStats,
 ): ReadonlyArray<SegmentedItem<UserFilter>> {
 	return [
-		{ value: "all", label: "Todos", count: counts.total },
-		{ value: "member", label: "Membros", count: counts.members },
-		{ value: "admin", label: "Administradores", count: counts.admins },
-		{ value: "active", label: "Ativos", count: counts.active },
-		{ value: "inactive", label: "Inativos", count: counts.inactive },
+		{ value: "all", label: "Todos", count: stats?.total },
+		{ value: "member", label: "Membros", count: stats?.members },
+		{ value: "admin", label: "Administradores", count: stats?.admins },
+		{ value: "active", label: "Ativos", count: stats?.active },
+		{ value: "inactive", label: "Inativos", count: stats?.inactive },
 	]
 }
 
 export interface UserFilterBarProps {
 	activeFilter: UserFilter
-	counts: UserStats
+	stats?: UserStats
 	onFilterChange: (filter: UserFilter) => void
 	className?: string
 }
 
 export function UserFilterBar({
 	activeFilter,
-	counts,
+	stats,
 	onFilterChange,
 	className,
 }: UserFilterBarProps) {
 	return (
 		<SegmentedControl
 			aria-label="Filtrar usuários por categoria"
-			items={buildItems(counts)}
+			items={buildItems(stats)}
 			value={activeFilter}
 			onValueChange={onFilterChange}
 			className={className}
+			countFloat={stats !== undefined}
 		/>
 	)
 }

@@ -323,7 +323,7 @@ export default function AdminUsersPage() {
 				<div className="flex flex-wrap items-center justify-between gap-3">
 					<UserFilterBar
 						activeFilter={activeFilter}
-						counts={stats}
+						stats={stats}
 						onFilterChange={handleFilterChange}
 						className="w-full [&>button]:flex-1 [&>button]:justify-center"
 					/>

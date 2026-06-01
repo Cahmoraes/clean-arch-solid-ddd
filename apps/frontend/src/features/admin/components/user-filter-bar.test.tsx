@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from "vitest"
 import type { UserStats } from "../types"
 import { UserFilterBar } from "./user-filter-bar"
 
-const COUNTS: UserStats = {
+const STATS: UserStats = {
 	total: 48,
 	members: 41,
 	admins: 7,
@@ -17,7 +17,7 @@ describe("UserFilterBar", () => {
 		render(
 			<UserFilterBar
 				activeFilter="all"
-				counts={COUNTS}
+				stats={STATS}
 				onFilterChange={vi.fn()}
 			/>,
 		)
@@ -32,11 +32,11 @@ describe("UserFilterBar", () => {
 		).toBeInTheDocument()
 	})
 
-	test("deve exibir os contadores em cada tab", () => {
+	test("deve exibir os contadores em cada tab quando stats estão presentes", () => {
 		render(
 			<UserFilterBar
 				activeFilter="all"
-				counts={COUNTS}
+				stats={STATS}
 				onFilterChange={vi.fn()}
 			/>,
 		)
@@ -47,11 +47,24 @@ describe("UserFilterBar", () => {
 		expect(screen.getByText("3")).toBeInTheDocument()
 	})
 
+	test("não deve exibir badges quando stats são undefined (loading)", () => {
+		render(
+			<UserFilterBar
+				activeFilter="all"
+				stats={undefined}
+				onFilterChange={vi.fn()}
+			/>,
+		)
+		expect(screen.queryByText("48")).not.toBeInTheDocument()
+		expect(screen.queryByText("0")).not.toBeInTheDocument()
+		expect(screen.getByRole("button", { name: /^todos$/i })).toBeInTheDocument()
+	})
+
 	test("deve marcar a tab ativa com aria-pressed=true", () => {
 		render(
 			<UserFilterBar
 				activeFilter="member"
-				counts={COUNTS}
+				stats={STATS}
 				onFilterChange={vi.fn()}
 			/>,
 		)
@@ -70,7 +83,7 @@ describe("UserFilterBar", () => {
 		render(
 			<UserFilterBar
 				activeFilter="all"
-				counts={COUNTS}
+				stats={STATS}
 				onFilterChange={onFilterChange}
 			/>,
 		)
@@ -85,7 +98,7 @@ describe("UserFilterBar", () => {
 		render(
 			<UserFilterBar
 				activeFilter="member"
-				counts={COUNTS}
+				stats={STATS}
 				onFilterChange={onFilterChange}
 			/>,
 		)
