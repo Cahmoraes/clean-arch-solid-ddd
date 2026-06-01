@@ -12,6 +12,7 @@ export const CHECKIN_TYPES = {
 		FetchCheckIns: Symbol.for("FetchCheckInsUseCase"),
 		CheckIn: Symbol.for("CheckInUseCase"),
 		CheckInHistory: Symbol.for("CheckInHistoryUseCase"),
+		GetCheckInStats: Symbol.for("GetCheckInStatsUseCase"),
 	},
 	Controllers: {
 		CheckIn: Symbol.for("CheckInController"),
@@ -20,5 +21,7 @@ export const CHECKIN_TYPES = {
 		ListCheckIns: Symbol.for("ListCheckInsController"),
 		MyCheckIns: Symbol.for("MyCheckInsController"),
 		Metrics: Symbol.for("CheckInMetricsController"),
+		GetCheckInStats: Symbol.for("GetCheckInStatsController"),
+		GetMyCheckInStats: Symbol.for("GetMyCheckInStatsController"),
 	},
 } as const

@@ -2,6 +2,7 @@ import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
 import type {
 	CheckInRepository,
+	CheckInStats,
 	FindManyInput,
 	FindManyOutput,
 	SaveResponse,
@@ -51,6 +52,17 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 		})
 	}
 
+	public async countByStatus(userId?: string): Promise<CheckInStats> {
+		const all = userId
+			? this.checkIns.toArray().filter((c) => c.userId === userId)
+			: this.checkIns.toArray()
+		const total = all.length
+		const pending = all.filter((c) => c.status === "pending").length
+		const validated = all.filter((c) => c.status === "validated").length
+		const rejected = all.filter((c) => c.status === "rejected").length
+		return { total, pending, validated, rejected }
+	}
+
 	public async findMany(input: FindManyInput): Promise<FindManyOutput> {
 		let filtered = this.checkIns.toArray()
 		if (input.userId) {
@@ -58,6 +70,12 @@ export class InMemoryCheckInRepository implements CheckInRepository {
 		}
 		if (input.status) {
 			filtered = filtered.filter((checkIn) => checkIn.status === input.status)
+		}
+		if (input.sortOrder) {
+			filtered = filtered.sort((a, b) => {
+				const diff = a.createdAt.getTime() - b.createdAt.getTime()
+				return input.sortOrder === "asc" ? diff : -diff
+			})
 		}
 		const total = filtered.length
 		const start = (input.page - 1) * env.ITEMS_PER_PAGE

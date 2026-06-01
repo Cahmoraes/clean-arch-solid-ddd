@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify"
 import { DuplicateCheckInError } from "@/check-in/application/error/duplicate-check-in-error.js"
 import type {
 	CheckInRepository,
+	CheckInStats,
 	FindManyInput,
 	FindManyOutput,
 	SaveResponse,
@@ -126,6 +127,27 @@ export class PrismaCheckInRepository implements CheckInRepository {
 		return checkInOnSameDate > 0
 	}
 
+	public async countByStatus(userId?: string): Promise<CheckInStats> {
+		const userFilter = userId ? { user_id: userId } : {}
+		const [total, pending, validated, rejected] = await Promise.all([
+			this.prismaClient.checkIn.count({ where: { ...userFilter } }),
+			this.prismaClient.checkIn.count({
+				where: { ...userFilter, validated_at: null, rejected_at: null },
+			}),
+			this.prismaClient.checkIn.count({
+				where: {
+					...userFilter,
+					validated_at: { not: null },
+					rejected_at: null,
+				},
+			}),
+			this.prismaClient.checkIn.count({
+				where: { ...userFilter, rejected_at: { not: null } },
+			}),
+		])
+		return { total, pending, validated, rejected }
+	}
+
 	public async findMany(input: FindManyInput): Promise<FindManyOutput> {
 		const where = this.buildWhere(input)
 		const [checkInData, total] = await Promise.all([
@@ -133,7 +155,7 @@ export class PrismaCheckInRepository implements CheckInRepository {
 				where,
 				skip: (input.page - 1) * env.ITEMS_PER_PAGE,
 				take: env.ITEMS_PER_PAGE,
-				orderBy: { created_at: "desc" },
+				orderBy: { created_at: input.sortOrder ?? "desc" },
 			}),
 			this.prismaClient.checkIn.count({ where }),
 		])
@@ -151,6 +173,9 @@ export class PrismaCheckInRepository implements CheckInRepository {
 		const where: Prisma.CheckInWhereInput = {}
 		if (input.userId) {
 			where.user_id = input.userId
+		}
+		if (input.gymName) {
+			where.gym = { title: { contains: input.gymName, mode: "insensitive" } }
 		}
 		if (input.status === "pending") {
 			where.validated_at = null

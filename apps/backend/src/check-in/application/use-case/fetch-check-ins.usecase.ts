@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify"
 import type {
 	CheckInStatus,
 	FindManyOutput,
+	SortOrder,
 } from "@/check-in/application/repository/check-in-repository"
 import type { GymRepository } from "@/gym/application/repository/gym-repository"
 import { CHECKIN_TYPES, GYM_TYPES } from "@/shared/infra/ioc/types"
@@ -11,6 +12,8 @@ export interface FetchCheckInsUseCaseInput {
 	page: number
 	status?: CheckInStatus
 	userId?: string
+	gymName?: string
+	sortOrder?: SortOrder
 }
 
 export interface CheckInDTO {
@@ -48,6 +51,8 @@ export class FetchCheckInsUseCase {
 			page: input.page,
 			status: input.status,
 			userId: input.userId,
+			gymName: input.gymName,
+			sortOrder: input.sortOrder,
 		})
 		const gymTitleMap = await this.buildGymTitleMap(result.items)
 		return {

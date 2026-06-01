@@ -9,7 +9,10 @@ export type CheckInFilterStatus =
 	| "rejected"
 	| undefined
 
+export type SortOrder = "asc" | "desc"
+
 const VALID_STATUSES = new Set<string>(["pending", "validated", "rejected"])
+const VALID_SORT_ORDERS = new Set<string>(["asc", "desc"])
 
 function parseStatus(value: string | null): CheckInFilterStatus {
 	if (!value || !VALID_STATUSES.has(value)) return undefined
@@ -21,11 +24,20 @@ function parsePage(value: string | null): number {
 	return Number.isInteger(n) && n > 0 ? n : 1
 }
 
+function parseSortOrder(value: string | null): SortOrder {
+	if (!value || !VALID_SORT_ORDERS.has(value)) return "desc"
+	return value as SortOrder
+}
+
 export interface UseCheckInFiltersReturn {
 	status: CheckInFilterStatus
 	page: number
+	gymName: string
+	sortOrder: SortOrder
 	setStatus: (status: CheckInFilterStatus) => void
 	setPage: (page: number) => void
+	setGymName: (name: string) => void
+	setSortOrder: (order: SortOrder) => void
 }
 
 export function useCheckInFilters(): UseCheckInFiltersReturn {
@@ -34,6 +46,8 @@ export function useCheckInFilters(): UseCheckInFiltersReturn {
 
 	const status = parseStatus(searchParams.get("status"))
 	const page = parsePage(searchParams.get("page"))
+	const gymName = searchParams.get("gymName") ?? ""
+	const sortOrder = parseSortOrder(searchParams.get("sortOrder"))
 
 	const setStatus = useCallback(
 		(newStatus: CheckInFilterStatus) => {
@@ -58,5 +72,38 @@ export function useCheckInFilters(): UseCheckInFiltersReturn {
 		[searchParams, router],
 	)
 
-	return { status, page, setStatus, setPage }
+	const setGymName = useCallback(
+		(name: string) => {
+			const params = new URLSearchParams(searchParams.toString())
+			if (name) {
+				params.set("gymName", name)
+			} else {
+				params.delete("gymName")
+			}
+			params.set("page", "1")
+			router.replace(`?${params.toString()}`)
+		},
+		[searchParams, router],
+	)
+
+	const setSortOrder = useCallback(
+		(order: SortOrder) => {
+			const params = new URLSearchParams(searchParams.toString())
+			params.set("sortOrder", order)
+			params.set("page", "1")
+			router.replace(`?${params.toString()}`)
+		},
+		[searchParams, router],
+	)
+
+	return {
+		status,
+		page,
+		gymName,
+		sortOrder,
+		setStatus,
+		setPage,
+		setGymName,
+		setSortOrder,
+	}
 }

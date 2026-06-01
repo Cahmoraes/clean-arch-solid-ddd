@@ -6,10 +6,14 @@ export interface SaveResponse {
 
 export type CheckInStatus = "pending" | "validated" | "rejected"
 
+export type SortOrder = "asc" | "desc"
+
 export interface FindManyInput {
 	page: number
 	status?: CheckInStatus
 	userId?: string
+	gymName?: string
+	sortOrder?: SortOrder
 }
 
 export interface FindManyOutput {
@@ -17,10 +21,18 @@ export interface FindManyOutput {
 	total: number
 }
 
+export interface CheckInStats {
+	total: number
+	pending: number
+	validated: number
+	rejected: number
+}
+
 export interface CheckInRepository {
 	save(checkIn: CheckIn): Promise<SaveResponse>
 	checkOfById(id: string): Promise<CheckIn | null>
 	onSameDateOfUserId(userId: string, date: Date): Promise<boolean>
 	findMany(input: FindManyInput): Promise<FindManyOutput>
+	countByStatus(userId?: string): Promise<CheckInStats>
 	withTransaction<TX extends object>(object: TX): CheckInRepository
 }

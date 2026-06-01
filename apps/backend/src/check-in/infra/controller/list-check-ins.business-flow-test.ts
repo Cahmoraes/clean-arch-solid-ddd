@@ -186,4 +186,68 @@ describe("Listar Check-Ins (GET /check-ins)", () => {
 		expect(response.status).toBe(200)
 		expect(response.body.items[0].gymTitle).toBe("Academia Admin")
 	})
+
+	test("Deve aceitar gymName como query param e retornar HTTP 200", async () => {
+		const adminUser = await createAndSaveUser({
+			userRepository,
+			id: "admin-gymname",
+			email: "admin-gymname@test.com",
+			password: "admin123",
+			role: RoleValues.ADMIN,
+		})
+
+		await createAndSaveCheckIn({
+			checkInRepository,
+			id: "ci-gymname",
+			userId: adminUser.id,
+			gymId: "gym-any",
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+
+		const authResult = await authenticate.execute({
+			email: "admin-gymname@test.com",
+			password: "admin123",
+		})
+		const { token } = authResult.forceSuccess().value
+
+		const response = await request(fastifyServer.server)
+			.get(CheckInRoutes.LIST)
+			.auth(token, { type: "bearer" })
+			.query({ page: 1, gymName: "Academia" })
+
+		expect(response.status).toBe(200)
+	})
+
+	test("Deve aceitar sortOrder=asc como query param e retornar HTTP 200", async () => {
+		const adminUser = await createAndSaveUser({
+			userRepository,
+			id: "admin-sortorder",
+			email: "admin-sortorder@test.com",
+			password: "admin123",
+			role: RoleValues.ADMIN,
+		})
+
+		await createAndSaveCheckIn({
+			checkInRepository,
+			id: "ci-sortorder",
+			userId: adminUser.id,
+			gymId: "gym-any",
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+
+		const authResult = await authenticate.execute({
+			email: "admin-sortorder@test.com",
+			password: "admin123",
+		})
+		const { token } = authResult.forceSuccess().value
+
+		const response = await request(fastifyServer.server)
+			.get(CheckInRoutes.LIST)
+			.auth(token, { type: "bearer" })
+			.query({ page: 1, sortOrder: "asc" })
+
+		expect(response.status).toBe(200)
+	})
 })

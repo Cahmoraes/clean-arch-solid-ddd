@@ -1,102 +1,77 @@
 import { act, renderHook } from "@testing-library/react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import { useCheckInFilters } from "./use-check-in-filters.js"
+import { beforeEach, describe, expect, test, vi } from "vitest"
+
+const mockReplace = vi.fn()
+let mockSearchParamsString = ""
 
 vi.mock("next/navigation", () => ({
-	useRouter: vi.fn(),
-	useSearchParams: vi.fn(),
+	useSearchParams: () => new URLSearchParams(mockSearchParamsString),
+	useRouter: () => ({ replace: mockReplace }),
 }))
 
+import { useCheckInFilters } from "./use-check-in-filters"
+
 describe("useCheckInFilters", () => {
-	const mockReplace = vi.fn()
-
 	beforeEach(() => {
-		vi.mocked(useRouter).mockReturnValue({
-			replace: mockReplace,
-		} as unknown as ReturnType<typeof useRouter>)
-		mockReplace.mockReset()
+		mockSearchParamsString = ""
+		mockReplace.mockClear()
 	})
 
-	it("returns undefined status and page 1 when URL has no params", () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("") as ReturnType<typeof useSearchParams>,
-		)
+	test("retorna gymName vazio por padrão", () => {
 		const { result } = renderHook(() => useCheckInFilters())
-		expect(result.current.status).toBeUndefined()
-		expect(result.current.page).toBe(1)
+		expect(result.current.gymName).toBe("")
 	})
 
-	it("parses valid status from URL", () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("status=pending") as ReturnType<
-				typeof useSearchParams
-			>,
-		)
+	test("retorna sortOrder desc por padrão", () => {
 		const { result } = renderHook(() => useCheckInFilters())
-		expect(result.current.status).toBe("pending")
+		expect(result.current.sortOrder).toBe("desc")
 	})
 
-	it("parses page from URL", () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("page=3") as ReturnType<typeof useSearchParams>,
-		)
+	test("lê gymName da URL", () => {
+		mockSearchParamsString = "gymName=smartfit"
 		const { result } = renderHook(() => useCheckInFilters())
-		expect(result.current.page).toBe(3)
+		expect(result.current.gymName).toBe("smartfit")
 	})
 
-	it("ignores invalid status values and returns undefined", () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("status=invalid") as ReturnType<
-				typeof useSearchParams
-			>,
-		)
+	test("lê sortOrder da URL", () => {
+		mockSearchParamsString = "sortOrder=asc"
 		const { result } = renderHook(() => useCheckInFilters())
-		expect(result.current.status).toBeUndefined()
+		expect(result.current.sortOrder).toBe("asc")
 	})
 
-	it("ignores invalid page values and returns 1", () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("page=abc") as ReturnType<typeof useSearchParams>,
-		)
-		const { result } = renderHook(() => useCheckInFilters())
-		expect(result.current.page).toBe(1)
-	})
-
-	it("setStatus updates URL with new status and resets page to 1", () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("page=3") as ReturnType<typeof useSearchParams>,
-		)
+	test("setGymName atualiza a URL com gymName e reseta page para 1", () => {
+		mockSearchParamsString = "page=3&status=pending"
 		const { result } = renderHook(() => useCheckInFilters())
 		act(() => {
-			result.current.setStatus("pending")
+			result.current.setGymName("smartfit")
 		})
-		expect(mockReplace).toHaveBeenCalledWith("?page=1&status=pending")
+		const calledWith = mockReplace.mock.calls[0][0] as string
+		const params = new URLSearchParams(calledWith.replace("?", ""))
+		expect(params.get("gymName")).toBe("smartfit")
+		expect(params.get("page")).toBe("1")
+		expect(params.get("status")).toBe("pending")
 	})
 
-	it("setStatus with undefined removes status param and resets page to 1", () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("status=pending&page=2") as ReturnType<
-				typeof useSearchParams
-			>,
-		)
+	test("setGymName remove gymName da URL quando string vazia", () => {
+		mockSearchParamsString = "gymName=smartfit"
 		const { result } = renderHook(() => useCheckInFilters())
 		act(() => {
-			result.current.setStatus(undefined)
+			result.current.setGymName("")
 		})
-		expect(mockReplace).toHaveBeenCalledWith("?page=1")
+		const calledWith = mockReplace.mock.calls[0][0] as string
+		const params = new URLSearchParams(calledWith.replace("?", ""))
+		expect(params.has("gymName")).toBe(false)
 	})
 
-	it("setPage updates page param and preserves status", () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("status=pending&page=1") as ReturnType<
-				typeof useSearchParams
-			>,
-		)
+	test("setSortOrder atualiza a URL com sortOrder e reseta page para 1", () => {
+		mockSearchParamsString = "page=2"
 		const { result } = renderHook(() => useCheckInFilters())
 		act(() => {
-			result.current.setPage(2)
+			result.current.setSortOrder("asc")
 		})
-		expect(mockReplace).toHaveBeenCalledWith("?status=pending&page=2")
+		const calledWith = mockReplace.mock.calls[0][0] as string
+		const params = new URLSearchParams(calledWith.replace("?", ""))
+		expect(params.get("sortOrder")).toBe("asc")
+		expect(params.get("page")).toBe("1")
 	})
 })

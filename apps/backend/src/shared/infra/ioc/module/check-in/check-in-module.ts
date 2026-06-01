@@ -2,9 +2,12 @@ import { ContainerModule } from "inversify"
 import { CheckInUseCase } from "@/check-in/application/use-case/check-in.usecase"
 import { CheckInHistoryUseCase } from "@/check-in/application/use-case/check-in-history.usecase"
 import { FetchCheckInsUseCase } from "@/check-in/application/use-case/fetch-check-ins.usecase"
+import { GetCheckInStatsUseCase } from "@/check-in/application/use-case/get-check-in-stats.usecase"
 import { RejectCheckInUseCase } from "@/check-in/application/use-case/reject-check-in.usecase"
 import { ValidateCheckInUseCase } from "@/check-in/application/use-case/validate-check-in.usecase"
 import { CheckInController } from "@/check-in/infra/controller/check-in.controller"
+import { GetCheckInStatsController } from "@/check-in/infra/controller/get-check-in-stats.controller"
+import { GetMyCheckInStatsController } from "@/check-in/infra/controller/get-my-check-in-stats.controller"
 import { ListCheckInsController } from "@/check-in/infra/controller/list-check-ins.controller"
 import { MetricsController } from "@/check-in/infra/controller/metrics.controller"
 import { MyCheckInsController } from "@/check-in/infra/controller/my-check-ins.controller"
@@ -23,9 +26,14 @@ export const checkInModule = new ContainerModule(({ bind }) => {
 	bind(CHECKIN_TYPES.Controllers.ListCheckIns).to(ListCheckInsController)
 	bind(CHECKIN_TYPES.Controllers.MyCheckIns).to(MyCheckInsController)
 	bind(CHECKIN_TYPES.Controllers.Metrics).to(MetricsController)
+	bind(CHECKIN_TYPES.Controllers.GetCheckInStats).to(GetCheckInStatsController)
+	bind(CHECKIN_TYPES.Controllers.GetMyCheckInStats).to(
+		GetMyCheckInStatsController,
+	)
 	bind(CHECKIN_TYPES.UseCases.CheckIn).to(CheckInUseCase)
 	bind(CHECKIN_TYPES.UseCases.CheckInHistory).to(CheckInHistoryUseCase)
 	bind(CHECKIN_TYPES.UseCases.FetchCheckIns).to(FetchCheckInsUseCase)
+	bind(CHECKIN_TYPES.UseCases.GetCheckInStats).to(GetCheckInStatsUseCase)
 	bind(CHECKIN_TYPES.UseCases.ValidateCheckIn).to(ValidateCheckInUseCase)
 	bind(CHECKIN_TYPES.UseCases.RejectCheckIn).to(RejectCheckInUseCase)
 })

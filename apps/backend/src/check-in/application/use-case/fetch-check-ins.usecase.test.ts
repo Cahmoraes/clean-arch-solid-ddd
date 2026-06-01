@@ -172,4 +172,76 @@ describe("FetchCheckInsUseCase", () => {
 		expect(page2.items).toHaveLength(5)
 		expect(page2.total).toBe(25)
 	})
+
+	test("Deve aceitar gymName sem erro (in-memory não filtra por gymName)", async () => {
+		await createAndSaveCheckIn({
+			checkInRepository,
+			id: "ci-gym-name",
+			userId: "user-1",
+			gymId: "gym-1",
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+
+		const result = await sut.execute({ page: 1, gymName: "Academia Alpha" })
+		expect(result).toBeDefined()
+		expect(result.items).toBeDefined()
+		expect(result.total).toBeGreaterThanOrEqual(0)
+	})
+
+	test("Deve ordenar por createdAt em ordem ascendente quando sortOrder=asc", async () => {
+		const { CheckIn } = await import("@/check-in/domain/check-in")
+		const older = CheckIn.restore({
+			id: "ci-older",
+			userId: "user-1",
+			gymId: "gym-1",
+			createdAt: new Date("2024-01-01T10:00:00Z"),
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+		const newer = CheckIn.restore({
+			id: "ci-newer",
+			userId: "user-1",
+			gymId: "gym-1",
+			createdAt: new Date("2024-01-02T10:00:00Z"),
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+		await checkInRepository.save(older)
+		await checkInRepository.save(newer)
+
+		const result = await sut.execute({ page: 1, sortOrder: "asc" })
+		expect(result.items).toHaveLength(2)
+		expect(new Date(result.items[0].createdAt).getTime()).toBeLessThan(
+			new Date(result.items[1].createdAt).getTime(),
+		)
+	})
+
+	test("Deve ordenar por createdAt em ordem descendente quando sortOrder=desc", async () => {
+		const { CheckIn } = await import("@/check-in/domain/check-in")
+		const older = CheckIn.restore({
+			id: "ci-older-desc",
+			userId: "user-1",
+			gymId: "gym-1",
+			createdAt: new Date("2024-01-01T10:00:00Z"),
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+		const newer = CheckIn.restore({
+			id: "ci-newer-desc",
+			userId: "user-1",
+			gymId: "gym-1",
+			createdAt: new Date("2024-01-02T10:00:00Z"),
+			userLatitude: 0,
+			userLongitude: 0,
+		})
+		await checkInRepository.save(older)
+		await checkInRepository.save(newer)
+
+		const result = await sut.execute({ page: 1, sortOrder: "desc" })
+		expect(result.items).toHaveLength(2)
+		expect(new Date(result.items[0].createdAt).getTime()).toBeGreaterThan(
+			new Date(result.items[1].createdAt).getTime(),
+		)
+	})
 })

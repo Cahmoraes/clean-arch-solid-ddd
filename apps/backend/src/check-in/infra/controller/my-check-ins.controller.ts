@@ -20,6 +20,14 @@ const myCheckInsQuerySchema = z.object({
 		description: "Filter by status",
 		example: "pending",
 	}),
+	gymName: z.string().optional().meta({
+		description: "Filter by gym name (case-insensitive partial match)",
+		example: "Academia",
+	}),
+	sortOrder: z.enum(["asc", "desc"]).default("desc").meta({
+		description: "Sort order by createdAt",
+		example: "desc",
+	}),
 })
 
 export class MyCheckInsController extends BaseController {
@@ -61,6 +69,8 @@ export class MyCheckInsController extends BaseController {
 			page: parsedQuery.value.page,
 			status: parsedQuery.value.status,
 			userId: req.user.sub.id,
+			gymName: parsedQuery.value.gymName,
+			sortOrder: parsedQuery.value.sortOrder,
 		})
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
