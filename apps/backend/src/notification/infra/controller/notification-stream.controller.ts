@@ -43,6 +43,7 @@ export class NotificationStreamController extends BaseController {
 		const userId = req.user.sub.id
 
 		reply.raw.statusCode = HTTP_STATUS.OK
+		this.copyReplyHeadersToRaw(reply)
 		reply.raw.setHeader("Content-Type", "text/event-stream")
 		reply.raw.setHeader("Cache-Control", "no-cache")
 		reply.raw.setHeader("Connection", "keep-alive")
@@ -60,6 +61,18 @@ export class NotificationStreamController extends BaseController {
 			status: HTTP_STATUS.OK,
 			body: null,
 		})
+	}
+
+	/**
+	 * Headers set on the Fastify reply by plugins/hooks (e.g. @fastify/cors)
+	 * are only flushed when Fastify serializes the response. Since this
+	 * controller hijacks the reply and writes to the raw socket, those
+	 * headers must be copied to the raw response manually.
+	 */
+	private copyReplyHeadersToRaw(reply: FastifyReply): void {
+		for (const [name, value] of Object.entries(reply.getHeaders())) {
+			if (value !== undefined) reply.raw.setHeader(name, value)
+		}
 	}
 }
 

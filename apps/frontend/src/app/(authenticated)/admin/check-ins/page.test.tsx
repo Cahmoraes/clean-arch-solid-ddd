@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, test, vi } from "vitest"
 import { useCheckIns } from "@/features/check-ins/api"
 import AdminCheckInsPage from "./page.js"
 
@@ -38,6 +38,15 @@ describe("AdminCheckInsPage", () => {
 		vi.mocked(useCheckIns).mockReturnValue(
 			mockQuerySuccess() as unknown as ReturnType<typeof useCheckIns>,
 		)
+	})
+
+	test("não deve chamar router.replace no mount quando gymName não mudou", () => {
+		const replaceMock = vi.fn()
+		vi.mocked(useRouter).mockReturnValue({
+			replace: replaceMock,
+		} as unknown as ReturnType<typeof useRouter>)
+		render(<AdminCheckInsPage />)
+		expect(replaceMock).not.toHaveBeenCalled()
 	})
 
 	it("renders the filter bar with all 4 pills", () => {

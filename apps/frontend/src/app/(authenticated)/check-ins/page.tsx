@@ -142,8 +142,12 @@ function CheckInsPageContent() {
 	const debouncedGymName = useDebounce(gymNameInput, 300)
 
 	useEffect(() => {
+		// Evita loop de navegação: setGymName muda de identidade a cada
+		// router.replace (depende de searchParams), então só navega
+		// quando o valor debounced realmente difere do valor na URL.
+		if (debouncedGymName === gymName) return
 		setGymName(debouncedGymName)
-	}, [debouncedGymName, setGymName])
+	}, [debouncedGymName, gymName, setGymName])
 
 	const query = useMyCheckIns({ page, status, gymName, sortOrder })
 	const pages = totalCheckInPages(

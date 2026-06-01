@@ -85,6 +85,21 @@ describe("NotificationStreamController", () => {
 		)
 	})
 
+	test("GET /stream includes CORS headers when request has allowed origin", async () => {
+		const streamResponse = await openNotificationStream({
+			server: fastifyServer,
+			token,
+			origin: "http://localhost:3000",
+		})
+
+		expect(streamResponse.headers["access-control-allow-origin"]).toBe(
+			"http://localhost:3000",
+		)
+		expect(streamResponse.headers["access-control-allow-credentials"]).toBe(
+			"true",
+		)
+	})
+
 	test("GET /stream returns 401 without token", async () => {
 		const response = await request(fastifyServer.server).get(
 			NotificationRoutes.STREAM,
@@ -97,6 +112,7 @@ describe("NotificationStreamController", () => {
 function openNotificationStream(input: {
 	server: FastifyAdapter
 	token: string
+	origin?: string
 }): Promise<{ headers: IncomingMessage["headers"]; firstChunk: string }> {
 	return new Promise((resolve, reject) => {
 		let settled = false
@@ -105,6 +121,7 @@ function openNotificationStream(input: {
 			.set("Authorization", `Bearer ${input.token}`)
 			.buffer(false)
 			.timeout({ response: 1000, deadline: 2000 })
+		if (input.origin) streamRequest.set("Origin", input.origin)
 
 		streamRequest.on("response", (response: IncomingMessage) => {
 			response.once("data", (chunk) => {
