@@ -16,7 +16,12 @@ import {
 	type PaginatedCheckIns,
 } from "./extended-paths"
 
-export type { CheckIn, PaginatedCheckIns } from "./extended-paths"
+export type {
+	CheckIn,
+	CheckInStats,
+	PaginatedCheckIns,
+	SortOrder,
+} from "./extended-paths"
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 	if (error instanceof ApiError) return error
@@ -33,6 +38,8 @@ export const checkInsKeys = {
 			"list",
 			query.page ?? 1,
 			query.status ?? "all",
+			query.gymName ?? "",
+			query.sortOrder ?? "desc",
 		] as const,
 	mine: (query: CheckInsListQuery) =>
 		[
@@ -40,6 +47,8 @@ export const checkInsKeys = {
 			"mine",
 			query.page ?? 1,
 			query.status ?? "all",
+			query.gymName ?? "",
+			query.sortOrder ?? "desc",
 		] as const,
 	pendingAdmin: (page: number) =>
 		[...checkInsKeys.all, "admin-pending", page] as const,
@@ -106,6 +115,8 @@ async function fetchCheckIns(
 export interface UseCheckInsParams {
 	page: number
 	status?: "pending" | "validated" | "rejected"
+	gymName?: string
+	sortOrder?: "asc" | "desc"
 }
 
 export function useCheckIns(
@@ -114,6 +125,8 @@ export function useCheckIns(
 	const query: CheckInsListQuery = {
 		page: params.page,
 		...(params.status ? { status: params.status } : {}),
+		...(params.gymName ? { gymName: params.gymName } : {}),
+		...(params.sortOrder ? { sortOrder: params.sortOrder } : {}),
 	}
 	return useQuery<PaginatedCheckIns, ApiError>({
 		queryKey: checkInsKeys.list(query),
@@ -139,6 +152,8 @@ export function useMyCheckIns(
 	const query: CheckInsListQuery = {
 		page: params.page,
 		...(params.status ? { status: params.status } : {}),
+		...(params.gymName ? { gymName: params.gymName } : {}),
+		...(params.sortOrder ? { sortOrder: params.sortOrder } : {}),
 	}
 	return useQuery<PaginatedCheckIns, ApiError>({
 		queryKey: checkInsKeys.mine(query),

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback } from "react"
+import type { SortOrder } from "../api/extended-paths"
 
 export type CheckInFilterStatus =
 	| "pending"
@@ -9,7 +10,7 @@ export type CheckInFilterStatus =
 	| "rejected"
 	| undefined
 
-export type SortOrder = "asc" | "desc"
+export type { SortOrder }
 
 const VALID_STATUSES = new Set<string>(["pending", "validated", "rejected"])
 const VALID_SORT_ORDERS = new Set<string>(["asc", "desc"])

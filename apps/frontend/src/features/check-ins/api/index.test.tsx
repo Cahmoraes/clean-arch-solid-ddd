@@ -4,7 +4,12 @@ import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
 import { server } from "@/test/msw/server"
-import { useCheckIns, useCreateCheckIn, useValidateCheckIn } from "./index"
+import {
+	useCheckIns,
+	useCreateCheckIn,
+	useMyCheckIns,
+	useValidateCheckIn,
+} from "./index"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -142,6 +147,48 @@ describe("useCheckIns", () => {
 		})
 		await waitFor(() => expect(result.current.isError).toBe(true))
 		expect(result.current.error?.status).toBe(401)
+	})
+})
+
+describe("useMyCheckIns — filtros gymName e sortOrder", () => {
+	it("passa gymName na query string quando fornecido", async () => {
+		const captured: { url: URL | null } = { url: null }
+		server.use(
+			http.get(`${apiBaseUrl}/check-ins/me`, ({ request }) => {
+				captured.url = new URL(request.url)
+				return HttpResponse.json(
+					{ items: [], page: 1, total: 0 },
+					{ status: 200 },
+				)
+			}),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(
+			() => useMyCheckIns({ page: 1, gymName: "smartfit" }),
+			{ wrapper: Wrapper },
+		)
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(captured.url?.searchParams.get("gymName")).toBe("smartfit")
+	})
+
+	it("passa sortOrder=asc na query string quando fornecido", async () => {
+		const captured: { url: URL | null } = { url: null }
+		server.use(
+			http.get(`${apiBaseUrl}/check-ins/me`, ({ request }) => {
+				captured.url = new URL(request.url)
+				return HttpResponse.json(
+					{ items: [], page: 1, total: 0 },
+					{ status: 200 },
+				)
+			}),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(
+			() => useMyCheckIns({ page: 1, sortOrder: "asc" }),
+			{ wrapper: Wrapper },
+		)
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(captured.url?.searchParams.get("sortOrder")).toBe("asc")
 	})
 })
 

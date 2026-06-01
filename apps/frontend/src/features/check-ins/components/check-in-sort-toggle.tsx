@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowUp } from "lucide-react"
+import type { SortOrder } from "../api/extended-paths"
 
-export type SortOrder = "asc" | "desc"
+export type { SortOrder }
 
 export interface CheckInSortToggleProps {
 	value: SortOrder

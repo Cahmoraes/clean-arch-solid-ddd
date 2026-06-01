@@ -7,6 +7,8 @@ import { getApi } from "@/lib/api"
  * verb adopted by the frontend contract). Once the spec is regenerated and
  * aligned, these can be removed and `api` can be used directly.
  */
+export type SortOrder = "asc" | "desc"
+
 export interface CheckIn {
 	id: string
 	gymId: string
@@ -27,6 +29,15 @@ export interface PaginatedCheckIns {
 export interface CheckInsListQuery {
 	page?: number
 	status?: "pending" | "validated" | "rejected"
+	gymName?: string
+	sortOrder?: SortOrder
+}
+
+export interface CheckInStats {
+	total: number
+	validated: number
+	pending: number
+	rejected: number
 }
 
 export interface CheckInExtendedPaths {
@@ -43,6 +54,22 @@ export interface CheckInExtendedPaths {
 			parameters: { query?: CheckInsListQuery }
 			responses: {
 				200: { content: { "application/json": PaginatedCheckIns } }
+			}
+		}
+	}
+	"/check-ins/stats": {
+		get: {
+			parameters: { query?: Record<string, never> }
+			responses: {
+				200: { content: { "application/json": CheckInStats } }
+			}
+		}
+	}
+	"/check-ins/me/stats": {
+		get: {
+			parameters: { query?: Record<string, never> }
+			responses: {
+				200: { content: { "application/json": CheckInStats } }
 			}
 		}
 	}
