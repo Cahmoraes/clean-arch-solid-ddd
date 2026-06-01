@@ -14,6 +14,10 @@ vi.mock("@/features/check-ins/api", () => ({
 	CHECK_INS_DEFAULT_PAGE_SIZE: 10,
 }))
 
+vi.mock("@/features/check-ins/hooks/use-my-check-in-stats", () => ({
+	useMyCheckInStats: vi.fn(() => ({ data: undefined })),
+}))
+
 const mockQuerySuccess = (items = [], total = 0) => ({
 	isLoading: false,
 	isError: false,

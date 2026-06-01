@@ -1,7 +1,7 @@
 "use client"
 
 import { CalendarCheck } from "lucide-react"
-import { Suspense } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -12,15 +12,19 @@ import {
 import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
 import { CheckInFilterBar } from "@/features/check-ins/components/check-in-filter-bar"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
+import { CheckInSearchInput } from "@/features/check-ins/components/check-in-search-input"
+import { CheckInSortToggle } from "@/features/check-ins/components/check-in-sort-toggle"
 import { CheckInsPager } from "@/features/check-ins/components/check-ins-pager"
 import {
 	type CheckInFilterStatus,
 	useCheckInFilters,
 } from "@/features/check-ins/hooks/use-check-in-filters"
+import { useMyCheckInStats } from "@/features/check-ins/hooks/use-my-check-in-stats"
 import {
 	CHECK_IN_STATUS_LABELS,
 	totalCheckInPages,
 } from "@/features/check-ins/utils"
+import { useDebounce } from "@/hooks/use-debounce"
 import { useAuthStore } from "@/lib/auth/auth-store"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3", "sk-4"]
@@ -122,8 +126,26 @@ function CheckInsBody({ query, status }: BodyProps) {
 }
 
 function CheckInsPageContent() {
-	const { status, page, setStatus, setPage } = useCheckInFilters()
-	const query = useMyCheckIns({ page, status })
+	const {
+		status,
+		page,
+		gymName,
+		sortOrder,
+		setStatus,
+		setPage,
+		setGymName,
+		setSortOrder,
+	} = useCheckInFilters()
+	const { data: statsData } = useMyCheckInStats()
+
+	const [gymNameInput, setGymNameInput] = useState(gymName)
+	const debouncedGymName = useDebounce(gymNameInput, 300)
+
+	useEffect(() => {
+		setGymName(debouncedGymName)
+	}, [debouncedGymName, setGymName])
+
+	const query = useMyCheckIns({ page, status, gymName, sortOrder })
 	const pages = totalCheckInPages(
 		query.data?.total ?? 0,
 		CHECK_INS_DEFAULT_PAGE_SIZE,
@@ -146,7 +168,20 @@ function CheckInsPageContent() {
 				</p>
 			</header>
 
-			<CheckInFilterBar status={status} onStatusChange={setStatus} />
+			<CheckInFilterBar
+				status={status}
+				onStatusChange={setStatus}
+				stats={statsData}
+			/>
+
+			<div className="flex gap-3">
+				<CheckInSearchInput
+					value={gymNameInput}
+					onChange={setGymNameInput}
+					placeholder="Buscar por academia..."
+				/>
+				<CheckInSortToggle value={sortOrder} onValueChange={setSortOrder} />
+			</div>
 
 			<CheckInsBody query={query} status={status} />
 

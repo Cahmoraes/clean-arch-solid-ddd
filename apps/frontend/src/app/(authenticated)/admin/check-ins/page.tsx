@@ -1,7 +1,7 @@
 "use client"
 
 import { ShieldCheck } from "lucide-react"
-import { Suspense } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
@@ -14,7 +14,10 @@ import {
 import { CheckInActions } from "@/features/check-ins/components/check-in-actions"
 import { CheckInFilterBar } from "@/features/check-ins/components/check-in-filter-bar"
 import { CheckInItem } from "@/features/check-ins/components/check-in-item"
+import { CheckInSearchInput } from "@/features/check-ins/components/check-in-search-input"
+import { CheckInSortToggle } from "@/features/check-ins/components/check-in-sort-toggle"
 import { CheckInsPager } from "@/features/check-ins/components/check-ins-pager"
+import { useAdminCheckInStats } from "@/features/check-ins/hooks/use-admin-check-in-stats"
 import {
 	type CheckInFilterStatus,
 	useCheckInFilters,
@@ -23,6 +26,7 @@ import {
 	CHECK_IN_STATUS_LABELS,
 	totalCheckInPages,
 } from "@/features/check-ins/utils"
+import { useDebounce } from "@/hooks/use-debounce"
 
 const SKELETON_KEYS = ["sk-1", "sk-2", "sk-3"]
 
@@ -108,8 +112,26 @@ function AdminCheckInsBody({ query, status }: BodyProps) {
 }
 
 function AdminCheckInsPageContent() {
-	const { status, page, setStatus, setPage } = useCheckInFilters()
-	const query = useCheckIns({ page, status })
+	const {
+		status,
+		page,
+		gymName,
+		sortOrder,
+		setStatus,
+		setPage,
+		setGymName,
+		setSortOrder,
+	} = useCheckInFilters()
+	const { data: statsData } = useAdminCheckInStats()
+
+	const [gymNameInput, setGymNameInput] = useState(gymName)
+	const debouncedGymName = useDebounce(gymNameInput, 300)
+
+	useEffect(() => {
+		setGymName(debouncedGymName)
+	}, [debouncedGymName, setGymName])
+
+	const query = useCheckIns({ page, status, gymName, sortOrder })
 	const pages = totalCheckInPages(
 		query.data?.total ?? 0,
 		CHECK_INS_DEFAULT_PAGE_SIZE,
@@ -127,7 +149,20 @@ function AdminCheckInsPageContent() {
 				className="mb-0"
 			/>
 
-			<CheckInFilterBar status={status} onStatusChange={setStatus} />
+			<CheckInFilterBar
+				status={status}
+				onStatusChange={setStatus}
+				stats={statsData}
+			/>
+
+			<div className="flex gap-3">
+				<CheckInSearchInput
+					value={gymNameInput}
+					onChange={setGymNameInput}
+					placeholder="Buscar por academia..."
+				/>
+				<CheckInSortToggle value={sortOrder} onValueChange={setSortOrder} />
+			</div>
 
 			<AdminCheckInsBody query={query} status={status} />
 
