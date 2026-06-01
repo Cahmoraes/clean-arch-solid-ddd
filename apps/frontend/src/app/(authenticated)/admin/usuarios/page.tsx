@@ -25,7 +25,7 @@ import {
 import { UserDetailContainer } from "@/features/admin/components/user-detail/user-detail-container"
 import { UserFilterBar } from "@/features/admin/components/user-filter-bar"
 import { UserRow } from "@/features/admin/components/user-row"
-import type { UserFilter, UserStats } from "@/features/admin/types"
+import type { UserFilter } from "@/features/admin/types"
 import { useDebounce } from "@/hooks/use-debounce"
 import type { ApiError } from "@/lib/errors"
 
@@ -235,14 +235,6 @@ function resolveNextIndex(
 	return Math.min(Math.max(currentIndex + delta, 0), list.length - 1)
 }
 
-const EMPTY_STATS: UserStats = {
-	total: 0,
-	members: 0,
-	admins: 0,
-	active: 0,
-	inactive: 0,
-}
-
 export default function AdminUsersPage() {
 	const [page, setPage] = useState(1)
 	const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
@@ -250,9 +242,7 @@ export default function AdminUsersPage() {
 	const debouncedQuery = useDebounce(inputQuery, 500)
 	const limit = ADMIN_USERS_DEFAULT_LIMIT
 	const [activeFilter, setActiveFilter] = useState<UserFilter>("all")
-	const { data: statsData } = useUserStats()
-
-	const stats: UserStats = statsData ?? EMPTY_STATS
+	const { data: stats } = useUserStats()
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: debouncedQuery é o gatilho intencional para resetar a página; não é consumido no corpo do efeito
 	useEffect(() => {
