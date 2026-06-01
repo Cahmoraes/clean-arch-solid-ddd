@@ -12,7 +12,7 @@ export function CheckInSearchInput({
 	placeholder,
 }: CheckInSearchInputProps) {
 	return (
-		<div className="relative flex h-[52px] items-center rounded-md border border-border bg-surface px-4 gap-2">
+		<div className="relative w-full flex h-[52px] items-center rounded-md border border-border bg-surface px-4 gap-2">
 			<Search className="h-4 w-4 shrink-0 text-subtle" aria-hidden="true" />
 			<input
 				type="text"

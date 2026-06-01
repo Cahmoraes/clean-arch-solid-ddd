@@ -1,6 +1,6 @@
 # Task 2: Atualizar página admin `/admin/usuarios` — remover EMPTY_STATS [RF-001, RF-006, RF-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-users-filter-badges.md`
 **Spec:** `../specs/admin-users-filter-badges-design.md`
 **Depends on:** task-01

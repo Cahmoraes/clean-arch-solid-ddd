@@ -1,6 +1,6 @@
 # Task 1: Refatorar `UserFilterBar` — prop opcional e FloatBadge [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-users-filter-badges.md`
 **Spec:** `../specs/admin-users-filter-badges-design.md`
 **Depends on:** N/A

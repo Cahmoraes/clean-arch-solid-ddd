@@ -15,8 +15,8 @@
 
 ## Tarefas
 
-- [ ] 1. Refatorar `UserFilterBar` — prop opcional e FloatBadge [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-008] → `task-01.md`
-- [ ] 2. Atualizar página admin `/admin/usuarios` — remover EMPTY_STATS [RF-001, RF-005, RF-006, RF-007] → `task-02.md`
+- [x] 1. Refatorar `UserFilterBar` — prop opcional e FloatBadge [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-008] → `task-01.md`
+- [x] 2. Atualizar página admin `/admin/usuarios` — remover EMPTY_STATS [RF-001, RF-005, RF-006, RF-007] → `task-02.md`
 
 > **Nota RF-009, RF-010, RF-011:** Invalidação de cache após mutações já está implementada. Todos os hooks (`usePromoteToAdmin`, `useDemoteFromAdmin`, `useDeleteUser`, `useSuspendUser`, `useActivateUser`) chamam `queryClient.invalidateQueries({ queryKey: [USER_STATS_QUERY_KEY] })` no `onSettled`. Nenhuma task adicional necessária.
 

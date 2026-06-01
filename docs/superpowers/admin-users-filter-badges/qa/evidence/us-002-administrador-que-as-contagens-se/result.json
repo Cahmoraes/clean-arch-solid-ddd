@@ -1,0 +1,12 @@
+{
+  "us_id": "US-002",
+  "user_story": "Como administrador, eu quero que as contagens se atualizem automaticamente após promover, rebaixar ou excluir um usuário para que os badges sempre reflitam o estado atual.",
+  "requirements": ["RF-009", "RF-010", "RF-011"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "92 test files passed, 441 tests passed (exit code 0). Hooks verificados: use-promote-to-admin.ts, use-demote-from-admin.ts, use-delete-user.ts — todos chamam invalidateQueries([USER_STATS_QUERY_KEY]) em onSettled. Testes existentes cobrem: RF-009 (use-promote-to-admin.test.tsx — 'RF-016: invalida USER_STATS_QUERY_KEY após promoção bem-sucedida' e 'RF-016: invalida USER_STATS_QUERY_KEY mesmo quando promoção falha'); RF-010 (use-demote-from-admin.test.tsx — 'RF-016: invalida USER_STATS_QUERY_KEY após rebaixamento bem-sucedido' e 'RF-016: invalida USER_STATS_QUERY_KEY mesmo quando rebaixamento falha'); RF-011 (use-delete-user.test.tsx — 'invalida queries de listagem e stats após a mutação (onSettled)').",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "RF-009..RF-011 já implementados antes da feature atual. Invalidação ocorre em onSettled (não apenas onSuccess), garantindo comportamento correto também em falha. Screenshot omitido — servidor dev não estava em execução."
+}

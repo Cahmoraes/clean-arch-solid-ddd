@@ -22,7 +22,7 @@ export function CheckInSortToggle({
 		<button
 			type="button"
 			onClick={handleClick}
-			className="inline-flex h-[52px] items-center gap-2 rounded-md border border-border bg-surface px-4 text-sm text-foreground transition-colors hover:bg-surface/80"
+			className="inline-flex h-[52px] w-[220px] items-center justify-center gap-2 rounded-md border border-border bg-surface px-4 text-sm text-foreground transition-colors hover:bg-surface/80"
 		>
 			{isDesc ? (
 				<ArrowDown className="h-4 w-4 shrink-0" aria-hidden="true" />

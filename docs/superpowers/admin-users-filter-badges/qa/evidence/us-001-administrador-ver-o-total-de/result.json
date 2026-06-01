@@ -1,0 +1,12 @@
+{
+  "us_id": "US-001",
+  "user_story": "Como administrador, eu quero ver o total de usuários de cada categoria diretamente nos pills de filtro para que eu entenda a composição da plataforma sem precisar alternar entre filtros.",
+  "requirements": ["RF-001", "RF-002", "RF-003", "RF-004", "RF-005", "RF-006"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "441 tests passed (92 test files). Relevant tests in user-filter-bar.test.tsx: (1) 'deve renderizar as cinco tabs de filtro' — verifica pills Todos/Membros/Administradores/Ativos/Inativos presentes; (2) 'deve exibir os contadores em cada tab quando stats estão presentes' — cobre RF-001(48), RF-002(41), RF-003(7), RF-004(45), RF-005(3); (3) 'não deve exibir badges quando stats são undefined (loading)' — cobre RF-006 (badges só aparecem após load). Tests in use-user-stats.test.tsx: (1) 'deve retornar os contadores de usuários do endpoint' — valida mapeamento total/members/admins/active/inactive via MSW; (2) 'deve entrar em estado de erro quando o endpoint retorna 403' — valida erro de auth.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Dev server não estava rodando — screenshot pulado. Todos os 6 RFs cobertos por testes unitários existentes. Impl em user-filter-bar.tsx usa countFloat={stats !== undefined} para ocultar badges durante loading (RF-006). useUserStats usa staleTime 30s, endpoint GET /users/stats, tipagem via @repo/api-types."
+}
