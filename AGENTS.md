@@ -1,21 +1,21 @@
 ## ALTA PRIORIDADE
 
-- **SE VOCÊ NÃO VERIFICAR AS SKILLS**, sua tarefa será invalidada e geraremos retrabalho
-- **VOCÊ SÓ PODE finalizar uma tarefa** se `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` passar a 100% (executa lint + test + build). Sem exceções — falhar em qualquer um desses comandos significa que a tarefa NÃO ESTÁ COMPLETA
-- `biome:fix` tem tolerância zero. Zero problemas permitidos — qualquer issue do golangci-lint é uma falha bloqueante
-- **SEMPRE verifique as APIs dos pacotes dependentes** antes de escrever código de integração ou testes, para evitar código incorreto
-- **NUNCA use gambiarras** — sempre utilize a skill `no-workarounds` para qualquer tarefa de correção/debug + `testing-anti-patterns` para testes
-- **SEMPRE use as skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs ou problemas complexos
-- **NUNCA use ferramentas** de busca na web para pesquisar código local do projeto — para código local, use Grep/Glob
-- **NUNCA FAÇA COMMITS sem pedir permissão** sempre pergunte se o usuário deseja realizar commit
+- **SE VOCÊ NÃO VERIFICAR AS SKILLS**, tarefa invalidada, gera retrabalho
+- **VOCÊ SÓ PODE finalizar tarefa** se `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` passar 100% (lint + test + build). Sem exceção — falhar qualquer um = tarefa NÃO COMPLETA
+- `biome:fix` tolerância zero. Zero problemas — qualquer issue golangci-lint = falha bloqueante
+- **SEMPRE verifique APIs dos pacotes dependentes** antes de escrever código de integração/testes, evita código errado
+- **NUNCA use gambiarras** — use skill `no-workarounds` para correção/debug + `testing-anti-patterns` para testes
+- **SEMPRE use skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
+- **NUNCA use ferramentas** web para código local — use Grep/Glob
+- **NUNCA FAÇA COMMITS sem permissão** — sempre pergunte
 
 ## Monorepo Structure
 
-pnpm workspace monorepo managed by Turborepo:
+pnpm workspace monorepo via Turborepo:
 
 - **`apps/backend`** — Fastify API (Clean Architecture + DDD, TypeScript, Inversify IoC, Prisma ORM)
 - **`apps/frontend`** — Next.js 16 app (React 19, TanStack Query, Zustand, Tailwind, shadcn/ui)
-- **`packages/api-types`** — Shared OpenAPI-generated types between frontend and backend
+- **`packages/api-types`** — Shared OpenAPI-generated types entre frontend e backend
 
 ## Build, Test & Lint
 
@@ -63,50 +63,50 @@ pnpm --filter frontend e2e            # Playwright E2E tests
 
 ### Clean Architecture Layers (enforced by dependency-cruiser)
 
-Each bounded context lives in `src/{domain}/` with three layers:
+Cada bounded context em `src/{domain}/`, três camadas:
 
-- **`domain/`** — Entities, Value Objects, Domain Events, business errors. Pure logic, no imports from application or infra.
-- **`application/`** — Use Cases, Repository interfaces, DTOs. Imports domain only.
-- **`infra/`** — Controllers, concrete Repositories, Providers. Imports application and domain.
+- **`domain/`** — Entities, Value Objects, Domain Events, business errors. Lógica pura, sem imports de application/infra.
+- **`application/`** — Use Cases, Repository interfaces, DTOs. Importa só domain.
+- **`infra/`** — Controllers, concrete Repositories, Providers. Importa application e domain.
 
 **Bounded contexts**: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `shared/`
 
-Each module has its own `AGENTS.md` with detailed specs — read it before modifying that module.
+Cada módulo tem próprio `AGENTS.md` com specs — leia antes de modificar.
 
 ### Either Pattern (no exceptions for business logic)
 
-Use Cases return `Either<Error, Success>`:
+Use Cases retornam `Either<Error, Success>`:
 
 ```typescript
 return failure(new UserAlreadyExistsError())
 return success({ email: user.email })
 ```
 
-Exceptions are only for technical failures (DB connection, etc).
+Exceptions só para falhas técnicas (DB connection, etc).
 
 ### Inversify IoC — Adding a New Service
 
-1. Define symbols in `src/shared/infra/ioc/module/service-identifier/{domain}-types.ts`
-2. Register bindings in `src/shared/infra/ioc/module/{domain}/{domain}-container.ts`
-3. Wire in bootstrap at `src/bootstrap/setup-{domain}-module.ts`
+1. Define symbols em `src/shared/infra/ioc/module/service-identifier/{domain}-types.ts`
+2. Register bindings em `src/shared/infra/ioc/module/{domain}/{domain}-container.ts`
+3. Wire bootstrap em `src/bootstrap/setup-{domain}-module.ts`
 
 ### Entity Pattern
 
-- Factory method `create()` validates and returns `Either` (async only when validation requires it, e.g., bcrypt)
-- `restore()` bypasses validation (loading from DB)
-- Extend `Observable` for domain event publishing via `this.notify()`
+- Factory `create()` valida, retorna `Either` (async só quando validação exige, ex: bcrypt)
+- `restore()` pula validação (load do DB)
+- Estende `Observable` para domain event via `this.notify()`
 
 ### Controller Pattern
 
-- Implement `Controller` interface with `@injectable()` decorator
-- Register routes in `init()` method via `this.httpServer.register()`
-- Use `isProtected: true` for JWT-secured routes, `onlyAdmin: true` for admin-only
-- Route constants in `{domain}/infra/controller/routes/{domain}-routes.ts`
+- Implementa `Controller` interface com `@injectable()` decorator
+- Register routes no `init()` via `this.httpServer.register()`
+- `isProtected: true` para rotas JWT, `onlyAdmin: true` para admin-only
+- Route constants em `{domain}/infra/controller/routes/{domain}-routes.ts`
 
 ### Repository Provider Pattern
 
-Providers select implementation based on environment (`DATABASE_PROVIDER` env var):
-- Production: `PrismaRepository` or `SQLiteRepository`
+Providers escolhem implementação por env (`DATABASE_PROVIDER` env var):
+- Production: `PrismaRepository` ou `SQLiteRepository`
 - Development/Test: `InMemoryRepository`
 
 ### Domain Events
@@ -115,37 +115,37 @@ Providers select implementation based on environment (`DATABASE_PROVIDER` env va
 DomainEventPublisher.instance.publish(new UserCreatedEvent(payload))
 ```
 
-Publish after successful persistence in Use Cases.
+Publica após persistência ok nos Use Cases.
 
 ## Testing Conventions
 
 ### Unit Tests (`*.test.ts`)
 
 - Use in-memory repositories
-- `container.snapshot()` in beforeEach, `container.restore()` in afterEach
-- Factory helpers in `test/factory/` (e.g., `createAndSaveUser`, `createAndSaveGym`)
+- `container.snapshot()` no beforeEach, `container.restore()` no afterEach
+- Factory helpers em `test/factory/` (ex: `createAndSaveUser`, `createAndSaveGym`)
 
 ### Business Flow Tests (`*.business-flow-test.ts`)
 
-- Full HTTP tests with supertest against in-memory Fastify server
-- Rebind repositories to in-memory implementations via `container.rebindSync()`
+- HTTP tests full com supertest contra in-memory Fastify server
+- Rebind repositories para in-memory via `container.rebindSync()`
 
 ## Key Conventions
 
-- **Language**: Code in English, communication in PT-BR (preserve technical terms)
-- **Imports**: Use `@/` alias for `src/`. Use `.js` extension in internal imports (ESM).
-- **File naming**: kebab-case (e.g., `create-user.usecase.ts`, `user.repository.ts`)
-- **Class naming**: PascalCase — `UseCase` suffix, `Controller` suffix, `Error` suffix
-- **Formatting**: 2-space indentation, blank line at end of files, Biome enforced
+- **Language**: Code em English, comunicação em PT-BR (preserva technical terms)
+- **Imports**: `@/` alias para `src/`. Extensão `.js` em imports internos (ESM).
+- **File naming**: kebab-case (ex: `create-user.usecase.ts`, `user.repository.ts`)
+- **Class naming**: PascalCase — sufixo `UseCase`, `Controller`, `Error`
+- **Formatting**: 2-space indent, blank line no fim do arquivo, Biome enforced
 - **Commits**: Conventional commits via Commitizen (`pnpm --filter backend commit`)
-- **Validation gate**: `biome:fix` + `tsc:check` + `test:run` + `build` must all pass before completing any task
+- **Validation gate**: `biome:fix` + `tsc:check` + `test:run` + `build` todos passam antes de completar tarefa
 
 ## Shared API Types
 
-Types are generated from backend OpenAPI spec:
+Types gerados do backend OpenAPI spec:
 
 ```bash
 pnpm generate:types  # Export OpenAPI spec from backend + generate client types
 ```
 
-Frontend imports types from `@repo/api-types` workspace package.
+Frontend importa types do `@repo/api-types` workspace package.

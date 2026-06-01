@@ -1,36 +1,36 @@
 ## ALTA PRIORIDADE
 
-- **SE VOCE NAO VERIFICAR AS SKILLS**, tarefa invalidada, gera retrabalho
-- **VOCE SO PODE finalizar tarefa** se `pnpm lint:fix`, `pnpm tsc:check`, `pnpm test`, `pnpm build` passar 100% (lint + test + build). Sem excecao — falhar qualquer um = tarefa NAO COMPLETA
-- `lint:fix` tolerancia zero. Zero problemas — qualquer issue Biome = falha bloqueante
-- **SEMPRE verifique APIs dos pacotes dependentes** antes de escrever codigo de integracao/testes, evita codigo errado
-- **NUNCA use gambiarras** — use skill `no-workarounds` para correcao/debug + `test-antipatterns` para testes
-- **SEMPRE use skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
-- **NUNCA use ferramentas** web para codigo local — use Grep/Glob
-- **NUNCA FAÇA COMMITS sem permissão** — sempre pergunte
+- **SE VOCE NAO VERIFICAR AS SKILLS**, sua tarefa sera invalidada e geraremos retrabalho
+- **VOCE SO PODE finalizar uma tarefa** se `pnpm lint:fix`, `pnpm tsc:check`, `pnpm test` e `pnpm build` passar a 100% (executa lint + test + build). Sem excecoes — falhar em qualquer um desses comandos significa que a tarefa NAO ESTA COMPLETA
+- `lint:fix` tem tolerancia zero. Zero problemas permitidos — qualquer issue do Biome e uma falha bloqueante
+- **SEMPRE verifique as APIs dos pacotes dependentes** antes de escrever codigo de integracao ou testes, para evitar codigo incorreto
+- **NUNCA use gambiarras** — sempre utilize a skill `no-workarounds` para qualquer tarefa de correcao/debug + `test-antipatterns` para testes
+- **SEMPRE use as skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs ou problemas complexos
+- **NUNCA use ferramentas** de busca na web para pesquisar codigo local do projeto — para codigo local, use Grep/Glob
+- **NUNCA FAÇA COMMITS sem pedir permissão** sempre pergunte se o usuário deseja realizar commit
 
 ## REQUISITOS OBRIGATORIOS
-- DEVE rodar `pnpm lint:fix` antes de concluir QUALQUER subtarefa
-- SEMPRE USE skills `systematic-debugging` + `no-workarounds` antes de corrigir bug
+- DEVE executar `pnpm lint:fix` antes de concluir QUALQUER subtarefa
+- SEMPRE USE as skills `systematic-debugging` + `no-workarounds` antes de corrigir qualquer bug
 
-Pular verificacao = REJEICAO IMEDIATA DA TAREFA.
+Pular qualquer verificacao resultara em REJEICAO IMEDIATA DA TAREFA.
 
 <MOST_CRITICAL>
 
-- ABSOLUTAMENTE OBRIGATORIO: modo Plan, apos usuario aceitar plano, SEMPRE escreva plano aceito em arquivo Markdown dentro de docs/plans/.
+- ABSOLUTAMENTE OBRIGATORIO: No modo Plan, apos o usuario aceitar um plano, SEMPRE escreva o plano aceito em um arquivo Markdown dentro de docs/plans/.
 
-- OBRIGATORIO: plano aceito atualizado depois → atualize/acrescente conteudo no Markdown correspondente em docs/plans/.
+- OBRIGATORIO: Se o plano aceito for atualizado posteriormente, atualize ou acrescente o conteudo no arquivo Markdown correspondente dentro de docs/plans/.
 
-- VIOLACAO: nao persistir planos aceitos do modo Plan em docs/plans/ = nao conformidade com politica do workspace.
+- VIOLACAO: Nao persistir planos aceitos no modo Plan dentro de docs/plans/ e uma nao conformidade com esta politica do workspace.
 
 </MOST_CRITICAL>
 
 # Overview do Projeto
 
 ## Restricoes de Comunicacao
-- Responder portugues PT-BR, preservar termos tecnicos
-- Nunca emojis
-- Indentacao tab (Biome), linha em branco ao fim dos arquivos
+- Responder em portugues PT-BR preservando termos tecnicos
+- Nunca utilizar emojis
+- Indentacao com tab (Biome), linha em branco ao final de arquivos
 
 ## Build, Test & Lint
 
@@ -110,7 +110,7 @@ src/
 ```
 
 ### Feature Modules (`src/features/{feature}/`)
-Cada feature segue estrutura:
+Cada feature segue a estrutura:
 ```
 {feature}/
 ├── api/              # Hooks TanStack Query (useQuery, useMutation) e funcoes de fetch
@@ -131,7 +131,7 @@ Cada feature segue estrutura:
 
 ### Padrao de Autenticacao
 - Auth state em Zustand (`lib/auth/auth-store.ts`)
-- Token JWT em memoria (nao localStorage)
+- Token JWT armazenado em memoria (nao localStorage)
 - Refresh token via cookie httpOnly
 - Middleware de fetch intercepta 401 e faz refresh automatico
 - `AuthProvider` em `app/providers.tsx` gerencia bootstrap de sessao
@@ -158,7 +158,7 @@ Cada feature segue estrutura:
 - **Testes**: mesmo nome do arquivo com sufixo `.test.ts(x)` (ex: `auth-store.test.ts`)
 
 ### Testes em Portugues
-Descricoes de testes DEVEM ser portugues PT-BR usando `test` (nunca `it`):
+Descricoes de testes DEVEM ser escritas em portugues PT-BR usando `test` (nunca `it`):
 ```typescript
 // CORRETO
 describe("useLogin", () => {
@@ -178,7 +178,7 @@ describe("useLogin", () => {
 ```
 
 ### Imports
-- Alias `@/` para `src/` (ex: `import { api } from "@/lib/api"`)
+- Usar alias `@/` para `src/` (ex: `import { api } from "@/lib/api"`)
 - Imports organizados automaticamente pelo Biome
 
 ### Formatacao (Biome)
@@ -188,17 +188,17 @@ describe("useLogin", () => {
 - Complexidade cognitiva maxima: 5
 
 ### Design System
-Projeto segue design system cromático inspirado no Superhumon (doc em `DESIGN.md`):
+O projeto segue um design system cromático inspirado no Superhumon (documentado em `DESIGN.md`):
 - Paleta cromática: indigo navy (`#1b1938`), violet (`#c9b4fa`), teal (`#155555`)
 - Tipografia: Inter Variable via `next/font/google`
-- Escala gradual border-radius: 4px / 6px / 8px / 12px / 16px / 9999px
-- Sombras 3 níveis: flat / sm (1px) / md (8px)
+- Escala gradual de border-radius: 4px / 6px / 8px / 12px / 16px / 9999px
+- Sombras em 3 níveis: flat / sm (1px) / md (8px)
 - Sidebar usa `bg-primary` (indigo) como identidade de marca
 - Dark mode via `next-themes` com tokens derivados da paleta cromática
 - Componentes base em `src/components/ui/` (shadcn/ui customizado)
 
 ### API Client
-Cliente HTTP tipado via OpenAPI:
+O cliente HTTP e tipado via OpenAPI:
 ```typescript
 import { api } from "@/lib/api"
 
@@ -208,7 +208,7 @@ const { data, error } = await api.GET("/gyms/search/{name}", {
 })
 ```
 
-Tipos gerados do backend com `pnpm generate:types` (rodar na raiz do monorepo).
+Tipos gerados a partir do backend com `pnpm generate:types` (executar na raiz do monorepo).
 
 ### Tratamento de Erros
 Toda chamada API usa `ApiError` (classe em `lib/errors.ts`):

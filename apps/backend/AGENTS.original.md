@@ -1,36 +1,36 @@
 ## ALTA PRIORIDADE
 
-- **SE VOCÊ NÃO VERIFICAR AS SKILLS**, tarefa invalidada, gera retrabalho
-- **VOCÊ SÓ PODE finalizar tarefa** se `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` passar 100% (lint + test + build). Sem exceção — falhar qualquer um = NÃO COMPLETA
-- `biome:fix` tolerância zero. Zero problemas — qualquer issue golangci-lint = falha bloqueante
-- **SEMPRE verifique APIs dos pacotes dependentes** antes de código de integração/testes, evita código errado
-- **NUNCA gambiarras** — skill `no-workarounds` p/ correção/debug + `testing-anti-patterns` p/ testes
-- **SEMPRE skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
-- **NUNCA ferramentas web** p/ código local — use Grep/Glob
-- **NUNCA COMMITS sem permissão** — pergunte
+- **SE VOCÊ NÃO VERIFICAR AS SKILLS**, sua tarefa será invalidada e geraremos retrabalho
+- **VOCÊ SÓ PODE finalizar uma tarefa** se `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` passar a 100% (executa lint + test + build). Sem exceções — falhar em qualquer um desses comandos significa que a tarefa NÃO ESTÁ COMPLETA
+- `biome:fix` tem tolerância zero. Zero problemas permitidos — qualquer issue do golangci-lint é uma falha bloqueante
+- **SEMPRE verifique as APIs dos pacotes dependentes** antes de escrever código de integração ou testes, para evitar código incorreto
+- **NUNCA use gambiarras** — sempre utilize a skill `no-workarounds` para qualquer tarefa de correção/debug + `testing-anti-patterns` para testes
+- **SEMPRE use as skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs ou problemas complexos
+- **NUNCA use ferramentas** de busca na web para pesquisar código local do projeto — para código local, use Grep/Glob
+- **NUNCA FAÇA COMMITS sem pedir permissão** sempre pergunte se o usuário deseja realizar commit
 
 ## REQUISITOS OBRIGATÓRIOS
-- DEVE rodar `pnpm biome:fix` antes de concluir QUALQUER subtarefa
-- SEMPRE skills `systematic-debugging` + `no-workarounds` antes de corrigir bug
+- DEVE executar `pnpm biome:fix` antes de concluir QUALQUER subtarefa
+- SEMPRE USE as skills `systematic-debugging` + `no-workarounds` antes de corrigir qualquer bug
 
-Pular verificação = REJEIÇÃO IMEDIATA DA TAREFA.
+Pular qualquer verificação resultará em REJEIÇÃO IMEDIATA DA TAREFA.
 
 <MOST_CRITICAL>
 
-- ABSOLUTAMENTE OBRIGATÓRIO: modo Plan, após usuário aceitar plano, SEMPRE escreva plano aceito em Markdown dentro de docs/plans/.
+- ABSOLUTAMENTE OBRIGATÓRIO: No modo Plan, após o usuário aceitar um plano, SEMPRE escreva o plano aceito em um arquivo Markdown dentro de docs/plans/.
 
-- OBRIGATÓRIO: se plano aceito atualizado depois, atualize/acrescente no Markdown correspondente em docs/plans/.
+- OBRIGATÓRIO: Se o plano aceito for atualizado posteriormente, atualize ou acrescente o conteúdo no arquivo Markdown correspondente dentro de docs/plans/.
 
-- VIOLAÇÃO: não persistir planos aceitos do modo Plan em docs/plans/ = não conformidade com política do workspace.
+- VIOLAÇÃO: Não persistir planos aceitos no modo Plan dentro de docs/plans/ é uma não conformidade com esta política do workspace.
 
 </MOST_CRITICAL>
 
 # Overview do Projeto
 
 ## Restrições de Comunicação
-- Responder PT-BR preservando termos técnicos
-- Nunca emojis
-- Indentação 2 espaços, linha em branco ao final de arquivos
+- Responder em português PT-BR preservando termos técnicos
+- Nunca utilizar emojis
+- Indentação de 2 espaços, linha em branco ao final de arquivos
 
 ## Build, Test & Lint
 
@@ -115,13 +115,13 @@ infra/           # Controllers, implementações concretas de Repository, Provid
 **Domínios**: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `shared/`
 
 ### Regras de Dependência (enforced por dependency-cruiser)
-- **Domain**: não importa Application nem Infra (código puro)
-- **Application**: importa Domain, não Infra (orquestração)
+- **Domain**: não importa Application nem Infra (código puro do negócio)
+- **Application**: importa Domain, não importa Infra (orquestração de lógica)
 - **Infra**: importa Application e Domain (implementações técnicas)
-- **Shared**: disponível p/ todas camadas (utilitários genéricos)
+- **Shared**: disponível para todas as camadas (utilitários genéricos)
 
 ## Padrão Either para Tratamento de Erros
-Use Cases retornam `Either<Error, Success>` de `@/shared/domain/value-object/either`. Sem exceções p/ lógica de negócio:
+Use Cases retornam `Either<Error, Success>` de `@/shared/domain/value-object/either`. Sem exceções para lógica de negócio:
 ```typescript
 // Retornar erro
 return failure(new UserAlreadyExistsError())
@@ -134,10 +134,10 @@ if (result.isFailure()) return this.createResponseError(result)
 const { value } = result.forceSuccess()
 ```
 
-Exceções apenas p/ falhas técnicas (conexão BD, etc).
+Exceções apenas para falhas técnicas (conexão BD, etc).
 
 ## Inversify IoC - Padrão de Registro
-Três passos p/ adicionar serviço:
+Três passos para adicionar novo serviço:
 
 **1. Service Identifiers** em `src/shared/infra/ioc/module/service-identifier/{domain}-types.ts`:
 ```typescript
@@ -167,7 +167,7 @@ export function setupUserModule(): ModuleControllers {
 Validar com: `npm run fit:validate-dependencies`
 
 ## Padrão de Controller
-Controllers implementam `Controller`, usam decoradores Inversify. Responsabilidade: parsing HTTP → resposta:
+Controllers implementam `Controller` e usam decoradores do Inversify. Responsabilidade: parsing HTTP → resposta:
 ```typescript
 @injectable()
 export class CreateUserController implements Controller {
@@ -198,7 +198,7 @@ export class CreateUserController implements Controller {
 function makeSwaggerSchema(): Schema { ... }
 ```
 
-Sem lógica de negócio aqui — vai p/ Use Case.
+Não colocar lógica de negócio aqui - tudo vai para Use Case.
 
 ### Segurança de Rotas
 Rotas protegidas usam flags em `HandlerOptions`:
@@ -211,7 +211,7 @@ this.httpServer.register('delete', UserRoutes.DELETE, { callback: this.callback,
 ```
 
 ### Definição de Rotas
-Rotas = constantes em `{domain}/infra/controller/routes/{domain}-routes.ts`:
+Rotas são constantes em `{domain}/infra/controller/routes/{domain}-routes.ts`:
 ```typescript
 const PREFIX = '/users'
 export const UserRoutes = {
@@ -222,7 +222,7 @@ export const UserRoutes = {
 ```
 
 ## Padrão de Use Case
-Use Cases orquestram lógica de negócio, publicam eventos de domínio. Sempre retornam `Either`:
+Use Cases orquestram lógica de negócio e publicam eventos de domínio. Sempre retornam `Either`:
 ```typescript
 @injectable()
 export class CreateUserUseCase {
@@ -254,10 +254,10 @@ Transações e eventos de domínio aqui, não em controllers.
 
 ## Padrão de Entidade de Domínio
 Entidades:
-- Estendem `Observable`, usam factory methods com validação
-- Não salvam a si mesmas (Repository faz)
-- `create()` p/ validação completa, `restore()` p/ bypass (carregando do BD)
-- `create()` **async** apenas quando validação envolve operações assíncronas (ex: `User` usa bcrypt via `Password.create()`). `Gym` e `CheckIn` têm `create()` síncrono
+- Estendem `Observable` e usam factory methods com validação
+- Não salvam a si mesmas (Repository faz isso)
+- Métodos `create()` para validação completa, `restore()` para bypass (carregando do BD)
+- `create()` é **async** apenas quando a validação envolve operações assíncronas (ex: `User` usa bcrypt via `Password.create()`). `Gym` e `CheckIn`, por exemplo, têm `create()` síncrono
 
 ```typescript
 // create() síncrono (Gym, CheckIn, etc.)
@@ -297,17 +297,17 @@ export class User extends Observable {
 }
 ```
 
-`Result.combine()` agrega múltiplos `Either` — se qualquer falhar, retorna todos os erros.
+`Result.combine()` agrega múltiplos `Either` — se qualquer um falhar, retorna todos os erros.
 
-Value Objects imutáveis, sempre validam no `create()`.
+Value Objects são imutáveis e sempre validam no `create()`.
 
 ## Estratégia de Testes
 Dois tipos de testes automatizados:
 
 ### 1. Testes de Unidade (`*.test.ts`)
-- Testam Domain e Application isolados
-- Repositórios in-memory
-- Config: `test/vite.config.app-domain.ts`
+- Testam Domain e Application em isolamento
+- Usam repositórios in-memory
+- Arquivo config: `test/vite.config.app-domain.ts`
 
 ```typescript
 describe('CreateUserUseCase', () => {
@@ -325,13 +325,13 @@ describe('CreateUserUseCase', () => {
 })
 ```
 
-**Único teste**: `npm run test -- --t "should create"`
-**Cobertura**: `npm run test:cov`
+**Executar único teste**: `npm run test -- --t "should create"`
+**Rodar com cobertura**: `npm run test:cov`
 
 ### 2. Testes Business Flow (`*.business-flow-test.ts`)
 - Testam fluxos HTTP completos com supertest
-- Servidor Fastify em memória
-- Config: `test/vite.config.business-flow.ts`
+- Usam servidor Fastify em memória
+- Arquivo config: `test/vite.config.business-flow.ts`
 
 ```typescript
 describe('POST /users', () => {
@@ -362,10 +362,10 @@ describe('POST /users', () => {
 })
 ```
 
-**Único teste**: `npm run test:business-flow -- --t "should create"`
+**Executar único teste**: `npm run test:business-flow -- --t "should create"`
 
 ### Helpers de Teste
-Utilitários em `test/factory/` p/ criar e persistir entidades em memória:
+Funções utilitárias em `test/factory/` para criar e persistir entidades em memória:
 ```typescript
 import { createAndSaveUser } from 'test/factory/create-and-save-user'
 import { createAndSaveGym } from 'test/factory/create-and-save-gym'
@@ -378,19 +378,19 @@ const user = await createAndSaveUser({ userRepository, email: 'specific@email.co
 ## Checklist para Nova Feature
 Ordem recomendada:
 
-1. **Modelo de dados** em `{domain}/domain/`
+1. **Definir modelo de dados** em `{domain}/domain/`
    - Entidade principal + Value Objects
    - Validadores e erros de negócio
 
-2. **Use Case** em `{domain}/application/use-case/{feature}.usecase.ts`
-   - Orquestração da lógica
+2. **Criar Use Case** em `{domain}/application/use-case/{feature}.usecase.ts`
+   - Orquestração da lógica de negócio
    - Publicar eventos de domínio
 
 3. **Teste de unidade** `{feature}.usecase.test.ts`
    - Validar regras de negócio
 
 4. **Interface de Repository** em `{domain}/application/repository/`
-   - Contrato de acesso a dados
+   - Definir contrato de acesso a dados
 
 5. **Controller HTTP** em `{domain}/infra/controller/{feature}.controller.ts`
    - Parsing e resposta HTTP
@@ -399,22 +399,22 @@ Ordem recomendada:
    - Validar fluxo completo HTTP
 
 7. **IoC Container** em `src/shared/infra/ioc/module/{domain}/`:
-   - Types em `service-identifier/{domain}-types.ts`
-   - Bindings em `{domain}-container.ts`
+   - Adicionar types em `service-identifier/{domain}-types.ts`
+   - Registrar bindings em `{domain}-container.ts`
 
 8. **Bootstrap** em `src/bootstrap/setup-{domain}-module.ts`
-   - Controller ao array de controllers
+   - Adicionar controller ao array de controllers
 
 9. **Validar** com `npm run fit:validate-dependencies`
 
 ## Convenções de Nomes e Arquivos
 
-- **Entidades**: PascalCase, sem palavras genéricas (ex: `User`, não `UserEntity`)
+- **Entidades**: PascalCase, sufixo sem palavras genéricas (ex: `User`, não `UserEntity`)
 - **Value Objects**: PascalCase (ex: `Email`, `Name`)
-- **Use Cases**: PascalCase sufixo `UseCase` (ex: `CreateUserUseCase`)
-- **Controllers**: PascalCase sufixo `Controller` (ex: `CreateUserController`)
+- **Use Cases**: PascalCase com sufixo `UseCase` (ex: `CreateUserUseCase`)
+- **Controllers**: PascalCase com sufixo `Controller` (ex: `CreateUserController`)
 - **Repositórios**: interface PascalCase, implementação `Prisma{Entity}Repository`
-- **Erros**: PascalCase sufixo `Error` (ex: `UserAlreadyExistsError`)
+- **Erros**: PascalCase com sufixo `Error` (ex: `UserAlreadyExistsError`)
 - **Arquivos**: kebab-case (ex: `create-user.usecase.ts`, `user.repository.ts`)
 
 ## Path Aliases e Imports
@@ -425,7 +425,7 @@ import { User } from '@/user/domain/entity/user'
 import { Either } from '@/shared/domain/value-object/either'
 ```
 
-**Importante**: extensão `.js` em imports internos (transpilado p/ ESM):
+**Importante**: Usar extensão `.js` em imports internos (transpilado para ESM):
 ```typescript
 import { UserRepository } from './user-repository.js'  // ✅ Correto
 import { UserRepository } from './user-repository'      // ❌ Evitar
@@ -435,33 +435,33 @@ import { UserRepository } from './user-repository'      // ❌ Evitar
 
 - Models Prisma em `prisma/schema.prisma`
 - Gerar cliente: `npm run prisma:generate`
-- Migration: `npm run prisma:migrate:dev`
-- Testes: usar `InMemory*Repository` ao invés de Prisma
+- Executar migration: `npm run prisma:migrate:dev`
+- Em testes, usar `InMemory*Repository` ao invés de Prisma
 - Repositories concretos apenas em `infra/repository/`
 
 ## Ambiente e Infraestrutura
 
 ### Docker Compose
-Serviços em `compose.yaml`:
+Serviços disponíveis em `compose.yaml`:
 - **PostgreSQL**: porta 5432 (usuário: docker, senha: docker, database: apisolid)
 - **Redis**: porta 6379 (cache e sessões)
 - **RabbitMQ**: porta 5672 (mensageria assíncrona)
 
-Iniciar todos: `docker compose up -d`
+Iniciar todos os serviços: `docker compose up -d`
 
 ### Variáveis de Ambiente
-`.env` baseado em `.env.example`:
+Configurar arquivo `.env` baseado em `.env.example`:
 - `DATABASE_PROVIDER`: "prisma" ou "sqlite"
 - `NODE_ENV`: "production" ou "development"
 - `DATABASE_URL`: string de conexão Prisma
-- Autenticação (JWT_SECRET, etc)
+- Variáveis de autenticação (JWT_SECRET, etc)
 - Credenciais de serviços externos (Stripe, SMTP, etc)
 
 Variáveis validadas em `src/shared/infra/env/index.ts` com Zod.
 
 ## Tratamento de Erro em Controllers
 
-Padrão ResponseFactory p/ respostas consistentes:
+Padrão ResponseFactory para respostas consistentes:
 ```typescript
 // Sucesso
 return ResponseFactory.OK({ body: data })
@@ -481,7 +481,7 @@ private createResponseError(result: Either<Error, unknown>) {
 ```
 
 ## Padrão de Repository Provider
-Providers encapsulam seleção de implementação por ambiente:
+Providers encapsulam lógica de seleção de implementação de repositório baseada em ambiente:
 ```typescript
 export class UserRepositoryProvider {
   public static provide(context: ResolutionContext): UserRepository {
@@ -499,13 +499,13 @@ export class UserRepositoryProvider {
 }
 ```
 
-Registrar com `.toDynamicValue()`:
+Registrar no container com `.toDynamicValue()`:
 ```typescript
 bind(USER_TYPES.Repositories.User).toDynamicValue(UserRepositoryProvider.provide)
 ```
 
 ## Padrão de Value Object
-Value Objects validam no `create()`, retornam `Either`. `restore()` ao carregar do BD (sem validação):
+Value Objects validam no `create()` e retornam `Either`. Use `restore()` ao carregar do BD (sem validação):
 ```typescript
 export class Email {
   private readonly _value: string
@@ -525,7 +525,7 @@ export class Email {
 }
 ```
 
-Value Objects imutáveis — propriedades `readonly`, sem setters.
+Value Objects são imutáveis - propriedades `readonly` e sem setters.
 
 ## Eventos de Domínio
 Publicar eventos após persistência bem-sucedida:
@@ -546,10 +546,10 @@ DomainEventPublisher.instance.subscribe(Events.USER_CREATED, (event) => {
 })
 ```
 
-Eventos singleton — usar `DomainEventPublisher.instance`.
+Eventos são singleton - usar `DomainEventPublisher.instance`.
 
 ## Estrutura de Módulo de Domínio
-Cada bounded context em `src/{domain}/`:
+Cada bounded context em `src/{domain}/` segue esta estrutura:
 ```
 {domain}/
 ├── domain/                    # Camada de domínio puro
@@ -572,7 +572,7 @@ Domínios atuais: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `sh
 
 ## Documentação Específica por Módulo
 
-Cada módulo tem `AGENTS.md` próprio com specs de entidades, Value Objects, Use Cases, rotas, erros e exemplos:
+Cada módulo possui um `AGENTS.md` próprio com especificações detalhadas de entidades, Value Objects, Use Cases, rotas, erros e exemplos de código:
 
 | Módulo          | Documentação                                     | Responsabilidade principal                          |
 |-----------------|--------------------------------------------------|-----------------------------------------------------|
