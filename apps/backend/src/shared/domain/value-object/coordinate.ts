@@ -70,6 +70,8 @@ export class Coordinate {
 			Math.cos(fromRadian) * Math.cos(toRadian) * Math.cos(radTheta)
 		if (dist > 1) {
 			dist = 1
+		} else if (dist < -1) {
+			dist = -1
 		}
 		dist = Math.acos(dist)
 		dist = (dist * 180) / Math.PI
