@@ -17,7 +17,7 @@ export class StripeSubscriptionGateway implements SubscriptionGateway {
 
 	constructor() {
 		this.stripe = new Stripe(env.STRIPE_PRIVATE_KEY, {
-			apiVersion: "2026-04-22.dahlia",
+			apiVersion: "2026-05-27.dahlia",
 			maxNetworkRetries: 3,
 			timeout: 10000,
 		})

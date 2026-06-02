@@ -19,7 +19,7 @@ function makeStripeEventPayload(
 	const event = {
 		id: "evt_test_webhook_123",
 		object: "event",
-		api_version: "2026-04-22.dahlia",
+		api_version: "2026-05-27.dahlia",
 		created: Math.floor(Date.now() / 1000),
 		data: { object: {} },
 		livemode: false,
@@ -44,7 +44,7 @@ describe("StripeWebhookController", () => {
 			.inSingletonScope()
 		queue = container.get<Queue>(SHARED_TYPES.Queue)
 		stripe = new Stripe(env.STRIPE_PRIVATE_KEY, {
-			apiVersion: "2026-04-22.dahlia",
+			apiVersion: "2026-05-27.dahlia",
 		})
 		fastifyServer = await serverBuildForTest()
 		await fastifyServer.ready()
