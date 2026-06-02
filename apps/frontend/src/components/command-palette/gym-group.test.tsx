@@ -35,6 +35,19 @@ describe("GymGroup", () => {
 		expect(screen.queryByText("Academias")).not.toBeInTheDocument()
 	})
 
+	test("não dispara fetch quando isActive=false", async () => {
+		const fetchSpy = vi.fn()
+		server.use(
+			http.get("*/gyms/search/:name", () => {
+				fetchSpy()
+				return HttpResponse.json([])
+			}),
+		)
+		renderGymGroup("academia", false)
+		await new Promise((r) => setTimeout(r, 50))
+		expect(fetchSpy).not.toHaveBeenCalled()
+	})
+
 	test("exibe skeleton enquanto carrega", async () => {
 		server.use(
 			http.get("*/gyms/search/:name", async () => {

@@ -50,6 +50,7 @@ export function UserGroup({ query, isActive, onSelect }: UserGroupProps) {
 		page: 1,
 		limit: 5,
 		query: isActive ? query : undefined,
+		enabled: isActive,
 	})
 
 	const users = data?.users ?? []

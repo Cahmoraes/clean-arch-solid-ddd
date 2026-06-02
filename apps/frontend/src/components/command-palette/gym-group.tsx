@@ -17,6 +17,7 @@ export function GymGroup({ query, isActive, onSelect }: GymGroupProps) {
 	const { data: gyms = [], isLoading } = useGymsByName({
 		name: isActive ? query : "",
 		page: 1,
+		enabled: isActive,
 	})
 
 	if (!isActive) return null

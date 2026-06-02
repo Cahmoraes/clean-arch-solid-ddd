@@ -42,6 +42,22 @@ describe("UserGroup", () => {
 		expect(screen.queryByText("Usuários")).not.toBeInTheDocument()
 	})
 
+	test("não dispara fetch quando isActive=false", async () => {
+		const fetchSpy = vi.fn()
+		server.use(
+			http.get("*/users", () => {
+				fetchSpy()
+				return HttpResponse.json({
+					users: [],
+					pagination: { total: 0, page: 1, limit: 5, totalPages: 0 },
+				})
+			}),
+		)
+		renderUserGroup("joao", "ADMIN", false)
+		await new Promise((r) => setTimeout(r, 50))
+		expect(fetchSpy).not.toHaveBeenCalled()
+	})
+
 	test("exibe skeleton enquanto carrega", async () => {
 		server.use(
 			http.get("*/users", async () => {

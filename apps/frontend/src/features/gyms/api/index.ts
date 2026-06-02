@@ -24,6 +24,7 @@ function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 export interface GymsByNameParams {
 	name: string
 	page: number
+	enabled?: boolean
 }
 
 export const gymsKeys = {
@@ -93,11 +94,12 @@ async function createGymRequest(
 export function useGymsByName({
 	name,
 	page,
+	enabled = true,
 }: GymsByNameParams): UseQueryResult<Gym[], ApiError> {
 	const trimmed = name.trim()
 	return useQuery<Gym[], ApiError>({
 		queryKey: gymsKeys.search(trimmed, page),
-		enabled: trimmed.length > 0,
+		enabled: enabled && trimmed.length > 0,
 		queryFn: () => searchGymsByName(trimmed, page),
 	})
 }

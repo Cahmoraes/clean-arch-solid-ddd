@@ -21,6 +21,7 @@ export interface UseUsersParams {
 	limit: number
 	query?: string
 	filter?: UserFilter
+	enabled?: boolean
 }
 
 export interface UseUsersResult {
@@ -69,8 +70,10 @@ function buildFilterParams(filter?: UserFilter): FilterParams {
 export function useUsers(
 	params: UseUsersParams,
 ): UseQueryResult<UseUsersResult, ApiError> {
+	const { enabled = true } = params
 	return useQuery<UseUsersResult, ApiError>({
 		queryKey: adminUsersQueryKey(params),
+		enabled,
 		queryFn: async () => {
 			const filterParams = buildFilterParams(params.filter)
 			const { data, error } = await api.GET("/users", {
