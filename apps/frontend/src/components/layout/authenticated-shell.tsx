@@ -11,8 +11,9 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import type { ReactNode } from "react"
+import { type ReactNode, useEffect, useState } from "react"
 import { toast } from "sonner"
+import { CommandPalette } from "@/components/command-palette/command-palette"
 import { NotificationBell } from "@/components/notification/notification-bell"
 import { Avatar } from "@/components/ui/avatar"
 import { BrandMark } from "@/components/ui/brand-mark"
@@ -89,6 +90,18 @@ export function AuthenticatedShell({
 	const { data: meData } = useMe()
 	const isAdmin = user?.role === "ADMIN"
 	const displayName = meData?.name ?? (isAdmin ? "Administrador" : "Membro")
+	const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false)
+
+	useEffect(() => {
+		function handleKeyDown(e: KeyboardEvent) {
+			if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+				e.preventDefault()
+				setIsCommandPaletteOpen(true)
+			}
+		}
+		window.addEventListener("keydown", handleKeyDown)
+		return () => window.removeEventListener("keydown", handleKeyDown)
+	}, [])
 
 	function handleLogout() {
 		logout.mutate(undefined, {
@@ -181,6 +194,8 @@ export function AuthenticatedShell({
 						placeholder="Buscar..."
 						aria-label="Buscar"
 						className="max-w-[460px] flex-1 max-[560px]:hidden"
+						onClick={() => setIsCommandPaletteOpen(true)}
+						readOnly
 					/>
 					<div className="ml-auto flex items-center gap-3">
 						<ThemeToggle />
@@ -188,6 +203,11 @@ export function AuthenticatedShell({
 						<Avatar name={meData?.name} size="sm" />
 					</div>
 				</header>
+
+				<CommandPalette
+					open={isCommandPaletteOpen}
+					onOpenChange={setIsCommandPaletteOpen}
+				/>
 
 				<main className="flex-1 overflow-y-auto">
 					<div className="route-fade mx-auto max-w-[1180px] px-8 pb-20 pt-9 max-[560px]:px-[18px]">
