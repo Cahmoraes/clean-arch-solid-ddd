@@ -124,7 +124,9 @@ export function GymLocationPicker({
 				<LeafletMap
 					latitude={latitude}
 					longitude={longitude}
-					onMapClick={(lat, lng) => void handleMapClick(lat, lng)}
+					onMapClick={(lat: number, lng: number) =>
+						void handleMapClick(lat, lng)
+					}
 				/>
 				{isReverseGeocoding && (
 					<p className="px-3 py-1 text-xs text-muted-foreground">

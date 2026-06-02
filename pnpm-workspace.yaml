@@ -1,6 +1,16 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+packageExtensions:
+  '@hookform/resolvers':
+    peerDependencies:
+      zod: '*'
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
+  msgpackr-extract: true
+  msw: true
+  prisma: true
 onlyBuiltDependencies:
   - '@prisma/client'
   - '@prisma/engines'

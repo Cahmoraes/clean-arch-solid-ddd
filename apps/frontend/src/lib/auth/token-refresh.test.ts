@@ -90,7 +90,9 @@ describe("TokenRefreshScheduler", () => {
 			onForcedLogout,
 		})
 
-		await expect(scheduler.refreshNow()).rejects.toThrow("boom")
+		await expect(scheduler.refreshNow()).rejects.toMatchObject({
+			message: "boom",
+		})
 		expect(useAuthStore.getState().accessToken).toBeNull()
 		expect(onForcedLogout).toHaveBeenCalledTimes(1)
 	})
