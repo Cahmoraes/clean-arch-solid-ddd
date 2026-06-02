@@ -15,6 +15,7 @@ import { NodeMailerAdapter } from "@/shared/infra/gateway/node-mailer-adapter"
 import { PinoAdapter } from "@/shared/infra/logger/pino-adapter"
 import { createPinoLogger } from "@/shared/infra/logger/pino-logger-factory"
 import { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
+import { JwtRouteGuard } from "@/shared/infra/server/guard/jwt-route-guard"
 import { SHARED_TYPES } from "../../types"
 import { CacheDBProvider } from "./cache-db-provider"
 import { MailerProvider } from "./mailer-provider"
@@ -30,6 +31,7 @@ export const infraModule = new ContainerModule(({ bind }) => {
 	}
 	bind(SHARED_TYPES.Tokens.Auth).to(JsonWebTokenAdapter)
 	bind(SHARED_TYPES.Server.Fastify).to(FastifyAdapter).inSingletonScope()
+	bind(SHARED_TYPES.Server.RouteGuard).to(JwtRouteGuard).inSingletonScope()
 	bind(SHARED_TYPES.Cookies.Manager).to(CookieAdapter).inRequestScope()
 	bind(SHARED_TYPES.Redis)
 		.toDynamicValue(CacheDBProvider.provide)

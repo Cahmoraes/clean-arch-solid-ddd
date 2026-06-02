@@ -7,6 +7,7 @@ export const SHARED_TYPES = {
 	},
 	Server: {
 		Fastify: Symbol.for("FastifyServer"),
+		RouteGuard: Symbol.for("RouteGuard"),
 	},
 	Prisma: {
 		Client: Symbol.for("PrismaClient"),
