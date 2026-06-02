@@ -1,18 +1,26 @@
 import { Search, X } from "lucide-react"
+import { cn } from "@/lib/cn"
 
 export interface CheckInSearchInputProps {
 	value: string
 	onChange: (value: string) => void
 	placeholder?: string
+	className?: string
 }
 
 export function CheckInSearchInput({
 	value,
 	onChange,
 	placeholder,
+	className,
 }: CheckInSearchInputProps) {
 	return (
-		<div className="relative w-full flex h-[52px] items-center rounded-md border border-border bg-surface px-4 gap-2">
+		<div
+			className={cn(
+				"relative flex w-full h-[52px] items-center rounded-md border border-border bg-surface px-4 gap-2",
+				className,
+			)}
+		>
 			<Search className="h-4 w-4 shrink-0 text-subtle" aria-hidden="true" />
 			<input
 				type="text"

@@ -146,26 +146,29 @@ function AdminCheckInsPageContent() {
 			aria-label="Check-ins"
 			className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6"
 		>
-			<PageHeader
-				eyebrow="Admin"
-				title="Check-ins"
-				subtitle="Gerencie e valide os check-ins registrados pelos membros."
-				className="mb-0"
-			/>
-
-			<CheckInFilterBar
-				status={status}
-				onStatusChange={setStatus}
-				stats={statsData}
-			/>
-
-			<div className="flex gap-3">
-				<CheckInSearchInput
-					value={gymNameInput}
-					onChange={setGymNameInput}
-					placeholder="Buscar por academia..."
+			<div className="flex flex-col gap-5">
+				<PageHeader
+					eyebrow="Admin"
+					title="Check-ins"
+					subtitle="Gerencie e valide os check-ins registrados pelos membros."
+					className="mb-0"
 				/>
-				<CheckInSortToggle value={sortOrder} onValueChange={setSortOrder} />
+				<div className="flex flex-wrap items-center gap-3">
+					<CheckInFilterBar
+						status={status}
+						onStatusChange={setStatus}
+						stats={statsData}
+					/>
+					<div className="flex flex-1 gap-2 min-w-0">
+						<CheckInSearchInput
+							value={gymNameInput}
+							onChange={setGymNameInput}
+							placeholder="Buscar por academia..."
+							className="flex-1"
+						/>
+						<CheckInSortToggle value={sortOrder} onValueChange={setSortOrder} />
+					</div>
+				</div>
 			</div>
 
 			<AdminCheckInsBody query={query} status={status} />

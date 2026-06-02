@@ -199,7 +199,9 @@ export function AuthenticatedShell({
 					<div className="ml-auto flex items-center gap-3">
 						<ThemeToggle />
 						<NotificationBell />
-						<Avatar name={meData?.name} size="sm" />
+						<Link href="/perfil" aria-label="Ir para perfil">
+							<Avatar name={meData?.name} size="sm" />
+						</Link>
 					</div>
 				</header>
 
