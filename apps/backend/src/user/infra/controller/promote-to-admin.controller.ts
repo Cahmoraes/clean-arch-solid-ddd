@@ -1,16 +1,12 @@
 import type { FastifyRequest } from "fastify"
 import { inject } from "inversify"
-import { ZodError, z } from "zod"
+import { z } from "zod"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type {
-	HandleCallbackResponse,
-	HttpServer,
-	Schema,
-} from "@/shared/infra/server/http-server"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
 import type { PromoteToAdminUseCase } from "@/user/application/use-case/promote-to-admin.usecase"
 import { UserRoutes } from "./routes/user-routes"
@@ -55,15 +51,6 @@ export class PromoteToAdminController extends BaseController {
 			},
 			makePromoteToAdminSwaggerSchema(),
 		)
-	}
-
-	protected override mapResponseError(
-		error: Error | Error[],
-	): HandleCallbackResponse | undefined {
-		if (Array.isArray(error) || error instanceof ZodError) {
-			return undefined
-		}
-		return ResponseFactory.UNPROCESSABLE_ENTITY({ message: error.message })
 	}
 
 	public async callback(req: FastifyRequest) {

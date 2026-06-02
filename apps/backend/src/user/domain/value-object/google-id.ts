@@ -1,10 +1,13 @@
+import { DomainError } from "@/shared/domain/error/domain-error.js"
 import {
 	type Either,
 	failure,
 	success,
 } from "@/shared/domain/value-object/either"
 
-export class InvalidGoogleIdError extends Error {
+export class InvalidGoogleIdError extends DomainError {
+	public readonly kind = "validation" as const
+
 	constructor() {
 		super("Google ID cannot be empty")
 		this.name = "InvalidGoogleIdError"

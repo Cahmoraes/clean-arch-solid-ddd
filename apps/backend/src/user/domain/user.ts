@@ -135,7 +135,8 @@ export class User extends Observable {
 		const nameResult = Name.create(name)
 		const emailResult = Email.create(email)
 		const result = Result.combine([nameResult, emailResult])
-		if (result.not.valid) return failure(result.errors)
+		if (result.not.valid)
+			return failure(result.errors as UserValidationErrors[])
 		return success({
 			name: nameResult.forceSuccess().value,
 			email: emailResult.forceSuccess().value,

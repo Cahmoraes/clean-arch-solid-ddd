@@ -85,13 +85,13 @@ describe("Ativar Usuário", () => {
 		expect(response.body).toHaveProperty("message")
 	})
 
-	test("Deve retornar 422 quando o usuário alvo não existe", async () => {
+	test("Deve retornar 404 quando o usuário alvo não existe", async () => {
 		const response = await request(fastifyServer.server)
 			.patch(UserRoutes.ACTIVATE_USER)
 			.set("Authorization", `Bearer ${token}`)
 			.send({ userId: randomUUID() })
 
-		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
+		expect(response.status).toBe(HTTP_STATUS.NOT_FOUND)
 		expect(response.body).toHaveProperty("message")
 	})
 

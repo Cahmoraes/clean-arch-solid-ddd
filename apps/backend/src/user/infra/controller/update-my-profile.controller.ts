@@ -1,16 +1,12 @@
 import type { FastifyRequest } from "fastify"
 import { inject } from "inversify"
-import { ZodError, z } from "zod"
+import { z } from "zod"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type {
-	HandleCallbackResponse,
-	HttpServer,
-	Schema,
-} from "@/shared/infra/server/http-server"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import type { UpdateMyProfileUseCase } from "@/user/application/use-case/update-my-profile.usecase"
 import { UserRoutes } from "./routes/user-routes"
 
@@ -50,21 +46,6 @@ export class UpdateMyProfileController extends BaseController {
 			},
 			makeUpdateMyProfileSwaggerSchema(),
 		)
-	}
-
-	protected override mapResponseError(
-		error: Error | Error[],
-	): HandleCallbackResponse | undefined {
-		if (Array.isArray(error) || error instanceof ZodError) {
-			return undefined
-		}
-		if (error.name.endsWith("NotFoundError")) {
-			return ResponseFactory.create({
-				status: 404,
-				body: { message: error.message },
-			})
-		}
-		return undefined
 	}
 
 	private async callback(req: FastifyRequest) {

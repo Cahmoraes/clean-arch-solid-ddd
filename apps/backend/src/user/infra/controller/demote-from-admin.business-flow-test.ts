@@ -107,17 +107,17 @@ describe("Demover Administrador", () => {
 		expect(response.body).toHaveProperty("message")
 	})
 
-	test("Deve retornar 422 quando o usuário alvo não existe", async () => {
+	test("Deve retornar 404 quando o usuário alvo não existe", async () => {
 		const response = await request(fastifyServer.server)
 			.patch(UserRoutes.DEMOTE_FROM_ADMIN)
 			.set("Authorization", `Bearer ${token}`)
 			.send({ userId: randomUUID() })
 
-		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
+		expect(response.status).toBe(HTTP_STATUS.NOT_FOUND)
 		expect(response.body).toHaveProperty("message")
 	})
 
-	test("Deve retornar 422 ao tentar demover admin@admin.com", async () => {
+	test("Deve retornar 403 ao tentar demover admin@admin.com", async () => {
 		const superAdminId = randomUUID()
 		await createAndSaveUser({
 			userRepository,
@@ -131,11 +131,11 @@ describe("Demover Administrador", () => {
 			.set("Authorization", `Bearer ${token}`)
 			.send({ userId: superAdminId })
 
-		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
 		expect(response.body).toHaveProperty("message")
 	})
 
-	test("Deve retornar 422 ao tentar demover usuário que não é admin", async () => {
+	test("Deve retornar 409 ao tentar demover usuário que não é admin", async () => {
 		const targetId = randomUUID()
 		await createAndSaveUser({
 			userRepository,
@@ -149,17 +149,17 @@ describe("Demover Administrador", () => {
 			.set("Authorization", `Bearer ${token}`)
 			.send({ userId: targetId })
 
-		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
+		expect(response.status).toBe(HTTP_STATUS.CONFLICT)
 		expect(response.body).toHaveProperty("message")
 	})
 
-	test("Deve retornar 422 ao tentar demover a si próprio", async () => {
+	test("Deve retornar 403 ao tentar demover a si próprio", async () => {
 		const response = await request(fastifyServer.server)
 			.patch(UserRoutes.DEMOTE_FROM_ADMIN)
 			.set("Authorization", `Bearer ${token}`)
 			.send({ userId: adminId })
 
-		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
 		expect(response.body).toHaveProperty("message")
 	})
 })

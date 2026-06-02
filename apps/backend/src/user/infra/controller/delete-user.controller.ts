@@ -1,20 +1,13 @@
 import type { FastifyRequest } from "fastify"
 import { inject } from "inversify"
-import { ZodError, z } from "zod"
+import { z } from "zod"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type {
-	HandleCallbackResponse,
-	HttpServer,
-	Schema,
-} from "@/shared/infra/server/http-server"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-config.js"
-import { CannotDeleteSelfError } from "@/user/application/error/cannot-delete-self-error"
-import { UserIsSuperAdminError } from "@/user/application/error/user-is-super-admin-error"
-import { UserNotFoundError } from "@/user/application/error/user-not-found-error"
 import type { DeleteUserUseCase } from "@/user/application/use-case/delete-user.usecase"
 import { UserRoutes } from "./routes/user-routes"
 
@@ -58,24 +51,6 @@ export class DeleteUserController extends BaseController {
 			},
 			makeDeleteUserSwaggerSchema(),
 		)
-	}
-
-	protected override mapResponseError(
-		error: Error | Error[],
-	): HandleCallbackResponse | undefined {
-		if (Array.isArray(error) || error instanceof ZodError) {
-			return undefined
-		}
-		if (
-			error instanceof CannotDeleteSelfError ||
-			error instanceof UserIsSuperAdminError
-		) {
-			return ResponseFactory.FORBIDDEN({ message: error.message })
-		}
-		if (error instanceof UserNotFoundError) {
-			return ResponseFactory.NOT_FOUND({ message: error.message })
-		}
-		return undefined
 	}
 
 	public async callback(req: FastifyRequest) {
