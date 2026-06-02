@@ -8,13 +8,11 @@ import fastify, {
 	type FastifyReply,
 	type FastifyRequest,
 	type onRequestAsyncHookHandler,
-	type preHandlerAsyncHookHandler,
 	type RawServerDefault,
 	type RouteHandler,
 } from "fastify"
 import { inject, injectable } from "inversify"
 import type { z } from "zod"
-import type { AuthToken } from "@/user/application/auth/auth-token"
 import { Logger as LoggerDecorate } from "../decorator/logger.js"
 import { env, isProduction } from "../env"
 import { SHARED_TYPES } from "../ioc/types.js"
@@ -23,6 +21,7 @@ import type { Queue } from "../queue/queue.js"
 import { FastifySwaggerSetupFactory } from "./factories/fastify-swagger-setup-factory.js"
 import { FastifySwaggerUISetupFactory } from "./factories/fastify-swagger-ui-setup-factory.js"
 import { GlobalErrorHandler } from "./global-error-handler.js"
+import type { RouteGuard } from "./guard/route-guard.js"
 import { ResponseValidationHook } from "./hooks/response-validation-hook.js"
 import type {
 	HandlerOptions,
@@ -33,17 +32,14 @@ import type {
 } from "./http-server.js"
 import { RATE_LIMIT_CONFIG } from "./plugins/rate-limit-config.js"
 import { RateLimitPlugin } from "./plugins/rate-limit-plugin.js"
-import { AdminRoleCheck } from "./services/admin-role-check.js"
-import { AuthenticateHandler } from "./services/authenticate-pre-handler.js"
-import { CheckSessionRevokedHandler } from "./services/check-session-revoked.js"
 
 @injectable()
 export class FastifyAdapter implements HttpServer {
 	private readonly _server: FastifyInstance
 
 	constructor(
-		@inject(SHARED_TYPES.Tokens.Auth)
-		private readonly authToken: AuthToken,
+		@inject(SHARED_TYPES.Server.RouteGuard)
+		private readonly routeGuard: RouteGuard,
 		@inject(SHARED_TYPES.Logger)
 		private readonly logger: Logger,
 		@inject(SHARED_TYPES.Queue)
@@ -59,12 +55,7 @@ export class FastifyAdapter implements HttpServer {
 				},
 			},
 		})
-		this.bindMethods()
 		this.registerSwaggerEarly()
-	}
-
-	private bindMethods(): void {
-		this.authenticateOnRequest = this.authenticateOnRequest.bind(this)
 	}
 
 	private registerSwaggerEarly(): void {
@@ -156,13 +147,7 @@ export class FastifyAdapter implements HttpServer {
 					schema: fastifySchema,
 					validatorCompiler:
 						FastifyAdapter.makeValidatorCompiler(zodValidation),
-					onRequest: this.authenticateOnRequestOrUndefined(
-						handlerOptions.isProtected,
-					),
-					preHandler: [
-						this.onlyAdminPreHandler(handlerOptions.onlyAdmin),
-						this.checkSessionRevoked(handlerOptions.isProtected),
-					],
+					onRequest: this.routeGuardOnRequest(handlerOptions),
 					config: {
 						rateLimit: this.resolveRateLimitConfig(handlerOptions.rateLimit),
 					},
@@ -225,41 +210,29 @@ export class FastifyAdapter implements HttpServer {
 		)
 	}
 
-	private authenticateOnRequestOrUndefined(
-		enableAuthenticate?: boolean,
+	private routeGuardOnRequest(
+		handlerOptions: HandlerOptions,
 	): onRequestAsyncHookHandler | undefined {
-		return enableAuthenticate ? this.authenticateOnRequest : undefined
-	}
-
-	private onlyAdminPreHandler(onlyAdmin?: boolean): preHandlerAsyncHookHandler {
+		if (!handlerOptions.isProtected) return undefined
 		return async (
 			request: FastifyRequest,
 			reply: FastifyReply,
 		): Promise<void> => {
-			if (!onlyAdmin) return
-			const role = request.user.sub.role
-			const adminRoleCheck = new AdminRoleCheck({ request, reply })
-			void adminRoleCheck.execute(role)
-		}
-	}
-
-	private checkSessionRevoked(
-		isProtected?: boolean,
-	): preHandlerAsyncHookHandler {
-		return async (
-			request: FastifyRequest,
-			reply: FastifyReply,
-		): Promise<void> => {
-			if (!isProtected) return
-			const checkSessionRevoked = new CheckSessionRevokedHandler({
-				reply,
-				request,
-			})
-			await checkSessionRevoked.execute({
-				jwi: request.user.sub.jwi,
-				userId: request.user.sub.id,
-				iat: request.user.iat,
-			})
+			const result = await this.routeGuard.guard(
+				{ authorizationHeader: request.headers.authorization },
+				{
+					isProtected: handlerOptions.isProtected,
+					onlyAdmin: handlerOptions.onlyAdmin,
+				},
+			)
+			if (result.isFailure()) {
+				const denied = result.forceFailure().value
+				return reply.code(denied.status).send({ message: denied.message })
+			}
+			const user = result.forceSuccess().value
+			if (user) {
+				request.user = user
+			}
 		}
 	}
 
@@ -272,18 +245,6 @@ export class FastifyAdapter implements HttpServer {
 			if (reply.sent) return
 			reply.status(result.status).send(result.body)
 		}
-	}
-
-	private async authenticateOnRequest(
-		request: any,
-		reply: FastifyReply,
-	): Promise<void> {
-		const authenticateHandler = new AuthenticateHandler({
-			request,
-			reply,
-			authToken: this.authToken,
-		})
-		await authenticateHandler.execute()
 	}
 
 	get server(): RawServerDefault {
