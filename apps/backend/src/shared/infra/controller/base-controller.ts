@@ -14,24 +14,6 @@ import { ResponseFactory } from "./factory/response-factory"
 
 type ControllerError = Error | Error[]
 
-const CONFLICT_ERRORS = new Set([
-	"BillingCustomerNotProvisionedError",
-	"DuplicateWebhookEventError",
-	"GymAlreadyExistsError",
-	"GymWithCNPJAlreadyExistsError",
-	"MaxDistanceError",
-	"PasswordUnchangedError",
-	"CheckInTimeExceededError",
-	"UserAlreadyExistsError",
-	"UserHasAlreadyCheckedInToday",
-])
-
-const UNAUTHORIZED_ERRORS = new Set([
-	"InvalidCredentialsError",
-	"InvalidUserTokenError",
-	"TokenAlreadyRevokedError",
-])
-
 @injectable()
 export abstract class BaseController implements Controller {
 	protected parseRequest<T>(
@@ -93,27 +75,9 @@ export abstract class BaseController implements Controller {
 				message: error.message,
 			})
 		}
-		// Heurísticas legadas — cobrem erros ainda não migrados para DomainError.
-		// Removidas na task-07 quando a migração estiver completa.
-		if (UNAUTHORIZED_ERRORS.has(error.name)) {
-			return ResponseFactory.UNAUTHORIZED({ message: error.message })
-		}
-		if (error.name.endsWith("NotFoundError")) {
-			return ResponseFactory.NOT_FOUND({ message: error.message })
-		}
-		if (CONFLICT_ERRORS.has(error.name)) {
-			return ResponseFactory.CONFLICT({ message: error.message })
-		}
-		if (this.isLegacyValidationError(error)) {
-			return this.createUnprocessableEntity(error)
-		}
 		return ResponseFactory.INTERNAL_SERVER_ERROR({
 			message: error.message,
 		})
-	}
-
-	private isLegacyValidationError(error: Error): boolean {
-		return error.name.startsWith("Invalid") || error.name === "ValidationError"
 	}
 
 	private createUnprocessableEntity(error: Error | Error[]) {

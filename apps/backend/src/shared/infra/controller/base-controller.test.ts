@@ -108,11 +108,24 @@ describe("BaseController", () => {
 			expect(response.body).toEqual({ message: "Missing resource" })
 		})
 
-		test("Erro fora da hierarquia DomainError mantém fallback legado (heurística por nome)", () => {
+		test("Erro de negócio migrado é resolvido pelo kind, não por heurística", () => {
 			const sut = new TestBaseController()
-			// UserAlreadyExistsError ainda não migrou para DomainError nesta task
+			// UserAlreadyExistsError agora é DomainError com kind 'conflict'
 			const response = sut.respond(failure(new UserAlreadyExistsError()))
 			expect(response.status).toBe(409)
+		})
+
+		test("Erro técnico (extends Error) sempre gera 500 — sem heurística por nome", () => {
+			const sut = new TestBaseController()
+			class SomethingNotFoundError extends Error {
+				constructor() {
+					super("technical lookup failure")
+					this.name = "SomethingNotFoundError"
+				}
+			}
+			// Mesmo com nome terminando em NotFoundError, NÃO é DomainError → 500
+			const response = sut.respond(failure(new SomethingNotFoundError()))
+			expect(response.status).toBe(500)
 		})
 
 		test("Erro técnico desconhecido gera 500", () => {
