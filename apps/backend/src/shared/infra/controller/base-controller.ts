@@ -1,6 +1,7 @@
 import { injectable } from "inversify"
 import { ZodError, type z } from "zod"
 import { fromError } from "zod-validation-error"
+import { DomainError } from "@/shared/domain/error/domain-error.js"
 import {
 	type Either,
 	failure,
@@ -8,6 +9,7 @@ import {
 } from "@/shared/domain/value-object/either"
 import type { HandleCallbackResponse } from "@/shared/infra/server/http-server"
 import type { Controller } from "./controller"
+import { STATUS_BY_ERROR_KIND } from "./factory/error-kind-status.js"
 import { ResponseFactory } from "./factory/response-factory"
 
 type ControllerError = Error | Error[]
@@ -85,6 +87,14 @@ export abstract class BaseController implements Controller {
 	}
 
 	private createResponseByStatus(error: Error) {
+		if (error instanceof DomainError) {
+			return ResponseFactory.create({
+				status: STATUS_BY_ERROR_KIND[error.kind],
+				message: error.message,
+			})
+		}
+		// Heurísticas legadas — cobrem erros ainda não migrados para DomainError.
+		// Removidas na task-07 quando a migração estiver completa.
 		if (UNAUTHORIZED_ERRORS.has(error.name)) {
 			return ResponseFactory.UNAUTHORIZED({ message: error.message })
 		}
@@ -94,12 +104,16 @@ export abstract class BaseController implements Controller {
 		if (CONFLICT_ERRORS.has(error.name)) {
 			return ResponseFactory.CONFLICT({ message: error.message })
 		}
-		if (error.name.startsWith("Invalid") || error.name === "ValidationError") {
+		if (this.isLegacyValidationError(error)) {
 			return this.createUnprocessableEntity(error)
 		}
 		return ResponseFactory.INTERNAL_SERVER_ERROR({
 			message: error.message,
 		})
+	}
+
+	private isLegacyValidationError(error: Error): boolean {
+		return error.name.startsWith("Invalid") || error.name === "ValidationError"
 	}
 
 	private createUnprocessableEntity(error: Error | Error[]) {
