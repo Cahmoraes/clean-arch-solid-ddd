@@ -16,6 +16,10 @@ export default defineConfig({
 				__dirname,
 				"./src/test/mocks/next-font-google.ts",
 			),
+			"next/navigation": path.resolve(
+				__dirname,
+				"./src/test/mocks/next-navigation.ts",
+			),
 		},
 	},
 	test: {

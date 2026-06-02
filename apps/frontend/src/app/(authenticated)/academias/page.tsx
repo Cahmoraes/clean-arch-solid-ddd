@@ -2,7 +2,8 @@
 
 import { Plus, Search } from "lucide-react"
 import Link from "next/link"
-import { useId, useState } from "react"
+import { useSearchParams } from "next/navigation"
+import { Suspense, useId, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/page-header"
 import { SearchBar } from "@/components/ui/search-bar"
@@ -13,11 +14,15 @@ import { useAuthStore } from "@/lib/auth/auth-store"
 
 const RESULTS_PER_PAGE = 20
 
-export default function AcademiasPage() {
+interface AcademiasContentProps {
+	initialSearch: string
+}
+
+function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 	const user = useAuthStore((state) => state.user)
 	const inputId = useId()
-	const [draftQuery, setDraftQuery] = useState("")
-	const [submittedQuery, setSubmittedQuery] = useState("")
+	const [draftQuery, setDraftQuery] = useState(initialSearch)
+	const [submittedQuery, setSubmittedQuery] = useState(initialSearch)
 	const [page, setPage] = useState(1)
 
 	const trimmed = submittedQuery.trim()
@@ -103,5 +108,19 @@ export default function AcademiasPage() {
 				</div>
 			) : null}
 		</section>
+	)
+}
+
+function AcademiasPageInner() {
+	const searchParams = useSearchParams()
+	const initialSearch = searchParams?.get("search") ?? ""
+	return <AcademiasContent initialSearch={initialSearch} />
+}
+
+export default function AcademiasPage() {
+	return (
+		<Suspense fallback={<AcademiasContent initialSearch="" />}>
+			<AcademiasPageInner />
+		</Suspense>
 	)
 }

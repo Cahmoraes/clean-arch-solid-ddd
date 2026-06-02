@@ -1,8 +1,9 @@
 "use client"
 
 import { Users } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 import type { KeyboardEvent, MouseEvent } from "react"
-import { useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
@@ -235,10 +236,18 @@ function resolveNextIndex(
 	return Math.min(Math.max(currentIndex + delta, 0), list.length - 1)
 }
 
-export default function AdminUsersPage() {
+interface AdminUsersContentProps {
+	initialQuery: string
+	initialUserId: string | null
+}
+
+function AdminUsersContent({
+	initialQuery,
+	initialUserId,
+}: AdminUsersContentProps) {
 	const [page, setPage] = useState(1)
 	const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
-	const [inputQuery, setInputQuery] = useState("")
+	const [inputQuery, setInputQuery] = useState(initialQuery)
 	const debouncedQuery = useDebounce(inputQuery, 500)
 	const limit = ADMIN_USERS_DEFAULT_LIMIT
 	const [activeFilter, setActiveFilter] = useState<UserFilter>("all")
@@ -260,6 +269,13 @@ export default function AdminUsersPage() {
 		if (!data) return 0
 		return Math.max(1, Math.ceil(data.pagination.total / data.pagination.limit))
 	}, [data])
+
+	useEffect(() => {
+		if (!initialUserId || !data?.users?.length || selectedUser) return
+		const found = data.users.find((user) => user.id === initialUserId)
+		if (found) setSelectedUser(found)
+	}, [data?.users, initialUserId, selectedUser])
+
 	const activeSelectedUser = useMemo(() => {
 		if (!selectedUser) return null
 		return (
@@ -350,5 +366,27 @@ export default function AdminUsersPage() {
 				/>
 			</div>
 		</section>
+	)
+}
+
+function AdminUsersPageInner() {
+	const searchParams = useSearchParams()
+	const initialQuery = searchParams?.get("query") ?? ""
+	const initialUserId = searchParams?.get("userId") ?? null
+	return (
+		<AdminUsersContent
+			initialQuery={initialQuery}
+			initialUserId={initialUserId}
+		/>
+	)
+}
+
+export default function AdminUsersPage() {
+	return (
+		<Suspense
+			fallback={<AdminUsersContent initialQuery="" initialUserId={null} />}
+		>
+			<AdminUsersPageInner />
+		</Suspense>
 	)
 }
