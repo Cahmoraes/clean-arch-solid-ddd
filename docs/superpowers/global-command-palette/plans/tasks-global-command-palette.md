@@ -15,11 +15,11 @@
 
 ## Tarefas
 
-- [ ] 1. Install cmdk + CommandPalette shell + SearchBar onClick + AuthenticatedShell wiring [RF-001, RF-002, RF-003, RF-004, RF-005, RF-022, RF-023, RF-024, RF-025, RF-026] → `task-01.md`
-- [ ] 2. NavigationGroup — itens estáticos filtrados por role [RF-006, RF-007, RF-008, RF-009] → `task-02.md`
-- [ ] 3. useGlobalSearch + GymGroup [RF-010, RF-011, RF-012, RF-013, RF-014] → `task-03.md`
-- [ ] 4. UserGroup (admin only) [RF-016, RF-017, RF-018, RF-019, RF-020] → `task-04.md`
-- [ ] 5. Wire all groups + page URL params [RF-015, RF-021] → `task-05.md`
+- [x] 1. Install cmdk + CommandPalette shell + SearchBar onClick + AuthenticatedShell wiring [RF-001, RF-002, RF-003, RF-004, RF-005, RF-022, RF-023, RF-024, RF-025, RF-026] → `task-01.md`
+- [x] 2. NavigationGroup — itens estáticos filtrados por role [RF-006, RF-007, RF-008, RF-009] → `task-02.md`
+- [x] 3. useGlobalSearch + GymGroup [RF-010, RF-011, RF-012, RF-013, RF-014] → `task-03.md`
+- [x] 4. UserGroup (admin only) [RF-016, RF-017, RF-018, RF-019, RF-020] → `task-04.md`
+- [x] 5. Wire all groups + page URL params [RF-015, RF-021] → `task-05.md`
 
 ## Execution Waves
 

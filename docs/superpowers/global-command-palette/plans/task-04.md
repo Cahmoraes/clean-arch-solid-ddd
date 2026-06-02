@@ -1,6 +1,6 @@
 # Task 4: UserGroup (admin only) [RF-016, RF-017, RF-018, RF-019, RF-020]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-global-command-palette.md`
 **Spec:** `../specs/global-command-palette-design.md`
 **Depends on:** task-01, task-03

@@ -1,6 +1,6 @@
 # Task 2: NavigationGroup — itens estáticos filtrados por role [RF-006, RF-007, RF-008, RF-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-global-command-palette.md`
 **Spec:** `../specs/global-command-palette-design.md`
 **Depends on:** task-01

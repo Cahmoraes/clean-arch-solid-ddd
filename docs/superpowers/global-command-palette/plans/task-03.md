@@ -1,6 +1,6 @@
 # Task 3: useGlobalSearch + GymGroup [RF-010, RF-011, RF-012, RF-013, RF-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-global-command-palette.md`
 **Spec:** `../specs/global-command-palette-design.md`
 **Depends on:** task-01

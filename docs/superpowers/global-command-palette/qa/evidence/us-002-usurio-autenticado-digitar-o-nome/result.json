@@ -1,0 +1,80 @@
+{
+  "userStory": "US-002",
+  "title": "Como usuário autenticado, eu quero digitar o nome de uma academia no palette para que eu seja direcionado à lista de academias com aquela busca pré-preenchida",
+  "verificationDate": "2026-06-02",
+  "overallStatus": "PASS",
+  "requirements": [
+    {
+      "id": "RF-010",
+      "description": "O grupo 'Academias' é exibido para todos os usuários autenticados.",
+      "status": "PASS",
+      "evidence": "GymGroup renders inside CommandPalette for any authenticated user (MEMBER or ADMIN). Covered by command-palette.test.tsx: 'exibe GymGroup após digitar 2+ chars' + gym-group.test.tsx render tests.",
+      "testFiles": [
+        "src/components/command-palette/command-palette.test.tsx",
+        "src/components/command-palette/gym-group.test.tsx"
+      ]
+    },
+    {
+      "id": "RF-011",
+      "description": "A busca de academias só é disparada quando a query tem 2 ou mais caracteres.",
+      "status": "PASS",
+      "evidence": "useGlobalSearch: isActive = debouncedQuery.trim().length >= 2. GymGroup receives isActive prop and skips fetch when false. Tests: 'não exibe nada quando isActive=false', 'não dispara fetch quando isActive=false'.",
+      "testFiles": [
+        "src/components/command-palette/gym-group.test.tsx"
+      ],
+      "implementationRef": "src/components/command-palette/use-global-search.ts:10"
+    },
+    {
+      "id": "RF-012",
+      "description": "A busca é disparada com debounce de 300 ms após a última tecla pressionada.",
+      "status": "PASS",
+      "evidence": "useGlobalSearch calls useDebounce(query, 300). useDebounce uses setTimeout with clearTimeout on cleanup. Delay hardcoded to 300ms.",
+      "testFiles": [],
+      "implementationRef": "src/components/command-palette/use-global-search.ts:9 + src/hooks/use-debounce.ts"
+    },
+    {
+      "id": "RF-013",
+      "description": "Durante o carregamento, o grupo exibe um estado de skeleton/loading.",
+      "status": "PASS",
+      "evidence": "Test 'exibe skeleton enquanto carrega': MSW delays response, test asserts data-testid='gym-group-loading' present before response resolves.",
+      "testFiles": [
+        "src/components/command-palette/gym-group.test.tsx"
+      ]
+    },
+    {
+      "id": "RF-014",
+      "description": "Se nenhuma academia for encontrada, o grupo exibe uma mensagem de resultado vazio.",
+      "status": "PASS",
+      "evidence": "Test 'exibe estado vazio quando API retorna lista vazia': MSW returns [], test asserts 'Nenhuma academia encontrada.' present.",
+      "testFiles": [
+        "src/components/command-palette/gym-group.test.tsx"
+      ]
+    },
+    {
+      "id": "RF-015",
+      "description": "Ao selecionar uma academia, o app navega para /academias com a busca pré-preenchida com o nome da academia selecionada, e o palette fecha.",
+      "status": "PASS",
+      "evidence": "GymGroup test 'navega para /academias com query ao selecionar': mockPush called with '/academias?search=Academia+Fit', onSelect called once (palette close signal). AcademiasPage test 'RF-015: pré-preenche o campo de busca com o valor do parâmetro ?search=': useSearchParams returns 'search=Academia+Fit', input has value 'Academia Fit'.",
+      "testFiles": [
+        "src/components/command-palette/gym-group.test.tsx",
+        "src/app/(authenticated)/academias/page.test.tsx"
+      ]
+    }
+  ],
+  "testSummary": {
+    "filesRun": [
+      "src/components/command-palette/gym-group.test.tsx",
+      "src/components/command-palette/command-palette.test.tsx",
+      "src/app/(authenticated)/academias/page.test.tsx"
+    ],
+    "totalTests": 23,
+    "passed": 23,
+    "failed": 0,
+    "testRunnerOutput": "Test Files  3 passed (3) | Tests  23 passed (23)"
+  },
+  "notes": [
+    "RF-012 (300ms debounce) has no dedicated timing test; verified via implementation inspection (useDebounce(query, 300) in use-global-search.ts). use-debounce.test.ts exists but not run in this targeted pass.",
+    "No new acceptance tests needed: RF-015 URL pre-fill already covered in academias/page.test.tsx line 179.",
+    "Screenshots skipped: dev server not running."
+  ]
+}

@@ -1,6 +1,6 @@
 # Task 1: Install cmdk + CommandPalette shell + SearchBar onClick + AuthenticatedShell wiring [RF-001, RF-002, RF-003, RF-004, RF-005, RF-022, RF-023, RF-024, RF-025, RF-026]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-global-command-palette.md`
 **Spec:** `../specs/global-command-palette-design.md`
 **Depends on:** N/A

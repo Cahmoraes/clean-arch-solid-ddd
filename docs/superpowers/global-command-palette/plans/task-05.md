@@ -1,6 +1,6 @@
 # Task 5: Wire all groups + page URL params [RF-015, RF-021]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-global-command-palette.md`
 **Spec:** `../specs/global-command-palette-design.md`
 **Depends on:** task-01, task-02, task-03, task-04
