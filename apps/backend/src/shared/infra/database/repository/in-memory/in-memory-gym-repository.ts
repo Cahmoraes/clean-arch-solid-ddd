@@ -1,13 +1,12 @@
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
-import { DistanceCalculator } from "@/check-in/domain/service/distance-calculator"
-import type { Coordinate } from "@/check-in/domain/value-object/coordinate"
 import type {
 	FetchGymsInput,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
+import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import { env } from "@/shared/infra/env"
 
 @injectable()
@@ -54,10 +53,11 @@ export class InMemoryGymRepository implements GymRepository {
 
 	public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {
 		const nearbyGyms = this.gyms.filter((gym) => {
-			const distance = DistanceCalculator.distanceBetweenCoordinates(
-				{ latitude: coordinate.latitude, longitude: coordinate.longitude },
-				{ latitude: gym.latitude, longitude: gym.longitude },
-			)
+			const gymCoordinate = Coordinate.restore({
+				latitude: gym.latitude,
+				longitude: gym.longitude,
+			})
+			const distance = coordinate.distanceTo(gymCoordinate)
 			return distance <= InMemoryGymRepository.KILOMETER
 		})
 		return nearbyGyms.toArray()

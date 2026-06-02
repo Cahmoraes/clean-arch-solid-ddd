@@ -1,11 +1,6 @@
-import {
-	type Either,
-	failure,
-	success,
-} from "@/shared/domain/value-object/either"
-
-import { InvalidLatitudeError } from "../error/invalid-latitude-error"
-import { InvalidLongitudeError } from "../error/invalid-longitude-error"
+import { InvalidLatitudeError } from "../error/invalid-latitude-error.js"
+import { InvalidLongitudeError } from "../error/invalid-longitude-error.js"
+import { type Either, failure, success } from "./either.js"
 
 export interface CoordinateCreate {
 	latitude: number
@@ -57,5 +52,29 @@ export class Coordinate {
 
 	get longitude(): number {
 		return this._longitude
+	}
+
+	public distanceTo(other: Coordinate): number {
+		if (
+			this._latitude === other.latitude &&
+			this._longitude === other.longitude
+		) {
+			return 0
+		}
+		const fromRadian = (Math.PI * this._latitude) / 180
+		const toRadian = (Math.PI * other.latitude) / 180
+		const theta = this._longitude - other.longitude
+		const radTheta = (Math.PI * theta) / 180
+		let dist =
+			Math.sin(fromRadian) * Math.sin(toRadian) +
+			Math.cos(fromRadian) * Math.cos(toRadian) * Math.cos(radTheta)
+		if (dist > 1) {
+			dist = 1
+		}
+		dist = Math.acos(dist)
+		dist = (dist * 180) / Math.PI
+		dist = dist * 60 * 1.1515
+		dist = dist * 1.609344
+		return dist
 	}
 }

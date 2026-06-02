@@ -1,9 +1,8 @@
 import { inject, injectable } from "inversify"
-
-import type { InvalidLatitudeError } from "@/check-in/domain/error/invalid-latitude-error"
-import type { InvalidLongitudeError } from "@/check-in/domain/error/invalid-longitude-error"
-import { Coordinate } from "@/check-in/domain/value-object/coordinate"
 import type { Gym } from "@/gym/domain/gym"
+import type { InvalidLatitudeError } from "@/shared/domain/error/invalid-latitude-error"
+import type { InvalidLongitudeError } from "@/shared/domain/error/invalid-longitude-error"
+import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import {
 	type Either,
 	failure,

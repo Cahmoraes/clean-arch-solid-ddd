@@ -1,12 +1,12 @@
 import type { Decimal } from "@prisma/client/runtime/client"
 import { inject, injectable } from "inversify"
-import type { Coordinate } from "@/check-in/domain/value-object/coordinate"
 import type {
 	FetchGymsInput,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
+import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import type {
 	Prisma,
 	PrismaClient,

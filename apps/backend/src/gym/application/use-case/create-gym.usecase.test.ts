@@ -1,6 +1,6 @@
-import { InvalidLatitudeError } from "@/check-in/domain/error/invalid-latitude-error"
-import { InvalidLongitudeError } from "@/check-in/domain/error/invalid-longitude-error"
 import type { Gym } from "@/gym/domain/gym"
+import { InvalidLatitudeError } from "@/shared/domain/error/invalid-latitude-error"
+import { InvalidLongitudeError } from "@/shared/domain/error/invalid-longitude-error"
 import { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"

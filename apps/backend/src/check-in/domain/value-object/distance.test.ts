@@ -1,5 +1,5 @@
+import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import { InvalidDistanceError } from "../error/invalid-distance-error"
-import { Coordinate } from "./coordinate"
 import { Distance } from "./distance"
 
 describe("Distance", () => {

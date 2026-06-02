@@ -1,5 +1,5 @@
-import type { Coordinate } from "@/check-in/domain/value-object/coordinate"
 import type { Gym } from "@/gym/domain/gym"
+import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 
 export interface SaveGymResult {
 	id: string
