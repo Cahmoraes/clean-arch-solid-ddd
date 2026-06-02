@@ -20,7 +20,6 @@ interface UserItemProps {
 function UserItem({ user, onNavigate }: UserItemProps) {
 	return (
 		<Command.Item
-			key={user.id}
 			value={user.name}
 			onSelect={() => onNavigate(user)}
 			className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground aria-selected:bg-surface-2"

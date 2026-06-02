@@ -2,7 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import { useSearchParams } from "next/navigation"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
@@ -54,7 +54,7 @@ describe("AcademiasPage", () => {
 		)
 	})
 
-	it("exibe botão 'Cadastrar Academia' para usuário ADMIN", () => {
+	test("exibe botão 'Cadastrar Academia' para usuário ADMIN", () => {
 		setUser("ADMIN")
 		renderWithProviders(<AcademiasPage />)
 		const link = screen.getByTestId("gym-create-link")
@@ -62,18 +62,18 @@ describe("AcademiasPage", () => {
 		expect(link).toHaveAttribute("href", "/admin/academias/nova")
 	})
 
-	it("não exibe botão 'Cadastrar Academia' para usuário MEMBER", () => {
+	test("não exibe botão 'Cadastrar Academia' para usuário MEMBER", () => {
 		setUser("MEMBER")
 		renderWithProviders(<AcademiasPage />)
 		expect(screen.queryByTestId("gym-create-link")).not.toBeInTheDocument()
 	})
 
-	it("não exibe botão quando usuário não está autenticado", () => {
+	test("não exibe botão quando usuário não está autenticado", () => {
 		renderWithProviders(<AcademiasPage />)
 		expect(screen.queryByTestId("gym-create-link")).not.toBeInTheDocument()
 	})
 
-	it("exibe lista de academias no load inicial (modo browse)", async () => {
+	test("exibe lista de academias no load inicial (modo browse)", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms`, () =>
 				HttpResponse.json(fakeGyms(3), { status: 200 }),
@@ -85,7 +85,7 @@ describe("AcademiasPage", () => {
 		expect(screen.getByTestId("gym-card-gym-3")).toBeInTheDocument()
 	})
 
-	it("exibe Skeleton durante loading e lista após resposta MSW", async () => {
+	test("exibe Skeleton durante loading e lista após resposta MSW", async () => {
 		const deferred = createDeferred()
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/search/:name`, async () => {
@@ -112,7 +112,7 @@ describe("AcademiasPage", () => {
 		expect(screen.getByTestId("gym-card-gym-3")).toBeInTheDocument()
 	})
 
-	it("exibe EmptyState quando busca não retorna resultados (404)", async () => {
+	test("exibe EmptyState quando busca não retorna resultados (404)", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/search/:name`, () =>
 				HttpResponse.json({ message: "no gyms" }, { status: 404 }),
@@ -128,7 +128,7 @@ describe("AcademiasPage", () => {
 		).toBeInTheDocument()
 	})
 
-	it("paginação: Próxima incrementa página e nova request é feita", async () => {
+	test("paginação: Próxima incrementa página e nova request é feita", async () => {
 		const requestedPages: string[] = []
 		const RESULTS_PER_PAGE = 20
 		server.use(
@@ -160,7 +160,7 @@ describe("AcademiasPage", () => {
 		})
 	})
 
-	it("links dos cards apontam para detalhe da academia", async () => {
+	test("links dos cards apontam para detalhe da academia", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/search/:name`, () =>
 				HttpResponse.json(fakeGyms(2), { status: 200 }),
@@ -176,7 +176,7 @@ describe("AcademiasPage", () => {
 		expect(card.getAttribute("href")).toBe("/academias/gym-1")
 	})
 
-	it("RF-015: pré-preenche o campo de busca com o valor do parâmetro ?search=", () => {
+	test("RF-015: pré-preenche o campo de busca com o valor do parâmetro ?search=", () => {
 		vi.mocked(useSearchParams).mockReturnValue(
 			new URLSearchParams("search=Academia+Fit") as unknown as ReturnType<
 				typeof useSearchParams

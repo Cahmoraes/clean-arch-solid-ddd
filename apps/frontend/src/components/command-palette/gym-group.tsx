@@ -29,6 +29,7 @@ export function GymGroup({ query, isActive, onSelect }: GymGroupProps) {
 					data-testid="gym-group-loading"
 					role="status"
 					className="space-y-1 px-3 py-2"
+					aria-label="Carregando academias"
 				>
 					{[1, 2].map((i) => (
 						<div

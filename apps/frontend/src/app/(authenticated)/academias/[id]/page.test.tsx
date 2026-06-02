@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 const useParamsMock = vi.fn<() => { id: string }>()
 vi.mock("next/navigation", () => ({
@@ -67,7 +67,7 @@ describe("GymDetailPage", () => {
 		delete (navigator as unknown as { geolocation?: unknown }).geolocation
 	})
 
-	it("exibe nome, descrição, telefone e localização da academia mockada", async () => {
+	test("exibe nome, descrição, telefone e localização da academia mockada", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/:id`, ({ params }) =>
 				HttpResponse.json(
@@ -102,7 +102,7 @@ describe("GymDetailPage", () => {
 		expect(screen.getByTestId("gym-detail-checkin")).toBeInTheDocument()
 	})
 
-	it("exibe Skeleton durante loading", async () => {
+	test("exibe Skeleton durante loading", async () => {
 		const deferred = createDeferred()
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/:id`, async () => {
@@ -129,7 +129,7 @@ describe("GymDetailPage", () => {
 		})
 	})
 
-	it("exibe mensagem amigável em caso de erro de rede", async () => {
+	test("exibe mensagem amigável em caso de erro de rede", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/:id`, () =>
 				HttpResponse.json({ message: "boom" }, { status: 500 }),
@@ -142,7 +142,7 @@ describe("GymDetailPage", () => {
 		).toBeInTheDocument()
 	})
 
-	it("realiza check-in: exibe loading e toast de sucesso", async () => {
+	test("realiza check-in: exibe loading e toast de sucesso", async () => {
 		useAuthStore.setState({
 			accessToken: "fake",
 			expiresAt: Date.now() + 60_000,
@@ -193,7 +193,7 @@ describe("GymDetailPage", () => {
 		})
 	})
 
-	it("exibe mensagem amigável quando check-in falha (409)", async () => {
+	test("exibe mensagem amigável quando check-in falha (409)", async () => {
 		useAuthStore.setState({
 			accessToken: "fake",
 			expiresAt: Date.now() + 60_000,
