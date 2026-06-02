@@ -17,10 +17,6 @@ export class PgUserRepository implements UserRepository {
 		throw new Error("Method not implemented.")
 	}
 
-	public async delete(): Promise<void> {
-		throw new Error("Method not implemented.")
-	}
-
 	public async userOfEmail(email: string): Promise<User | null> {
 		const result = await this.pgClient.query(
 			"SELECT * FROM users WHERE email = $1",

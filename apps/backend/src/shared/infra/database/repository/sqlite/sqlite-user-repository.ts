@@ -180,17 +180,6 @@ export class SQLiteUserRepository implements UserRepository {
 			)
 	}
 
-	public async delete(user: User): Promise<void> {
-		this.sqliteConnection
-			.query(/*SQL*/ `
-      DELETE FROM 
-        "users"
-      WHERE
-        id = ?  
-    `)
-			.run(user.id)
-	}
-
 	public withTransaction<TX extends object>(sqliteClient: TX): UserRepository {
 		if (!SQLiteUnitOfWork.isClientTransaction(sqliteClient)) {
 			throw new InvalidTransactionInstance(sqliteClient)

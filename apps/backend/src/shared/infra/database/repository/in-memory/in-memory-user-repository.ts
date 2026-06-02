@@ -60,8 +60,4 @@ export class InMemoryUserRepository implements UserRepository {
 	public async userOfId(id: string): Promise<User | null> {
 		return this.users.find((user) => !user.isDeleted && user.id === id)
 	}
-
-	public async delete(user: User): Promise<void> {
-		this.users.delete(user)
-	}
 }
