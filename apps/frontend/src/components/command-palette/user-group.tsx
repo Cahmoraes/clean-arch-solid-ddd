@@ -22,7 +22,7 @@ function UserItem({ user, onNavigate }: UserItemProps) {
 		<Command.Item
 			value={user.name}
 			onSelect={() => onNavigate(user)}
-			className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground aria-selected:bg-surface-2"
+			className="mx-1 flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground aria-selected:bg-surface-2"
 		>
 			<User className="h-4 w-4 shrink-0 text-subtle" aria-hidden="true" />
 			<span className="flex-1 truncate">{user.name}</span>

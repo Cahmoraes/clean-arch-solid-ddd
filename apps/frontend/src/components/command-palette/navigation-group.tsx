@@ -71,7 +71,7 @@ export function NavigationGroup({ query, onSelect }: NavigationGroupProps) {
 							router.push(item.href)
 							onSelect()
 						}}
-						className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground aria-selected:bg-surface-2"
+						className="mx-1 flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground aria-selected:bg-surface-2"
 					>
 						<Icon className="h-4 w-4 shrink-0 text-subtle" aria-hidden="true" />
 						{item.label}

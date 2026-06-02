@@ -30,11 +30,14 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 			<Portal>
 				<Overlay className="fixed inset-0 z-40 bg-black/60" />
 				<Content
-					className="fixed left-1/2 top-[15vh] z-50 w-[calc(100vw-2rem)] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-popover shadow-pop focus:outline-none"
+					className="fixed left-1/2 top-[15vh] z-50 w-[calc(100vw-2rem)] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-sidebar shadow-pop focus:outline-none"
 					aria-describedby={undefined}
 				>
 					<Title className="sr-only">Paleta de comandos</Title>
-					<Command shouldFilter={false} className="flex flex-col">
+					<Command
+						shouldFilter={false}
+						className="flex flex-col font-mono [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-subtle"
+					>
 						<div className="flex items-center gap-3 border-b border-border px-4">
 							<Search
 								className="h-4 w-4 shrink-0 text-subtle"

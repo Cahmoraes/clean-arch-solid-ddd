@@ -63,7 +63,7 @@ export function GymGroup({ query, isActive, onSelect }: GymGroupProps) {
 						router.push(`/academias?${params.toString()}`)
 						onSelect()
 					}}
-					className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground aria-selected:bg-surface-2"
+					className="mx-1 flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground aria-selected:bg-surface-2"
 				>
 					<Building2
 						className="h-4 w-4 shrink-0 text-subtle"

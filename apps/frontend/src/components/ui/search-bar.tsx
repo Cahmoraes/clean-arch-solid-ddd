@@ -35,7 +35,7 @@ export function SearchBar({
 				className={cn(baseClasses, "cursor-pointer")}
 			>
 				<Search className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-				<span className="h-full flex-1 truncate text-left text-[15px] text-subtle">
+				<span className="flex-1 truncate text-left text-[15px] text-subtle">
 					{placeholder}
 				</span>
 				{showShortcut && (
