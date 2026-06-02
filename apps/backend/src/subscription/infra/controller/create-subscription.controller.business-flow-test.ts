@@ -76,7 +76,9 @@ describe("CreateSubscriptionController", () => {
 		expect(response.body).toHaveProperty("subscriptionId")
 		expect(response.body).toHaveProperty("status", "active")
 
-		const saved = await subscriptionRepository.ofUserId("user-with-billing")
+		const saved = await subscriptionRepository.ofCustomerId(
+			"cus_existing_billing",
+		)
 		expect(saved).not.toBeNull()
 		expect(saved?.customerId).toBe("cus_existing_billing")
 		expect(saved?.billingSubscriptionId).toBe(response.body.subscriptionId)

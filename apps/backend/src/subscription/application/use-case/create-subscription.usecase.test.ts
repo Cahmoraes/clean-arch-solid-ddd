@@ -45,8 +45,8 @@ describe("CreateSubscription UseCase", () => {
 		expect(value.subscriptionId).toMatch(/^sub_test_/)
 		expect(value.status).toBe("active")
 
-		const subscriptionSaved = await subscriptionRepository.ofUserId(
-			input.userId,
+		const subscriptionSaved = await subscriptionRepository.ofCustomerId(
+			input.customerId,
 		)
 		expect(subscriptionSaved?.id).toMatch(
 			/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,

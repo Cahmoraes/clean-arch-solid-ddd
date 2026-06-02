@@ -62,20 +62,6 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
 		})
 	}
 
-	public async ofId(id: string): Promise<Subscription | null> {
-		const data = await this.prisma.subscription.findUnique({ where: { id } })
-		if (!data) return null
-		return this.restore(data as SubscriptionData)
-	}
-
-	public async ofUserId(userId: string): Promise<Subscription | null> {
-		const data = await this.prisma.subscription.findFirst({
-			where: { user_id: userId },
-		})
-		if (!data) return null
-		return this.restore(data as SubscriptionData)
-	}
-
 	public async ofBillingSubscriptionId(
 		billingSubscriptionId: string,
 	): Promise<Subscription | null> {

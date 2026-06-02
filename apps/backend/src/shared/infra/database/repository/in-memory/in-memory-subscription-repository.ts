@@ -19,14 +19,6 @@ export class InMemorySubscriptionRepository implements SubscriptionRepository {
 		this.data.add(subscription)
 	}
 
-	public async ofId(id: string): Promise<Subscription | null> {
-		return this.data.find((subscriptions) => subscriptions.id === id)
-	}
-
-	public async ofUserId(userId: string): Promise<Subscription | null> {
-		return this.data.find((subscriptions) => subscriptions.userId === userId)
-	}
-
 	public async ofBillingSubscriptionId(
 		billingSubscriptionId: string,
 	): Promise<Subscription | null> {
