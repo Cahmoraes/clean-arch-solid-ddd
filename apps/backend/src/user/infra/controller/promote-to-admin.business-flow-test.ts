@@ -152,4 +152,22 @@ describe("Promover Usuário a Admin", () => {
 		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
 		expect(response.body).toHaveProperty("message")
 	})
+
+	test("Deve retornar 409 ao tentar promover usuário que já é admin", async () => {
+		const alreadyAdminId = randomUUID()
+		await createAndSaveUser({
+			userRepository,
+			id: alreadyAdminId,
+			email: "already-admin@promote.test",
+			role: "ADMIN",
+		})
+
+		const response = await request(fastifyServer.server)
+			.patch(UserRoutes.PROMOTE_TO_ADMIN)
+			.set("Authorization", `Bearer ${token}`)
+			.send({ userId: alreadyAdminId })
+
+		expect(response.status).toBe(HTTP_STATUS.CONFLICT)
+		expect(response.body).toHaveProperty("message")
+	})
 })
