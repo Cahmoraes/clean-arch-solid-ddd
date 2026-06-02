@@ -46,14 +46,15 @@ interface NavigationGroupProps {
 }
 
 export function NavigationGroup({ query, onSelect }: NavigationGroupProps) {
-	const user = useAuthStore((state) => state.user)
+	const role = useAuthStore((state) => state.user?.role)
 	const router = useRouter()
-	const isAdmin = user?.role === "ADMIN"
+	const isAdmin = role === "ADMIN"
 
+	const q = query.trim().toLowerCase()
 	const items = NAV_ITEMS.filter((item) => {
 		if (item.adminOnly && !isAdmin) return false
-		if (query.trim().length === 0) return true
-		return item.label.toLowerCase().includes(query.trim().toLowerCase())
+		if (q.length === 0) return true
+		return item.label.toLowerCase().includes(q)
 	})
 
 	if (items.length === 0) return null
