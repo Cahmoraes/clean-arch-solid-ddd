@@ -3,7 +3,7 @@
 import { Users } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import type { KeyboardEvent, MouseEvent } from "react"
-import { Suspense, useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
@@ -270,11 +270,17 @@ function AdminUsersContent({
 		return Math.max(1, Math.ceil(data.pagination.total / data.pagination.limit))
 	}, [data])
 
+	const autoSelectedRef = useRef(false)
+
 	useEffect(() => {
-		if (!initialUserId || !data?.users?.length || selectedUser) return
+		if (autoSelectedRef.current || !initialUserId || !data?.users?.length)
+			return
 		const found = data.users.find((user) => user.id === initialUserId)
-		if (found) setSelectedUser(found)
-	}, [data?.users, initialUserId, selectedUser])
+		if (found) {
+			setSelectedUser(found)
+			autoSelectedRef.current = true
+		}
+	}, [data?.users, initialUserId])
 
 	const activeSelectedUser = useMemo(() => {
 		if (!selectedUser) return null

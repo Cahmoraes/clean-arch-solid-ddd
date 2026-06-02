@@ -1,12 +1,17 @@
 import { screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
-import { beforeEach, describe, expect, it } from "vitest"
+import { useSearchParams } from "next/navigation"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import AcademiasPage from "./page"
+
+vi.mock("next/navigation", () => ({
+	useSearchParams: vi.fn(),
+}))
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -44,6 +49,9 @@ function setUser(role: "MEMBER" | "ADMIN") {
 describe("AcademiasPage", () => {
 	beforeEach(() => {
 		useAuthStore.getState().clear()
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("") as unknown as ReturnType<typeof useSearchParams>,
+		)
 	})
 
 	it("exibe botão 'Cadastrar Academia' para usuário ADMIN", () => {
@@ -166,5 +174,15 @@ describe("AcademiasPage", () => {
 		const card = await screen.findByTestId("gym-card-gym-1")
 		expect(within(card).getByText(/iron gym 1/i)).toBeInTheDocument()
 		expect(card.getAttribute("href")).toBe("/academias/gym-1")
+	})
+
+	it("RF-015: pré-preenche o campo de busca com o valor do parâmetro ?search=", () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("search=Academia+Fit") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		renderWithProviders(<AcademiasPage />)
+		expect(screen.getByTestId("gym-search-input")).toHaveValue("Academia Fit")
 	})
 })

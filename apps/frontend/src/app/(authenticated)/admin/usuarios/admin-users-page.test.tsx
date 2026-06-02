@@ -1,11 +1,16 @@
 import { screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
+import { useSearchParams } from "next/navigation"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import AdminUsersPage from "./page"
+
+vi.mock("next/navigation", () => ({
+	useSearchParams: vi.fn(),
+}))
 
 const isDesktopMock = vi.fn<() => boolean>(() => true)
 vi.mock("@/lib/hooks/use-is-desktop", () => ({
@@ -65,6 +70,9 @@ describe("AdminUsersPage modal integration", () => {
 			expiresAt: Date.now() + 60_000,
 			user: { id: "admin-logged", role: "ADMIN" },
 		})
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("") as unknown as ReturnType<typeof useSearchParams>,
+		)
 	})
 
 	test("não exibe o painel de detalhes inicialmente", async () => {
@@ -199,6 +207,22 @@ describe("AdminUsersPage modal integration", () => {
 			{ timeout: 2000 },
 		)
 	}, 20_000)
+
+	test("RF-021: auto-seleciona usuário quando ?userId= está na URL e usuário existe na lista", async () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams(
+				"userId=usr-1&query=Jo%C3%A3o",
+			) as unknown as ReturnType<typeof useSearchParams>,
+		)
+		mockUsersList([
+			buildUser({ id: "usr-1", name: "João", email: "joao@example.com" }),
+		])
+		renderPage()
+
+		await waitFor(() => {
+			expect(screen.getByRole("tab", { name: "Detalhes" })).toBeInTheDocument()
+		})
+	})
 
 	test("não dispara busca antes do debounce de 500ms", async () => {
 		const user = userEvent.setup()

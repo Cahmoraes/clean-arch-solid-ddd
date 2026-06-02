@@ -1,6 +1,6 @@
 "use client"
 
-import { Content, Overlay, Portal, Root } from "@radix-ui/react-dialog"
+import { Content, Overlay, Portal, Root, Title } from "@radix-ui/react-dialog"
 import { Command } from "cmdk"
 import { Search } from "lucide-react"
 import { useState } from "react"
@@ -33,6 +33,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 					className="fixed left-1/2 top-[15vh] z-50 w-[calc(100vw-2rem)] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-popover shadow-pop focus:outline-none"
 					aria-describedby={undefined}
 				>
+					<Title className="sr-only">Paleta de comandos</Title>
 					<Command shouldFilter={false} className="flex flex-col">
 						<div className="flex items-center gap-3 border-b border-border px-4">
 							<Search

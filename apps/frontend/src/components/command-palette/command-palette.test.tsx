@@ -110,7 +110,8 @@ describe("CommandPalette", () => {
 			screen.getByPlaceholderText("Buscar páginas, academias, usuários..."),
 			"jo",
 		)
-		await new Promise((r) => setTimeout(r, 500))
-		expect(screen.queryByText("João")).not.toBeInTheDocument()
+		await waitFor(() =>
+			expect(screen.queryByText("João")).not.toBeInTheDocument(),
+		)
 	})
 })
