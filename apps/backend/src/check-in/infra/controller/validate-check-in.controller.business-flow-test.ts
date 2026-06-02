@@ -86,6 +86,6 @@ describe("Validar CheckIn", () => {
 				checkInId: "invalid-id",
 			})
 
-		expect(response.status).toBe(HTTP_STATUS.CONFLICT)
+		expect(response.status).toBe(HTTP_STATUS.NOT_FOUND)
 	})
 })

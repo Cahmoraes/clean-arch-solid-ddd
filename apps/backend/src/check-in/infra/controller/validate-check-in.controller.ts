@@ -1,17 +1,13 @@
 import type { FastifyRequest } from "fastify"
 import { inject } from "inversify"
-import { ZodError, z } from "zod"
+import { z } from "zod"
 import type { ValidateCheckInUseCase } from "@/check-in/application/use-case/validate-check-in.usecase"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { CHECKIN_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type {
-	HandleCallbackResponse,
-	HttpServer,
-	Schema,
-} from "@/shared/infra/server/http-server"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import { CheckInRoutes } from "./routes/check-in-routes"
 
@@ -61,19 +57,6 @@ export class ValidateCheckInController extends BaseController {
 			},
 			makeValidateCheckInSwaggerSchema(),
 		)
-	}
-
-	protected override mapResponseError(
-		error: Error | Error[],
-	): HandleCallbackResponse | undefined {
-		if (Array.isArray(error) || error instanceof ZodError) {
-			return undefined
-		}
-
-		return ResponseFactory.create({
-			status: HTTP_STATUS.CONFLICT,
-			message: error.message,
-		})
 	}
 
 	private async callback(req: FastifyRequest) {

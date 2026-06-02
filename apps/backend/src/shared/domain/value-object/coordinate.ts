@@ -32,7 +32,7 @@ export class Coordinate {
 
 	public static validate(
 		props: CoordinateCreate,
-	): Either<Error, CoordinateCreate> {
+	): Either<InvalidLatitudeError | InvalidLongitudeError, CoordinateCreate> {
 		if (props.latitude < MIN_LATITUDE || props.latitude > MAX_LATITUDE) {
 			return failure(new InvalidLatitudeError())
 		}

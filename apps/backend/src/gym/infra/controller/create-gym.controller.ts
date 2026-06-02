@@ -1,17 +1,13 @@
 import type { FastifyRequest } from "fastify"
 import { inject } from "inversify"
-import { ZodError, z } from "zod"
+import { z } from "zod"
 import type { CreateGymUseCase } from "@/gym/application/use-case/create-gym.usecase"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { GYM_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type {
-	HandleCallbackResponse,
-	HttpServer,
-	Schema,
-} from "@/shared/infra/server/http-server"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { GymRoutes } from "./routes/gym-routes"
 
 const createGymSchema = z.object({
@@ -66,18 +62,6 @@ export class CreateGymController extends BaseController {
 			},
 			makeCreateGymSwaggerSchema(),
 		)
-	}
-
-	protected override mapResponseError(
-		error: Error | Error[],
-	): HandleCallbackResponse | undefined {
-		if (Array.isArray(error) || error instanceof ZodError) {
-			return undefined
-		}
-
-		return ResponseFactory.CONFLICT({
-			message: error.message,
-		})
 	}
 
 	private async callback(req: FastifyRequest) {

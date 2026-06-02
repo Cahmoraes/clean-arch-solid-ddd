@@ -1,4 +1,8 @@
-export class BillingCustomerNotProvisionedError extends Error {
+import { DomainError } from "@/shared/domain/error/domain-error.js"
+
+export class BillingCustomerNotProvisionedError extends DomainError {
+	public readonly kind = "conflict" as const
+
 	constructor(userId?: string) {
 		super(
 			userId
