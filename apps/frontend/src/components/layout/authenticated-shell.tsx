@@ -194,8 +194,7 @@ export function AuthenticatedShell({
 						placeholder="Buscar..."
 						aria-label="Buscar"
 						className="max-w-[460px] flex-1 max-[560px]:hidden"
-						onClick={() => setIsCommandPaletteOpen(true)}
-						readOnly
+						onActivate={() => setIsCommandPaletteOpen(true)}
 					/>
 					<div className="ml-auto flex items-center gap-3">
 						<ThemeToggle />

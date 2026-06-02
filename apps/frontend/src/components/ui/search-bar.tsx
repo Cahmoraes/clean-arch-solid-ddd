@@ -1,47 +1,39 @@
 import { Search } from "lucide-react"
-import type {
-	InputHTMLAttributes,
-	KeyboardEvent,
-	MouseEventHandler,
-} from "react"
+import type { InputHTMLAttributes } from "react"
 import { cn } from "@/lib/cn"
 
 export interface SearchBarProps
-	extends Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "onClick"> {
+	extends Omit<InputHTMLAttributes<HTMLInputElement>, "className"> {
 	className?: string
 	showShortcut?: boolean
-	onClick?: MouseEventHandler<HTMLDivElement>
+	/**
+	 * When provided, renders the wrapper as a keyboard-accessible trigger
+	 * (role="button", tabIndex=0) that opens the Command Palette.
+	 * The inner input becomes non-interactive (tabIndex=-1, readOnly).
+	 */
+	onActivate?: () => void
 }
 
-export function SearchBar({
-	className,
-	showShortcut = false,
-	onClick,
-	...inputProps
-}: SearchBarProps) {
-	function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-		if (onClick && (event.key === "Enter" || event.key === " ")) {
-			event.preventDefault()
-			onClick(event as unknown as React.MouseEvent<HTMLDivElement>)
-		}
-	}
+const INNER_CLASS =
+	"h-full flex-1 border-none bg-transparent text-[15px] text-foreground outline-none placeholder:text-subtle"
 
+function SearchBarInner({
+	showShortcut,
+	inputProps,
+	isTrigger,
+}: {
+	showShortcut: boolean
+	inputProps: InputHTMLAttributes<HTMLInputElement>
+	isTrigger: boolean
+}) {
 	return (
-		// biome-ignore lint/a11y/noStaticElementInteractions: role="presentation" wrapper delegates to inner input; onClick opens command palette
-		<div
-			role={onClick ? "presentation" : undefined}
-			onClick={onClick}
-			onKeyDown={onClick ? handleKeyDown : undefined}
-			className={cn(
-				"flex h-[52px] items-center gap-3 rounded-md border border-border bg-surface px-4 text-subtle",
-				onClick && "cursor-pointer",
-				className,
-			)}
-		>
+		<>
 			<Search className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
 			<input
 				type="search"
-				className="h-full flex-1 border-none bg-transparent text-[15px] text-foreground outline-none placeholder:text-subtle"
+				className={INNER_CLASS}
+				tabIndex={isTrigger ? -1 : undefined}
+				readOnly={isTrigger || undefined}
 				{...inputProps}
 			/>
 			{showShortcut && (
@@ -49,6 +41,44 @@ export function SearchBar({
 					⌘K
 				</kbd>
 			)}
+		</>
+	)
+}
+
+export function SearchBar({
+	className,
+	showShortcut = false,
+	onActivate,
+	...inputProps
+}: SearchBarProps) {
+	const wrapperClass = cn(
+		"flex h-[52px] items-center gap-3 rounded-md border border-border bg-surface px-4 text-subtle",
+		className,
+	)
+
+	if (onActivate) {
+		return (
+			<button
+				type="button"
+				onClick={onActivate}
+				className={cn(wrapperClass, "cursor-pointer")}
+			>
+				<SearchBarInner
+					showShortcut={showShortcut}
+					inputProps={inputProps}
+					isTrigger
+				/>
+			</button>
+		)
+	}
+
+	return (
+		<div className={wrapperClass}>
+			<SearchBarInner
+				showShortcut={showShortcut}
+				inputProps={inputProps}
+				isTrigger={false}
+			/>
 		</div>
 	)
 }
