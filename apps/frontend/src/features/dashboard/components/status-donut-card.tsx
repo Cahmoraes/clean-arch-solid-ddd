@@ -61,9 +61,9 @@ export function StatusDonutCard({
 		return (
 			<div className="rounded-xl border border-border bg-card p-4">
 				<Skeleton className="mb-4 h-4 w-40" />
-				<div className="flex items-center justify-center gap-6">
+				<div className="flex flex-col items-center gap-4 md:flex-row md:justify-center md:gap-6">
 					<Skeleton className="h-20 w-20 rounded-full" />
-					<div className="flex flex-col gap-2">
+					<div className="flex flex-row flex-wrap justify-center gap-x-3 gap-y-2 md:flex-col md:gap-2">
 						<Skeleton className="h-4 w-28" />
 						<Skeleton className="h-4 w-24" />
 						<Skeleton className="h-4 w-24" />
@@ -82,7 +82,7 @@ export function StatusDonutCard({
 			<p className="mb-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">
 				Status dos check-ins
 			</p>
-			<div className="flex items-center justify-center gap-6">
+			<div className="flex flex-col items-center gap-4 md:flex-row md:justify-center md:gap-6">
 				<svg
 					width="80"
 					height="80"
@@ -116,7 +116,7 @@ export function StatusDonutCard({
 							))}
 				</svg>
 
-				<ul className="flex flex-col gap-2">
+				<ul className="flex flex-row flex-wrap justify-center gap-x-4 gap-y-2 md:flex-col md:gap-2">
 					{[
 						{
 							label: "Validado",
