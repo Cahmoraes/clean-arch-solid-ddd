@@ -1,4 +1,4 @@
-import type { ElementType, ReactNode } from "react"
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react"
 import { cn } from "@/lib/cn"
 
 export type PageContainerWidth = "wide" | "default" | "narrow"
@@ -9,26 +9,27 @@ const WIDTH_CLASSES: Record<PageContainerWidth, string> = {
 	narrow: "max-w-2xl",
 }
 
-export interface PageContainerProps {
+type PageContainerOwnProps<T extends ElementType> = {
 	width?: PageContainerWidth
-	as?: ElementType
+	as?: T
 	className?: string
 	children: ReactNode
-	id?: string
-	"aria-label"?: string
-	"aria-labelledby"?: string
-	"aria-busy"?: boolean | "true" | "false"
 	"data-testid"?: string
 }
 
-export function PageContainer({
+export type PageContainerProps<T extends ElementType = "div"> =
+	PageContainerOwnProps<T> &
+		Omit<ComponentPropsWithoutRef<T>, keyof PageContainerOwnProps<T>>
+
+export function PageContainer<T extends ElementType = "div">({
 	width = "default",
-	as: Component = "div",
+	as,
 	className,
 	children,
 	"data-testid": testId = "page-container",
 	...rest
-}: PageContainerProps) {
+}: PageContainerProps<T>) {
+	const Component: ElementType = as ?? "div"
 	return (
 		<Component
 			data-testid={testId}
