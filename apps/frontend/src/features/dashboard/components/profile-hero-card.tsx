@@ -87,17 +87,21 @@ function InlineStats({
 	streak: number
 }) {
 	return (
-		<div className="ml-auto flex gap-6">
+		<div className="flex w-full justify-center gap-6 border-t border-border pt-4 md:ml-auto md:w-auto md:border-0 md:pt-0 md:justify-start">
 			<div className="text-center">
-				<p className="text-xl font-semibold text-primary">{total}</p>
+				<p className="text-lg font-semibold text-primary md:text-xl">{total}</p>
 				<p className="text-xs text-muted-foreground">Total</p>
 			</div>
 			<div className="text-center">
-				<p className="text-xl font-semibold text-primary">{thisMonth}</p>
+				<p className="text-lg font-semibold text-primary md:text-xl">
+					{thisMonth}
+				</p>
 				<p className="text-xs text-muted-foreground">Este mês</p>
 			</div>
 			<div className="text-center">
-				<p className="text-xl font-semibold text-primary">{streak}</p>
+				<p className="text-lg font-semibold text-primary md:text-xl">
+					{streak}
+				</p>
 				<p className="text-xs text-muted-foreground">Sequência</p>
 			</div>
 		</div>
@@ -106,14 +110,16 @@ function InlineStats({
 
 function ProfileHeroCardSkeleton() {
 	return (
-		<div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5">
-			<Skeleton className="h-14 w-14 rounded-full" />
-			<div className="flex flex-col gap-2">
-				<Skeleton className="h-5 w-40" />
-				<Skeleton className="h-4 w-56" />
-				<Skeleton className="h-4 w-20" />
+		<div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 md:flex-row md:flex-wrap md:items-center">
+			<div className="flex items-center gap-4">
+				<Skeleton className="h-14 w-14 rounded-full" />
+				<div className="flex flex-col gap-2">
+					<Skeleton className="h-5 w-40" />
+					<Skeleton className="h-4 w-56" />
+					<Skeleton className="h-4 w-20" />
+				</div>
 			</div>
-			<div className="ml-auto flex gap-6">
+			<div className="flex w-full justify-center gap-6 border-t border-border pt-4 md:ml-auto md:w-auto md:border-0 md:pt-0">
 				<Skeleton className="h-12 w-12" />
 				<Skeleton className="h-12 w-12" />
 				<Skeleton className="h-12 w-12" />
@@ -136,9 +142,11 @@ export function ProfileHeroCard({ thisMonth, streak }: ProfileHeroCardProps) {
 	}
 
 	return (
-		<div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-sm">
-			<Avatar name={me?.name} />
-			<UserInfo me={me} />
+		<div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm md:flex-row md:flex-wrap md:items-center">
+			<div className="flex items-center gap-4">
+				<Avatar name={me?.name} />
+				<UserInfo me={me} />
+			</div>
 			<InlineStats
 				total={metrics?.checkInsCount ?? 0}
 				thisMonth={thisMonth}
