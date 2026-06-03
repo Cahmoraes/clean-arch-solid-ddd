@@ -2,6 +2,7 @@
 
 import { AlertTriangle, BadgeCheck, Check } from "lucide-react"
 import { useId, useState } from "react"
+import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { useCreateSubscription } from "@/features/subscriptions/api/use-create-subscription"
 import {
@@ -325,7 +326,7 @@ export default function SubscriptionPage() {
 	const flow = useSubscriptionFlow()
 
 	return (
-		<section className="mx-auto flex w-full max-w-3xl flex-col gap-8">
+		<PageContainer as="section" width="default">
 			<header className="flex flex-col gap-2">
 				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Assinatura Premium
@@ -355,6 +356,6 @@ export default function SubscriptionPage() {
 				disabled={flow.isPending || !flow.selectedPlan}
 				onSubscribe={flow.handleSubscribe}
 			/>
-		</section>
+		</PageContainer>
 	)
 }

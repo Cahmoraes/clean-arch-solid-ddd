@@ -2,6 +2,7 @@
 
 import { ShieldCheck } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
+import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
@@ -142,10 +143,7 @@ function AdminCheckInsPageContent() {
 	)
 
 	return (
-		<section
-			aria-label="Check-ins"
-			className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6"
-		>
+		<PageContainer as="section" width="default" aria-label="Check-ins">
 			<div className="flex flex-col gap-5">
 				<PageHeader
 					eyebrow="Admin"
@@ -179,7 +177,7 @@ function AdminCheckInsPageContent() {
 				onChange={setPage}
 				testId="admin-checkins"
 			/>
-		</section>
+		</PageContainer>
 	)
 }
 

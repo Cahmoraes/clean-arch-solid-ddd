@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
+import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -197,9 +198,10 @@ export default function GymDetailPage() {
 	const query = useGymById(id)
 
 	return (
-		<section
+		<PageContainer
+			as="section"
+			width="default"
 			aria-labelledby="gym-detail-title"
-			className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6"
 		>
 			<div>
 				<Link
@@ -219,6 +221,6 @@ export default function GymDetailPage() {
 				onRetry={() => query.refetch()}
 				gym={query.data}
 			/>
-		</section>
+		</PageContainer>
 	)
 }

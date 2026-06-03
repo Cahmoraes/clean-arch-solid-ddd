@@ -2,6 +2,7 @@
 
 import { CalendarCheck } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
+import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -156,9 +157,10 @@ function CheckInsPageContent() {
 	)
 
 	return (
-		<section
+		<PageContainer
+			as="section"
+			width="default"
 			aria-labelledby="checkins-title"
-			className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6"
 		>
 			<header className="flex flex-col gap-1">
 				<h1
@@ -195,7 +197,7 @@ function CheckInsPageContent() {
 				onChange={setPage}
 				testId="checkins"
 			/>
-		</section>
+		</PageContainer>
 	)
 }
 

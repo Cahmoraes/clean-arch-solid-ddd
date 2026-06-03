@@ -2,6 +2,7 @@
 
 import { UserCircle } from "lucide-react"
 import React from "react"
+import { PageContainer } from "@/components/layout/page-container"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -335,7 +336,7 @@ export default function ProfilePage() {
 	} = useMetrics()
 
 	return (
-		<main className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-10 sm:px-6">
+		<PageContainer width="default" className="gap-6">
 			<header className="flex flex-col gap-1">
 				<Eyebrow>Conta</Eyebrow>
 				<h1 className="font-display text-3xl font-semibold text-foreground">
@@ -371,6 +372,6 @@ export default function ProfilePage() {
 					hasPassword={me.hasPassword}
 				/>
 			) : null}
-		</main>
+		</PageContainer>
 	)
 }

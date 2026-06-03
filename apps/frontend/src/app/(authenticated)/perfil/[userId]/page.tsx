@@ -3,6 +3,7 @@
 import { UserCircle } from "lucide-react"
 import Link from "next/link"
 import { use } from "react"
+import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -129,7 +130,7 @@ export function PublicProfileView({ userId }: PublicProfileViewProps) {
 	const notFound = error instanceof ApiError && error.status === 404
 
 	return (
-		<main className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-10 sm:px-6">
+		<PageContainer width="default">
 			<header className="flex flex-col gap-2">
 				<Link
 					href="/perfil"
@@ -162,7 +163,7 @@ export function PublicProfileView({ userId }: PublicProfileViewProps) {
 					refetch={refetch}
 				/>
 			</section>
-		</main>
+		</PageContainer>
 	)
 }
 
