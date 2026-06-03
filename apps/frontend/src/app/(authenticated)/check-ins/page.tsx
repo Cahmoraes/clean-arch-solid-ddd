@@ -174,19 +174,21 @@ function CheckInsPageContent() {
 				</p>
 			</header>
 
-			<CheckInFilterBar
-				status={status}
-				onStatusChange={setStatus}
-				stats={statsData}
-			/>
-
-			<div className="flex gap-3">
-				<CheckInSearchInput
-					value={gymNameInput}
-					onChange={setGymNameInput}
-					placeholder="Buscar por academia..."
+			<div className="flex flex-wrap items-center gap-3">
+				<CheckInFilterBar
+					status={status}
+					onStatusChange={setStatus}
+					stats={statsData}
 				/>
-				<CheckInSortToggle value={sortOrder} onValueChange={setSortOrder} />
+				<div className="flex flex-1 gap-2 min-w-0">
+					<CheckInSearchInput
+						value={gymNameInput}
+						onChange={setGymNameInput}
+						placeholder="Buscar por academia..."
+						className="flex-1"
+					/>
+					<CheckInSortToggle value={sortOrder} onValueChange={setSortOrder} />
+				</div>
 			</div>
 
 			<CheckInsBody query={query} status={status} />
