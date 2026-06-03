@@ -17,10 +17,10 @@ export function PublicShell({ children, className }: PublicShellProps) {
 				className,
 			)}
 		>
-			<header className="border-b border-border">
+			<header className="border-b border-border bg-background">
 				<div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
 					<Link href="/" aria-label="Página inicial VOLT">
-						<BrandMark />
+						<BrandMark className="text-foreground" />
 					</Link>
 					<nav
 						aria-label="Ações de autenticação"

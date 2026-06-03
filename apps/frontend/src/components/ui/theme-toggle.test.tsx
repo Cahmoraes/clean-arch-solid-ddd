@@ -18,14 +18,14 @@ describe("ThemeToggle", () => {
 
 	test("alterna para light quando o tema atual é dark", () => {
 		render(<ThemeToggle />)
-		fireEvent.click(screen.getByRole("button", { name: /tema/i }))
+		fireEvent.click(screen.getByRole("button", { name: /modo/i }))
 		expect(setTheme).toHaveBeenCalledWith("light")
 	})
 
 	test("alterna para dark quando o tema atual é light", () => {
 		currentTheme = "light"
 		render(<ThemeToggle />)
-		fireEvent.click(screen.getByRole("button", { name: /tema/i }))
+		fireEvent.click(screen.getByRole("button", { name: /modo/i }))
 		expect(setTheme).toHaveBeenCalledWith("dark")
 	})
 })

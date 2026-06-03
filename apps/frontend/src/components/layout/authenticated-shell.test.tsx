@@ -73,7 +73,7 @@ describe("AuthenticatedShell — VOLT", () => {
 				<p>conteúdo</p>
 			</AuthenticatedShell>,
 		)
-		expect(screen.getByRole("button", { name: /tema/i })).toBeInTheDocument()
+		expect(screen.getByRole("button", { name: /modo/i })).toBeInTheDocument()
 	})
 
 	test("exibe o botão Sair na sidebar para MEMBER", () => {
