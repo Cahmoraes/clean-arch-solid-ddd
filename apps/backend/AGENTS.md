@@ -2,7 +2,7 @@
 
 - **SE VOCÊ NÃO VERIFICAR AS SKILLS**, tarefa invalidada, gera retrabalho
 - **VOCÊ SÓ PODE finalizar tarefa** se `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` passar 100% (lint + test + build). Sem exceção — falhar qualquer um = NÃO COMPLETA
-- `biome:fix` tolerância zero. Zero problemas — qualquer issue golangci-lint = falha bloqueante
+- `biome:fix` tolerância zero. Zero problemas — qualquer issue Biome = falha bloqueante
 - **SEMPRE verifique APIs dos pacotes dependentes** antes de código de integração/testes, evita código errado
 - **NUNCA gambiarras** — skill `no-workarounds` p/ correção/debug + `testing-anti-patterns` p/ testes
 - **SEMPRE skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
@@ -36,56 +36,56 @@ Pular verificação = REJEIÇÃO IMEDIATA DA TAREFA.
 
 ### Comandos Essenciais
 ```bash
-npm run start                      # Iniciar aplicação em produção
-npm run dev                        # Desenvolvimento com hot-reload
-npm run build                      # Build para produção
-npm run tsc:check                  # Verificar tipos TypeScript
-npm run worker                     # Iniciar worker de processamento de fila
+pnpm start                      # Iniciar aplicação em produção
+pnpm dev                        # Desenvolvimento com hot-reload
+pnpm build                      # Build para produção
+pnpm tsc:check                  # Verificar tipos TypeScript
+pnpm worker                     # Iniciar worker de processamento de fila
 ```
 
 ### Testing
 ```bash
-npm run test                       # Testes de unidade (*.test.ts)
-npm run test:cov                   # Testes com cobertura
-npm run test:business-flow         # Testes HTTP de integração (*.business-flow-test.ts)
-npm run test:e2e:prisma            # Testes de integração Prisma
-npm run test:fitness               # Fitness function tests
-npm run test-create-users          # Teste de carga: requisições POST concorrentes
+pnpm test                       # Testes de unidade (*.test.ts)
+pnpm test:cov                   # Testes com cobertura
+pnpm test:business-flow         # Testes HTTP de integração (*.business-flow-test.ts)
+pnpm test:e2e:prisma            # Testes de integração Prisma
+pnpm test:fitness               # Fitness function tests
+pnpm test-create-users          # Teste de carga: requisições POST concorrentes
 ```
 
 ### Validação de Arquitetura & Qualidade
 ```bash
-npm run fit:validate-dependencies  # Validar regras de dependência (dependency-cruiser)
-npm run dependency:metrics         # Gerar visualização de dependências (SVG)
-npm run biome:fix                  # Formatar código com Biome
-npm run eslint:fix                 # Corrigir problemas ESLint
-npm run check:last-dependencies    # Verificar e atualizar dependências desatualizadas
+pnpm fit:validate-dependencies  # Validar regras de dependência (dependency-cruiser)
+pnpm dependency:metrics         # Gerar visualização de dependências (SVG)
+pnpm biome:fix                  # Formatar código com Biome
+pnpm eslint:fix                 # Corrigir problemas ESLint
+pnpm check:last-dependencies    # Verificar e atualizar dependências desatualizadas
 ```
 
 ### Banco de Dados
 ```bash
-npm run prisma:migrate:dev         # Executar migrations (dev)
-npm run prisma:generate            # Gerar cliente Prisma
-npm run prisma:studio              # UI para gerenciar banco (http://localhost:5555)
-npm run prisma:reset               # Resetar banco (force drop + migrate)
-npm run prisma:deploy              # Deploy das migrations em produção
-npm run prisma:schema              # Gerar schema SQL (supabase-schema.sql)
-npm run prisma:db:pull             # Sincronizar schema com BD existente
+pnpm prisma:migrate:dev         # Executar migrations (dev)
+pnpm prisma:generate            # Gerar cliente Prisma
+pnpm prisma:studio              # UI para gerenciar banco (http://localhost:5555)
+pnpm prisma:reset               # Resetar banco (force drop + migrate)
+pnpm prisma:deploy              # Deploy das migrations em produção
+pnpm prisma:schema              # Gerar schema SQL (supabase-schema.sql)
+pnpm prisma:db:pull             # Sincronizar schema com BD existente
 ```
 
 ### Docker
 ```bash
-npm run docker:up                  # Iniciar PostgreSQL + Redis + RabbitMQ
-npm run docker:down                # Derrubar todos os containers
+pnpm docker:up                  # Iniciar PostgreSQL + Redis + RabbitMQ
+pnpm docker:down                # Derrubar todos os containers
 ```
 
 ### Utilitários
 ```bash
-npm run setup-queue                # Configurar filas no RabbitMQ
-npm run wait:db                    # Aguardar disponibilidade do PostgreSQL
-npm run wait:rabbit                # Aguardar disponibilidade do RabbitMQ
-npm run commit                     # Commit interativo com Commitizen (padrão convencional)
-npm run "stripe webhook"           # Iniciar listener de webhook do Stripe
+pnpm setup-queue                # Configurar filas no RabbitMQ
+pnpm wait:db                    # Aguardar disponibilidade do PostgreSQL
+pnpm wait:rabbit                # Aguardar disponibilidade do RabbitMQ
+pnpm commit                     # Commit interativo com Commitizen (padrão convencional)
+pnpm "stripe webhook"           # Iniciar listener de webhook do Stripe
 ```
 
 ## Skills Obrigatórias por Tipo de Tarefa
@@ -113,6 +113,8 @@ infra/           # Controllers, implementações concretas de Repository, Provid
 ```
 
 **Domínios**: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `shared/`
+
+**Antes de modificar qualquer módulo**: leia o `AGENTS.md` do bounded context correspondente em `src/{domain}/AGENTS.md`.
 
 ### Regras de Dependência (enforced por dependency-cruiser)
 - **Domain**: não importa Application nem Infra (código puro)
@@ -164,7 +166,7 @@ export function setupUserModule(): ModuleControllers {
 }
 ```
 
-Validar com: `npm run fit:validate-dependencies`
+Validar com: `pnpm fit:validate-dependencies`
 
 ## Padrão de Controller
 Controllers implementam `Controller`, usam decoradores Inversify. Responsabilidade: parsing HTTP → resposta:
@@ -325,8 +327,8 @@ describe('CreateUserUseCase', () => {
 })
 ```
 
-**Único teste**: `npm run test -- --t "should create"`
-**Cobertura**: `npm run test:cov`
+**Único teste**: `pnpm test -- --t "should create"`
+**Cobertura**: `pnpm test:cov`
 
 ### 2. Testes Business Flow (`*.business-flow-test.ts`)
 - Testam fluxos HTTP completos com supertest
@@ -362,7 +364,7 @@ describe('POST /users', () => {
 })
 ```
 
-**Único teste**: `npm run test:business-flow -- --t "should create"`
+**Único teste**: `pnpm test:business-flow -- --t "should create"`
 
 ### Helpers de Teste
 Utilitários em `test/factory/` p/ criar e persistir entidades em memória:
@@ -405,7 +407,7 @@ Ordem recomendada:
 8. **Bootstrap** em `src/bootstrap/setup-{domain}-module.ts`
    - Controller ao array de controllers
 
-9. **Validar** com `npm run fit:validate-dependencies`
+9. **Validar** com `pnpm fit:validate-dependencies`
 
 ## Convenções de Nomes e Arquivos
 
@@ -434,8 +436,8 @@ import { UserRepository } from './user-repository'      // ❌ Evitar
 ## Integração com BD (Prisma)
 
 - Models Prisma em `prisma/schema.prisma`
-- Gerar cliente: `npm run prisma:generate`
-- Migration: `npm run prisma:migrate:dev`
+- Gerar cliente: `pnpm prisma:generate`
+- Migration: `pnpm prisma:migrate:dev`
 - Testes: usar `InMemory*Repository` ao invés de Prisma
 - Repositories concretos apenas em `infra/repository/`
 

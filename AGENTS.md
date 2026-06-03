@@ -2,12 +2,25 @@
 
 - **SE VOCÊ NÃO VERIFICAR AS SKILLS**, tarefa invalidada, gera retrabalho
 - **VOCÊ SÓ PODE finalizar tarefa** se `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` passar 100% (lint + test + build). Sem exceção — falhar qualquer um = tarefa NÃO COMPLETA
-- `biome:fix` tolerância zero. Zero problemas — qualquer issue golangci-lint = falha bloqueante
+- `biome:fix` tolerância zero. Zero problemas — qualquer issue Biome = falha bloqueante
 - **SEMPRE verifique APIs dos pacotes dependentes** antes de escrever código de integração/testes, evita código errado
 - **NUNCA use gambiarras** — use skill `no-workarounds` para correção/debug + `testing-anti-patterns` para testes
 - **SEMPRE use skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
 - **NUNCA use ferramentas** web para código local — use Grep/Glob
 - **NUNCA FAÇA COMMITS sem permissão** — sempre pergunte
+
+<MOST_CRITICAL>
+
+- ABSOLUTAMENTE OBRIGATÓRIO: modo Plan, após usuário aceitar plano, SEMPRE escreva plano aceito em Markdown dentro de `docs/plans/`.
+- OBRIGATÓRIO: plano aceito atualizado depois → atualize/acrescente no Markdown correspondente em `docs/plans/`.
+- VIOLAÇÃO: não persistir planos aceitos = não conformidade com política do workspace.
+
+</MOST_CRITICAL>
+
+## Restrições de Comunicação
+
+- Responder sempre em PT-BR, preservar termos técnicos
+- Nunca usar emojis
 
 ## Monorepo Structure
 
@@ -57,88 +70,11 @@ pnpm --filter frontend test -- -t "name"  # Single test by name
 pnpm --filter frontend e2e            # Playwright E2E tests
 ```
 
-**SEMPRE RESPONDER EM PORTUGUÊS!!**
+## Arquitetura e Convenções
 
-## Backend Architecture
-
-### Clean Architecture Layers (enforced by dependency-cruiser)
-
-Cada bounded context em `src/{domain}/`, três camadas:
-
-- **`domain/`** — Entities, Value Objects, Domain Events, business errors. Lógica pura, sem imports de application/infra.
-- **`application/`** — Use Cases, Repository interfaces, DTOs. Importa só domain.
-- **`infra/`** — Controllers, concrete Repositories, Providers. Importa application e domain.
-
-**Bounded contexts**: `user/`, `gym/`, `check-in/`, `session/`, `subscription/`, `shared/`
-
-Cada módulo tem próprio `AGENTS.md` com specs — leia antes de modificar.
-
-### Either Pattern (no exceptions for business logic)
-
-Use Cases retornam `Either<Error, Success>`:
-
-```typescript
-return failure(new UserAlreadyExistsError())
-return success({ email: user.email })
-```
-
-Exceptions só para falhas técnicas (DB connection, etc).
-
-### Inversify IoC — Adding a New Service
-
-1. Define symbols em `src/shared/infra/ioc/module/service-identifier/{domain}-types.ts`
-2. Register bindings em `src/shared/infra/ioc/module/{domain}/{domain}-container.ts`
-3. Wire bootstrap em `src/bootstrap/setup-{domain}-module.ts`
-
-### Entity Pattern
-
-- Factory `create()` valida, retorna `Either` (async só quando validação exige, ex: bcrypt)
-- `restore()` pula validação (load do DB)
-- Estende `Observable` para domain event via `this.notify()`
-
-### Controller Pattern
-
-- Implementa `Controller` interface com `@injectable()` decorator
-- Register routes no `init()` via `this.httpServer.register()`
-- `isProtected: true` para rotas JWT, `onlyAdmin: true` para admin-only
-- Route constants em `{domain}/infra/controller/routes/{domain}-routes.ts`
-
-### Repository Provider Pattern
-
-Providers escolhem implementação por env (`DATABASE_PROVIDER` env var):
-- Production: `PrismaRepository` ou `SQLiteRepository`
-- Development/Test: `InMemoryRepository`
-
-### Domain Events
-
-```typescript
-DomainEventPublisher.instance.publish(new UserCreatedEvent(payload))
-```
-
-Publica após persistência ok nos Use Cases.
-
-## Testing Conventions
-
-### Unit Tests (`*.test.ts`)
-
-- Use in-memory repositories
-- `container.snapshot()` no beforeEach, `container.restore()` no afterEach
-- Factory helpers em `test/factory/` (ex: `createAndSaveUser`, `createAndSaveGym`)
-
-### Business Flow Tests (`*.business-flow-test.ts`)
-
-- HTTP tests full com supertest contra in-memory Fastify server
-- Rebind repositories para in-memory via `container.rebindSync()`
-
-## Key Conventions
-
-- **Language**: Code em English, comunicação em PT-BR (preserva technical terms)
-- **Imports**: `@/` alias para `src/`. Extensão `.js` em imports internos (ESM).
-- **File naming**: kebab-case (ex: `create-user.usecase.ts`, `user.repository.ts`)
-- **Class naming**: PascalCase — sufixo `UseCase`, `Controller`, `Error`
-- **Formatting**: 2-space indent, blank line no fim do arquivo, Biome enforced
-- **Commits**: Conventional commits via Commitizen (`pnpm --filter backend commit`)
-- **Validation gate**: `biome:fix` + `tsc:check` + `test:run` + `build` todos passam antes de completar tarefa
+> Detalhes completos de arquitetura, padrões e convenções do backend em [`apps/backend/CLAUDE.md`](apps/backend/CLAUDE.md).
+> Detalhes do frontend em [`apps/frontend/CLAUDE.md`](apps/frontend/CLAUDE.md).
+> Cada bounded context do backend tem `AGENTS.md` próprio — leia antes de modificar.
 
 ## Shared API Types
 
