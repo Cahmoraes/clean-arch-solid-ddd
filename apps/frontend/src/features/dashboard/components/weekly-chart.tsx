@@ -73,7 +73,7 @@ export function WeeklyChart({ frequency, isLoading }: WeeklyChartProps) {
 			<div
 				role="img"
 				aria-label="Gráfico de barras de frequência semanal"
-				className="flex h-[200px] items-end gap-2.5"
+				className="flex h-[140px] items-end gap-2.5 md:h-[200px]"
 			>
 				{frequency.map((count, dayIndex) => (
 					<Bar

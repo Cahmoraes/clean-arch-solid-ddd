@@ -26,7 +26,7 @@ export function PageHeader({
 		>
 			<div className="flex flex-col gap-2">
 				{eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-				<h1 className="font-display text-[30px] font-semibold tracking-tight">
+				<h1 className="font-display text-2xl font-semibold tracking-tight md:text-[30px]">
 					{title}
 				</h1>
 				{subtitle && <p className="text-muted-foreground">{subtitle}</p>}

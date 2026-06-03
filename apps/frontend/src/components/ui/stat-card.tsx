@@ -55,7 +55,7 @@ export function StatCard({
 					</span>
 				)}
 			</div>
-			<p className="font-mono text-[38px] font-bold leading-none tracking-tight tabular">
+			<p className="font-mono text-3xl font-bold leading-none tracking-tight tabular md:text-[38px]">
 				{value}
 			</p>
 			<p className="mt-2 text-sm text-muted-foreground">{label}</p>
