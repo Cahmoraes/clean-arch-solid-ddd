@@ -106,3 +106,92 @@ describe("UserFilterBar", () => {
 		expect(onFilterChange).toHaveBeenCalledWith("all")
 	})
 })
+
+describe("UserFilterBar — mobile sheet", () => {
+	test("exibe botão Filtros no DOM (versão mobile presente)", () => {
+		render(
+			<UserFilterBar
+				activeFilter="all"
+				stats={STATS}
+				onFilterChange={vi.fn()}
+			/>,
+		)
+		expect(
+			screen.getByRole("button", { name: /abrir filtros/i }),
+		).toBeInTheDocument()
+	})
+
+	test("exibe chip com label do filtro ativo quando não é all", () => {
+		render(
+			<UserFilterBar
+				activeFilter="admin"
+				stats={STATS}
+				onFilterChange={vi.fn()}
+			/>,
+		)
+		const chips = screen
+			.queryAllByText("Administradores")
+			.filter((el) => el.tagName === "SPAN")
+		expect(chips).toHaveLength(1)
+	})
+
+	test("não exibe chip quando activeFilter é all", () => {
+		render(
+			<UserFilterBar
+				activeFilter="all"
+				stats={STATS}
+				onFilterChange={vi.fn()}
+			/>,
+		)
+		const chips = screen
+			.queryAllByText("Administradores")
+			.filter((el) => el.tagName === "SPAN")
+		expect(chips).toHaveLength(0)
+	})
+
+	test("abre o Sheet ao clicar no botão Filtros", async () => {
+		render(
+			<UserFilterBar
+				activeFilter="all"
+				stats={STATS}
+				onFilterChange={vi.fn()}
+			/>,
+		)
+		await userEvent.click(
+			screen.getByRole("button", { name: /abrir filtros/i }),
+		)
+		expect(screen.getByRole("dialog")).toBeInTheDocument()
+	})
+
+	test("chama onFilterChange com all ao clicar em Limpar", async () => {
+		const onFilterChange = vi.fn()
+		render(
+			<UserFilterBar
+				activeFilter="member"
+				stats={STATS}
+				onFilterChange={onFilterChange}
+			/>,
+		)
+		await userEvent.click(
+			screen.getByRole("button", { name: /abrir filtros/i }),
+		)
+		await userEvent.click(screen.getByRole("button", { name: /^limpar$/i }))
+		expect(onFilterChange).toHaveBeenCalledWith("all")
+	})
+
+	test("chama onFilterChange com pendingFilter ao clicar em Aplicar", async () => {
+		const onFilterChange = vi.fn()
+		render(
+			<UserFilterBar
+				activeFilter="all"
+				stats={STATS}
+				onFilterChange={onFilterChange}
+			/>,
+		)
+		await userEvent.click(
+			screen.getByRole("button", { name: /abrir filtros/i }),
+		)
+		await userEvent.click(screen.getByRole("button", { name: /^aplicar$/i }))
+		expect(onFilterChange).toHaveBeenCalledWith("all")
+	})
+})

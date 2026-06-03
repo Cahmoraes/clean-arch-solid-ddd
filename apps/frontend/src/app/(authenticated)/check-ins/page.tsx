@@ -180,7 +180,7 @@ function CheckInsPageContent() {
 					onStatusChange={setStatus}
 					stats={statsData}
 				/>
-				<div className="flex flex-1 gap-2 min-w-0">
+				<div className="flex flex-1 flex-wrap gap-2 min-w-0">
 					<CheckInSearchInput
 						value={gymNameInput}
 						onChange={setGymNameInput}
