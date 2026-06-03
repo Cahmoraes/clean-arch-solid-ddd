@@ -1,6 +1,6 @@
 # Task 1: Criar componente `PageContainer` + testes unitários [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-008, RF-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-content-width-standardization.md`
 **Spec:** `../specs/content-width-standardization-design.md`
 **Depends on:** N/A

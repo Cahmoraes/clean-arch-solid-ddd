@@ -1,6 +1,6 @@
 # Task 4: Migrar telas tier `narrow` (Cadastrar academia, Trocar senha) [RF-013, RF-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-content-width-standardization.md`
 **Spec:** `../specs/content-width-standardization-design.md`
 **Depends on:** task-01

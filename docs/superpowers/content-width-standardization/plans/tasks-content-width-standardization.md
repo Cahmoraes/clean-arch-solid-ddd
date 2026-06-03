@@ -15,11 +15,11 @@
 
 ## Tarefas
 
-- [ ] 1. Criar componente `PageContainer` + testes unitários [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-008, RF-009] → `task-01.md`
-- [ ] 2. Migrar telas tier `wide` (Dashboard, Academias, Admin Usuários) [RF-011, RF-014, RF-016] → `task-02.md`
-- [ ] 3. Migrar telas tier `default` (Check-ins, Admin Check-ins, Perfil, Perfil público, Assinatura, Detalhe academia) [RF-012, RF-014, RF-016] → `task-03.md`
-- [ ] 4. Migrar telas tier `narrow` (Cadastrar academia, Trocar senha) [RF-013, RF-014] → `task-04.md`
-- [ ] 5. Verificação visual (borda esquerda) + auth intacta + gate final [RF-010, RF-015, RF-016] → `task-05.md`
+- [x] 1. Criar componente `PageContainer` + testes unitários [RF-001, RF-002, RF-003, RF-004, RF-005, RF-006, RF-007, RF-008, RF-009] → `task-01.md`
+- [x] 2. Migrar telas tier `wide` (Dashboard, Academias, Admin Usuários) [RF-011, RF-014, RF-016] → `task-02.md`
+- [x] 3. Migrar telas tier `default` (Check-ins, Admin Check-ins, Perfil, Perfil público, Assinatura, Detalhe academia) [RF-012, RF-014, RF-016] → `task-03.md`
+- [x] 4. Migrar telas tier `narrow` (Cadastrar academia, Trocar senha) [RF-013, RF-014] → `task-04.md`
+- [x] 5. Verificação visual (borda esquerda) + auth intacta + gate final [RF-010, RF-015, RF-016] → `task-05.md`
 
 ## Execution Waves
 

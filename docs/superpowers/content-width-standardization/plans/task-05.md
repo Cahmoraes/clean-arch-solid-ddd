@@ -1,6 +1,6 @@
 # Task 5: Verificação visual (borda esquerda) + auth intacta + gate final [RF-010, RF-015, RF-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-content-width-standardization.md`
 **Spec:** `../specs/content-width-standardization-design.md`
 **Depends on:** task-02, task-03, task-04

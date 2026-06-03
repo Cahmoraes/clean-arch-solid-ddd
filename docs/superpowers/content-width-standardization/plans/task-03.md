@@ -1,6 +1,6 @@
 # Task 3: Migrar telas tier `default` (Check-ins, Admin Check-ins, Perfil, Perfil público, Assinatura, Detalhe academia) [RF-012, RF-014, RF-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-content-width-standardization.md`
 **Spec:** `../specs/content-width-standardization-design.md`
 **Depends on:** task-01

@@ -1,6 +1,6 @@
 # Task 2: Migrar telas tier `wide` (Dashboard, Academias, Admin Usuários) [RF-011, RF-014, RF-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-content-width-standardization.md`
 **Spec:** `../specs/content-width-standardization-design.md`
 **Depends on:** task-01
