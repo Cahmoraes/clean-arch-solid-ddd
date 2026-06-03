@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useId } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { useCreateGym } from "@/features/gyms/api"
@@ -62,9 +63,10 @@ export default function AdminNovaAcademiaPage() {
 	}
 
 	return (
-		<section
+		<PageContainer
+			as="section"
+			width="narrow"
 			aria-labelledby="nova-academia-title"
-			className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-10 sm:px-6"
 		>
 			<header className="flex flex-col gap-2">
 				<h1
@@ -140,6 +142,6 @@ export default function AdminNovaAcademiaPage() {
 					</Button>
 				</div>
 			</form>
-		</section>
+		</PageContainer>
 	)
 }

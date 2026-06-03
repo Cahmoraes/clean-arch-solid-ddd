@@ -5,6 +5,7 @@ import { KeyRound } from "lucide-react"
 import { useId, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { FormField } from "@/components/ui/form-field"
@@ -241,7 +242,7 @@ function DefinePasswordForm({ provider }: DefinePasswordFormProps) {
 
 function LoadingPasswordPage() {
 	return (
-		<section className="mx-auto flex w-full max-w-md flex-col gap-8">
+		<PageContainer as="section" width="narrow">
 			<header className="flex flex-col gap-2">
 				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Senha
@@ -255,7 +256,7 @@ function LoadingPasswordPage() {
 				<Skeleton className="h-10 w-full" />
 				<Skeleton className="h-10 w-full" />
 			</div>
-		</section>
+		</PageContainer>
 	)
 }
 
@@ -266,7 +267,7 @@ interface PasswordErrorPageProps {
 
 function PasswordErrorPage({ isFetching, onRetry }: PasswordErrorPageProps) {
 	return (
-		<section className="mx-auto flex w-full max-w-md flex-col gap-8">
+		<PageContainer as="section" width="narrow">
 			<header className="flex flex-col gap-2">
 				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Senha
@@ -290,7 +291,7 @@ function PasswordErrorPage({ isFetching, onRetry }: PasswordErrorPageProps) {
 					</Button>
 				}
 			/>
-		</section>
+		</PageContainer>
 	)
 }
 
@@ -311,7 +312,7 @@ function PasswordContentPage({
 		: "Use uma senha forte e diferente da atual."
 
 	return (
-		<section className="mx-auto flex w-full max-w-md flex-col gap-8">
+		<PageContainer as="section" width="narrow">
 			<header className="flex flex-col gap-2">
 				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					{title}
@@ -323,7 +324,7 @@ function PasswordContentPage({
 			) : (
 				<ExistingChangePasswordForm />
 			)}
-		</section>
+		</PageContainer>
 	)
 }
 
