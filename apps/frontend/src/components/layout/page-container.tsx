@@ -17,6 +17,7 @@ export interface PageContainerProps {
 	id?: string
 	"aria-label"?: string
 	"aria-labelledby"?: string
+	"aria-busy"?: boolean | "true" | "false"
 	"data-testid"?: string
 }
 

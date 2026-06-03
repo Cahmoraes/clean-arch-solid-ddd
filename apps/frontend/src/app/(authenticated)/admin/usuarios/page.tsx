@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import type { KeyboardEvent, MouseEvent } from "react"
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
+import { PageContainer } from "@/components/layout/page-container"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
 import {
@@ -320,9 +321,10 @@ function AdminUsersContent({
 	}
 
 	return (
-		<section
+		<PageContainer
+			as="section"
+			width="wide"
 			data-testid="admin-users-page"
-			className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6"
 			aria-busy={isFetching}
 		>
 			<div className="flex flex-col gap-5">
@@ -371,7 +373,7 @@ function AdminUsersContent({
 					onEdit={handleEditUser}
 				/>
 			</div>
-		</section>
+		</PageContainer>
 	)
 }
 

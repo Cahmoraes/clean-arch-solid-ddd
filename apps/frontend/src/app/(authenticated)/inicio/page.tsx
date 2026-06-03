@@ -1,5 +1,10 @@
+import { PageContainer } from "@/components/layout/page-container"
 import { DashboardPage } from "@/features/dashboard/components/dashboard-page"
 
 export default function InicioDashboardPage() {
-	return <DashboardPage />
+	return (
+		<PageContainer width="wide">
+			<DashboardPage />
+		</PageContainer>
+	)
 }

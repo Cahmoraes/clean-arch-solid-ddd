@@ -4,6 +4,7 @@ import { Plus, Search } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Suspense, useId, useState } from "react"
+import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/page-header"
 import { SearchBar } from "@/components/ui/search-bar"
@@ -42,9 +43,11 @@ function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 	}
 
 	return (
-		<section
+		<PageContainer
+			as="section"
+			width="wide"
 			aria-labelledby="academias-title"
-			className="mx-auto flex w-full max-w-6xl flex-col px-4 py-10 sm:px-6"
+			className="gap-0"
 		>
 			<PageHeader
 				eyebrow="Rede"
@@ -107,7 +110,7 @@ function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 					/>
 				</div>
 			) : null}
-		</section>
+		</PageContainer>
 	)
 }
 
