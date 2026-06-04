@@ -1,6 +1,6 @@
 # Task 17: Frontend — AnalyticsPage assembly + navegação sidebar [FR-001, FR-002, FR-003]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-13, task-14, task-15, task-16

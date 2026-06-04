@@ -1,6 +1,7 @@
 "use client"
 
 import {
+	BarChart3,
 	Building2,
 	CheckCircle,
 	CreditCard,
@@ -41,6 +42,7 @@ const MAIN_NAV_ITEMS: ReadonlyArray<NavItem> = [
 const ADMIN_NAV_ITEMS: ReadonlyArray<NavItem> = [
 	{ href: "/admin/usuarios", label: "Usuários", icon: Users },
 	{ href: "/admin/check-ins", label: "Check-ins", icon: CheckCircle },
+	{ href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ]
 
 function isPathActive(pathname: string | null, href: string): boolean {
