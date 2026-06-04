@@ -17,6 +17,8 @@ export class PrismaAnalyticsUserRepository implements AnalyticsUserRepository {
 		private readonly prismaClient: PrismaClient,
 	) {}
 
+	// Retention windows are fixed by business definition: active = last 30 days, at-risk = no check-in in 14 days.
+	// The period parameter is part of the repository contract but intentionally unused here.
 	public async fetchRetentionAnalytics(
 		_period: AnalyticsPeriod,
 	): Promise<RetentionAnalytics> {

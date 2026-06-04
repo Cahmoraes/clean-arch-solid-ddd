@@ -5,6 +5,7 @@ import { type UseQueryResult, useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
 import type { PeriodKey } from "../hooks/use-analytics-period"
+import { ANALYTICS_STALE_TIME_MS } from "./use-check-in-metrics"
 
 type RetentionMetricsResponse =
 	paths["/admin/analytics/retention"]["get"]["responses"][200]["content"]["application/json"]
@@ -30,6 +31,6 @@ export function useRetentionMetrics(
 			if (error || !data) throw toApiError(error)
 			return data
 		},
-		staleTime: 60_000,
+		staleTime: ANALYTICS_STALE_TIME_MS,
 	})
 }
