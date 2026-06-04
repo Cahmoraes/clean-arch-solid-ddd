@@ -1,6 +1,6 @@
 # Task 15: Frontend — RetentionMetricsSection component [FR-011, FR-012, FR-013]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-12

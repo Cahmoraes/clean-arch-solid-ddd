@@ -1,6 +1,6 @@
 # Task 16: Frontend — GrowthMetricsSection component [FR-014, FR-015, FR-016]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-12
