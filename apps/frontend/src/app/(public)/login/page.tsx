@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useId } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { BrandMark } from "@/components/ui/brand-mark"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { FormField } from "@/components/ui/form-field"
@@ -72,11 +71,7 @@ function LoginForm() {
 
 	return (
 		<div className="grid min-h-[calc(100vh-8rem)] grid-cols-[1.05fr_1fr] max-[860px]:grid-cols-1">
-			<aside className="relative flex flex-col justify-between overflow-hidden bg-[#0a0a0a] p-12 text-[#f3f3ee] max-[860px]:hidden">
-				<div className="flex items-center justify-between">
-					<BrandMark className="text-white" />
-					<Eyebrow className="text-white/40">v3.0</Eyebrow>
-				</div>
+			<aside className="relative flex flex-col justify-between overflow-hidden bg-surface-3 p-12 dark:bg-[#0a0a0a] max-[860px]:hidden">
 				<h2 className="font-display text-[clamp(48px,7vw,92px)] font-bold leading-[0.92] tracking-[-0.03em]">
 					Treine onde
 					<br />
@@ -87,7 +82,7 @@ function LoginForm() {
 						<span className="font-mono text-3xl font-bold text-accent tabular-nums">
 							312
 						</span>
-						<span className="max-w-[110px] text-xs text-white/55">
+						<span className="max-w-[110px] text-xs text-muted-foreground dark:text-white/55">
 							academias parceiras
 						</span>
 					</div>
@@ -95,7 +90,7 @@ function LoginForm() {
 						<span className="font-mono text-3xl font-bold text-accent tabular-nums">
 							48k
 						</span>
-						<span className="max-w-[110px] text-xs text-white/55">
+						<span className="max-w-[110px] text-xs text-muted-foreground dark:text-white/55">
 							check-ins por mês
 						</span>
 					</div>
@@ -103,7 +98,7 @@ function LoginForm() {
 						<span className="font-mono text-3xl font-bold text-accent tabular-nums">
 							4.9
 						</span>
-						<span className="max-w-[110px] text-xs text-white/55">
+						<span className="max-w-[110px] text-xs text-muted-foreground dark:text-white/55">
 							avaliação média
 						</span>
 					</div>
