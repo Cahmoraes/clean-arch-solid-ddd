@@ -1,0 +1,57 @@
+{
+  "user_story": "US-02",
+  "title": "Como admin, eu quero filtrar todas as métricas por período pré-definido",
+  "verdict": "PASS",
+  "verified_at": "2026-06-04",
+  "requirements": [
+    {
+      "id": "FR-002",
+      "description": "Seletor de período com opções 7d, 30d, 3m, 12m; padrão ao abrir = 30d",
+      "status": "PASS",
+      "evidence": {
+        "implementation": "apps/frontend/src/features/admin/analytics/components/period-selector.tsx — PERIOD_ITEMS define as 4 opções; DEFAULT_PERIOD='30d' em use-analytics-period.ts",
+        "tests_passing": [
+          "FR-002: período padrão é '30d' quando não há query param na URL",
+          "FR-002: hook aceita todos os 4 períodos exigidos (7d, 30d, 3m, 12m)",
+          "FR-002: período inválido na URL retorna ao padrão '30d'"
+        ],
+        "screenshot": "screenshot-default-period.png"
+      }
+    },
+    {
+      "id": "FR-003",
+      "description": "Período selecionado persistido na URL como ?period=<valor>",
+      "status": "PASS",
+      "evidence": {
+        "implementation": "apps/frontend/src/features/admin/analytics/hooks/use-analytics-period.ts — setPeriod chama router.replace com ?period=<valor>; period lido de searchParams.get('period')",
+        "tests_passing": [
+          "FR-003: setPeriod grava o período selecionado na URL como ?period=<valor>",
+          "FR-003: período lido da URL é retornado corretamente (link compartilhável)"
+        ],
+        "screenshot": "screenshot-period-7d.png"
+      }
+    }
+  ],
+  "test_files": {
+    "existing_unit_test": "apps/frontend/src/features/admin/analytics/hooks/use-analytics-period.test.ts",
+    "acceptance_test": "docs/superpowers/admin-analytics/qa/evidence/us-02-filtrar-metricas-por-periodo/us-02-period-selector.acceptance.test.tsx",
+    "acceptance_test_result": "5/5 tests passed",
+    "run_command": "cd apps/frontend && npx vitest run --config /home/cahmoraes/projects/estudo/clean-arch-solid-ddd/docs/superpowers/admin-analytics/qa/evidence/us-02-filtrar-metricas-por-periodo/vitest.acceptance.config.ts"
+  },
+  "backend_test": {
+    "file": "apps/backend/src/analytics/domain/value-object/analytics-period.test.ts",
+    "note": "AnalyticsPeriod value object tested at domain level"
+  },
+  "screenshots": [
+    {
+      "file": "screenshot-default-period.png",
+      "description": "Página /admin/analytics sem query param — período padrão 30d ativo"
+    },
+    {
+      "file": "screenshot-period-7d.png",
+      "description": "Página /admin/analytics?period=7d — período 7d selecionado via URL"
+    }
+  ],
+  "gaps": [],
+  "notes": "O teste de aceitação vive em docs/ (fora do src/), exigindo um vitest.acceptance.config.ts dedicado que mapeia node_modules e aliases do frontend via caminhos absolutos. O hook existente e o componente PeriodSelector cobrem completamente os requisitos FR-002 e FR-003."
+}

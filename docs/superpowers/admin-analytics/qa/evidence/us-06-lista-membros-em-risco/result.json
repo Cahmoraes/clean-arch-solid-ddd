@@ -1,0 +1,59 @@
+{
+	"userStory": "US-06",
+	"title": "Como admin, eu quero ver a lista de membros em risco (sem check-in recente) para que eu possa entrar em contato e prevenir o abandono",
+	"verifiedAt": "2026-06-04",
+	"overallStatus": "PASS",
+	"requirements": [
+		{
+			"id": "FR-012",
+			"description": "A seção deve exibir a lista de membros em risco: sem check-in nos últimos 14 dias. Cada item deve mostrar nome do membro e quantidade de dias desde o último check-in.",
+			"status": "PASS",
+			"evidence": {
+				"frontend": {
+					"component": "apps/frontend/src/features/admin/analytics/components/retention-metrics-section.tsx",
+					"findings": [
+						"data.atRiskMembers.map() renderiza uma <li> por membro com key={member.id}",
+						"<span className='font-medium'>{member.name}</span> exibe o nome do membro",
+						"<span>{member.daysSinceLastCheckIn} dias sem check-in</span> exibe os dias",
+						"Cabeçalho exibe 'Membros em risco ({data.atRiskMembers.length})' com contagem dinâmica",
+						"Estado vazio: exibe 'Nenhum membro em risco no momento.' quando lista é vazia"
+					]
+				},
+				"backend": {
+					"repository": "apps/backend/src/shared/infra/database/repository/prisma/prisma-analytics-user-repository.ts",
+					"findings": [
+						"SQL usa HAVING MAX(c.created_at) < fourteenDaysAgo para filtrar membros sem check-in em 14 dias",
+						"EXTRACT(DAY FROM NOW() - MAX(c.created_at))::int AS days_since calcula os dias corretamente",
+						"Mapeamento: row.days_since → daysSinceLastCheckIn na interface AtRiskMember",
+						"Limite de 50 membros por consulta, ordenados por days_since DESC (mais críticos primeiro)"
+					]
+				},
+				"interface": {
+					"file": "apps/backend/src/analytics/application/repository/analytics-user-repository.ts",
+					"findings": [
+						"AtRiskMember interface: { id: string; name: string; daysSinceLastCheckIn: number }",
+						"RetentionAnalytics.atRiskMembers: AtRiskMember[] — contrato correto"
+					]
+				}
+			}
+		}
+	],
+	"testResults": {
+		"frontendAcceptance": {
+			"file": "docs/superpowers/admin-analytics/qa/evidence/us-06-lista-membros-em-risco/us-06-at-risk-members.acceptance.test.tsx",
+			"runner": "docs/superpowers/admin-analytics/qa/evidence/us-06-lista-membros-em-risco/run-acceptance.mjs",
+			"status": "PASS",
+			"tests": 7,
+			"description": "FR-012 verificado: renderização de nome + days, contador no cabeçalho, estado vazio, múltiplos membros com contagens individuais, períodos diferentes, loading/error states"
+		},
+		"backendUnit": {
+			"file": "apps/backend/src/analytics/application/use-case/fetch-retention-analytics.usecase.test.ts",
+			"status": "PASS",
+			"tests": 2,
+			"description": "UseCase retorna atRiskMembers como array no resultado de retenção"
+		}
+	},
+	"screenshot": null,
+	"appRunning": true,
+	"summary": "FR-012 implementado e verificado. Backend query filtra corretamente membros sem check-in há mais de 14 dias e retorna name + daysSinceLastCheckIn. Frontend renderiza a lista com nome e dias para cada membro, exibe contagem no cabeçalho e mensagem de estado vazio. 7 testes de aceitação passando."
+}

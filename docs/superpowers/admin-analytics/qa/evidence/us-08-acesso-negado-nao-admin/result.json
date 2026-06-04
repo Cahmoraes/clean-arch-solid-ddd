@@ -1,0 +1,99 @@
+{
+  "user_story": "US-08",
+  "title": "Como membro (não-admin), eu quero ser impedido de acessar a página de analytics para que dados operacionais sensíveis permaneçam protegidos",
+  "requirement": "FR-001: A página deve ser acessível somente por admins autenticados; tentativa de acesso por membro deve redirecionar para página inicial",
+  "verdict": "PASSED",
+  "verification_date": "2026-06-04",
+  "layers_verified": [
+    {
+      "layer": "Backend — HTTP Route Guard",
+      "status": "PASS",
+      "evidence": [
+        {
+          "file": "apps/backend/src/analytics/infra/http/controller/fetch-check-in-analytics.controller.ts",
+          "flags": { "isProtected": true, "onlyAdmin": true },
+          "route": "GET /admin/analytics/checkins"
+        },
+        {
+          "file": "apps/backend/src/analytics/infra/http/controller/fetch-retention-analytics.controller.ts",
+          "flags": { "isProtected": true, "onlyAdmin": true },
+          "route": "GET /admin/analytics/retention"
+        },
+        {
+          "file": "apps/backend/src/analytics/infra/http/controller/fetch-growth-analytics.controller.ts",
+          "flags": { "isProtected": true, "onlyAdmin": true },
+          "route": "GET /admin/analytics/growth"
+        }
+      ],
+      "mechanism": "JwtRouteGuard.checkAdminRole(): quando policy.onlyAdmin=true e user.sub.role !== 'ADMIN', retorna HTTP 403 Forbidden"
+    },
+    {
+      "layer": "Backend — JwtRouteGuard Unit Tests",
+      "status": "PASS",
+      "evidence": {
+        "file": "apps/backend/src/shared/infra/server/guard/jwt-route-guard.test.ts",
+        "tests": [
+          {
+            "name": "Rota onlyAdmin com role MEMBER retorna 403 Forbidden",
+            "assertion": "result.forceFailure().value === { status: HTTP_STATUS.FORBIDDEN, message: 'Forbidden' }"
+          },
+          {
+            "name": "Rota onlyAdmin com role ADMIN retorna o usuário autenticado",
+            "assertion": "result.forceSuccess().value?.sub.role === 'ADMIN'"
+          },
+          {
+            "name": "Rota protegida sem token retorna 401 Unauthorized",
+            "assertion": "result.forceFailure().value === { status: HTTP_STATUS.UNAUTHORIZED, message: 'Unauthorized' }"
+          }
+        ]
+      }
+    },
+    {
+      "layer": "Frontend — AdminGuard Component + Layout",
+      "status": "PASS",
+      "evidence": [
+        {
+          "file": "apps/frontend/src/app/(authenticated)/admin/layout.tsx",
+          "description": "AdminLayout envolve todos os sub-routes de /admin (incluindo /admin/analytics) com <AdminGuard redirectTo='/'>"
+        },
+        {
+          "file": "apps/frontend/src/components/layout/admin-guard.tsx",
+          "mechanism": "Lê user.role do useAuthStore; se role !== 'ADMIN', chama router.replace(redirectTo) e renderiza null (conteúdo não exibido)"
+        }
+      ]
+    },
+    {
+      "layer": "Frontend — AdminGuard Unit Tests",
+      "status": "PASS",
+      "evidence": {
+        "file": "apps/frontend/src/components/layout/admin-guard.test.tsx",
+        "tests": [
+          {
+            "name": "redireciona MEMBER para / e não renderiza filhos",
+            "assertion": "screen.queryByText('painel-admin') === null && replace called with '/'"
+          },
+          {
+            "name": "renderiza filhos quando role é ADMIN",
+            "assertion": "screen.getByText('painel-admin') presente e replace NÃO chamado"
+          },
+          {
+            "name": "respeita destino customizado de redirect",
+            "assertion": "replace called with '/perfil'"
+          },
+          {
+            "name": "exibe placeholder quando não há usuário (boot)",
+            "assertion": "data-testid='admin-guard-loading' presente, conteúdo não exibido"
+          }
+        ]
+      }
+    }
+  ],
+  "protection_summary": {
+    "backend": "Todos os 3 endpoints de analytics (GET /admin/analytics/checkins, /retention, /growth) têm isProtected:true + onlyAdmin:true. JwtRouteGuard retorna HTTP 403 Forbidden para qualquer token com role=MEMBER e HTTP 401 Unauthorized para requisições sem token.",
+    "frontend": "O layout /admin/layout.tsx aplica <AdminGuard redirectTo='/'> em toda a árvore de rotas admin. O AdminGuard redireciona MEMBER para '/' via router.replace() e não renderiza o conteúdo da página."
+  },
+  "gap_analysis": {
+    "missing": "Nenhum gap identificado. A proteção opera em duas camadas independentes: guard de backend (JWT) e guard de frontend (role-based component). A analytics page (/admin/analytics/page.tsx) está coberta pelo layout guard.",
+    "observation": "Não existem testes de business-flow específicos para os endpoints de analytics (não há arquivos .business-flow-test.ts em analytics/), mas os testes unitários do JwtRouteGuard cobrem o comportamento de autorização de forma genérica, aplicando-se a todos os endpoints que usam as flags isProtected/onlyAdmin."
+  }
+}

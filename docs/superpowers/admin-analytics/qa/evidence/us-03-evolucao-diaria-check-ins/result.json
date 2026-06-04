@@ -1,0 +1,46 @@
+{
+	"userStory": "US-03",
+	"title": "Como admin, eu quero ver a evolução diária de check-ins em forma de gráfico",
+	"verifiedAt": "2026-06-04",
+	"overallStatus": "PARTIAL_PASS",
+	"requirements": [
+		{
+			"id": "FR-007",
+			"description": "A seção deve exibir um gráfico de linha com a evolução diária de check-ins ao longo do período",
+			"status": "PASS",
+			"evidence": "CheckInMetricsSection renderiza <LineChart> do recharts com data={data.dailySeries} quando dailySeries.length > 0. Verificado em check-in-metrics-section.tsx linha 82. Aceito pelos testes de aceitação."
+		},
+		{
+			"id": "FR-008",
+			"description": "Para períodos de 3 meses ou 12 meses, a série temporal deve ser agregada por semana (não por dia) para manter a legibilidade do gráfico",
+			"status": "GAP",
+			"evidence": "AnalyticsPeriod.shouldAggregateByWeek() existe e retorna true para '3m' e '12m' (analytics-period.ts + analytics-period.test.ts — 4 testes passando). Porém PrismaAnalyticsCheckInRepository.fetchCheckInAnalytics() usa DATE_TRUNC('day') fixo para dailySeries, sem consultar shouldAggregateByWeek(). O use case FetchCheckInAnalyticsUseCase também não passa a informação de agregação ao repositório. O método shouldAggregateByWeek() nunca é chamado no fluxo de check-in analytics.",
+			"affectedFiles": [
+				"apps/backend/src/shared/infra/database/repository/prisma/prisma-analytics-check-in-repository.ts",
+				"apps/backend/src/analytics/application/use-case/fetch-check-in-analytics.usecase.ts"
+			]
+		},
+		{
+			"id": "FR-010",
+			"description": "A seção deve estar aberta por padrão ao carregar a página",
+			"status": "PASS",
+			"evidence": "CheckInMetricsSection inicializa useState(true) para isOpen e passa open={isOpen} ao Collapsible. Verificado em check-in-metrics-section.tsx linha 43 e 47. Aceito pelo teste de aceitação 'FR-010: seção está aberta por padrão'."
+		}
+	],
+	"testResults": {
+		"backendUnit": {
+			"file": "apps/backend/src/analytics/domain/value-object/analytics-period.test.ts",
+			"status": "PASS",
+			"tests": 4,
+			"description": "shouldAggregateByWeek() testado para todos os 4 períodos"
+		},
+		"frontendAcceptance": {
+			"file": "docs/superpowers/admin-analytics/qa/evidence/us-03-evolucao-diaria-check-ins/us-03-checkin-trend.acceptance.test.tsx",
+			"status": "PASS",
+			"tests": 5,
+			"description": "FR-007 (LineChart renderizado), FR-010 (defaultOpen), estados de loading/error/empty verificados"
+		}
+	},
+	"screenshot": null,
+	"summary": "FR-007 e FR-010 implementados e verificados. FR-008 tem gap: AnalyticsPeriod.shouldAggregateByWeek() está correto mas nunca é invocado no fluxo de check-in — o repositório Prisma sempre agrega por dia independente do período selecionado."
+}
