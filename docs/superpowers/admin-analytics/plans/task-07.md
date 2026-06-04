@@ -1,6 +1,6 @@
 # Task 7: Backend Infra — Prisma repositories (AnalyticsCheckIn + AnalyticsUser)
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-03

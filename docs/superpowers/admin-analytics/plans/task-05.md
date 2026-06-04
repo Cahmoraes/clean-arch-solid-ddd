@@ -1,6 +1,6 @@
 # Task 5: Backend Use Case — FetchRetentionAnalyticsUseCase [FR-011, FR-012]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-03

@@ -1,6 +1,6 @@
 # Task 4: Backend Use Case — FetchCheckInAnalyticsUseCase [FR-007, FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-03
