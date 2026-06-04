@@ -1,6 +1,6 @@
 # Task 8: Backend Infra — Controllers + rotas analytics [FR-001]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-04, task-05, task-06
