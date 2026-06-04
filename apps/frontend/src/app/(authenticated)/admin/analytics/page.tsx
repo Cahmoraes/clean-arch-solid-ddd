@@ -33,7 +33,7 @@ export default function AnalyticsPage() {
 	return (
 		<PageContainer>
 			<PageHeader title="Analytics" />
-			<Suspense>
+			<Suspense fallback={null}>
 				<AnalyticsContent />
 			</Suspense>
 		</PageContainer>
