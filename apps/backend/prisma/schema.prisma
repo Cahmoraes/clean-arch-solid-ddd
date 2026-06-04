@@ -26,6 +26,7 @@ model User {
   userNotifications UserNotification[]
   notifications     Notification[]
 
+  @@index([created_at])
   @@map("users")
 }
 
@@ -42,6 +43,8 @@ model CheckIn {
   gym          Gym       @relation(fields: [gym_id], references: [id])
   user         User      @relation(fields: [user_id], references: [id])
 
+  @@index([created_at])
+  @@index([user_id, created_at])
   @@map("check_ins")
 }
 
