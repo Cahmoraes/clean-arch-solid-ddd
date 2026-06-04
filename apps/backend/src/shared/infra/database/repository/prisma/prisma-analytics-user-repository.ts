@@ -7,7 +7,10 @@ import type {
 	RetentionAnalytics,
 } from "@/analytics/application/repository/analytics-user-repository"
 import type { AnalyticsPeriod } from "@/analytics/domain/value-object/analytics-period"
-import type { PrismaClient } from "@/shared/infra/database/generated/prisma/client"
+import {
+	Prisma,
+	type PrismaClient,
+} from "@/shared/infra/database/generated/prisma/client"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 
 @injectable()
@@ -75,7 +78,12 @@ export class PrismaAnalyticsUserRepository implements AnalyticsUserRepository {
 		period: AnalyticsPeriod,
 	): Promise<GrowthAnalytics> {
 		const { from, to } = period
-		const truncUnit = period.shouldAggregateByWeek() ? "week" : "day"
+		// Prisma creates a separate $N parameter for each ${variable} interpolation.
+		// DATE_TRUNC requires the same literal in SELECT and GROUP BY for PostgreSQL's
+		// functional-dependency check to pass — use Prisma.raw() to inline it.
+		const trunc = Prisma.raw(
+			`'${period.shouldAggregateByWeek() ? "week" : "day"}'`,
+		)
 
 		const [
 			totalResult,
@@ -92,21 +100,21 @@ export class PrismaAnalyticsUserRepository implements AnalyticsUserRepository {
         `,
 			this.prismaClient.$queryRaw<Array<{ date: string; count: bigint }>>`
           SELECT
-            TO_CHAR(DATE_TRUNC(${truncUnit}, created_at), 'YYYY-MM-DD') as date,
+            TO_CHAR(DATE_TRUNC(${trunc}, created_at), 'YYYY-MM-DD') as date,
             COUNT(*) as count
           FROM "users"
           WHERE created_at >= ${from} AND created_at <= ${to}
-          GROUP BY DATE_TRUNC(${truncUnit}, created_at)
-          ORDER BY DATE_TRUNC(${truncUnit}, created_at)
+          GROUP BY DATE_TRUNC(${trunc}, created_at)
+          ORDER BY DATE_TRUNC(${trunc}, created_at)
         `,
 			this.prismaClient.$queryRaw<Array<{ date: string; count: bigint }>>`
           SELECT
-            TO_CHAR(DATE_TRUNC(${truncUnit}, c.created_at), 'YYYY-MM-DD') as date,
+            TO_CHAR(DATE_TRUNC(${trunc}, c.created_at), 'YYYY-MM-DD') as date,
             COUNT(DISTINCT c.user_id) as count
           FROM "check_ins" c
           WHERE c.created_at >= ${from} AND c.created_at <= ${to}
-          GROUP BY DATE_TRUNC(${truncUnit}, c.created_at)
-          ORDER BY DATE_TRUNC(${truncUnit}, c.created_at)
+          GROUP BY DATE_TRUNC(${trunc}, c.created_at)
+          ORDER BY DATE_TRUNC(${trunc}, c.created_at)
         `,
 		])
 
