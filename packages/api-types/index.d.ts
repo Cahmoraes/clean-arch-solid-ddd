@@ -2148,6 +2148,10 @@ export interface paths {
                     page: number;
                     /** @description Filter by status */
                     status?: "pending" | "validated" | "rejected";
+                    /** @description Filter by gym name (case-insensitive partial match) */
+                    gymName?: string;
+                    /** @description Sort order by createdAt */
+                    sortOrder: "asc" | "desc";
                 };
                 header?: never;
                 path?: never;
@@ -2541,6 +2545,10 @@ export interface paths {
                     page: number;
                     /** @description Filter by status */
                     status?: "pending" | "validated" | "rejected";
+                    /** @description Filter by gym name (case-insensitive partial match) */
+                    gymName?: string;
+                    /** @description Sort order by createdAt */
+                    sortOrder: "asc" | "desc";
                 };
                 header?: never;
                 path?: never;
@@ -2668,6 +2676,126 @@ export interface paths {
                         "application/json": {
                             /** @description Error message */
                             message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/check-ins/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get check-in stats
+         * @description Get aggregated check-in statistics (total, pending, validated, rejected). Requires ADMIN role.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Check-in stats retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * @description Total number of check-ins
+                             * @example 100
+                             */
+                            total: number;
+                            /**
+                             * @description Number of pending check-ins
+                             * @example 40
+                             */
+                            pending: number;
+                            /**
+                             * @description Number of validated check-ins
+                             * @example 50
+                             */
+                            validated: number;
+                            /**
+                             * @description Number of rejected check-ins
+                             * @example 10
+                             */
+                            rejected: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/check-ins/me/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get my check-in stats
+         * @description Get aggregated check-in statistics for the authenticated user (total, pending, validated, rejected).
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Check-in stats retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * @description Total number of check-ins
+                             * @example 10
+                             */
+                            total: number;
+                            /**
+                             * @description Number of pending check-ins
+                             * @example 2
+                             */
+                            pending: number;
+                            /**
+                             * @description Number of validated check-ins
+                             * @example 7
+                             */
+                            validated: number;
+                            /**
+                             * @description Number of rejected check-ins
+                             * @example 1
+                             */
+                            rejected: number;
                         };
                     };
                 };
@@ -3455,6 +3583,105 @@ export interface paths {
                             [key: string]: unknown;
                         };
                     };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/analytics/checkins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/analytics/retention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/analytics/growth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };

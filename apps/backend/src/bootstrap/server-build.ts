@@ -5,6 +5,7 @@ import { EXCHANGES } from "@/shared/infra/queue/exchanges"
 import type { Queue } from "@/shared/infra/queue/queue"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 
+import { setupAnalyticsModule } from "./setup-analytics-module"
 import { setupCheckInModule } from "./setup-check-in-module"
 import { setupGymModule } from "./setup-gym-module"
 import { setupHealthCheckModule } from "./setup-health-check-module"
@@ -34,6 +35,7 @@ export async function serverBuild() {
 		await setupHealthCheckModule(),
 		await setupSubscriptionModule(),
 		await setupNotificationModule(),
+		await setupAnalyticsModule(),
 	]
 
 	await initializeControllers(modules.flatMap((m) => m.controllers))
