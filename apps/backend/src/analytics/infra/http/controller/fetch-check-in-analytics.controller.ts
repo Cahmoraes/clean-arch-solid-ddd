@@ -67,20 +67,27 @@ function makeSwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
 		tags: ["analytics"],
 		summary: "Fetch check-in analytics",
-		description: "Returns check-in totals, daily series and hourly distribution for the given period.",
+		description:
+			"Returns check-in totals, daily series and hourly distribution for the given period.",
 		security: true,
 		querystring: querySchema,
 		responses: {
 			200: {
 				description: "Check-in analytics retrieved successfully",
 				schema: z.object({
-					totalCheckIns: z.number().meta({ description: "Total check-ins in period" }),
-					dailySeries: z.array(periodCountSchema).meta({ description: "Daily check-in counts" }),
+					totalCheckIns: z
+						.number()
+						.meta({ description: "Total check-ins in period" }),
+					dailySeries: z
+						.array(periodCountSchema)
+						.meta({ description: "Daily check-in counts" }),
 					hourlyDistribution: z
 						.array(
 							z.object({
 								hour: z.number().meta({ description: "Hour of day (0-23)" }),
-								count: z.number().meta({ description: "Check-in count for this hour" }),
+								count: z
+									.number()
+									.meta({ description: "Check-in count for this hour" }),
 							}),
 						)
 						.meta({ description: "Check-in counts per hour of day" }),

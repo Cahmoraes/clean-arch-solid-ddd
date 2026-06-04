@@ -1,6 +1,6 @@
 # Task 10: Frontend Setup — instalar recharts + shadcn Chart + shadcn Collapsible
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** N/A

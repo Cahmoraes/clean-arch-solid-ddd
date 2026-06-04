@@ -1,6 +1,6 @@
 # Task 2: Backend IoC — analytics-types + export em types.ts [FR-001]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** N/A

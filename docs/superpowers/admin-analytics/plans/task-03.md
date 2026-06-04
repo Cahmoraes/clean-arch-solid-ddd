@@ -1,6 +1,6 @@
 # Task 3: Backend Domain — AnalyticsPeriod + interfaces + in-memory test doubles [FR-002, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-02

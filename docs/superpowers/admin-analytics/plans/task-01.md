@@ -1,6 +1,6 @@
 # Task 1: Migração — indexes de performance [FR-007, FR-009, FR-011, FR-015]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** N/A

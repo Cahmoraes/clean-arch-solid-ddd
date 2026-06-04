@@ -1,6 +1,6 @@
 # Task 6: Backend Use Case — FetchGrowthAnalyticsUseCase [FR-014, FR-015]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-03

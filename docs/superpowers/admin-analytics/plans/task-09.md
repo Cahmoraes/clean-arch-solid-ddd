@@ -1,6 +1,6 @@
 # Task 9: Backend IoC — analytics-module + wiring + geração de types [FR-001]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-08

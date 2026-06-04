@@ -67,21 +67,26 @@ function makeSwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
 		tags: ["analytics"],
 		summary: "Fetch growth analytics",
-		description: "Returns total members, new members count, period series and active members trend.",
+		description:
+			"Returns total members, new members count, period series and active members trend.",
 		security: true,
 		querystring: querySchema,
 		responses: {
 			200: {
 				description: "Growth analytics retrieved successfully",
 				schema: z.object({
-					totalMembers: z.number().meta({ description: "Total members up to period end" }),
-					newMembersCount: z.number().meta({ description: "New members in period" }),
+					totalMembers: z
+						.number()
+						.meta({ description: "Total members up to period end" }),
+					newMembersCount: z
+						.number()
+						.meta({ description: "New members in period" }),
 					newMembersPerPeriod: z
 						.array(periodCountSchema)
 						.meta({ description: "New members grouped by day or week" }),
-					activeMembersTrend: z
-						.array(periodCountSchema)
-						.meta({ description: "Active members trend grouped by day or week" }),
+					activeMembersTrend: z.array(periodCountSchema).meta({
+						description: "Active members trend grouped by day or week",
+					}),
 				}),
 			},
 		},

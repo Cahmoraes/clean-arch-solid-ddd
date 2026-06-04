@@ -1,6 +1,6 @@
 # Task 13: Frontend — AnalyticsKpiRow component [FR-004, FR-005, FR-006]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-12

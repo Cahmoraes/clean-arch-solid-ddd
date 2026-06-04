@@ -1,6 +1,6 @@
 # Task 11: Frontend — useAnalyticsPeriod hook + PeriodSelector component [FR-002, FR-003]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** N/A

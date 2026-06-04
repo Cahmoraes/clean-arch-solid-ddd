@@ -62,16 +62,23 @@ function makeSwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
 		tags: ["analytics"],
 		summary: "Fetch retention analytics",
-		description: "Returns active/inactive member counts, churn rate and at-risk members list.",
+		description:
+			"Returns active/inactive member counts, churn rate and at-risk members list.",
 		security: true,
 		querystring: querySchema,
 		responses: {
 			200: {
 				description: "Retention analytics retrieved successfully",
 				schema: z.object({
-					activeCount: z.number().meta({ description: "Members active in last 30 days" }),
-					inactiveCount: z.number().meta({ description: "Members inactive for 30+ days" }),
-					churnRate: z.number().meta({ description: "Churn rate percentage (0-100)" }),
+					activeCount: z
+						.number()
+						.meta({ description: "Members active in last 30 days" }),
+					inactiveCount: z
+						.number()
+						.meta({ description: "Members inactive for 30+ days" }),
+					churnRate: z
+						.number()
+						.meta({ description: "Churn rate percentage (0-100)" }),
 					atRiskMembers: z
 						.array(
 							z.object({
@@ -82,7 +89,9 @@ function makeSwaggerSchema(): Schema {
 									.meta({ description: "Days since last check-in" }),
 							}),
 						)
-						.meta({ description: "Members with no check-in in the last 14 days" }),
+						.meta({
+							description: "Members with no check-in in the last 14 days",
+						}),
 				}),
 			},
 		},
