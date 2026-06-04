@@ -38,14 +38,11 @@ export class RedisNotificationSubscriber {
 		if (this.client.status === "wait" || this.client.status === "end") {
 			return
 		}
-
 		this.client.removeListener("pmessage", this.handleMessage)
-
 		if (this.isSubscribed) {
 			await this.client.punsubscribe(NOTIFICATION_CHANNEL_PATTERN)
 			this.isSubscribed = false
 		}
-
 		await this.client.quit()
 	}
 
@@ -55,15 +52,12 @@ export class RedisNotificationSubscriber {
 		if (this.client.status === "end") {
 			throw new Error("RedisNotificationSubscriber is disconnected")
 		}
-
 		if (this.client.status !== "wait") return
-
 		if (!this.connectingPromise) {
 			this.connectingPromise = this.client.connect().finally(() => {
 				this.connectingPromise = null
 			})
 		}
-
 		await this.connectingPromise
 	}
 
@@ -73,7 +67,6 @@ export class RedisNotificationSubscriber {
 		message: string,
 	): void => {
 		const userId = channel.replace(NOTIFICATION_CHANNEL_PREFIX, "")
-
 		try {
 			const payload = JSON.parse(message) as NotificationCreatedPayload
 			this.sseManager.send(userId, { type: "notification", payload })

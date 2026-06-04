@@ -63,27 +63,23 @@ export class CreateNotificationOnCheckInEventHandler {
 
 	private async handleApproved(event: DomainEvent<unknown>): Promise<void> {
 		if (!(event instanceof CheckInApprovedEvent)) return
-
 		const notification = Notification.create({
 			userId: event.payload.userId,
 			type: "CHECK_IN_APPROVED",
 			title: "Check-in aprovado",
 			message: "Seu check-in foi aprovado com sucesso.",
 		})
-
 		await this.persistAndPublish(notification)
 	}
 
 	private async handleRejected(event: DomainEvent<unknown>): Promise<void> {
 		if (!(event instanceof CheckInRejectedEvent)) return
-
 		const notification = Notification.create({
 			userId: event.payload.userId,
 			type: "CHECK_IN_REJECTED",
 			title: "Check-in rejeitado",
 			message: "Seu check-in foi rejeitado.",
 		})
-
 		await this.persistAndPublish(notification)
 	}
 

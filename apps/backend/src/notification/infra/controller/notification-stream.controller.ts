@@ -41,7 +41,6 @@ export class NotificationStreamController extends BaseController {
 
 	private async callback(req: FastifyRequest, reply: FastifyReply) {
 		const userId = req.user.sub.id
-
 		reply.raw.statusCode = HTTP_STATUS.OK
 		this.copyReplyHeadersToRaw(reply)
 		reply.raw.setHeader("Content-Type", "text/event-stream")
@@ -56,7 +55,6 @@ export class NotificationStreamController extends BaseController {
 		req.socket.on("close", () => {
 			this.sseManager.remove(userId, reply)
 		})
-
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
 			body: null,

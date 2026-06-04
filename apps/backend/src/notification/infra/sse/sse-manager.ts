@@ -12,24 +12,19 @@ export class SseManager {
 
 	public add(userId: string, reply: SseClient): void {
 		const userClients = this.clients.get(userId)
-
 		if (!userClients) {
 			this.clients.set(userId, new Set([reply]))
 			return
 		}
-
 		userClients.add(reply)
 	}
 
 	public remove(userId: string, reply: SseClient): void {
 		const userClients = this.clients.get(userId)
-
 		if (!userClients) {
 			return
 		}
-
 		userClients.delete(reply)
-
 		if (userClients.size === 0) {
 			this.clients.delete(userId)
 		}
@@ -37,14 +32,11 @@ export class SseManager {
 
 	public send(userId: string, data: unknown): void {
 		const userClients = this.clients.get(userId)
-
 		if (!userClients) {
 			return
 		}
-
 		const message = `data: ${JSON.stringify(data)}\n\n`
 		const deadClients: SseClient[] = []
-
 		for (const reply of userClients) {
 			try {
 				reply.raw.write(message)
@@ -52,7 +44,6 @@ export class SseManager {
 				deadClients.push(reply)
 			}
 		}
-
 		for (const deadClient of deadClients) {
 			this.remove(userId, deadClient)
 		}

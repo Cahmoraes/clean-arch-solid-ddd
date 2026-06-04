@@ -25,7 +25,6 @@ export class RedisNotificationPublisher {
 		if (this.client.status === "wait" || this.client.status === "end") {
 			return
 		}
-
 		await this.client.quit()
 	}
 
@@ -35,15 +34,12 @@ export class RedisNotificationPublisher {
 		if (this.client.status === "end") {
 			throw new Error("RedisNotificationPublisher is disconnected")
 		}
-
 		if (this.client.status !== "wait") return
-
 		if (!this.connectingPromise) {
 			this.connectingPromise = this.client.connect().finally(() => {
 				this.connectingPromise = null
 			})
 		}
-
 		await this.connectingPromise
 	}
 }
