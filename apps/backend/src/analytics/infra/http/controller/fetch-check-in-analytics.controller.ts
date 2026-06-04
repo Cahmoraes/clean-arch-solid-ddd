@@ -6,10 +6,16 @@ import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { ANALYTICS_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 
 const querySchema = z.object({
 	period: z.string().default("30d"),
+})
+
+const periodCountSchema = z.object({
+	date: z.string().meta({ description: "Date (YYYY-MM-DD)" }),
+	count: z.number().meta({ description: "Count for this period" }),
 })
 
 @injectable()
@@ -30,11 +36,16 @@ export class FetchCheckInAnalyticsController extends BaseController {
 
 	@Logger({ message: "FetchCheckInAnalyticsController" })
 	public async init(): Promise<void> {
-		this.httpServer.register("get", "/admin/analytics/checkins", {
-			callback: this.callback,
-			isProtected: true,
-			onlyAdmin: true,
-		})
+		this.httpServer.register(
+			"get",
+			"/admin/analytics/checkins",
+			{
+				callback: this.callback,
+				isProtected: true,
+				onlyAdmin: true,
+			},
+			makeSwaggerSchema(),
+		)
 	}
 
 	public async callback(req: FastifyRequest) {
@@ -50,4 +61,31 @@ export class FetchCheckInAnalyticsController extends BaseController {
 		}
 		return ResponseFactory.OK({ body: result.forceSuccess().value })
 	}
+}
+
+function makeSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["analytics"],
+		summary: "Fetch check-in analytics",
+		description: "Returns check-in totals, daily series and hourly distribution for the given period.",
+		security: true,
+		querystring: querySchema,
+		responses: {
+			200: {
+				description: "Check-in analytics retrieved successfully",
+				schema: z.object({
+					totalCheckIns: z.number().meta({ description: "Total check-ins in period" }),
+					dailySeries: z.array(periodCountSchema).meta({ description: "Daily check-in counts" }),
+					hourlyDistribution: z
+						.array(
+							z.object({
+								hour: z.number().meta({ description: "Hour of day (0-23)" }),
+								count: z.number().meta({ description: "Check-in count for this hour" }),
+							}),
+						)
+						.meta({ description: "Check-in counts per hour of day" }),
+				}),
+			},
+		},
+	})
 }

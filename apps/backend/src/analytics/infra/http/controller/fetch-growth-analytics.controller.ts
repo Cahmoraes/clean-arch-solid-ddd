@@ -6,10 +6,16 @@ import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { ANALYTICS_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 
 const querySchema = z.object({
 	period: z.string().default("30d"),
+})
+
+const periodCountSchema = z.object({
+	date: z.string().meta({ description: "Date (YYYY-MM-DD)" }),
+	count: z.number().meta({ description: "Count for this period" }),
 })
 
 @injectable()
@@ -30,11 +36,16 @@ export class FetchGrowthAnalyticsController extends BaseController {
 
 	@Logger({ message: "FetchGrowthAnalyticsController" })
 	public async init(): Promise<void> {
-		this.httpServer.register("get", "/admin/analytics/growth", {
-			callback: this.callback,
-			isProtected: true,
-			onlyAdmin: true,
-		})
+		this.httpServer.register(
+			"get",
+			"/admin/analytics/growth",
+			{
+				callback: this.callback,
+				isProtected: true,
+				onlyAdmin: true,
+			},
+			makeSwaggerSchema(),
+		)
 	}
 
 	public async callback(req: FastifyRequest) {
@@ -50,4 +61,29 @@ export class FetchGrowthAnalyticsController extends BaseController {
 		}
 		return ResponseFactory.OK({ body: result.forceSuccess().value })
 	}
+}
+
+function makeSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["analytics"],
+		summary: "Fetch growth analytics",
+		description: "Returns total members, new members count, period series and active members trend.",
+		security: true,
+		querystring: querySchema,
+		responses: {
+			200: {
+				description: "Growth analytics retrieved successfully",
+				schema: z.object({
+					totalMembers: z.number().meta({ description: "Total members up to period end" }),
+					newMembersCount: z.number().meta({ description: "New members in period" }),
+					newMembersPerPeriod: z
+						.array(periodCountSchema)
+						.meta({ description: "New members grouped by day or week" }),
+					activeMembersTrend: z
+						.array(periodCountSchema)
+						.meta({ description: "Active members trend grouped by day or week" }),
+				}),
+			},
+		},
+	})
 }

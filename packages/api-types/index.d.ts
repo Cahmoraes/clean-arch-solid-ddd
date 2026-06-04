@@ -3601,21 +3601,46 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Fetch check-in analytics
+         * @description Returns check-in totals, daily series and hourly distribution for the given period.
+         */
         get: {
             parameters: {
-                query?: never;
+                query: {
+                    period: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Default Response */
+                /** @description Check-in analytics retrieved successfully */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": {
+                            /** @description Total check-ins in period */
+                            totalCheckIns: number;
+                            /** @description Daily check-in counts */
+                            dailySeries: {
+                                /** @description Date (YYYY-MM-DD) */
+                                date: string;
+                                /** @description Count for this period */
+                                count: number;
+                            }[];
+                            /** @description Check-in counts per hour of day */
+                            hourlyDistribution: {
+                                /** @description Hour of day (0-23) */
+                                hour: number;
+                                /** @description Check-in count for this hour */
+                                count: number;
+                            }[];
+                        };
+                    };
                 };
             };
         };
@@ -3634,21 +3659,45 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Fetch retention analytics
+         * @description Returns active/inactive member counts, churn rate and at-risk members list.
+         */
         get: {
             parameters: {
-                query?: never;
+                query: {
+                    period: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Default Response */
+                /** @description Retention analytics retrieved successfully */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": {
+                            /** @description Members active in last 30 days */
+                            activeCount: number;
+                            /** @description Members inactive for 30+ days */
+                            inactiveCount: number;
+                            /** @description Churn rate percentage (0-100) */
+                            churnRate: number;
+                            /** @description Members with no check-in in the last 14 days */
+                            atRiskMembers: {
+                                /** @description User ID */
+                                id: string;
+                                /** @description User name */
+                                name: string;
+                                /** @description Days since last check-in */
+                                daysSinceLastCheckIn: number;
+                            }[];
+                        };
+                    };
                 };
             };
         };
@@ -3667,21 +3716,48 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Fetch growth analytics
+         * @description Returns total members, new members count, period series and active members trend.
+         */
         get: {
             parameters: {
-                query?: never;
+                query: {
+                    period: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Default Response */
+                /** @description Growth analytics retrieved successfully */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": {
+                            /** @description Total members up to period end */
+                            totalMembers: number;
+                            /** @description New members in period */
+                            newMembersCount: number;
+                            /** @description New members grouped by day or week */
+                            newMembersPerPeriod: {
+                                /** @description Date (YYYY-MM-DD) */
+                                date: string;
+                                /** @description Count for this period */
+                                count: number;
+                            }[];
+                            /** @description Active members trend grouped by day or week */
+                            activeMembersTrend: {
+                                /** @description Date (YYYY-MM-DD) */
+                                date: string;
+                                /** @description Count for this period */
+                                count: number;
+                            }[];
+                        };
+                    };
                 };
             };
         };

@@ -6,7 +6,8 @@ import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { ANALYTICS_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
-import type { HttpServer } from "@/shared/infra/server/http-server"
+import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
+import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 
 const querySchema = z.object({
 	period: z.string().default("30d"),
@@ -30,11 +31,16 @@ export class FetchRetentionAnalyticsController extends BaseController {
 
 	@Logger({ message: "FetchRetentionAnalyticsController" })
 	public async init(): Promise<void> {
-		this.httpServer.register("get", "/admin/analytics/retention", {
-			callback: this.callback,
-			isProtected: true,
-			onlyAdmin: true,
-		})
+		this.httpServer.register(
+			"get",
+			"/admin/analytics/retention",
+			{
+				callback: this.callback,
+				isProtected: true,
+				onlyAdmin: true,
+			},
+			makeSwaggerSchema(),
+		)
 	}
 
 	public async callback(req: FastifyRequest) {
@@ -50,4 +56,35 @@ export class FetchRetentionAnalyticsController extends BaseController {
 		}
 		return ResponseFactory.OK({ body: result.forceSuccess().value })
 	}
+}
+
+function makeSwaggerSchema(): Schema {
+	return OpenApiSchemaBuilder.build({
+		tags: ["analytics"],
+		summary: "Fetch retention analytics",
+		description: "Returns active/inactive member counts, churn rate and at-risk members list.",
+		security: true,
+		querystring: querySchema,
+		responses: {
+			200: {
+				description: "Retention analytics retrieved successfully",
+				schema: z.object({
+					activeCount: z.number().meta({ description: "Members active in last 30 days" }),
+					inactiveCount: z.number().meta({ description: "Members inactive for 30+ days" }),
+					churnRate: z.number().meta({ description: "Churn rate percentage (0-100)" }),
+					atRiskMembers: z
+						.array(
+							z.object({
+								id: z.string().meta({ description: "User ID" }),
+								name: z.string().meta({ description: "User name" }),
+								daysSinceLastCheckIn: z
+									.number()
+									.meta({ description: "Days since last check-in" }),
+							}),
+						)
+						.meta({ description: "Members with no check-in in the last 14 days" }),
+				}),
+			},
+		},
+	})
 }

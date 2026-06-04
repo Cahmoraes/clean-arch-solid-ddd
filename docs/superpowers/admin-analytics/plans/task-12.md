@@ -1,6 +1,6 @@
 # Task 12: Frontend API hooks — useCheckInMetrics + useRetentionMetrics + useGrowthMetrics [FR-004]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-analytics.md`
 **Spec:** `../specs/admin-analytics-design.md`
 **Depends on:** task-09, task-11
