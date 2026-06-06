@@ -88,7 +88,7 @@ export class FastifyAdapter implements HttpServer {
 
 	private async setupMultipart(): Promise<void> {
 		await this._server.register(fastifyMultipart, {
-			limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+			limits: { fileSize: 5 * 1024 * 1024, files: 1, parts: 1, fields: 0 },
 		})
 	}
 
