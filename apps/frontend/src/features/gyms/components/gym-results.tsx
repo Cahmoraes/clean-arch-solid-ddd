@@ -17,6 +17,7 @@ export interface GymResultsProps {
 	errorMessage?: string
 	onRetry: () => void
 	items: Gym[]
+	isAdmin?: boolean
 }
 
 function ResultsLoading() {
@@ -80,12 +81,17 @@ function ResultsEmptyBrowse() {
 	)
 }
 
-function ResultsList({ items }: { items: Gym[] }) {
+function ResultsList({ items, isAdmin }: { items: Gym[]; isAdmin?: boolean }) {
 	return (
 		<ul className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]">
 			{items.map((gym) => (
 				<li key={gym.id} className="flex flex-col">
-					<GymCard gym={gym} />
+					<GymCard
+						gym={gym}
+						adminEditHref={
+							isAdmin ? `/admin/academias/${gym.id}/editar` : undefined
+						}
+					/>
 				</li>
 			))}
 		</ul>
@@ -109,10 +115,11 @@ function GymContents({
 	onRetry,
 	items,
 	query,
+	isAdmin,
 }: Omit<GymResultsProps, "isBrowseMode">) {
 	if (isLoading) return <ResultsLoading />
 	if (isError) return <ResultsError message={errorMessage} onRetry={onRetry} />
-	if (items.length > 0) return <ResultsList items={items} />
+	if (items.length > 0) return <ResultsList items={items} isAdmin={isAdmin} />
 	return query ? <ResultsEmpty query={query} /> : <ResultsEmptyBrowse />
 }
 
