@@ -17,6 +17,7 @@ export const GYM_TYPES = {
 	},
 	Controllers: {
 		CreateGym: Symbol.for("CreateGymController"),
+		UpdateGym: Symbol.for("UpdateGymController"),
 		SearchGym: Symbol.for("SearchGymController"),
 		FetchNearbyGym: Symbol.for("FetchNearbyGymController"),
 		FetchAllGyms: Symbol.for("FetchAllGymsController"),

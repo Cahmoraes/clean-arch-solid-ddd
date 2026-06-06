@@ -9,6 +9,7 @@ import { type ModuleControllers, resolve } from "./server-build"
 export function setupGymModule(): ModuleControllers {
 	const controllers = [
 		resolve(GYM_TYPES.Controllers.CreateGym),
+		resolve(GYM_TYPES.Controllers.UpdateGym),
 		resolve(GYM_TYPES.Controllers.SearchGym),
 		resolve(GYM_TYPES.Controllers.FetchAllGyms),
 		resolve(GYM_TYPES.Controllers.FetchGymById),
