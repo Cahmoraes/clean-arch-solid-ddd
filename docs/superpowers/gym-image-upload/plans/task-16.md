@@ -1,6 +1,6 @@
 # Task 16: Integrar uploader na página de cadastro [FR-001, FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-14, task-15

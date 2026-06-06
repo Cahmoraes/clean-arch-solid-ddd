@@ -1,6 +1,6 @@
 # Task 6: `SetGymImageUseCase` + teste unitário [FR-007, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-02, task-05

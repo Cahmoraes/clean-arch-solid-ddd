@@ -1,6 +1,6 @@
 # Task 13: Integrar `GymImage` no `GymCard` e no detalhe [FR-010, FR-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-12

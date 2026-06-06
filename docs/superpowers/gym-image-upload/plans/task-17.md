@@ -1,6 +1,6 @@
 # Task 17: Página de edição `/admin/academias/[id]/editar` [FR-006, FR-007, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-14, task-15
