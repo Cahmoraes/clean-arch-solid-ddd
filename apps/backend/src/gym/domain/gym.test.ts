@@ -86,4 +86,16 @@ describe("Gym imageKey", () => {
 		})
 		expect(gym.imageKey).toBe("gyms/xyz.webp")
 	})
+
+	test("restore sem imageKey resulta em undefined", () => {
+		const gym = Gym.restore({
+			id: "gym-2",
+			title: "Academia Teste",
+			latitude: 0,
+			longitude: 0,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua Padrão, 1",
+		})
+		expect(gym.imageKey).toBeUndefined()
+	})
 })
