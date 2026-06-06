@@ -37,4 +37,37 @@ describe("GymCard VOLT", () => {
 		renderWithProviders(<GymCard gym={gym} />)
 		expect(screen.getByTestId("gym-image")).toBeInTheDocument()
 	})
+
+	test("não exibe o botão de edição quando adminEditHref não é informado", () => {
+		renderWithProviders(<GymCard gym={gym} />)
+		expect(screen.queryByTestId("gym-edit-g1")).not.toBeInTheDocument()
+	})
+
+	test("exibe o botão de edição com href correto quando adminEditHref é informado", () => {
+		renderWithProviders(
+			<GymCard gym={gym} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		const editLink = screen.getByTestId("gym-edit-g1")
+		expect(editLink).toBeInTheDocument()
+		expect(editLink).toHaveAttribute("href", "/admin/academias/g1/editar")
+	})
+
+	test("rotula o botão de edição com o nome da academia", () => {
+		renderWithProviders(
+			<GymCard gym={gym} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		expect(
+			screen.getByRole("link", { name: "Editar academia VOLT Centro" }),
+		).toBeInTheDocument()
+	})
+
+	test("mantém o cartão navegável para o detalhe mesmo com o botão de edição", () => {
+		renderWithProviders(
+			<GymCard gym={gym} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		expect(screen.getByTestId("gym-card-g1")).toHaveAttribute(
+			"href",
+			"/academias/g1",
+		)
+	})
 })

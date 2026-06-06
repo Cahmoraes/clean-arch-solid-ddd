@@ -1,10 +1,11 @@
-import { MapPin } from "lucide-react"
+import { MapPin, Pencil } from "lucide-react"
 import Link from "next/link"
 import type { Gym } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
 
 export interface GymCardProps {
 	gym: Gym
+	adminEditHref?: string
 }
 
 function resolveLocation(gym: Gym): string {
@@ -12,47 +13,59 @@ function resolveLocation(gym: Gym): string {
 	return `${gym.latitude.toFixed(4)}, ${gym.longitude.toFixed(4)}`
 }
 
-export function GymCard({ gym }: GymCardProps) {
+export function GymCard({ gym, adminEditHref }: GymCardProps) {
 	return (
-		<Link
-			href={`/academias/${gym.id}`}
-			data-testid={`gym-card-${gym.id}`}
-			className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[transform,border-color] hover:-translate-y-0.5 hover:border-border-strong"
-		>
-			<div className="relative h-[140px] w-full">
-				<GymImage
-					imageKey={gym.imageKey}
-					alt={gym.title}
-					className="h-full w-full"
-				/>
-				<span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
-					<span className="h-1.5 w-1.5 rounded-full bg-current" /> Disponível
-				</span>
-			</div>
-			<div className="flex flex-1 flex-col gap-2.5 p-[18px]">
-				<p className="font-display text-base font-semibold text-card-foreground">
-					{gym.title}
-				</p>
-				{gym.description ? (
-					<p className="line-clamp-2 text-[13px] text-muted-foreground">
-						{gym.description}
-					</p>
-				) : null}
-				<p className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-					<MapPin className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
-					<span className="line-clamp-1">{resolveLocation(gym)}</span>
-				</p>
-				<div className="mt-auto flex items-center justify-between border-t border-border pt-3.5">
-					{gym.phone ? (
-						<span className="text-[12.5px] text-subtle">{gym.phone}</span>
-					) : (
-						<span className="text-[12.5px] text-subtle">Ver detalhes</span>
-					)}
-					<span className="rounded-md bg-accent px-3 py-1.5 text-[13px] font-semibold text-accent-foreground">
-						Check-in
+		<div className="relative flex h-full flex-col">
+			<Link
+				href={`/academias/${gym.id}`}
+				data-testid={`gym-card-${gym.id}`}
+				className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[transform,border-color] hover:-translate-y-0.5 hover:border-border-strong"
+			>
+				<div className="relative h-[140px] w-full">
+					<GymImage
+						imageKey={gym.imageKey}
+						alt={gym.title}
+						className="h-full w-full"
+					/>
+					<span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
+						<span className="h-1.5 w-1.5 rounded-full bg-current" /> Disponível
 					</span>
 				</div>
-			</div>
-		</Link>
+				<div className="flex flex-1 flex-col gap-2.5 p-[18px]">
+					<p className="font-display text-base font-semibold text-card-foreground">
+						{gym.title}
+					</p>
+					{gym.description ? (
+						<p className="line-clamp-2 text-[13px] text-muted-foreground">
+							{gym.description}
+						</p>
+					) : null}
+					<p className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+						<MapPin className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+						<span className="line-clamp-1">{resolveLocation(gym)}</span>
+					</p>
+					<div className="mt-auto flex items-center justify-between border-t border-border pt-3.5">
+						{gym.phone ? (
+							<span className="text-[12.5px] text-subtle">{gym.phone}</span>
+						) : (
+							<span className="text-[12.5px] text-subtle">Ver detalhes</span>
+						)}
+						<span className="rounded-md bg-accent px-3 py-1.5 text-[13px] font-semibold text-accent-foreground">
+							Check-in
+						</span>
+					</div>
+				</div>
+			</Link>
+			{adminEditHref ? (
+				<Link
+					href={adminEditHref}
+					data-testid={`gym-edit-${gym.id}`}
+					aria-label={`Editar academia ${gym.title}`}
+					className="absolute right-3 top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background/80 text-foreground backdrop-blur transition-colors hover:bg-background hover:text-primary"
+				>
+					<Pencil className="h-4 w-4" aria-hidden="true" />
+				</Link>
+			) : null}
+		</div>
 	)
 }
