@@ -22,7 +22,7 @@
 - [x] 5. Portas de imagem + implementações (sharp/fs) + deps + env [FR-005, FR-008] → `task-05.md`
 - [x] 6. `SetGymImageUseCase` + teste unitário [FR-007, FR-008] → `task-06.md`
 - [x] 7. Plugins Fastify (multipart + static) + guard do rawBody [FR-005, FR-014] → `task-07.md`
-- [ ] 8. `UpdateGymController` + rota `PUT /gyms/:gymId` + wiring + business-flow [FR-006, FR-009, FR-015] → `task-08.md`
+- [x] 8. `UpdateGymController` + rota `PUT /gyms/:gymId` + wiring + business-flow [FR-006, FR-009, FR-015] → `task-08.md`
 - [ ] 9. `GymImageController` + rota `POST /gyms/:gymId/image` + wiring + business-flow [FR-005, FR-007, FR-015] → `task-09.md`
 - [ ] 10. Regenerar tipos OpenAPI + validar dependency-cruiser [FR-006, FR-013] → `task-10.md`
 - [x] 11. Frontend: `imageKey` em `GymSummary` + path multipart + helper de URL [FR-013, FR-014] → `task-11.md`
