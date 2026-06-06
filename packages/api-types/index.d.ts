@@ -1822,6 +1822,8 @@ export interface paths {
                             phone: string | null;
                             /** @description Full gym address */
                             address: string | null;
+                            /** @description Relative key of the gym image */
+                            imageKey: string | null;
                             /**
                              * @description Latitude
                              * @example -23.5505
@@ -1943,6 +1945,213 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/gyms/{gymId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get gym by ID
+         * @description Retrieve a specific gym by its ID
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Gym ID */
+                    gymId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Gym retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * @description Gym ID
+                             * @example 550e8400-e29b-41d4-a716-446655440000
+                             */
+                            id: string;
+                            /**
+                             * @description Gym CNPJ
+                             * @example 12345678000100
+                             */
+                            cnpj: string;
+                            /**
+                             * @description Gym name
+                             * @example Iron Gym
+                             */
+                            title: string;
+                            /** @description Gym description */
+                            description: string | null;
+                            /** @description Gym phone number */
+                            phone: string | null;
+                            /** @description Full gym address */
+                            address: string | null;
+                            /**
+                             * @description Relative key of the gym image
+                             * @example gyms/abc.webp
+                             */
+                            imageKey: string | null;
+                            /**
+                             * @description Latitude
+                             * @example -23.5505
+                             */
+                            latitude: number;
+                            /**
+                             * @description Longitude
+                             * @example -46.6333
+                             */
+                            longitude: number;
+                        };
+                    };
+                };
+                /** @description Invalid params */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Gym not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        /**
+         * Update a gym
+         * @description Update an existing gym's registration data. Requires ADMIN role
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Gym ID */
+                    gymId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Gym CNPJ
+                         * @example 12345678000100
+                         */
+                        cnpj: string;
+                        /**
+                         * @description Gym name
+                         * @example Iron Gym
+                         */
+                        title: string;
+                        /**
+                         * @description Gym description
+                         * @example A great gym
+                         */
+                        description?: string;
+                        /**
+                         * @description Gym phone number
+                         * @example 11999999999
+                         */
+                        phone?: string;
+                        /**
+                         * @description Gym latitude
+                         * @example -23.5505
+                         */
+                        latitude: number;
+                        /**
+                         * @description Gym longitude
+                         * @example -46.6333
+                         */
+                        longitude: number;
+                        /**
+                         * @description Full gym address
+                         * @example Rua das Flores, 123, São Paulo - SP
+                         */
+                        address: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Gym updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example Gym updated */
+                            message: string;
+                            /** @description Updated gym ID */
+                            id: string;
+                        };
+                    };
+                };
+                /** @description Invalid request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Gym not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Conflict - CNPJ already used by another gym */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/gyms/search/{name}": {
         parameters: {
             query?: never;
@@ -1990,6 +2199,8 @@ export interface paths {
                             description: string | null;
                             /** @description Gym phone number */
                             phone: string | null;
+                            /** @description Relative key of the gym image */
+                            imageKey: string | null;
                             /**
                              * @description Latitude
                              * @example -23.5505
@@ -2037,18 +2248,20 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/gyms/{gymId}": {
+    "/gyms/{gymId}/image": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /**
-         * Get gym by ID
-         * @description Retrieve a specific gym by its ID
+         * Upload/replace a gym image
+         * @description Uploads a gym image (multipart/form-data, field 'image'). Requires ADMIN role
          */
-        get: {
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -2060,51 +2273,17 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Gym retrieved successfully */
+                /** @description Image stored */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": {
-                            /**
-                             * @description Gym ID
-                             * @example 550e8400-e29b-41d4-a716-446655440000
-                             */
-                            id: string;
-                            /**
-                             * @description Gym name
-                             * @example Iron Gym
-                             */
-                            title: string;
-                            /** @description Gym description */
-                            description: string | null;
-                            /** @description Gym phone number */
-                            phone: string | null;
-                            /** @description Full gym address */
-                            address: string | null;
-                            /**
-                             * @description Latitude
-                             * @example -23.5505
-                             */
-                            latitude: number;
-                            /**
-                             * @description Longitude
-                             * @example -46.6333
-                             */
-                            longitude: number;
-                        };
-                    };
-                };
-                /** @description Invalid params */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @description Error message */
-                            message: string;
+                            /** @example gyms/abc.webp */
+                            imageKey: string;
+                            /** @example /uploads/gyms/abc.webp */
+                            url: string;
                         };
                     };
                 };
@@ -2115,15 +2294,34 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description File too large */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unsupported media type */
+                415: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
                             message: string;
                         };
                     };
                 };
             };
         };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
