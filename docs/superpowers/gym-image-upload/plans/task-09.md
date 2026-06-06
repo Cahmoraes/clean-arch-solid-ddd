@@ -1,6 +1,6 @@
 # Task 9: `GymImageController` + rota `POST /gyms/:gymId/image` + wiring + business-flow [FR-005, FR-007, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-06, task-07, task-08
