@@ -140,3 +140,4 @@ src/shared/infra/openapi/generated/
 .yarn/install-state.gz
 .pnp.*
 build
+uploads/

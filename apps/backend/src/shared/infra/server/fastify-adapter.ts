@@ -1,5 +1,9 @@
+import { mkdirSync } from "node:fs"
+import path from "node:path"
 import { Readable } from "node:stream"
 import fastifyCors from "@fastify/cors"
+import fastifyMultipart from "@fastify/multipart"
+import fastifyStatic from "@fastify/static"
 import fastifySwagger from "@fastify/swagger"
 import fastifySwaggerUI from "@fastify/swagger-ui"
 import fastify, {
@@ -74,10 +78,27 @@ export class FastifyAdapter implements HttpServer {
 		this.setupRawBody()
 		this.setupResponseValidation()
 		await this.setupRateLimit()
+		await this.setupMultipart()
+		await this.setupStaticFiles()
 	}
 
 	private async setupRateLimit(): Promise<void> {
 		await RateLimitPlugin.register(this._server, this.logger, this.queue)
+	}
+
+	private async setupMultipart(): Promise<void> {
+		await this._server.register(fastifyMultipart, {
+			limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+		})
+	}
+
+	private async setupStaticFiles(): Promise<void> {
+		const root = path.resolve(env.UPLOAD_DIR)
+		mkdirSync(root, { recursive: true })
+		await this._server.register(fastifyStatic, {
+			root,
+			prefix: "/uploads/",
+		})
 	}
 
 	private async setupCORS(): Promise<void> {
@@ -101,15 +122,29 @@ export class FastifyAdapter implements HttpServer {
 		this._server.addHook(
 			"preParsing",
 			async (request: FastifyRequest, _reply: FastifyReply, payload) => {
-				const chunks: Buffer[] = []
-				for await (const chunk of payload as AsyncIterable<Buffer | string>) {
-					chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+				const contentType = request.headers["content-type"] ?? ""
+				if (contentType.includes("multipart/form-data")) {
+					return payload
 				}
-				const body = Buffer.concat(chunks)
-				request.rawBody = body.toString("utf8")
-				return Readable.from(body) as NodeJS.ReadableStream
+				return this.captureRawBody(
+					request,
+					payload as AsyncIterable<Buffer | string>,
+				)
 			},
 		)
+	}
+
+	private async captureRawBody(
+		request: FastifyRequest,
+		payload: AsyncIterable<Buffer | string>,
+	): Promise<NodeJS.ReadableStream> {
+		const chunks: Buffer[] = []
+		for await (const chunk of payload) {
+			chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+		}
+		const body = Buffer.concat(chunks)
+		request.rawBody = body.toString("utf8")
+		return Readable.from(body) as NodeJS.ReadableStream
 	}
 
 	private setupResponseValidation(): void {
