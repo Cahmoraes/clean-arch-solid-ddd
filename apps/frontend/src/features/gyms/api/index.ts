@@ -8,7 +8,8 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query"
 import type { CreateGymInput } from "@/features/gyms/schemas/create-gym-schema"
-import { api } from "@/lib/api"
+import { API_BASE_URL, api } from "@/lib/api"
+import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
 import { type GymSummary, getGymsExtendedClient } from "./extended-paths"
 
@@ -148,6 +149,81 @@ export function useCreateGym(): UseMutationResult<
 	const queryClient = useQueryClient()
 	return useMutation<CreateGymResult, ApiError, CreateGymInput>({
 		mutationFn: createGymRequest,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: gymsKeys.all })
+		},
+	})
+}
+
+export interface UpdateGymVariables {
+	id: string
+	input: CreateGymInput
+}
+
+async function updateGymRequest({
+	id,
+	input,
+}: UpdateGymVariables): Promise<CreateGymResult> {
+	const client = getGymsExtendedClient()
+	const { data, error } = await client.PUT("/gyms/{id}", {
+		params: { path: { id } },
+		body: buildCreateGymBody(input),
+	})
+	if (error || !data) throw toApiError(error)
+	return { id: data.id }
+}
+
+export function useUpdateGym(): UseMutationResult<
+	CreateGymResult,
+	ApiError,
+	UpdateGymVariables
+> {
+	const queryClient = useQueryClient()
+	return useMutation<CreateGymResult, ApiError, UpdateGymVariables>({
+		mutationFn: updateGymRequest,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: gymsKeys.all })
+		},
+	})
+}
+
+export interface SetGymImageVariables {
+	id: string
+	file: Blob
+}
+
+export interface SetGymImageResult {
+	imageKey: string
+	url: string
+}
+
+async function setGymImageRequest({
+	id,
+	file,
+}: SetGymImageVariables): Promise<SetGymImageResult> {
+	const form = new FormData()
+	form.append("image", file, "gym-image.webp")
+	const token = useAuthStore.getState().accessToken
+	const response = await fetch(`${API_BASE_URL}/gyms/${id}/image`, {
+		method: "POST",
+		body: form,
+		credentials: "include",
+		headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+	})
+	if (!response.ok) {
+		throw ApiError.fromStatus(response.status, "image_upload_failed")
+	}
+	return (await response.json()) as SetGymImageResult
+}
+
+export function useSetGymImage(): UseMutationResult<
+	SetGymImageResult,
+	ApiError,
+	SetGymImageVariables
+> {
+	const queryClient = useQueryClient()
+	return useMutation<SetGymImageResult, ApiError, SetGymImageVariables>({
+		mutationFn: setGymImageRequest,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: gymsKeys.all })
 		},

@@ -4,7 +4,14 @@ import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
 import { server } from "@/test/msw/server"
-import { useAllGyms, useCreateGym, useGymById, useGymsByName } from "./index"
+import {
+	useAllGyms,
+	useCreateGym,
+	useGymById,
+	useGymsByName,
+	useSetGymImage,
+	useUpdateGym,
+} from "./index"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -196,5 +203,49 @@ describe("useCreateGym", () => {
 				},
 			}),
 		).rejects.toMatchObject({ status: 409 })
+	})
+})
+
+const validUpdateInput = {
+	title: "Academia Editada",
+	cnpj: "11222333000181",
+	description: "",
+	phone: "",
+	location: { address: "Rua B, 2", latitude: -23.5, longitude: -46.6 },
+}
+
+describe("useUpdateGym", () => {
+	it("atualiza a academia via PUT e retorna o id", async () => {
+		server.use(
+			http.put(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json({ message: "Gym updated", id: "gym-1" }),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useUpdateGym(), { wrapper: Wrapper })
+		result.current.mutate({ id: "gym-1", input: validUpdateInput })
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data?.id).toBe("gym-1")
+	})
+})
+
+describe("useSetGymImage", () => {
+	it("envia a imagem via POST e retorna imageKey + url", async () => {
+		server.use(
+			http.post(`${apiBaseUrl}/gyms/:id/image`, () =>
+				HttpResponse.json({
+					imageKey: "gyms/x.webp",
+					url: "/uploads/gyms/x.webp",
+				}),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useSetGymImage(), { wrapper: Wrapper })
+		result.current.mutate({
+			id: "gym-1",
+			file: new Blob(["webp"], { type: "image/webp" }),
+		})
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data?.imageKey).toBe("gyms/x.webp")
 	})
 })
