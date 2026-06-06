@@ -28,6 +28,7 @@ export function GymImageUploader({
 		const file = event.target.files?.[0]
 		if (!file) return
 		setError(null)
+		if (imageSrc) URL.revokeObjectURL(imageSrc)
 		setImageSrc(URL.createObjectURL(file))
 	}
 
@@ -47,11 +48,15 @@ export function GymImageUploader({
 		if (!imageSrc || !area) return
 		setIsProcessing(true)
 		setError(null)
-		await cropAndEmit(imageSrc, area)
-		setIsProcessing(false)
+		try {
+			await cropAndEmit(imageSrc, area)
+		} finally {
+			setIsProcessing(false)
+		}
 	}
 
 	function handleRemove() {
+		if (imageSrc) URL.revokeObjectURL(imageSrc)
 		setImageSrc(null)
 		setArea(null)
 		setZoom(1)
