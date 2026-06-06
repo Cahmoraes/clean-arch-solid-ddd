@@ -15,20 +15,20 @@
 
 ## Tarefas
 
-- [ ] 1. Domínio Gym: campo opcional `imageKey` + migration Prisma [FR-003] → `task-01.md`
+- [x] 1. Domínio Gym: campo opcional `imageKey` + migration Prisma [FR-003] → `task-01.md`
 - [ ] 2. Repositórios de Gym: mapear `imageKey` + método `update` [FR-006, FR-008] → `task-02.md`
 - [ ] 3. Expor `imageKey` nos endpoints de leitura (detalhe + listagem + busca) [FR-013, FR-014] → `task-03.md`
 - [ ] 4. `UpdateGymUseCase` + teste unitário [FR-006, FR-009] → `task-04.md`
-- [ ] 5. Portas de imagem + implementações (sharp/fs) + deps + env [FR-005, FR-008] → `task-05.md`
+- [x] 5. Portas de imagem + implementações (sharp/fs) + deps + env [FR-005, FR-008] → `task-05.md`
 - [ ] 6. `SetGymImageUseCase` + teste unitário [FR-007, FR-008] → `task-06.md`
 - [ ] 7. Plugins Fastify (multipart + static) + guard do rawBody [FR-005, FR-014] → `task-07.md`
 - [ ] 8. `UpdateGymController` + rota `PUT /gyms/:gymId` + wiring + business-flow [FR-006, FR-009, FR-015] → `task-08.md`
 - [ ] 9. `GymImageController` + rota `POST /gyms/:gymId/image` + wiring + business-flow [FR-005, FR-007, FR-015] → `task-09.md`
 - [ ] 10. Regenerar tipos OpenAPI + validar dependency-cruiser [FR-006, FR-013] → `task-10.md`
-- [ ] 11. Frontend: `imageKey` em `GymSummary` + path multipart + helper de URL [FR-013, FR-014] → `task-11.md`
+- [x] 11. Frontend: `imageKey` em `GymSummary` + path multipart + helper de URL [FR-013, FR-014] → `task-11.md`
 - [ ] 12. Componente `GymImage` (cover + gradiente + zoom + placeholder) [FR-010, FR-011, FR-012, FR-013] → `task-12.md`
 - [ ] 13. Integrar `GymImage` no `GymCard` e no detalhe [FR-010, FR-014] → `task-13.md`
-- [ ] 14. Componente `GymImageUploader` (crop com react-easy-crop) [FR-001, FR-002, FR-004] → `task-14.md`
+- [x] 14. Componente `GymImageUploader` (crop com react-easy-crop) [FR-001, FR-002, FR-004] → `task-14.md`
 - [ ] 15. Mutations `useUpdateGym` + `useSetGymImage` [FR-006, FR-007] → `task-15.md`
 - [ ] 16. Integrar uploader na página de cadastro [FR-001, FR-002] → `task-16.md`
 - [ ] 17. Página de edição `/admin/academias/[id]/editar` [FR-006, FR-007, FR-015] → `task-17.md`

@@ -1,6 +1,6 @@
 # Task 11: Frontend — `imageKey` em `GymSummary` + path `PUT` + helper de URL [FR-013, FR-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** N/A

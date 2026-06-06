@@ -1,6 +1,6 @@
 # Task 14: Componente `GymImageUploader` (crop com react-easy-crop) [FR-001, FR-002, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** N/A

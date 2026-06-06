@@ -1,6 +1,6 @@
 # Task 1: Domínio Gym — campo opcional `imageKey` + migration Prisma [FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** N/A

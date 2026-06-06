@@ -1,6 +1,6 @@
 # Task 5: Portas de imagem + implementações (sharp/fs) + deps + env [FR-005, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** N/A
