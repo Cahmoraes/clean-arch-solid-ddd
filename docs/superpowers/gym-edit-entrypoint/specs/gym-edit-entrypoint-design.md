@@ -1,6 +1,6 @@
 ---
 created_at: "2026-06-06T16:16:58-03:00"
-updated_at: "2026-06-06T16:16:58-03:00"
+updated_at: "2026-06-06T16:18:00-03:00"
 ---
 
 # Design — Ponto de entrada para edição de academia
@@ -64,18 +64,23 @@ internamente.
 plumbing) — em troca, o card permanece desacoplado do auth, testável sem mock de store,
 e reutilizável em contextos onde a regra de exibição seja diferente.
 
-### ADR-2 — Botão sobreposto fora do `<Link>` (resolve link aninhado)
+### ADR-2 — Segundo `<Link>` irmão fora do `<Link>` principal (resolve link aninhado)
 
 **Decisão:** a raiz do `GymCard` deixa de ser o `<Link>` e passa a ser um
 `<div className="relative">`. Dentro dele, dois **irmãos** no DOM: o `<Link>` existente
-(card inteiro, comportamento preservado) e um `<button>` posicionado `absolute` no canto
-superior direito com `z-index` acima do link.
+(card inteiro, comportamento preservado) e um segundo `<Link href={adminEditHref}>`
+estilizado como botão, posicionado `absolute` no canto superior direito com `z-index`
+acima do link principal.
 
 **Trade-off:** mexer na estrutura raiz do card é mais invasivo que uma adição isolada —
 mas é a única forma válida de ter dois alvos de clique, já que HTML proíbe `<a>` aninhado
-em `<a>`. Como são irmãos (não aninhados), o clique no botão não dispara a navegação do
-link; dispensa `stopPropagation` e não quebra a hidratação. O botão faz
-`router.push(adminEditHref)`.
+em `<a>`. Como são irmãos (não aninhados), o clique no ícone não dispara a navegação do
+card; dispensa `stopPropagation` e não quebra a hidratação.
+
+Optou-se por um segundo `<Link>` em vez de `<button>` + `useRouter`: assim o `GymCard`
+permanece sem `"use client"`/hooks (não vira client component só por causa do botão), a
+navegação é acessível nativamente (ctrl+click abre em nova aba) e os testes verificam
+apenas `href` — sem mock de router. O ícone é renderizado dentro do `<Link>` de edição.
 
 ### ADR-3 — Botão sempre visível para admin (não apenas no hover)
 
@@ -101,9 +106,9 @@ em troca, funciona em touch (sem hover) e é mais descobrível.
 
 ## Tratamento de Erros
 
-Sem novos caminhos de erro neste escopo: a navegação é client-side (`router.push`) e a
-tela de destino já trata loading/erro/404 via `useGymById`. O backend já recusa edição
-de não-admin (defesa real, independente do botão).
+Sem novos caminhos de erro neste escopo: a navegação é um `<Link>` client-side e a tela
+de destino já trata loading/erro/404 via `useGymById`. O backend já recusa edição de
+não-admin (defesa real, independente do botão).
 
 ## Testes
 
