@@ -34,6 +34,8 @@ describe("AdminEditarAcademiaPage", () => {
 		await waitFor(() =>
 			expect(screen.getByTestId("gym-form-title")).toHaveValue("Academia Volt"),
 		)
-		expect(screen.getByTestId("gym-form-cnpj")).toHaveValue("11222333000181")
+		expect(screen.getByTestId("gym-form-cnpj")).toHaveValue(
+			"11.222.333/0001-81",
+		)
 	})
 })

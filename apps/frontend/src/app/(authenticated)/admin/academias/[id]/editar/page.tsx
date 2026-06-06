@@ -16,9 +16,11 @@ import {
 	useSetGymImage,
 	useUpdateGym,
 } from "@/features/gyms/api"
+import { GymCnpjField } from "@/features/gyms/components/gym-cnpj-field"
 import { GymImage } from "@/features/gyms/components/gym-image"
 import { GymImageUploader } from "@/features/gyms/components/gym-image-uploader"
 import { GymLocationPicker } from "@/features/gyms/components/gym-location-picker"
+import { GymPhoneField } from "@/features/gyms/components/gym-phone-field"
 import {
 	type CreateGymInput,
 	createGymSchema,
@@ -102,13 +104,19 @@ function EditGymForm({ gym }: { gym: Gym }) {
 				error={errors.title?.message}
 				{...register("title")}
 			/>
-			<FormField
-				id={cnpjId}
-				label="CNPJ (apenas dígitos)"
-				inputMode="numeric"
-				data-testid="gym-form-cnpj"
-				error={errors.cnpj?.message}
-				{...register("cnpj")}
+			<Controller
+				control={control}
+				name="cnpj"
+				render={({ field, fieldState }) => (
+					<GymCnpjField
+						id={cnpjId}
+						value={field.value}
+						onAccept={field.onChange}
+						onBlur={field.onBlur}
+						error={fieldState.error?.message}
+						testId="gym-form-cnpj"
+					/>
+				)}
 			/>
 			<Controller
 				control={control}
@@ -130,13 +138,19 @@ function EditGymForm({ gym }: { gym: Gym }) {
 				error={errors.description?.message}
 				{...register("description")}
 			/>
-			<FormField
-				id={phoneId}
-				label="Telefone (opcional, apenas dígitos)"
-				inputMode="numeric"
-				data-testid="gym-form-phone"
-				error={errors.phone?.message}
-				{...register("phone")}
+			<Controller
+				control={control}
+				name="phone"
+				render={({ field, fieldState }) => (
+					<GymPhoneField
+						id={phoneId}
+						value={field.value ?? ""}
+						onAccept={field.onChange}
+						onBlur={field.onBlur}
+						error={fieldState.error?.message}
+						testId="gym-form-phone"
+					/>
+				)}
 			/>
 			<GymImageUploader
 				onCropped={setImageBlob}

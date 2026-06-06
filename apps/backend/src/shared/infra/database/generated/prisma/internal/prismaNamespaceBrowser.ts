@@ -116,6 +116,7 @@ export const GymScalarFieldEnum = {
   description: 'description',
   phone: 'phone',
   address: 'address',
+  image_key: 'image_key',
   latitude: 'latitude',
   longitude: 'longitude',
   created_at: 'created_at',

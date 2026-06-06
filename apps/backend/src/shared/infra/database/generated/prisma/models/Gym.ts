@@ -43,6 +43,7 @@ export type GymMinAggregateOutputType = {
   description: string | null
   phone: string | null
   address: string | null
+  image_key: string | null
   latitude: runtime.Decimal | null
   longitude: runtime.Decimal | null
   created_at: Date | null
@@ -56,6 +57,7 @@ export type GymMaxAggregateOutputType = {
   description: string | null
   phone: string | null
   address: string | null
+  image_key: string | null
   latitude: runtime.Decimal | null
   longitude: runtime.Decimal | null
   created_at: Date | null
@@ -69,6 +71,7 @@ export type GymCountAggregateOutputType = {
   description: number
   phone: number
   address: number
+  image_key: number
   latitude: number
   longitude: number
   created_at: number
@@ -94,6 +97,7 @@ export type GymMinAggregateInputType = {
   description?: true
   phone?: true
   address?: true
+  image_key?: true
   latitude?: true
   longitude?: true
   created_at?: true
@@ -107,6 +111,7 @@ export type GymMaxAggregateInputType = {
   description?: true
   phone?: true
   address?: true
+  image_key?: true
   latitude?: true
   longitude?: true
   created_at?: true
@@ -120,6 +125,7 @@ export type GymCountAggregateInputType = {
   description?: true
   phone?: true
   address?: true
+  image_key?: true
   latitude?: true
   longitude?: true
   created_at?: true
@@ -220,6 +226,7 @@ export type GymGroupByOutputType = {
   description: string | null
   phone: string | null
   address: string | null
+  image_key: string | null
   latitude: runtime.Decimal
   longitude: runtime.Decimal
   created_at: Date
@@ -256,6 +263,7 @@ export type GymWhereInput = {
   description?: Prisma.StringNullableFilter<"Gym"> | string | null
   phone?: Prisma.StringNullableFilter<"Gym"> | string | null
   address?: Prisma.StringNullableFilter<"Gym"> | string | null
+  image_key?: Prisma.StringNullableFilter<"Gym"> | string | null
   latitude?: Prisma.DecimalFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFilter<"Gym"> | Date | string
@@ -270,6 +278,7 @@ export type GymOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
+  image_key?: Prisma.SortOrderInput | Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -287,6 +296,7 @@ export type GymWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"Gym"> | string | null
   phone?: Prisma.StringNullableFilter<"Gym"> | string | null
   address?: Prisma.StringNullableFilter<"Gym"> | string | null
+  image_key?: Prisma.StringNullableFilter<"Gym"> | string | null
   latitude?: Prisma.DecimalFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFilter<"Gym"> | Date | string
@@ -301,6 +311,7 @@ export type GymOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
+  image_key?: Prisma.SortOrderInput | Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -322,6 +333,7 @@ export type GymScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"Gym"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Gym"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"Gym"> | string | null
+  image_key?: Prisma.StringNullableWithAggregatesFilter<"Gym"> | string | null
   latitude?: Prisma.DecimalWithAggregatesFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalWithAggregatesFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeWithAggregatesFilter<"Gym"> | Date | string
@@ -335,6 +347,7 @@ export type GymCreateInput = {
   description?: string | null
   phone?: string | null
   address?: string | null
+  image_key?: string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
@@ -349,6 +362,7 @@ export type GymUncheckedCreateInput = {
   description?: string | null
   phone?: string | null
   address?: string | null
+  image_key?: string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
@@ -363,6 +377,7 @@ export type GymUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -377,6 +392,7 @@ export type GymUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -391,6 +407,7 @@ export type GymCreateManyInput = {
   description?: string | null
   phone?: string | null
   address?: string | null
+  image_key?: string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
@@ -404,6 +421,7 @@ export type GymUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -417,6 +435,7 @@ export type GymUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -435,6 +454,7 @@ export type GymCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  image_key?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -453,6 +473,7 @@ export type GymMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  image_key?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -466,6 +487,7 @@ export type GymMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  image_key?: Prisma.SortOrder
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
@@ -498,6 +520,7 @@ export type GymCreateWithoutCheckInsInput = {
   description?: string | null
   phone?: string | null
   address?: string | null
+  image_key?: string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
@@ -511,6 +534,7 @@ export type GymUncheckedCreateWithoutCheckInsInput = {
   description?: string | null
   phone?: string | null
   address?: string | null
+  image_key?: string | null
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Date | string
@@ -540,6 +564,7 @@ export type GymUpdateWithoutCheckInsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -553,6 +578,7 @@ export type GymUncheckedUpdateWithoutCheckInsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_key?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -597,6 +623,7 @@ export type GymSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   description?: boolean
   phone?: boolean
   address?: boolean
+  image_key?: boolean
   latitude?: boolean
   longitude?: boolean
   created_at?: boolean
@@ -612,6 +639,7 @@ export type GymSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   description?: boolean
   phone?: boolean
   address?: boolean
+  image_key?: boolean
   latitude?: boolean
   longitude?: boolean
   created_at?: boolean
@@ -625,6 +653,7 @@ export type GymSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   description?: boolean
   phone?: boolean
   address?: boolean
+  image_key?: boolean
   latitude?: boolean
   longitude?: boolean
   created_at?: boolean
@@ -638,13 +667,14 @@ export type GymSelectScalar = {
   description?: boolean
   phone?: boolean
   address?: boolean
+  image_key?: boolean
   latitude?: boolean
   longitude?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type GymOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "cnpj" | "title" | "description" | "phone" | "address" | "latitude" | "longitude" | "created_at" | "updated_at", ExtArgs["result"]["gym"]>
+export type GymOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "cnpj" | "title" | "description" | "phone" | "address" | "image_key" | "latitude" | "longitude" | "created_at" | "updated_at", ExtArgs["result"]["gym"]>
 export type GymInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   checkIns?: boolean | Prisma.Gym$checkInsArgs<ExtArgs>
   _count?: boolean | Prisma.GymCountOutputTypeDefaultArgs<ExtArgs>
@@ -664,6 +694,7 @@ export type $GymPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     description: string | null
     phone: string | null
     address: string | null
+    image_key: string | null
     latitude: runtime.Decimal
     longitude: runtime.Decimal
     created_at: Date
@@ -1098,6 +1129,7 @@ export interface GymFieldRefs {
   readonly description: Prisma.FieldRef<"Gym", 'String'>
   readonly phone: Prisma.FieldRef<"Gym", 'String'>
   readonly address: Prisma.FieldRef<"Gym", 'String'>
+  readonly image_key: Prisma.FieldRef<"Gym", 'String'>
   readonly latitude: Prisma.FieldRef<"Gym", 'Decimal'>
   readonly longitude: Prisma.FieldRef<"Gym", 'Decimal'>
   readonly created_at: Prisma.FieldRef<"Gym", 'DateTime'>

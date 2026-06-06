@@ -1,6 +1,8 @@
 import { faker } from "@faker-js/faker"
 import { prismaClient } from "@/shared/infra/database/connection/prisma-client.js"
 import { Password } from "@/user/domain/value-object/password.js"
+import { generateValidCnpjFromIndex } from "./lib/brazilian-cnpj.js"
+import { generateBrazilianMobilePhone } from "./lib/brazilian-phone.js"
 
 const SUPER_ADMIN_EMAIL =
 	process.env.SEED_SUPER_ADMIN_EMAIL ?? "admin@admin.com"
@@ -82,10 +84,10 @@ async function seedUsers(): Promise<void> {
 
 async function seedGyms(): Promise<void> {
 	const data = Array.from({ length: GYM_COUNT }, (_, index) => ({
-		cnpj: String(index + 1).padStart(14, "0"),
+		cnpj: generateValidCnpjFromIndex(index + 1),
 		title: `${faker.company.name()} Gym`,
 		description: faker.company.catchPhrase(),
-		phone: faker.phone.number(),
+		phone: generateBrazilianMobilePhone(),
 		address: faker.location.streetAddress({ useFullAddress: true }),
 		latitude: faker.location.latitude(),
 		longitude: faker.location.longitude(),

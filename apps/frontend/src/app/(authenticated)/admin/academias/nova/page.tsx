@@ -9,8 +9,10 @@ import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { useCreateGym, useSetGymImage } from "@/features/gyms/api"
+import { GymCnpjField } from "@/features/gyms/components/gym-cnpj-field"
 import { GymImageUploader } from "@/features/gyms/components/gym-image-uploader"
 import { GymLocationPicker } from "@/features/gyms/components/gym-location-picker"
+import { GymPhoneField } from "@/features/gyms/components/gym-phone-field"
 import {
 	type CreateGymInput,
 	createGymSchema,
@@ -108,13 +110,19 @@ export default function AdminNovaAcademiaPage() {
 					error={errors.title?.message}
 					{...register("title")}
 				/>
-				<FormField
-					id={cnpjId}
-					label="CNPJ (apenas dígitos)"
-					inputMode="numeric"
-					data-testid="gym-form-cnpj"
-					error={errors.cnpj?.message}
-					{...register("cnpj")}
+				<Controller
+					control={control}
+					name="cnpj"
+					render={({ field, fieldState }) => (
+						<GymCnpjField
+							id={cnpjId}
+							value={field.value}
+							onAccept={field.onChange}
+							onBlur={field.onBlur}
+							error={fieldState.error?.message}
+							testId="gym-form-cnpj"
+						/>
+					)}
 				/>
 
 				<Controller
@@ -138,13 +146,19 @@ export default function AdminNovaAcademiaPage() {
 					error={errors.description?.message}
 					{...register("description")}
 				/>
-				<FormField
-					id={phoneId}
-					label="Telefone (opcional, apenas dígitos)"
-					inputMode="numeric"
-					data-testid="gym-form-phone"
-					error={errors.phone?.message}
-					{...register("phone")}
+				<Controller
+					control={control}
+					name="phone"
+					render={({ field, fieldState }) => (
+						<GymPhoneField
+							id={phoneId}
+							value={field.value ?? ""}
+							onAccept={field.onChange}
+							onBlur={field.onBlur}
+							error={fieldState.error?.message}
+							testId="gym-form-phone"
+						/>
+					)}
 				/>
 
 				<GymImageUploader onCropped={setImageBlob} />
