@@ -1,6 +1,6 @@
 # Task 10: Regenerar tipos OpenAPI + validar dependency-cruiser [FR-006, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-03, task-09
