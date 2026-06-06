@@ -1,6 +1,6 @@
 # Task 15: Mutations `useUpdateGym` + `useSetGymImage` [FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-11

@@ -1,6 +1,6 @@
 # Task 2: Repositórios de Gym — mapear `imageKey` + método `update` [FR-006, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-01

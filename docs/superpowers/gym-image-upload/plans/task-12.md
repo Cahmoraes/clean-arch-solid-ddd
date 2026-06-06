@@ -1,6 +1,6 @@
 # Task 12: Componente `GymImage` (cover + gradiente + zoom + placeholder) [FR-010, FR-011, FR-012, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-11

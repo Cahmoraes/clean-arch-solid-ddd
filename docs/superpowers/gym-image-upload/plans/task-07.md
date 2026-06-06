@@ -1,6 +1,6 @@
 # Task 7: Plugins Fastify (multipart + static) + guard do rawBody [FR-005, FR-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-image-upload.md`
 **Spec:** `../specs/gym-image-upload-design.md`
 **Depends on:** task-05
