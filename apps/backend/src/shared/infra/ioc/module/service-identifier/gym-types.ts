@@ -13,6 +13,7 @@ export const GYM_TYPES = {
 		FetchNearbyGym: Symbol.for("FetchNearbyGymUseCase"),
 		FetchAllGyms: Symbol.for("FetchAllGymsUseCase"),
 		FetchGymById: Symbol.for("FetchGymByIdUseCase"),
+		SetGymImage: Symbol.for("SetGymImageUseCase"),
 	},
 	Controllers: {
 		CreateGym: Symbol.for("CreateGymController"),
@@ -20,5 +21,9 @@ export const GYM_TYPES = {
 		FetchNearbyGym: Symbol.for("FetchNearbyGymController"),
 		FetchAllGyms: Symbol.for("FetchAllGymsController"),
 		FetchGymById: Symbol.for("FetchGymByIdController"),
+	},
+	Services: {
+		ImageProcessor: Symbol.for("ImageProcessor"),
+		ImageStorage: Symbol.for("ImageStorage"),
 	},
 } as const
