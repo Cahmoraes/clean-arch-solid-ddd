@@ -28,9 +28,28 @@ export class InMemoryGymRepository implements GymRepository {
 			phone: gym.phone,
 			cnpj: gym.cnpj,
 			address: gym.address,
+			imageKey: gym.imageKey,
 		})
 		this.gyms.add(gymWithId)
 		return { id: gym.id }
+	}
+
+	public async update(gym: Gym): Promise<void> {
+		const existing = this.gyms.find((current) => current.id === gym.id)
+		if (existing) this.gyms.delete(existing)
+		this.gyms.add(
+			Gym.restore({
+				id: gym.id,
+				title: gym.title,
+				description: gym.description,
+				latitude: gym.latitude,
+				longitude: gym.longitude,
+				phone: gym.phone,
+				cnpj: gym.cnpj,
+				address: gym.address,
+				imageKey: gym.imageKey,
+			}),
+		)
 	}
 
 	public async gymOfId(id: string): Promise<Gym | null> {

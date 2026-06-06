@@ -22,6 +22,7 @@ export interface GymCreateProps {
 	description: string | null
 	phone?: string | null
 	address?: string | null
+	image_key?: string | null
 	latitude: Decimal
 	longitude: Decimal
 	cnpj: string
@@ -49,6 +50,7 @@ export class PrismaGymRepository implements GymRepository {
 				description: gym.description,
 				phone: gym.phone ? gym.phone.toString() : undefined,
 				address: gym.address,
+				image_key: gym.imageKey ?? null,
 				latitude: gym.latitude,
 				longitude: gym.longitude,
 				cnpj: gym.cnpj,
@@ -56,6 +58,22 @@ export class PrismaGymRepository implements GymRepository {
 			select: { id: true },
 		})
 		return { id: result.id }
+	}
+
+	public async update(gym: Gym): Promise<void> {
+		await this.prismaClient.gym.update({
+			where: { id: gym.id },
+			data: {
+				title: gym.title,
+				description: gym.description ?? null,
+				phone: gym.phone ?? null,
+				address: gym.address ?? null,
+				image_key: gym.imageKey ?? null,
+				latitude: gym.latitude,
+				longitude: gym.longitude,
+				cnpj: gym.cnpj,
+			},
+		})
 	}
 
 	public async fetchGyms(input: FetchGymsInput): Promise<Gym[]> {
@@ -81,6 +99,7 @@ export class PrismaGymRepository implements GymRepository {
 			description: props.description ?? undefined,
 			phone: props.phone ? props.phone : undefined,
 			address: props.address ?? undefined,
+			imageKey: props.image_key ?? undefined,
 			latitude: props.latitude.toNumber(),
 			longitude: props.longitude.toNumber(),
 			cnpj: props.cnpj,

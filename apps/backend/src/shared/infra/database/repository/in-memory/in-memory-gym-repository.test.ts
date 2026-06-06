@@ -54,3 +54,34 @@ describe("InMemoryGymRepository", () => {
 		})
 	})
 })
+
+describe("InMemoryGymRepository update", () => {
+	test("atualiza os dados e o imageKey de uma academia existente", async () => {
+		const repository = new InMemoryGymRepository()
+		const gym = Gym.create({
+			id: "gym-1",
+			title: "Nome Antigo",
+			latitude: 0,
+			longitude: 0,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua A, 1",
+		}).forceSuccess().value
+		await repository.save(gym)
+
+		const updated = Gym.restore({
+			id: "gym-1",
+			title: "Nome Novo",
+			latitude: 0,
+			longitude: 0,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua B, 2",
+			imageKey: "gyms/novo.webp",
+		})
+		await repository.update(updated)
+
+		const found = await repository.gymOfId("gym-1")
+		expect(found?.title).toBe("Nome Novo")
+		expect(found?.imageKey).toBe("gyms/novo.webp")
+		expect(repository.gyms.size).toBe(1)
+	})
+})

@@ -12,6 +12,7 @@ export interface FetchGymsInput {
 
 export interface GymRepository {
 	save(gym: Gym): Promise<SaveGymResult>
+	update(gym: Gym): Promise<void>
 	gymOfId(id: string): Promise<Gym | null>
 	fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]>
 	gymOfCNPJ(cnpj: string): Promise<Gym | null>
