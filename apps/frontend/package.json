@@ -40,6 +40,7 @@
 		"radix-ui": "^1.4.3",
 		"react": "19.2.4",
 		"react-dom": "19.2.4",
+		"react-easy-crop": "^5.5.7",
 		"react-hook-form": "7.75.0",
 		"react-leaflet": "5.0.0",
 		"recharts": "^3.8.0",
