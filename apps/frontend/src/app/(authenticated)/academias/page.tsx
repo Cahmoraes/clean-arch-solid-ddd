@@ -21,6 +21,7 @@ interface AcademiasContentProps {
 
 function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 	const user = useAuthStore((state) => state.user)
+	const isAdmin = user?.role === "ADMIN"
 	const inputId = useId()
 	const [draftQuery, setDraftQuery] = useState(initialSearch)
 	const [submittedQuery, setSubmittedQuery] = useState(initialSearch)
@@ -54,7 +55,7 @@ function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 				title="Academias"
 				subtitle="Busque por nome ou navegue pelas academias disponíveis."
 				action={
-					user?.role === "ADMIN" ? (
+					isAdmin ? (
 						<Button asChild variant="primary" size="sm">
 							<Link href="/admin/academias/nova" data-testid="gym-create-link">
 								<Plus aria-hidden className="h-4 w-4" />
@@ -96,6 +97,7 @@ function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 					errorMessage={activeQuery.error?.userMessage}
 					onRetry={() => activeQuery.refetch()}
 					items={items}
+					isAdmin={isAdmin}
 				/>
 			</div>
 

@@ -185,4 +185,30 @@ describe("AcademiasPage", () => {
 		renderWithProviders(<AcademiasPage />)
 		expect(screen.getByTestId("gym-search-input")).toHaveValue("Academia Fit")
 	})
+
+	test("exibe ícone de edição nos cards para usuário ADMIN", async () => {
+		setUser("ADMIN")
+		server.use(
+			http.get(`${apiBaseUrl}/gyms`, () =>
+				HttpResponse.json(fakeGyms(2), { status: 200 }),
+			),
+		)
+		renderWithProviders(<AcademiasPage />)
+
+		const editLink = await screen.findByTestId("gym-edit-gym-1")
+		expect(editLink).toHaveAttribute("href", "/admin/academias/gym-1/editar")
+	})
+
+	test("não exibe ícone de edição nos cards para usuário MEMBER", async () => {
+		setUser("MEMBER")
+		server.use(
+			http.get(`${apiBaseUrl}/gyms`, () =>
+				HttpResponse.json(fakeGyms(2), { status: 200 }),
+			),
+		)
+		renderWithProviders(<AcademiasPage />)
+
+		expect(await screen.findByTestId("gym-card-gym-1")).toBeInTheDocument()
+		expect(screen.queryByTestId("gym-edit-gym-1")).not.toBeInTheDocument()
+	})
 })
