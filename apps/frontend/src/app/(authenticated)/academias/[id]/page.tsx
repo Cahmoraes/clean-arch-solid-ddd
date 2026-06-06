@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCreateCheckIn } from "@/features/check-ins/api"
 import { type Gym, useGymById } from "@/features/gyms/api"
+import { GymImage } from "@/features/gyms/components/gym-image"
 import { ApiError } from "@/lib/errors"
 
 function DetailLoading() {
@@ -129,6 +130,12 @@ function DetailCard({ gym }: { gym: Gym }) {
 			data-testid="gym-detail-card"
 			className="flex flex-col gap-6 rounded-[12px] border border-border bg-card p-6"
 		>
+			<GymImage
+				imageKey={gym.imageKey}
+				alt={gym.title}
+				className="h-48 w-full rounded-[8px]"
+				loading="eager"
+			/>
 			<header className="flex flex-col gap-2">
 				<h1
 					id="gym-detail-title"

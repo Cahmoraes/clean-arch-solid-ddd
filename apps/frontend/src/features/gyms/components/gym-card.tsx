@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react"
 import Link from "next/link"
 import type { Gym } from "@/features/gyms/api"
+import { GymImage } from "@/features/gyms/components/gym-image"
 
 export interface GymCardProps {
 	gym: Gym
@@ -16,13 +17,17 @@ export function GymCard({ gym }: GymCardProps) {
 		<Link
 			href={`/academias/${gym.id}`}
 			data-testid={`gym-card-${gym.id}`}
-			className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[transform,border-color] hover:-translate-y-0.5 hover:border-border-strong"
+			className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[transform,border-color] hover:-translate-y-0.5 hover:border-border-strong"
 		>
-			<div className="relative flex h-[140px] items-center justify-center bg-[repeating-linear-gradient(135deg,var(--color-surface-2)_0_10px,var(--color-surface-3)_10px_20px)]">
-				<span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
+			<div className="relative h-[140px] w-full">
+				<GymImage
+					imageKey={gym.imageKey}
+					alt={gym.title}
+					className="h-full w-full"
+				/>
+				<span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
 					<span className="h-1.5 w-1.5 rounded-full bg-current" /> Disponível
 				</span>
-				<span className="text-[11px] text-subtle">foto</span>
 			</div>
 			<div className="flex flex-1 flex-col gap-2.5 p-[18px]">
 				<p className="font-display text-base font-semibold text-card-foreground">

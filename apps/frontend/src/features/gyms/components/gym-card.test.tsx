@@ -10,7 +10,7 @@ const gym: Gym = {
 	description: "Academia completa",
 	phone: null,
 	address: "Rua A, 100",
-	imageKey: null,
+	imageKey: "gyms/volt.webp",
 	latitude: -23.5,
 	longitude: -46.6,
 }
@@ -31,5 +31,10 @@ describe("GymCard VOLT", () => {
 	test("usa a localização disponível como subtítulo", () => {
 		renderWithProviders(<GymCard gym={gym} />)
 		expect(screen.getByText("Rua A, 100")).toBeInTheDocument()
+	})
+
+	test("exibe a imagem da academia no card", () => {
+		renderWithProviders(<GymCard gym={gym} />)
+		expect(screen.getByTestId("gym-image")).toBeInTheDocument()
 	})
 })
