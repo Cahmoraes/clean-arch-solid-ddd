@@ -10,6 +10,7 @@ const gym: Gym = {
 	description: "Academia completa",
 	phone: null,
 	address: "Rua A, 100",
+	imageKey: null,
 	latitude: -23.5,
 	longitude: -46.6,
 }

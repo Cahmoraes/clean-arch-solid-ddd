@@ -12,8 +12,20 @@ export interface GymSummary {
 	description: string | null
 	phone: string | null
 	address: string | null
+	imageKey: string | null
+	cnpj?: string
 	latitude: number
 	longitude: number
+}
+
+export interface GymUpdateBody {
+	cnpj: string
+	title: string
+	description?: string
+	phone?: string
+	latitude: number
+	longitude: number
+	address: string
 }
 
 export interface PaginatedGyms {
@@ -36,6 +48,15 @@ export interface GymExtendedPaths {
 			parameters: { path: { id: string } }
 			responses: {
 				200: { content: { "application/json": GymSummary } }
+			}
+		}
+		put: {
+			parameters: { path: { id: string } }
+			requestBody: { content: { "application/json": GymUpdateBody } }
+			responses: {
+				200: {
+					content: { "application/json": { message: string; id: string } }
+				}
 			}
 		}
 	}
