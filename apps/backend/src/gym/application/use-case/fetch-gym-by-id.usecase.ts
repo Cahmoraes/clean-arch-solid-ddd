@@ -16,10 +16,12 @@ export interface FetchGymByIdUseCaseInput {
 
 export interface FetchGymByIdUseCaseOutputDTO {
 	id: string
+	cnpj: string
 	title: string
 	description: string | null
 	phone: string | null
 	address: string | null
+	imageKey: string | null
 	latitude: number
 	longitude: number
 }
@@ -43,10 +45,12 @@ export class FetchGymByIdUseCase {
 		if (!gym) return failure(new GymNotFoundError())
 		return success({
 			id: gym.id,
+			cnpj: gym.cnpj,
 			title: gym.title,
 			description: gym.description ?? null,
 			phone: gym.phone ?? null,
 			address: gym.address ?? null,
+			imageKey: gym.imageKey ?? null,
 			latitude: gym.latitude,
 			longitude: gym.longitude,
 		})

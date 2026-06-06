@@ -1,7 +1,8 @@
 import { createAndSaveGym } from "test/factory/create-and-save-gym"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 
-import type { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
+import { Gym } from "@/gym/domain/gym"
+import { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 
@@ -9,6 +10,7 @@ import type {
 	FetchGymByIdUseCase,
 	FetchGymByIdUseCaseInput,
 } from "./fetch-gym-by-id.usecase"
+import { FetchGymByIdUseCase as FetchGymByIdUseCaseImpl } from "./fetch-gym-by-id.usecase"
 
 describe("FetchGymByIdUseCase", () => {
 	let sut: FetchGymByIdUseCase
@@ -77,5 +79,44 @@ describe("FetchGymByIdUseCase", () => {
 			expect(result.value.description).toBeNull()
 			expect(result.value.phone).toBeNull()
 		}
+	})
+})
+
+describe("FetchGymByIdUseCase imageKey", () => {
+	test("retorna imageKey no DTO quando a academia tem imagem", async () => {
+		const gymRepository = new InMemoryGymRepository()
+		const gym = Gym.restore({
+			id: "gym-1",
+			title: "Academia Teste",
+			latitude: 0,
+			longitude: 0,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua A, 1",
+			imageKey: "gyms/foto.webp",
+		})
+		await gymRepository.save(gym)
+		const sut = new FetchGymByIdUseCaseImpl(gymRepository)
+
+		const result = await sut.execute({ gymId: "gym-1" })
+
+		expect(result.forceSuccess().value.imageKey).toBe("gyms/foto.webp")
+	})
+
+	test("retorna imageKey null quando a academia não tem imagem", async () => {
+		const gymRepository = new InMemoryGymRepository()
+		const gym = Gym.restore({
+			id: "gym-2",
+			title: "Academia Sem Foto",
+			latitude: 0,
+			longitude: 0,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua B, 2",
+		})
+		await gymRepository.save(gym)
+		const sut = new FetchGymByIdUseCaseImpl(gymRepository)
+
+		const result = await sut.execute({ gymId: "gym-2" })
+
+		expect(result.forceSuccess().value.imageKey).toBeNull()
 	})
 })

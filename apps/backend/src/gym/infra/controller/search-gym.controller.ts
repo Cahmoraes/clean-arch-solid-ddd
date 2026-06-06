@@ -123,6 +123,10 @@ function makeSearchGymSwaggerSchema(): Schema {
 							.string()
 							.nullable()
 							.meta({ description: "Gym phone number" }),
+						imageKey: z
+							.string()
+							.nullable()
+							.meta({ description: "Relative key of the gym image" }),
 						latitude: z
 							.number()
 							.meta({ description: "Latitude", example: -23.5505 }),

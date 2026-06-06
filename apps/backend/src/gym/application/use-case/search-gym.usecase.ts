@@ -15,6 +15,7 @@ export interface SearchGymUseCaseOutput {
 	title: string
 	description: string | null
 	phone: string | null
+	imageKey: string | null
 	latitude: number
 	longitude: number
 }
@@ -46,6 +47,7 @@ export class SearchGymUseCase {
 			title: g.title,
 			description: g.description ?? null,
 			phone: g.phone ?? null,
+			imageKey: g.imageKey ?? null,
 			latitude: g.latitude,
 			longitude: g.longitude,
 		}))

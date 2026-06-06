@@ -94,6 +94,10 @@ function makeFetchAllGymsSwaggerSchema(): Schema {
 							.string()
 							.nullable()
 							.meta({ description: "Full gym address" }),
+						imageKey: z
+							.string()
+							.nullable()
+							.meta({ description: "Relative key of the gym image" }),
 						latitude: z
 							.number()
 							.meta({ description: "Latitude", example: -23.5505 }),

@@ -74,10 +74,15 @@ const gymResponseSchema = z.object({
 		description: "Gym ID",
 		example: "550e8400-e29b-41d4-a716-446655440000",
 	}),
+	cnpj: z.string().meta({ description: "Gym CNPJ", example: "12345678000100" }),
 	title: z.string().meta({ description: "Gym name", example: "Iron Gym" }),
 	description: z.string().nullable().meta({ description: "Gym description" }),
 	phone: z.string().nullable().meta({ description: "Gym phone number" }),
 	address: z.string().nullable().meta({ description: "Full gym address" }),
+	imageKey: z.string().nullable().meta({
+		description: "Relative key of the gym image",
+		example: "gyms/abc.webp",
+	}),
 	latitude: z.number().meta({ description: "Latitude", example: -23.5505 }),
 	longitude: z.number().meta({ description: "Longitude", example: -46.6333 }),
 })
