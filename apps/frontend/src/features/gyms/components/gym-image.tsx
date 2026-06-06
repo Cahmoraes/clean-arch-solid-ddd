@@ -6,9 +6,15 @@ export interface GymImageProps {
 	imageKey: string | null | undefined
 	alt: string
 	className?: string
+	loading?: "lazy" | "eager"
 }
 
-export function GymImage({ imageKey, alt, className }: GymImageProps) {
+export function GymImage({
+	imageKey,
+	alt,
+	className,
+	loading = "lazy",
+}: GymImageProps) {
 	const url = gymImageUrl(imageKey)
 	return (
 		<div
@@ -23,7 +29,7 @@ export function GymImage({ imageKey, alt, className }: GymImageProps) {
 					src={url}
 					alt={alt}
 					data-testid="gym-image"
-					loading="lazy"
+					loading={loading}
 					className="h-full w-full object-cover transition-[transform,filter] duration-300 ease-out group-hover:scale-[1.07] group-hover:brightness-105"
 				/>
 			) : (
