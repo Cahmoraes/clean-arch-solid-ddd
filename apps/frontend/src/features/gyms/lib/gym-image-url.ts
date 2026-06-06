@@ -7,6 +7,7 @@ import { API_BASE_URL } from "@/lib/api"
 export function gymImageUrl(
 	imageKey: string | null | undefined,
 ): string | null {
-	if (!imageKey) return null
-	return `${API_BASE_URL}/uploads/${imageKey}`
+	const key = imageKey?.trim()
+	if (!key) return null
+	return `${API_BASE_URL}/uploads/${key}`
 }

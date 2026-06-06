@@ -7,6 +7,7 @@ describe("gymImageUrl", () => {
 		expect(gymImageUrl(null)).toBeNull()
 		expect(gymImageUrl(undefined)).toBeNull()
 		expect(gymImageUrl("")).toBeNull()
+		expect(gymImageUrl("   ")).toBeNull()
 	})
 
 	test("monta a URL pública a partir da imageKey", () => {
