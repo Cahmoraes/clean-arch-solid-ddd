@@ -2,13 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-import { useId } from "react"
+import { useId, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
-import { useCreateGym } from "@/features/gyms/api"
+import { useCreateGym, useSetGymImage } from "@/features/gyms/api"
+import { GymImageUploader } from "@/features/gyms/components/gym-image-uploader"
 import { GymLocationPicker } from "@/features/gyms/components/gym-location-picker"
 import {
 	type CreateGymInput,
@@ -32,6 +33,8 @@ export default function AdminNovaAcademiaPage() {
 	const phoneId = useId()
 
 	const { mutateAsync, isPending } = useCreateGym()
+	const { mutateAsync: setGymImage } = useSetGymImage()
+	const [imageBlob, setImageBlob] = useState<Blob | null>(null)
 	const {
 		register,
 		handleSubmit,
@@ -52,9 +55,21 @@ export default function AdminNovaAcademiaPage() {
 		},
 	})
 
+	async function uploadImageIfPresent(id: string) {
+		if (!imageBlob) return
+		try {
+			await setGymImage({ id, file: imageBlob })
+		} catch {
+			toast.error(
+				"Academia criada, mas a imagem falhou. Você pode adicioná-la na edição.",
+			)
+		}
+	}
+
 	async function onSubmit(values: CreateGymInput) {
 		try {
 			const { id } = await mutateAsync(values)
+			await uploadImageIfPresent(id)
 			toast.success("Academia cadastrada com sucesso.")
 			router.replace(`/academias/${id}`)
 		} catch (submitError) {
@@ -131,6 +146,8 @@ export default function AdminNovaAcademiaPage() {
 					error={errors.phone?.message}
 					{...register("phone")}
 				/>
+
+				<GymImageUploader onCropped={setImageBlob} />
 
 				<div className="flex justify-end">
 					<Button

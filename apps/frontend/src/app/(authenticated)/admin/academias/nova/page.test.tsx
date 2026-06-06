@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it, test, vi } from "vitest"
 
 const replace = vi.fn()
 vi.mock("next/navigation", () => ({
@@ -13,6 +13,15 @@ vi.mock("next/navigation", () => ({
 		refresh: vi.fn(),
 		prefetch: vi.fn(),
 	}),
+}))
+
+// Mock do uploader de imagem para evitar problemas com react-easy-crop em jsdom
+vi.mock("@/features/gyms/components/gym-image-uploader", () => ({
+	GymImageUploader: ({
+		onCropped: _onCropped,
+	}: {
+		onCropped: (blob: Blob) => void
+	}) => <input type="file" data-testid="gym-image-input" />,
 }))
 
 // Mock do componente de mapa para evitar problemas com Leaflet em jsdom
@@ -117,5 +126,10 @@ describe("AdminNovaAcademiaPage", () => {
 		await user.click(screen.getByTestId("gym-form-submit"))
 
 		expect(await screen.findByText(/informe o nome/i)).toBeInTheDocument()
+	})
+
+	test("exibe o campo de upload de imagem", () => {
+		renderWithProviders(<AdminNovaAcademiaPage />)
+		expect(screen.getByTestId("gym-image-input")).toBeInTheDocument()
 	})
 })
