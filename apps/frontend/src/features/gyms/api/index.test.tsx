@@ -3,6 +3,7 @@ import { renderHook, waitFor } from "@testing-library/react"
 import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
 import { describe, expect, it } from "vitest"
+import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import {
 	useAllGyms,
@@ -247,5 +248,28 @@ describe("useSetGymImage", () => {
 		})
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
 		expect(result.current.data?.imageKey).toBe("gyms/x.webp")
+	})
+
+	it("envia o token de autenticação no header Authorization", async () => {
+		let sentAuth: string | null = null
+		useAuthStore.setState({ accessToken: "tok-123" })
+		server.use(
+			http.post(`${apiBaseUrl}/gyms/:id/image`, ({ request }) => {
+				sentAuth = request.headers.get("authorization")
+				return HttpResponse.json({
+					imageKey: "gyms/y.webp",
+					url: "/uploads/gyms/y.webp",
+				})
+			}),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useSetGymImage(), { wrapper: Wrapper })
+		result.current.mutate({
+			id: "gym-1",
+			file: new Blob(["webp"], { type: "image/webp" }),
+		})
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(sentAuth).toBe("Bearer tok-123")
+		useAuthStore.setState({ accessToken: null })
 	})
 })
