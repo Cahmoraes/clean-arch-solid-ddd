@@ -22,6 +22,7 @@ interface GymConstructor {
 	phone: Phone
 	coordinate: Coordinate
 	address?: string
+	imageKey?: string
 }
 
 export type GymCreateProps = Omit<
@@ -58,6 +59,7 @@ export class Gym {
 	private readonly _coordinate: Coordinate
 	private readonly _cnpj: CNPJ
 	private readonly _address?: string
+	private readonly _imageKey?: string
 
 	private constructor(gymProps: GymConstructor) {
 		this._id = gymProps.id
@@ -67,6 +69,7 @@ export class Gym {
 		this._coordinate = gymProps.coordinate
 		this._cnpj = gymProps.cnpj
 		this._address = gymProps.address
+		this._imageKey = gymProps.imageKey
 	}
 
 	public static create(
@@ -143,5 +146,9 @@ export class Gym {
 
 	get address(): string | undefined {
 		return this._address
+	}
+
+	get imageKey(): string | undefined {
+		return this._imageKey
 	}
 }

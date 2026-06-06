@@ -49,3 +49,41 @@ describe("Gym Entity", () => {
 		expect(gym.address).toBeUndefined()
 	})
 })
+
+describe("Gym imageKey", () => {
+	test("expõe imageKey quando fornecido no create", () => {
+		const gym = Gym.create({
+			title: "Academia Teste",
+			latitude: 0,
+			longitude: 0,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua Padrão, 1",
+			imageKey: "gyms/abc.webp",
+		}).forceSuccess().value
+		expect(gym.imageKey).toBe("gyms/abc.webp")
+	})
+
+	test("imageKey é undefined quando não fornecido", () => {
+		const gym = Gym.create({
+			title: "Academia Teste",
+			latitude: 0,
+			longitude: 0,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua Padrão, 1",
+		}).forceSuccess().value
+		expect(gym.imageKey).toBeUndefined()
+	})
+
+	test("restore preserva imageKey", () => {
+		const gym = Gym.restore({
+			id: "gym-1",
+			title: "Academia Teste",
+			latitude: 0,
+			longitude: 0,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua Padrão, 1",
+			imageKey: "gyms/xyz.webp",
+		})
+		expect(gym.imageKey).toBe("gyms/xyz.webp")
+	})
+})
