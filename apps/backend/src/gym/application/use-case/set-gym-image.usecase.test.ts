@@ -80,6 +80,30 @@ describe("SetGymImageUseCase", () => {
 		expect(deleted).toContain("gyms/old.webp")
 	})
 
+	test("remove o arquivo recém-gravado quando o update falha", async () => {
+		const gymRepository = new InMemoryGymRepository()
+		await gymRepository.save(
+			Gym.restore({
+				id: "gym-1",
+				title: "Academia",
+				latitude: 0,
+				longitude: 0,
+				cnpj: "11.222.333/0001-81",
+				address: "Rua A, 1",
+			}),
+		)
+		gymRepository.update = async () => {
+			throw new Error("db down")
+		}
+		const { storage, deleted } = makeStorage()
+		const sut = new SetGymImageUseCase(gymRepository, makeProcessor(), storage)
+
+		await expect(
+			sut.execute({ gymId: "gym-1", fileBuffer: Buffer.from("raw") }),
+		).rejects.toThrow("db down")
+		expect(deleted).toContain("gyms/new-1.webp")
+	})
+
 	test("retorna GymNotFoundError quando a academia não existe", async () => {
 		const gymRepository = new InMemoryGymRepository()
 		const { storage } = makeStorage()

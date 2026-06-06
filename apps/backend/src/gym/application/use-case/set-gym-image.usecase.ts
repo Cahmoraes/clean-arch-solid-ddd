@@ -54,19 +54,24 @@ export class SetGymImageUseCase {
 		)
 		const previousKey = gym.imageKey
 
-		await this.gymRepository.update(
-			Gym.restore({
-				id: gym.id,
-				title: gym.title,
-				description: gym.description,
-				phone: gym.phone,
-				latitude: gym.latitude,
-				longitude: gym.longitude,
-				cnpj: gym.cnpj,
-				address: gym.address,
-				imageKey: key,
-			}),
-		)
+		try {
+			await this.gymRepository.update(
+				Gym.restore({
+					id: gym.id,
+					title: gym.title,
+					description: gym.description,
+					phone: gym.phone,
+					latitude: gym.latitude,
+					longitude: gym.longitude,
+					cnpj: gym.cnpj,
+					address: gym.address,
+					imageKey: key,
+				}),
+			)
+		} catch (error) {
+			await this.imageStorage.delete(key)
+			throw error
+		}
 
 		if (previousKey) await this.imageStorage.delete(previousKey)
 		return success({ imageKey: key })
