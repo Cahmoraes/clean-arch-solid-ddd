@@ -13,6 +13,7 @@ export function setupGymModule(): ModuleControllers {
 		resolve(GYM_TYPES.Controllers.SearchGym),
 		resolve(GYM_TYPES.Controllers.FetchAllGyms),
 		resolve(GYM_TYPES.Controllers.FetchGymById),
+		resolve(GYM_TYPES.Controllers.GymImage),
 	]
 	return { controllers }
 }

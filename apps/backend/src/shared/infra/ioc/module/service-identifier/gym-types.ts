@@ -22,6 +22,7 @@ export const GYM_TYPES = {
 		FetchNearbyGym: Symbol.for("FetchNearbyGymController"),
 		FetchAllGyms: Symbol.for("FetchAllGymsController"),
 		FetchGymById: Symbol.for("FetchGymByIdController"),
+		GymImage: Symbol.for("GymImageController"),
 	},
 	Services: {
 		ImageProcessor: Symbol.for("ImageProcessor"),
