@@ -25,7 +25,7 @@ const envSchema = z.object({
 	DIRECT_URL: z.string().optional(),
 	GOOGLE_CLIENT_ID: z.string().optional(),
 	CORS_ORIGINS: z.string().optional(),
-	FRONTEND_URL: z.string().url().default("http://localhost:3000"),
+	FRONTEND_URL: z.url().default("http://localhost:3000"),
 	UPLOAD_DIR: z.string().default("uploads"),
 	CRON_TIME_TO_UPDATE_CACHE: z.string().default("0 * * * *"),
 	STRIPE_PUBLIC_KEY: z.string(),
