@@ -1,4 +1,5 @@
 import { MapPin, Pencil } from "lucide-react"
+import { motion } from "motion/react"
 import Link from "next/link"
 import type { Gym } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
@@ -13,13 +14,25 @@ function resolveLocation(gym: Gym): string {
 	return `${gym.latitude.toFixed(4)}, ${gym.longitude.toFixed(4)}`
 }
 
+const cardHoverVariant = {
+	y: -3,
+	scale: 1.015,
+	boxShadow:
+		"0 0 0 1px rgba(57,229,140,0.45), 0 10px 30px -12px rgba(0,0,0,0.5)",
+}
+
 export function GymCard({ gym, adminEditHref }: GymCardProps) {
 	return (
-		<div className="relative flex h-full flex-col">
+		<motion.div
+			data-testid="gym-card-wrapper"
+			className="relative flex h-full flex-col rounded-lg"
+			whileHover={cardHoverVariant}
+			transition={{ type: "spring", stiffness: 300, damping: 25 }}
+		>
 			<Link
 				href={`/academias/${gym.id}`}
 				data-testid={`gym-card-${gym.id}`}
-				className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[transform,border-color] hover:-translate-y-0.5 hover:border-border-strong"
+				className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm"
 			>
 				<div className="relative h-[140px] w-full">
 					<GymImage
@@ -66,6 +79,6 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 					<Pencil className="h-4 w-4" aria-hidden="true" />
 				</Link>
 			) : null}
-		</div>
+		</motion.div>
 	)
 }

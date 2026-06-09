@@ -70,4 +70,19 @@ describe("GymCard VOLT", () => {
 			"/academias/g1",
 		)
 	})
+
+	test("o card principal é envolvido por um motion.div (data-testid gym-card-wrapper)", () => {
+		const { container } = renderWithProviders(<GymCard gym={gym} />)
+		const wrapper = container.querySelector("[data-testid='gym-card-wrapper']")
+		expect(wrapper).toBeInTheDocument()
+	})
+
+	test("link do card não possui classes Tailwind de hover legadas", () => {
+		renderWithProviders(<GymCard gym={gym} />)
+		const link = screen.getByTestId("gym-card-g1")
+		expect(link.className).not.toContain("hover:-translate-y-0.5")
+		expect(link.className).not.toContain("hover:border-border-strong")
+		expect(link.className).not.toContain("transition-[transform,border-color]")
+		expect(link.className).not.toContain("group")
+	})
 })
