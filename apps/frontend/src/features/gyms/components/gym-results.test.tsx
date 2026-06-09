@@ -61,4 +61,25 @@ describe("GymResults", () => {
 		renderWithProviders(<GymResults {...baseProps()} />)
 		expect(screen.queryByTestId("gym-edit-g1")).not.toBeInTheDocument()
 	})
+
+	test("exibe esqueletos GymCardSkeleton no estado de loading", () => {
+		renderWithProviders(<GymResults {...baseProps()} isLoading items={[]} />)
+		const loadingContainer = screen.getByTestId("gym-results-loading")
+		const skeletons = loadingContainer.querySelectorAll(
+			"[data-testid='gym-card-skeleton']",
+		)
+		expect(skeletons.length).toBe(6)
+	})
+
+	test("a lista de resultados é renderizada em um motion.ul com data-testid", () => {
+		renderWithProviders(<GymResults {...baseProps()} />)
+		expect(screen.getByTestId("gym-results-list")).toBeInTheDocument()
+	})
+
+	test("cada card é renderizado em um motion.li dentro do motion.ul", () => {
+		renderWithProviders(<GymResults {...baseProps()} />)
+		const list = screen.getByTestId("gym-results-list")
+		const listItems = list.querySelectorAll("li")
+		expect(listItems.length).toBe(2)
+	})
 })

@@ -1,13 +1,29 @@
 "use client"
 
 import { Search } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Skeleton } from "@/components/ui/skeleton"
 import type { Gym } from "@/features/gyms/api"
 import { GymCard } from "@/features/gyms/components/gym-card"
+import { GymCardSkeleton } from "@/features/gyms/components/gym-card-skeleton"
 
 const SKELETON_COUNT = 6
+
+const listVariants = {
+	hidden: {},
+	show: { transition: { staggerChildren: 0.07 } },
+} as const
+
+const cardVariants = {
+	hidden: { opacity: 0, scale: 0.92 },
+	show: {
+		opacity: 1,
+		scale: 1,
+		transition: { type: "spring", stiffness: 280, damping: 22 },
+	},
+	exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
+} as const
 
 export interface GymResultsProps {
 	query: string
@@ -27,11 +43,8 @@ function ResultsLoading() {
 			className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]"
 		>
 			{Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-				<Skeleton
-					// biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholders are not reorderable
-					key={index}
-					className="h-[260px] w-full rounded-lg"
-				/>
+				// biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholders are not reorderable
+				<GymCardSkeleton key={index} />
 			))}
 		</div>
 	)
@@ -83,18 +96,31 @@ function ResultsEmptyBrowse() {
 
 function ResultsList({ items, isAdmin }: { items: Gym[]; isAdmin?: boolean }) {
 	return (
-		<ul className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]">
-			{items.map((gym) => (
-				<li key={gym.id} className="flex flex-col">
-					<GymCard
-						gym={gym}
-						adminEditHref={
-							isAdmin ? `/admin/academias/${gym.id}/editar` : undefined
-						}
-					/>
-				</li>
-			))}
-		</ul>
+		<motion.ul
+			data-testid="gym-results-list"
+			variants={listVariants}
+			initial="hidden"
+			animate="show"
+			className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]"
+		>
+			<AnimatePresence>
+				{items.map((gym) => (
+					<motion.li
+						key={gym.id}
+						variants={cardVariants}
+						exit={cardVariants.exit}
+						className="flex flex-col"
+					>
+						<GymCard
+							gym={gym}
+							adminEditHref={
+								isAdmin ? `/admin/academias/${gym.id}/editar` : undefined
+							}
+						/>
+					</motion.li>
+				))}
+			</AnimatePresence>
+		</motion.ul>
 	)
 }
 
