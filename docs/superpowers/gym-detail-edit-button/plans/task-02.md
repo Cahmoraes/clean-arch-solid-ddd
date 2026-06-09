@@ -1,6 +1,6 @@
 # Task 2: Implementação — botão editar em DetailCard, DetailBody e GymDetailPage
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/gym-detail-edit-button-design.md`
 **Depends on:** task-01

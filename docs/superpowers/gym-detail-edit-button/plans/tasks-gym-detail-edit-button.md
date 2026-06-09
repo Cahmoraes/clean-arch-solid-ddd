@@ -15,8 +15,8 @@
 
 ## Tarefas
 
-- [ ] 1. Testes: casos TDD para botão editar no detalhe → `task-01.md`
-- [ ] 2. Implementação: `DetailCard`, `DetailBody` e `GymDetailPage` → `task-02.md`
+- [x] 1. Testes: casos TDD para botão editar no detalhe → `task-01.md`
+- [x] 2. Implementação: `DetailCard`, `DetailBody` e `GymDetailPage` → `task-02.md`
 
 ## Ondas de Execução
 

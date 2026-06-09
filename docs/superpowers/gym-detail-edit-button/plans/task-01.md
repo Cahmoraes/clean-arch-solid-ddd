@@ -1,6 +1,6 @@
 # Task 1: Testes TDD para botão editar no detalhe da academia
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/gym-detail-edit-button-design.md`
 **Depends on:** N/A
