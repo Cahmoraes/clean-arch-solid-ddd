@@ -36,7 +36,7 @@ importers:
         version: 9.1.3
       '@fastify/swagger':
         specifier: 9.7.0
-        version: 9.7.0
+        version: 9.7.0(supports-color@10.2.2)
       '@fastify/swagger-ui':
         specifier: 5.2.6
         version: 5.2.6
@@ -84,7 +84,7 @@ importers:
         version: 12.10.0
       bullmq:
         specifier: 5.77.7
-        version: 5.77.7
+        version: 5.77.7(supports-color@10.2.2)
       commitizen:
         specifier: 4.3.1
         version: 4.3.1(@types/node@25.9.1)(typescript@6.0.3)
@@ -99,13 +99,13 @@ importers:
         version: 5.8.5
       google-auth-library:
         specifier: 10.6.2
-        version: 10.6.2
+        version: 10.6.2(supports-color@10.2.2)
       inversify:
         specifier: 8.1.0
         version: 8.1.0(reflect-metadata@0.2.2)
       ioredis:
         specifier: 5.11.0
-        version: 5.11.0
+        version: 5.11.0(supports-color@10.2.2)
       jsonwebtoken:
         specifier: 9.0.3
         version: 9.0.3
@@ -147,7 +147,7 @@ importers:
         version: 22.2.0(@types/node@25.9.1)
       tsup:
         specifier: 8.5.1
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.15)(tsx@4.22.4)(typescript@6.0.3)(yaml@2.8.2)
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.15)(supports-color@10.2.2)(tsx@4.22.4)(typescript@6.0.3)(yaml@2.8.2)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -223,7 +223,7 @@ importers:
         version: 7.8.0(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(better-sqlite3@12.10.0)(magicast@0.5.2)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(typescript@6.0.3)
       supertest:
         specifier: 7.2.2
-        version: 7.2.2
+        version: 7.2.2(supports-color@10.2.2)
       tsx:
         specifier: 4.22.4
         version: 4.22.4
@@ -6513,10 +6513,10 @@ snapshots:
       rfdc: 1.4.1
       yaml: 2.8.2
 
-  '@fastify/swagger@9.7.0':
+  '@fastify/swagger@9.7.0(supports-color@10.2.2)':
     dependencies:
       fastify-plugin: 5.1.0
-      json-schema-resolver: 3.0.0
+      json-schema-resolver: 3.0.0(supports-color@10.2.2)
       openapi-types: 12.1.3
       rfdc: 1.4.1
       yaml: 2.8.2
@@ -8552,10 +8552,10 @@ snapshots:
       base64-js: 1.5.1
       ieee754: 1.2.1
 
-  bullmq@5.77.7:
+  bullmq@5.77.7(supports-color@10.2.2):
     dependencies:
       cron-parser: 4.9.0
-      ioredis: 5.10.1
+      ioredis: 5.10.1(supports-color@10.2.2)
       msgpackr: 2.0.2
       node-abort-controller: 3.1.1
       semver: 7.8.0
@@ -9301,7 +9301,7 @@ snapshots:
 
   function-bind@1.1.2: {}
 
-  gaxios@7.1.4:
+  gaxios@7.1.4(supports-color@10.2.2):
     dependencies:
       extend: 3.0.2
       https-proxy-agent: 7.0.6(supports-color@10.2.2)
@@ -9311,7 +9311,7 @@ snapshots:
 
   gcp-metadata@8.1.2:
     dependencies:
-      gaxios: 7.1.4
+      gaxios: 7.1.4(supports-color@10.2.2)
       google-logging-utils: 1.1.3
       json-bigint: 1.0.0
     transitivePeerDependencies:
@@ -9394,11 +9394,11 @@ snapshots:
       is-windows: 1.0.2
       which: 1.3.1
 
-  google-auth-library@10.6.2:
+  google-auth-library@10.6.2(supports-color@10.2.2):
     dependencies:
       base64-js: 1.5.1
       ecdsa-sig-formatter: 1.0.11
-      gaxios: 7.1.4
+      gaxios: 7.1.4(supports-color@10.2.2)
       gcp-metadata: 8.1.2
       google-logging-utils: 1.1.3
       jws: 4.0.1
@@ -9570,7 +9570,7 @@ snapshots:
     transitivePeerDependencies:
       - reflect-metadata
 
-  ioredis@5.10.1:
+  ioredis@5.10.1(supports-color@10.2.2):
     dependencies:
       '@ioredis/commands': 1.5.1
       cluster-key-slot: 1.1.2
@@ -9584,7 +9584,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  ioredis@5.11.0:
+  ioredis@5.11.0(supports-color@10.2.2):
     dependencies:
       '@ioredis/commands': 1.10.0
       cluster-key-slot: 1.1.1
@@ -9732,7 +9732,7 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  json-schema-resolver@3.0.0:
+  json-schema-resolver@3.0.0(supports-color@10.2.2):
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       fast-uri: 3.1.0
@@ -11102,7 +11102,7 @@ snapshots:
       tinyglobby: 0.2.16
       ts-interface-checker: 0.1.13
 
-  superagent@10.3.0:
+  superagent@10.3.0(supports-color@10.2.2):
     dependencies:
       component-emitter: 1.3.1
       cookiejar: 2.1.4
@@ -11116,11 +11116,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  supertest@7.2.2:
+  supertest@7.2.2(supports-color@10.2.2):
     dependencies:
       cookie-signature: 1.2.2
       methods: 1.1.2
-      superagent: 10.3.0
+      superagent: 10.3.0(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -11251,7 +11251,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.1(jiti@2.6.1)(postcss@8.5.15)(tsx@4.22.4)(typescript@6.0.3)(yaml@2.8.2):
+  tsup@8.5.1(jiti@2.6.1)(postcss@8.5.15)(supports-color@10.2.2)(tsx@4.22.4)(typescript@6.0.3)(yaml@2.8.2):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.2)
       cac: 6.7.14
