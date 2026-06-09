@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react"
-import { describe, expect, test } from "vitest"
+import { fireEvent, screen, waitFor } from "@testing-library/react"
+import { describe, expect, test, vi } from "vitest"
 import { API_BASE_URL } from "@/lib/api"
 import { renderWithProviders } from "@/test/render"
 import { GymImage } from "./gym-image"
@@ -20,13 +20,59 @@ describe("GymImage", () => {
 		expect(screen.queryByTestId("gym-image")).not.toBeInTheDocument()
 	})
 
-	test("imagem possui classes de transição suave (ease-in-out, 500ms, scale-1.05)", () => {
+	test("imagem não possui classes Tailwind de hover/transição legadas", () => {
 		renderWithProviders(
 			<GymImage imageKey="gyms/foto.webp" alt="Academia Volt" />,
 		)
 		const img = screen.getByTestId("gym-image")
-		expect(img.className).toContain("duration-500")
-		expect(img.className).toContain("ease-in-out")
-		expect(img.className).toContain("scale-[1.05]")
+		expect(img.className).not.toContain("group-hover:scale-[1.05]")
+		expect(img.className).not.toContain("group-hover:brightness-105")
+		expect(img.className).not.toContain("duration-500")
+		expect(img.className).not.toContain("ease-in-out")
+	})
+
+	test("imagem atualiza estado loaded após acionar o evento onLoad", () => {
+		renderWithProviders(
+			<GymImage imageKey="gyms/foto.webp" alt="Academia Volt" />,
+		)
+		const img = screen.getByTestId("gym-image")
+		expect(img).toHaveAttribute("data-loaded", "false")
+		fireEvent.load(img)
+		expect(screen.getByTestId("gym-image")).toHaveAttribute(
+			"data-loaded",
+			"true",
+		)
+	})
+
+	test("imagem já carregada em cache sincroniza estado loaded após montagem", async () => {
+		const completeGetter = vi
+			.spyOn(HTMLImageElement.prototype, "complete", "get")
+			.mockReturnValue(true)
+
+		renderWithProviders(
+			<GymImage imageKey="gyms/foto.webp" alt="Academia Volt" />,
+		)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("gym-image")).toHaveAttribute(
+				"data-loaded",
+				"true",
+			)
+		})
+
+		completeGetter.mockRestore()
+	})
+
+	test("imagem sai do estado oculto quando ocorre erro de carregamento", () => {
+		renderWithProviders(
+			<GymImage imageKey="gyms/foto.webp" alt="Academia Volt" />,
+		)
+		const img = screen.getByTestId("gym-image")
+		expect(img).toHaveAttribute("data-loaded", "false")
+		fireEvent.error(img)
+		expect(screen.getByTestId("gym-image")).toHaveAttribute(
+			"data-loaded",
+			"true",
+		)
 	})
 })
