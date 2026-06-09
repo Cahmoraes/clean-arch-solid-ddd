@@ -229,4 +229,87 @@ describe("GymDetailPage", () => {
 			)
 		})
 	})
+
+	test("exibe link de edição para usuário admin", async () => {
+		useAuthStore.setState({
+			accessToken: "fake",
+			expiresAt: Date.now() + 60_000,
+			user: { id: "admin-1", role: "ADMIN" },
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json(
+					{
+						id: "gym-1",
+						title: "Iron Gym",
+						description: null,
+						phone: null,
+						latitude: -23.5,
+						longitude: -46.6,
+					},
+					{ status: 200 },
+				),
+			),
+		)
+		renderWithProviders(<GymDetailPage />)
+
+		const editLink = await screen.findByTestId("gym-detail-edit")
+		expect(editLink).toBeInTheDocument()
+		expect(editLink).toHaveAttribute("href", "/admin/academias/gym-1/editar")
+	})
+
+	test("rotula o link de edição com o nome da academia", async () => {
+		useAuthStore.setState({
+			accessToken: "fake",
+			expiresAt: Date.now() + 60_000,
+			user: { id: "admin-1", role: "ADMIN" },
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json(
+					{
+						id: "gym-1",
+						title: "Iron Gym",
+						description: null,
+						phone: null,
+						latitude: -23.5,
+						longitude: -46.6,
+					},
+					{ status: 200 },
+				),
+			),
+		)
+		renderWithProviders(<GymDetailPage />)
+
+		expect(
+			await screen.findByRole("link", { name: "Editar academia Iron Gym" }),
+		).toBeInTheDocument()
+	})
+
+	test("não exibe link de edição para usuário não-admin", async () => {
+		useAuthStore.setState({
+			accessToken: "fake",
+			expiresAt: Date.now() + 60_000,
+			user: { id: "user-1", role: "MEMBER" },
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json(
+					{
+						id: "gym-1",
+						title: "Iron Gym",
+						description: null,
+						phone: null,
+						latitude: -23.5,
+						longitude: -46.6,
+					},
+					{ status: 200 },
+				),
+			),
+		)
+		renderWithProviders(<GymDetailPage />)
+
+		await screen.findByTestId("gym-detail-title")
+		expect(screen.queryByTestId("gym-detail-edit")).not.toBeInTheDocument()
+	})
 })
