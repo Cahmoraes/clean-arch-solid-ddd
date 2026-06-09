@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeft, MapPin, Phone } from "lucide-react"
+import { ArrowLeft, MapPin, Pencil, Phone } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useState } from "react"
@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useCreateCheckIn } from "@/features/check-ins/api"
 import { type Gym, useGymById } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
+import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError } from "@/lib/errors"
 
 function DetailLoading() {
@@ -124,18 +125,35 @@ function CheckInButton({ gym }: CheckInButtonProps) {
 	)
 }
 
-function DetailCard({ gym }: { gym: Gym }) {
+interface DetailCardProps {
+	gym: Gym
+	adminEditHref?: string
+}
+
+function DetailCard({ gym, adminEditHref }: DetailCardProps) {
 	return (
 		<article
 			data-testid="gym-detail-card"
 			className="flex flex-col gap-6 rounded-[12px] border border-border bg-card p-6"
 		>
-			<GymImage
-				imageKey={gym.imageKey}
-				alt={gym.title}
-				className="h-48 w-full rounded-[8px]"
-				loading="eager"
-			/>
+			<div className="relative h-48 w-full">
+				<GymImage
+					imageKey={gym.imageKey}
+					alt={gym.title}
+					className="h-full w-full rounded-[8px]"
+					loading="eager"
+				/>
+				{adminEditHref ? (
+					<Link
+						href={adminEditHref}
+						data-testid="gym-detail-edit"
+						aria-label={`Editar academia ${gym.title}`}
+						className="absolute right-3 top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background/80 text-foreground backdrop-blur transition-colors hover:bg-background hover:text-primary"
+					>
+						<Pencil className="h-4 w-4" aria-hidden="true" />
+					</Link>
+				) : null}
+			</div>
 			<header className="flex flex-col gap-2">
 				<h1
 					id="gym-detail-title"
@@ -184,6 +202,7 @@ interface DetailBodyProps {
 	errorMessage?: string
 	onRetry: () => void
 	gym: Gym | undefined
+	adminEditHref?: string
 }
 
 function DetailBody({
@@ -192,10 +211,11 @@ function DetailBody({
 	errorMessage,
 	onRetry,
 	gym,
+	adminEditHref,
 }: DetailBodyProps) {
 	if (isLoading) return <DetailLoading />
 	if (isError) return <DetailError message={errorMessage} onRetry={onRetry} />
-	if (gym) return <DetailCard gym={gym} />
+	if (gym) return <DetailCard gym={gym} adminEditHref={adminEditHref} />
 	return null
 }
 
@@ -203,6 +223,9 @@ export default function GymDetailPage() {
 	const params = useParams<{ id: string }>()
 	const id = params?.id
 	const query = useGymById(id)
+	const user = useAuthStore((state) => state.user)
+	const adminEditHref =
+		user?.role === "ADMIN" ? `/admin/academias/${id}/editar` : undefined
 
 	return (
 		<PageContainer
@@ -227,6 +250,7 @@ export default function GymDetailPage() {
 				errorMessage={query.error?.userMessage}
 				onRetry={() => query.refetch()}
 				gym={query.data}
+				adminEditHref={adminEditHref}
 			/>
 		</PageContainer>
 	)
