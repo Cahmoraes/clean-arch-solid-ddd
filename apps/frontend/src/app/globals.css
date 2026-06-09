@@ -215,3 +215,28 @@
 		animation: voltBar 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
 }
+
+@keyframes shimmer {
+	0% {
+		background-position: -800px 0;
+	}
+	100% {
+		background-position: 800px 0;
+	}
+}
+
+.shimmer {
+	background: linear-gradient(
+		90deg,
+		var(--color-surface-2) 25%,
+		var(--color-surface-3) 50%,
+		var(--color-surface-2) 75%
+	);
+	background-size: 1600px 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.shimmer {
+		animation: shimmer 1.6s ease-in-out infinite;
+	}
+}
