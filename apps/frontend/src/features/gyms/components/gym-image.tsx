@@ -30,7 +30,7 @@ export function GymImage({
 					alt={alt}
 					data-testid="gym-image"
 					loading={loading}
-					className="h-full w-full object-cover transition-[transform,filter] duration-300 ease-out group-hover:scale-[1.07] group-hover:brightness-105"
+					className="h-full w-full object-cover transition-[transform,filter] duration-500 ease-in-out group-hover:scale-[1.05] group-hover:brightness-105"
 				/>
 			) : (
 				<div

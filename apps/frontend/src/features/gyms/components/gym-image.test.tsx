@@ -19,4 +19,14 @@ describe("GymImage", () => {
 		expect(screen.getByTestId("gym-image-placeholder")).toBeInTheDocument()
 		expect(screen.queryByTestId("gym-image")).not.toBeInTheDocument()
 	})
+
+	test("imagem possui classes de transição suave (ease-in-out, 500ms, scale-1.05)", () => {
+		renderWithProviders(
+			<GymImage imageKey="gyms/foto.webp" alt="Academia Volt" />,
+		)
+		const img = screen.getByTestId("gym-image")
+		expect(img.className).toContain("duration-500")
+		expect(img.className).toContain("ease-in-out")
+		expect(img.className).toContain("scale-[1.05]")
+	})
 })
