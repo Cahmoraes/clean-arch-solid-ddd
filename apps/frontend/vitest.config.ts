@@ -8,6 +8,10 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
+			"motion/react": path.resolve(
+				__dirname,
+				"./src/test/mocks/motion-react.tsx",
+			),
 			"next/dynamic": path.resolve(
 				__dirname,
 				"./src/test/mocks/next-dynamic.tsx",
