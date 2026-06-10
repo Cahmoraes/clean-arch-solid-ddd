@@ -13,6 +13,13 @@ export interface GymImageProps {
 	loading?: "lazy" | "eager"
 }
 
+const imageHoverVariants = {
+	hover: {
+		scale: 1.05,
+		filter: "brightness(1.08) blur(0px)",
+	},
+}
+
 export function GymImage({
 	imageKey,
 	alt,
@@ -58,7 +65,8 @@ export function GymImage({
 							: { opacity: 0, filter: "blur(8px)" }
 					}
 					transition={{ duration: 0.4, ease: "easeOut" }}
-					whileHover={{ scale: 1.05, filter: "brightness(1.08) blur(0px)" }}
+					variants={imageHoverVariants}
+					whileHover="hover"
 					onLoad={() => setLoadedImageUrl(url)}
 					onError={() => setLoadedImageUrl(url)}
 				/>

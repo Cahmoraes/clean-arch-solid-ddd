@@ -14,11 +14,18 @@ function resolveLocation(gym: Gym): string {
 	return `${gym.latitude.toFixed(4)}, ${gym.longitude.toFixed(4)}`
 }
 
-const cardHoverVariant = {
-	y: -3,
-	scale: 1.015,
-	boxShadow:
-		"0 0 0 1px rgba(57,229,140,0.45), 0 10px 30px -12px rgba(0,0,0,0.5)",
+const cardMotionVariants = {
+	rest: {
+		y: 0,
+		scale: 1,
+		boxShadow: "0 0 0 0px rgba(57,229,140,0), 0 0px 0px 0px rgba(0,0,0,0)",
+	},
+	hover: {
+		y: -3,
+		scale: 1.015,
+		boxShadow:
+			"0 0 0 1px rgba(57,229,140,0.45), 0 10px 30px -12px rgba(0,0,0,0.5)",
+	},
 }
 
 export function GymCard({ gym, adminEditHref }: GymCardProps) {
@@ -26,7 +33,10 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 		<motion.div
 			data-testid="gym-card-wrapper"
 			className="relative flex h-full flex-col rounded-lg"
-			whileHover={cardHoverVariant}
+			variants={cardMotionVariants}
+			initial="rest"
+			animate="rest"
+			whileHover="hover"
 			transition={{ type: "spring", stiffness: 300, damping: 25 }}
 		>
 			<Link
