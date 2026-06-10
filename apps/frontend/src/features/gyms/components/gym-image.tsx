@@ -11,6 +11,7 @@ export interface GymImageProps {
 	alt: string
 	className?: string
 	loading?: "lazy" | "eager"
+	hoverEffect?: boolean
 }
 
 const imageHoverVariants = {
@@ -25,6 +26,7 @@ export function GymImage({
 	alt,
 	className,
 	loading = "lazy",
+	hoverEffect = true,
 }: GymImageProps) {
 	const containerReference = useRef<HTMLDivElement>(null)
 	const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null)
@@ -66,7 +68,7 @@ export function GymImage({
 					}
 					transition={{ duration: 0.4, ease: "easeOut" }}
 					variants={imageHoverVariants}
-					whileHover="hover"
+					whileHover={hoverEffect ? "hover" : undefined}
 					onLoad={() => setLoadedImageUrl(url)}
 					onError={() => setLoadedImageUrl(url)}
 				/>

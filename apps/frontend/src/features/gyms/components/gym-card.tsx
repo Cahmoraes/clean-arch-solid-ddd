@@ -49,6 +49,7 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 						imageKey={gym.imageKey}
 						alt={gym.title}
 						className="h-full w-full"
+						hoverEffect={false}
 					/>
 					<span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
 						<span className="h-1.5 w-1.5 rounded-full bg-current" /> Disponível
