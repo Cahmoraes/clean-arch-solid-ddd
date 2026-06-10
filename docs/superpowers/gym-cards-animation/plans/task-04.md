@@ -1,6 +1,6 @@
 # Task 04: Migrar GymImage para motion.img com blur-up [FR-006, FR-007, FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-cards-animation.md`
 **Spec:** `../specs/gym-cards-animation-design.md`
 **Depends on:** task-01, task-03

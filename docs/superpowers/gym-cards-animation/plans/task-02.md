@@ -1,6 +1,6 @@
 # Task 02: Criar GymCardSkeleton e shimmer CSS [FR-010, FR-011, FR-012, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-cards-animation.md`
 **Spec:** `../specs/gym-cards-animation-design.md`
 **Depends on:** N/A

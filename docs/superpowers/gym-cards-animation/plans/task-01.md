@@ -1,6 +1,6 @@
 # Task 01: Instalar motion/react, configurar MotionConfig e mock Vitest [FR-003, FR-005, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-cards-animation.md`
 **Spec:** `../specs/gym-cards-animation-design.md`
 **Depends on:** N/A

@@ -15,11 +15,11 @@
 
 ## Tarefas
 
-- [ ] 1. Instalar motion/react, configurar MotionConfig e mock Vitest [FR-003, FR-005, FR-015] → `task-01.md`
-- [ ] 2. Criar GymCardSkeleton e shimmer CSS [FR-010, FR-011, FR-012, FR-013] → `task-02.md`
-- [ ] 3. Migrar hover do GymCard para motion/react [FR-004, FR-005, FR-006] → `task-03.md`
-- [ ] 4. Migrar GymImage para motion.img com blur-up [FR-006, FR-007, FR-008, FR-009] → `task-04.md`
-- [ ] 5. Adicionar stagger/AnimatePresence no GymResults [FR-001, FR-002, FR-003, FR-005, FR-013, FR-014, FR-015] → `task-05.md`
+- [x] 1. Instalar motion/react, configurar MotionConfig e mock Vitest [FR-003, FR-005, FR-015] → `task-01.md`
+- [x] 2. Criar GymCardSkeleton e shimmer CSS [FR-010, FR-011, FR-012, FR-013] → `task-02.md`
+- [x] 3. Migrar hover do GymCard para motion/react [FR-004, FR-005, FR-006] → `task-03.md`
+- [x] 4. Migrar GymImage para motion.img com blur-up [FR-006, FR-007, FR-008, FR-009] → `task-04.md`
+- [x] 5. Adicionar stagger/AnimatePresence no GymResults [FR-001, FR-002, FR-003, FR-005, FR-013, FR-014, FR-015] → `task-05.md`
 
 ## Ondas de Execução
 

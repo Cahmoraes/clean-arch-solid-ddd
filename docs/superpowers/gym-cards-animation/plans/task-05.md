@@ -1,6 +1,6 @@
 # Task 05: Adicionar stagger/AnimatePresence no GymResults [FR-001, FR-002, FR-003, FR-013, FR-014, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-cards-animation.md`
 **Spec:** `../specs/gym-cards-animation-design.md`
 **Depends on:** task-01, task-02

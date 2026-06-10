@@ -1,6 +1,6 @@
 # Task 03: Migrar hover do GymCard para motion/react [FR-004, FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-cards-animation.md`
 **Spec:** `../specs/gym-cards-animation-design.md`
 **Depends on:** task-01
