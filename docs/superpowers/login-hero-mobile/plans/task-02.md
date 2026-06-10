@@ -1,6 +1,6 @@
 # Task 2: Adicionar bloco hero mobile e ajustar os testes
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/login-hero-mobile-design.md`
 **Depends on:** task-01

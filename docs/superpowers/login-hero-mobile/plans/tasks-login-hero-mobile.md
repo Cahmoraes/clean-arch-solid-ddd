@@ -17,8 +17,8 @@
 
 ## Tarefas
 
-- [ ] 1. Extrair `LOGIN_STATS` e refatorar o aside desktop → `task-01.md`
-- [ ] 2. Adicionar bloco hero mobile e ajustar os testes → `task-02.md`
+- [x] 1. Extrair `LOGIN_STATS` e refatorar o aside desktop → `task-01.md`
+- [x] 2. Adicionar bloco hero mobile e ajustar os testes → `task-02.md`
 
 ## Ondas de Execução
 

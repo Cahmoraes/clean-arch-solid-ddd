@@ -1,6 +1,6 @@
 # Task 1: Extrair `LOGIN_STATS` e refatorar o aside desktop
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/login-hero-mobile-design.md`
 **Depends on:** N/A
