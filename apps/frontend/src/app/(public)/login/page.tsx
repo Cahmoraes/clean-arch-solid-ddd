@@ -16,6 +16,12 @@ import { ApiError } from "@/lib/errors"
 
 const DEFAULT_REDIRECT = "/inicio"
 
+const LOGIN_STATS = [
+	{ value: "312", label: "academias parceiras" },
+	{ value: "48k", label: "check-ins por mês" },
+	{ value: "4.9", label: "avaliação média" },
+] as const
+
 function loginErrorMessage(error: unknown): string {
 	if (error instanceof ApiError) {
 		if (error.code === "password_not_set") {
@@ -82,30 +88,16 @@ function LoginForm() {
 						<span className="text-accent">você</span> estiver.
 					</h2>
 					<div className="flex flex-wrap gap-9">
-						<div className="flex flex-col gap-0.5">
-							<span className="font-mono text-3xl font-bold text-accent tabular-nums">
-								312
-							</span>
-							<span className="max-w-[110px] text-xs text-muted-foreground dark:text-white/55">
-								academias parceiras
-							</span>
-						</div>
-						<div className="flex flex-col gap-0.5">
-							<span className="font-mono text-3xl font-bold text-accent tabular-nums">
-								48k
-							</span>
-							<span className="max-w-[110px] text-xs text-muted-foreground dark:text-white/55">
-								check-ins por mês
-							</span>
-						</div>
-						<div className="flex flex-col gap-0.5">
-							<span className="font-mono text-3xl font-bold text-accent tabular-nums">
-								4.9
-							</span>
-							<span className="max-w-[110px] text-xs text-muted-foreground dark:text-white/55">
-								avaliação média
-							</span>
-						</div>
+						{LOGIN_STATS.map((stat) => (
+							<div key={stat.label} className="flex flex-col gap-0.5">
+								<span className="font-mono text-3xl font-bold text-accent tabular-nums">
+									{stat.value}
+								</span>
+								<span className="max-w-[110px] text-xs text-muted-foreground dark:text-white/55">
+									{stat.label}
+								</span>
+							</div>
+						))}
 					</div>
 				</aside>
 
