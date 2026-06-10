@@ -103,6 +103,26 @@ function LoginForm() {
 
 				<div className="flex flex-col justify-center p-12 max-[560px]:p-6">
 					<div className="mx-auto flex w-full max-w-[400px] flex-col gap-8">
+						<div
+							data-testid="login-hero-mobile"
+							className="hidden flex-col gap-4 border-b border-border pb-6 max-[860px]:flex"
+						>
+							<h2 className="font-display text-3xl font-bold leading-[0.95] tracking-[-0.03em]">
+								Treine onde <span className="text-accent">você</span> estiver.
+							</h2>
+							<div className="flex flex-wrap gap-6">
+								{LOGIN_STATS.map((stat) => (
+									<div key={stat.label} className="flex flex-col gap-0.5">
+										<span className="font-mono text-2xl font-bold text-accent tabular-nums">
+											{stat.value}
+										</span>
+										<span className="text-xs text-muted-foreground dark:text-white/55">
+											{stat.label}
+										</span>
+									</div>
+								))}
+							</div>
+						</div>
 						<header className="flex flex-col gap-2">
 							<Eyebrow>Acesse sua conta</Eyebrow>
 							<h1 className="font-display text-[30px] font-semibold tracking-tight text-foreground">

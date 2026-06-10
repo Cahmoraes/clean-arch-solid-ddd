@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react"
+import { screen, within } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { describe, expect, test, vi } from "vitest"
 import { renderWithProviders } from "@/test/render"
@@ -33,9 +33,18 @@ vi.mock("@/features/auth/api", () => ({
 import LoginPage from "./page"
 
 describe("Login VOLT", () => {
-	test("exibe o painel-marca com o hero", () => {
+	test("exibe o hero no painel-marca desktop e no bloco mobile", () => {
 		renderWithProviders(<LoginPage />)
-		expect(screen.getByText(/Treine onde/i)).toBeInTheDocument()
+		expect(screen.getAllByText(/Treine onde/i)).toHaveLength(2)
+	})
+
+	test("exibe o hero compacto no bloco mobile com as estatísticas", () => {
+		renderWithProviders(<LoginPage />)
+		const mobileHero = screen.getByTestId("login-hero-mobile")
+		expect(within(mobileHero).getByText(/Treine onde/i)).toBeInTheDocument()
+		expect(within(mobileHero).getByText("312")).toBeInTheDocument()
+		expect(within(mobileHero).getByText("48k")).toBeInTheDocument()
+		expect(within(mobileHero).getByText("4.9")).toBeInTheDocument()
 	})
 
 	test("preserva os campos e o botão de submit", () => {
