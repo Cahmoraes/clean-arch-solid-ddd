@@ -15,7 +15,7 @@
 
 ## Tarefas
 
-- [ ] 1. Implementar container `max-w-6xl` na tela de login + verificação → `task-01.md`
+- [x] 1. Implementar container `max-w-6xl` na tela de login + verificação → `task-01.md`
 
 ## Execution Waves
 

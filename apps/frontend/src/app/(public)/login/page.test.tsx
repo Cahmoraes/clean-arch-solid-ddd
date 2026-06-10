@@ -177,13 +177,10 @@ describe("LoginPage", () => {
 		expect(useAuthStore.getState().accessToken).toBe(token)
 	})
 
-	test("renderiza container com max-w-6xl alinhado ao header e footer", () => {
+	test("renderiza container de largura máxima centralizado", () => {
 		renderWithProviders(<LoginPage />)
 
 		const container = screen.getByTestId("login-content-container")
-		expect(container).toBeInTheDocument()
-		expect(container).toHaveClass("mx-auto")
-		expect(container).toHaveClass("max-w-6xl")
-		expect(container).toHaveClass("w-full")
+		expect(container).toHaveClass("mx-auto", "w-full", "max-w-6xl")
 	})
 })

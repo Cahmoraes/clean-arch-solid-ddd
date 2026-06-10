@@ -1,6 +1,6 @@
 # Task 1: Implementar container `max-w-6xl` na tela de login + verificação
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/login-content-container-design.md`
 **Depends on:** N/A
