@@ -1,0 +1,49 @@
+import { InMemoryCheckInRepository } from "@/shared/infra/database/repository/in-memory/in-memory-check-in-repository"
+import { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
+import { InMemoryLoginAttemptStore } from "@/shared/infra/database/repository/in-memory/in-memory-login-attempt-store"
+import { InMemoryPasswordResetTokenStore } from "@/shared/infra/database/repository/in-memory/in-memory-password-reset-token-store"
+import { InMemorySubscriptionRepository } from "@/shared/infra/database/repository/in-memory/in-memory-subscription-repository"
+import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
+import { container } from "@/shared/infra/ioc/container"
+import { SUBSCRIPTION_TYPES } from "@/shared/infra/ioc/module/service-identifier/subscription-types"
+import { CHECKIN_TYPES, GYM_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+
+export interface SetupInMemoryRepositoriesOutput {
+	userRepository: InMemoryUserRepository
+	gymRepository: InMemoryGymRepository
+	checkInRepository: InMemoryCheckInRepository
+	subscriptionRepository: InMemorySubscriptionRepository
+	loginAttemptStore: InMemoryLoginAttemptStore
+	passwordResetTokenStore: InMemoryPasswordResetTokenStore
+}
+
+export function setupInMemoryRepositories(): SetupInMemoryRepositoriesOutput {
+	const userRepository = new InMemoryUserRepository()
+	container.rebind(USER_TYPES.Repositories.User).toConstantValue(userRepository)
+	const gymRepository = new InMemoryGymRepository()
+	container.rebind(GYM_TYPES.Repositories.Gym).toConstantValue(gymRepository)
+	const checkInRepository = new InMemoryCheckInRepository()
+	container
+		.rebind(CHECKIN_TYPES.Repositories.CheckIn)
+		.toConstantValue(checkInRepository)
+	const subscriptionRepository = new InMemorySubscriptionRepository()
+	container
+		.rebind(SUBSCRIPTION_TYPES.REPOSITORIES.Subscription)
+		.toConstantValue(subscriptionRepository)
+	const loginAttemptStore = new InMemoryLoginAttemptStore()
+	container
+		.rebind(USER_TYPES.Gateways.LoginAttemptStore)
+		.toConstantValue(loginAttemptStore)
+	const passwordResetTokenStore = new InMemoryPasswordResetTokenStore()
+	container
+		.rebind(USER_TYPES.Gateways.PasswordResetTokenStore)
+		.toConstantValue(passwordResetTokenStore)
+	return {
+		userRepository,
+		gymRepository,
+		checkInRepository,
+		subscriptionRepository,
+		loginAttemptStore,
+		passwordResetTokenStore,
+	}
+}

@@ -1,0 +1,33 @@
+{
+  "us_id": "US-003",
+  "user_story": "Como administrador, eu quero que os pills não exibam zeros enquanto as contagens estão carregando para que eu não confunda um estado transitório com dados reais.",
+  "requirements": ["RF-007", "RF-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "existing_test_file": "apps/frontend/src/features/admin/components/user-filter-bar.test.tsx",
+  "existing_test_name": "não deve exibir badges quando stats são undefined (loading)",
+  "existing_test_assertions": [
+    "queryByText('48') not in document",
+    "queryByText('0') not in document",
+    "button Todos still renders"
+  ],
+  "acceptance_tests_created": [
+    "docs/superpowers/admin-users-filter-badges/qa/evidence/us-003-administrador-que-os-pills-no/us-003-loading-no-zeros.acceptance.test.tsx"
+  ],
+  "test_output_summary": "6/6 tests passed in user-filter-bar.test.tsx. Target test 'não deve exibir badges quando stats são undefined (loading)' PASSED. All assertions verified: no '0' placeholder rendered when stats=undefined.",
+  "rf_007_coverage": {
+    "status": "COVERED",
+    "evidence": "Existing test 'não deve exibir badges quando stats são undefined (loading)' — stats=undefined passed to UserFilterBar, asserts queryByText('0') not in document.",
+    "test_result": "PASS"
+  },
+  "rf_008_coverage": {
+    "status": "COVERED_BY_SAME_CODE_PATH",
+    "evidence": "useUserStats() has no initialData/placeholderData. TanStack Query sets data=undefined when queryFn throws. page.tsx line 245 destructures { data: stats } — stats=undefined on error. Line 316 passes stats={stats} to UserFilterBar. Same code path as RF-007.",
+    "dedicated_test_created": "us-003-loading-no-zeros.acceptance.test.tsx — RF-008 test case",
+    "test_result": "PASS"
+  },
+  "screenshot_path": null,
+  "screenshot_note": "Dev server not running — screenshot skipped.",
+  "failure_details": null,
+  "notes": "RF-007 and RF-008 share identical runtime behavior: both produce stats=undefined → UserFilterBar renders pills without badge. Chain verified: useUserStats (use-user-stats.ts:22-32) → no initialData → TanStack Query data=undefined on error/loading → page.tsx passes undefined to UserFilterBar → component conditionally renders badge only when stats prop is defined."
+}

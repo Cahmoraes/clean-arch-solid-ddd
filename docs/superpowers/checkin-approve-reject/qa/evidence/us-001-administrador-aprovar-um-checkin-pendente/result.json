@@ -1,0 +1,92 @@
+{
+	"us_id": "us-001",
+	"user_story": "Como administrador, eu quero aprovar um check-in pendente para que ele seja registrado como validado no sistema.",
+	"requirements": [
+		"RF-001",
+		"RF-005",
+		"RF-008",
+		"RF-009",
+		"RF-010",
+		"RF-018",
+		"RF-019"
+	],
+	"status": "PARTIAL",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": {
+		"backend_tests": {
+			"CheckIn Entity Tests": {
+				"file": "apps/backend/src/check-in/domain/check-in.test.ts",
+				"total": 14,
+				"passed": 14,
+				"status": "✓ ALL PASSED"
+			},
+			"ValidateCheckInUseCase Tests": {
+				"file": "apps/backend/src/check-in/application/use-case/validate-check-in.usecase.test.ts",
+				"total": 3,
+				"passed": 3,
+				"status": "✓ ALL PASSED"
+			}
+		},
+		"frontend_tests": {
+			"AdminCheckInsPage Tests": {
+				"file": "apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx",
+				"total": 6,
+				"passed": 5,
+				"failed": 1,
+				"tests": {
+					"lista check-ins pendentes e valida ao clicar em 'Validar'": "✓ PASSED",
+					"exibe EmptyState quando não há check-ins pendentes": "✓ PASSED",
+					"exibe erro amigável ao falhar validação (409)": "✓ PASSED",
+					"rejeita um check-in pendente ao clicar em 'Rejeitar'": "✓ PASSED",
+					"exibe erro amigável ao falhar rejeição": "✗ FAILED",
+					"exibe apenas botão rejeitar para check-in validado": "✓ PASSED"
+				}
+			}
+		}
+	},
+	"screenshot_path": null,
+	"failure_details": {
+		"test_name": "exibe erro amigável ao falhar rejeição",
+		"file": "apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx",
+		"line": 204,
+		"expected": "Não foi possível rejeitar o check-in.",
+		"received": "Recurso não encontrado.",
+		"root_cause": "Test is mocking a 404 status code for the rejection endpoint failure (line 195-196). The application correctly maps the 404 status code to the generic error message 'Recurso não encontrado.' via the mapStatusToMessage function. The CheckInActions component then displays this API error message instead of the fallback message. The test expectation is incorrect - it should either use a different status code (like 409 used in the validate error test) or expect the actual API error message.",
+		"recommendations": [
+			"Update the test to use a status code that matches the expected error message (e.g., use 409 like the validation error test)",
+			"Or update the test to expect 'Recurso não encontrado.' which is the correct 404 mapping"
+		]
+	},
+	"implementation_verification": {
+		"RF-001": {
+			"status": "✓ VERIFIED",
+			"description": "PATCH /check-ins/validate endpoint is implemented and tested"
+		},
+		"RF-005": {
+			"status": "✓ VERIFIED",
+			"description": "CheckIn entity ensures validatedAt and rejectedAt are never both set (test: 'invariante: validatedAt e rejectedAt nunca coexistem')"
+		},
+		"RF-008": {
+			"status": "✓ VERIFIED",
+			"description": "State transitions: pending → validated is implemented and tested"
+		},
+		"RF-009": {
+			"status": "✓ VERIFIED",
+			"description": "Frontend shows 'Aprovar' and 'Rejeitar' buttons for pending check-ins (test: 'lista check-ins pendentes e valida ao clicar em Validar')"
+		},
+		"RF-010": {
+			"status": "✓ VERIFIED",
+			"description": "Frontend shows only 'Rejeitar' button for validated check-ins (test: 'exibe apenas botão rejeitar para check-in validado')"
+		},
+		"RF-018": {
+			"status": "✓ VERIFIED",
+			"description": "Loading state implemented: buttons show 'Aprovando...' or 'Rejeitando...' and are disabled during operation"
+		},
+		"RF-019": {
+			"status": "✓ VERIFIED",
+			"description": "Toast feedback is shown after approval/rejection actions (test: 'lista check-ins pendentes e valida ao clicar em Validar')"
+		}
+	},
+	"notes": "The feature is CORRECTLY IMPLEMENTED. The test failure is a TEST DEFECT, not a feature defect. The US-001 acceptance criteria are fully satisfied:\n\n1. Backend validates check-ins correctly (14 domain tests passed, 3 use case tests passed)\n2. Frontend displays approve button for pending check-ins (VERIFIED via test)\n3. Frontend displays reject button for both pending and validated check-ins (VERIFIED via test)\n4. Admin can approve a pending check-in (VERIFIED via test 'lista check-ins pendentes...')\n5. Success toast is shown after approval (VERIFIED via test)\n6. Error handling with toast is implemented (5/6 tests pass; 1 test has wrong expectation)\n7. Loading states are properly managed (buttons disabled, text changes)\n8. State transitions are enforced (pending → validated only, never simultaneous validatedAt/rejectedAt)\n\nThe single test failure in 'exibe erro amigável ao falhar rejeição' is due to the test using a 404 status code while expecting a custom error message. The application correctly returns the 404 mapping 'Recurso não encontrado.' The test expectation should be updated to match either: (1) the actual 404 error message, or (2) use a different status code."
+}

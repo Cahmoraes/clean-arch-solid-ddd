@@ -1,0 +1,227 @@
+
+> frontend@0.1.0 test /home/cahmoraes/projects/estudo/clean-arch-solid-ddd/apps/frontend
+> vitest run -- --reporter=verbose src/components/ui/theme-toggle-fab.test.tsx
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/cahmoraes/projects/estudo/clean-arch-solid-ddd/apps/frontend[39m
+
+ [32m✓[39m src/app/(public)/cadastro/page.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 5381[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe instrução de ativação após cadastro bem-sucedido [33m 3799[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe mensagem amigável quando email já cadastrado (409) [33m 1520[2mms[22m[39m
+ [31m❯[39m src/app/(authenticated)/admin/academias/nova/page.test.tsx [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 5581[2mms[22m[39m
+[31m     [31m×[31m envia formulário válido com endereço e coordenadas e redireciona[39m[33m 5138[2mms[22m[39m
+     [33m[2m✓[22m[39m bloqueia submissão quando dados são inválidos [33m 387[2mms[22m[39m
+ [32m✓[39m src/app/(public)/login/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 6016[2mms[22m[39m
+     [33m[2m✓[22m[39m submete credenciais válidas e redireciona para /academias [33m 3015[2mms[22m[39m
+     [33m[2m✓[22m[39m respeita query string `redirect` ao redirecionar [33m 658[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe mensagem amigável (sem 401) ao receber credenciais inválidas [33m 1019[2mms[22m[39m
+     [33m[2m✓[22m[39m bloqueia submissão quando email é inválido [33m 1248[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/academias/page.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 7342[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe botão 'Cadastrar Academia' para usuário ADMIN [33m 754[2mms[22m[39m
+     [33m[2m✓[22m[39m não exibe botão quando usuário não está autenticado [33m 414[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe lista de academias no load inicial (modo browse) [33m 489[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe Skeleton durante loading e lista após resposta MSW [33m 1902[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe EmptyState quando busca não retorna resultados (404) [33m 838[2mms[22m[39m
+     [33m[2m✓[22m[39m paginação: Próxima incrementa página e nova request é feita [33m 1648[2mms[22m[39m
+     [33m[2m✓[22m[39m links dos cards apontam para detalhe da academia [33m 955[2mms[22m[39m
+ [32m✓[39m src/features/admin/components/user-detail-modal.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 8729[2mms[22m[39m
+     [33m[2m✓[22m[39m renderiza os dados do usuário selecionado [33m 2911[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe botão de inativar para usuário ativo que não é admin [33m 475[2mms[22m[39m
+     [33m[2m✓[22m[39m não exibe botão de inativar para usuário admin [33m 370[2mms[22m[39m
+     [33m[2m✓[22m[39m não exibe botão de inativar para o admin logado [33m 326[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe botão de ativar para usuário suspenso [33m 434[2mms[22m[39m
+     [33m[2m✓[22m[39m abre o AlertDialog ao clicar em inativar [33m 1063[2mms[22m[39m
+     [33m[2m✓[22m[39m chama a mutação de inativação após confirmar no AlertDialog [33m 907[2mms[22m[39m
+     [33m[2m✓[22m[39m chama a mutação de ativação sem confirmação [33m 449[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe estado de loading durante a requisição [33m 369[2mms[22m[39m
+     [33m[2m✓[22m[39m fecha o AlertDialog e exibe erro inline quando a API falha ao inativar [33m 1038[2mms[22m[39m
+     [33m[2m✓[22m[39m chama onClose ao fechar pelo botão X [33m 322[2mms[22m[39m
+[90mstderr[2m | src/features/gyms/components/gym-location-picker.test.tsx[2m > [22m[2mGymLocationPicker[2m > [22m[2mchama onChange com novas coords e address revertido ao clicar no mapa
+[22m[39mThe current testing environment is not configured to support act(...)
+The current testing environment is not configured to support act(...)
+
+ [32m✓[39m src/components/ui/dialog.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 3970[2mms[22m[39m
+     [33m[2m✓[22m[39m opens via trigger and closes via close button [33m 3277[2mms[22m[39m
+     [33m[2m✓[22m[39m closes when pressing Escape [33m 660[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/perfil/senha/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 6607[2mms[22m[39m
+     [33m[2m✓[22m[39m submete nova senha quando válida [33m 3594[2mms[22m[39m
+     [33m[2m✓[22m[39m bloqueia submissão quando confirmação diverge da nova senha [33m 1654[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe erro amigável em 401 [33m 1290[2mms[22m[39m
+ [32m✓[39m src/features/gyms/components/gym-location-picker.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 4621[2mms[22m[39m
+     [33m[2m✓[22m[39m renderiza input de endereço, botão buscar e mapa [33m 434[2mms[22m[39m
+     [33m[2m✓[22m[39m chama onChange com lat/lng após busca bem-sucedida [33m 2519[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe mensagem de erro quando endereço não encontrado [33m 1004[2mms[22m[39m
+ [32m✓[39m src/components/layout/authenticated-shell.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 5861[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe link admin quando role é ADMIN [33m 1706[2mms[22m[39m
+     [33m[2m✓[22m[39m oculta link admin quando role é MEMBER [33m 378[2mms[22m[39m
+     [33m[2m✓[22m[39m alterna o menu mobile ao clicar no botão [33m 1447[2mms[22m[39m
+     [33m[2m✓[22m[39m logout limpa o store e redireciona para /login [33m 2256[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/admin/usuarios/admin-users-page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 5837[2mms[22m[39m
+     [33m[2m✓[22m[39m não exibe o modal inicialmente [33m 838[2mms[22m[39m
+     [33m[2m✓[22m[39m abre o modal ao clicar em um usuário da listagem [33m 2799[2mms[22m[39m
+     [33m[2m✓[22m[39m fecha o modal ao clicar no botão X [33m 1027[2mms[22m[39m
+     [33m[2m✓[22m[39m reseta o usuário selecionado ao fechar o modal [33m 1091[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/admin/check-ins/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 2755[2mms[22m[39m
+     [33m[2m✓[22m[39m lista check-ins pendentes e valida ao clicar em 'Validar' [33m 2305[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/assinatura/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 3525[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe aviso de demonstração visível sem interação [33m 629[2mms[22m[39m
+     [33m[2m✓[22m[39m envia priceId do plano selecionado e exibe confirmação com id retornado [33m 2066[2mms[22m[39m
+     [33m[2m✓[22m[39m mostra estado de loading no botão durante a chamada [33m 421[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe mensagem amigável quando o backend falha [33m 331[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/academias/[id]/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 3359[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe nome, descrição, telefone e localização da academia mockada [33m 806[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe Skeleton durante loading [33m 302[2mms[22m[39m
+     [33m[2m✓[22m[39m realiza check-in: exibe loading e toast de sucesso [33m 1459[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe mensagem amigável quando check-in falha (409) [33m 466[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/check-ins/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 2911[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe Skeleton durante loading e depois lista os check-ins [33m 987[2mms[22m[39m
+     [33m[2m✓[22m[39m navega para próxima página quando há paginação [33m 1445[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/admin/usuarios/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 3447[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe Skeleton durante o carregamento e depois lista [33m 1015[2mms[22m[39m
+     [33m[2m✓[22m[39m navega entre páginas via paginação [33m 2016[2mms[22m[39m
+ [32m✓[39m src/components/ui/button.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 3605[2mms[22m[39m
+     [33m[2m✓[22m[39m renders children and is type=button by default [33m 2438[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 3223[2mms[22m[39m
+     [33m[2m✓[22m[39m renderiza o botão após o mount [33m 2095[2mms[22m[39m
+     [33m[2m✓[22m[39m chama setTheme('dark') ao clicar em modo light [33m 344[2mms[22m[39m
+ [32m✓[39m src/app/(public)/error.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 4292[2mms[22m[39m
+     [33m[2m✓[22m[39m renders friendly fallback UI with retry button [33m 3483[2mms[22m[39m
+     [33m[2m✓[22m[39m invokes reset() when retry button is clicked [33m 672[2mms[22m[39m
+ [32m✓[39m src/features/admin/components/user-row.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 4565[2mms[22m[39m
+     [33m[2m✓[22m[39m renderiza nome, e-mail e label legível para role MEMBER [33m 956[2mms[22m[39m
+     [33m[2m✓[22m[39m chama onSelect com os dados do usuário ao clicar na linha [33m 2721[2mms[22m[39m
+ [32m✓[39m src/components/ui/empty-state.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 4695[2mms[22m[39m
+     [33m[2m✓[22m[39m renders title [33m 3399[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the action element when provided [33m 623[2mms[22m[39m
+ [32m✓[39m src/components/layout/public-shell.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 3159[2mms[22m[39m
+     [33m[2m✓[22m[39m renderiza header com CTAs de login e cadastro [33m 2927[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/error.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 3422[2mms[22m[39m
+     [33m[2m✓[22m[39m renders friendly fallback UI with retry button [33m 2732[2mms[22m[39m
+     [33m[2m✓[22m[39m invokes reset() when retry button is clicked [33m 567[2mms[22m[39m
+ [32m✓[39m src/features/gyms/api/index.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 1726[2mms[22m[39m
+     [33m[2m✓[22m[39m desabilita query quando name é vazio [33m 378[2mms[22m[39m
+     [33m[2m✓[22m[39m retorna lista de academias do MSW para nome válido [33m 546[2mms[22m[39m
+ [32m✓[39m src/app/(public)/page.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 2825[2mms[22m[39m
+     [33m[2m✓[22m[39m renderiza CTAs de cadastro e login [33m 644[2mms[22m[39m
+     [33m[2m✓[22m[39m renderiza título principal e descrição [33m 2105[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/perfil/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 3456[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe skeleton durante loading e dados após resposta MSW [33m 1557[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe mensagem amigável quando /users/me retorna erro [33m 778[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe mensagem de erro específica para falha em métricas [33m 385[2mms[22m[39m
+     [33m[2m✓[22m[39m invalidação da query /users/me re-busca dados e atualiza a UI sem reload [33m 376[2mms[22m[39m
+ [32m✓[39m src/features/check-ins/api/index.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 1555[2mms[22m[39m
+     [33m[2m✓[22m[39m envia payload e retorna id do check-in criado [33m 695[2mms[22m[39m
+ [32m✓[39m src/features/admin/api/use-activate-user.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1493[2mms[22m[39m
+     [33m[2m✓[22m[39m aplica optimistic update para 'activated' antes de a requisição completar [33m 1015[2mms[22m[39m
+ [32m✓[39m src/features/admin/api/use-suspend-user.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1564[2mms[22m[39m
+     [33m[2m✓[22m[39m aplica optimistic update para 'suspended' antes de a requisição completar [33m 927[2mms[22m[39m
+ [32m✓[39m src/app/(authenticated)/perfil/[userId]/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 3023[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe nome e dados públicos do usuário consultado [33m 2008[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe estado de não encontrado em 404 [33m 546[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe erro amigável em 500 com botão de retentar [33m 363[2mms[22m[39m
+ [32m✓[39m src/features/profile/api/index.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 2257[2mms[22m[39m
+     [33m[2m✓[22m[39m retorna dados tipados a partir do MSW [33m 1091[2mms[22m[39m
+     [33m[2m✓[22m[39m retorna perfil público a partir do MSW [33m 380[2mms[22m[39m
+ [32m✓[39m src/features/admin/api/use-users.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1256[2mms[22m[39m
+     [33m[2m✓[22m[39m retorna lista paginada tipada do MSW [33m 984[2mms[22m[39m
+ [32m✓[39m src/test/msw.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1392[2mms[22m[39m
+     [33m[2m✓[22m[39m intercepts HTTP requests with default handlers [33m 1146[2mms[22m[39m
+ [32m✓[39m src/features/gyms/hooks/use-gym-location-picker.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 753[2mms[22m[39m
+ [32m✓[39m src/app/(public)/ativar/[token]/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1958[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe sucesso quando token UUID é aceito pelo backend [33m 1378[2mms[22m[39m
+ [32m✓[39m src/features/subscriptions/api/use-create-subscription.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1035[2mms[22m[39m
+     [33m[2m✓[22m[39m envia priceId e paymentMethodId e retorna a subscription criada [33m 630[2mms[22m[39m
+ [32m✓[39m src/test/render.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 1107[2mms[22m[39m
+     [33m[2m✓[22m[39m wraps the component in a QueryClientProvider [33m 921[2mms[22m[39m
+ [32m✓[39m src/components/layout/admin-guard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1992[2mms[22m[39m
+     [33m[2m✓[22m[39m renderiza filhos quando role é ADMIN [33m 1180[2mms[22m[39m
+     [33m[2m✓[22m[39m exibe placeholder quando não há usuário (boot) [33m 336[2mms[22m[39m
+ [32m✓[39m src/lib/auth/token-refresh.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 664[2mms[22m[39m
+ [32m✓[39m src/lib/auth/auth-fetch-middleware.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 1273[2mms[22m[39m
+     [33m[2m✓[22m[39m injects Authorization header on protected requests [33m 617[2mms[22m[39m
+ [32m✓[39m src/features/auth/api/index.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1495[2mms[22m[39m
+     [33m[2m✓[22m[39m popula o auth-store com token decodificado ao receber sucesso do MSW [33m 1138[2mms[22m[39m
+ [32m✓[39m src/proxy.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 298[2mms[22m[39m
+ [32m✓[39m src/lib/observability.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 336[2mms[22m[39m
+ [32m✓[39m src/lib/auth/auth-store.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 444[2mms[22m[39m
+ [32m✓[39m src/components/ui/skeleton.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 830[2mms[22m[39m
+     [33m[2m✓[22m[39m renders with pulse animation class [33m 502[2mms[22m[39m
+ [32m✓[39m src/lib/cn.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 356[2mms[22m[39m
+ [32m✓[39m src/lib/errors.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 201[2mms[22m[39m
+ [32m✓[39m src/features/auth/schemas/index.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 241[2mms[22m[39m
+ [32m✓[39m src/lib/jwt.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 162[2mms[22m[39m
+ [32m✓[39m src/features/gyms/schemas/create-gym-schema.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 218[2mms[22m[39m
+ [32m✓[39m src/features/profile/schemas/update-profile-schema.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 111[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/app/(authenticated)/admin/academias/nova/page.test.tsx[2m > [22mAdminNovaAcademiaPage[2m > [22menvia formulário válido com endereço e coordenadas e redireciona
+[31m[1mError[22m: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+[36m [2m❯[22m src/app/(authenticated)/admin/academias/nova/page.test.tsx:[2m55:2[22m[39m
+    [90m 53|[39m
+    [90m 54|[39m [34mdescribe[39m([32m"AdminNovaAcademiaPage"[39m[33m,[39m () [33m=>[39m {
+    [90m 55|[39m  it("envia formulário válido com endereço e coordenadas e redireciona"…
+    [90m   |[39m  [31m^[39m
+    [90m 56|[39m   [35mlet[39m received[33m:[39m [33mRecord[39m[33m<[39mstring[33m,[39m unknown[33m>[39m [33m|[39m [35mnull[39m [33m=[39m [35mnull[39m
+    [90m 57|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m49 passed[39m[22m[90m (50)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m244 passed[39m[22m[90m (245)[39m
+[2m   Start at [22m 20:19:33
+[2m   Duration [22m 216.47s[2m (transform 11.40s, setup 202.23s, import 88.04s, tests 136.92s, environment 539.46s)[22m
+
+/home/cahmoraes/projects/estudo/clean-arch-solid-ddd/apps/frontend:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  frontend@0.1.0 test: `vitest run -- --reporter=verbose src/components/ui/theme-toggle-fab.test.tsx`
+Exit status 1
+
+
+===== ACCEPTANCE RERUN =====
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/cahmoraes/projects/estudo/clean-arch-solid-ddd/apps/frontend[39m
+
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mnão renderiza nada antes do mount para evitar flash visual[32m 188[2mms[22m[39m
+[90mstderr[2m | src/app/layout.test.tsx[2m > [22m[2mRootLayout[2m > [22m[2mdeve exibir o toggle de tema ao renderizar o shell público
+[22m[39mIn HTML, <html> cannot be a child of <div>.
+This will cause a hydration error.
+
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mrenderiza o botão após o mount[33m 1739[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mexibe ícone 🌙 quando tema é light[32m 205[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mexibe ícone ☀️ quando tema é dark[32m 108[2mms[22m[39m
+ [32m✓[39m src/app/layout.test.tsx[2m > [22mRootLayout[2m > [22mdeve exibir o toggle de tema ao renderizar o shell público[33m 2330[2mms[22m[39m
+ [32m✓[39m src/app/layout.test.tsx[2m > [22mRootLayout[2m > [22mdeve exibir o toggle de tema ao renderizar o shell autenticado[32m 162[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mchama setTheme('dark') ao clicar em modo light[33m 400[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mchama setTheme('light') ao clicar em modo dark[32m 176[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mtem aria-label 'Ativar tema escuro' no modo light[32m 83[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mtem aria-label 'Ativar tema claro' no modo dark[32m 66[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 20:27:54
+[2m   Duration [22m 20.37s[2m (transform 1.73s, setup 6.91s, import 2.64s, tests 5.65s, environment 19.83s)[22m
+
+
+
+===== ACCEPTANCE RERUN 2 =====
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90m/home/cahmoraes/projects/estudo/clean-arch-solid-ddd/apps/frontend[39m
+
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mnão renderiza nada antes do mount para evitar flash visual[32m 27[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mrenderiza o botão após o mount[33m 573[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mexibe ícone 🌙 quando tema é light[32m 43[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mexibe ícone ☀️ quando tema é dark[32m 29[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mchama setTheme('dark') ao clicar em modo light[32m 96[2mms[22m[39m
+ [32m✓[39m src/app/layout.test.tsx[2m > [22mRootLayout[2m > [22mdeve exibir o toggle de tema ao renderizar o shell público[33m 711[2mms[22m[39m
+ [32m✓[39m src/app/layout.test.tsx[2m > [22mRootLayout[2m > [22mdeve exibir o toggle de tema ao renderizar o shell autenticado[32m 53[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mchama setTheme('light') ao clicar em modo dark[32m 67[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mtem aria-label 'Ativar tema escuro' no modo light[32m 27[2mms[22m[39m
+ [32m✓[39m src/components/ui/theme-toggle-fab.test.tsx[2m > [22mThemeToggleFAB[2m > [22mtem aria-label 'Ativar tema claro' no modo dark[32m 22[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 20:29:15
+[2m   Duration [22m 10.53s[2m (transform 583ms, setup 2.46s, import 571ms, tests 1.68s, environment 13.62s)[22m
+

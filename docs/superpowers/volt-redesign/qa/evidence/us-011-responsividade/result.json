@@ -1,0 +1,14 @@
+{
+  "us_id": "us-011",
+  "user_story": "Como usuário em dispositivo móvel/estreito, quero que a interface se adapte (sidebar colapsada/drawer, login em coluna única, grids em reflow), para usar a plataforma sem quebra de layout.",
+  "requirements": ["RF-022", "RF-023", "RF-024", "RF-025"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/volt-redesign/qa/evidence/us-011-responsividade/us-011-responsividade-classes.acceptance.test.tsx"
+  ],
+  "test_output_summary": "14 checks passed (source-level), 0 failed. Acceptance test executado via tsx (Node.js puro, sem vitest bundler). 4 existing tests em authenticated-shell.test.tsx também passam.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Status PARTIAL: todas as classes CSS responsivas estão presentes no código-fonte (evidência de conformidade com RF-022..RF-025), mas comportamento visual real não é verificável em happy-dom (limitação conhecida do ambiente de teste — media queries não são avaliadas). Classes encontradas por RF:\n\nRF-022 (sidebar icon-rail ≤860px):\n  - authenticated-shell.tsx: 'max-[860px]:grid-cols-[76px_1fr]' (grid wrapper)\n  - authenticated-shell.tsx: 'max-[860px]:hidden' (ocultar labels de nav)\n  - authenticated-shell.tsx: 'max-[860px]:px-3' (padding reduzido)\n  - authenticated-shell.tsx: 'max-[860px]:justify-center' (centralizar ícones)\n\nRF-023 (login coluna única ≤860px):\n  - login/page.tsx: 'grid-cols-[1.05fr_1fr] max-[860px]:grid-cols-1'\n  - login/page.tsx: aside com 'max-[860px]:hidden' (ocultar painel lateral)\n\nRF-024 (grids reflow fluido):\n  - dashboard-page.tsx: 'grid-cols-4 max-[1100px]:grid-cols-2 max-[560px]:grid-cols-1' (KPIs)\n  - dashboard-page.tsx: 'grid-cols-[1.6fr_1fr] max-[1100px]:grid-cols-1' (charts)\n  - gym-results.tsx: 'grid-cols-[repeat(auto-fill,minmax(280px,1fr))]' (auto-fill fluido)\n\nRF-025 (max-w 1180px):\n  - authenticated-shell.tsx: 'mx-auto max-w-[1180px]' no container de main"
+}

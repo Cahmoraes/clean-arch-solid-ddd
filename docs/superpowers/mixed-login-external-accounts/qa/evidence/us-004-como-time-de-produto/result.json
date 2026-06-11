@@ -1,0 +1,12 @@
+{
+	"us_id": "us-004",
+	"user_story": "Como time de produto e segurança, eu quero manter um único principal por conta para evitar duplicidade de usuários e linking inseguro entre métodos de autenticação.",
+	"requirements": ["RF-001", "RF-002", "RF-003", "RF-011"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "Backend business-flow: 10/10 testes passaram em authenticate-with-google.business-flow-test.ts, my-profile.business-flow-test.ts e define-password.business-flow-test.ts. Frontend: 10/10 testes passaram em perfil/page.test.tsx e perfil/senha/page.test.tsx. Backend unit: 4/4 testes passaram em user-profile.usecase.test.ts. Evidências-chave verificadas: GET /users/me retorna hasPassword e authMethods; /perfil alterna o CTA entre Definir senha e Alterar senha; /perfil/senha bifurca o formulário conforme hasPassword; login com Google retorna 409 external_account_link_required quando o email já existe sem vínculo seguro; após definir a primeira senha, a conta aceita login por email/senha na mesma conta já vinculada ao Google.",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "O arquivo citado na instrução para RF-001 não existe; a cobertura equivalente está em apps/backend/src/user/infra/controller/my-profile.business-flow-test.ts. Não foi necessário criar testes de aceitação adicionais. Screenshot pulado porque os servidores não estavam em execução. Validações complementares também passaram: pnpm --filter backend biome:fix, pnpm --filter backend tsc:check, pnpm --filter backend test:run, pnpm --filter frontend lint:fix, pnpm --filter frontend tsc:check, pnpm --filter frontend test --run e pnpm build."
+}

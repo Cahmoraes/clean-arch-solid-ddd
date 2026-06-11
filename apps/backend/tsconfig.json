@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"useDefineForClassFields": false,
+		"target": "esnext",
+		"lib": ["ES2022", "dom"],
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"paths": {
+			"@/*": ["./src/*"],
+			"test/*": ["./test/*"]
+		},
+		"types": ["reflect-metadata", "vitest/globals"],
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"skipLibCheck": true,
+		"jsx": "react-jsx",
+		"jsxImportSource": "react"
+	}
+}

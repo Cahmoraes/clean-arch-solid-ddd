@@ -1,0 +1,46 @@
+import { injectable } from "inversify"
+import NodeCache from "node-cache"
+import type { CacheDB } from "./cache-db"
+
+@injectable()
+export class CacheDBMemory implements CacheDB {
+	public data: Map<string, any> = new Map()
+	private _cache: NodeCache
+
+	constructor() {
+		this._cache = new NodeCache()
+	}
+
+	public async get<T>(key: string): Promise<T | null> {
+		return this._cache.get(key) ?? null
+	}
+
+	public async set<T>(
+		key: string,
+		value: T,
+		_ttlSeconds?: number,
+	): Promise<void> {
+		this._cache.set(key, value)
+	}
+
+	public async delete(key: string): Promise<void> {
+		this._cache.del(key)
+	}
+
+	public async getAndDelete<T>(key: string): Promise<T | null> {
+		const value = this._cache.get<T>(key)
+		if (value === undefined) return null
+		this._cache.del(key)
+		return value
+	}
+
+	public async deleteByPattern(pattern: string): Promise<void> {
+		const regex = new RegExp(`^${pattern.replace(/\*/g, ".*")}$`)
+		const matchingKeys = this._cache.keys().filter((key) => regex.test(key))
+		this._cache.del(matchingKeys)
+	}
+
+	public async clear(): Promise<void> {
+		this._cache.flushAll()
+	}
+}

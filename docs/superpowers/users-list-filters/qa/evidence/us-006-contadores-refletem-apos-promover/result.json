@@ -1,0 +1,54 @@
+{
+	"userStory": "US-006",
+	"title": "Contadores refletem situação atual após promover ou rebaixar usuário",
+	"requirement": "RF-016",
+	"status": "PASSED",
+	"verificationMethod": "unit-test + code-review",
+	"date": "2026-05-27",
+	"summary": "Todas as mutações (usePromoteToAdmin, useDemoteFromAdmin) chamam queryClient.invalidateQueries({ queryKey: [USER_STATS_QUERY_KEY] }) no callback onSettled — garantindo que os contadores sejam refrescados após qualquer desfecho (sucesso ou erro). Testes unitários adicionados e executados com 4/4 passando.",
+	"testsAdded": [
+		{
+			"file": "apps/frontend/src/features/admin/api/use-promote-to-admin.test.tsx",
+			"tests": [
+				"RF-016: invalida USER_STATS_QUERY_KEY após promoção bem-sucedida",
+				"RF-016: invalida USER_STATS_QUERY_KEY mesmo quando promoção falha"
+			]
+		},
+		{
+			"file": "apps/frontend/src/features/admin/api/use-demote-from-admin.test.tsx",
+			"tests": [
+				"RF-016: invalida USER_STATS_QUERY_KEY após rebaixamento bem-sucedido",
+				"RF-016: invalida USER_STATS_QUERY_KEY mesmo quando rebaixamento falha"
+			]
+		}
+	],
+	"testRun": {
+		"command": "npx vitest run --reporter verbose -t \"RF-016\"",
+		"result": "4 passed | 0 failed",
+		"preExistingFailures": "Falhas pré-existentes não relacionadas (perfil/page.test.tsx, etc.) estavam presentes antes deste QA e não são escopo desta US"
+	},
+	"codeEvidence": {
+		"usePromoteToAdmin": {
+			"file": "apps/frontend/src/features/admin/api/use-promote-to-admin.ts",
+			"onSettled": "void queryClient.invalidateQueries({ queryKey: [USER_STATS_QUERY_KEY] })"
+		},
+		"useDemoteFromAdmin": {
+			"file": "apps/frontend/src/features/admin/api/use-demote-from-admin.ts",
+			"onSettled": "void queryClient.invalidateQueries({ queryKey: [USER_STATS_QUERY_KEY] })"
+		},
+		"useActivateUser": {
+			"file": "apps/frontend/src/features/admin/api/use-activate-user.ts",
+			"onSettled": "void queryClient.invalidateQueries({ queryKey: [USER_STATS_QUERY_KEY] })"
+		},
+		"useSuspendUser": {
+			"file": "apps/frontend/src/features/admin/api/use-suspend-user.ts",
+			"onSettled": "void queryClient.invalidateQueries({ queryKey: [USER_STATS_QUERY_KEY] })"
+		}
+	},
+	"findings": [
+		"onSettled dispara em ambos os casos (sucesso e erro) — comportamento correto conforme TanStack Query",
+		"Invalidação usa queryKey exato [USER_STATS_QUERY_KEY] — consistente com useUserStats hook",
+		"Todas as 4 mutações de estado do usuário (promote, demote, activate, suspend) invalidam USER_STATS_QUERY_KEY",
+		"Acceptance test criado em docs/ (não executável via vitest padrão — node_modules fora do root); testes equivalentes adicionados em src/"
+	]
+}

@@ -1,0 +1,27 @@
+{
+  "userStory": "us-008",
+  "title": "Gerir usuários em tela VOLT (filtros segmentados, busca, lista com badge de role) preservando funcionalidade atual",
+  "requirements": ["RF-017"],
+  "status": "PASSED",
+  "summary": "5 arquivos de teste da feature admin executados com sucesso: 38 testes, 0 falhas. Cobrem os elementos VOLT do RF-017 (page-header, segmented filter, search, user-row, badge de role). Funcionalidade de filtros/busca/badge validada pelos testes existentes (user-row: 5 asserts de badge/role; user-filter-bar: 23 asserts de filter/search/segment/status). Nenhum teste novo necessário.",
+  "tests": {
+    "files": [
+      "src/features/admin/components/user-row.test.tsx",
+      "src/features/admin/components/user-filter-bar.test.tsx",
+      "src/features/admin/components/user-detail-modal.test.tsx",
+      "src/app/(authenticated)/admin/usuarios/admin-users-page.test.tsx",
+      "src/app/(authenticated)/admin/usuarios/page.test.tsx"
+    ],
+    "filesPassed": 5,
+    "filesFailed": 0,
+    "testsPassed": 38,
+    "testsFailed": 0,
+    "duration": "5.85s"
+  },
+  "screenshot": null,
+  "notes": [
+    "Screenshot INDISPONÍVEL: playwright-cli não executado neste fluxo de QA — etapa pulada conforme instrução.",
+    "RF-017 (page-header/segmented/search/user-row/badge) coberto pelos testes existentes; nenhum gap claro identificado, portanto nenhum teste de aceitação novo foi criado.",
+    "Comando de execução: npx vitest run <5 paths>."
+  ]
+}

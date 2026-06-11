@@ -1,0 +1,47 @@
+{
+	"us_id": "us-005",
+	"user_story": "Como usuário registrado, eu quero ser notificado por e-mail quando minha senha for alterada com sucesso, para que eu saiba que a alteração ocorreu e possa agir caso não tenha sido eu.",
+	"requirements": ["RF-013"],
+	"status": "PASSED",
+	"summary": "RF-013 verificado com sucesso: o reset de senha publica PasswordChangedEvent e o bootstrap do módulo user registra SendPasswordAlertEmailNotification, resultando no envio do e-mail de alerta ao usuário.",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [
+		"docs/superpowers/forgot-password/qa/evidence/us-005-notificado-email-senha-alterada/us-005-password-alert-email.acceptance.test.ts"
+	],
+	"implementation_evidence": [
+		{
+			"file": "apps/backend/src/user/domain/event/password-changed-event.ts",
+			"verified": "PasswordChangedEvent existe e carrega userName/userEmail no payload."
+		},
+		{
+			"file": "apps/backend/src/user/application/use-case/reset-password.usecase.ts",
+			"verified": "ResetPasswordUseCase inscreve handlePasswordChangedEvent antes de user.changePassword() e publica o evento via DomainEventPublisher após reset bem-sucedido."
+		},
+		{
+			"file": "apps/backend/src/bootstrap/setup-user-module.ts",
+			"verified": "setupUserModule resolve SendPasswordAlertEmailNotification e chama subscribe() durante o bootstrap."
+		},
+		{
+			"file": "apps/backend/src/user/infra/email/send-password-alert-email.notification.ts",
+			"verified": "A notificação escuta EVENTS.PASSWORD_CHANGED e envia e-mail via MailerGateway com subject de alerta de segurança."
+		}
+	],
+	"test_evidence": [
+		{
+			"command": "pnpm --filter backend exec vitest run --config ./test/vite.config.app-domain.ts --reporter=verbose src/user/application/use-case/reset-password.usecase.test.ts src/user/application/use-case/change-password.usecase.test.ts src/user/application/use-case/define-password.usecase.test.ts src/user/infra/email/send-password-alert-email.notification.test.ts src/shared/domain/event/domain-event-publisher.test.ts",
+			"status": "PASSED",
+			"summary": "5 arquivos executados, 29 testes aprovados."
+		},
+		{
+			"command": "pnpm --filter backend exec vitest run --config ../../docs/superpowers/forgot-password/qa/evidence/us-005-notificado-email-senha-alterada/vitest.evidence.config.ts --reporter=verbose",
+			"status": "PASSED",
+			"summary": "1 arquivo de aceitação executado, 2 testes aprovados cobrindo publicação do evento no reset e assinatura da notificação no bootstrap."
+		},
+		{
+			"command": "pnpm --filter backend biome:fix && pnpm --filter backend tsc:check && pnpm --filter backend test:run && pnpm --filter backend build",
+			"status": "PASSED",
+			"summary": "Validação completa do backend executada com sucesso após coleta de evidências."
+		}
+	],
+	"notes": "A cobertura existente já validava o envio do e-mail para PasswordChangedEvent e o uso de PasswordChangedEvent em change-password/define-password. A evidência adicional criada cobre explicitamente o fluxo de reset de senha exigido por RF-013 e a ligação do subscriber no bootstrap."
+}

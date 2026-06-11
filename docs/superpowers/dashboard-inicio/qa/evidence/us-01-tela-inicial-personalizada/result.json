@@ -1,0 +1,14 @@
+{
+  "us_id": "us-01",
+  "user_story": "Como membro, quero que ao fazer login eu chegue direto no meu dashboard pessoal, para que eu veja minhas informações sem precisar navegar.",
+  "requirements": ["RF-001", "RF-002", "RF-003"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/dashboard-inicio/qa/evidence/us-01-tela-inicial-personalizada/us-01-login-redirect.acceptance.test.ts"
+  ],
+  "test_output_summary": "62 test files, 342 tests — all PASSED. Testes existentes cobrem RF-001 e RF-002: login page redireciona para /inicio (src/app/(public)/login/page.test.tsx, testes: 'submete credenciais válidas e redireciona para /inicio' e 'redireciona para /inicio após login Google bem-sucedido'). Authenticated shell test confirma '/inicio' na navegação sidebar.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "RF-001 PASSED: apps/frontend/src/app/(authenticated)/inicio/page.tsx existe e renderiza DashboardPage. RF-002 PASSED: DEFAULT_REDIRECT = '/inicio' definido em src/app/(public)/login/page.tsx (linha 16). RF-003: gap encontrado e corrigido durante o QA gate — '/inicio/:path*' adicionado ao config.matcher em src/proxy.ts; 2 novos testes adicionados em src/proxy.test.ts (8/8 passando)."
+}

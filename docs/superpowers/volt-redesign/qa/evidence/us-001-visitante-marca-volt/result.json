@@ -1,0 +1,15 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como visitante, quero ver a marca VOLT na tela de login e nas páginas públicas, para reconhecer a identidade da plataforma.",
+  "requirements": ["RF-008", "RF-009", "RF-014"],
+  "status": "PASSED",
+  "existing_tests_found": [
+    "apps/frontend/src/components/layout/public-shell.test.tsx",
+    "apps/frontend/src/app/(public)/login/login-volt.test.tsx"
+  ],
+  "acceptance_tests_created": [],
+  "test_output_summary": "vitest run: 2 arquivos de teste, 7 testes, todos PASSED (0 falhas), duração 3.74s. public-shell.test.tsx cobre RF-008/RF-014: assere wordmark VOLT presente no header (>=1 ocorrência), ausência da marca antiga GymPass, borda inferior VOLT sem bloco bg-primary, e CTAs de login/cadastro. login-volt.test.tsx cobre a tela de login com painel-marca/hero VOLT ('Treine onde') e preservação dos campos de e-mail/senha e botão de submit.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Cobertura suficiente — nenhum teste novo criado (Task 2). RF-008 e RF-014 verificados por public-shell.test.tsx (marca VOLT presente, GymPass ausente, shell público VOLT). RF-009 (metadados) verificado por inspeção direta de apps/frontend/src/app/layout.tsx: metadata.title = 'VOLT — Plataforma de acesso a academias' e description com 'VOLT — treine onde você estiver'. Task 3 (screenshot): browser automation INDISPONÍVEL nesta execução (app/backend não rodando) → pulado; screenshot_path = null."
+}

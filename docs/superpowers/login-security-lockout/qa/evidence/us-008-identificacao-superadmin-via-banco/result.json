@@ -1,0 +1,50 @@
+{
+  "userStory": "US-008",
+  "title": "Identificação do superadmin via banco de dados",
+  "status": "PASSED",
+  "verifiedAt": "2026-05-28",
+  "requirements": [
+    {
+      "id": "RF-018",
+      "description": "Schema deve incluir campo isSuperAdmin Boolean @default(false) na tabela de usuários",
+      "status": "PASSED",
+      "evidence": "apps/backend/prisma/schema.prisma linha 21: `is_super_admin Boolean @default(false)`"
+    },
+    {
+      "id": "RF-019",
+      "description": "Root admin deve ter isSuperAdmin=true via migration de dados",
+      "status": "PASSED",
+      "evidence": "apps/backend/prisma/migrations/20260528141648_add_locked_status_and_is_super_admin/migration.sql — ADD COLUMN is_super_admin BOOLEAN NOT NULL DEFAULT false + UPDATE users SET is_super_admin = true WHERE email = 'admin@admin.com'"
+    },
+    {
+      "id": "RF-020",
+      "description": "Nenhuma verificação de identidade do root admin usa comparação de string em código-fonte de produção",
+      "status": "PASSED",
+      "evidence": "grep -r 'admin@admin.com' apps/backend/src/ --include='*.ts' (excluindo arquivos de teste) retornou zero matches. promote-to-admin.usecase.ts:43 usa user.isSuperAdmin, demote-from-admin.usecase.ts:47 usa user.isSuperAdmin, authenticate.usecase.ts:69,82,87 usa user.isSuperAdmin"
+    }
+  ],
+  "existingTests": [
+    {
+      "file": "apps/backend/src/user/application/use-case/promote-to-admin.usecase.test.ts",
+      "test": "Não deve promover usuário com isSuperAdmin=true",
+      "assertsIsSuperAdmin": true
+    },
+    {
+      "file": "apps/backend/src/user/application/use-case/demote-from-admin.usecase.test.ts",
+      "test": "Não deve demover usuário com isSuperAdmin=true",
+      "assertsIsSuperAdmin": true
+    },
+    {
+      "file": "apps/backend/src/session/application/use-case/authenticate.usecase.test.ts",
+      "test": "Não deve bloquear usuário isSuperAdmin mesmo com 3 tentativas inválidas",
+      "assertsIsSuperAdmin": true
+    }
+  ],
+  "testRun": {
+    "command": "pnpm --filter backend test:run",
+    "result": "85 test files passed, 497 tests passed",
+    "newTestsCreated": false,
+    "reason": "Testes existentes já cobrem isSuperAdmin de forma adequada em todos os use-cases relevantes"
+  },
+  "notes": "A string 'admin@admin.com' aparece APENAS em arquivos de teste (*.test.ts e *.business-flow-test.ts), nunca em código-fonte de produção. O código de produção usa exclusivamente user.isSuperAdmin para proteção do root admin."
+}

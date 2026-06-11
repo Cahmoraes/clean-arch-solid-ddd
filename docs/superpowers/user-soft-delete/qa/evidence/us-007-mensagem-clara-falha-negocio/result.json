@@ -1,0 +1,55 @@
+{
+  "us_id": "us-007",
+  "title": "Admin vê mensagem clara quando exclusão falha por regra de negócio",
+  "requirements": ["RF-014", "RF-020"],
+  "status": "PARTIAL",
+  "evaluated_at": "2026-05-31",
+  "test_output_summary": {
+    "backend_business_flow": {
+      "command": "pnpm --filter backend test:business-flow -- -t 'Excluir Usuário'",
+      "result": "PASSED",
+      "test_files": 38,
+      "tests": 157,
+      "relevant_tests": [
+        "Deve retornar 403 ao tentar excluir a si mesmo (verifica response.body.message)",
+        "Deve retornar 403 ao tentar excluir o super admin (verifica response.body.message)",
+        "Deve retornar 404 quando o usuário alvo não existe (verifica response.body.message)"
+      ],
+      "rf_014_coverage": "FULL — mapResponseError retorna ResponseFactory.FORBIDDEN({ message }) para CannotDeleteSelfError e UserIsSuperAdminError; ResponseFactory.NOT_FOUND({ message }) para UserNotFoundError. Todos os 3 casos têm assertion de response.body.message nos testes."
+    },
+    "frontend_unit_tests": {
+      "command": "pnpm --filter frontend test -- -t 'useDeleteUser'",
+      "result": "PASSED",
+      "test_files": 88,
+      "tests": 426,
+      "relevant_tests": [
+        "useDeleteUser: restaura o usuário no cache em caso de erro 403 da API",
+        "useDeleteUser: remove o usuário do cache otimisticamente antes de a requisição completar",
+        "useDeleteUser: invalida queries de listagem e stats após a mutação"
+      ],
+      "rf_020_coverage": "PARTIAL — use-delete-user.test.tsx verifica rollback de cache em erro 403 mas NÃO verifica o userMessage do ApiError gerado. use-user-detail-actions.test.tsx não testa o campo errorMessage após delete falhar com 403/404."
+    }
+  },
+  "gap_identified": {
+    "description": "Nenhum teste verifica que errorMessage (exposto por useUserDetailActions) é não-nulo e apresenta string amigável após deleteUser retornar 403 ou 404.",
+    "severity": "MEDIUM — o comportamento funciona em código (getErrorMessage(deleteUser) é primeira na cadeia de errorMessage), mas não há teste de aceitação que prove que o banner de erro aparece para o admin.",
+    "note_on_toApiError": "toApiError em use-delete-user.ts usa error instanceof Error para decidir o userMessage. O objeto 'error' do openapi-fetch (body parsed da resposta 403/404) NÃO é uma instância de Error, então o fallback é mapStatusToMessage(500) = 'Erro interno no servidor.' ao invés de mapStatusToMessage(403) = 'Você não tem permissão para realizar esta ação.' — isso é um bug de mapeamento que resulta em mensagem genérica ao invés da mensagem correta para 403."
+  },
+  "acceptance_tests_created": {
+    "file": "us-007-error-message-surfacing.acceptance.test.tsx",
+    "location": "docs/superpowers/user-soft-delete/qa/evidence/us-007-mensagem-clara-falha-negocio/",
+    "runner": "run-acceptance.mjs",
+    "execution_status": "UNABLE_TO_RUN",
+    "execution_blocker": "Limitação arquitetural: vitest com pnpm workspaces não consegue executar arquivos de teste fora do 'root' do projeto (apps/frontend). O arquivo de teste está em docs/ (fora do root), e o vitest não inclui arquivos fora do root no include glob. A solução requereria criar um arquivo de test proxy dentro de apps/frontend/src/ — proibido pelas instruções de QA. O acceptance test está escrito e revisável, mas não pôde ser executado automaticamente.",
+    "test_cases": [
+      "expõe errorMessage não-nulo quando deleteUser retorna 403 (auto-exclusão / super admin)",
+      "expõe errorMessage não-nulo quando deleteUser retorna 404 (usuário não encontrado)",
+      "errorMessage retorna null após delete bem-sucedido (204)"
+    ]
+  },
+  "notes": [
+    "RF-014 FULLY COVERED: backend retorna 403 com { message } para self-delete e super-admin-delete, e 404 com { message } para not-found. Testes de business-flow verificam status + message em todos os casos.",
+    "RF-020 PARTIALLY COVERED: o hook useDeleteUser captura o erro e o surfacing via errorMessage existe em código (use-user-detail-actions.ts linha 125-131). Porém os testes existentes não verificam que o campo errorMessage fica não-nulo após o erro, e há um bug de mapeamento onde mensagem 403 aparece como genérica de 500.",
+    "Bug encontrado: toApiError(error) onde error é o body parsed do openapi-fetch (ex: { message: '...' }) — não é Error instance, então userMessage = mapStatusToMessage(500) em vez de mapStatusToMessage(403). A mensagem amigável correta para 403 ('Você não tem permissão...') não é usada."
+  ]
+}

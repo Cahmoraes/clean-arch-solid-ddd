@@ -1,0 +1,39 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
+	"extends": "//",
+	"files": {
+		"ignoreUnknown": false,
+		"includes": [
+			"**",
+			"!**/.github",
+			"!**/playwright-report",
+			"!**/test-results",
+			"!**/coverage",
+			"!**/.next",
+			"!**/node_modules"
+		]
+	},
+	"overrides": [
+		{
+			"includes": [
+				"**/*.test.ts",
+				"**/*.test.tsx",
+				"**/*.spec.ts",
+				"**/*.spec.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noNonNullAssertion": "off"
+					}
+				}
+			}
+		}
+	],
+	"css": {
+		"parser": {
+			"cssModules": true,
+			"tailwindDirectives": true
+		}
+	}
+}

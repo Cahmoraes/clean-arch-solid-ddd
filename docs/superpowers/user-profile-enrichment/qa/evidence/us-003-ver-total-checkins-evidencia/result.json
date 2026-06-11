@@ -1,0 +1,27 @@
+{
+"us_id": "US-003",
+"user_story": "Como usuário autenticado, eu quero ver meu total de check-ins em evidência para acompanhar meu engajamento com a plataforma.",
+"requirements": ["RF-001", "RF-003"],
+"status": "PASSED",
+"existing_tests_found": true,
+"acceptance_tests_created": [],
+"test_output_summary": "2 suítes alvo aprovadas via npx vitest run: src/app/(authenticated)/perfil/page.test.tsx (4 testes) + src/features/profile/api/index.test.tsx (5 testes). Total: 9 testes passados, 0 falhas. Nenhum teste de aceitação extra necessário.",
+"screenshot_path": null,
+"failure_details": null,
+"notes": "Mapeamento validado. page.test.tsx cobre metric-checkins em page.test.tsx:83 e iniciais do avatar em page.test.tsx:89/108. index.test.tsx cobre hook useMetrics e payload checkInsCount em index.test.tsx:60-73. Screenshot skipped — server not running.",
+"mapped_tests": [
+{
+"file": "apps/frontend/src/app/(authenticated)/perfil/page.test.tsx",
+"coverage": [
+"renderiza data-testid=metric-checkins com contagem de check-ins",
+"renderiza iniciais do avatar a partir do nome do usuário"
+]
+},
+{
+"file": "apps/frontend/src/features/profile/api/index.test.tsx",
+"coverage": [
+"useMetrics retorna checkInsCount tipado do endpoint /users/me/metrics"
+]
+}
+]
+}

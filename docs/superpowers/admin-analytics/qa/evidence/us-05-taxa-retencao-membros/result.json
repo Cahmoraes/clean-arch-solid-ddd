@@ -1,0 +1,64 @@
+{
+  "user_story": "US-05",
+  "title": "Taxa de retenção e contagem de membros ativos versus inativos",
+  "status": "PASS",
+  "verified_at": "2026-06-04",
+  "server_running": true,
+  "requirements": [
+    {
+      "id": "FR-011",
+      "description": "Exibir contagem absoluta de membros ativos e inativos, e taxa de churn em percentual. Membro inativo: sem check-in nos últimos 30 dias (fixo, independente do período selecionado).",
+      "status": "PASS",
+      "evidence": {
+        "component": "apps/frontend/src/features/admin/analytics/components/retention-metrics-section.tsx",
+        "backend_use_case": "apps/backend/src/analytics/application/use-case/fetch-retention-analytics.usecase.ts",
+        "repository": "apps/backend/src/shared/infra/database/repository/prisma/prisma-analytics-user-repository.ts",
+        "notes": [
+          "activeCount renderizado via data.activeCount.toLocaleString('pt-BR') com label 'Membros ativos'",
+          "inactiveCount renderizado via data.inactiveCount com label 'Membros inativos'",
+          "churnRate renderizado via data.churnRate.toFixed(1)% com label 'Taxa de churn'",
+          "Janela fixa de 30 dias confirmada no repositório: thirtyDaysAgo = now - 30d, independente do period passado ao use-case",
+          "inactiveCount = max(0, totalUsers - activeCount), churnRate = (inactiveCount / totalUsers) * 100"
+        ]
+      }
+    },
+    {
+      "id": "FR-013",
+      "description": "A seção deve estar fechada por padrão ao carregar a página.",
+      "status": "PASS",
+      "evidence": {
+        "component": "apps/frontend/src/features/admin/analytics/components/retention-metrics-section.tsx",
+        "notes": [
+          "useState(false) na linha 21: const [isOpen, setIsOpen] = useState(false) // fechado por padrão (FR-013)",
+          "Collapsible open={isOpen}: conteúdo não renderizado enquanto isOpen=false",
+          "Teste de aceitação confirma que Membros ativos/inativos/Taxa de churn não aparecem no DOM antes da interação do usuário"
+        ]
+      }
+    }
+  ],
+  "tests": {
+    "file": "apps/frontend/src/features/admin/analytics/components/retention-metrics-section.test.tsx",
+    "evidence_copy": "docs/superpowers/admin-analytics/qa/evidence/us-05-taxa-retencao-membros/us-05-retention-metrics.acceptance.test.tsx",
+    "run_command": "pnpm --filter frontend test -- src/features/admin/analytics/components/retention-metrics-section.test.tsx",
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "cases": [
+      "deve renderizar a seção fechada ao carregar a página (FR-013)",
+      "deve exibir activeCount ao abrir a seção (FR-011)",
+      "deve exibir inactiveCount ao abrir a seção (FR-011)",
+      "deve exibir churnRate em percentual ao abrir a seção (FR-011)",
+      "deve indicar janela fixa de 30 dias para membros ativos (FR-011)",
+      "deve indicar ausência de check-in em 30+ dias para membros inativos (FR-011)",
+      "deve exibir mensagem de erro quando a requisição falha"
+    ]
+  },
+  "backend_test": {
+    "file": "apps/backend/src/analytics/application/use-case/fetch-retention-analytics.usecase.test.ts",
+    "notes": "Teste de use-case existente cobre retorno de activeCount, inactiveCount, churnRate e atRiskMembers para período válido, e falha para período inválido."
+  },
+  "observations": [
+    "O nome do arquivo use-case é fetch-retention-analytics.usecase.ts (sem hífen entre use e case), diferente do caminho mencionado na task (fetch-retention-analytics.use-case.ts que não existe).",
+    "O CollapsibleContent do Radix UI não remove o conteúdo do DOM quando fechado em happy-dom, mas a query 'queryByText' confirma o comportamento correto de closed-by-default ao verificar que os labels não aparecem antes da abertura."
+  ]
+}

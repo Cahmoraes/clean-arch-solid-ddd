@@ -1,0 +1,137 @@
+import { inject, injectable } from "inversify"
+import type {
+	Prisma,
+	PrismaClient,
+} from "@/shared/infra/database/generated/prisma/client"
+import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
+import { SHARED_TYPES } from "@/shared/infra/ioc/types"
+import type { UserQuery } from "@/user/application/persistence/repository/user-query"
+import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
+import { User } from "@/user/domain/user"
+import type { RoleTypes } from "@/user/domain/value-object/role"
+import type { StatusTypes } from "@/user/domain/value-object/status"
+import { PrismaUnitOfWork } from "../unit-of-work/prisma-unit-of-work"
+
+interface UserData {
+	id: string
+	name: string
+	email: string
+	password_hash: string | null
+	google_id: string | null
+	created_at: Date
+	updated_at: Date
+	role: RoleTypes
+	status: StatusTypes
+	billing_customer_id?: string | null
+	deleted_at?: Date | null
+}
+
+@injectable()
+export class PrismaUserRepository implements UserRepository {
+	constructor(
+		@inject(SHARED_TYPES.Prisma.Client)
+		private readonly prisma: PrismaClient | Prisma.TransactionClient,
+	) {}
+
+	public withTransaction<TX extends object>(prismaClient: TX): UserRepository {
+		if (!PrismaUnitOfWork.isClientTransaction(prismaClient)) {
+			throw new InvalidTransactionInstance(prismaClient)
+		}
+		return new PrismaUserRepository(prismaClient)
+	}
+
+	public async get(userQuery: UserQuery): Promise<User | null> {
+		const userDataOrNull = await this.prisma.user.findFirst({
+			where: { ...userQuery.fields, deleted_at: null },
+		})
+		if (!userDataOrNull) return null
+		return this.restoreUser(userDataOrNull)
+	}
+
+	public async userOfId(id: string): Promise<User | null> {
+		const userDataOrNull = await this.prisma.user.findFirst({
+			where: {
+				id,
+				deleted_at: null,
+			},
+		})
+		if (!userDataOrNull) return null
+		return this.restoreUser(userDataOrNull)
+	}
+
+	public async userOfEmail(email: string): Promise<User | null> {
+		const userDataOrNull = await this.prisma.user.findFirst({
+			where: {
+				email,
+				deleted_at: null,
+			},
+		})
+		if (!userDataOrNull) return null
+		return this.restoreUser(userDataOrNull)
+	}
+
+	public async userOfGoogleId(googleId: string): Promise<User | null> {
+		const userDataOrNull = await this.prisma.user.findFirst({
+			where: {
+				google_id: googleId,
+				deleted_at: null,
+			},
+		})
+		if (!userDataOrNull) return null
+		return this.restoreUser(userDataOrNull)
+	}
+
+	private async restoreUser(userData: UserData): Promise<User> {
+		return User.restore({
+			id: userData.id,
+			email: userData.email,
+			name: userData.name,
+			password: userData.password_hash ?? undefined,
+			googleId: userData.google_id ?? undefined,
+			createdAt: new Date(userData.created_at),
+			updatedAt: new Date(userData.updated_at),
+			role: userData.role,
+			status: userData.status,
+			billingCustomerId: userData.billing_customer_id ?? undefined,
+			deletedAt: userData.deleted_at ?? undefined,
+		})
+	}
+
+	public async save(user: User): Promise<void> {
+		await this.prisma.user.create({
+			data: {
+				id: user.id,
+				email: user.email,
+				name: user.name,
+				password_hash: user.password,
+				google_id: user.googleId,
+				created_at: user.createdAt,
+				role: user.role,
+				status: user.status,
+				billing_customer_id: user.billingCustomerId,
+				deleted_at: user.deletedAt ?? null,
+			},
+		})
+	}
+
+	public async update(user: User): Promise<void> {
+		await this.prisma.user.update({
+			where: {
+				id: user.id,
+			},
+			data: {
+				email: user.email,
+				name: user.name,
+				password_hash: user.password,
+				google_id: user.googleId,
+				created_at: user.createdAt,
+				role: user.role,
+				status: user.status,
+				billing_customer_id: user.billingCustomerId,
+				is_super_admin: user.isSuperAdmin,
+				updated_at: user.updatedAt ? user.updatedAt : new Date(),
+				deleted_at: user.deletedAt ?? null,
+			},
+		})
+	}
+}

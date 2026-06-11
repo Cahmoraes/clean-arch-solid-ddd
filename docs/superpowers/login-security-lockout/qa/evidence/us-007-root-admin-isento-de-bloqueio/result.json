@@ -1,0 +1,55 @@
+{
+  "userStory": "US-007",
+  "title": "Root admin isento de bloqueio",
+  "status": "PASSED",
+  "verifiedAt": "2026-05-28T15:38:00-03:00",
+  "requirements": {
+    "RF-005": {
+      "description": "Usuários com isSuperAdmin=true são isentos: tentativas falhas não são contabilizadas e o bloqueio nunca é acionado para eles.",
+      "status": "PASSED"
+    }
+  },
+  "implementation": {
+    "file": "apps/backend/src/session/application/use-case/authenticate.usecase.ts",
+    "exemptionPoints": [
+      {
+        "method": "checkLockStatus",
+        "line": 69,
+        "code": "if (user.isSuperAdmin) return null",
+        "description": "Lock check skipped entirely for superAdmin — isLocked never queried"
+      },
+      {
+        "method": "validatePasswordAndAuthenticate",
+        "line": 82,
+        "code": "if (!user.isSuperAdmin) { await this.handleFailedAttempt(user, input.email) }",
+        "description": "Failed attempt NOT counted for superAdmin"
+      },
+      {
+        "method": "validatePasswordAndAuthenticate",
+        "line": 87,
+        "code": "if (!user.isSuperAdmin) { await this.loginAttemptStore.deleteFailedAttempts(input.email) }",
+        "description": "Counter deletion also gated — superAdmin path skips entirely"
+      }
+    ]
+  },
+  "existingTests": {
+    "file": "apps/backend/src/session/application/use-case/authenticate.usecase.test.ts",
+    "testName": "lockout > Não deve bloquear usuário isSuperAdmin mesmo com 3 tentativas inválidas",
+    "line": 177,
+    "verifies": [
+      "3 consecutive failed login attempts for isSuperAdmin=true user do NOT trigger lockout",
+      "user.isLocked remains false after 3 failures",
+      "user.status remains not 'locked'"
+    ],
+    "result": "PASSED (561ms)"
+  },
+  "newTestsCreated": false,
+  "testRunSummary": {
+    "command": "pnpm --filter backend test:run -- --reporter=verbose",
+    "totalFiles": 85,
+    "totalTests": 497,
+    "passed": 497,
+    "failed": 0
+  },
+  "notes": "Implementation is correct and complete. The isSuperAdmin guard appears in two distinct code paths: (1) checkLockStatus returns null immediately — lock check never executed; (2) validatePasswordAndAuthenticate skips handleFailedAttempt call — increment never called. Both paths together guarantee RF-005 compliance."
+}

@@ -1,0 +1,75 @@
+{
+  "userStory": "US-005",
+  "title": "Como membro regular (não admin), eu quero que o palette não exiba a seção de usuários para que eu não veja opções irrelevantes ao meu perfil.",
+  "verifiedAt": "2026-06-02",
+  "status": "PASSED",
+  "requirements": [
+    {
+      "id": "RF-016",
+      "description": "O grupo 'Usuários' é exibido apenas para usuários com role ADMIN",
+      "status": "PASSED",
+      "evidence": {
+        "sourceFile": "apps/frontend/src/components/command-palette/command-palette.tsx",
+        "codeEvidence": "{isAdmin && <UserGroup ... />} — conditional on line 66-72",
+        "tests": [
+          {
+            "file": "apps/frontend/src/components/command-palette/command-palette.test.tsx",
+            "name": "não exibe UserGroup para membro",
+            "result": "PASSED"
+          },
+          {
+            "file": "apps/frontend/src/components/command-palette/command-palette.test.tsx",
+            "name": "exibe NavigationGroup quando aberto com query vazia (membro)",
+            "result": "PASSED",
+            "note": "Asserts queryByText('Usuários (admin)') not.toBeInTheDocument() for MEMBER"
+          }
+        ]
+      }
+    },
+    {
+      "id": "RF-007",
+      "description": "Itens de navegação para páginas admin são exibidos apenas para usuários com role ADMIN",
+      "status": "PASSED",
+      "evidence": {
+        "sourceFile": "apps/frontend/src/components/command-palette/navigation-group.tsx",
+        "tests": [
+          {
+            "file": "apps/frontend/src/components/command-palette/navigation-group.test.tsx",
+            "name": "não exibe itens admin para membro",
+            "result": "PASSED",
+            "note": "Asserts 'Usuários (admin)' and 'Check-ins (admin)' not.toBeInTheDocument() for MEMBER"
+          },
+          {
+            "file": "apps/frontend/src/components/command-palette/navigation-group.test.tsx",
+            "name": "exibe itens admin para ADMIN",
+            "result": "PASSED"
+          }
+        ]
+      }
+    },
+    {
+      "id": "RF-005",
+      "description": "O foco retorna ao elemento anterior após o fechamento do palette (accessibility for all users)",
+      "status": "PASSED",
+      "evidence": {
+        "mechanism": "Radix UI @radix-ui/react-dialog v1.1.15 — returns focus to trigger element on Dialog close natively, no custom impl required",
+        "sourceFile": "apps/frontend/src/components/command-palette/command-palette.tsx",
+        "note": "Uses Radix Dialog Root/Content primitives. Radix handles returnFocus automatically per WAI-ARIA Dialog pattern."
+      }
+    }
+  ],
+  "testSummary": {
+    "totalCommandPaletteTests": 27,
+    "directlyRelevantToUS005": 4,
+    "allPassed": true,
+    "suiteTotal": "473 tests / 97 files — all passed",
+    "relevantTests": [
+      "command-palette.test.tsx > não exibe UserGroup para membro",
+      "command-palette.test.tsx > exibe NavigationGroup quando aberto com query vazia (membro)",
+      "navigation-group.test.tsx > não exibe itens admin para membro",
+      "navigation-group.test.tsx > exibe itens de navegação principal para membro"
+    ]
+  },
+  "acceptanceTestsNeeded": false,
+  "notes": "All three RFs verified. RF-016 impl: isAdmin guard wraps UserGroup in command-palette.tsx line 66. RF-007 impl: NavigationGroup filters admin-only items by role. RF-005 impl: Radix Dialog v1.1.15 returns focus to trigger natively."
+}

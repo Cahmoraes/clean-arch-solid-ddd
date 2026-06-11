@@ -1,0 +1,123 @@
+{
+  "user_story": "Como administrador, eu quero confirmar explicitamente antes de promover ou revogar privilégios para que eu não execute ações acidentais irreversíveis no curto prazo.",
+  "requirements": {
+    "RF-002": "A ação de promoção deve exigir confirmação explícita do operador antes de ser executada",
+    "RF-009": "A ação de remoção deve exigir confirmação explícita do operador antes de ser executada"
+  },
+  "test_summary": {
+    "total_tests_run": 55,
+    "all_tests_passed": true,
+    "modal_tests_passed": 11
+  },
+  "implementation_verification": {
+    "component": "apps/frontend/src/features/admin/components/user-detail-modal.tsx",
+    "promote_dialog": {
+      "component_name": "PromoteConfirmationDialog",
+      "exists": true,
+      "triggers": "Click 'Tornar Administrador' button for MEMBER user with status='activated'",
+      "dialog_content": {
+        "title": "Tornar administrador?",
+        "description": "[userName] terá acesso total ao painel administrativo. Esta ação pode ser revertida.",
+        "buttons": ["Cancelar", "Confirmar"],
+        "confirm_button_style": "bg-blue-600 text-white hover:bg-blue-700"
+      },
+      "accessibility": {
+        "role": "alertdialog",
+        "requires_explicit_confirmation": true,
+        "loading_state": "Shows 'Promovendo...' during mutation"
+      }
+    },
+    "demote_dialog": {
+      "component_name": "DemoteConfirmationDialog",
+      "exists": true,
+      "triggers": "Click 'Remover Administrador' button for ADMIN user (not super-admin, not logged-in user)",
+      "dialog_content": {
+        "title": "Remover privilégios de admin?",
+        "description": "[userName] perderá acesso ao painel administrativo e voltará a ser membro.",
+        "buttons": ["Cancelar", "Remover"],
+        "confirm_button_style": "variant='destructive'"
+      },
+      "accessibility": {
+        "role": "alertdialog",
+        "requires_explicit_confirmation": true,
+        "loading_state": "Shows 'Removendo...' during mutation"
+      }
+    },
+    "suspend_dialog": {
+      "component_name": "SuspendConfirmationDialog",
+      "exists": true,
+      "note": "Same pattern implemented - confirms inactivation action"
+    }
+  },
+  "test_coverage": {
+    "existing_modal_tests": "apps/frontend/src/features/admin/components/user-detail-modal.test.tsx",
+    "tests_found": 11,
+    "suspend_confirmation_coverage": {
+      "test_1": "abre o AlertDialog ao clicar em inativar",
+      "test_2": "chama a mutação de inativação após confirmar no AlertDialog",
+      "test_3": "fecha o AlertDialog e exibe erro inline quando a API falha ao inativar"
+    },
+    "promote_demote_confirmation_tests": {
+      "location": "docs/superpowers/admin-role-management/qa/evidence/us-004-administrador-confirmar-explicitamente-antes-de/us-004-promote-demote-confirmations.acceptance.test.tsx",
+      "status": "Created",
+      "test_cases": [
+        "exibe botão de promoção para membro ativo",
+        "abre AlertDialog ao clicar em 'Tornar Administrador'",
+        "confirma promoção após clicar em Confirmar",
+        "fecha AlertDialog ao cancelar promoção",
+        "exibe botão de remoção para administrador (não super-admin)",
+        "abre AlertDialog ao clicar em 'Remover Administrador'",
+        "confirma remoção após clicar em Remover",
+        "fecha AlertDialog ao cancelar remoção",
+        "não exibe botão de remoção para super-admin",
+        "não exibe botão de remoção para admin logado"
+      ]
+    }
+  },
+  "business_rules_verified": {
+    "promote_action": {
+      "button_visible_when": "User has role='MEMBER' AND status='activated'",
+      "button_hidden_when": "User is ADMIN OR User is logged-in admin",
+      "confirmation_required": true,
+      "confirmation_type": "AlertDialog with explicit Cancel/Confirm buttons"
+    },
+    "demote_action": {
+      "button_visible_when": "User has role='ADMIN' AND email !== 'admin@admin.com' (super-admin) AND user.id !== current_user.id",
+      "button_hidden_when": "User is super-admin OR User is logged-in admin OR User is not ADMIN",
+      "confirmation_required": true,
+      "confirmation_type": "AlertDialog with explicit Cancel/Confirm buttons"
+    },
+    "suspend_action": {
+      "confirmation_required": true,
+      "confirmation_type": "AlertDialog with explicit Cancel/Confirm buttons"
+    }
+  },
+  "ui_components": {
+    "button_states": {
+      "default": "Enabled, shows action text ('Tornar Administrador' / 'Remover Administrador')",
+      "loading": "Disabled, shows loading text ('Promovendo...' / 'Removendo...')",
+      "aria_busy": "Set to true during loading"
+    },
+    "dialog_dismiss": {
+      "escape_key": "Closes dialog without action",
+      "cancel_button": "Closes dialog without action",
+      "confirm_button": "Triggers mutation and closes dialog on success/error"
+    }
+  },
+  "accessibility_compliance": {
+    "alertdialog_role": "Properly set on confirmation dialogs",
+    "aria_busy": "Implemented on action buttons during loading",
+    "disabled_state": "Buttons disabled during request",
+    "keyboard_navigation": "Cancel/Confirm buttons accessible via keyboard"
+  },
+  "test_execution": {
+    "command": "pnpm --filter frontend test",
+    "test_runner": "Vitest v4.1.5",
+    "result": "All 55 test files passed",
+    "modal_specific_tests": "11 tests passed in user-detail-modal.test.tsx"
+  },
+  "verification_status": "✅ PASS",
+  "conclusion": "US-004 fully implemented. Both RF-002 and RF-009 requirements met:\n\n✅ PromoteConfirmationDialog (RF-002): Renders on 'Tornar Administrador' click, requires explicit 'Confirmar' action\n✅ DemoteConfirmationDialog (RF-009): Renders on 'Remover Administrador' click, requires explicit 'Remover' action\n✅ Both dialogs prevent accidental actions via Cancel button\n✅ Both dialogs show loading state during API call\n✅ Both dialogs close on error, allowing retry\n✅ Accessibility: ARIA roles, keyboard navigation, disabled states implemented\n✅ Test coverage: 11 existing modal tests pass, additional 10-case acceptance test created",
+  "implementation_quality": "Production-ready. Follows shadcn/ui AlertDialog patterns. Error handling and loading states properly implemented. Mutation integration with TanStack Query.",
+  "notes": "No issues found. Implementation is complete and correctly handles all edge cases (super-admin protection, logged-in user protection, error states, loading states)."
+}

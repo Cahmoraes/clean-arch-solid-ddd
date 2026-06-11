@@ -1,0 +1,83 @@
+{
+  "userStory": "US-01 — Como admin, quero ver KPIs de analytics na dashboard",
+  "verificationDate": "2026-06-04",
+  "method": "static-analysis",
+  "status": "PASSED",
+  "requirements": [
+    {
+      "id": "FR-004",
+      "description": "KPI row exibe 3 cards (check-ins total, taxa de retenção, novos membros)",
+      "status": "PASSED",
+      "evidence": {
+        "component": "apps/frontend/src/features/admin/analytics/components/analytics-kpi-row.tsx",
+        "findings": [
+          "Grid sm:grid-cols-3 renderiza 3 colunas em telas maiores",
+          "Card 1: checkInQuery.data.totalCheckIns → label 'Check-ins no período'",
+          "Card 2: retentionQuery.data.churnRate → label 'Taxa de retenção' (calculado como 100 - churnRate)",
+          "Card 3: growthQuery.data.newMembersCount → label 'Novos membros'"
+        ]
+      }
+    },
+    {
+      "id": "FR-005",
+      "description": "Cards exibem skeleton de loading enquanto dados são carregados (isPending)",
+      "status": "PASSED",
+      "evidence": {
+        "component": "apps/frontend/src/features/admin/analytics/components/analytics-kpi-row.tsx",
+        "findings": [
+          "Componente KpiSkeleton usa <Skeleton className='h-28 w-full rounded-lg' />",
+          "checkInQuery.isPending → <KpiSkeleton /> renderizado",
+          "retentionQuery.isPending → <KpiSkeleton /> renderizado",
+          "growthQuery.isPending → <KpiSkeleton /> renderizado"
+        ]
+      }
+    },
+    {
+      "id": "FR-006",
+      "description": "Cada card trata seu próprio erro de forma independente",
+      "status": "PASSED",
+      "evidence": {
+        "component": "apps/frontend/src/features/admin/analytics/components/analytics-kpi-row.tsx",
+        "findings": [
+          "Componente KpiError exibe mensagem de erro localizada por card",
+          "checkInQuery.isError → <KpiError message='Erro ao carregar check-ins' />",
+          "retentionQuery.isError → <KpiError message='Erro ao carregar retenção' />",
+          "growthQuery.isError → <KpiError message='Erro ao carregar crescimento' />",
+          "Cada query é independente: falha em um card não afeta os demais"
+        ]
+      }
+    }
+  ],
+  "hooks": [
+    {
+      "file": "apps/frontend/src/features/admin/analytics/api/use-check-in-metrics.ts",
+      "queryKey": "admin-analytics-checkins",
+      "endpoint": "GET /admin/analytics/checkins",
+      "staleTime": 60000,
+      "errorType": "ApiError"
+    },
+    {
+      "file": "apps/frontend/src/features/admin/analytics/api/use-retention-metrics.ts",
+      "queryKey": "admin-analytics-retention",
+      "endpoint": "GET /admin/analytics/retention",
+      "staleTime": 60000,
+      "errorType": "ApiError"
+    },
+    {
+      "file": "apps/frontend/src/features/admin/analytics/api/use-growth-metrics.ts",
+      "queryKey": "admin-analytics-growth",
+      "endpoint": "GET /admin/analytics/growth",
+      "staleTime": 60000,
+      "errorType": "ApiError"
+    }
+  ],
+  "existingTests": [
+    "apps/frontend/src/components/ui/stat-card.test.tsx"
+  ],
+  "notes": [
+    "Nenhum teste unitário dedicado ao componente AnalyticsKpiRow encontrado (apenas stat-card.test.tsx que testa o componente filho)",
+    "Arquivo de teste de aceitação presente: us-01-kpi-row.acceptance.test.tsx",
+    "Query keys são únicas e distintas por domínio de métrica",
+    "Types derivados do OpenAPI spec via @repo/api-types — type safety garantida em tempo de compilação"
+  ]
+}

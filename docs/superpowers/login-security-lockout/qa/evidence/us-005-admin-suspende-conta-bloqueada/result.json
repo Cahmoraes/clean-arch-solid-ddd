@@ -1,0 +1,56 @@
+{
+  "userStory": "US-005",
+  "title": "Admin suspende conta bloqueada",
+  "requirement": "RF-016",
+  "status": "PASSED",
+  "verifiedAt": "2026-05-28",
+  "findings": {
+    "domainLayer": {
+      "file": "apps/backend/src/user/domain/value-object/status.ts",
+      "finding": "LockedStatus.suspend() implementado corretamente — transiciona para SuspendedStatus via UserStatusFactory.create(user, 'suspended')",
+      "status": "PASSED"
+    },
+    "applicationLayer": {
+      "file": "apps/backend/src/user/application/use-case/suspend-user.usecase.ts",
+      "finding": "SuspendUserUseCase.execute() chama userFound.suspend() sem verificar status anterior — funciona para qualquer status, incluindo locked",
+      "status": "PASSED"
+    },
+    "existingTests": {
+      "file": "apps/backend/src/user/application/use-case/suspend-user.usecase.test.ts",
+      "finding": "3 testes existentes cobrem: suspensão bem-sucedida, usuário inexistente, e invalidação de cache. Porém nenhum testa explicitamente o status initial locked.",
+      "testsRun": 497,
+      "testsPassed": 497,
+      "status": "PASSED"
+    },
+    "gap": {
+      "description": "Nenhum teste existente verifica explicitamente a transição locked → suspended (RF-016 específico)",
+      "resolution": "Acceptance test criado em evidence dir cobrindo: (1) LockedStatus.suspend() retorna SuspendedStatus, (2) SuspendUserUseCase persiste locked→suspended, (3) status não reverte automaticamente"
+    }
+  },
+  "acceptanceTests": {
+    "file": "docs/superpowers/login-security-lockout/qa/evidence/us-005-admin-suspende-conta-bloqueada/us-005.acceptance.test.ts",
+    "tests": [
+      {
+        "name": "LockedStatus.suspend() deve retornar SuspendedStatus",
+        "layer": "domain",
+        "covers": "RF-016 state machine"
+      },
+      {
+        "name": "LockedStatus.suspend() não deve manter status locked após chamada",
+        "layer": "domain",
+        "covers": "RF-016 irreversibility at domain level"
+      },
+      {
+        "name": "deve suspender um usuário com status locked (RF-016)",
+        "layer": "application",
+        "covers": "RF-016 use case integration"
+      },
+      {
+        "name": "transição locked → suspended não deve ser reversível autonomamente pelo usuário",
+        "layer": "application",
+        "covers": "RF-016 persistence + no autonomous recovery"
+      }
+    ]
+  },
+  "verdict": "US-005 IMPLEMENTADA. A máquina de estado (LockedStatus.suspend()) e o use case (SuspendUserUseCase) estão corretos. A transição locked→suspended está implementada e funciona. Os testes de aceitação específicos para RF-016 foram criados no diretório de evidências."
+}

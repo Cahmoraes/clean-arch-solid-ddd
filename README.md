@@ -1,91 +1,80 @@
-# Projeto API Solid
+# Clean Arch SOLID DDD — Monorepo
 
-## Descrição
+Monorepo de estudo de Clean Architecture, SOLID e DDD, composto por uma API backend
+e uma aplicação web frontend que a consome.
 
-Este projeto é uma API desenvolvida com princípios de Clean Architecture, utilizando TypeScript, Node.js, e Prisma ORM. A API é projetada para ser escalável, testável e fácil de manter, seguindo os princípios de desenvolvimento de software como coesão e acoplamento.
+> Execução local-only: este projeto roda inteiramente na sua máquina (via Docker
+> Compose para a infraestrutura). Não há deploy em nuvem associado a este repositório.
 
-## Estrutura do Projeto
+## Estrutura
 
-A estrutura do projeto segue os princípios de Clean Architecture, dividindo o código em camadas bem definidas:
+Gerenciado com [pnpm workspaces](https://pnpm.io/workspaces) e [Turborepo](https://turbo.build/):
 
-- **Domain**: Contém as entidades e objetos de valor do domínio.
-- **Application**: Contém os casos de uso e lógica de aplicação.
-- **Infra**: Contém a implementação de infraestrutura, como repositórios, controladores e serviços externos.
+| Pacote | Descrição |
+|--------|-----------|
+| `apps/backend` | API Fastify — Clean Architecture + DDD, TypeScript, Inversify (IoC), Prisma ORM |
+| `apps/frontend` | App web Next.js 16 — React 19, TanStack Query, Zustand, Tailwind, shadcn/ui |
+| `packages/api-types` | Types compartilhados gerados a partir do OpenAPI spec do backend |
 
-## Funcionalidades
+## Pré-requisitos
 
-- **Autenticação de Usuários**: Criação, autenticação e gerenciamento de perfis de usuários.
-- **Gerenciamento de Academias**: Criação, busca e validação de academias.
-- **Check-ins**: Registro e validação de check-ins de usuários em academias.
-- **Métricas de Usuários**: Consulta de métricas e histórico de check-ins dos usuários.
+- [Node.js](https://nodejs.org) 20+
+- [pnpm](https://pnpm.io) 11.5.2 (ver `packageManager` no `package.json`)
+- [Docker](https://www.docker.com) + Docker Compose (para Postgres, Redis e RabbitMQ locais)
 
-## Tecnologias Utilizadas
+## Infraestrutura local
 
-- **Node.js**: Ambiente de execução JavaScript.
-- **TypeScript**: Superset de JavaScript que adiciona tipagem estática.
-- **Prisma ORM**: ORM para Node.js e TypeScript.
-- **Fastify**: Framework web para Node.js.
-- **Inversify**: Container de injeção de dependência para TypeScript.
-- **Vitest**: Framework de testes unitários e de integração.
-- **Zod**: Biblioteca de validação de esquemas.
-- **RabbitMQ**: Sistema de barramento de mensagens para comunicação assíncrona.
-- **NodeMailer**: Módulo para disparos de e-mails.
+A infraestrutura sobe via `apps/backend/compose.yaml`:
 
-## Instalação
+| Serviço | Porta(s) local |
+|---------|----------------|
+| PostgreSQL | 5432 |
+| Redis | 6379 |
+| RabbitMQ | 5672 (AMQP) / 15672 (management UI) |
+| Nginx (proxy) | 80 |
 
-1. Clone o repositório (HTTPS):
-```sh
-  git clone https://github.com/Cahmoraes/clean-arch-solid-ddd.git
-  cd clean-arch-solid-ddd
-```
-
-1.1 Clone o repositório (SSH):
-```sh
-  git clone git@github.com:Cahmoraes/clean-arch-solid-ddd.git
-  cd clean-arch-solid-ddd
-```
-
-1.2 Execute o Docker Compose:
-```sh
-  docker compose up -D
-```
-
-2. Instale as dependências:
-```sh
-  npm ci
-```
-
-3. Configure as variáveis de ambiente: Crie um arquivo .env baseado no `.env.example` e ajuste as variáveis conforme necessário.
-
-4. Execute as migrações do Prisma:
+## Setup
 
 ```sh
-  npx prisma migrate dev
+# 1. Instalar dependências (a partir da raiz)
+pnpm install
+
+# 2. Criar os arquivos de ambiente a partir dos exemplos
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.local.example apps/frontend/.env.local
+
+# 3. Subir a infraestrutura local (Postgres + Redis + RabbitMQ + Nginx)
+pnpm --filter backend docker:up
+
+# 4. Rodar as migrações do banco
+pnpm --filter backend prisma:migrate:dev
 ```
 
-Scripts Disponíveis:
-  - **npm start**: Inicia o servidor em modo de produção.
-  - **npm run dev**: Inicia o servidor em modo de desenvolvimento com hot-reload.
-  - **npm test**: Executa os testes unitários.
-  - **npm run test**:integration: Executa os testes de integração.
-  - **npm run build**: Compila o projeto para a pasta build.
-  - **npm run prisma**:studio: Abre o Prisma Studio para gerenciar o banco de dados.
+> O script `dev` do backend já executa `docker:up` e aguarda Postgres/RabbitMQ
+> ficarem prontos automaticamente, então no fluxo normal o passo 3 é opcional.
 
-## Configuração do Dependency Cruiser
+## Desenvolvimento
 
-O arquivo `.dependency-cruiser.js` contém as regras de dependência para o projeto. Ele define quais dependências são permitidas e quais são proibidas entre diferentes camadas do sistema. Aqui estão as principais regras configuradas:
+```sh
+# Rodar tudo (backend + frontend) via Turborepo
+pnpm dev
 
-- **noDomainToApplicationExceptPermitted**: Impede que a camada `domain` dependa da camada `application`, exceto para arquivos permitidos.
-- **noDomainToInfraExceptPermitted**: Impede que a camada `domain` dependa da camada `infra`, exceto para arquivos permitidos.
-- **noApplicationToInfraExceptPermitted**: Impede que a camada `application` dependa da camada `infra`, exceto para arquivos permitidos.
-- **allowInfraCircularDependency**: Permite dependências circulares dentro da pasta `infra/`, mas impede ciclos em outras camadas do sistema.
+# Ou individualmente
+pnpm --filter backend dev    # API em http://localhost:3333 (sobe a infra automaticamente)
+pnpm --filter frontend dev   # Web em http://localhost:3000
+```
 
-As regras são configuradas na seção `forbidden` do arquivo, e opções adicionais de configuração estão disponíveis na seção `options`.
+## Comandos úteis (raiz)
 
-Para mais detalhes, consulte o arquivo [.dependency-cruiser.js](./.dependency-cruiser.js).
+```sh
+pnpm build            # Build de todos os pacotes
+pnpm test             # Testes de todos os pacotes
+pnpm lint             # Lint de todos os pacotes
+pnpm generate:types   # Exporta o OpenAPI do backend e gera os types do client
+```
 
-### Licença
-Este projeto está licenciado sob a licença MIT. 
+Detalhes específicos de cada app estão nos READMEs de `apps/backend` e `apps/frontend`.
 
-Desenvolvido por **Caique Vinícius de Moraes**
+## Licença
 
+MIT — desenvolvido por Caique Vinícius de Moraes.

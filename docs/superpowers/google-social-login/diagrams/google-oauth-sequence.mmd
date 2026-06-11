@@ -1,0 +1,73 @@
+sequenceDiagram
+    autonumber
+    actor Usuário
+    participant Frontend
+    participant Controller as AuthenticateWithGoogleController
+    participant UseCase as AuthenticateWithGoogleUseCase
+    participant GoogleProvider as GoogleAuthProviderImpl
+    participant GoogleAPI as Google OAuth2 API
+    participant UserRepo as UserRepository
+    participant AuthToken as AuthToken (JWT)
+    participant EventBus as DomainEventPublisher
+
+    Usuário->>Frontend: Clica em "Entrar com Google"
+
+    Note over Frontend: Google Identity Services SDK<br/>(executa no browser do usuário)
+    Frontend->>+GoogleAPI: Solicita autenticação
+    GoogleAPI-->>-Frontend: ID Token (JWT assinado pelo Google)
+
+    Frontend->>+Controller: POST /sessions/google<br/>{ idToken: "eyJ..." }
+    Note over Controller: Valida body com Zod<br/>z.string().min(1)
+
+    Controller->>+UseCase: execute({ idToken })
+
+    UseCase->>+GoogleProvider: verify(idToken)
+    GoogleProvider->>+GoogleAPI: OAuth2Client.verifyIdToken(idToken, clientId)
+
+    alt Token inválido ou expirado
+        GoogleAPI-->>GoogleProvider: Lança exceção
+        GoogleProvider-->>UseCase: failure(InvalidGoogleTokenError)
+        UseCase-->>Controller: failure(InvalidGoogleTokenError)
+        Controller-->>Frontend: 401 Unauthorized
+        Frontend-->>Usuário: Exibe mensagem de erro
+    else Token válido
+        GoogleAPI-->>-GoogleProvider: { sub, email, name, email_verified }
+        GoogleProvider-->>-UseCase: success({ sub, email, name, emailVerified })
+
+        alt emailVerified === false
+            UseCase-->>Controller: failure(GoogleEmailNotVerifiedError)
+            Controller-->>Frontend: 422 Unprocessable Entity
+            Frontend-->>Usuário: Email Google não verificado
+        else emailVerified === true
+            Note over UseCase: Resolução do usuário (3 etapas)
+            UseCase->>+UserRepo: findByGoogleId(sub)
+
+            alt Encontrou por google_id
+                UserRepo-->>UseCase: User (já vinculado)
+                Note over UseCase: Login direto — sem alterações
+            else Não encontrou por google_id
+                UserRepo-->>UseCase: null
+                UseCase->>UserRepo: findByEmail(email)
+
+                alt Encontrou por email (conta existente)
+                    UserRepo-->>UseCase: User (criado por senha)
+                    UseCase->>UseCase: user.linkGoogleAccount(googleId)
+                    UseCase->>EventBus: publish(GoogleAccountLinkedEvent)
+                    UseCase->>UserRepo: save(user)
+                    UserRepo-->>UseCase: ok
+                else Nenhum usuário encontrado
+                    UserRepo-->>UseCase: null
+                    UseCase->>UseCase: User.create({ name, email, googleId, password: null })
+                    UseCase->>UserRepo: save(newUser)
+                    UserRepo-->>-UseCase: ok
+                end
+            end
+
+            UseCase->>+AuthToken: sign(userId) + generateRefreshToken()
+            AuthToken-->>-UseCase: { token, refreshToken }
+
+            UseCase-->>-Controller: success({ token, refreshToken })
+            Controller-->>-Frontend: 200 OK { token, refreshToken }
+            Frontend-->>Usuário: Redireciona para área autenticada
+        end
+    end

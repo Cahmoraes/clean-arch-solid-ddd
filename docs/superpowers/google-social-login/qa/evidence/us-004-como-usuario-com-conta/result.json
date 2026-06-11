@@ -1,0 +1,38 @@
+{
+	"us_id": "us-004",
+	"user_story": "Como usuário com conta Google de email não verificado, quando tento fazer login com Google, eu quero receber uma mensagem clara de erro para que eu entenda por que o login falhou.",
+	"requirements": ["RF-004", "RF-010"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_files": {
+		"unit_tests": {
+			"file": "apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts",
+			"test_count": 8,
+			"relevant_test": "deve retornar GoogleEmailNotVerifiedError quando o email não for verificado",
+			"status": "PASSED"
+		},
+		"business_flow_tests": {
+			"file": "apps/backend/src/session/infra/controller/authenticate-with-google.business-flow-test.ts",
+			"test_count": 6,
+			"relevant_test": "Deve retornar 422 quando email Google não for verificado",
+			"status": "PASSED",
+			"http_status": 422,
+			"expected_response": {
+				"message": "Google email is not verified"
+			}
+		}
+	},
+	"test_output_summary": "14 tests passed (8 unit + 6 business-flow) - PASSED",
+	"implementation_details": {
+		"error_class": "GoogleEmailNotVerifiedError",
+		"http_endpoint": "POST /sessions/google",
+		"validation_field": "emailVerified",
+		"failure_condition": "emailVerified === false",
+		"response_code": 422,
+		"error_message": "Google email is not verified"
+	},
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "✓ Requisito RF-004 (422 quando email não verificado) foi implementado e testado\n✓ Requisito RF-010 (vinculação só com email_verified:true) está coberto pelos testes\n✓ Testes unitários cobrem validação de emailVerified=false\n✓ Testes de business-flow cobrem resposta HTTP 422 com mensagem clara\n✓ A mensagem de erro \"Google email is not verified\" é clara e informativa"
+}

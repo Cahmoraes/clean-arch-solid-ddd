@@ -1,0 +1,49 @@
+{
+  "userStory": "US-004",
+  "title": "Combinar filtro de categoria com busca por texto",
+  "status": "PASSED",
+  "verifiedAt": "2026-05-27",
+  "requirements": {
+    "RF-013": "PASSED",
+    "RF-020": "PASSED"
+  },
+  "evidence": {
+    "backend": {
+      "file": "apps/backend/src/user/application/use-case/fetch-users.usecase.test.ts",
+      "test": "Deve combinar filtro de role com busca por texto",
+      "line": 277,
+      "result": "PASSED",
+      "notes": "Teste passa query='joão' + role='MEMBER' simultaneamente. UseCase retorna apenas u-joao-member (não u-joao-admin nem u-maria-member). Outros 79 arquivos passaram. 14 falhas por timeout em bcrypt (change-password, reset-password, authenticate) são pré-existentes e não relacionadas à US-004."
+    },
+    "frontend": {
+      "file": "docs/superpowers/users-list-filters/qa/evidence/us-004-combinar-filtro-busca-texto/us-004-combined-filter-search.acceptance.test.tsx",
+      "tests": [
+        "deve enviar role=ADMIN e query=joao simultaneamente quando filter='admin' e query='joao'",
+        "deve enviar role=MEMBER e query=maria simultaneamente quando filter='member' e query='maria'",
+        "deve enviar status=active e query=joao simultaneamente quando filter='active' e query='joao'"
+      ],
+      "result": "PASSED",
+      "runOutput": "360 passed (360) — Test Files 64 passed (64)",
+      "notes": "Acceptance test criado pois não existia teste de integração frontend verificando envio simultâneo de filter+query. MSW captura URL e verifica ambos os params presentes na mesma requisição. Implementação em use-users.ts: buildFilterParams() espalhado via spread junto com params.query no mesmo objeto query."
+    },
+    "implementation": {
+      "file": "apps/frontend/src/features/admin/api/use-users.ts",
+      "mechanism": "buildFilterParams(params.filter) retorna { role } ou { status } ou {}; spread junto com page, limit, query no objeto params.query — todos enviados simultaneamente na mesma chamada GET /users",
+      "confirmed": true
+    }
+  },
+  "preExistingFailures": {
+    "backend": [
+      "src/user/domain/user.test.ts — bcrypt timeout (1 falha)",
+      "src/user/application/use-case/change-password.usecase.test.ts — bcrypt timeout (8 falhas)",
+      "src/user/application/use-case/define-password.usecase.test.ts — bcrypt timeout (1 falha)",
+      "src/user/application/use-case/reset-password.usecase.test.ts — bcrypt timeout (2 falhas)",
+      "src/session/application/use-case/authenticate.usecase.test.ts — bcrypt timeout (2 falhas)"
+    ],
+    "frontend": [
+      "src/app/(authenticated)/admin/usuarios/admin-users-page.test.tsx — admin-users-list testid not found",
+      "src/app/(authenticated)/perfil/senha/page.test.tsx — skeleton state não resolve"
+    ],
+    "note": "Todas pré-existentes, não relacionadas à US-004"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "us-003",
+  "user_story": "Como administrador, eu quero ser impedido de realizar ações inválidas (promover usuário inativo, me auto-demover, operar sobre o admin raiz) para que o sistema mantenha sua integridade de acesso.",
+  "requirements": ["RF-004", "RF-005", "RF-006", "RF-007", "RF-011", "RF-012", "RF-013"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Backend: 12 unit tests passed (promote 6/6 + demote 6/6), 131 BF tests passed. Frontend: 287 tests passed. RF-006 frontend gap (canPromoteToAdmin missing SUPER_ADMIN_EMAIL check) identified and fixed in commit 33fac9e.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "RF-006 frontend guard was implicit (admin@admin.com is always ADMIN so role=MEMBER check excluded them). However PRD requires explicit check — fixed by adding user.email !== SUPER_ADMIN_EMAIL to canPromoteToAdmin. No UI visibility tests exist for guard conditions, but backend + BF tests fully cover all guard behaviors."
+}

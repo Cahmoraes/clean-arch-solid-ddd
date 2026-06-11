@@ -1,0 +1,12 @@
+{
+	"us_id": "us-005",
+	"user_story": "Como usuário, eu quero ver claramente quando um dos meus check-ins foi rejeitado, para entender o resultado da moderação.",
+	"requirements": ["RF-011", "RF-012", "RF-017"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": ["us-005-rejected-badge.acceptance.test.tsx"],
+	"test_output_summary": "✓ All 257 tests passed (53 test files). Frontend component tests verified that: (1) StatusBadge renders 'Rejeitado' with neutral gray color (text-muted-foreground) for status='rejected' (RF-017), (2) CheckInActions component returns null for rejected check-ins showing no action buttons (RF-011), (3) Non-admin users on /check-ins page see no action buttons regardless of status (RF-012).",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "Implementation verified through code inspection and acceptance tests. CheckInItem.tsx correctly implements StatusBadge with XCircle icon and neutral color styling. CheckInActions.tsx correctly returns null when status='rejected', ensuring no buttons are displayed. Page-level tests confirm non-admin users cannot see action buttons. All frontend tests pass without issues."
+}

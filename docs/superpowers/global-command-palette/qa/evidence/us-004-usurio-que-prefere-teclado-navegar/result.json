@@ -1,0 +1,56 @@
+{
+  "userStory": "US-004",
+  "title": "Usuário que prefere teclado — navegar entre resultados",
+  "status": "PASSED",
+  "verifiedAt": "2026-06-02",
+  "testSuite": {
+    "file": "apps/frontend/src/components/command-palette/command-palette.test.tsx",
+    "totalTests": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "requirements": {
+    "RF-022": {
+      "description": "↑ e ↓ movem o foco entre itens",
+      "status": "PASSED",
+      "evidence": "Library guarantee: cmdk Command root onKeyDown handles ArrowDown → Q(1) and ArrowUp → Q(-1), iterating over '[cmdk-item]:not([aria-disabled])' elements and calling setState('value'). Verified in cmdk/dist/index.mjs source.",
+      "implementationProof": "cmdk Command root: case 'ArrowDown': ue(e) → Q(1); case 'ArrowUp': de(e) → Q(-1)"
+    },
+    "RF-023": {
+      "description": "Enter seleciona o item em foco e executa ação",
+      "status": "PASSED",
+      "evidence": "Library guarantee: cmdk Command root onKeyDown case 'Enter' dispatches 'cmdk-item-select' event on selected item; Command.Item listens and calls onSelect callback. NavigationGroup.tsx uses onSelect to call router.push(href) + parent onSelect(). Test 'navega ao clicar num item e chama onSelect' covers click path (same onSelect handler).",
+      "implementationProof": "cmdk: case 'Enter': a.dispatchEvent(new Event('cmdk-item-select')); Item.onSelect → router.push(href); onSelect()"
+    },
+    "RF-024": {
+      "description": "Esc fecha o palette sem executar ação",
+      "status": "PASSED",
+      "evidence": "Explicit test in command-palette.test.tsx line 25-32: 'chama onOpenChange(false) ao pressionar Esc'. userEvent.keyboard('{Escape}') → onOpenChange called with false. Radix Dialog Root handles Esc natively, triggers onOpenChange(false). Test PASSES.",
+      "testName": "chama onOpenChange(false) ao pressionar Esc",
+      "testFile": "apps/frontend/src/components/command-palette/command-palette.test.tsx",
+      "testLine": 25
+    },
+    "RF-025": {
+      "description": "Foco capturado dentro do modal (focus trap)",
+      "status": "PASSED",
+      "evidence": "Library guarantee: Radix Dialog Content provides built-in focus trap via @radix-ui/react-dialog. component-palette.tsx uses Radix Dialog Root + Portal + Content. No custom focus trap code needed.",
+      "implementationProof": "command-palette.tsx: import { Content, Overlay, Portal, Root } from '@radix-ui/react-dialog'"
+    },
+    "RF-026": {
+      "description": "ARIA role=combobox e aria-activedescendant",
+      "status": "PASSED",
+      "evidence": "Library guarantee verified in cmdk source: Command.Input renders with role='combobox', aria-expanded=true, aria-controls=listId, aria-labelledby=labelId, aria-activedescendant=selectedItemId. Command.List renders with role='listbox', aria-activedescendant=selectedItemId. Command.Item renders with role='option', aria-selected, aria-disabled.",
+      "implementationProof": "cmdk Command.Input: role='combobox', aria-expanded=true, aria-activedescendant=p (selectedItemId)"
+    }
+  },
+  "libraryGuarantees": [
+    "cmdk@latest: ArrowUp/ArrowDown navigation (RF-022), Enter selection (RF-023), ARIA combobox + activedescendant (RF-026)",
+    "@radix-ui/react-dialog: Esc to close (RF-024), focus trap (RF-025)"
+  ],
+  "customTestCoverage": [
+    "RF-024 — explicit Vitest test 'chama onOpenChange(false) ao pressionar Esc' (PASSES)"
+  ],
+  "allTestsPassing": true,
+  "runCommand": "npx vitest run src/components/command-palette/command-palette.test.tsx --reporter=verbose",
+  "runOutput": "8 passed (8) — all tests green"
+}

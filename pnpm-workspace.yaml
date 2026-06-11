@@ -1,3 +1,21 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+packageExtensions:
+  '@hookform/resolvers':
+    peerDependencies:
+      zod: '*'
+overrides:
+  '@types/react': 19.2.16
+allowBuilds:
+  '@prisma/engines': true
+  better-sqlite3: true
+  core-js-pure: true
+  esbuild: true
+  msgpackr-extract: true
+  msw: true
+  prisma: true
+  sharp: true
 onlyBuiltDependencies:
   - '@prisma/client'
   - '@prisma/engines'
@@ -5,3 +23,4 @@ onlyBuiltDependencies:
   - prisma
   - unrs-resolver
   - better-sqlite3
+  - sharp

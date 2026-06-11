@@ -1,0 +1,12 @@
+{
+	"us_id": "us-003",
+	"user_story": "Como usuário que criei minha conta com email e senha, eu quero poder fazer login com meu Google (que usa o mesmo email) para que minha conta existente seja reconhecida e eu não tenha uma conta duplicada.",
+	"requirements": ["RF-008", "RF-010", "RF-011"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "✓ 8 tests passed in authenticate-with-google.usecase.test.ts + ✓ 6 tests passed in authenticate-with-google.business-flow-test.ts = 14 tests passed (total test suite: 373 passed)",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "Testes já existentes cobrem completamente o cenário da US-003:\n\n1. **Unit Tests (authenticate-with-google.usecase.test.ts)**:\n   - ✓ deve retornar InvalidGoogleTokenError quando o token for inválido\n   - ✓ deve retornar GoogleEmailNotVerifiedError quando o email não for verificado (RF-010)\n   - ✓ deve autenticar usuário existente com googleId\n   - ✓ **deve vincular conta Google a usuário existente pelo email e autenticar** (US-003 core)\n   - ✓ deve criar novo usuário via Google e autenticar\n   - ✓ deve retornar GoogleAccountAlreadyLinkedError quando email já vinculado a outro googleId\n   - ✓ deve autenticar usuário existente quando save falha por race condition (upsert otimista)\n   - ✓ deve retornar tokens válidos com dados do usuário corretos\n\n2. **Business Flow Tests (authenticate-with-google.business-flow-test.ts)**:\n   - ✓ Deve autenticar usuário existente com googleId\n   - ✓ Deve retornar 401 quando token Google for inválido\n   - ✓ Deve retornar 422 quando email Google não for verificado (RF-010)\n   - ✓ Deve criar novo usuário e autenticar via Google\n   - ✓ **Deve vincular conta Google a usuário existente pelo email e autenticar** (US-003 HTTP validation)\n   - ✓ Deve retornar 409 quando email já estiver vinculado a outro googleId\n\n3. **Requisitos cobertos**:\n   - RF-008: Vincula google_id a conta existente pelo email com email_verified:true ✓\n   - RF-010: Vinculação só ocorre com email_verified:true ✓\n   - RF-011: google_id armazenado ✓\n\nCenário principal testado em 2 níveis (unit + HTTP):\n1. Cria usuário com email+senha (sem googleId)\n2. POST /sessions/google com token Google do mesmo email (email_verified:true)\n3. Verifica 200 com tokens\n4. Verifica que usuário agora tem googleId vinculado"
+}

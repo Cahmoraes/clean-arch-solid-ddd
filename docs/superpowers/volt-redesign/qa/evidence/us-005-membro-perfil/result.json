@@ -1,0 +1,35 @@
+{
+  "userStory": "us-005",
+  "title": "Membro ve pagina de perfil (card com banner, avatar e streak) no visual VOLT",
+  "requirements": ["RF-019"],
+  "status": "PARTIAL",
+  "summary": "Testes existentes de perfil VOLT passam (7/7). profile-card e metric-card implementados e cobertos: nome, avatar (iniciais CM/AU/MS), email, id, created-at, metrica de check-ins, badges de role/status e botao de edicao. Porem o componente 'streak' citado em RF-019 nao existe na implementacao (page.tsx nem features/profile contem qualquer referencia a streak); a metrica exposta e check-ins, nao streak.",
+  "tests": {
+    "command": "npx vitest run \"src/app/(authenticated)/perfil/perfil-volt.test.tsx\" \"src/app/(authenticated)/perfil/page.test.tsx\"",
+    "files": [
+      "apps/frontend/src/app/(authenticated)/perfil/perfil-volt.test.tsx",
+      "apps/frontend/src/app/(authenticated)/perfil/page.test.tsx"
+    ],
+    "result": "PASS",
+    "testFiles": "2 passed (2)",
+    "testCases": "7 passed (7)"
+  },
+  "coverage": {
+    "profile-card": true,
+    "metric-card": true,
+    "streak": false,
+    "name": true,
+    "avatar": true,
+    "metric_checkins": true,
+    "badges_role_status": true,
+    "edit_button": true,
+    "newTestsCreated": false,
+    "note": "Cobertura existente suficiente para name+avatar+metrica; nenhum teste novo criado pois ja presentes. Nenhum teste cobre 'streak' porque a feature nao foi implementada."
+  },
+  "screenshot": null,
+  "notes": [
+    "Task 3 (screenshot): playwright-cli/screenshot INDISPONIVEL no ambiente -> pulado conforme instrucao.",
+    "RF-019 cita 'streak' mas implementacao nao possui componente/metrica de streak. Gap funcional -> status PARTIAL.",
+    "RF-019 cita 'banner' no card; testids nao expoem banner explicitamente (nao verificavel sem screenshot)."
+  ]
+}

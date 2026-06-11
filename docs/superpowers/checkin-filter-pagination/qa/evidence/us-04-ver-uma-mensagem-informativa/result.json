@@ -1,0 +1,110 @@
+{
+  "story": "US-04",
+  "title": "Como usuário, eu quero ver uma mensagem informativa quando nenhum check-in corresponde ao filtro selecionado para que eu saiba que a lista está vazia intencionalmente",
+  "requirement": "RF-014: Quando lista vazia após filtro, exibir mensagem de empty state contextual ao filtro ativo",
+  "test_run": {
+    "command": "pnpm --filter frontend test -- --run apps/frontend/src/app/(authenticated)/check-ins/page.test.tsx apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx",
+    "exit_code": 0,
+    "duration": "32.86s",
+    "total_tests_passed": 102,
+    "status": "PASSED"
+  },
+  "test_coverage": {
+    "user_page": {
+      "file": "apps/frontend/src/app/(authenticated)/check-ins/page.test.tsx",
+      "tests": [
+        {
+          "name": "shows default empty state when no filter is active and list is empty",
+          "expected_message": "Você ainda não fez check-in",
+          "status": "PASS",
+          "line": "65-68"
+        },
+        {
+          "name": "shows contextual empty state when filter is active and list is empty (status=pending)",
+          "expected_message": "Nenhum check-in pendente encontrado",
+          "status": "PASS",
+          "line": "70-80"
+        },
+        {
+          "name": "shows contextual empty state for validated filter (status=validated)",
+          "expected_message": "Nenhum check-in aprovado encontrado",
+          "status": "PASS",
+          "line": "82-92"
+        },
+        {
+          "name": "shows contextual empty state for rejected filter (status=rejected)",
+          "expected_message": "Nenhum check-in rejeitado encontrado",
+          "status": "PASS",
+          "line": "94-104"
+        }
+      ]
+    },
+    "admin_page": {
+      "file": "apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx",
+      "tests": [
+        {
+          "name": "shows default empty state when no filter is active and list is empty",
+          "expected_message": "Nenhum check-in encontrado",
+          "status": "PASS",
+          "line": "72-75"
+        },
+        {
+          "name": "shows contextual empty state when filter is active and list is empty (status=pending)",
+          "expected_message": "Nenhum check-in pendente encontrado",
+          "status": "PASS",
+          "line": "77-87"
+        },
+        {
+          "name": "shows contextual empty state for rejected filter (status=rejected)",
+          "expected_message": "Nenhum check-in rejeitado encontrado",
+          "status": "PASS",
+          "line": "89-99"
+        }
+      ]
+    }
+  },
+  "verification_summary": {
+    "all_required_scenarios_covered": true,
+    "user_page_messages": [
+      {
+        "filter": "none",
+        "message": "Você ainda não fez check-in",
+        "verified": true
+      },
+      {
+        "filter": "status=pending",
+        "message": "Nenhum check-in pendente encontrado",
+        "verified": true
+      },
+      {
+        "filter": "status=validated",
+        "message": "Nenhum check-in aprovado encontrado",
+        "verified": true
+      },
+      {
+        "filter": "status=rejected",
+        "message": "Nenhum check-in rejeitado encontrado",
+        "verified": true
+      }
+    ],
+    "admin_page_messages": [
+      {
+        "filter": "none",
+        "message": "Nenhum check-in encontrado",
+        "verified": true
+      },
+      {
+        "filter": "status=pending",
+        "message": "Nenhum check-in pendente encontrado",
+        "verified": true
+      },
+      {
+        "filter": "status=rejected",
+        "message": "Nenhum check-in rejeitado encontrado",
+        "verified": true
+      }
+    ]
+  },
+  "conclusion": "✓ US-04 VERIFICADO COM SUCESSO. Todos os testes passam (102/102). Requisito RF-014 implementado corretamente com mensagens de empty state contextualizadas para cada filtro ativo.",
+  "timestamp": "2025-01-09T14:17:45Z"
+}

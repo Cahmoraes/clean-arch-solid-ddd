@@ -1,0 +1,22 @@
+{
+	"us_id": "us-001",
+	"user_story": "Como usuário registrado que esqueceu minha senha, eu quero solicitar um link de recuperação informando meu e-mail, para que eu possa redefinir minha senha sem precisar de suporte.",
+	"requirements": [
+		"RF-001",
+		"RF-002",
+		"RF-003",
+		"RF-004",
+		"RF-005",
+		"RF-006",
+		"RF-007"
+	],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [
+		"docs/superpowers/forgot-password/qa/evidence/us-001-solicitar-link-recuperacao/us-001-solicitar-link-recuperacao.acceptance.test.ts"
+	],
+	"test_output_summary": "forgot-password.usecase.test.ts (6/6), forgot-password.business-flow-test.ts (3/3), send-password-reset-email.notification.test.ts (4/4). RF-007 (429) verificado para rate limit por IP no business-flow-test. Rate limit por e-mail é propositalmente silencioso (retorna 200) para não vazar existência de conta (anti-enumeração por design, documentado como best-effort na spec).",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "O teste de aceitação gerado pelo subagente esperava 429 para o 4º request pelo mesmo e-mail. Isso está INCORRETO — o design spec define o rate limit por e-mail como best-effort e SILENCIOSO (sempre retorna 200) para proteger contra enumeração de contas. RF-007 (429) aplica-se ao rate limit por IP, verificado no business-flow test ('Deve retornar 429 quando exceder o rate limit da rota')."
+}

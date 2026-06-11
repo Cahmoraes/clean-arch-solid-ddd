@@ -1,0 +1,35 @@
+{
+  "userStory": "US-04 — Padrão semanal",
+  "status": "PASSED",
+  "verifiedAt": "2026-05-25",
+  "requirements": {
+    "RF-015": {
+      "description": "Exibir barras para cada dia da semana (Dom–Sáb) com a contagem de check-ins daquele dia",
+      "status": "PASSED",
+      "evidence": "WeeklyChart renders 7 Bar components via frequency.map(), with DAY_LABELS = [\"Dom\", \"Seg\", \"Ter\", \"Qua\", \"Qui\", \"Sex\", \"Sáb\"] (index 0=Dom, 6=Sáb). File: apps/frontend/src/features/dashboard/components/weekly-chart.tsx"
+    },
+    "RF-016": {
+      "description": "O cálculo deve considerar todos os check-ins disponíveis no histórico carregado",
+      "status": "PASSED",
+      "evidence": "computeWeeklyFrequency() returns array[7] indexed by dayOfWeek from all provided check-ins. Tests: 'agrupa check-ins por dia da semana' (freq[1]=2 for two Monday check-ins) and 'retorna array de zeros para lista vazia' (all zeros for empty input) — both PASS. File: apps/frontend/src/features/dashboard/hooks/use-dashboard-metrics.test.ts lines 77-95"
+    },
+    "RF-017": {
+      "description": "O gráfico deve exibir tooltip com contagem ao hover",
+      "status": "PASSED",
+      "evidence": "Bar component renders <div title={`${DAY_LABELS[dayIndex]}: ${count} check-in${count !== 1 ? 's' : ''}`} /> — native HTML title attribute provides tooltip on hover. File: apps/frontend/src/features/dashboard/components/weekly-chart.tsx line 49"
+    }
+  },
+  "testsRun": {
+    "command": "npx vitest run src/features/dashboard/hooks/use-dashboard-metrics.test.ts",
+    "result": "PASSED",
+    "relevantTests": [
+      "computeWeeklyFrequency > agrupa check-ins por dia da semana",
+      "computeWeeklyFrequency > retorna array de zeros para lista vazia"
+    ]
+  },
+  "codeVerification": {
+    "computeWeeklyFrequency": "Confirmed: returns number[7] indexed by Date.getDay() (0=Dom, 6=Sáb)",
+    "WeeklyChart": "Confirmed: maps frequency[7] to 7 Bar components with DAY_LABELS",
+    "tooltip": "Confirmed: each bar <div> has title attribute with day label + count"
+  }
+}

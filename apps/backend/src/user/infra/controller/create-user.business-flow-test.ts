@@ -1,0 +1,119 @@
+import request from "supertest"
+import { serverBuildForTest } from "test/factory/server-build-for-test"
+import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
+import { container } from "@/shared/infra/ioc/container"
+import { USER_TYPES } from "@/shared/infra/ioc/types"
+import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
+import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import { User } from "@/user/domain/user"
+import { UserRoutes } from "./routes/user-routes"
+
+describe("Cadastrar Usuário", () => {
+	let fastifyServer: FastifyAdapter
+	let userRepository: InMemoryUserRepository
+
+	beforeEach(async () => {
+		container.snapshot()
+		userRepository = new InMemoryUserRepository()
+		container
+			.rebind(USER_TYPES.Repositories.User)
+			.toConstantValue(userRepository)
+		fastifyServer = await serverBuildForTest()
+		await fastifyServer.ready()
+	})
+
+	afterEach(async () => {
+		container.restore()
+		await fastifyServer.close()
+	})
+
+	test("Deve criar um usuário", async () => {
+		const input = {
+			name: "any_name",
+			email: "any@email.com",
+			password: "any_password",
+		}
+
+		const result = await request(fastifyServer.server)
+			.post(UserRoutes.CREATE)
+			.send(input)
+
+		expect(result.status).toBe(HTTP_STATUS.CREATED)
+		expect(result.body).toEqual({
+			message: "User created",
+			email: input.email,
+		})
+	})
+
+	test("Deve retornar 409 se o usuário já existir", async () => {
+		const input = {
+			name: "any_name",
+			email: "any@email.com",
+			password: "any_password",
+		}
+
+		const user = await User.create(input)
+		await userRepository.save(user.forceSuccess().value)
+
+		const response = await request(fastifyServer.server)
+			.post(UserRoutes.CREATE)
+			.send(input)
+
+		expect(response.status).toBe(HTTP_STATUS.CONFLICT)
+		expect(response.body).toEqual({
+			message: "User already exists",
+		})
+	})
+
+	test("Não deve criar um usuário com dados inválidos para o controller", async () => {
+		const input = {
+			name: "any_name",
+			email: "invalid_email",
+			password: "any_password",
+		}
+
+		const result = await request(fastifyServer.server)
+			.post(UserRoutes.CREATE)
+			.send(input)
+
+		expect(result.status).toBe(HTTP_STATUS.BAD_REQUEST)
+		expect(result.body).toEqual({
+			message: 'Validation error: Invalid email address at "email"',
+		})
+	})
+
+	test("Não deve criar um usuário com a propriedade name inválida. Acima de 30 caracteres", async () => {
+		const input = {
+			name: "any_name".repeat(30),
+			email: "john@doe.com",
+			password: "any_password",
+		}
+
+		const result = await request(fastifyServer.server)
+			.post(UserRoutes.CREATE)
+			.send(input)
+
+		expect(result.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
+		expect(result.body).toEqual({
+			message: "Name must have between 10 and 30 characters",
+		})
+	})
+
+	test("Não deve criar um usuário com role ADMIN via endpoint público", async () => {
+		const input = {
+			name: "any_name",
+			email: "attacker@evil.com",
+			password: "any_password",
+			role: "ADMIN",
+		}
+
+		const result = await request(fastifyServer.server)
+			.post(UserRoutes.CREATE)
+			.send(input)
+
+		expect(result.status).toBe(HTTP_STATUS.CREATED)
+
+		const created = userRepository.users.find((u) => u.email === input.email)
+		expect(created?.role).toBe("MEMBER")
+	})
+})

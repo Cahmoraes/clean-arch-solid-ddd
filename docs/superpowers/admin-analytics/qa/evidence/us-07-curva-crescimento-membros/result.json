@@ -1,0 +1,82 @@
+{
+  "userStory": "US-07",
+  "title": "Como admin, eu quero ver a curva de crescimento de membros e o número de novos cadastros por período para que eu possa avaliar o resultado de ações de aquisição",
+  "date": "2026-06-04",
+  "verdict": "PASS",
+  "requirements": [
+    {
+      "id": "FR-014",
+      "description": "A seção deve exibir um gráfico de área com a evolução cumulativa do total de membros ativos no período",
+      "status": "PASS",
+      "evidence": "GrowthMetricsSection renderiza <AreaChart data={data.activeMembersTrend}> com <Area dataKey='count'> condicionalmente quando activeMembersTrend.length > 0. Backend retorna activeMembersTrend: PeriodCount[] via PrismaAnalyticsUserRepository.fetchGrowthAnalytics com query SQL DATE_TRUNC agrupando check-ins únicos por período."
+    },
+    {
+      "id": "FR-015",
+      "description": "A seção deve exibir um gráfico de barras com o número de novos membros cadastrados por semana ou mês dentro do período",
+      "status": "PASS",
+      "evidence": "GrowthMetricsSection renderiza <BarChart data={data.newMembersPerPeriod}> com <Bar dataKey='count'> condicionalmente quando newMembersPerPeriod.length > 0. Backend retorna newMembersPerPeriod: PeriodCount[] via SQL DATE_TRUNC agrupando novos cadastros por semana (3m/12m) ou dia (7d/30d)."
+    },
+    {
+      "id": "FR-016",
+      "description": "A seção deve estar fechada por padrão ao carregar a página",
+      "status": "PASS",
+      "evidence": "const [isOpen, setIsOpen] = useState(false) — comentário inline '// fechado por padrão (FR-016)'. Collapsible recebe open={isOpen} (false na montagem inicial). Confirmado por teste: Collapsible renderiza com data-open='false' antes de qualquer interação."
+    }
+  ],
+  "staticAnalysis": {
+    "frontendComponent": {
+      "file": "apps/frontend/src/features/admin/analytics/components/growth-metrics-section.tsx",
+      "findings": [
+        "useState(false) — seção fechada por padrão com comentário FR-016",
+        "AreaChart data={data.activeMembersTrend} — FR-014",
+        "Area type='monotone' dataKey='count' stroke/fill com gradiente — FR-014",
+        "BarChart data={data.newMembersPerPeriod} — FR-015",
+        "Bar dataKey='count' fill='var(--color-count)' radius=[2,2,0,0] — FR-015",
+        "Renderização condicional: data.activeMembersTrend.length > 0 e data.newMembersPerPeriod.length > 0",
+        "Estados de loading (Skeleton x2), error e empty-state implementados"
+      ]
+    },
+    "backendInterface": {
+      "file": "apps/backend/src/analytics/application/repository/analytics-user-repository.ts",
+      "findings": [
+        "interface GrowthAnalytics { totalMembers, newMembersCount, newMembersPerPeriod: PeriodCount[], activeMembersTrend: PeriodCount[] }",
+        "interface PeriodCount { date: string; count: number }",
+        "AnalyticsUserRepository.fetchGrowthAnalytics(period: AnalyticsPeriod): Promise<GrowthAnalytics>"
+      ]
+    },
+    "backendRepository": {
+      "file": "apps/backend/src/shared/infra/database/repository/prisma/prisma-analytics-user-repository.ts",
+      "findings": [
+        "newMembersPerPeriod: SQL COUNT(*) FROM users GROUP BY DATE_TRUNC(truncUnit, created_at)",
+        "activeMembersTrend: SQL COUNT(DISTINCT user_id) FROM check_ins GROUP BY DATE_TRUNC(truncUnit, created_at)",
+        "truncUnit = period.shouldAggregateByWeek() ? 'week' : 'day' — atende requisito de semana/mês do FR-015",
+        "Retorna PeriodCount[] com date: string e count: number"
+      ]
+    }
+  },
+  "screenshot": "NOT_RUNNING_AT_QA_TIME",
+  "appStatus": "RUNNING (HTTP 200 at localhost:3000)",
+  "tests": {
+    "file": "docs/superpowers/admin-analytics/qa/evidence/us-07-curva-crescimento-membros/us-07-growth-metrics.acceptance.test.tsx",
+    "run_command": "cd apps/frontend && npx vitest run --config vitest.acceptance.config.ts \"us-07-growth-metrics\"",
+    "note": "Arquivo reside fora de src/ — requer vitest.acceptance.config.ts temporário com include expandido e alias de node_modules do frontend. Config deve ser criada antes de rodar.",
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "cases": [
+      "FR-016: deve renderizar Collapsible com open=false por padrão",
+      "FR-016: deve manter seção fechada mesmo quando dados estão disponíveis",
+      "FR-014: deve exibir AreaChart quando activeMembersTrend tem dados",
+      "FR-014: deve passar activeMembersTrend ao AreaChart com número correto de pontos",
+      "FR-014: Area deve usar dataKey='count' para exibir contagem de membros ativos",
+      "FR-014: não deve exibir AreaChart quando activeMembersTrend está vazio",
+      "FR-015: deve exibir BarChart quando newMembersPerPeriod tem dados",
+      "FR-015: deve passar newMembersPerPeriod ao BarChart com número correto de pontos",
+      "FR-015: Bar deve usar dataKey='count' para exibir contagem de novos membros",
+      "FR-015: não deve exibir BarChart quando newMembersPerPeriod está vazio",
+      "Estados: deve exibir skeletons durante carregamento",
+      "Estados: deve exibir mensagem de erro quando isError=true",
+      "Estados: deve exibir estado vazio quando ambas as séries estão vazias"
+    ]
+  }
+}

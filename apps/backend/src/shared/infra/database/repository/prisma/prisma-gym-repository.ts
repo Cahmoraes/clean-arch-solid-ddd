@@ -1,0 +1,137 @@
+import type { Decimal } from "@prisma/client/runtime/client"
+import { inject, injectable } from "inversify"
+import type {
+	FetchGymsInput,
+	GymRepository,
+	SaveGymResult,
+} from "@/gym/application/repository/gym-repository"
+import { Gym } from "@/gym/domain/gym"
+import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
+import type {
+	Prisma,
+	PrismaClient,
+} from "@/shared/infra/database/generated/prisma/client"
+import { env } from "@/shared/infra/env"
+import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
+import { SHARED_TYPES } from "@/shared/infra/ioc/types"
+import { PrismaUnitOfWork } from "../unit-of-work/prisma-unit-of-work"
+
+export interface GymCreateProps {
+	id: string
+	title: string
+	description: string | null
+	phone?: string | null
+	address?: string | null
+	image_key?: string | null
+	latitude: Decimal
+	longitude: Decimal
+	cnpj: string
+}
+
+@injectable()
+export class PrismaGymRepository implements GymRepository {
+	constructor(
+		@inject(SHARED_TYPES.Prisma.Client)
+		private readonly prismaClient: PrismaClient | Prisma.TransactionClient,
+	) {}
+
+	public withTransaction<TX extends object>(prismaClient: TX): GymRepository {
+		if (PrismaUnitOfWork.isClientTransaction(prismaClient)) {
+			return new PrismaGymRepository(prismaClient)
+		}
+		throw new InvalidTransactionInstance(prismaClient)
+	}
+
+	public async save(gym: Gym): Promise<SaveGymResult> {
+		const result = await this.prismaClient.gym.create({
+			data: {
+				id: gym.id,
+				title: gym.title,
+				description: gym.description,
+				phone: gym.phone ? gym.phone.toString() : undefined,
+				address: gym.address,
+				image_key: gym.imageKey ?? null,
+				latitude: gym.latitude,
+				longitude: gym.longitude,
+				cnpj: gym.cnpj,
+			},
+			select: { id: true },
+		})
+		return { id: result.id }
+	}
+
+	public async update(gym: Gym): Promise<void> {
+		await this.prismaClient.gym.update({
+			where: { id: gym.id },
+			data: {
+				title: gym.title,
+				description: gym.description ?? null,
+				phone: gym.phone ?? null,
+				address: gym.address ?? null,
+				image_key: gym.imageKey ?? null,
+				latitude: gym.latitude,
+				longitude: gym.longitude,
+				cnpj: gym.cnpj,
+			},
+		})
+	}
+
+	public async fetchGyms(input: FetchGymsInput): Promise<Gym[]> {
+		const gymData = await this.prismaClient.gym.findMany({
+			where: input.title
+				? {
+						title: {
+							contains: input.title,
+							mode: "insensitive",
+						},
+					}
+				: undefined,
+			skip: (input.page - 1) * env.ITEMS_PER_PAGE,
+			take: env.ITEMS_PER_PAGE,
+		})
+		return gymData.map(this.createGym)
+	}
+
+	private createGym(props: GymCreateProps): Gym {
+		return Gym.restore({
+			id: props.id,
+			title: props.title,
+			description: props.description ?? undefined,
+			phone: props.phone ? props.phone : undefined,
+			address: props.address ?? undefined,
+			imageKey: props.image_key ?? undefined,
+			latitude: props.latitude.toNumber(),
+			longitude: props.longitude.toNumber(),
+			cnpj: props.cnpj,
+		})
+	}
+
+	public async gymOfId(id: string): Promise<Gym | null> {
+		const gymData = await this.prismaClient.gym.findUnique({
+			where: { id },
+		})
+		if (!gymData) return null
+		return this.createGym(gymData)
+	}
+
+	public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {
+		const gyms = await this.prismaClient.$queryRaw<GymCreateProps[]>`
+      SELECT * FROM "gyms"
+      WHERE ST_DistanceSphere(
+        ST_MakePoint("longitude", "latitude"),
+        ST_MakePoint(${coordinate.longitude}, ${coordinate.latitude})
+      ) <= 10000
+    `
+		return gyms.map(this.createGym)
+	}
+
+	public async gymOfCNPJ(cnpj: string): Promise<Gym | null> {
+		const gymDataOrNull = await this.prismaClient.gym.findUnique({
+			where: {
+				cnpj,
+			},
+		})
+		if (!gymDataOrNull) return null
+		return this.createGym(gymDataOrNull)
+	}
+}

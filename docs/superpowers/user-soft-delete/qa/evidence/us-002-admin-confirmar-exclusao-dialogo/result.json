@@ -1,0 +1,44 @@
+{
+  "us_id": "us-002",
+  "title": "Admin confirma exclusão em diálogo enfático antes de efetivá-la",
+  "requirements": ["RF-017"],
+  "status": "PASSED",
+  "verified_at": "2026-05-31T00:00:00.000Z",
+  "screenshot": null,
+  "screenshot_note": "Dev server not running at http://localhost:3000 — screenshot skipped",
+  "component_analysis": {
+    "file": "apps/frontend/src/features/admin/components/user-detail/confirmation-dialogs.tsx",
+    "component": "DeleteConfirmationDialog",
+    "variant_destructive": true,
+    "emphatic_text": "Esta ação não pode ser desfeita pela interface e o usuário perderá o acesso imediatamente.",
+    "isDeleting_label_toggle": "isDeleting ? 'Excluindo...' : 'Confirmar exclusão'",
+    "isPending_guards": "disabled={isPending} on both Cancel and Confirm buttons",
+    "open_trigger_covered_by_footer_test": true
+  },
+  "tests": {
+    "footer_trigger_test": {
+      "file": "apps/frontend/src/features/admin/components/user-detail/user-actions-footer.test.tsx",
+      "test": "botão Excluir habilitado dispara onOpenDelete",
+      "result": "PASSED",
+      "run_output": "88 passed (88 files) — all 426 tests passed"
+    },
+    "acceptance_test": {
+      "file": "docs/superpowers/user-soft-delete/qa/evidence/us-002-admin-confirmar-exclusao-dialogo/us-002-delete-dialog-emphatic-text.acceptance.test.tsx",
+      "cases": [
+        "renderiza título e texto enfático sobre irreversibilidade quando aberto",
+        "botão de confirmação tem variant destructive e label correto",
+        "botão mostra 'Excluindo...' quando isDeleting=true",
+        "botões ficam disabled quando isPending=true (guard contra duplo clique)",
+        "chama onConfirm ao clicar em confirmar exclusão",
+        "não renderiza conteúdo quando open=false"
+      ],
+      "result": "PASSED",
+      "run_output": "Test Files 1 passed | 88 skipped (89) — Tests 6 passed | 426 skipped (432)"
+    }
+  },
+  "rf_017_coverage": {
+    "dialogo_confirmacao_destrutivo": "VERIFIED — AlertDialog with Button variant='destructive'",
+    "texto_enfatico_irreversibilidade": "VERIFIED — 'não pode ser desfeita pela interface'",
+    "isDeleting_pending_guards": "VERIFIED — label toggles, buttons disabled on isPending"
+  }
+}

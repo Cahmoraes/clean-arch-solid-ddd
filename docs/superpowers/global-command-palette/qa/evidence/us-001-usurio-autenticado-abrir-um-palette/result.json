@@ -1,0 +1,113 @@
+{
+  "userStory": "US-001",
+  "title": "Como usuário autenticado, eu quero abrir um palette de busca com ⌘K ou clicando no campo do header",
+  "status": "PARTIAL",
+  "evaluatedAt": "2026-06-02",
+  "totalPassingTests": 473,
+  "totalTestFiles": 97,
+  "relevantTestFiles": [
+    "src/components/command-palette/command-palette.test.tsx",
+    "src/components/command-palette/navigation-group.test.tsx",
+    "src/components/ui/search-bar.test.tsx",
+    "src/components/layout/authenticated-shell.test.tsx"
+  ],
+  "relevantTestsPassing": 23,
+  "requirements": {
+    "RF-001": {
+      "description": "Palette abre ao pressionar ⌘K / Ctrl+K em qualquer página autenticada",
+      "status": "PARTIAL",
+      "evidence": "Impl em authenticated-shell.tsx:96-103 (useEffect + window.addEventListener). Nenhum teste unitário cobre o atalho de teclado no AuthenticatedShell. A lógica existe e é correta; apenas não há cobertura de teste automatizado para este RF.",
+      "testsCovering": []
+    },
+    "RF-002": {
+      "description": "Palette abre ao clicar no campo de busca do header",
+      "status": "PARTIAL",
+      "evidence": "SearchBar.test.tsx cobre onActivate ao clicar; authenticated-shell.tsx linha 197 conecta onActivate → setIsCommandPaletteOpen(true). Cobertura indireta — sem teste de integração no AuthenticatedShell.",
+      "testsCovering": [
+        "SearchBar > chama onActivate ao clicar no wrapper quando onActivate é fornecido"
+      ]
+    },
+    "RF-003": {
+      "description": "Palette fecha ao pressionar Esc",
+      "status": "PASSED",
+      "evidence": "Coberto pelo Radix Dialog (onOpenChange nativo) + teste explícito.",
+      "testsCovering": [
+        "CommandPalette > chama onOpenChange(false) ao pressionar Esc"
+      ]
+    },
+    "RF-004": {
+      "description": "Palette fecha ao clicar fora do modal (backdrop)",
+      "status": "PARTIAL",
+      "evidence": "Radix Dialog Overlay em command-palette.tsx:31 implementa o comportamento nativamente. Nenhum teste unitário simula clique no overlay — requer browser/E2E para validação completa.",
+      "testsCovering": []
+    },
+    "RF-005": {
+      "description": "Foco retorna ao elemento anterior após fechamento",
+      "status": "PARTIAL",
+      "evidence": "Radix Dialog gerencia focus return nativamente via FocusScope. Não testável no nível unitário (happy-dom); requer E2E com browser real.",
+      "testsCovering": []
+    },
+    "RF-006": {
+      "description": "Ao abrir com query vazia, grupo Navegação exibido com páginas do role",
+      "status": "PASSED",
+      "evidence": "Coberto por dois testes.",
+      "testsCovering": [
+        "CommandPalette > exibe NavigationGroup quando aberto com query vazia (membro)",
+        "NavigationGroup > exibe todos os itens quando query está vazia"
+      ]
+    },
+    "RF-007": {
+      "description": "Itens admin exibidos apenas para ADMIN",
+      "status": "PASSED",
+      "evidence": "Coberto por testes em command-palette.test.tsx e navigation-group.test.tsx.",
+      "testsCovering": [
+        "CommandPalette > exibe NavigationGroup com itens admin quando ADMIN",
+        "CommandPalette > exibe NavigationGroup quando aberto com query vazia (membro) [verifica ausência de admin]",
+        "NavigationGroup > exibe itens admin para ADMIN",
+        "NavigationGroup > não exibe itens admin para membro"
+      ]
+    },
+    "RF-008": {
+      "description": "Selecionar item navega para página e fecha palette",
+      "status": "PASSED",
+      "evidence": "NavigationGroup chama router.push + onSelect; CommandPalette passa onSelect={() => handleOpenChange(false)}.",
+      "testsCovering": [
+        "NavigationGroup > navega ao clicar num item e chama onSelect"
+      ]
+    },
+    "RF-009": {
+      "description": "Itens de navegação aparecem em menos de 50ms (sem API)",
+      "status": "PASSED",
+      "evidence": "Itens estáticos renderizam sincronamente — teste usa getByText sem findBy/waitFor.",
+      "testsCovering": [
+        "NavigationGroup > items aparecem sem espera de API (< 50ms percebidos)"
+      ]
+    }
+  },
+  "gaps": [
+    {
+      "rf": "RF-001",
+      "gap": "Nenhum teste unitário valida que Ctrl+K / ⌘K abre o palette via AuthenticatedShell",
+      "recommendation": "Adicionar teste em authenticated-shell.test.tsx: renderizar shell, disparar userEvent.keyboard('{Control>}k{/Control}'), verificar que CommandPalette input aparece"
+    },
+    {
+      "rf": "RF-002",
+      "gap": "Cobertura indireta — SearchBar onActivate testado isolado, mas não no contexto do AuthenticatedShell",
+      "recommendation": "Adicionar teste de integração no authenticated-shell.test.tsx: clicar no SearchBar → CommandPalette input aparece"
+    },
+    {
+      "rf": "RF-004",
+      "gap": "Clique no backdrop não testado (happy-dom não despacha eventos de click do Overlay do Radix Dialog corretamente)",
+      "recommendation": "Cobrir via E2E Playwright (e2e/command-palette.spec.ts)"
+    },
+    {
+      "rf": "RF-005",
+      "gap": "Focus return não testável em happy-dom",
+      "recommendation": "Cobrir via E2E Playwright"
+    }
+  ],
+  "acceptanceTestFile": "us-001-navigation-palette-open-close.acceptance.test.tsx",
+  "acceptanceTestNote": "Arquivo de referência fora do src/. Não executável via pnpm test padrão (include: src/**). Para rodar: adicionar temporariamente o path ao vitest.config.ts include ou converter para E2E Playwright.",
+  "screenshots": "UNAVAILABLE — requer servidor de desenvolvimento + backend em execução",
+  "summary": "RF-003, RF-006, RF-007, RF-008, RF-009 totalmente cobertos por testes passando. RF-001 e RF-002 implementados corretamente mas sem cobertura de teste na camada de integração do AuthenticatedShell. RF-004 e RF-005 delegados ao Radix Dialog (correto) mas requerem E2E para validação completa."
+}

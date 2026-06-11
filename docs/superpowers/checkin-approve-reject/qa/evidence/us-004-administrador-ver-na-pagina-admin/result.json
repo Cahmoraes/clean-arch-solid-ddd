@@ -1,0 +1,82 @@
+{
+	"us_id": "us-004",
+	"user_story": "Como administrador, eu quero ver na página /admin/check-ins apenas os check-ins que ainda podem ser acionados (pendentes e validados), sem poluição de itens já resolvidos.",
+	"requirements": ["RF-013", "RF-014", "RF-015", "RF-016"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"existing_tests": [
+		{
+			"file": "apps/frontend/src/app/(authenticated)/admin/check-ins/page.test.tsx",
+			"count": 6,
+			"tests": [
+				{
+					"name": "lista check-ins pendentes e valida ao clicar em 'Validar'",
+					"coverage": ["RF-013", "RF-015"]
+				},
+				{
+					"name": "exibe EmptyState quando não há check-ins pendentes",
+					"coverage": []
+				},
+				{
+					"name": "exibe erro amigável ao falhar validação (409)",
+					"coverage": []
+				},
+				{
+					"name": "rejeita um check-in pendente ao clicar em 'Rejeitar'",
+					"coverage": ["RF-015"]
+				},
+				{
+					"name": "exibe erro amigável ao falhar rejeição",
+					"coverage": []
+				},
+				{
+					"name": "exibe apenas botão rejeitar para check-in validado",
+					"coverage": ["RF-016"]
+				}
+			]
+		}
+	],
+	"acceptance_tests_created": [
+		{
+			"name": "us-004-admin-hidden-rejected.acceptance.test.tsx",
+			"location": "docs/superpowers/checkin-approve-reject/qa/evidence/us-004-administrador-ver-na-pagina-admin/",
+			"purpose": "Verify RF-014: Hidden rejected check-ins",
+			"tests": [
+				{
+					"name": "oculta check-ins rejeitados mesmo quando retornados pela API",
+					"status": "PASSED"
+				},
+				{
+					"name": "exibe EmptyState quando todos check-ins são rejeitados",
+					"status": "PASSED"
+				}
+			]
+		}
+	],
+	"test_output_summary": "✓ All tests passed. Frontend test suite: 257 tests passed (257). RF-014 acceptance tests validated that: (1) Rejected check-ins are filtered out from the list even when API returns them, (2) Empty state is shown when all check-ins are rejected, (3) Only pending and validated check-ins are visible.",
+	"implementation_verification": {
+		"rf_013": {
+			"status": "PASSED",
+			"description": "Page displays check-ins with status 'pending' and 'validated'",
+			"implementation": "Line 80-82 in page.tsx filters for !rejected items"
+		},
+		"rf_014": {
+			"status": "PASSED",
+			"description": "Rejected check-ins are hidden (filtered out)",
+			"implementation": "Line 80-82 in page.tsx: .filter((item) => item.status !== 'rejected')"
+		},
+		"rf_015": {
+			"status": "PASSED",
+			"description": "Pending check-ins show 'Aprovar' and 'Rejeitar' buttons",
+			"implementation": "check-in-actions.tsx lines 142-152: PendingActions component renders ApproveButton + RejectButton"
+		},
+		"rf_016": {
+			"status": "PASSED",
+			"description": "Validated check-ins show only 'Rejeitar' button",
+			"implementation": "check-in-actions.tsx lines 131-139: RejectButton only for validated status"
+		}
+	},
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "✅ All requirements covered. Implementation uses filter pattern to remove rejected items from the list. CheckInActions component correctly handles conditional rendering based on check-in status. Tests include both happy path (validate, reject) and error scenarios (409 conflict, 404 not found). RF-014 acceptance test verifies the critical requirement that rejected items are not visible in the admin panel even when returned by the API."
+}

@@ -1,0 +1,119 @@
+import { randomUUID } from "node:crypto"
+import type { SubscriptionStatusTypes } from "./subscription-status-types"
+
+export interface SubscriptionConstructor {
+	id: string
+	userId: string
+	billingSubscriptionId: string
+	customerId: string
+	status: SubscriptionStatusTypes
+	createdAt: Date
+	updatedAt?: Date
+	canceledAt?: Date
+}
+
+export interface SubscriptionCreate {
+	id?: string
+	userId: string
+	billingSubscriptionId: string
+	customerId: string
+	status: SubscriptionStatusTypes
+}
+
+export interface SubscriptionRestore {
+	id: string
+	userId: string
+	billingSubscriptionId: string
+	customerId: string
+	status: SubscriptionStatusTypes
+	createdAt: Date
+	updatedAt?: Date
+	canceledAt?: Date
+}
+
+export class Subscription {
+	private readonly _id: string
+	private readonly _userId: string
+	private readonly _billingSubscriptionId: string
+	private readonly _customerId: string
+	private _status: SubscriptionStatusTypes
+	private readonly _createdAt: Date
+	private _updatedAt?: Date
+	private _canceledAt?: Date
+
+	private constructor(props: SubscriptionConstructor) {
+		this._id = props.id
+		this._userId = props.userId
+		this._billingSubscriptionId = props.billingSubscriptionId
+		this._customerId = props.customerId
+		this._status = props.status
+		this._createdAt = props.createdAt
+		this._updatedAt = props.updatedAt
+		this._canceledAt = props.canceledAt
+	}
+
+	public static create(props: SubscriptionCreate): Subscription {
+		const createdAt = new Date()
+		return new Subscription({
+			...props,
+			id: props.id ?? randomUUID(),
+			createdAt,
+		})
+	}
+
+	public static restore(props: SubscriptionRestore): Subscription {
+		return new Subscription(props)
+	}
+
+	public get id(): string {
+		return this._id
+	}
+
+	public get userId(): string {
+		return this._userId
+	}
+
+	public get billingSubscriptionId(): string {
+		return this._billingSubscriptionId
+	}
+
+	public get customerId(): string {
+		return this._customerId
+	}
+
+	public get status(): SubscriptionStatusTypes {
+		return this._status
+	}
+
+	public get createdAt(): Date {
+		return this._createdAt
+	}
+
+	public get updatedAt(): Date | undefined {
+		return this._updatedAt
+	}
+
+	public get canceledAt(): Date | undefined {
+		return this._canceledAt
+	}
+
+	public changeStatus(newStatus: SubscriptionStatusTypes): void {
+		this._status = newStatus
+	}
+
+	public activate(): void {
+		this._status = "active"
+		this._updatedAt = new Date()
+	}
+
+	public cancel(): void {
+		this._status = "canceled"
+		this._canceledAt = new Date()
+		this._updatedAt = new Date()
+	}
+
+	public markAsPastDue(): void {
+		this._status = "past_due"
+		this._updatedAt = new Date()
+	}
+}

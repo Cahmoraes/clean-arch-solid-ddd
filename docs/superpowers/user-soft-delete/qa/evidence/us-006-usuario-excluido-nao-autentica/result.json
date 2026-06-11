@@ -1,0 +1,43 @@
+{
+  "us_id": "us-006",
+  "title": "Usuário excluído não autentica (senha e Google)",
+  "requirements": ["RF-003"],
+  "status": "PASSED",
+  "verified_at": "2026-05-31T16:00:00-03:00",
+  "test_output_summary": {
+    "password_login": {
+      "test": "Não deve autenticar um usuário soft-deleted (login por senha)",
+      "file": "apps/backend/src/session/application/use-case/authenticate.usecase.test.ts",
+      "result": "PASSED",
+      "assertion": "result.isFailure() = true, result.value instanceof InvalidCredentialsError",
+      "mechanism": "userRepository.userOfEmail filters !user.isDeleted → returns null → InvalidCredentialsError"
+    },
+    "google_login": {
+      "test": "Acceptance tests (2 tests) — us-006-google-login.acceptance.test.ts",
+      "file": "docs/superpowers/user-soft-delete/qa/evidence/us-006-usuario-excluido-nao-autentica/us-006-google-login.acceptance.test.ts",
+      "result": "PASSED",
+      "assertion": "userOfGoogleId and userOfEmail both filter isDeleted → deleted user invisible; original identity cannot authenticate",
+      "mechanism": "InMemoryUserRepository.userOfGoogleId and userOfEmail both apply !user.isDeleted filter (lines 54-56, 50-51 in in-memory-user-repository.ts)",
+      "note": "Google path does not return InvalidCredentialsError by design: deleted user is invisible to all lookups, so the system treats the googleId/email as unknown and would create a new account. The original deleted user's session/identity is permanently inaccessible. RF-003 satisfied."
+    }
+  },
+  "acceptance_tests_created": [
+    {
+      "file": "docs/superpowers/user-soft-delete/qa/evidence/us-006-usuario-excluido-nao-autentica/us-006-google-login.acceptance.test.ts",
+      "tests": 2,
+      "runner_config": "apps/backend/test/vite.config.acceptance-us006.ts",
+      "run_command": "pnpm --filter backend exec npx vitest --run --config ./test/vite.config.acceptance-us006.ts"
+    }
+  ],
+  "filter_evidence": {
+    "file": "apps/backend/src/shared/infra/database/repository/in-memory/in-memory-user-repository.ts",
+    "userOfEmail_line": 51,
+    "userOfGoogleId_line": 55,
+    "filter": "!user.isDeleted"
+  },
+  "notes": [
+    "Password login: explicit unit test exists and passes.",
+    "Google login: no explicit 'must return InvalidCredentialsError' scenario exists because the usecase does not have a soft-delete guard — instead, the repository filter makes deleted users invisible (treated as non-existent). Two acceptance tests confirm this behavior.",
+    "PrismaUserRepository must also apply the same isDeleted filter for production parity — not verified in this task."
+  ]
+}

@@ -1,0 +1,422 @@
+import { EVENTS } from "@/shared/domain/event/events"
+import { UserStatus } from "@/shared/infra/database/generated/prisma/client"
+import { InvalidEmailError } from "./error/invalid-email-error"
+import { InvalidNameLengthError } from "./error/invalid-name-length-error"
+import { type CreateUserDto, User, type UserRestore } from "./user"
+import { GoogleId } from "./value-object/google-id.js"
+import { RoleValues } from "./value-object/role"
+import { StatusTypes } from "./value-object/status"
+
+describe("User Entity", () => {
+	test("Deve criar um usuário", async () => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+		}
+		const user = (await User.create(input)).force.success().value
+		expect(user.name).toEqual(input.name)
+		expect(user.email).toEqual(input.email)
+		expect(user.role).toBe(RoleValues.MEMBER)
+		expect(user.password).toEqual(expect.any(String))
+		expect(user.createdAt).toEqual(expect.any(Date))
+		expect(user.updatedAt).toBeUndefined()
+		expect(user.id).toEqual(expect.any(String))
+		expect(user.isActive).toBe(true)
+		expect(user.status).toBe(UserStatus.activated)
+		expect(user.billingCustomerId).toBeUndefined()
+	})
+
+	test("Deve restaurar um usuário", () => {
+		const input: UserRestore = {
+			createdAt: new Date(),
+			id: "any_id",
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+			role: RoleValues.MEMBER,
+			status: "activated",
+		}
+		const user = User.restore(input)
+		expect(user).toBeDefined()
+		expect(user.id).toEqual(input.id)
+		expect(user.name).toEqual(input.name)
+		expect(user.email).toEqual(input.email)
+		expect(user.role).toEqual(input.role)
+		expect(user.password).toEqual(expect.any(String))
+		expect(user.createdAt).toEqual(input.createdAt)
+		expect(user.isActive).toBe(true)
+	})
+
+	test("Não deve criar um usuário com nome inválido", async () => {
+		const input: CreateUserDto = {
+			name: "",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+		}
+		const userOrError = await User.create(input)
+		expect(userOrError.forceFailure().value).toEqual([
+			expect.any(InvalidNameLengthError),
+		])
+	})
+
+	test("Não deve criar um usuário com email inválido", async () => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "",
+			password: "securepassword123",
+		}
+		const userOrError = await User.create(input)
+		expect(userOrError.forceFailure().value).toEqual([
+			expect.any(InvalidEmailError),
+		])
+	})
+
+	test("Não deve criar um usuário com nome e email inválido", async () => {
+		const input: CreateUserDto = {
+			name: "",
+			email: "",
+			password: "securepassword123",
+		}
+		const userOrError = await User.create(input)
+		expect(userOrError.forceFailure().value).toEqual([
+			expect.any(InvalidNameLengthError),
+			expect.any(InvalidEmailError),
+		])
+	})
+
+	test("Deve criar um usuário com uma data de criação pré-definida", async () => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+			createdAt: new Date(),
+		}
+		const userOrError = await User.create(input)
+		expect(userOrError.forceSuccess().value.createdAt).toBe(input.createdAt)
+	})
+
+	test("Deve criar um usuário ADMINISTRADOR", async () => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+			role: "ADMIN",
+			createdAt: new Date(),
+		}
+		const userOrError = await User.create(input)
+		expect(userOrError.forceSuccess().value.role).toBe(RoleValues.ADMIN)
+	})
+
+	test("Deve restaurar um usuário ADMINISTRADOR", () => {
+		const input: UserRestore = {
+			createdAt: new Date(),
+			id: "any_id",
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+			role: RoleValues.ADMIN,
+			status: "activated",
+		}
+		const user = User.restore(input)
+		expect(user.role).toEqual(RoleValues.ADMIN)
+	})
+
+	test("Deve alterar a senha de um usuário", async () => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "12345678",
+		}
+		const user = (await User.create(input)).forceSuccess().value
+		const oldPassword = user.password
+		const newRawPassword = "87654321"
+		const result = await user.changePassword(newRawPassword)
+		expect(result.isSuccess()).toBe(true)
+		expect(user.password).not.toBe(oldPassword)
+		await expect(user.checkPassword(newRawPassword)).resolves.toBe(true)
+	})
+
+	test("Deve atualizar um usuário com dados alterados", async () => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+		}
+		const observer = vi.fn()
+		const user = (await User.create(input)).forceSuccess().value
+		user.subscribe(observer)
+		const updateUserResult = user.updateProfile({
+			email: "martin@fowler.com",
+			name: "Martin Fowler",
+		})
+		expect(updateUserResult.isSuccess()).toBe(true)
+		expect(observer).toBeCalledTimes(1)
+		expect(user).toBeInstanceOf(User)
+		expect(user.id).toBe(user.id)
+		expect(user.name).toBe("Martin Fowler")
+		expect(user.email).toBe("martin@fowler.com")
+		await expect(user.checkPassword("securepassword123")).resolves.toBe(true)
+	})
+
+	test("Deve suspender um usuário ativo", async () => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+		}
+		const user = (await User.create(input)).forceSuccess().value
+		expect(user.isSuspend).toBe(false)
+		user.suspend()
+		expect(user.isActive).toBe(false)
+		expect(user.isSuspend).toBe(true)
+	})
+
+	test("Deve ativar um usuário suspenso", async () => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+			status: "suspended",
+		}
+		const user = (await User.create(input)).forceSuccess().value
+		expect(user.isSuspend).toBe(true)
+		user.activate()
+		expect(user.isSuspend).toBe(false)
+		expect(user.isActive).toBe(true)
+	})
+
+	test("Deve restaurar um usuário suspenso", () => {
+		const input: UserRestore = {
+			createdAt: new Date(),
+			id: "any_id",
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+			role: RoleValues.MEMBER,
+			status: "suspended",
+		}
+		const user = User.restore(input)
+		expect(user.isActive).toBe(false)
+	})
+
+	test("Deve criar definir um billingCustomerId para um usuário", async () => {
+		const BILLING_CUSTOMER_ID = "customer-billing-id"
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+		}
+		const observer = vi.fn()
+		const user = (await User.create(input)).force.success().value
+		expect(observer).not.toBeCalled()
+		user.subscribe(observer)
+		expect(user.billingCustomerId).toBeUndefined()
+		user.assignBillingCustomerId(BILLING_CUSTOMER_ID)
+		expect(observer).toHaveBeenCalledWith(
+			expect.objectContaining({
+				eventName: EVENTS.USER_ASSIGNED_BILLING_CUSTOMER_ID,
+				payload: {
+					userEmail: user.email,
+				},
+				id: expect.any(String),
+				date: expect.any(Date),
+			}),
+		)
+		expect(user.billingCustomerId).toBe(BILLING_CUSTOMER_ID)
+	})
+
+	test.each([
+		null,
+		undefined,
+		"",
+	])("Não Deve criar definir um inválido para um usuário", async (invalidValue) => {
+		const input: CreateUserDto = {
+			name: "John Doe",
+			email: "john.doe@example.com",
+			password: "securepassword123",
+		}
+		const user = (await User.create(input)).force.success().value
+		expect(user.billingCustomerId).toBeUndefined()
+		user.assignBillingCustomerId(invalidValue as string)
+		expect(user.billingCustomerId).toBeUndefined()
+	})
+
+	test("Deve criar um usuário com googleId e sem senha", async () => {
+		const result = await User.create({
+			name: "Google User",
+			email: "google@example.com",
+			googleId: "google-sub-123",
+		})
+		expect(result.isSuccess()).toBe(true)
+		const user = result.force.success().value
+		expect(user.googleId).toBe("google-sub-123")
+		expect(user.password).toBeUndefined()
+	})
+
+	test("Não deve criar um usuário sem senha e sem googleId", async () => {
+		const result = await User.create({
+			name: "No Auth User",
+			email: "noauth@example.com",
+		})
+		expect(result.isFailure()).toBe(true)
+	})
+
+	test("Deve criar um usuário com senha e googleId", async () => {
+		const result = await User.create({
+			name: "Both Auth User",
+			email: "both@example.com",
+			password: "any_password",
+			googleId: "google-sub-456",
+		})
+		expect(result.isSuccess()).toBe(true)
+		const user = result.force.success().value
+		expect(user.googleId).toBe("google-sub-456")
+		expect(user.password).toBeDefined()
+	})
+
+	test("Deve restaurar um usuário com googleId", () => {
+		const user = User.restore({
+			id: "any-id",
+			name: "Restored User",
+			email: "restored@example.com",
+			role: "MEMBER",
+			status: "activated",
+			createdAt: new Date(),
+			googleId: "google-sub-789",
+		})
+		expect(user.googleId).toBe("google-sub-789")
+		expect(user.password).toBeUndefined()
+	})
+
+	test("Deve vincular conta Google a um usuário existente", async () => {
+		const result = await User.create({
+			name: "Existing User",
+			email: "existing@example.com",
+			password: "any_password",
+		})
+		const user = result.force.success().value
+		expect(user.googleId).toBeUndefined()
+		user.linkGoogleAccount(GoogleId.restore("google-sub-999"))
+		expect(user.googleId).toBe("google-sub-999")
+	})
+
+	describe("User — status locked e isSuperAdmin", () => {
+		function makeLockedUser() {
+			return User.restore({
+				id: "user-id-1",
+				name: "Test User",
+				email: "test@test.com",
+				role: "MEMBER",
+				status: StatusTypes.LOCKED,
+				createdAt: new Date(),
+			})
+		}
+
+		function makeActivatedUser(isSuperAdmin = false) {
+			return User.restore({
+				id: "user-id-2",
+				name: "Test User",
+				email: "test@test.com",
+				role: "MEMBER",
+				status: StatusTypes.ACTIVATED,
+				createdAt: new Date(),
+				isSuperAdmin,
+			})
+		}
+
+		test("lock() deve transicionar activated → locked", () => {
+			const user = makeActivatedUser()
+			user.lock()
+			expect(user.isLocked).toBe(true)
+			expect(user.isActive).toBe(false)
+			expect(user.status).toBe("locked")
+		})
+
+		test("activate() em locked deve transicionar para activated", () => {
+			const user = makeLockedUser()
+			user.activate()
+			expect(user.isActive).toBe(true)
+			expect(user.isLocked).toBe(false)
+		})
+
+		test("suspend() em locked deve transicionar para suspended", () => {
+			const user = makeLockedUser()
+			user.suspend()
+			expect(user.isSuspend).toBe(true)
+			expect(user.isLocked).toBe(false)
+		})
+
+		test("lock() em locked deve ser no-op", () => {
+			const user = makeLockedUser()
+			user.lock()
+			expect(user.isLocked).toBe(true)
+		})
+
+		test("lock() em suspended deve ser no-op", () => {
+			const user = User.restore({
+				id: "user-id-3",
+				name: "Test User",
+				email: "test@test.com",
+				role: "MEMBER",
+				status: StatusTypes.SUSPENDED,
+				createdAt: new Date(),
+			})
+			user.lock()
+			expect(user.isSuspend).toBe(true)
+			expect(user.isLocked).toBe(false)
+		})
+
+		test("isSuperAdmin deve retornar true quando restaurado com isSuperAdmin=true", () => {
+			const user = makeActivatedUser(true)
+			expect(user.isSuperAdmin).toBe(true)
+		})
+
+		test("isSuperAdmin deve retornar false por padrão", () => {
+			const user = makeActivatedUser()
+			expect(user.isSuperAdmin).toBe(false)
+		})
+	})
+
+	describe("User soft delete", () => {
+		test("Deve iniciar não-excluído (isDeleted=false, deletedAt=undefined)", async () => {
+			const user = (
+				await User.create({
+					email: "user@email.com",
+					name: "any_name",
+					password: "any_password",
+				})
+			).forceSuccess().value
+			expect(user.isDeleted).toBe(false)
+			expect(user.deletedAt).toBeUndefined()
+		})
+
+		test("Deve marcar o usuário como excluído ao chamar delete()", async () => {
+			const user = (
+				await User.create({
+					email: "user@email.com",
+					name: "any_name",
+					password: "any_password",
+				})
+			).forceSuccess().value
+			user.delete()
+			expect(user.isDeleted).toBe(true)
+			expect(user.deletedAt).toBeInstanceOf(Date)
+		})
+
+		test("Deve preservar deletedAt ao restaurar um usuário excluído", () => {
+			const deletedAt = new Date("2026-01-01T00:00:00.000Z")
+			const user = User.restore({
+				id: "user-id",
+				email: "user@email.com",
+				name: "any_name",
+				role: "MEMBER",
+				status: "activated",
+				createdAt: new Date(),
+				deletedAt,
+			})
+			expect(user.isDeleted).toBe(true)
+			expect(user.deletedAt).toEqual(deletedAt)
+		})
+	})
+})

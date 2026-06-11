@@ -1,0 +1,60 @@
+{
+  "userStory": "US-08",
+  "title": "Navegação consistente",
+  "status": "PARTIAL",
+  "verifiedAt": "2026-05-25T00:00:00Z",
+  "summary": "A sidebar está implementada com a maioria dos requisitos atendidos. Os 5 itens de navegação (RF-004), o destaque do item ativo (RF-005) e o hamburger mobile (RF-007) estão funcionando e cobertos por testes. O RF-006 está parcialmente implementado: a sidebar exibe o role do usuário e um ícone genérico no rodapé, mas não exibe o nome do usuário nem iniciais derivadas do nome, pois o AuthUser do auth-store armazena apenas id e role (sem campo name).",
+  "requirements": [
+    {
+      "id": "RF-004",
+      "description": "A sidebar deve exibir os itens de navegação: Dashboard, Check-ins, Academias, Perfil, Assinatura",
+      "status": "PASSED",
+      "evidence": "MAIN_NAV_ITEMS em authenticated-shell.tsx (linhas 28-34) contém exatamente os 5 itens: /inicio (Dashboard), /check-ins (Check-ins), /academias (Academias), /perfil (Perfil), /assinatura (Assinatura). Teste 'exibe sidebar de navegação com itens principais' passou.",
+      "testFile": "src/components/layout/authenticated-shell.test.tsx"
+    },
+    {
+      "id": "RF-005",
+      "description": "O item ativo deve ser destacado visualmente conforme o path atual",
+      "status": "PASSED",
+      "evidence": "Função isPathActive() implementada (linhas 41-44) e usada em SidebarNavItem para aplicar aria-current='page' e classes CSS de destaque (bg-foreground text-background) no item ativo. Testado implicitamente com pathname='/inicio' mockado nos testes.",
+      "testFile": "src/components/layout/authenticated-shell.test.tsx"
+    },
+    {
+      "id": "RF-006",
+      "description": "A sidebar deve exibir no rodapé o avatar com iniciais, nome e role do usuário logado",
+      "status": "PARTIAL",
+      "evidence": "O rodapé da sidebar exibe um ícone genérico (User icon do lucide-react) e o role ('Administrador' ou 'Membro'). Não exibe nome do usuário nem iniciais, pois AuthUser em auth-store.ts armazena apenas {id, role} — sem campo name. O JWT decodificado (lib/jwt.ts) não inclui o campo name no payload.",
+      "testFile": "src/components/layout/authenticated-shell.tsx",
+      "gap": "AuthUser precisa incluir o campo name e o JWT/backend precisa expor esse dado para cumprir completamente o RF-006."
+    },
+    {
+      "id": "RF-007",
+      "description": "Em viewport mobile/tablet (<1024px), a sidebar deve ser ocultada e acessível por um botão hamburger que abre um drawer",
+      "status": "PASSED",
+      "evidence": "Botão hamburger implementado com aria-label='Abrir menu de navegação' e aria-expanded, sidebar mobile com data-testid='mobile-sidebar' e aria-hidden para controle de visibilidade, botão de fechar com aria-label='Fechar menu'. Teste 'abre e fecha sidebar mobile ao clicar no botão' passou com sucesso.",
+      "testFile": "src/components/layout/authenticated-shell.test.tsx"
+    }
+  ],
+  "testResults": {
+    "runner": "vitest",
+    "file": "src/components/layout/authenticated-shell.test.tsx",
+    "totalTests": 5,
+    "passed": 5,
+    "failed": 0,
+    "details": [
+      "PASS - exibe sidebar de navegação com itens principais",
+      "PASS - exibe seção admin na sidebar quando role é ADMIN",
+      "PASS - oculta seção admin quando role é MEMBER",
+      "PASS - abre e fecha sidebar mobile ao clicar no botão",
+      "PASS - logout redireciona para /login"
+    ]
+  },
+  "gaps": [
+    {
+      "rf": "RF-006",
+      "description": "Nome do usuário e iniciais não são exibidos no rodapé da sidebar. O campo name não existe em AuthUser nem no JWT payload decodificado.",
+      "severity": "medium",
+      "suggestedFix": "Adicionar campo name ao AuthUser, incluir name no payload JWT do backend, e atualizar o rodapé da sidebar para exibir iniciais (avatar) e nome completo do usuário."
+    }
+  ]
+}

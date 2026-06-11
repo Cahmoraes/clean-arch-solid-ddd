@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/*
+ * VOLT — design tokens (Tailwind v4 @theme)
+ * Accent verde-esmeralda #39e58c. Dark é o tema padrão (classe .dark via next-themes).
+ * Nomes semânticos --color-* consumidos pelos componentes shadcn + tokens estendidos
+ * (surface-*, border-strong, primary-strong, success/warning + soft, sidebar-*).
+ */
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+	/* Fontes — carregadas via next/font/google em layout.tsx */
+	--font-display: var(--font-space-grotesk), system-ui, sans-serif;
+	--font-sans: var(--font-inter), system-ui, sans-serif;
+	--font-mono:
+		var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+	/* Cores semânticas — LIGHT */
+	--color-background: #f1f1ec;
+	--color-foreground: #111110;
+	--color-card: #ffffff;
+	--color-card-foreground: #111110;
+	--color-popover: #ffffff;
+	--color-popover-foreground: #111110;
+
+	--color-primary: #39e58c;
+	--color-primary-strong: #22c976;
+	--color-primary-foreground: #0a0a0a;
+
+	--color-secondary: #f7f7f3;
+	--color-secondary-foreground: #111110;
+	--color-muted: #f7f7f3;
+	--color-muted-foreground: #57574f;
+	--color-subtle: #8a8a80;
+	--color-accent: #39e58c;
+	--color-accent-foreground: #0a0a0a;
+
+	--color-surface: #ffffff;
+	--color-surface-2: #f7f7f3;
+	--color-surface-3: #efefe9;
+
+	--color-success: #2fcf80;
+	--color-success-soft: rgba(47, 207, 128, 0.14);
+	--color-warning: #ffb443;
+	--color-warning-soft: rgba(255, 180, 67, 0.16);
+	--color-destructive: #ff5a4d;
+	--color-destructive-foreground: #ffffff;
+	--color-destructive-soft: rgba(255, 90, 77, 0.14);
+
+	--color-border: #e4e4dc;
+	--color-border-strong: #d3d3c9;
+	--color-input: #e4e4dc;
+	--color-ring: #39e58c;
+
+	--color-sidebar: #111110;
+	--color-sidebar-foreground: #f3f3ee;
+	--color-sidebar-muted: #8d8d84;
+	--color-sidebar-border: #262622;
+	--color-sidebar-active: #ffffff;
+	--color-sidebar-active-foreground: #111110;
+
+	/* Radius */
+	--radius-xs: 6px;
+	--radius-sm: 8px;
+	--radius-md: 14px;
+	--radius-lg: 22px;
+	--radius-xl: 22px;
+	--radius-full: 9999px;
+
+	/* Sombras */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 10px 30px -12px rgba(0, 0, 0, 0.18);
+	--shadow-pop: 0 24px 60px -20px rgba(0, 0, 0, 0.35);
+}
+
+/* DARK (tema padrão) */
+.dark {
+	color-scheme: dark;
+	--color-background: #080808;
+	--color-foreground: #f6f6f4;
+	--color-card: #161616;
+	--color-card-foreground: #f6f6f4;
+	--color-popover: #161616;
+	--color-popover-foreground: #f6f6f4;
+
+	--color-primary: #39e58c;
+	--color-primary-strong: #22c976;
+	--color-primary-foreground: #0a0a0a;
+
+	--color-secondary: #1d1d1d;
+	--color-secondary-foreground: #f6f6f4;
+	--color-muted: #1d1d1d;
+	--color-muted-foreground: #a3a39c;
+	--color-subtle: #6f6f68;
+	--color-accent: #39e58c;
+	--color-accent-foreground: #0a0a0a;
+
+	--color-surface: #161616;
+	--color-surface-2: #1d1d1d;
+	--color-surface-3: #242424;
+
+	--color-success: #2fcf80;
+	--color-warning: #ffb443;
+	--color-destructive: #ff5a4d;
+	--color-destructive-foreground: #0a0a0a;
+
+	--color-border: #2a2a2a;
+	--color-border-strong: #3a3a3a;
+	--color-input: #2a2a2a;
+	--color-ring: #39e58c;
+
+	--color-sidebar: #0f0f0f;
+	--color-sidebar-foreground: #f3f3ee;
+	--color-sidebar-muted: #79796f;
+	--color-sidebar-border: #232323;
+	--color-sidebar-active: #39e58c;
+	--color-sidebar-active-foreground: #0a0a0a;
+}
+
+@layer base {
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+
+	html {
+		height: 100%;
+		color-scheme: light;
+	}
+
+	body {
+		min-height: 100%;
+		background-color: var(--color-background);
+		color: var(--color-foreground);
+		font-family: var(--font-sans);
+		font-size: 15px;
+		line-height: 1.5;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-family: var(--font-display);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.05;
+		color: var(--color-foreground);
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	button,
+	[role="button"] {
+		cursor: pointer;
+	}
+
+	::placeholder {
+		color: var(--color-subtle);
+	}
+
+	::selection {
+		background: var(--color-primary);
+		color: var(--color-primary-foreground);
+	}
+
+	*:focus-visible {
+		outline: 2px solid color-mix(in srgb, var(--color-ring) 55%, transparent);
+		outline-offset: 2px;
+	}
+}
+
+/* Numerais tabulares para mono */
+.font-mono,
+.tabular {
+	font-feature-settings: "tnum" 1;
+}
+
+/* Movimento VOLT — transform-only, estado-base sempre visível.
+   Opt-in: anima apenas quando o usuário não pede movimento reduzido. */
+@keyframes voltFade {
+	from {
+		transform: translateY(10px);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+@keyframes voltBar {
+	from {
+		transform: scaleY(0);
+	}
+	to {
+		transform: scaleY(1);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.route-fade {
+		animation: voltFade 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+
+	.volt-bar {
+		animation: voltBar 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -800px 0;
+	}
+	100% {
+		background-position: 800px 0;
+	}
+}
+
+.shimmer {
+	background: linear-gradient(
+		90deg,
+		var(--color-surface-2) 25%,
+		var(--color-surface-3) 50%,
+		var(--color-surface-2) 75%
+	);
+	background-size: 1600px 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.shimmer {
+		animation: shimmer 1.6s ease-in-out infinite;
+	}
+}

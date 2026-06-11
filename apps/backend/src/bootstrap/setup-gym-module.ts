@@ -1,0 +1,19 @@
+import { GYM_TYPES } from "@/shared/infra/ioc/types"
+
+import { type ModuleControllers, resolve } from "./server-build"
+
+/**
+ * Setup Gym Module
+ * Resolves and returns all gym-related controllers
+ */
+export function setupGymModule(): ModuleControllers {
+	const controllers = [
+		resolve(GYM_TYPES.Controllers.CreateGym),
+		resolve(GYM_TYPES.Controllers.UpdateGym),
+		resolve(GYM_TYPES.Controllers.SearchGym),
+		resolve(GYM_TYPES.Controllers.FetchAllGyms),
+		resolve(GYM_TYPES.Controllers.FetchGymById),
+		resolve(GYM_TYPES.Controllers.GymImage),
+	]
+	return { controllers }
+}

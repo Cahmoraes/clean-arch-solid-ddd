@@ -1,0 +1,73 @@
+{
+  "userStory": "US-003",
+  "title": "Como administrador, quero filtrar a lista de usuários por categoria selecionando uma tab",
+  "status": "PASSED",
+  "date": "2026-05-27",
+  "requirements": [
+    {
+      "id": "RF-007",
+      "description": "Selecionar a tab 'Membros' exibe apenas usuários com role MEMBER",
+      "status": "PASSED",
+      "evidence": {
+        "unit": "use-users.test.tsx — deve enviar role=MEMBER quando filter='member'",
+        "acceptance": "us-003-filter-by-tab.acceptance.test.tsx — RF-007 — tab Membros envia role=MEMBER e não envia status"
+      }
+    },
+    {
+      "id": "RF-008",
+      "description": "Selecionar a tab 'Administradores' exibe apenas usuários com role ADMIN",
+      "status": "PASSED",
+      "evidence": {
+        "unit": "use-users.test.tsx — deve enviar role=ADMIN quando filter='admin'",
+        "acceptance": "us-003-filter-by-tab.acceptance.test.tsx — RF-008 — tab Administradores envia role=ADMIN"
+      }
+    },
+    {
+      "id": "RF-009",
+      "description": "Selecionar a tab 'Ativos' exibe apenas usuários com status ativo",
+      "status": "PASSED",
+      "evidence": {
+        "unit": "use-users.test.tsx — deve enviar status=active quando filter='active'",
+        "acceptance": "us-003-filter-by-tab.acceptance.test.tsx — RF-009 — tab Ativos envia status=active e não envia role"
+      }
+    },
+    {
+      "id": "RF-010",
+      "description": "Selecionar a tab 'Inativos' exibe apenas usuários com status inativo",
+      "status": "PASSED",
+      "evidence": {
+        "unit": "use-users.test.tsx — deve enviar status=inactive quando filter='inactive'",
+        "acceptance": "us-003-filter-by-tab.acceptance.test.tsx — RF-010 — tab Inativos envia status=inactive e não envia role"
+      }
+    },
+    {
+      "id": "RF-011",
+      "description": "Selecionar a tab 'Todos' remove qualquer filtro de categoria ativo",
+      "status": "PASSED",
+      "evidence": {
+        "unit": "use-users.test.tsx — não deve enviar role nem status quando filter='all'",
+        "acceptance": "us-003-filter-by-tab.acceptance.test.tsx — RF-011 — tab Todos remove filtros role e status"
+      }
+    }
+  ],
+  "testFiles": {
+    "frontend_unit": "apps/frontend/src/features/admin/api/use-users.test.tsx",
+    "frontend_component": "apps/frontend/src/features/admin/components/user-filter-bar.test.tsx",
+    "frontend_acceptance": "apps/frontend/src/app/(authenticated)/admin/usuarios/us-003-filter-by-tab.acceptance.test.tsx",
+    "backend_business_flow": "apps/backend/src/user/infra/controller/fetch-users.business-flow-test.ts"
+  },
+  "findings": {
+    "gaps_at_start": [
+      "Nenhum teste de integração E2E de tab click → API call existia em admin-users-page.test.tsx",
+      "Cobertura de RF-007 a RF-011 existia apenas no nível de hook (use-users.test.tsx), sem teste de componente de página completo"
+    ],
+    "created": [
+      "apps/frontend/src/app/(authenticated)/admin/usuarios/us-003-filter-by-tab.acceptance.test.tsx — 5 testes de aceitação (RF-007 a RF-011) todos PASSED"
+    ],
+    "pre_existing_failures": [
+      "src/app/(authenticated)/admin/usuarios/page.test.tsx — 'exibe Skeleton durante o carregamento' falha (pré-existente, não relacionada a US-003)",
+      "src/app/(authenticated)/academias/[id]/page.test.tsx — falha pré-existente, não relacionada"
+    ]
+  },
+  "verdict": "US-003 APROVADA. Todos os RF (007-011) cobertos por testes unitários + componente + aceitação. Implementação correta: FILTER_PARAMS_MAP em use-users.ts mapeia filtros de tab para params de API. UserFilterBar dispara onFilterChange. AdminUsersPage passa activeFilter para useUsers."
+}
