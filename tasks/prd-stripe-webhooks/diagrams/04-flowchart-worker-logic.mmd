@@ -1,0 +1,27 @@
+flowchart TD
+    A([Mensagem recebida\nda fila stripeWebhook]) --> B[Abre unitOfWork.runTransaction]
+    B --> C[INSERT stripe_webhook_events\neventId UNIQUE]
+    C --> D{UniqueConstraint\nViolation?}
+
+    D -->|Sim - duplicata| E[ROLLBACK]
+    E --> F([ack — ignora silenciosamente])
+
+    D -->|Não - evento novo| G{event.type}
+
+    G -->|customer.subscription.updated\nstatus = active| H[ActivateSubscriptionUseCase\nbillingSubscriptionId]
+    G -->|customer.subscription.updated\nstatus = canceled| I[CancelSubscriptionUseCase\nbillingSubscriptionId]
+    G -->|customer.subscription.deleted| I
+    G -->|invoice.payment_failed| J[HandlePaymentFailedUseCase\ncustomerId]
+    G -->|outros tipos| K([ack — ignora silenciosamente])
+
+    H --> L{Subscription\nencontrada?}
+    I --> L
+    J --> L
+
+    L -->|Não| M[failure — SubscriptionNotFoundError\nloga warn, sem propagar]
+    M --> N[ROLLBACK]
+    N --> O([ack — tolerância a falhas])
+
+    L -->|Sim| P[Atualiza status Subscription\nAtualiza status User]
+    P --> Q[COMMIT\natômico: INSERT + efeitos de negócio]
+    Q --> R([ack — processamento completo])

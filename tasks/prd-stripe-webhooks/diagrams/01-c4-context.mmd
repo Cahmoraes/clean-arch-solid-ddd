@@ -1,0 +1,11 @@
+C4Context
+    title Visão de Contexto — Sistema de Webhooks Stripe
+
+    Person(usuario, "Usuário", "Assinante da plataforma. Tem acesso suspenso ou ativo conforme status da assinatura")
+    Person(admin, "Administrador", "Monitora integridade da integração via logs e audit trail")
+    System(api, "Plataforma API", "Processa webhooks, gerencia ciclo de vida de assinaturas e status de usuários")
+    System_Ext(stripe, "Stripe", "Gateway de pagamento. Dispara eventos assíncronos via webhooks ao mudar status de assinaturas")
+
+    Rel(stripe, api, "POST /webhook/stripe", "HTTPS + stripe-signature")
+    Rel(usuario, api, "Acessa recursos protegidos", "HTTPS / JWT")
+    Rel(api, stripe, "Cria clientes e assinaturas", "Stripe SDK")

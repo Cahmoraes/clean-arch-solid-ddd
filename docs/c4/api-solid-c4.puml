@@ -1,0 +1,233 @@
+@startuml api-solid-c4
+!pragma charset UTF-8
+skinparam packageStyle rectangle
+
+title C4 • Code - User Domain (Exemplo Detalhado)
+
+package "User Domain Layer" {
+  class User <<entity>> {
+    - id: UniqueId
+    - name: Name
+    - email: Email
+    - passwordHash: PasswordHash
+    - role: Role
+    - status: UserStatus
+    - createdAt: Date
+    - updatedAt: Date
+    - billingCustomerId?: string
+    
+    + {static} create(props: UserCreate): Either<ValidationError[], User>
+    + {static} restore(props: UserRestore): User
+    + changeName(newName: Name): void
+    + changeEmail(newEmail: Email): void
+    + changePassword(newPassword: PasswordHash): void
+    + suspend(): void
+    + activate(): void
+    + isActive(): boolean
+    + isSuspended(): boolean
+  }
+  
+  class Name <<value object>> {
+    - value: string
+    
+    + {static} create(name: string): Either<ValidationError, Name>
+    - validate(name: string): boolean
+  }
+  
+  class Email <<value object>> {
+    - value: string
+    
+    + {static} create(email: string): Either<ValidationError, Email>
+    - validate(email: string): boolean
+  }
+  
+  class PasswordHash <<value object>> {
+    - value: string
+    
+    + {static} create(password: string): Either<ValidationError, PasswordHash>
+    + {static} fromHash(hash: string): PasswordHash
+    + compare(plainPassword: string): Promise<boolean>
+    - hash(password: string): Promise<string>
+  }
+  
+  enum Role {
+    ADMIN
+    MEMBER
+  }
+  
+  enum UserStatus {
+    activated
+    suspended
+  }
+}
+
+package "User Application Layer" {
+  interface UserRepository <<interface>> {
+    + save(user: User): Promise<void>
+    + get(query: UserQuery): Promise<User | null>
+    + list(query: ListQuery): Promise<User[]>
+    + delete(userId: UniqueId): Promise<void>
+    + userOfEmail(email: string): Promise<User | null>
+    + withTransaction(tx: Transaction): UserRepository
+  }
+  
+  class CreateUserUseCase <<use case>> {
+    - userRepository: UserRepository
+    - queue: Queue
+    - unitOfWork: UnitOfWork
+    
+    + execute(input: CreateUserInput): Promise<Either<Error, CreateUserOutput>>
+  }
+  
+  class UserProfileUseCase <<use case>> {
+    - userRepository: UserRepository
+    
+    + execute(input: UserProfileInput): Promise<Either<Error, UserProfileOutput>>
+  }
+  
+  class ChangePasswordUseCase <<use case>> {
+    - userRepository: UserRepository
+    - unitOfWork: UnitOfWork
+    
+    + execute(input: ChangePasswordInput): Promise<Either<Error, SuccessOutput>>
+  }
+  
+  class FetchUsersUseCase <<use case>> {
+    - userRepository: UserRepository
+    
+    + execute(input: FetchUsersInput): Promise<Either<Error, FetchUsersOutput>>
+  }
+  
+  class UserAlreadyExistsError <<error>> {
+    + message: string
+  }
+  
+  class UserNotFoundError <<error>> {
+    + message: string
+  }
+}
+
+package "User Infrastructure Layer" {
+  class CreateUserController <<controller>> {
+    - httpServer: HttpServer
+    - createUserUseCase: CreateUserUseCase
+    
+    + init(): Promise<void>
+    - callback(request: FastifyRequest): Promise<Response>
+    - parseBodyOrError(body: unknown): Either<Error, CreateUserInput>
+    - createResponseError(result: Failure): Response
+  }
+  
+  class UserProfileController <<controller>> {
+    - httpServer: HttpServer
+    - userProfileUseCase: UserProfileUseCase
+    
+    + init(): Promise<void>
+    - callback(request: FastifyRequest): Promise<Response>
+  }
+  
+  class PgUserRepository <<repository>> {
+    - prisma: PrismaClient
+    - tx?: Transaction
+    
+    + save(user: User): Promise<void>
+    + get(query: UserQuery): Promise<User | null>
+    + list(query: ListQuery): Promise<User[]>
+    + delete(userId: UniqueId): Promise<void>
+    + userOfEmail(email: string): Promise<User | null>
+    + withTransaction(tx: Transaction): PgUserRepository
+    - toDomain(raw: PrismaUser): User
+    - toPersistence(user: User): PrismaUserInput
+  }
+}
+
+package "Shared Domain" {
+  class Either<L, R> <<monad>> {
+    + isSuccess(): boolean
+    + isFailure(): boolean
+    + value: L | R
+    + {static} success<R>(value: R): Either<never, R>
+    + {static} failure<L>(error: L): Either<L, never>
+  }
+  
+  class UniqueId <<value object>> {
+    - value: string
+    
+    + {static} create(): UniqueId
+    + {static} from(id: string): UniqueId
+  }
+  
+  class Observable <<abstract>> {
+    - observers: Observer[]
+    
+    + attach(observer: Observer): void
+    + detach(observer: Observer): void
+    + notify(event: DomainEvent): void
+  }
+}
+
+' Relationships - Domain Layer
+User *-- Name
+User *-- Email
+User *-- PasswordHash
+User *-- UniqueId
+User *-- Role
+User *-- UserStatus
+User --|> Observable
+
+' Relationships - Application Layer
+CreateUserUseCase --> UserRepository
+CreateUserUseCase --> User
+CreateUserUseCase ..> UserAlreadyExistsError
+UserProfileUseCase --> UserRepository
+UserProfileUseCase --> User
+UserProfileUseCase ..> UserNotFoundError
+ChangePasswordUseCase --> UserRepository
+ChangePasswordUseCase --> User
+FetchUsersUseCase --> UserRepository
+FetchUsersUseCase --> User
+
+' Relationships - Infrastructure Layer
+CreateUserController --> CreateUserUseCase
+CreateUserController --> Either
+UserProfileController --> UserProfileUseCase
+PgUserRepository ..|> UserRepository
+PgUserRepository --> User
+
+' Relationships - Shared
+CreateUserUseCase --> Either
+UserProfileUseCase --> Either
+ChangePasswordUseCase --> Either
+Name --> Either
+Email --> Either
+PasswordHash --> Either
+
+note right of User
+  • Factory method com validação
+  • Métodos de mudança de estado
+  • Notifica observers em eventos
+  • Validações de integridade
+end note
+
+note right of CreateUserUseCase
+  • Verifica email existente
+  • Valida input via Zod
+  • Cria entidade User
+  • Persiste com UnitOfWork
+  • Publica UserCreatedEvent
+end note
+
+note right of PgUserRepository
+  • Implementação Prisma
+  • Suporte a transações
+  • Mapeamento Domain ↔ Persistence
+  • Query builder pattern
+end note
+
+note bottom of Either
+  Pattern funcional para
+  tratamento de erros
+  sem exceções
+end note
+
+@enduml

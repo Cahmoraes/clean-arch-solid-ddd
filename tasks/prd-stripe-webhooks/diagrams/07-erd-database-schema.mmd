@@ -1,0 +1,31 @@
+erDiagram
+    USERS {
+        uuid id PK
+        string name
+        string email UK
+        string password_hash
+        string status
+        string role
+        datetime created_at
+        datetime updated_at
+    }
+
+    SUBSCRIPTIONS {
+        uuid id PK
+        uuid user_id FK
+        string billing_subscription_id UK
+        string customer_id
+        string status
+        datetime created_at
+        datetime updated_at
+        datetime canceled_at
+    }
+
+    STRIPE_WEBHOOK_EVENTS {
+        uuid id PK
+        string event_id UK
+        string event_type
+        datetime processed_at
+    }
+
+    USERS ||--o| SUBSCRIPTIONS : "possui"
