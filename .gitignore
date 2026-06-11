@@ -17,3 +17,5 @@ coverage/
 # Python bytecode (skill scripts)
 __pycache__/
 *.py[cod]
+.claude/settings.json
+headroom_memory.db
