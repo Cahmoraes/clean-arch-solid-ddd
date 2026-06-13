@@ -23,6 +23,7 @@ export interface UserDetailPanelProps {
 	user: AdminUser
 	onEdit: () => void
 	onClose?: () => void
+	onUserPatched?: (patch: Partial<AdminUser>) => void
 }
 
 function InlineError({ message }: { message: string | null }) {
@@ -154,8 +155,12 @@ export function UserDetailPanel({
 	user,
 	onEdit,
 	onClose,
+	onUserPatched,
 }: UserDetailPanelProps) {
-	const actions = useUserDetailActions(user, { onDeleteSuccess: onClose })
+	const actions = useUserDetailActions(user, {
+		onDeleteSuccess: onClose,
+		onUserPatched,
+	})
 
 	return (
 		<div className="flex flex-col gap-4">

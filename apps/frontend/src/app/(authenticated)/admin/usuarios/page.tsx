@@ -303,6 +303,10 @@ function AdminUsersContent({
 		setSelectedUser(null)
 	}
 
+	function handleUserPatched(patch: Partial<AdminUser>) {
+		setSelectedUser((current) => (current ? { ...current, ...patch } : current))
+	}
+
 	function handleFilterChange(filter: UserFilter) {
 		setActiveFilter(filter)
 		setPage(1)
@@ -371,6 +375,7 @@ function AdminUsersContent({
 					user={activeSelectedUser}
 					onClose={handleModalClose}
 					onEdit={handleEditUser}
+					onUserPatched={handleUserPatched}
 				/>
 			</div>
 		</PageContainer>

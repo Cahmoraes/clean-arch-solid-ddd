@@ -224,6 +224,52 @@ describe("AdminUsersPage modal integration", () => {
 		})
 	})
 
+	test("mantém o status atualizado no painel após ativar usuário que sai do filtro Inativos", async () => {
+		const user = userEvent.setup()
+		let activated = false
+
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				const statusFilter = url.searchParams.get("status")
+				const suspendedUser = buildUser({
+					id: "user-1",
+					name: "Jada Weissnat",
+					email: "jada@example.com",
+					status: "suspended",
+				})
+				// Filtro "inactive" → backend retorna apenas suspensos.
+				// Após ativar, o usuário deixa de aparecer nesse filtro.
+				const droppedFromFilter = statusFilter === "inactive" && activated
+				const users = droppedFromFilter ? [] : [suspendedUser]
+				return HttpResponse.json(
+					{ users, pagination: { page: 1, limit: 10, total: users.length } },
+					{ status: 200 },
+				)
+			}),
+			http.patch(`${apiBaseUrl}/users/activate`, () => {
+				activated = true
+				return HttpResponse.json({}, { status: 200 })
+			}),
+		)
+
+		renderPage()
+
+		await user.click(await screen.findByRole("button", { name: /inativos/i }))
+		await user.click(await screen.findByTestId("user-row-user-1"))
+
+		await user.click(screen.getByRole("button", { name: /^ativar$/i }))
+
+		// Aguarda o refetch remover o usuário da lista filtrada (passa o flash do
+		// optimistic update) antes de validar o status exibido no painel.
+		await waitFor(() => {
+			expect(screen.queryByTestId("user-row-user-1")).not.toBeInTheDocument()
+		})
+
+		expect(screen.queryAllByText("Inativo")).toHaveLength(0)
+		expect(screen.getAllByText("Ativo").length).toBeGreaterThan(0)
+	}, 20_000)
+
 	test("não dispara busca antes do debounce de 500ms", async () => {
 		const user = userEvent.setup()
 		let callCount = 0

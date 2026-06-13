@@ -91,6 +91,7 @@ export interface UserDetailActions {
 
 interface UseUserDetailActionsOptions {
 	onDeleteSuccess?: () => void
+	onUserPatched?: (patch: Partial<AdminUser>) => void
 }
 
 export function useUserDetailActions(
@@ -132,7 +133,10 @@ export function useUserDetailActions(
 	function onConfirmSuspend(event: MouseEvent<HTMLButtonElement>) {
 		event.preventDefault()
 		suspendUser.mutate(user.id, {
-			onSuccess: () => setSuspendOpen(false),
+			onSuccess: () => {
+				setSuspendOpen(false)
+				options?.onUserPatched?.({ status: "suspended" })
+			},
 			onError: () => setSuspendOpen(false),
 		})
 	}
@@ -140,7 +144,10 @@ export function useUserDetailActions(
 	function onConfirmPromote(event: MouseEvent<HTMLButtonElement>) {
 		event.preventDefault()
 		promoteToAdmin.mutate(user.id, {
-			onSuccess: () => setPromoteOpen(false),
+			onSuccess: () => {
+				setPromoteOpen(false)
+				options?.onUserPatched?.({ role: "ADMIN" })
+			},
 			onError: () => setPromoteOpen(false),
 		})
 	}
@@ -148,7 +155,10 @@ export function useUserDetailActions(
 	function onConfirmDemote(event: MouseEvent<HTMLButtonElement>) {
 		event.preventDefault()
 		demoteFromAdmin.mutate(user.id, {
-			onSuccess: () => setDemoteOpen(false),
+			onSuccess: () => {
+				setDemoteOpen(false)
+				options?.onUserPatched?.({ role: "MEMBER" })
+			},
 			onError: () => setDemoteOpen(false),
 		})
 	}
@@ -185,7 +195,10 @@ export function useUserDetailActions(
 			setDemoteOpen,
 			setDeleteOpen,
 		},
-		onActivate: () => activateUser.mutate(user.id),
+		onActivate: () =>
+			activateUser.mutate(user.id, {
+				onSuccess: () => options?.onUserPatched?.({ status: "activated" }),
+			}),
 		onConfirmSuspend,
 		onConfirmPromote,
 		onConfirmDemote,
