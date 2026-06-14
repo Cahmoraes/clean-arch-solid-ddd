@@ -2,14 +2,12 @@ import { screen } from "@testing-library/react"
 import { HttpResponse, http } from "msw"
 import { describe, expect, test } from "vitest"
 import { DEMO_PLANS } from "@/features/subscriptions/schemas"
+import { SERVER_API_URL } from "@/lib/server-api-url"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import LandingPage from "./page"
 
-const apiBaseUrl =
-	process.env.API_URL ??
-	process.env.NEXT_PUBLIC_API_URL ??
-	"http://localhost:3333"
+const apiBaseUrl = SERVER_API_URL
 
 describe("Landing pública (RSC)", () => {
 	test("renderiza CTAs de cadastro e login", async () => {

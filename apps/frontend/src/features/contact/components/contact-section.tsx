@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "../constants"
 import { ContactForm } from "./contact-form"
 
 export function ContactSection() {
@@ -23,10 +24,10 @@ export function ContactSection() {
 						direto por e-mail.
 					</p>
 					<a
-						href="mailto:contato@volt.com"
+						href={`mailto:${CONTACT_EMAIL}`}
 						className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2 text-sm font-medium text-accent transition-colors hover:bg-surface-3"
 					>
-						contato@volt.com
+						{CONTACT_EMAIL}
 					</a>
 				</div>
 				<ContactForm />

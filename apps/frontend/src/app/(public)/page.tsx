@@ -3,15 +3,13 @@ import Link from "next/link"
 import { ContactSection } from "@/features/contact/components/contact-section"
 import { PlansSectionHero } from "@/features/subscriptions/components/plans-section-hero"
 import { DEMO_PLANS, type DemoPlan } from "@/features/subscriptions/schemas"
-
-const API_URL =
-	process.env.API_URL ??
-	process.env.NEXT_PUBLIC_API_URL ??
-	"http://localhost:3333"
+import { SERVER_API_URL } from "@/lib/server-api-url"
 
 async function fetchPlans(): Promise<ReadonlyArray<DemoPlan>> {
 	try {
-		const res = await fetch(`${API_URL}/plans`, { next: { revalidate: 3600 } })
+		const res = await fetch(`${SERVER_API_URL}/plans`, {
+			next: { revalidate: 3600 },
+		})
 		if (!res.ok) return DEMO_PLANS
 		return (await res.json()) as ReadonlyArray<DemoPlan>
 	} catch {

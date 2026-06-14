@@ -62,6 +62,17 @@ describe("contactFormSchema", () => {
 			expect(result.error.flatten().fieldErrors.mensagem).toBeDefined()
 		}
 	})
+	test("rejeita mensagem com mais de 2000 caracteres", () => {
+		const result = contactFormSchema.safeParse({
+			nome: "João",
+			email: "joao@example.com",
+			mensagem: "a".repeat(2001),
+		})
+		expect(result.success).toBe(false)
+		if (!result.success) {
+			expect(result.error.flatten().fieldErrors.mensagem).toBeDefined()
+		}
+	})
 })
 
 describe("useSendContact", () => {
