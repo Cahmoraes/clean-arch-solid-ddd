@@ -3,6 +3,7 @@ import { renderHook, waitFor } from "@testing-library/react"
 import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
 import { describe, expect, test } from "vitest"
+import { ApiError } from "@/lib/errors"
 import { server } from "@/test/msw/server"
 import { contactFormSchema } from "../schemas"
 import { useSendContact } from "./use-send-contact"
@@ -96,5 +97,8 @@ describe("useSendContact", () => {
 			mensagem: "Olá",
 		})
 		await waitFor(() => expect(result.current.isError).toBe(true))
+		expect(result.current.error).toBeInstanceOf(ApiError)
+		expect(result.current.error?.status).toBe(500)
+		expect(result.current.error?.code).toBe("contact_failed")
 	})
 })
