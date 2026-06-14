@@ -1,6 +1,6 @@
 # Task 2: Backend — Endpoint `POST /contact` [FR-014, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-home-planos-contato.md`
 **Spec:** `../specs/home-planos-contato-design.md`
 **Depends on:** N/A

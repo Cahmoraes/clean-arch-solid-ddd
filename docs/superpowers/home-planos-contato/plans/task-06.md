@@ -27,7 +27,6 @@ O arquivo atual (`page.tsx`) já existe — será modificado preservando o hero 
 - `vercel-react-best-practices`: manter `page.tsx` como RSC puro (`async`); não adicionar `"use client"` — `ContactSection` encapsula o Client Component interno
 - `vercel-composition-patterns`: `LandingPage` compõe `PlansSectionHero` e `ContactSection` como props-down — não faz nada além de buscar dados e compor
 - `tailwindcss`: garantir que `max-w-6xl` no container pai e `max-w-xl` nas seções de planos/contato não causem overflow em mobile; testar com `w-screen overflow-x-auto` temporário se necessário
-- `super.verification-before-completion`: rodar `pnpm --filter frontend tsc:check`, `pnpm --filter frontend lint:fix`, `pnpm --filter frontend test -- --run` e `pnpm --filter frontend build` antes de marcar DONE
 
 ## Passos
 

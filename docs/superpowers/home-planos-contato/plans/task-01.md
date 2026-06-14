@@ -1,6 +1,6 @@
 # Task 1: Backend — Endpoint `GET /plans` [FR-001]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-home-planos-contato.md`
 **Spec:** `../specs/home-planos-contato-design.md`
 **Depends on:** N/A

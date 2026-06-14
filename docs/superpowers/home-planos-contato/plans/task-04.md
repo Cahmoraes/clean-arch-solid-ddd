@@ -1,6 +1,6 @@
 # Task 4: Frontend — Schema de Contato + Hook `useSendContact` [FR-009, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-home-planos-contato.md`
 **Spec:** `../specs/home-planos-contato-design.md`
 **Depends on:** task-02

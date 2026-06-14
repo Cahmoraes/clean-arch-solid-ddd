@@ -1,6 +1,6 @@
 # Task 3: Frontend — Componentes de Planos (`PlanCardHero`, `PlanCardSecondary`, `PlansSectionHero`) [FR-002, FR-003, FR-006, FR-007, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-home-planos-contato.md`
 **Spec:** `../specs/home-planos-contato-design.md`
 **Depends on:** task-01

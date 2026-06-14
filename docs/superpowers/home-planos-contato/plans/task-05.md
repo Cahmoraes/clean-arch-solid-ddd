@@ -29,7 +29,6 @@ O `FormField` de `@/components/ui/form-field` é usado para `nome` e `email`. O 
 - `tailwindcss`: usar `grid gap-8 md:grid-cols-2` para layout responsivo; não usar `flex` para o grid 2 colunas (FR-017)
 - `shadcn`: usar `Button`, `FormField` e `Label` de `@/components/ui/` — não reimplementar
 - `tanstack-query-best-practices`: consumir `isPending`, `isError`, `isSuccess` do hook; não criar estado local duplicado para esses
-- `super.verification-before-completion`: rodar `pnpm --filter frontend tsc:check`, `pnpm --filter frontend lint:fix` e `pnpm --filter frontend test -- --run` antes de marcar DONE
 
 ## Passos
 
