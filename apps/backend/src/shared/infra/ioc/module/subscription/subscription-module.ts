@@ -5,8 +5,10 @@ import { CancelSubscriptionUseCase } from "@/subscription/application/use-case/c
 import { CreateCustomer } from "@/subscription/application/use-case/create-customer.usecase"
 import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/create-subscription.usecase"
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
+import { ListPlansUseCase } from "@/subscription/application/use-case/list-plans.usecase"
 import { CreateCustomerController } from "@/subscription/infra/controller/create-customer-controller"
 import { CreateSubscriptionController } from "@/subscription/infra/controller/create-subscription.controller"
+import { ListPlansController } from "@/subscription/infra/controller/list-plans.controller"
 import { StripeWebhookController } from "@/subscription/infra/controller/stripe-webhook.controller"
 import { StripeWebhookWorker } from "@/subscription/infra/worker/stripe-webhook-worker"
 import { SUBSCRIPTION_TYPES } from "../service-identifier/subscription-types"
@@ -47,6 +49,8 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 		HandlePaymentFailedUseCase,
 	)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.StripeWebhook).to(StripeWebhookController)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.ListPlans).to(ListPlansUseCase)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ListPlans).to(ListPlansController)
 	bind(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)
 		.to(StripeWebhookWorker)
 		.inSingletonScope()

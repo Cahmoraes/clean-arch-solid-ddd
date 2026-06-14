@@ -7,6 +7,7 @@ import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 
 import { setupAnalyticsModule } from "./setup-analytics-module"
 import { setupCheckInModule } from "./setup-check-in-module"
+import { setupContactModule } from "./setup-contact-module"
 import { setupGymModule } from "./setup-gym-module"
 import { setupHealthCheckModule } from "./setup-health-check-module"
 import { setupNotificationModule } from "./setup-notification-module"
@@ -36,6 +37,7 @@ export async function serverBuild() {
 		await setupSubscriptionModule(),
 		await setupNotificationModule(),
 		await setupAnalyticsModule(),
+		setupContactModule(),
 	]
 
 	await initializeControllers(modules.flatMap((m) => m.controllers))

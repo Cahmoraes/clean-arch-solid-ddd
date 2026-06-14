@@ -1,6 +1,7 @@
 import { Container } from "inversify"
 import { analyticsModule } from "./module/analytics/analytics-module"
 import { checkInModule } from "./module/check-in/check-in-module"
+import { contactModule } from "./module/contact/contact-module"
 import { gymModule } from "./module/gym/gym-module"
 import { healthCheckModule } from "./module/health-check/heath-check-module"
 import { infraModule } from "./module/infra/infra-module"
@@ -20,4 +21,5 @@ container.load(
 	subscriptionModule,
 	notificationModule,
 	analyticsModule,
+	contactModule,
 )
