@@ -34,7 +34,7 @@ export class SendContactEmailController extends BaseController {
 
 	@Logger({ message: "✅" })
 	public async init(): Promise<void> {
-		this.server.register("post", ContactRoutes.SEND, {
+		await this.server.register("post", ContactRoutes.SEND, {
 			callback: this.callback,
 			rateLimit: { max: 10, timeWindow: 60_000 },
 		})

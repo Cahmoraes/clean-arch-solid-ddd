@@ -1,10 +1,10 @@
 import request from "supertest"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
 import { afterEach, beforeEach, describe, expect, test } from "vitest"
-import { container } from "@/shared/infra/ioc/container.js"
-import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter.js"
-import { HTTP_STATUS } from "@/shared/infra/server/http-status.js"
-import { ContactRoutes } from "./contact-routes.js"
+import { container } from "@/shared/infra/ioc/container"
+import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
+import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import { ContactRoutes } from "./contact-routes"
 
 describe("POST /contact", () => {
 	let fastifyServer: FastifyAdapter
