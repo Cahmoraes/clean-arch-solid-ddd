@@ -20,7 +20,7 @@
 - [x] 3. Frontend: componentes de planos (`PlanCardHero`, `PlanCardSecondary`, `PlansSectionHero`) [FR-002, FR-003, FR-006, FR-007, FR-016] → `task-03.md`
 - [x] 4. Frontend: schema de contato + hook `useSendContact` [FR-009, FR-010] → `task-04.md`
 - [x] 5. Frontend: componentes `ContactSection` + `ContactForm` [FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-017] → `task-05.md`
-- [ ] 6. Frontend: composição da home page + responsividade [FR-001, FR-004, FR-005, FR-007, FR-008, FR-016, FR-017, FR-018] → `task-06.md`
+- [x] 6. Frontend: composição da home page + responsividade [FR-001, FR-004, FR-005, FR-007, FR-008, FR-016, FR-017, FR-018] → `task-06.md`
 
 ## Ondas de Execução
 

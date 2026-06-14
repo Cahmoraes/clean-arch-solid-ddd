@@ -1,6 +1,6 @@
 # Task 6: Frontend — Composição da Home Page + Responsividade [FR-001, FR-004, FR-005, FR-007, FR-008, FR-016, FR-017, FR-018]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-home-planos-contato.md`
 **Spec:** `../specs/home-planos-contato-design.md`
 **Depends on:** task-03, task-05
