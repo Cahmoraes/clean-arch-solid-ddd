@@ -1,6 +1,6 @@
 # Task 5: Frontend — `ContactSection` + `ContactForm` [FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-017]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-home-planos-contato.md`
 **Spec:** `../specs/home-planos-contato-design.md`
 **Depends on:** task-04
