@@ -13,7 +13,10 @@ import { ContactRoutes } from "./contact-routes.js"
 const sendContactEmailSchema = z.object({
 	nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres."),
 	email: z.string().email(),
-	mensagem: z.string().min(1, "Mensagem é obrigatória."),
+	mensagem: z
+		.string()
+		.min(1, "Mensagem é obrigatória.")
+		.max(2000, "Mensagem deve ter no máximo 2000 caracteres."),
 })
 
 @injectable()
