@@ -1,10 +1,31 @@
 import Link from "next/link"
 
+import { ContactSection } from "@/features/contact/components/contact-section"
+import { PlansSectionHero } from "@/features/subscriptions/components/plans-section-hero"
+import { DEMO_PLANS, type DemoPlan } from "@/features/subscriptions/schemas"
+
+const API_URL =
+	process.env.API_URL ??
+	process.env.NEXT_PUBLIC_API_URL ??
+	"http://localhost:3333"
+
+async function fetchPlans(): Promise<ReadonlyArray<DemoPlan>> {
+	try {
+		const res = await fetch(`${API_URL}/plans`, { next: { revalidate: 3600 } })
+		if (!res.ok) return DEMO_PLANS
+		return (await res.json()) as ReadonlyArray<DemoPlan>
+	} catch {
+		return DEMO_PLANS
+	}
+}
+
 /**
  * Landing pública — RSC. Apresenta o produto e direciona para
  * cadastro/login. Sem dependência do auth-store (cliente).
  */
-export default function LandingPage() {
+export default async function LandingPage() {
+	const plans = await fetchPlans()
+
 	return (
 		<div className="mx-auto flex w-full max-w-6xl flex-col gap-24 px-4 py-16 sm:px-6 sm:py-24">
 			<section
@@ -79,6 +100,10 @@ export default function LandingPage() {
 					</li>
 				</ul>
 			</section>
+
+			<PlansSectionHero plans={plans} />
+
+			<ContactSection />
 		</div>
 	)
 }
