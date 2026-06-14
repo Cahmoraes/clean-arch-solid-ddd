@@ -13,6 +13,8 @@ coverage/
 .memory/
 .playwright
 .playwright-cli
+.memory/memory.db
+
 
 # Python bytecode (skill scripts)
 __pycache__/
