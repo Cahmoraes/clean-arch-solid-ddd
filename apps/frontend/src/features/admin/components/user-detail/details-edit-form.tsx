@@ -76,29 +76,28 @@ export function DetailsEditForm({
 	async function handleSave() {
 		setErrorMessage(null)
 		try {
-			const mutations: Promise<void>[] = []
-
+			// Sequencial e nesta ordem: promover exige usuário ativo, então o
+			// status precisa ser persistido antes da mudança de role.
 			if (permissions.canEditProfile && (nameChanged || emailChanged)) {
-				mutations.push(updateUser.mutateAsync({ userId: user.id, name, email }))
+				await updateUser.mutateAsync({ userId: user.id, name, email })
 			}
 
 			if (permissions.canChangeStatus && statusChanged) {
 				if (status === "suspended") {
-					mutations.push(suspendUser.mutateAsync(user.id))
+					await suspendUser.mutateAsync(user.id)
 				} else if (status === "activated") {
-					mutations.push(activateUser.mutateAsync(user.id))
+					await activateUser.mutateAsync(user.id)
 				}
 			}
 
 			if (permissions.canChangeRole && roleChanged) {
 				if (role === "ADMIN") {
-					mutations.push(promoteToAdmin.mutateAsync(user.id))
+					await promoteToAdmin.mutateAsync(user.id)
 				} else if (role === "MEMBER") {
-					mutations.push(demoteFromAdmin.mutateAsync(user.id))
+					await demoteFromAdmin.mutateAsync(user.id)
 				}
 			}
 
-			await Promise.all(mutations)
 			onSaved()
 		} catch (err) {
 			setErrorMessage(toErrorMessage(err))
