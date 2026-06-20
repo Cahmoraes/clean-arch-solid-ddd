@@ -70,6 +70,7 @@ export class UpdateUserProfileController extends BaseController {
 		}
 
 		const profileUpdateResult = await this.updateUserProfile.execute({
+			requesterId: req.user.sub.id,
 			userId: parseRequestResult.value.userId,
 			email: parseBodyResult.value.email,
 			name: parseBodyResult.value.name,

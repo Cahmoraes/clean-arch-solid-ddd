@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import request from "supertest"
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { serverBuildForTest } from "test/factory/server-build-for-test"
@@ -13,8 +14,8 @@ describe("Atualizar Perfil de Usuário", () => {
 	let fastifyServer: FastifyAdapter
 	let userRepository: InMemoryUserRepository
 	let authenticate: AuthenticateUseCase
-	let token: string
-	const userId = "profile-target-id"
+	let adminToken: string
+	const targetMemberId = "profile-target-member-id"
 
 	beforeEach(async () => {
 		container.snapshot()
@@ -27,18 +28,32 @@ describe("Atualizar Perfil de Usuário", () => {
 		)
 		fastifyServer = await serverBuildForTest()
 		await fastifyServer.ready()
+
+		// Requester: admin comum (não root)
 		await createAndSaveUser({
 			userRepository,
-			id: userId,
+			id: randomUUID(),
+			name: "admin user",
+			email: "admin@profile.test",
+			password: "any_password",
+			role: "ADMIN",
+		})
+
+		// Alvo: membro
+		await createAndSaveUser({
+			userRepository,
+			id: targetMemberId,
 			name: "old_name",
 			email: "old@profile.test",
 			password: "any_password",
+			role: "MEMBER",
 		})
+
 		const result = await authenticate.execute({
-			email: "old@profile.test",
+			email: "admin@profile.test",
 			password: "any_password",
 		})
-		token = result.force.success().value.token
+		adminToken = result.force.success().value.token
 	})
 
 	afterEach(async () => {
@@ -50,10 +65,10 @@ describe("Atualizar Perfil de Usuário", () => {
 		return UserRoutes.PROFILE.replace(":userId", id)
 	}
 
-	test("Deve atualizar nome e email do usuário e responder 201", async () => {
+	test("Admin deve atualizar nome e email de um membro e responder 201", async () => {
 		const response = await request(fastifyServer.server)
-			.patch(profileUrl(userId))
-			.set("Authorization", `Bearer ${token}`)
+			.patch(profileUrl(targetMemberId))
+			.set("Authorization", `Bearer ${adminToken}`)
 			.send({
 				name: "new valid name",
 				email: "new@profile.test",
@@ -64,14 +79,14 @@ describe("Atualizar Perfil de Usuário", () => {
 			message: "User created",
 			email: "new@profile.test",
 		})
-		const updated = await userRepository.userOfId(userId)
+		const updated = await userRepository.userOfId(targetMemberId)
 		expect(updated?.name).toBe("new valid name")
 		expect(updated?.email).toBe("new@profile.test")
 	})
 
 	test("Deve retornar 401 quando o JWT não é fornecido", async () => {
 		const response = await request(fastifyServer.server)
-			.patch(profileUrl(userId))
+			.patch(profileUrl(targetMemberId))
 			.send({ name: "new valid name", email: "new@profile.test" })
 
 		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
@@ -79,21 +94,50 @@ describe("Atualizar Perfil de Usuário", () => {
 
 	test("Deve retornar 400 quando o email é inválido", async () => {
 		const response = await request(fastifyServer.server)
-			.patch(profileUrl(userId))
-			.set("Authorization", `Bearer ${token}`)
+			.patch(profileUrl(targetMemberId))
+			.set("Authorization", `Bearer ${adminToken}`)
 			.send({ name: "new valid name", email: "invalid-email" })
 
 		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
 		expect(response.body).toHaveProperty("message")
 	})
 
-	test("Deve retornar 404 quando o usuário não existe", async () => {
+	test("Deve retornar 404 quando o usuário alvo não existe (FR-012)", async () => {
 		const response = await request(fastifyServer.server)
 			.patch(profileUrl("non-existing-user-id"))
-			.set("Authorization", `Bearer ${token}`)
+			.set("Authorization", `Bearer ${adminToken}`)
 			.send({ name: "new valid name", email: "ghost@profile.test" })
 
 		expect(response.status).toBe(HTTP_STATUS.NOT_FOUND)
 		expect(response.body).toHaveProperty("message")
+	})
+
+	test("Admin comum recebe 403 ao tentar editar outro admin (FR-012)", async () => {
+		const targetAdminId = randomUUID()
+		await createAndSaveUser({
+			userRepository,
+			id: targetAdminId,
+			email: "target-admin@profile.test",
+			password: "any_password",
+			role: "ADMIN",
+		})
+
+		const response = await request(fastifyServer.server)
+			.patch(profileUrl(targetAdminId))
+			.set("Authorization", `Bearer ${adminToken}`)
+			.send({ name: "Hacked Name", email: "hacked@profile.test" })
+
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
+		expect(response.body).toHaveProperty("message")
+	})
+
+	test("Regressão FR-011: PATCH /users/me (self-edit de nome) continua funcionando", async () => {
+		// O endpoint /users/me usa UpdateMyProfileUseCase separado, sem política de autorização
+		const response = await request(fastifyServer.server)
+			.patch(UserRoutes.ME)
+			.set("Authorization", `Bearer ${adminToken}`)
+			.send({ name: "meu novo nome" })
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
 	})
 })
