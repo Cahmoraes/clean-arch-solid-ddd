@@ -60,6 +60,7 @@ export class ActivateUserController extends BaseController {
 		}
 
 		const result = await this.activeUser.execute({
+			requesterId: req.user.sub.id,
 			userId: parseBodyResult.value.userId,
 		})
 

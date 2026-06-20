@@ -114,4 +114,22 @@ describe("Suspender Usuário", () => {
 		expect(response.status).toBe(HTTP_STATUS.NOT_FOUND)
 		expect(response.body).toHaveProperty("message")
 	})
+
+	test("Deve retornar 403 quando admin tenta suspender outro admin", async () => {
+		const targetId = randomUUID()
+		await createAndSaveUser({
+			userRepository,
+			id: targetId,
+			email: "admin-target@suspend.test",
+			role: "ADMIN",
+		})
+
+		const response = await request(fastifyServer.server)
+			.patch(UserRoutes.SUSPEND_USER)
+			.set("Authorization", `Bearer ${token}`)
+			.send({ userId: targetId })
+
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
+		expect(response.body).toHaveProperty("message")
+	})
 })

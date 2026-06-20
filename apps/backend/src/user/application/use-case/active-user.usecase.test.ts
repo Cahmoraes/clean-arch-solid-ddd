@@ -6,11 +6,30 @@ import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { User } from "@/user/domain/user"
 import { StatusTypes } from "@/user/domain/value-object/status"
+import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type {
 	ActiveUserUseCase,
 	ActiveUserUseCaseInput,
 } from "./active-user.usecase"
+
+function restoreUser(
+	id: string,
+	role: "ADMIN" | "MEMBER",
+	isSuperAdmin = false,
+): User {
+	return User.restore({
+		id,
+		name: `User ${id}`,
+		email: `${id}@test.com`,
+		role,
+		status: "activated",
+		createdAt: new Date(),
+		isSuperAdmin,
+	})
+}
+
+const ROOT_ID = "root-id"
 
 describe("ActiveUserUseCase", () => {
 	let sut: ActiveUserUseCase
@@ -25,6 +44,7 @@ describe("ActiveUserUseCase", () => {
 		loginAttemptStore = repositories.loginAttemptStore
 		cacheDB = container.get(SHARED_TYPES.Redis)
 		sut = container.get(USER_TYPES.UseCases.ActivateUser)
+		await userRepository.save(restoreUser(ROOT_ID, "ADMIN", true))
 	})
 
 	afterEach(() => {
@@ -33,6 +53,7 @@ describe("ActiveUserUseCase", () => {
 
 	test("Deve ativar um usuário", async () => {
 		const input: ActiveUserUseCaseInput = {
+			requesterId: ROOT_ID,
 			userId: "any_user_id",
 		}
 		const user = (
@@ -52,6 +73,7 @@ describe("ActiveUserUseCase", () => {
 
 	test("Não deve ativar um usuário inexistente", async () => {
 		const input: ActiveUserUseCaseInput = {
+			requesterId: ROOT_ID,
 			userId: "any_user_id",
 		}
 		const result = await sut.execute(input)
@@ -73,7 +95,10 @@ describe("ActiveUserUseCase", () => {
 
 		expect(await loginAttemptStore.isLocked("locked-user-id")).toBe(true)
 
-		const result = await sut.execute({ userId: "locked-user-id" })
+		const result = await sut.execute({
+			requesterId: ROOT_ID,
+			userId: "locked-user-id",
+		})
 
 		expect(result.isSuccess()).toBe(true)
 		const user = await userRepository.userOfId("locked-user-id")
@@ -94,13 +119,17 @@ describe("ActiveUserUseCase", () => {
 		})
 		await userRepository.save(activeUser)
 
-		const result = await sut.execute({ userId: "active-user-id" })
+		const result = await sut.execute({
+			requesterId: ROOT_ID,
+			userId: "active-user-id",
+		})
 
 		expect(result.isSuccess()).toBe(true)
 	})
 
 	test("Deve invalidar o cache fetch-users após ativar um usuário", async () => {
 		const input: ActiveUserUseCaseInput = {
+			requesterId: ROOT_ID,
 			userId: "any_user_id",
 		}
 		const user = (
@@ -124,6 +153,7 @@ describe("ActiveUserUseCase", () => {
 
 	test("Deve invalidar o cache user-stats após ativar um usuário", async () => {
 		const input: ActiveUserUseCaseInput = {
+			requesterId: ROOT_ID,
 			userId: "any_user_id",
 		}
 		const user = (
@@ -140,5 +170,94 @@ describe("ActiveUserUseCase", () => {
 		await sut.execute(input)
 		const cachedStats = await cacheDB.get("user-stats")
 		expect(cachedStats).toBeNull()
+	})
+
+	test("Admin comum não ativa outro admin (403)", async () => {
+		await userRepository.save(restoreUser("admin-id", "ADMIN"))
+		await userRepository.save(
+			User.restore({
+				id: "other-admin",
+				name: "Other Admin",
+				email: "other-admin@test.com",
+				role: "ADMIN",
+				status: "suspended",
+				createdAt: new Date(),
+			}),
+		)
+
+		const result = await sut.execute({
+			requesterId: "admin-id",
+			userId: "other-admin",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(NotAllowedToManageUserError)
+	})
+
+	test("Ninguém ativa o super admin (403)", async () => {
+		await userRepository.save(restoreUser("admin-id", "ADMIN"))
+		await userRepository.save(
+			User.restore({
+				id: "root",
+				name: "Root",
+				email: "root@test.com",
+				role: "ADMIN",
+				status: "suspended",
+				createdAt: new Date(),
+				isSuperAdmin: true,
+			}),
+		)
+
+		const result = await sut.execute({
+			requesterId: "admin-id",
+			userId: "root",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(NotAllowedToManageUserError)
+	})
+
+	test("Admin comum ativa um membro com sucesso", async () => {
+		await userRepository.save(restoreUser("admin-id", "ADMIN"))
+		await userRepository.save(
+			User.restore({
+				id: "member-id",
+				name: "Member",
+				email: "member@test.com",
+				role: "MEMBER",
+				status: "suspended",
+				createdAt: new Date(),
+			}),
+		)
+
+		const result = await sut.execute({
+			requesterId: "admin-id",
+			userId: "member-id",
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		const updated = await userRepository.userOfId("member-id")
+		expect(updated?.status).toBe("activated")
+	})
+
+	test("Requester inexistente recebe 403", async () => {
+		await userRepository.save(
+			User.restore({
+				id: "member-id",
+				name: "Member",
+				email: "member@test.com",
+				role: "MEMBER",
+				status: "suspended",
+				createdAt: new Date(),
+			}),
+		)
+
+		const result = await sut.execute({
+			requesterId: "ghost-id",
+			userId: "member-id",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(NotAllowedToManageUserError)
 	})
 })
