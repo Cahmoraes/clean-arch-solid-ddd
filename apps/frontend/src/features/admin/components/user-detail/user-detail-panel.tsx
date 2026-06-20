@@ -80,7 +80,7 @@ function UserDetailTabs({
 				<TabsTrigger value="atividade">Atividade</TabsTrigger>
 			</TabsList>
 			<TabsContent value="detalhes">
-				<DetailsTab user={user} />
+				<DetailsTab user={user} permissions={actions.permissions} />
 			</TabsContent>
 			<TabsContent value="permissoes">
 				<PermissionsTab
