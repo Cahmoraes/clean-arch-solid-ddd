@@ -31,7 +31,6 @@ export function useUpdateUser(): UseMutationResult<
 
 	return useMutation<void, ApiError, UpdateUserInput, Context>({
 		mutationFn: async ({ userId, name, email }) => {
-			// biome-ignore lint/suspicious/noExplicitAny: endpoint not yet in generated api-types
 			const { error } = await (api.PATCH as any)(`/users/${userId}`, {
 				params: { path: { userId } },
 				body: { name, email },

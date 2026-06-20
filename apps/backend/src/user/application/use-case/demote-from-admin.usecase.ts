@@ -7,6 +7,7 @@ import {
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { UserManagementPolicy } from "@/user/domain/service/user-management-policy"
+import type { User } from "@/user/domain/user"
 import { CannotDemoteSelfError } from "../error/cannot-demote-self-error"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import { UserIsNotAdminError } from "../error/user-is-not-admin-error"
@@ -31,6 +32,11 @@ export type DemoteFromAdminUseCaseOutput = Promise<
 	>
 >
 
+type AuthorizeResult = Either<
+	NotAllowedToManageUserError | UserNotFoundError | UserIsSuperAdminError,
+	{ requester: User; user: User }
+>
+
 @injectable()
 export class DemoteFromAdminUseCase {
 	constructor(
@@ -40,24 +46,35 @@ export class DemoteFromAdminUseCase {
 		private readonly cacheDB: CacheDB,
 	) {}
 
+	private async authorizeRoleChange(
+		requesterId: string,
+		userId: string,
+	): Promise<AuthorizeResult> {
+		const requester = await this.userRepository.userOfId(requesterId)
+		if (!requester) return failure(new NotAllowedToManageUserError())
+		const user = await this.userRepository.userOfId(userId)
+		if (!user) return failure(new UserNotFoundError())
+		if (user.isSuperAdmin) return failure(new UserIsSuperAdminError())
+		if (!UserManagementPolicy.canChangeRole(requester, user)) {
+			return failure(new NotAllowedToManageUserError())
+		}
+		return success({ requester, user })
+	}
+
 	public async execute(
 		input: DemoteFromAdminUseCaseInput,
 	): DemoteFromAdminUseCaseOutput {
-		const requester = await this.userRepository.userOfId(input.requesterId)
-		if (!requester) return failure(new NotAllowedToManageUserError())
-
 		if (input.userId === input.requesterId) {
 			return failure(new CannotDemoteSelfError())
 		}
 
-		const user = await this.userRepository.userOfId(input.userId)
-		if (!user) return failure(new UserNotFoundError())
-		if (user.isSuperAdmin) return failure(new UserIsSuperAdminError())
+		const authResult = await this.authorizeRoleChange(
+			input.requesterId,
+			input.userId,
+		)
+		if (authResult.isFailure()) return failure(authResult.value)
 
-		if (!UserManagementPolicy.canChangeRole(requester, user)) {
-			return failure(new NotAllowedToManageUserError())
-		}
-
+		const { user } = authResult.value
 		if (user.role !== "ADMIN") return failure(new UserIsNotAdminError())
 		user.updateRole("MEMBER")
 		await this.userRepository.update(user)

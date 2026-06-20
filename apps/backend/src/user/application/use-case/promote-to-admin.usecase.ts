@@ -7,6 +7,7 @@ import {
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { UserManagementPolicy } from "@/user/domain/service/user-management-policy"
+import type { User } from "@/user/domain/user"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import { UserAlreadyAdminError } from "../error/user-already-admin-error"
 import { UserIsNotActiveError } from "../error/user-is-not-active-error"
@@ -31,6 +32,11 @@ export type PromoteToAdminUseCaseOutput = Promise<
 	>
 >
 
+type AuthorizeResult = Either<
+	NotAllowedToManageUserError | UserNotFoundError | UserIsSuperAdminError,
+	{ requester: User; user: User }
+>
+
 @injectable()
 export class PromoteToAdminUseCase {
 	constructor(
@@ -40,20 +46,31 @@ export class PromoteToAdminUseCase {
 		private readonly cacheDB: CacheDB,
 	) {}
 
-	public async execute(
-		input: PromoteToAdminUseCaseInput,
-	): PromoteToAdminUseCaseOutput {
-		const requester = await this.userRepository.userOfId(input.requesterId)
+	private async authorizeRoleChange(
+		requesterId: string,
+		userId: string,
+	): Promise<AuthorizeResult> {
+		const requester = await this.userRepository.userOfId(requesterId)
 		if (!requester) return failure(new NotAllowedToManageUserError())
-
-		const user = await this.userRepository.userOfId(input.userId)
+		const user = await this.userRepository.userOfId(userId)
 		if (!user) return failure(new UserNotFoundError())
 		if (user.isSuperAdmin) return failure(new UserIsSuperAdminError())
-
 		if (!UserManagementPolicy.canChangeRole(requester, user)) {
 			return failure(new NotAllowedToManageUserError())
 		}
+		return success({ requester, user })
+	}
 
+	public async execute(
+		input: PromoteToAdminUseCaseInput,
+	): PromoteToAdminUseCaseOutput {
+		const authResult = await this.authorizeRoleChange(
+			input.requesterId,
+			input.userId,
+		)
+		if (authResult.isFailure()) return failure(authResult.value)
+
+		const { user } = authResult.value
 		if (!user.isActive) return failure(new UserIsNotActiveError())
 		if (user.role === "ADMIN") return failure(new UserAlreadyAdminError())
 

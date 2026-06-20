@@ -31,45 +31,75 @@ function isRoot(user: { isSuperAdmin?: boolean }): boolean {
 	return user.isSuperAdmin === true
 }
 
+interface PermissionCtx {
+	isSelf: boolean
+	requesterIsRoot: boolean
+	requesterIsAdmin: boolean
+	targetIsRoot: boolean
+	targetIsMember: boolean
+	currentUser: CurrentUser
+}
+
+function canEditProfileRule(ctx: PermissionCtx): boolean {
+	if (ctx.isSelf || !ctx.currentUser) return false
+	if (ctx.requesterIsRoot) return true
+	return ctx.requesterIsAdmin && ctx.targetIsMember && !ctx.targetIsRoot
+}
+
+function canChangeStatusRule(ctx: PermissionCtx): boolean {
+	if (ctx.targetIsRoot || ctx.isSelf || !ctx.currentUser) return false
+	if (ctx.requesterIsRoot) return true
+	return ctx.requesterIsAdmin && ctx.targetIsMember
+}
+
+function canChangeRoleRule(ctx: PermissionCtx): boolean {
+	return !ctx.targetIsRoot && !ctx.isSelf && ctx.requesterIsRoot
+}
+
+function buildSuspendActivateFlags(
+	user: AdminUser,
+	canChangeStatus: boolean,
+	isLocked: boolean,
+): { canSuspend: boolean; canActivate: boolean } {
+	return {
+		canSuspend: canChangeStatus && (user.status === "activated" || isLocked),
+		canActivate: canChangeStatus && (user.status === "suspended" || isLocked),
+	}
+}
+
+function buildRoleChangeFlags(
+	user: AdminUser,
+	canChangeRole: boolean,
+): { canPromoteToAdmin: boolean; canDemoteFromAdmin: boolean } {
+	return {
+		canPromoteToAdmin:
+			canChangeRole && user.status === "activated" && user.role === "MEMBER",
+		canDemoteFromAdmin: canChangeRole && user.role === "ADMIN",
+	}
+}
+
 export function resolvePermissions(
 	user: AdminUser,
 	currentUser: CurrentUser,
 ): UserDetailPermissions {
 	const isLocked = user.status === "locked"
+	const ctx: PermissionCtx = {
+		isSelf: currentUser?.id === user.id,
+		requesterIsRoot: currentUser ? isRoot(currentUser) : false,
+		requesterIsAdmin: currentUser?.role === "ADMIN",
+		targetIsRoot: isRoot(user),
+		targetIsMember: user.role === "MEMBER",
+		currentUser,
+	}
 
-	const isSelf = currentUser?.id === user.id
-	const requesterIsRoot = currentUser ? isRoot(currentUser) : false
-	const requesterIsAdmin = currentUser?.role === "ADMIN"
-	const targetIsRoot = isRoot(user)
-	const targetIsMember = user.role === "MEMBER"
-
-	const canEditProfile =
-		!isSelf &&
-		!!currentUser &&
-		(requesterIsRoot || (requesterIsAdmin && targetIsMember && !targetIsRoot))
-
-	const canChangeStatus =
-		!targetIsRoot &&
-		!isSelf &&
-		!!currentUser &&
-		(requesterIsRoot || (requesterIsAdmin && targetIsMember))
-
-	const canChangeRole = !targetIsRoot && !isSelf && requesterIsRoot
-
-	const canSuspend =
-		canChangeStatus && (user.status === "activated" || isLocked)
-	const canActivate =
-		canChangeStatus && (user.status === "suspended" || isLocked)
-	const canPromoteToAdmin =
-		canChangeRole && user.status === "activated" && user.role === "MEMBER"
-	const canDemoteFromAdmin = canChangeRole && user.role === "ADMIN"
-	const canDelete = !targetIsRoot && !isSelf && requesterIsRoot
+	const canEditProfile = canEditProfileRule(ctx)
+	const canChangeStatus = canChangeStatusRule(ctx)
+	const canChangeRole = canChangeRoleRule(ctx)
+	const canDelete = !ctx.targetIsRoot && !ctx.isSelf && ctx.requesterIsRoot
 
 	return {
-		canSuspend,
-		canActivate,
-		canPromoteToAdmin,
-		canDemoteFromAdmin,
+		...buildSuspendActivateFlags(user, canChangeStatus, isLocked),
+		...buildRoleChangeFlags(user, canChangeRole),
 		canDelete,
 		isLocked,
 		canEditProfile,
