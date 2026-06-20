@@ -46,6 +46,7 @@ export function renderWithProviders(
 interface TestJwtOptions {
 	sub?: string
 	role?: "MEMBER" | "ADMIN"
+	isSuperAdmin?: boolean
 	expSeconds?: number
 }
 
@@ -67,11 +68,17 @@ export function makeTestJwt(options: TestJwtOptions = {}): string {
 	const {
 		sub = "user-test-id",
 		role = "MEMBER",
+		isSuperAdmin,
 		expSeconds = Math.floor(Date.now() / 1000) + 60 * 60,
 	} = options
 	const header = base64UrlEncode(JSON.stringify({ alg: "none", typ: "JWT" }))
-	const payload = base64UrlEncode(
-		JSON.stringify({ sub, role, exp: expSeconds }),
-	)
+	// Quando isSuperAdmin é informado, espelha a forma real do backend
+	// (`sub` aninhado), única origem de onde `decodeJwt` extrai isSuperAdmin.
+	// Caso contrário mantém a forma flat para preservar testes existentes.
+	const claims =
+		isSuperAdmin === undefined
+			? { sub, role, exp: expSeconds }
+			: { sub: { id: sub, role, isSuperAdmin }, role, exp: expSeconds }
+	const payload = base64UrlEncode(JSON.stringify(claims))
 	return `${header}.${payload}.signature`
 }

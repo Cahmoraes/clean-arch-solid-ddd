@@ -25,10 +25,12 @@ const root = makeUser({ id: "root", role: "ADMIN", isSuperAdmin: true })
 const admin = makeUser({ id: "admin", role: "ADMIN" })
 const otherAdmin = makeUser({ id: "other-admin", role: "ADMIN" })
 const member = makeUser({ id: "member", role: "MEMBER" })
+const otherMember = makeUser({ id: "other-member", role: "MEMBER" })
 
 describe("UserManagementPolicy.canEditProfile", () => {
 	test("nega editar a si mesmo (usa-se o perfil próprio)", () => {
 		expect(UserManagementPolicy.canEditProfile(admin, admin)).toBe(false)
+		expect(UserManagementPolicy.canEditProfile(root, root)).toBe(false)
 	})
 
 	test("root edita qualquer um", () => {
@@ -47,6 +49,7 @@ describe("UserManagementPolicy.canEditProfile", () => {
 
 	test("membro não edita ninguém pelo painel", () => {
 		expect(UserManagementPolicy.canEditProfile(member, member)).toBe(false)
+		expect(UserManagementPolicy.canEditProfile(member, otherMember)).toBe(false)
 	})
 })
 
@@ -71,6 +74,14 @@ describe("UserManagementPolicy.canChangeStatus", () => {
 
 	test("membro não altera status de ninguém", () => {
 		expect(UserManagementPolicy.canChangeStatus(member, admin)).toBe(false)
+		expect(UserManagementPolicy.canChangeStatus(member, otherMember)).toBe(
+			false,
+		)
+	})
+
+	test("nega alterar o próprio status", () => {
+		expect(UserManagementPolicy.canChangeStatus(admin, admin)).toBe(false)
+		expect(UserManagementPolicy.canChangeStatus(member, member)).toBe(false)
 	})
 })
 
@@ -90,6 +101,7 @@ describe("UserManagementPolicy.canChangeRole", () => {
 	})
 
 	test("root não altera o próprio role", () => {
+		expect(UserManagementPolicy.canChangeRole(root, root)).toBe(false)
 		const anotherRoot = makeUser({
 			id: "root",
 			role: "ADMIN",
