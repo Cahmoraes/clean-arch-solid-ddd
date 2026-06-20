@@ -39,6 +39,7 @@ function baseProps() {
 			isDemoting: false,
 			isDeleting: false,
 		},
+		canEdit: true,
 		onEdit: vi.fn(),
 		onActivate: vi.fn(),
 		onOpenSuspend: vi.fn(),
@@ -53,8 +54,15 @@ describe("UserActionsFooter", () => {
 		const user = userEvent.setup()
 		const props = baseProps()
 		render(<UserActionsFooter {...props} />)
-		await user.click(screen.getByRole("button", { name: /editar/i }))
+		await user.click(screen.getByRole("button", { name: /editar dados/i }))
 		expect(props.onEdit).toHaveBeenCalledTimes(1)
+	})
+
+	test("oculta o botão Editar dados quando canEdit é false", () => {
+		render(<UserActionsFooter {...baseProps()} canEdit={false} />)
+		expect(
+			screen.queryByRole("button", { name: /editar dados/i }),
+		).not.toBeInTheDocument()
 	})
 
 	test("abre confirmação ao clicar em Inativar", async () => {

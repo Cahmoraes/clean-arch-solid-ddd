@@ -4,7 +4,6 @@ import { Users } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import type { KeyboardEvent, MouseEvent } from "react"
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
-import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/page-container"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
@@ -312,10 +311,6 @@ function AdminUsersContent({
 		setPage(1)
 	}
 
-	function handleEditUser(user: AdminUser) {
-		toast.info(`Edição de ${user.name} estará disponível em breve.`)
-	}
-
 	function handleListKeyNavigation(event: KeyboardEvent<HTMLDivElement>) {
 		const list = data?.users
 		if (!isArrowKey(event.key) || !list || list.length === 0) return
@@ -374,7 +369,6 @@ function AdminUsersContent({
 				<UserDetailContainer
 					user={activeSelectedUser}
 					onClose={handleModalClose}
-					onEdit={handleEditUser}
 					onUserPatched={handleUserPatched}
 				/>
 			</div>

@@ -17,6 +17,7 @@ export interface UserActionsFooterProps {
 	user: AdminUser
 	permissions: UserDetailPermissions
 	flags: ActionFlags
+	canEdit: boolean
 	onEdit: () => void
 	onActivate: () => void
 	onOpenSuspend: () => void
@@ -133,6 +134,7 @@ function ContextualActions({
 export function UserActionsFooter({
 	permissions,
 	flags,
+	canEdit,
 	onEdit,
 	onActivate,
 	onOpenSuspend,
@@ -149,13 +151,15 @@ export function UserActionsFooter({
 	})
 	return (
 		<div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
-			<Button
-				onClick={onEdit}
-				disabled={flags.isPending}
-				className="h-11 rounded-md bg-accent px-4 font-semibold text-accent-foreground hover:bg-primary-strong"
-			>
-				Editar dados
-			</Button>
+			{canEdit ? (
+				<Button
+					onClick={onEdit}
+					disabled={flags.isPending}
+					className="h-11 rounded-md bg-accent px-4 font-semibold text-accent-foreground hover:bg-primary-strong"
+				>
+					Editar dados
+				</Button>
+			) : null}
 
 			<ContextualActions actions={actions} isPending={flags.isPending} />
 		</div>

@@ -33,10 +33,9 @@ function renderContainer(user: AdminUser | null) {
 	const wrapper = ({ children }: { children: ReactNode }) => (
 		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 	)
-	return render(
-		<UserDetailContainer user={user} onClose={vi.fn()} onEdit={vi.fn()} />,
-		{ wrapper },
-	)
+	return render(<UserDetailContainer user={user} onClose={vi.fn()} />, {
+		wrapper,
+	})
 }
 
 beforeEach(() => {

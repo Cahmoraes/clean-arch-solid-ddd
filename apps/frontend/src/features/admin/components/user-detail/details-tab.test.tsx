@@ -31,7 +31,14 @@ function buildUser(overrides: Partial<AdminUser> = {}): AdminUser {
 
 describe("DetailsTab", () => {
 	test("exibe nome, e-mail e User ID", () => {
-		render(<DetailsTab user={buildUser()} permissions={noPermissions} />)
+		render(
+			<DetailsTab
+				user={buildUser()}
+				permissions={noPermissions}
+				editing={false}
+				onStopEdit={() => {}}
+			/>,
+		)
 		expect(screen.getByText("João Damasio")).toBeInTheDocument()
 		expect(screen.getByText("joao@example.com")).toBeInTheDocument()
 		expect(screen.getByText("usr_4821kx")).toBeInTheDocument()
@@ -42,13 +49,22 @@ describe("DetailsTab", () => {
 			<DetailsTab
 				user={buildUser({ status: "suspended" })}
 				permissions={noPermissions}
+				editing={false}
+				onStopEdit={() => {}}
 			/>,
 		)
 		expect(screen.getByText("Inativo")).toBeInTheDocument()
 	})
 
 	test("exibe fallback gracioso para último acesso ausente", () => {
-		render(<DetailsTab user={buildUser()} permissions={noPermissions} />)
+		render(
+			<DetailsTab
+				user={buildUser()}
+				permissions={noPermissions}
+				editing={false}
+				onStopEdit={() => {}}
+			/>,
+		)
 		expect(screen.getByText("Sem registro")).toBeInTheDocument()
 	})
 })

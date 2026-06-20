@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Avatar } from "@/components/ui/avatar"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -15,13 +16,15 @@ import {
 import { DetailsTab } from "./details-tab"
 import { PermissionsTab } from "./permissions-tab"
 import type { UserDetailActions } from "./use-user-detail-actions"
-import { useUserDetailActions } from "./use-user-detail-actions"
+import {
+	canEditAnything,
+	useUserDetailActions,
+} from "./use-user-detail-actions"
 import { UserActionsFooter } from "./user-actions-footer"
 import { statusBadgeClassName, statusLabel } from "./user-detail-format"
 
 export interface UserDetailPanelProps {
 	user: AdminUser
-	onEdit: () => void
 	onClose?: () => void
 	onUserPatched?: (patch: Partial<AdminUser>) => void
 }
@@ -68,19 +71,36 @@ function UserIdentityHeader({ user }: { user: AdminUser }) {
 function UserDetailTabs({
 	user,
 	actions,
+	activeTab,
+	onTabChange,
+	editing,
+	onStopEdit,
 }: {
 	user: AdminUser
 	actions: UserDetailActions
+	activeTab: string
+	onTabChange: (tab: string) => void
+	editing: boolean
+	onStopEdit: () => void
 }) {
 	return (
-		<Tabs defaultValue="detalhes" className="flex flex-col gap-4">
+		<Tabs
+			value={activeTab}
+			onValueChange={onTabChange}
+			className="flex flex-col gap-4"
+		>
 			<TabsList>
 				<TabsTrigger value="detalhes">Detalhes</TabsTrigger>
 				<TabsTrigger value="permissoes">Permissões</TabsTrigger>
 				<TabsTrigger value="atividade">Atividade</TabsTrigger>
 			</TabsList>
 			<TabsContent value="detalhes">
-				<DetailsTab user={user} permissions={actions.permissions} />
+				<DetailsTab
+					user={user}
+					permissions={actions.permissions}
+					editing={editing}
+					onStopEdit={onStopEdit}
+				/>
 			</TabsContent>
 			<TabsContent value="permissoes">
 				<PermissionsTab
@@ -153,7 +173,6 @@ function ConfirmationDialogs({
 
 export function UserDetailPanel({
 	user,
-	onEdit,
 	onClose,
 	onUserPatched,
 }: UserDetailPanelProps) {
@@ -161,17 +180,33 @@ export function UserDetailPanel({
 		onDeleteSuccess: onClose,
 		onUserPatched,
 	})
+	const [activeTab, setActiveTab] = useState("detalhes")
+	const [editing, setEditing] = useState(false)
+	const canEdit = canEditAnything(actions.permissions)
+
+	function handleStartEdit() {
+		setActiveTab("detalhes")
+		setEditing(true)
+	}
 
 	return (
 		<div className="flex flex-col gap-4">
 			<UserIdentityHeader user={user} />
 			<InlineError message={actions.errorMessage} />
-			<UserDetailTabs user={user} actions={actions} />
+			<UserDetailTabs
+				user={user}
+				actions={actions}
+				activeTab={activeTab}
+				onTabChange={setActiveTab}
+				editing={editing}
+				onStopEdit={() => setEditing(false)}
+			/>
 			<UserActionsFooter
 				user={user}
 				permissions={actions.permissions}
 				flags={actions.flags}
-				onEdit={onEdit}
+				canEdit={canEdit && !editing}
+				onEdit={handleStartEdit}
 				onActivate={actions.onActivate}
 				onOpenSuspend={() => actions.confirm.setSuspendOpen(true)}
 				onOpenPromote={() => actions.confirm.setPromoteOpen(true)}

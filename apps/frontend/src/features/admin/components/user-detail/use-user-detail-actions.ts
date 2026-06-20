@@ -108,6 +108,14 @@ export function resolvePermissions(
 	}
 }
 
+export function canEditAnything(permissions: UserDetailPermissions): boolean {
+	return (
+		permissions.canEditProfile ||
+		permissions.canChangeStatus ||
+		permissions.canChangeRole
+	)
+}
+
 function getErrorMessage(mutation: {
 	isError: boolean
 	error?: { userMessage?: string } | null

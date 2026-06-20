@@ -16,19 +16,16 @@ import { UserDetailPanel } from "./user-detail-panel"
 export interface UserDetailContainerProps {
 	user: AdminUser | null
 	onClose: () => void
-	onEdit: (user: AdminUser) => void
 	onUserPatched?: (patch: Partial<AdminUser>) => void
 }
 
 function DesktopView({
 	user,
 	onClose,
-	onEdit,
 	onUserPatched,
 }: {
 	user: AdminUser | null
 	onClose: () => void
-	onEdit: (user: AdminUser) => void
 	onUserPatched?: (patch: Partial<AdminUser>) => void
 }) {
 	if (!user) {
@@ -45,7 +42,6 @@ function DesktopView({
 			<UserDetailPanel
 				user={user}
 				onClose={onClose}
-				onEdit={() => onEdit(user)}
 				onUserPatched={onUserPatched}
 			/>
 		</div>
@@ -55,12 +51,10 @@ function DesktopView({
 function MobileView({
 	user,
 	onClose,
-	onEdit,
 	onUserPatched,
 }: {
 	user: AdminUser | null
 	onClose: () => void
-	onEdit: (user: AdminUser) => void
 	onUserPatched?: (patch: Partial<AdminUser>) => void
 }) {
 	return (
@@ -81,7 +75,6 @@ function MobileView({
 					<UserDetailPanel
 						user={user}
 						onClose={onClose}
-						onEdit={() => onEdit(user)}
 						onUserPatched={onUserPatched}
 					/>
 				) : null}
@@ -93,7 +86,6 @@ function MobileView({
 export function UserDetailContainer({
 	user,
 	onClose,
-	onEdit,
 	onUserPatched,
 }: UserDetailContainerProps) {
 	const isDesktop = useIsDesktop()
@@ -102,17 +94,11 @@ export function UserDetailContainer({
 			<DesktopView
 				user={user}
 				onClose={onClose}
-				onEdit={onEdit}
 				onUserPatched={onUserPatched}
 			/>
 		)
 	}
 	return (
-		<MobileView
-			user={user}
-			onClose={onClose}
-			onEdit={onEdit}
-			onUserPatched={onUserPatched}
-		/>
+		<MobileView user={user} onClose={onClose} onUserPatched={onUserPatched} />
 	)
 }
