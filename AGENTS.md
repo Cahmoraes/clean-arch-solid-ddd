@@ -6,7 +6,7 @@
 - **SEMPRE verifique APIs dos pacotes dependentes** antes de escrever código de integração/testes, evita código errado
 - **NUNCA use gambiarras** — use skill `no-workarounds` para correção/debug + `testing-anti-patterns` para testes
 - **SEMPRE use skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
-- **NUNCA use ferramentas** web para código local — use Grep/Glob
+- **NUNCA use ferramentas** web para código local — use `sg` (busca estrutural TS/JS), Grep ou Glob. Prefira `sg` a `grep` para padrões de AST (decorators, chamadas com generics, shapes de objeto)
 - **NUNCA FAÇA COMMITS sem permissão** — sempre pergunte
 
 <MOST_CRITICAL>
