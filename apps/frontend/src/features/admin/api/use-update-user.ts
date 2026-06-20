@@ -1,0 +1,74 @@
+"use client"
+
+import type { QueryKey, UseMutationResult } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { api } from "@/lib/api"
+import { ApiError, mapStatusToMessage } from "@/lib/errors"
+import { USER_STATS_QUERY_KEY } from "./use-user-stats"
+import { ADMIN_USERS_QUERY_KEY, type UseUsersResult } from "./use-users"
+
+export interface UpdateUserInput {
+	userId: string
+	name: string
+	email: string
+}
+
+type Context = [QueryKey, UseUsersResult | undefined][]
+
+function toApiError(error: unknown): ApiError {
+	if (error instanceof ApiError) return error
+	const message =
+		error instanceof Error ? error.message : mapStatusToMessage(500)
+	return new ApiError(500, "network_error", message)
+}
+
+export function useUpdateUser(): UseMutationResult<
+	void,
+	ApiError,
+	UpdateUserInput
+> {
+	const queryClient = useQueryClient()
+
+	return useMutation<void, ApiError, UpdateUserInput, Context>({
+		mutationFn: async ({ userId, name, email }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: endpoint not yet in generated api-types
+			const { error } = await (api.PATCH as any)(`/users/${userId}`, {
+				params: { path: { userId } },
+				body: { name, email },
+			})
+			if (error) throw toApiError(error)
+		},
+		onMutate: async ({ userId, name, email }) => {
+			await queryClient.cancelQueries({ queryKey: [ADMIN_USERS_QUERY_KEY] })
+
+			const previousQueries = queryClient.getQueriesData<UseUsersResult>({
+				queryKey: [ADMIN_USERS_QUERY_KEY],
+			})
+
+			queryClient.setQueriesData<UseUsersResult>(
+				{ queryKey: [ADMIN_USERS_QUERY_KEY] },
+				(old) => {
+					if (!old) return old
+					return {
+						...old,
+						users: old.users.map((user) =>
+							user.id === userId ? { ...user, name, email } : user,
+						),
+					}
+				},
+			)
+
+			return previousQueries
+		},
+		onError: (_error, _vars, context) => {
+			if (!context) return
+			for (const [queryKey, data] of context) {
+				queryClient.setQueryData(queryKey, data)
+			}
+		},
+		onSettled: () => {
+			void queryClient.invalidateQueries({ queryKey: [ADMIN_USERS_QUERY_KEY] })
+			void queryClient.invalidateQueries({ queryKey: [USER_STATS_QUERY_KEY] })
+		},
+	})
+}
