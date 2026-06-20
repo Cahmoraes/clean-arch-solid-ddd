@@ -27,12 +27,14 @@ describe("Promover Usuário a Admin", () => {
 		)
 		fastifyServer = await serverBuildForTest()
 		await fastifyServer.ready()
+		// Root user (isSuperAdmin=true) — único que pode promover/demover
 		await createAndSaveUser({
 			userRepository,
 			id: randomUUID(),
 			email: "auth@promote.test",
 			password: "any_password",
 			role: "ADMIN",
+			isSuperAdmin: true,
 		})
 		const result = await authenticate.execute({
 			email: "auth@promote.test",
@@ -73,7 +75,7 @@ describe("Promover Usuário a Admin", () => {
 		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
 	})
 
-	test("Deve retornar 403 quando o solicitante não é admin", async () => {
+	test("Deve retornar 403 quando o solicitante não é admin (MEMBER)", async () => {
 		await createAndSaveUser({
 			userRepository,
 			id: randomUUID(),
@@ -93,6 +95,38 @@ describe("Promover Usuário a Admin", () => {
 			.send({ userId: randomUUID() })
 
 		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
+	})
+
+	test("Admin comum (não-root) recebe 403 ao tentar promover", async () => {
+		await createAndSaveUser({
+			userRepository,
+			id: randomUUID(),
+			email: "common-admin@promote.test",
+			password: "admin_password",
+			role: "ADMIN",
+			isSuperAdmin: false,
+		})
+		const commonAdminResult = await authenticate.execute({
+			email: "common-admin@promote.test",
+			password: "admin_password",
+		})
+		const commonAdminToken = commonAdminResult.force.success().value.token
+
+		const targetId = randomUUID()
+		await createAndSaveUser({
+			userRepository,
+			id: targetId,
+			email: "target@promote.test",
+			role: "MEMBER",
+		})
+
+		const response = await request(fastifyServer.server)
+			.patch(UserRoutes.PROMOTE_TO_ADMIN)
+			.set("Authorization", `Bearer ${commonAdminToken}`)
+			.send({ userId: targetId })
+
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
+		expect(response.body).toHaveProperty("message")
 	})
 
 	test("Deve retornar 400 quando o body é inválido (userId não-UUID)", async () => {

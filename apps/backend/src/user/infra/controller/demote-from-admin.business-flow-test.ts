@@ -29,12 +29,14 @@ describe("Demover Administrador", () => {
 		fastifyServer = await serverBuildForTest()
 		await fastifyServer.ready()
 		adminId = randomUUID()
+		// Root user (isSuperAdmin=true) — único que pode demover (FR-008)
 		await createAndSaveUser({
 			userRepository,
 			id: adminId,
 			email: "auth@demote.test",
 			password: "any_password",
 			role: "ADMIN",
+			isSuperAdmin: true,
 		})
 		const result = await authenticate.execute({
 			email: "auth@demote.test",

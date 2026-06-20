@@ -5,6 +5,7 @@ import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { User } from "@/user/domain/user"
 import { CannotDemoteSelfError } from "../error/cannot-demote-self-error"
+import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import { UserIsNotAdminError } from "../error/user-is-not-admin-error"
 import { UserIsSuperAdminError } from "../error/user-is-super-admin-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
@@ -12,6 +13,19 @@ import type {
 	DemoteFromAdminUseCase,
 	DemoteFromAdminUseCaseInput,
 } from "./demote-from-admin.usecase"
+
+function makeRoot(id = "root-id"): User {
+	return User.restore({
+		id,
+		name: "Root User",
+		email: "root@test.com",
+		password: "hashed_password",
+		role: "ADMIN",
+		status: "activated",
+		createdAt: new Date(),
+		isSuperAdmin: true,
+	})
+}
 
 describe("DemoteFromAdminUseCase", () => {
 	let sut: DemoteFromAdminUseCase
@@ -31,6 +45,7 @@ describe("DemoteFromAdminUseCase", () => {
 	})
 
 	test("Deve demover um administrador a membro", async () => {
+		await userRepository.save(makeRoot())
 		const user = (
 			await User.create({
 				id: "admin-id",
@@ -44,7 +59,7 @@ describe("DemoteFromAdminUseCase", () => {
 
 		const input: DemoteFromAdminUseCaseInput = {
 			userId: "admin-id",
-			requesterId: "requester-id",
+			requesterId: "root-id",
 		}
 		const result = await sut.execute(input)
 
@@ -53,10 +68,66 @@ describe("DemoteFromAdminUseCase", () => {
 		expect(updated?.role).toBe("MEMBER")
 	})
 
+	test("Admin comum não pode rebaixar outro admin (root-only — 403)", async () => {
+		const commonAdmin = (
+			await User.create({
+				id: "common-admin-id",
+				email: "common@test.com",
+				name: "Common Admin",
+				password: "password",
+				role: "ADMIN",
+			})
+		).forceSuccess().value
+		await userRepository.save(commonAdmin)
+
+		const targetAdmin = (
+			await User.create({
+				id: "target-admin-id",
+				email: "target@test.com",
+				name: "Target Admin",
+				password: "password",
+				role: "ADMIN",
+			})
+		).forceSuccess().value
+		await userRepository.save(targetAdmin)
+
+		const result = await sut.execute({
+			requesterId: "common-admin-id",
+			userId: "target-admin-id",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(NotAllowedToManageUserError)
+	})
+
+	test("Root rebaixa um admin a membro com sucesso", async () => {
+		await userRepository.save(makeRoot())
+		const targetAdmin = (
+			await User.create({
+				id: "target-admin-id",
+				email: "target@test.com",
+				name: "Target Admin",
+				password: "password",
+				role: "ADMIN",
+			})
+		).forceSuccess().value
+		await userRepository.save(targetAdmin)
+
+		const result = await sut.execute({
+			requesterId: "root-id",
+			userId: "target-admin-id",
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		const updated = await userRepository.userOfId("target-admin-id")
+		expect(updated?.role).toBe("MEMBER")
+	})
+
 	test("Não deve demover usuário inexistente", async () => {
+		await userRepository.save(makeRoot())
 		const result = await sut.execute({
 			userId: "ghost-id",
-			requesterId: "requester-id",
+			requesterId: "root-id",
 		})
 		expect(result.isFailure()).toBe(true)
 		expect(result.value).toBeInstanceOf(UserNotFoundError)
@@ -71,8 +142,18 @@ describe("DemoteFromAdminUseCase", () => {
 		expect(result.value).toBeInstanceOf(CannotDemoteSelfError)
 	})
 
+	test("Retorna NotAllowedToManageUserError quando requesterId não existe", async () => {
+		const result = await sut.execute({
+			userId: "any-user-id",
+			requesterId: "nonexistent-requester",
+		})
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(NotAllowedToManageUserError)
+	})
+
 	test("Não deve demover usuário com isSuperAdmin=true", async () => {
-		const user = User.restore({
+		await userRepository.save(makeRoot("root-id"))
+		const superTarget = User.restore({
 			id: "super-id",
 			email: "super@test.com",
 			name: "Super Admin",
@@ -82,17 +163,18 @@ describe("DemoteFromAdminUseCase", () => {
 			createdAt: new Date(),
 			isSuperAdmin: true,
 		})
-		await userRepository.save(user)
+		await userRepository.save(superTarget)
 
 		const result = await sut.execute({
 			userId: "super-id",
-			requesterId: "requester-id",
+			requesterId: "root-id",
 		})
 		expect(result.isFailure()).toBe(true)
 		expect(result.value).toBeInstanceOf(UserIsSuperAdminError)
 	})
 
 	test("Não deve demover usuário que não é admin", async () => {
+		await userRepository.save(makeRoot())
 		const user = (
 			await User.create({
 				id: "member-id",
@@ -106,13 +188,14 @@ describe("DemoteFromAdminUseCase", () => {
 
 		const result = await sut.execute({
 			userId: "member-id",
-			requesterId: "requester-id",
+			requesterId: "root-id",
 		})
 		expect(result.isFailure()).toBe(true)
 		expect(result.value).toBeInstanceOf(UserIsNotAdminError)
 	})
 
 	test("Deve invalidar o cache fetch-users após demover", async () => {
+		await userRepository.save(makeRoot())
 		const user = (
 			await User.create({
 				id: "cache-admin-id",
@@ -125,13 +208,14 @@ describe("DemoteFromAdminUseCase", () => {
 		await userRepository.save(user)
 		await cacheDB.set("fetch-users:1:10", { data: [] }, 60)
 
-		await sut.execute({ userId: "cache-admin-id", requesterId: "requester-id" })
+		await sut.execute({ userId: "cache-admin-id", requesterId: "root-id" })
 
 		const cached = await cacheDB.get("fetch-users:1:10")
 		expect(cached).toBeNull()
 	})
 
 	test("Deve invalidar o cache user-stats após demover", async () => {
+		await userRepository.save(makeRoot())
 		const user = (
 			await User.create({
 				id: "cache-stats-admin-id",
@@ -146,7 +230,7 @@ describe("DemoteFromAdminUseCase", () => {
 
 		await sut.execute({
 			userId: "cache-stats-admin-id",
-			requesterId: "requester-id",
+			requesterId: "root-id",
 		})
 
 		const cachedStats = await cacheDB.get("user-stats")
