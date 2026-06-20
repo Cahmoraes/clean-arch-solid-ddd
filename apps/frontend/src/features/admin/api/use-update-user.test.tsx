@@ -5,6 +5,7 @@ import type { ReactNode } from "react"
 import { describe, expect, test } from "vitest"
 import { server } from "@/test/msw/server"
 import { useUpdateUser } from "./use-update-user"
+import { USER_STATS_QUERY_KEY } from "./use-user-stats"
 import { adminUsersQueryKey, type UseUsersResult } from "./use-users"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
@@ -175,5 +176,33 @@ describe("useUpdateUser", () => {
 			adminUsersQueryKey(QUERY_PARAMS),
 		)
 		expect(queryState?.isInvalidated).toBe(true)
+	})
+
+	test("invalida USER_STATS_QUERY_KEY após mutação com sucesso", async () => {
+		const queryClient = makeQueryClient()
+		queryClient.setQueryData([USER_STATS_QUERY_KEY], { total: 1 })
+
+		server.use(
+			http.patch(`${apiBaseUrl}/users/u1`, () =>
+				HttpResponse.json({}, { status: 200 }),
+			),
+		)
+
+		const { result } = renderHook(() => useUpdateUser(), {
+			wrapper: wrapper(queryClient),
+		})
+
+		act(() => {
+			result.current.mutate({
+				userId: "u1",
+				name: "Nome Novo",
+				email: "novo@example.com",
+			})
+		})
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+
+		const statsState = queryClient.getQueryState([USER_STATS_QUERY_KEY])
+		expect(statsState?.isInvalidated).toBe(true)
 	})
 })

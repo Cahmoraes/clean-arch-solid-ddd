@@ -43,12 +43,12 @@ export class DemoteFromAdminUseCase {
 	public async execute(
 		input: DemoteFromAdminUseCaseInput,
 	): DemoteFromAdminUseCaseOutput {
+		const requester = await this.userRepository.userOfId(input.requesterId)
+		if (!requester) return failure(new NotAllowedToManageUserError())
+
 		if (input.userId === input.requesterId) {
 			return failure(new CannotDemoteSelfError())
 		}
-
-		const requester = await this.userRepository.userOfId(input.requesterId)
-		if (!requester) return failure(new NotAllowedToManageUserError())
 
 		const user = await this.userRepository.userOfId(input.userId)
 		if (!user) return failure(new UserNotFoundError())

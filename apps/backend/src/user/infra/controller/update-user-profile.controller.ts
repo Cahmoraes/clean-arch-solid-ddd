@@ -47,6 +47,7 @@ export class UpdateUserProfileController extends BaseController {
 			{
 				callback: this.callback,
 				isProtected: true,
+				onlyAdmin: true,
 			},
 			makeUpdateUserProfileSwaggerSchema(),
 		)

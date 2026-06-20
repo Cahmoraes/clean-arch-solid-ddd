@@ -92,6 +92,10 @@ describe("resolvePermissions — canChangeStatus", () => {
 			resolvePermissions(target({ id: "admin" }), admin).canChangeStatus,
 		).toBe(false)
 	})
+
+	test("sem usuário autenticado nega alterar status (fail-closed)", () => {
+		expect(resolvePermissions(target(), null).canChangeStatus).toBe(false)
+	})
 })
 
 describe("resolvePermissions — canChangeRole", () => {

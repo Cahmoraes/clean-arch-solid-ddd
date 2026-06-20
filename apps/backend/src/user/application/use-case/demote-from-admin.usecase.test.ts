@@ -134,6 +134,7 @@ describe("DemoteFromAdminUseCase", () => {
 	})
 
 	test("Não deve permitir auto-demoção (userId === requesterId)", async () => {
+		await userRepository.save(makeRoot("same-id"))
 		const result = await sut.execute({
 			userId: "same-id",
 			requesterId: "same-id",
