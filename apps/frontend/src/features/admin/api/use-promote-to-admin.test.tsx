@@ -19,6 +19,7 @@ const MEMBER_USER = {
 	role: "MEMBER" as const,
 	status: "activated" as const,
 	createdAt: "2024-01-01T00:00:00.000Z",
+	isSuperAdmin: false,
 }
 
 function makeQueryClient() {

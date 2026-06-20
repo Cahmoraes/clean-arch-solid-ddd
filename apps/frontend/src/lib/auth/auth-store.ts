@@ -4,6 +4,7 @@ import { decodeJwt } from "@/lib/jwt"
 export interface AuthUser {
 	id: string
 	role: "MEMBER" | "ADMIN"
+	isSuperAdmin?: boolean
 }
 
 export type AuthEventType = "login" | "refresh" | "logout" | "forced-logout"
@@ -61,7 +62,11 @@ export const useAuthStore = create<AuthState>((set) => ({
 			emit(kind, null)
 			return
 		}
-		const user: AuthUser = { id: payload.sub, role: payload.role }
+		const user: AuthUser = {
+			id: payload.sub,
+			role: payload.role,
+			isSuperAdmin: payload.isSuperAdmin,
+		}
 		set({ accessToken: token, expiresAt: payload.exp * 1000, user })
 		writeSessionFlag(true)
 		emit(kind, user)

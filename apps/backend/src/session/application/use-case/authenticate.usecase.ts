@@ -148,14 +148,30 @@ export class AuthenticateUseCase {
 
 	private signUserToken(user: User, jwi: string): string {
 		return this.authToken.sign(
-			{ sub: { id: user.id, email: user.email, role: user.role, jwi } },
+			{
+				sub: {
+					id: user.id,
+					email: user.email,
+					role: user.role,
+					isSuperAdmin: user.isSuperAdmin,
+					jwi,
+				},
+			},
 			env.PRIVATE_KEY,
 		)
 	}
 
 	private createRefreshToken(user: User, jwi: string): string {
 		return this.authToken.refreshToken(
-			{ sub: { id: user.id, email: user.email, role: user.role, jwi } },
+			{
+				sub: {
+					id: user.id,
+					email: user.email,
+					role: user.role,
+					isSuperAdmin: user.isSuperAdmin,
+					jwi,
+				},
+			},
 			env.PRIVATE_KEY,
 		)
 	}

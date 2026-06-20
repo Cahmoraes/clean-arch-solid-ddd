@@ -45,4 +45,46 @@ describe("decodeJwt", () => {
 		})
 		expect(decodeJwt(token)).toEqual({ sub: "user-2", role: "ADMIN", exp })
 	})
+
+	it("extrai isSuperAdmin true do sub aninhado", () => {
+		const exp = Math.floor(Date.now() / 1000) + 600
+		const token = makeJwt({
+			sub: {
+				id: "user-3",
+				email: "sa@y.com",
+				role: "ADMIN",
+				isSuperAdmin: true,
+				jwi: "j2",
+			},
+			exp,
+		})
+		const payload = decodeJwt(token)
+		expect(payload?.isSuperAdmin).toBe(true)
+	})
+
+	it("extrai isSuperAdmin false do sub aninhado", () => {
+		const exp = Math.floor(Date.now() / 1000) + 600
+		const token = makeJwt({
+			sub: {
+				id: "user-4",
+				email: "m@y.com",
+				role: "MEMBER",
+				isSuperAdmin: false,
+				jwi: "j3",
+			},
+			exp,
+		})
+		const payload = decodeJwt(token)
+		expect(payload?.isSuperAdmin).toBe(false)
+	})
+
+	it("isSuperAdmin é undefined quando ausente do sub", () => {
+		const exp = Math.floor(Date.now() / 1000) + 600
+		const token = makeJwt({
+			sub: { id: "user-5", email: "m2@y.com", role: "MEMBER", jwi: "j4" },
+			exp,
+		})
+		const payload = decodeJwt(token)
+		expect(payload?.isSuperAdmin).toBeUndefined()
+	})
 })

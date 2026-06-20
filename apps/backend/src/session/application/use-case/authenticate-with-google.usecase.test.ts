@@ -209,6 +209,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			id: user.id,
 			email: user.email,
 			role: user.role,
+			isSuperAdmin: user.isSuperAdmin,
 			jwi: expect.any(String),
 		})
 		expect(decodedRefreshToken.sub).toEqual(decoded.sub)

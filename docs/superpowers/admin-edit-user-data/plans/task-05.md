@@ -1,6 +1,6 @@
 # Task 5: Expor `isSuperAdmin` no JWT e na resposta de GET /users [FR-002, FR-007]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-admin-edit-user-data.md`
 **Spec:** `../specs/admin-edit-user-data-design.md`
 **Depends on:** N/A

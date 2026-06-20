@@ -109,6 +109,9 @@ const userItemSchema = z.object({
 		.enum(["activated", "suspended", "locked"])
 		.meta({ description: "User status" }),
 	createdAt: z.string().meta({ description: "User creation date" }),
+	isSuperAdmin: z
+		.boolean()
+		.meta({ description: "Whether the user is a super admin" }),
 })
 
 const fetchUsersResponseSchema = z.object({

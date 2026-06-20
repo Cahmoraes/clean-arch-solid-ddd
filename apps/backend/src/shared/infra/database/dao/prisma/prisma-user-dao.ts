@@ -29,6 +29,7 @@ export class PrismaUserDAO implements UserDAO {
 					role: true,
 					status: true,
 					created_at: true,
+					is_super_admin: true,
 				},
 				where,
 				take: input.limit,
@@ -45,6 +46,7 @@ export class PrismaUserDAO implements UserDAO {
 				name: u.name,
 				role: u.role,
 				status: u.status,
+				isSuperAdmin: u.is_super_admin,
 				createdAt: u.created_at.toISOString(),
 			})),
 		}

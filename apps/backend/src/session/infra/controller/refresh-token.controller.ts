@@ -24,6 +24,7 @@ interface Sub {
 		id: string
 		email: string
 		role: string
+		isSuperAdmin?: boolean
 		jwi: string
 	}
 	iat: number

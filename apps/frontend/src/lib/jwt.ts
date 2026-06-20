@@ -2,6 +2,7 @@ export interface JwtPayload {
 	sub: string
 	role: "MEMBER" | "ADMIN"
 	exp: number
+	isSuperAdmin?: boolean
 }
 
 function base64UrlDecode(input: string): string {
@@ -41,6 +42,7 @@ interface NormalizedClaims {
 	sub: string
 	role: "MEMBER" | "ADMIN"
 	exp: number
+	isSuperAdmin?: boolean
 }
 
 function asObject(value: unknown): Record<string, unknown> | null {
@@ -67,6 +69,14 @@ function pickRole(
 	return null
 }
 
+function pickIsSuperAdmin(
+	nestedSub: Record<string, unknown> | null,
+): boolean | undefined {
+	if (typeof nestedSub?.isSuperAdmin === "boolean")
+		return nestedSub.isSuperAdmin
+	return undefined
+}
+
 /**
  * Normalize the JWT payload into the shape consumed by the auth-store. The
  * backend currently nests the user identity inside `sub` (`{ id, email, role }`),
@@ -81,7 +91,8 @@ function normalizeClaims(
 	const id = pickId(value.sub, nestedSub) ?? pickFlatId(value)
 	const role = pickRole(value.role, nestedSub)
 	if (!id || !role) return null
-	return { sub: id, role, exp: value.exp }
+	const isSuperAdmin = pickIsSuperAdmin(nestedSub)
+	return { sub: id, role, exp: value.exp, isSuperAdmin }
 }
 
 function pickFlatId(value: Record<string, unknown>): string | null {

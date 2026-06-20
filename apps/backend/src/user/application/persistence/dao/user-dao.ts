@@ -16,6 +16,7 @@ export interface FetchUsersData {
 	createdAt: string
 	name: string
 	email: string
+	isSuperAdmin: boolean
 }
 
 export interface FetchUsersOutput {

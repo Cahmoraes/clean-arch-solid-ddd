@@ -26,6 +26,7 @@ export const refreshResponseSchema = z
 export const sessionUserSchema = z.object({
 	id: z.string(),
 	role: z.enum(["MEMBER", "ADMIN"]),
+	isSuperAdmin: z.boolean().optional(),
 })
 
 export type LoginRequest = z.infer<typeof loginRequestSchema>

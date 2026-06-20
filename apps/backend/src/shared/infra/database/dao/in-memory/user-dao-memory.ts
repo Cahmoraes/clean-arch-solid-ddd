@@ -21,6 +21,7 @@ export interface CreateUserInput {
 	role?: RoleTypes
 	status?: StatusTypes
 	createdAt?: string
+	isSuperAdmin?: boolean
 	deletedAt?: string | null
 }
 
@@ -61,6 +62,7 @@ export class UserDAOMemory implements UserDAO {
 			createdAt: new Date().toISOString(),
 			name: `User ${randomSuffix}`,
 			email: `user_${randomSuffix}@test.com`,
+			isSuperAdmin: false,
 			deletedAt: null,
 			...createUserInput,
 		}
@@ -102,6 +104,7 @@ export class UserDAOMemory implements UserDAO {
 				name: u.name,
 				role: u.role,
 				status: u.status,
+				isSuperAdmin: u.isSuperAdmin,
 				createdAt: u.createdAt,
 			}))
 		return {

@@ -22,6 +22,7 @@ export interface FetchUsersData {
 	createdAt: string
 	name: string
 	email: string
+	isSuperAdmin: boolean
 }
 
 export interface FetchUsersMeta {

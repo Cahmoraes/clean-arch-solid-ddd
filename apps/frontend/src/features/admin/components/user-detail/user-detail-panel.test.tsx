@@ -14,6 +14,7 @@ function buildUser(overrides: Partial<AdminUser> = {}): AdminUser {
 		role: "ADMIN",
 		status: "activated",
 		createdAt: "2025-01-12T08:00:00.000Z",
+		isSuperAdmin: false,
 		...overrides,
 	}
 }
