@@ -7,9 +7,8 @@ import { useDemoteFromAdmin } from "@/features/admin/api/use-demote-from-admin"
 import { usePromoteToAdmin } from "@/features/admin/api/use-promote-to-admin"
 import { useSuspendUser } from "@/features/admin/api/use-suspend-user"
 import type { AdminUser } from "@/features/admin/api/use-users"
+import type { AuthUser } from "@/lib/auth/auth-store"
 import { useAuthStore } from "@/lib/auth/auth-store"
-
-const SUPER_ADMIN_EMAIL = "admin@admin.com"
 
 export interface UserDetailPermissions {
 	canSuspend: boolean
@@ -18,32 +17,54 @@ export interface UserDetailPermissions {
 	canDemoteFromAdmin: boolean
 	canDelete: boolean
 	isLocked: boolean
+	canEditProfile: boolean
+	canChangeStatus: boolean
+	canChangeRole: boolean
 }
 
-function isProtectedAccount(
-	user: AdminUser,
-	currentUserId: string | null | undefined,
-): boolean {
-	return currentUserId === user.id || user.email === SUPER_ADMIN_EMAIL
+type CurrentUser =
+	| Pick<AuthUser, "id" | "role" | "isSuperAdmin">
+	| null
+	| undefined
+
+function isRoot(user: { isSuperAdmin?: boolean }): boolean {
+	return user.isSuperAdmin === true
 }
 
-function resolvePermissions(
+export function resolvePermissions(
 	user: AdminUser,
-	currentUserId: string | null | undefined,
+	currentUser: CurrentUser,
 ): UserDetailPermissions {
 	const isLocked = user.status === "locked"
+
+	const isSelf = currentUser?.id === user.id
+	const requesterIsRoot = currentUser ? isRoot(currentUser) : false
+	const requesterIsAdmin = currentUser?.role === "ADMIN"
+	const targetIsRoot = isRoot(user)
+	const targetIsMember = user.role === "MEMBER"
+
+	const canEditProfile =
+		!isSelf &&
+		!!currentUser &&
+		(requesterIsRoot || (requesterIsAdmin && targetIsMember && !targetIsRoot))
+
+	const canChangeStatus =
+		!targetIsRoot &&
+		!isSelf &&
+		!!currentUser &&
+		(requesterIsRoot || (requesterIsAdmin && targetIsMember))
+
+	const canChangeRole = !targetIsRoot && !isSelf && requesterIsRoot
+
 	const canSuspend =
-		(user.status === "activated" || isLocked) &&
-		user.role !== "ADMIN" &&
-		currentUserId !== user.id
-	const canActivate = user.status === "suspended" || isLocked
+		canChangeStatus && (user.status === "activated" || isLocked)
+	const canActivate =
+		canChangeStatus && (user.status === "suspended" || isLocked)
 	const canPromoteToAdmin =
-		user.status === "activated" &&
-		user.role === "MEMBER" &&
-		user.email !== SUPER_ADMIN_EMAIL
-	const canDemoteFromAdmin =
-		user.role === "ADMIN" && !isProtectedAccount(user, currentUserId)
-	const canDelete = !isProtectedAccount(user, currentUserId)
+		canChangeRole && user.status === "activated" && user.role === "MEMBER"
+	const canDemoteFromAdmin = canChangeRole && user.role === "ADMIN"
+	const canDelete = !targetIsRoot && !isSelf && requesterIsRoot
+
 	return {
 		canSuspend,
 		canActivate,
@@ -51,6 +72,9 @@ function resolvePermissions(
 		canDemoteFromAdmin,
 		canDelete,
 		isLocked,
+		canEditProfile,
+		canChangeStatus,
+		canChangeRole,
 	}
 }
 
@@ -175,7 +199,7 @@ export function useUserDetailActions(
 	}
 
 	return {
-		permissions: resolvePermissions(user, currentUser?.id),
+		permissions: resolvePermissions(user, currentUser),
 		flags: {
 			isPending,
 			isActivating: activateUser.isPending,

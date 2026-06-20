@@ -37,7 +37,12 @@ function wrapper(): (props: { children: ReactNode }) => React.JSX.Element {
 }
 
 describe("useUserDetailActions", () => {
-	test("expõe permissão de promover para membro ativo", () => {
+	test("expõe permissão de promover para membro ativo quando current user é root", () => {
+		useAuthStore
+			.getState()
+			.setSession(
+				makeTestJwt({ sub: "root-id", role: "ADMIN", isSuperAdmin: true }),
+			)
 		const { result } = renderHook(
 			() => useUserDetailActions(buildUser({ role: "MEMBER" })),
 			{ wrapper: wrapper() },

@@ -27,6 +27,9 @@ function baseProps() {
 			canDemoteFromAdmin: false,
 			canDelete: true,
 			isLocked: false,
+			canEditProfile: true,
+			canChangeStatus: true,
+			canChangeRole: false,
 		},
 		flags: {
 			isPending: false,
