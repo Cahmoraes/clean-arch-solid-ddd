@@ -74,12 +74,11 @@ function PaginationPrevious({
 	return (
 		<PaginationLink
 			aria-label="Go to previous page"
-			size="md"
-			className={cn("gap-1 pl-3", className)}
+			size="icon"
+			className={cn("", className)}
 			{...props}
 		>
 			<ChevronLeft className="h-4 w-4" />
-			<span>Anterior</span>
 		</PaginationLink>
 	)
 }
@@ -91,11 +90,10 @@ function PaginationNext({
 	return (
 		<PaginationLink
 			aria-label="Go to next page"
-			size="md"
-			className={cn("gap-1 pr-3", className)}
+			size="icon"
+			className={cn("", className)}
 			{...props}
 		>
-			<span>Próxima</span>
 			<ChevronRight className="h-4 w-4" />
 		</PaginationLink>
 	)
