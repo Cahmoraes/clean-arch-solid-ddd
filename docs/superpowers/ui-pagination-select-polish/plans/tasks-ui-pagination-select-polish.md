@@ -15,8 +15,8 @@
 
 ## Tarefas
 
-- [ ] 1. Paginação — substituir botões Anterior/Próxima por ícones → `task-01.md`
-- [ ] 2. Select de Status/Role — appearance-none + ChevronDown custom → `task-02.md`
+- [x] 1. Paginação — substituir botões Anterior/Próxima por ícones → `task-01.md`
+- [x] 2. Select de Status/Role — appearance-none + ChevronDown custom → `task-02.md`
 
 ## Ondas de Execução
 

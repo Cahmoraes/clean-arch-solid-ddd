@@ -1,6 +1,6 @@
 # Task 2: Select de Status/Role — appearance-none + ChevronDown custom
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/ui-pagination-select-polish-design.md`
 **Depends on:** N/A

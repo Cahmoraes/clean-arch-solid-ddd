@@ -1,6 +1,6 @@
 # Task 1: Paginação — substituir botões Anterior/Próxima por ícones
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/ui-pagination-select-polish-design.md`
 **Depends on:** N/A
