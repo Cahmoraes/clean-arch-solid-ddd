@@ -208,4 +208,18 @@ describe("DetailsEditForm", () => {
 			expect(onSaved).toHaveBeenCalledOnce()
 		})
 	})
+
+	test("select de status tem appearance-none e ícone chevron", () => {
+		renderForm()
+		const statusSelect = screen.getByLabelText("Status")
+		expect(statusSelect).toHaveClass("appearance-none")
+		expect(statusSelect.parentElement?.querySelector("svg")).toBeInTheDocument()
+	})
+
+	test("select de permissão tem appearance-none e ícone chevron", () => {
+		renderForm()
+		const roleSelect = screen.getByLabelText("Permissão")
+		expect(roleSelect).toHaveClass("appearance-none")
+		expect(roleSelect.parentElement?.querySelector("svg")).toBeInTheDocument()
+	})
 })
