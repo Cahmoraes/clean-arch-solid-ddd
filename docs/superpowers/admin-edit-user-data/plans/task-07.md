@@ -1,6 +1,6 @@
 # Task 7: Mutation admin para editar nome/email de um usuário-alvo [FR-001, FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-edit-user-data.md`
 **Spec:** `../specs/admin-edit-user-data-design.md`
 **Depends on:** task-05

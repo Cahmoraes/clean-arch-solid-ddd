@@ -1,6 +1,6 @@
 # Task 6: Estender `resolvePermissions` com a matriz de autorização [FR-002, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-edit-user-data.md`
 **Spec:** `../specs/admin-edit-user-data-design.md`
 **Depends on:** task-05

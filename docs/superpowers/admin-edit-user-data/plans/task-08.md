@@ -1,6 +1,6 @@
 # Task 8: Aba Detalhes editável inline orquestrando as mutations [FR-001, FR-002, FR-003, FR-004, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-edit-user-data.md`
 **Spec:** `../specs/admin-edit-user-data-design.md`
 **Depends on:** task-06, task-07

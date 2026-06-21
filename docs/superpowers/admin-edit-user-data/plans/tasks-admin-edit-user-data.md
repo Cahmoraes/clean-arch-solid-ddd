@@ -16,13 +16,13 @@
 ## Tarefas
 
 - [ ] 1. Policy de domínio `UserManagementPolicy` + erro de autorização [FR-005, FR-006, FR-007, FR-008, FR-009, FR-010] → `task-01.md`
-- [ ] 2. Autorização na edição de nome/email (UpdateUserProfile) [FR-005, FR-006, FR-007, FR-010, FR-011, FR-012] → `task-02.md`
-- [ ] 3. Autorização na alteração de status (Suspend/Activate) [FR-005, FR-006, FR-007, FR-009, FR-012] → `task-03.md`
-- [ ] 4. Autorização na alteração de role (Promote/Demote, root-only) [FR-006, FR-007, FR-008, FR-009, FR-012] → `task-04.md`
+- [x] 2. Autorização na edição de nome/email (UpdateUserProfile) [FR-005, FR-006, FR-007, FR-010, FR-011, FR-012] → `task-02.md`
+- [x] 3. Autorização na alteração de status (Suspend/Activate) [FR-005, FR-006, FR-007, FR-009, FR-012] → `task-03.md`
+- [x] 4. Autorização na alteração de role (Promote/Demote, root-only) [FR-006, FR-007, FR-008, FR-009, FR-012] → `task-04.md`
 - [ ] 5. Expor `isSuperAdmin` no JWT e na resposta de GET /users [FR-002, FR-007] → `task-05.md`
-- [ ] 6. Estender `resolvePermissions` com a matriz de autorização [FR-002, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010] → `task-06.md`
-- [ ] 7. Mutation admin para editar nome/email de um usuário-alvo [FR-001, FR-003] → `task-07.md`
-- [ ] 8. Aba Detalhes editável inline orquestrando as mutations [FR-001, FR-002, FR-003, FR-004, FR-007] → `task-08.md`
+- [x] 6. Estender `resolvePermissions` com a matriz de autorização [FR-002, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010] → `task-06.md`
+- [x] 7. Mutation admin para editar nome/email de um usuário-alvo [FR-001, FR-003] → `task-07.md`
+- [x] 8. Aba Detalhes editável inline orquestrando as mutations [FR-001, FR-002, FR-003, FR-004, FR-007] → `task-08.md`
 
 ## Ondas de Execução
 

@@ -1,6 +1,6 @@
 # Task 2: Autorização na edição de nome/email (UpdateUserProfile) [FR-005, FR-006, FR-007, FR-010, FR-011, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-edit-user-data.md`
 **Spec:** `../specs/admin-edit-user-data-design.md`
 **Depends on:** task-01
