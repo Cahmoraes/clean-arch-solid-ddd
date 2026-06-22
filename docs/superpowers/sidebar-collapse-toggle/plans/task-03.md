@@ -1,6 +1,6 @@
 # Task 3: Leitura do cookie no layout server (sem flicker) [FR-005, FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-sidebar-collapse-toggle.md`
 **Spec:** `../specs/sidebar-collapse-toggle-design.md`
 **Depends on:** task-01, task-02

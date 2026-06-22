@@ -1,6 +1,11 @@
 import { render, screen } from "@testing-library/react"
 import type { ReactElement, ReactNode } from "react"
 import { describe, expect, test, vi } from "vitest"
+
+vi.mock("next/headers", () => ({
+	cookies: () => Promise.resolve({ get: () => undefined }),
+}))
+
 import AuthenticatedLayout from "./(authenticated)/layout"
 import PublicLayout from "./(public)/layout"
 import RootLayout from "./layout"
@@ -57,12 +62,11 @@ describe("RootLayout", () => {
 		).not.toBeInTheDocument()
 	})
 
-	test("deve renderizar o shell autenticado sem o toggle de tema flutuante", () => {
-		renderRootLayoutContent(
-			<AuthenticatedLayout>
-				<div>conteúdo autenticado</div>
-			</AuthenticatedLayout>,
-		)
+	test("deve renderizar o shell autenticado sem o toggle de tema flutuante", async () => {
+		const authLayout = await AuthenticatedLayout({
+			children: <div>conteúdo autenticado</div>,
+		})
+		renderRootLayoutContent(authLayout)
 
 		expect(screen.getByTestId("authenticated-shell")).toBeInTheDocument()
 		expect(

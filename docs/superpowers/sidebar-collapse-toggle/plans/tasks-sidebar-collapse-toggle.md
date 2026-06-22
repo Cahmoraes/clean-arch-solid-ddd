@@ -15,9 +15,9 @@
 
 ## Tarefas
 
-- [ ] 1. Cookie client-safe + store Zustand de recolhimento [FR-005, FR-007] → `task-01.md`
-- [ ] 2. Recolher/expandir no AuthenticatedShell (UI, a11y, toggle, atalho, tooltips) [FR-001, FR-002, FR-003, FR-004, FR-006, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013] → `task-02.md`
-- [ ] 3. Leitura do cookie no layout server (sem flicker) [FR-005, FR-006, FR-007] → `task-03.md`
+- [x] 1. Cookie client-safe + store Zustand de recolhimento [FR-005, FR-007] → `task-01.md`
+- [x] 2. Recolher/expandir no AuthenticatedShell (UI, a11y, toggle, atalho, tooltips) [FR-001, FR-002, FR-003, FR-004, FR-006, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013] → `task-02.md`
+- [x] 3. Leitura do cookie no layout server (sem flicker) [FR-005, FR-006, FR-007] → `task-03.md`
 - [ ] 4. E2E de persistência após reload [FR-005, FR-006] → `task-04.md`
 
 ## Ondas de Execução
