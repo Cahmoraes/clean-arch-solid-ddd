@@ -1,6 +1,6 @@
 # Task 4: E2E de persistência após reload [FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-sidebar-collapse-toggle.md`
 **Spec:** `../specs/sidebar-collapse-toggle-design.md`
 **Depends on:** task-01, task-02, task-03
