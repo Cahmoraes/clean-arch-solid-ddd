@@ -1,6 +1,6 @@
 # Task 1: Cookie client-safe + store Zustand de recolhimento [FR-005, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-sidebar-collapse-toggle.md`
 **Spec:** `../specs/sidebar-collapse-toggle-design.md`
 **Depends on:** N/A
