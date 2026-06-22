@@ -9,17 +9,18 @@ export interface SidebarCollapseState {
 	hydrate: (collapsed: boolean) => void
 }
 
-export const useSidebarCollapseStore = create<SidebarCollapseState>((set) => ({
-	collapsed: false,
-	toggle: () =>
-		set((state) => {
-			const next = !state.collapsed
+export const useSidebarCollapseStore = create<SidebarCollapseState>(
+	(set, get) => ({
+		collapsed: false,
+		toggle: () => {
+			const next = !get().collapsed
 			writeSidebarCollapseCookie(next)
-			return { collapsed: next }
-		}),
-	setCollapsed: (collapsed: boolean) => {
-		writeSidebarCollapseCookie(collapsed)
-		set({ collapsed })
-	},
-	hydrate: (collapsed: boolean) => set({ collapsed }),
-}))
+			set({ collapsed: next })
+		},
+		setCollapsed: (collapsed: boolean) => {
+			writeSidebarCollapseCookie(collapsed)
+			set({ collapsed })
+		},
+		hydrate: (collapsed: boolean) => set({ collapsed }),
+	}),
+)

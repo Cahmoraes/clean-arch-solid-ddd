@@ -66,10 +66,10 @@ function CollapsedTooltip({ label }: { label: string }) {
 
 function handleSidebarKeyDown(e: KeyboardEvent, openPalette: () => void): void {
 	if (!(e.metaKey || e.ctrlKey)) return
-	if (e.key === "k") {
+	if (e.key.toLowerCase() === "k") {
 		e.preventDefault()
 		openPalette()
-	} else if (e.key === "b") {
+	} else if (e.key.toLowerCase() === "b") {
 		e.preventDefault()
 		useSidebarCollapseStore.getState().toggle()
 	}
