@@ -31,7 +31,10 @@ function setRole(role: "MEMBER" | "ADMIN") {
 	})
 }
 
-afterEach(() => useAuthStore.getState().clear())
+afterEach(() => {
+	useAuthStore.getState().clear()
+	useSidebarCollapseStore.setState({ collapsed: false })
+})
 beforeEach(() => useSidebarCollapseStore.setState({ collapsed: false }))
 
 describe("AuthenticatedShell — VOLT", () => {
@@ -146,5 +149,19 @@ describe("AuthenticatedShell — recolher/expandir", () => {
 		expect(
 			screen.getByRole("button", { name: "Expandir menu" }),
 		).toBeInTheDocument()
+	})
+
+	test("Cmd/Ctrl+K abre o command palette sem recolher o menu (FR-011)", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		fireEvent.keyDown(window, { key: "k", ctrlKey: true })
+		expect(
+			screen.getByRole("dialog", { name: "Paleta de comandos" }),
+		).toBeInTheDocument()
+		expect(useSidebarCollapseStore.getState().collapsed).toBe(false)
 	})
 })

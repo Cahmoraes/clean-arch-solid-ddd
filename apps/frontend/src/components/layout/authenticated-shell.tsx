@@ -56,13 +56,23 @@ function isPathActive(pathname: string | null, href: string): boolean {
 function CollapsedTooltip({ label }: { label: string }) {
 	return (
 		<span
-			role="tooltip"
 			aria-hidden="true"
 			className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md group-hover/nav:block group-focus-visible/nav:block"
 		>
 			{label}
 		</span>
 	)
+}
+
+function handleSidebarKeyDown(e: KeyboardEvent, openPalette: () => void): void {
+	if (!(e.metaKey || e.ctrlKey)) return
+	if (e.key === "k") {
+		e.preventDefault()
+		openPalette()
+	} else if (e.key === "b") {
+		e.preventDefault()
+		useSidebarCollapseStore.getState().toggle()
+	}
 }
 
 function SidebarNavItem({
@@ -128,19 +138,10 @@ export function AuthenticatedShell({
 	const toggleCollapsed = useSidebarCollapseStore((state) => state.toggle)
 
 	useEffect(() => {
-		// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: função aninhada no useEffect com dois atalhos de teclado compostos — extração perderia acesso ao setIsCommandPaletteOpen sem prop drilling
-		function handleKeyDown(e: KeyboardEvent) {
-			if (!(e.metaKey || e.ctrlKey)) return
-			if (e.key === "k") {
-				e.preventDefault()
-				setIsCommandPaletteOpen(true)
-			} else if (e.key === "b") {
-				e.preventDefault()
-				useSidebarCollapseStore.getState().toggle()
-			}
-		}
-		window.addEventListener("keydown", handleKeyDown)
-		return () => window.removeEventListener("keydown", handleKeyDown)
+		const handler = (e: KeyboardEvent) =>
+			handleSidebarKeyDown(e, () => setIsCommandPaletteOpen(true))
+		window.addEventListener("keydown", handler)
+		return () => window.removeEventListener("keydown", handler)
 	}, [])
 
 	function handleLogout() {
