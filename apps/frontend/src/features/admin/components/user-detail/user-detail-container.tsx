@@ -38,7 +38,7 @@ function DesktopView({
 		)
 	}
 	return (
-		<div className="rounded-lg border border-border bg-card p-5">
+		<div className="rounded-lg border border-border bg-card p-5 md:self-start md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:overflow-y-auto">
 			<UserDetailPanel
 				user={user}
 				onClose={onClose}

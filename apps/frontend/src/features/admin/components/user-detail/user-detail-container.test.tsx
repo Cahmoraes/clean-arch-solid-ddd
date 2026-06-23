@@ -70,4 +70,22 @@ describe("UserDetailContainer", () => {
 		renderContainer(null)
 		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
 	})
+
+	test("no desktop com usuário, wrapper tem classes sticky e max-height", () => {
+		isDesktopMock.mockReturnValue(true)
+		const { container } = renderContainer(buildUser())
+		const wrapper = container.firstChild as HTMLElement
+		expect(wrapper.className).toContain("md:self-start")
+		expect(wrapper.className).toContain("md:sticky")
+		expect(wrapper.className).toContain("md:top-4")
+		expect(wrapper.className).toContain("md:max-h-[calc(100vh-2rem)]")
+		expect(wrapper.className).toContain("md:overflow-y-auto")
+	})
+
+	test("no desktop sem usuário (EmptyState), wrapper NÃO tem classe sticky", () => {
+		isDesktopMock.mockReturnValue(true)
+		const { container } = renderContainer(null)
+		const wrapper = container.firstChild as HTMLElement
+		expect(wrapper.className).not.toContain("md:sticky")
+	})
 })
