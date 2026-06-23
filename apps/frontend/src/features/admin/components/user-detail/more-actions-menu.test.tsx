@@ -275,6 +275,26 @@ describe("MoreActionsMenu", () => {
 		expect(separators).toHaveLength(1)
 	})
 
+	test("exibe separador entre grupo admin e excluir quando grupo status está vazio", async () => {
+		const permissions = {
+			...basePermissions(),
+			canPromoteToAdmin: true,
+			canSuspend: false,
+			canActivate: false,
+			canDelete: true,
+		}
+		render(
+			<MoreActionsMenu
+				permissions={permissions}
+				flags={baseFlags()}
+				{...baseHandlers()}
+			/>,
+		)
+		await openMenu()
+		const separators = document.querySelectorAll('[role="separator"]')
+		expect(separators).toHaveLength(1)
+	})
+
 	test("desabilita o trigger quando isPending = true", () => {
 		const flags = { ...baseFlags(), isPending: true }
 		render(

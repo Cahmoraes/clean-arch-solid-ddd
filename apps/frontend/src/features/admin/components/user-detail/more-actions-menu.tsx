@@ -167,7 +167,7 @@ export function MoreActionsMenu({
 					onActivate={onActivate}
 					onOpenSuspend={onOpenSuspend}
 				/>
-				{g2 && g3 && <DropdownMenuSeparator />}
+				{(g1 || g2) && g3 && <DropdownMenuSeparator />}
 				<DeleteSection
 					permissions={permissions}
 					flags={flags}
