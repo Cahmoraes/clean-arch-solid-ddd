@@ -188,6 +188,29 @@ describe("MoreActionsMenu", () => {
 		expect(handlers.onOpenSuspend).not.toHaveBeenCalled()
 	})
 
+	test("chama onActivate diretamente ao clicar em Desbloquear (FR-016)", async () => {
+		const handlers = baseHandlers()
+		const permissions = {
+			...basePermissions(),
+			canActivate: true,
+			canSuspend: false,
+			isLocked: true,
+		}
+		render(
+			<MoreActionsMenu
+				permissions={permissions}
+				flags={baseFlags()}
+				{...handlers}
+			/>,
+		)
+		await openMenu()
+		await userEvent.click(
+			screen.getByRole("menuitem", { name: /desbloquear/i }),
+		)
+		expect(handlers.onActivate).toHaveBeenCalledTimes(1)
+		expect(handlers.onOpenSuspend).not.toHaveBeenCalled()
+	})
+
 	test("exibe 'Excluir' em cor destructive quando canDelete = true", async () => {
 		render(
 			<MoreActionsMenu
