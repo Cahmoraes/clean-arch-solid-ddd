@@ -258,7 +258,8 @@ describe("AdminUsersPage modal integration", () => {
 		await user.click(await screen.findByRole("button", { name: /inativos/i }))
 		await user.click(await screen.findByTestId("user-row-user-1"))
 
-		await user.click(screen.getByRole("button", { name: /^ativar$/i }))
+		await user.click(screen.getByRole("button", { name: /mais ações/i }))
+		await user.click(screen.getByRole("menuitem", { name: /^ativar$/i }))
 
 		// Aguarda o refetch remover o usuário da lista filtrada (passa o flash do
 		// optimistic update) antes de validar o status exibido no painel.

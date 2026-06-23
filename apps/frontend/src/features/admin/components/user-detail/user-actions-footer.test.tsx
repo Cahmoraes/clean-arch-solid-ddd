@@ -49,12 +49,15 @@ function baseProps() {
 	}
 }
 
+async function openMoreActions() {
+	await userEvent.click(screen.getByRole("button", { name: /mais ações/i }))
+}
+
 describe("UserActionsFooter", () => {
-	test("renderiza o botão Editar e dispara onEdit", async () => {
-		const user = userEvent.setup()
+	test("renderiza o botão Editar dados e dispara onEdit ao clicar", async () => {
 		const props = baseProps()
 		render(<UserActionsFooter {...props} />)
-		await user.click(screen.getByRole("button", { name: /editar dados/i }))
+		await userEvent.click(screen.getByRole("button", { name: /editar dados/i }))
 		expect(props.onEdit).toHaveBeenCalledTimes(1)
 	})
 
@@ -65,39 +68,59 @@ describe("UserActionsFooter", () => {
 		).not.toBeInTheDocument()
 	})
 
-	test("abre confirmação ao clicar em Inativar", async () => {
-		const user = userEvent.setup()
+	test("renderiza o botão Mais ações sempre", () => {
+		render(<UserActionsFooter {...baseProps()} />)
+		expect(
+			screen.getByRole("button", { name: /mais ações/i }),
+		).toBeInTheDocument()
+	})
+
+	test("renderiza o botão Mais ações mesmo quando canEdit é false", () => {
+		render(<UserActionsFooter {...baseProps()} canEdit={false} />)
+		expect(
+			screen.getByRole("button", { name: /mais ações/i }),
+		).toBeInTheDocument()
+	})
+
+	test("abre o dropdown e chama onOpenSuspend ao clicar em Inativar", async () => {
 		const props = baseProps()
 		render(<UserActionsFooter {...props} />)
-		await user.click(screen.getByRole("button", { name: /inativar/i }))
+		await openMoreActions()
+		await userEvent.click(screen.getByRole("menuitem", { name: /inativar/i }))
 		expect(props.onOpenSuspend).toHaveBeenCalledTimes(1)
 	})
 
-	test("botão Excluir habilitado dispara onOpenDelete", async () => {
-		const user = userEvent.setup()
+	test("abre o dropdown e chama onOpenDelete ao clicar em Excluir", async () => {
 		const props = baseProps()
 		render(<UserActionsFooter {...props} />)
-		const btn = screen.getByRole("button", { name: /excluir/i })
-		expect(btn).not.toBeDisabled()
-		await user.click(btn)
+		await openMoreActions()
+		await userEvent.click(screen.getByRole("menuitem", { name: /excluir/i }))
 		expect(props.onOpenDelete).toHaveBeenCalledTimes(1)
 	})
 
-	test("oculta botão Excluir quando canDelete é false", () => {
+	test("abre o dropdown e não exibe Excluir quando canDelete = false", async () => {
 		const props = baseProps()
 		props.permissions.canDelete = false
 		render(<UserActionsFooter {...props} />)
+		await openMoreActions()
 		expect(
-			screen.queryByRole("button", { name: /excluir/i }),
+			screen.queryByRole("menuitem", { name: /excluir/i }),
 		).not.toBeInTheDocument()
 	})
 
-	test("oculta Inativar quando não permitido", () => {
+	test("abre o dropdown e chama onOpenPromote ao clicar em Tornar Admin", async () => {
 		const props = baseProps()
-		props.permissions.canSuspend = false
 		render(<UserActionsFooter {...props} />)
-		expect(
-			screen.queryByRole("button", { name: /inativar/i }),
-		).not.toBeInTheDocument()
+		await openMoreActions()
+		await userEvent.click(
+			screen.getByRole("menuitem", { name: /tornar admin/i }),
+		)
+		expect(props.onOpenPromote).toHaveBeenCalledTimes(1)
+	})
+
+	test("botão Editar dados tem classe bg-accent", () => {
+		render(<UserActionsFooter {...baseProps()} />)
+		const btn = screen.getByRole("button", { name: /editar dados/i })
+		expect(btn.className).toContain("bg-accent")
 	})
 })
