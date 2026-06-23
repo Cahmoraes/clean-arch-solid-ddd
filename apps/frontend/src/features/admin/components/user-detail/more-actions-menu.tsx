@@ -123,11 +123,10 @@ function DeleteSection({
 }
 
 function groupPresence(p: UserDetailPermissions) {
-	return {
-		g1: p.canPromoteToAdmin || p.canDemoteFromAdmin,
-		g2: p.canSuspend || p.canActivate,
-		g3: p.canDelete,
-	}
+	const g1 = p.canPromoteToAdmin || p.canDemoteFromAdmin
+	const g2 = p.canSuspend || p.canActivate
+	const g3 = p.canDelete
+	return { g1, g2, g3, hasItems: g1 || g2 || g3 }
 }
 
 export function MoreActionsMenu({
@@ -139,7 +138,9 @@ export function MoreActionsMenu({
 	onOpenDemote,
 	onOpenDelete,
 }: MoreActionsMenuProps) {
-	const { g1, g2, g3 } = groupPresence(permissions)
+	const { g1, g2, g3, hasItems } = groupPresence(permissions)
+
+	if (!hasItems) return null
 
 	return (
 		<DropdownMenu>

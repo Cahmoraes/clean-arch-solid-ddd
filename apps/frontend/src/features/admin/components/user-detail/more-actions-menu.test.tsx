@@ -39,9 +39,10 @@ function baseHandlers() {
 	}
 }
 
-async function openMenu() {
-	const trigger = screen.getByRole("button", { name: /mais ações/i })
-	await userEvent.click(trigger)
+type UserInstance = ReturnType<typeof userEvent.setup>
+
+async function openMenu(user: UserInstance) {
+	await user.click(screen.getByRole("button", { name: /mais ações/i }))
 }
 
 describe("MoreActionsMenu", () => {
@@ -59,6 +60,7 @@ describe("MoreActionsMenu", () => {
 	})
 
 	test("exibe 'Tornar Admin' quando canPromoteToAdmin = true e abre dialog ao clicar", async () => {
+		const user = userEvent.setup()
 		const handlers = baseHandlers()
 		render(
 			<MoreActionsMenu
@@ -67,14 +69,15 @@ describe("MoreActionsMenu", () => {
 				{...handlers}
 			/>,
 		)
-		await openMenu()
+		await openMenu(user)
 		const item = screen.getByRole("menuitem", { name: /tornar admin/i })
 		expect(item).toBeInTheDocument()
-		await userEvent.click(item)
+		await user.click(item)
 		expect(handlers.onOpenPromote).toHaveBeenCalledTimes(1)
 	})
 
 	test("exibe 'Remover Admin' quando canDemoteFromAdmin = true", async () => {
+		const user = userEvent.setup()
 		const permissions = {
 			...basePermissions(),
 			canPromoteToAdmin: false,
@@ -87,7 +90,7 @@ describe("MoreActionsMenu", () => {
 				{...baseHandlers()}
 			/>,
 		)
-		await openMenu()
+		await openMenu(user)
 		expect(
 			screen.getByRole("menuitem", { name: /remover admin/i }),
 		).toBeInTheDocument()
@@ -97,6 +100,7 @@ describe("MoreActionsMenu", () => {
 	})
 
 	test("exibe 'Inativar' em cor warning quando canSuspend = true", async () => {
+		const user = userEvent.setup()
 		render(
 			<MoreActionsMenu
 				permissions={basePermissions()}
@@ -104,13 +108,14 @@ describe("MoreActionsMenu", () => {
 				{...baseHandlers()}
 			/>,
 		)
-		await openMenu()
+		await openMenu(user)
 		const item = screen.getByRole("menuitem", { name: /inativar/i })
 		expect(item).toBeInTheDocument()
 		expect(item.className).toContain("text-warning")
 	})
 
 	test("chama onOpenSuspend ao clicar em Inativar (não executa diretamente)", async () => {
+		const user = userEvent.setup()
 		const handlers = baseHandlers()
 		render(
 			<MoreActionsMenu
@@ -119,13 +124,14 @@ describe("MoreActionsMenu", () => {
 				{...handlers}
 			/>,
 		)
-		await openMenu()
-		await userEvent.click(screen.getByRole("menuitem", { name: /inativar/i }))
+		await openMenu(user)
+		await user.click(screen.getByRole("menuitem", { name: /inativar/i }))
 		expect(handlers.onOpenSuspend).toHaveBeenCalledTimes(1)
 		expect(handlers.onActivate).not.toHaveBeenCalled()
 	})
 
 	test("exibe 'Ativar' em cor success quando canActivate = true", async () => {
+		const user = userEvent.setup()
 		const permissions = {
 			...basePermissions(),
 			canActivate: true,
@@ -139,13 +145,14 @@ describe("MoreActionsMenu", () => {
 				{...baseHandlers()}
 			/>,
 		)
-		await openMenu()
+		await openMenu(user)
 		const item = screen.getByRole("menuitem", { name: /^ativar$/i })
 		expect(item).toBeInTheDocument()
 		expect(item.className).toContain("text-success")
 	})
 
 	test("exibe 'Desbloquear' quando canActivate = true e isLocked = true", async () => {
+		const user = userEvent.setup()
 		const permissions = {
 			...basePermissions(),
 			canActivate: true,
@@ -159,7 +166,7 @@ describe("MoreActionsMenu", () => {
 				{...baseHandlers()}
 			/>,
 		)
-		await openMenu()
+		await openMenu(user)
 		expect(
 			screen.getByRole("menuitem", { name: /desbloquear/i }),
 		).toBeInTheDocument()
@@ -169,6 +176,7 @@ describe("MoreActionsMenu", () => {
 	})
 
 	test("chama onActivate diretamente (sem dialog) ao clicar em Ativar", async () => {
+		const user = userEvent.setup()
 		const handlers = baseHandlers()
 		const permissions = {
 			...basePermissions(),
@@ -182,13 +190,14 @@ describe("MoreActionsMenu", () => {
 				{...handlers}
 			/>,
 		)
-		await openMenu()
-		await userEvent.click(screen.getByRole("menuitem", { name: /^ativar$/i }))
+		await openMenu(user)
+		await user.click(screen.getByRole("menuitem", { name: /^ativar$/i }))
 		expect(handlers.onActivate).toHaveBeenCalledTimes(1)
 		expect(handlers.onOpenSuspend).not.toHaveBeenCalled()
 	})
 
 	test("chama onActivate diretamente ao clicar em Desbloquear (FR-016)", async () => {
+		const user = userEvent.setup()
 		const handlers = baseHandlers()
 		const permissions = {
 			...basePermissions(),
@@ -203,15 +212,14 @@ describe("MoreActionsMenu", () => {
 				{...handlers}
 			/>,
 		)
-		await openMenu()
-		await userEvent.click(
-			screen.getByRole("menuitem", { name: /desbloquear/i }),
-		)
+		await openMenu(user)
+		await user.click(screen.getByRole("menuitem", { name: /desbloquear/i }))
 		expect(handlers.onActivate).toHaveBeenCalledTimes(1)
 		expect(handlers.onOpenSuspend).not.toHaveBeenCalled()
 	})
 
 	test("exibe 'Excluir' em cor destructive quando canDelete = true", async () => {
+		const user = userEvent.setup()
 		render(
 			<MoreActionsMenu
 				permissions={basePermissions()}
@@ -219,13 +227,14 @@ describe("MoreActionsMenu", () => {
 				{...baseHandlers()}
 			/>,
 		)
-		await openMenu()
+		await openMenu(user)
 		const item = screen.getByRole("menuitem", { name: /excluir/i })
 		expect(item).toBeInTheDocument()
 		expect(item.className).toContain("text-destructive")
 	})
 
 	test("chama onOpenDelete ao clicar em Excluir (não executa diretamente)", async () => {
+		const user = userEvent.setup()
 		const handlers = baseHandlers()
 		render(
 			<MoreActionsMenu
@@ -234,12 +243,13 @@ describe("MoreActionsMenu", () => {
 				{...handlers}
 			/>,
 		)
-		await openMenu()
-		await userEvent.click(screen.getByRole("menuitem", { name: /excluir/i }))
+		await openMenu(user)
+		await user.click(screen.getByRole("menuitem", { name: /excluir/i }))
 		expect(handlers.onOpenDelete).toHaveBeenCalledTimes(1)
 	})
 
 	test("não exibe 'Excluir' quando canDelete = false", async () => {
+		const user = userEvent.setup()
 		const permissions = { ...basePermissions(), canDelete: false }
 		render(
 			<MoreActionsMenu
@@ -248,13 +258,14 @@ describe("MoreActionsMenu", () => {
 				{...baseHandlers()}
 			/>,
 		)
-		await openMenu()
+		await openMenu(user)
 		expect(
 			screen.queryByRole("menuitem", { name: /excluir/i }),
 		).not.toBeInTheDocument()
 	})
 
 	test("não exibe separador quando grupo acima está vazio (sem Tornar/Remover Admin)", async () => {
+		const user = userEvent.setup()
 		const permissions = {
 			...basePermissions(),
 			canPromoteToAdmin: false,
@@ -268,14 +279,13 @@ describe("MoreActionsMenu", () => {
 				{...baseHandlers()}
 			/>,
 		)
-		await openMenu()
-		// Não há separator antes de Inativar se grupo 1 está vazio
+		await openMenu(user)
 		const separators = document.querySelectorAll('[role="separator"]')
-		// Apenas o separator entre grupo 2 e grupo 3 deve existir
 		expect(separators).toHaveLength(1)
 	})
 
 	test("exibe separador entre grupo admin e excluir quando grupo status está vazio", async () => {
+		const user = userEvent.setup()
 		const permissions = {
 			...basePermissions(),
 			canPromoteToAdmin: true,
@@ -290,9 +300,30 @@ describe("MoreActionsMenu", () => {
 				{...baseHandlers()}
 			/>,
 		)
-		await openMenu()
+		await openMenu(user)
 		const separators = document.querySelectorAll('[role="separator"]')
 		expect(separators).toHaveLength(1)
+	})
+
+	test("não renderiza nada quando todas as permissões estão negadas", () => {
+		const permissions = {
+			...basePermissions(),
+			canPromoteToAdmin: false,
+			canDemoteFromAdmin: false,
+			canSuspend: false,
+			canActivate: false,
+			canDelete: false,
+		}
+		render(
+			<MoreActionsMenu
+				permissions={permissions}
+				flags={baseFlags()}
+				{...baseHandlers()}
+			/>,
+		)
+		expect(
+			screen.queryByRole("button", { name: /mais ações/i }),
+		).not.toBeInTheDocument()
 	})
 
 	test("desabilita o trigger quando isPending = true", () => {
