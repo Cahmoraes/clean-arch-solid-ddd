@@ -147,7 +147,14 @@ export function MoreActionsMenu({
 				<Button
 					variant="outline"
 					className="h-11 rounded-md px-4 font-semibold"
-					disabled={flags.isPending}
+					disabled={
+						flags.isPending ||
+						flags.isActivating ||
+						flags.isSuspending ||
+						flags.isPromoting ||
+						flags.isDemoting ||
+						flags.isDeleting
+					}
 				>
 					Mais ações
 					<ChevronDown className="ml-1 size-4" />
