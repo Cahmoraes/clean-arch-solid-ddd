@@ -41,9 +41,9 @@ interface PermissionCtx {
 }
 
 function canEditProfileRule(ctx: PermissionCtx): boolean {
-	if (ctx.isSelf || !ctx.currentUser) return false
-	if (ctx.requesterIsRoot) return true
-	return ctx.requesterIsAdmin && ctx.targetIsMember && !ctx.targetIsRoot
+	if (!ctx.currentUser) return false
+	if (ctx.isSelf) return true
+	return ctx.requesterIsRoot
 }
 
 function canChangeStatusRule(ctx: PermissionCtx): boolean {
@@ -109,11 +109,7 @@ export function resolvePermissions(
 }
 
 export function canEditAnything(permissions: UserDetailPermissions): boolean {
-	return (
-		permissions.canEditProfile ||
-		permissions.canChangeStatus ||
-		permissions.canChangeRole
-	)
+	return permissions.canEditProfile || permissions.canChangeRole
 }
 
 function getErrorMessage(mutation: {

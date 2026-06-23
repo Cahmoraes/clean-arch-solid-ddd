@@ -24,6 +24,7 @@ interface UserData {
 	status: StatusTypes
 	billing_customer_id?: string | null
 	deleted_at?: Date | null
+	is_super_admin?: boolean | null
 }
 
 @injectable()
@@ -94,6 +95,7 @@ export class PrismaUserRepository implements UserRepository {
 			status: userData.status,
 			billingCustomerId: userData.billing_customer_id ?? undefined,
 			deletedAt: userData.deleted_at ?? undefined,
+			isSuperAdmin: userData.is_super_admin ?? false,
 		})
 	}
 

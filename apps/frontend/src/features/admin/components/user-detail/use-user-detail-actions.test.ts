@@ -21,8 +21,8 @@ const root: Current = { id: "root", role: "ADMIN", isSuperAdmin: true }
 const admin: Current = { id: "admin", role: "ADMIN", isSuperAdmin: false }
 
 describe("resolvePermissions — canEditProfile", () => {
-	test("admin comum pode editar perfil de membro", () => {
-		expect(resolvePermissions(target(), admin).canEditProfile).toBe(true)
+	test("admin comum não pode editar perfil de outro usuário", () => {
+		expect(resolvePermissions(target(), admin).canEditProfile).toBe(false)
 	})
 
 	test("admin comum não pode editar perfil de outro admin", () => {
@@ -39,10 +39,14 @@ describe("resolvePermissions — canEditProfile", () => {
 		).toBe(true)
 	})
 
-	test("ninguém edita a si mesmo pelo painel", () => {
+	test("root pode editar perfil de membro", () => {
+		expect(resolvePermissions(target(), root).canEditProfile).toBe(true)
+	})
+
+	test("admin pode editar o próprio perfil pelo painel", () => {
 		expect(
 			resolvePermissions(target({ id: "admin" }), admin).canEditProfile,
-		).toBe(false)
+		).toBe(true)
 	})
 
 	test("admin comum não pode editar perfil de super admin", () => {
@@ -128,7 +132,7 @@ describe("resolvePermissions — tolerância a isSuperAdmin ausente", () => {
 	test("isSuperAdmin ausente no currentUser é tratado como false", () => {
 		const adminWithoutFlag: Current = { id: "admin2", role: "ADMIN" }
 		expect(resolvePermissions(target(), adminWithoutFlag).canEditProfile).toBe(
-			true,
+			false,
 		)
 	})
 

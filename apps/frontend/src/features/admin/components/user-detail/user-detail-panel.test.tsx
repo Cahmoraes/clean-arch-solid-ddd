@@ -70,6 +70,19 @@ describe("UserDetailPanel", () => {
 		).not.toBeInTheDocument()
 	})
 
+	test("admin comum não exibe o botão Editar dados ao visualizar outro usuário", () => {
+		useAuthStore
+			.getState()
+			.setSession(
+				makeTestJwt({ sub: "admin-id", role: "ADMIN", isSuperAdmin: false }),
+			)
+		renderPanel(buildUser({ id: "target-id", role: "MEMBER" }))
+
+		expect(
+			screen.queryByRole("button", { name: /editar dados/i }),
+		).not.toBeInTheDocument()
+	})
+
 	test("root abre o formulário de edição ao clicar em Editar dados", async () => {
 		const currentUser = userEvent.setup()
 		useAuthStore
