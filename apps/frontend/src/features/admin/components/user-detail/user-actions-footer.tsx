@@ -34,6 +34,7 @@ export function UserActionsFooter({
 			{canEdit ? (
 				<Button
 					onClick={onEdit}
+					disabled={flags.isPending}
 					className="h-11 rounded-md bg-accent px-4 font-semibold text-accent-foreground hover:bg-accent/90"
 				>
 					Editar dados
