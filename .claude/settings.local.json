@@ -1,35 +1,36 @@
 {
-	"respectGitignore": true,
-	"permissions": {
-		"allow": [
-			"Bash(ls -la /home/cahmoraes/projects/estudo/ 2>&1 | head -20)",
-			"Bash(find //wsl.localhost/ubuntu/home/cahmoraes/projects/estudo/clean-arch-solid-ddd -type f -name \"README*\" | head -20)",
-			"Bash(find //wsl.localhost/ubuntu/home/cahmoraes/projects/estudo/clean-arch-solid-ddd/apps -maxdepth 2 -type f \\\\\\( -name \"README*\" -o -name \"package.json\" \\\\\\))",
-			"Bash(ls \"\\\\\\\\\\\\\\\\wsl.localhost\\\\\\\\ubuntu\\\\\\\\home\\\\\\\\cahmoraes\\\\\\\\projects\\\\\\\\estudo\\\\\\\\clean-arch-solid-ddd\\\\\\\\\")",
-			"Bash(wslpath \"\\\\\\\\\\\\\\\\wsl.localhost\\\\\\\\ubuntu\\\\\\\\home\\\\\\\\cahmoraes\\\\\\\\projects\\\\\\\\estudo\\\\\\\\clean-arch-solid-ddd\")",
-			"PowerShell(wsl -e bash -c \"ls /home/cahmoraes/projects/estudo/clean-arch-solid-ddd/\")"
-		]
-	},
-	"skillOverrides": {
-		"cavecrew": "off",
-		"caveman-commit": "off",
-		"caveman-help": "off",
-		"caveman-review": "off",
-		"caveman-stats": "off",
-		"code-style": "off",
-		"create-controller": "off",
-		"find-skills": "off",
-		"generate-release-tables": "off",
-		"mistica": "off",
-		"mistica-docs-query": "off",
-		"grill-me": "off",
-		"skill-creator": "off",
-		"figma-to-code": "off",
-		"figma-visual-tester": "off",
-		"to-adr": "off",
-		"systematic-debugging": "off",
-		"webview-bridge": "off",
-		"architectural-analyzer": "off",
-		"code-review": "off"
-	}
+  "respectGitignore": true,
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /home/cahmoraes/projects/estudo/ 2>&1 | head -20)",
+      "Bash(find //wsl.localhost/ubuntu/home/cahmoraes/projects/estudo/clean-arch-solid-ddd -type f -name \"README*\" | head -20)",
+      "Bash(find //wsl.localhost/ubuntu/home/cahmoraes/projects/estudo/clean-arch-solid-ddd/apps -maxdepth 2 -type f \\\\\\( -name \"README*\" -o -name \"package.json\" \\\\\\))",
+      "Bash(ls \"\\\\\\\\\\\\\\\\wsl.localhost\\\\\\\\ubuntu\\\\\\\\home\\\\\\\\cahmoraes\\\\\\\\projects\\\\\\\\estudo\\\\\\\\clean-arch-solid-ddd\\\\\\\\\")",
+      "Bash(wslpath \"\\\\\\\\\\\\\\\\wsl.localhost\\\\\\\\ubuntu\\\\\\\\home\\\\\\\\cahmoraes\\\\\\\\projects\\\\\\\\estudo\\\\\\\\clean-arch-solid-ddd\")",
+      "PowerShell(wsl -e bash -c \"ls /home/cahmoraes/projects/estudo/clean-arch-solid-ddd/\")"
+    ]
+  },
+  "skillOverrides": {
+    "cavecrew": "off",
+    "caveman-commit": "off",
+    "caveman-help": "off",
+    "caveman-review": "off",
+    "caveman-stats": "off",
+    "code-style": "off",
+    "create-controller": "off",
+    "find-skills": "off",
+    "generate-release-tables": "off",
+    "mistica": "off",
+    "mistica-docs-query": "off",
+    "grill-me": "off",
+    "skill-creator": "off",
+    "figma-to-code": "off",
+    "figma-visual-tester": "off",
+    "to-adr": "off",
+    "systematic-debugging": "off",
+    "webview-bridge": "off",
+    "architectural-analyzer": "off",
+    "code-review": "off",
+    "spec": "off"
+  }
 }
