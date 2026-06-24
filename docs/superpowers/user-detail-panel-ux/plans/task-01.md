@@ -1,6 +1,6 @@
 # Task 1: Sticky layout no UserDetailContainer [FR-001, FR-002, FR-003, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-detail-panel-ux.md`
 **Spec:** `../specs/user-detail-panel-ux-design.md`
 **Tier:** cheap

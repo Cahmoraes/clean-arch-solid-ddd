@@ -34,6 +34,7 @@ function DesktopView({
 				icon={UserRound}
 				title="Selecione um usuário"
 				description="Escolha um usuário na lista para ver os detalhes."
+				className="md:self-start md:sticky md:top-4"
 			/>
 		)
 	}

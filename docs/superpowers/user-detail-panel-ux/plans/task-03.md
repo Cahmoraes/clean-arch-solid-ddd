@@ -1,6 +1,6 @@
 # Task 3: Refatorar UserActionsFooter [FR-005, FR-006, FR-014, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-detail-panel-ux.md`
 **Spec:** `../specs/user-detail-panel-ux-design.md`
 **Tier:** standard

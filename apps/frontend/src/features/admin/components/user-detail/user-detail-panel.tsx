@@ -14,7 +14,6 @@ import {
 	SuspendConfirmationDialog,
 } from "./confirmation-dialogs"
 import { DetailsTab } from "./details-tab"
-import { PermissionsTab } from "./permissions-tab"
 import type { UserDetailActions } from "./use-user-detail-actions"
 import {
 	canEditAnything,
@@ -91,7 +90,6 @@ function UserDetailTabs({
 		>
 			<TabsList>
 				<TabsTrigger value="detalhes">Detalhes</TabsTrigger>
-				<TabsTrigger value="permissoes">Permissões</TabsTrigger>
 				<TabsTrigger value="atividade">Atividade</TabsTrigger>
 			</TabsList>
 			<TabsContent value="detalhes">
@@ -100,16 +98,6 @@ function UserDetailTabs({
 					permissions={actions.permissions}
 					editing={editing}
 					onStopEdit={onStopEdit}
-				/>
-			</TabsContent>
-			<TabsContent value="permissoes">
-				<PermissionsTab
-					user={user}
-					canPromoteToAdmin={actions.permissions.canPromoteToAdmin}
-					canDemoteFromAdmin={actions.permissions.canDemoteFromAdmin}
-					isPending={actions.flags.isPending}
-					onPromote={() => actions.confirm.setPromoteOpen(true)}
-					onDemote={() => actions.confirm.setDemoteOpen(true)}
 				/>
 			</TabsContent>
 			<TabsContent value="atividade">

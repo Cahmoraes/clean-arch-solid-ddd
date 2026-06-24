@@ -39,12 +39,14 @@ describe("UserDetailPanel", () => {
 		useAuthStore.getState().clear()
 	})
 
-	test("exibe nome, e-mail e as três abas", () => {
+	test("exibe nome, e-mail e as duas abas", () => {
 		renderPanel(buildUser())
 		const header = within(screen.getByRole("banner"))
 		expect(header.getByText("João Damasio")).toBeInTheDocument()
 		expect(screen.getByRole("tab", { name: "Detalhes" })).toBeInTheDocument()
-		expect(screen.getByRole("tab", { name: "Permissões" })).toBeInTheDocument()
+		expect(
+			screen.queryByRole("tab", { name: "Permissões" }),
+		).not.toBeInTheDocument()
 		expect(screen.getByRole("tab", { name: "Atividade" })).toBeInTheDocument()
 	})
 

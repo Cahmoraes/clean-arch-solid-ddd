@@ -82,10 +82,11 @@ describe("UserDetailContainer", () => {
 		expect(wrapper.className).toContain("md:overflow-y-auto")
 	})
 
-	test("no desktop sem usuário (EmptyState), wrapper NÃO tem classe sticky", () => {
+	test("no desktop sem usuário (EmptyState), wrapper tem classe self-start e sticky", () => {
 		isDesktopMock.mockReturnValue(true)
 		const { container } = renderContainer(null)
 		const wrapper = container.firstChild as HTMLElement
-		expect(wrapper.className).not.toContain("md:sticky")
+		expect(wrapper.className).toContain("md:self-start")
+		expect(wrapper.className).toContain("md:sticky")
 	})
 })

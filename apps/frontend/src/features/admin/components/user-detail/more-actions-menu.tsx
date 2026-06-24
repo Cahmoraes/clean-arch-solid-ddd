@@ -78,7 +78,7 @@ function StatusSection({
 				<DropdownMenuItem
 					onClick={onOpenSuspend}
 					disabled={flags.isSuspending}
-					className="text-warning focus:text-warning"
+					className="text-warning focus:bg-warning-soft focus:text-warning"
 				>
 					Inativar
 				</DropdownMenuItem>
@@ -87,7 +87,7 @@ function StatusSection({
 				<DropdownMenuItem
 					onClick={onActivate}
 					disabled={flags.isActivating}
-					className="text-success focus:text-success"
+					className="text-success focus:bg-success-soft focus:text-success"
 				>
 					{permissions.isLocked ? "Desbloquear" : "Ativar"}
 				</DropdownMenuItem>
@@ -113,7 +113,7 @@ function DeleteSection({
 				<DropdownMenuItem
 					onClick={onOpenDelete}
 					disabled={flags.isDeleting}
-					className="text-destructive focus:text-destructive"
+					className="text-destructive focus:bg-destructive-soft focus:text-destructive"
 				>
 					Excluir
 				</DropdownMenuItem>

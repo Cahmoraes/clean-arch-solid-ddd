@@ -15,9 +15,9 @@
 
 ## Tarefas
 
-- [ ] 1. Sticky layout no UserDetailContainer [FR-001, FR-002, FR-003, FR-004] → `task-01.md`
-- [ ] 2. Componente MoreActionsMenu [FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-016] → `task-02.md`
-- [ ] 3. Refatorar UserActionsFooter [FR-005, FR-006, FR-014, FR-015] → `task-03.md`
+- [x] 1. Sticky layout no UserDetailContainer [FR-001, FR-002, FR-003, FR-004] → `task-01.md`
+- [x] 2. Componente MoreActionsMenu [FR-007, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013, FR-016] → `task-02.md`
+- [x] 3. Refatorar UserActionsFooter [FR-005, FR-006, FR-014, FR-015] → `task-03.md`
 
 ## Ondas de Execução
 
