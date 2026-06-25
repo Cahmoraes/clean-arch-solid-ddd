@@ -32,5 +32,6 @@
     "architectural-analyzer": "off",
     "code-review": "off",
     "spec": "off"
-  }
+  },
+  "prefersReducedMotion": false
 }
