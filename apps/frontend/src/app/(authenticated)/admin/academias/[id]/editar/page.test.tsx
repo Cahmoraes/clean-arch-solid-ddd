@@ -65,12 +65,12 @@ describe("AdminEditarAcademiaPage", () => {
 		expect(cancelBtn).toHaveClass("border-border")
 	})
 
-	test("deve navegar para /admin/academias ao clicar em Cancelar", async () => {
+	test("deve navegar para /academias ao clicar em Cancelar", async () => {
 		const user = userEvent.setup()
 		renderWithProviders(<AdminEditarAcademiaPage />)
 		const cancelBtn = await screen.findByTestId("gym-form-cancel")
 		await user.click(cancelBtn)
-		expect(mockPush).toHaveBeenCalledWith("/admin/academias")
+		expect(mockPush).toHaveBeenCalledWith("/academias")
 	})
 
 	test("não deve chamar mockPush ao submeter o formulário", async () => {

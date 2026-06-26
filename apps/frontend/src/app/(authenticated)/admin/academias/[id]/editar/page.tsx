@@ -139,7 +139,7 @@ function EditGymForm({ gym }: { gym: Gym }) {
 					type="button"
 					variant="outline"
 					data-testid="gym-form-cancel"
-					onClick={() => router.push("/admin/academias")}
+					onClick={() => router.push("/academias")}
 				>
 					Cancelar
 				</Button>
