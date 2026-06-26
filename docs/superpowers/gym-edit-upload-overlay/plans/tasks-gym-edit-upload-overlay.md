@@ -15,7 +15,7 @@
 
 ## Tarefas
 
-- [ ] 1. Criar GymImageEditOverlay: componente, testes e handler MSW [FR-005, FR-006, FR-007, FR-009, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015] → `task-01.md`
+- [x] 1. Criar GymImageEditOverlay: componente, testes e handler MSW [FR-005, FR-006, FR-007, FR-009, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015] → `task-01.md`
 - [ ] 2. Atualizar EditGymForm: cancelar, troca de componente de imagem e desacoplamento do upload [FR-001, FR-002, FR-003, FR-004, FR-008, FR-016] → `task-02.md`
 
 ## Ondas de Execução

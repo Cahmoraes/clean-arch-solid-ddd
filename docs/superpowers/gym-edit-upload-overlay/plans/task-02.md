@@ -1,6 +1,6 @@
 # Task 2: Atualizar EditGymForm: cancelar, troca de componente de imagem e desacoplamento do upload [FR-001, FR-002, FR-003, FR-004, FR-008, FR-016]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-gym-edit-upload-overlay.md`
 **Spec:** `../specs/gym-edit-upload-overlay-design.md`
 **Tier:** standard

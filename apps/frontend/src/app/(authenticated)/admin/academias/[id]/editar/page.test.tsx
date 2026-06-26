@@ -1,24 +1,37 @@
 import { screen, waitFor } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
-import { describe, expect, test, vi } from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 
+const mockPush = vi.fn()
+const mockReplace = vi.fn()
+
 vi.mock("next/navigation", () => ({
-	useParams: () => ({ id: "gym-1" }),
-	useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+	useRouter: () => ({ push: mockPush, replace: mockReplace }),
+	useParams: () => ({ id: "gym-123" }),
+}))
+
+vi.mock("@/features/gyms/components/gym-image-edit-overlay", () => ({
+	GymImageEditOverlay: () => <div data-testid="gym-image-edit-overlay-mock" />,
 }))
 
 import AdminEditarAcademiaPage from "./page"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
+beforeEach(() => {
+	mockPush.mockClear()
+	mockReplace.mockClear()
+})
+
 describe("AdminEditarAcademiaPage", () => {
 	test("pré-preenche o formulário com os dados da academia", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/:id`, () =>
 				HttpResponse.json({
-					id: "gym-1",
+					id: "gym-123",
 					title: "Academia Volt",
 					description: "Top",
 					phone: "11999999999",
@@ -37,5 +50,31 @@ describe("AdminEditarAcademiaPage", () => {
 		expect(screen.getByTestId("gym-form-cnpj")).toHaveValue(
 			"11.222.333/0001-81",
 		)
+	})
+
+	test("deve renderizar GymImageEditOverlay em vez de GymImageUploader", async () => {
+		renderWithProviders(<AdminEditarAcademiaPage />)
+		await screen.findByTestId("gym-image-edit-overlay-mock")
+		expect(screen.queryByTestId("gym-image-input")).not.toBeInTheDocument()
+	})
+
+	test("deve renderizar o botão Cancelar com variant outline", async () => {
+		renderWithProviders(<AdminEditarAcademiaPage />)
+		const cancelBtn = await screen.findByTestId("gym-form-cancel")
+		expect(cancelBtn).toBeInTheDocument()
+	})
+
+	test("deve navegar para /admin/academias ao clicar em Cancelar", async () => {
+		const user = userEvent.setup()
+		renderWithProviders(<AdminEditarAcademiaPage />)
+		const cancelBtn = await screen.findByTestId("gym-form-cancel")
+		await user.click(cancelBtn)
+		expect(mockPush).toHaveBeenCalledWith("/admin/academias")
+	})
+
+	test("não deve chamar mockPush ao submeter o formulário", async () => {
+		renderWithProviders(<AdminEditarAcademiaPage />)
+		await screen.findByTestId("gym-form-submit")
+		expect(mockPush).not.toHaveBeenCalled()
 	})
 })

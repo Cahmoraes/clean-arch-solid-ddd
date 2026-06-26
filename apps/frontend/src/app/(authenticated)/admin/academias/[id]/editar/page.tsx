@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useParams, useRouter } from "next/navigation"
-import { useId, useState } from "react"
+import { useId } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/page-container"
@@ -10,15 +10,9 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { FormField } from "@/components/ui/form-field"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-	type Gym,
-	useGymById,
-	useSetGymImage,
-	useUpdateGym,
-} from "@/features/gyms/api"
+import { type Gym, useGymById, useUpdateGym } from "@/features/gyms/api"
 import { GymCnpjField } from "@/features/gyms/components/gym-cnpj-field"
-import { GymImage } from "@/features/gyms/components/gym-image"
-import { GymImageUploader } from "@/features/gyms/components/gym-image-uploader"
+import { GymImageEditOverlay } from "@/features/gyms/components/gym-image-edit-overlay"
 import { GymLocationPicker } from "@/features/gyms/components/gym-location-picker"
 import { GymPhoneField } from "@/features/gyms/components/gym-phone-field"
 import {
@@ -42,9 +36,7 @@ function EditGymForm({ gym }: { gym: Gym }) {
 	const cnpjId = useId()
 	const descriptionId = useId()
 	const phoneId = useId()
-	const [imageBlob, setImageBlob] = useState<Blob | null>(null)
 	const { mutateAsync: updateGym, isPending } = useUpdateGym()
-	const { mutateAsync: setGymImage } = useSetGymImage()
 	const {
 		register,
 		handleSubmit,
@@ -65,19 +57,9 @@ function EditGymForm({ gym }: { gym: Gym }) {
 		},
 	})
 
-	async function uploadImageIfPresent() {
-		if (!imageBlob) return
-		try {
-			await setGymImage({ id: gym.id, file: imageBlob })
-		} catch {
-			toast.error("Dados salvos, mas a imagem falhou. Tente reenviar.")
-		}
-	}
-
 	async function onSubmit(values: CreateGymInput) {
 		try {
 			await updateGym({ id: gym.id, input: values })
-			await uploadImageIfPresent()
 			toast.success("Academia atualizada com sucesso.")
 			router.replace(`/academias/${gym.id}`)
 		} catch (submitError) {
@@ -92,10 +74,10 @@ function EditGymForm({ gym }: { gym: Gym }) {
 			className="flex flex-col gap-4"
 			aria-label="Formulário de edição de academia"
 		>
-			<GymImage
+			<GymImageEditOverlay
+				gymId={gym.id}
 				imageKey={gym.imageKey}
-				alt={gym.title}
-				className="h-40 w-full rounded-[8px]"
+				gymTitle={gym.title}
 			/>
 			<FormField
 				id={titleId}
@@ -152,11 +134,15 @@ function EditGymForm({ gym }: { gym: Gym }) {
 					/>
 				)}
 			/>
-			<GymImageUploader
-				onCropped={setImageBlob}
-				label="Trocar imagem (opcional)"
-			/>
-			<div className="flex justify-end">
+			<div className="flex justify-end gap-2">
+				<Button
+					type="button"
+					variant="outline"
+					data-testid="gym-form-cancel"
+					onClick={() => router.push("/admin/academias")}
+				>
+					Cancelar
+				</Button>
 				<Button
 					type="submit"
 					data-testid="gym-form-submit"
