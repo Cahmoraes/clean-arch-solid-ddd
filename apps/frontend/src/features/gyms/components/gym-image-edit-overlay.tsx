@@ -56,7 +56,6 @@ export function GymImageEditOverlay({
 	}
 
 	function handleClose() {
-		if (imageSrc) URL.revokeObjectURL(imageSrc)
 		setImageSrc(null)
 		setCroppedAreaPixels(null)
 		setZoom(1)
