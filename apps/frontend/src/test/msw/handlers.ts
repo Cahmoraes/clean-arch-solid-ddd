@@ -119,6 +119,15 @@ export const handlers = [
 			{ status: 201 },
 		),
 	),
+	http.post(endpoint("/gyms/:id/image"), () =>
+		HttpResponse.json(
+			{
+				imageKey: "test-image-key",
+				url: "https://stub.example.com/test-image-key",
+			},
+			{ status: 200 },
+		),
+	),
 	http.post(endpoint("/check-ins"), () =>
 		HttpResponse.json(
 			{
