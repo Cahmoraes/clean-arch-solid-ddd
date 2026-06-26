@@ -62,6 +62,7 @@ describe("AdminEditarAcademiaPage", () => {
 		renderWithProviders(<AdminEditarAcademiaPage />)
 		const cancelBtn = await screen.findByTestId("gym-form-cancel")
 		expect(cancelBtn).toBeInTheDocument()
+		expect(cancelBtn).toHaveClass("border-border")
 	})
 
 	test("deve navegar para /admin/academias ao clicar em Cancelar", async () => {
