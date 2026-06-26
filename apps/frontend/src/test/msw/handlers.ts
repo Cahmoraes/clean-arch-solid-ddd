@@ -2,7 +2,7 @@ import { HttpResponse, http } from "msw"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
-function endpoint(path: string): string {
+export function endpoint(path: string): string {
 	return `${apiBaseUrl}${path}`
 }
 

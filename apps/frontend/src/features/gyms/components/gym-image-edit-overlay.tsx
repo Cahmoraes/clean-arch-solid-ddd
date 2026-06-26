@@ -1,7 +1,7 @@
 "use client"
 
 import { Pencil } from "lucide-react"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Cropper from "react-easy-crop"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -36,6 +36,12 @@ export function GymImageEditOverlay({
 		null,
 	)
 	const { mutateAsync, isPending } = useSetGymImage()
+
+	useEffect(() => {
+		return () => {
+			if (imageSrc) URL.revokeObjectURL(imageSrc)
+		}
+	}, [imageSrc])
 
 	function handleIconClick() {
 		inputRef.current?.click()

@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react"
 import { HttpResponse, http } from "msw"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import { endpoint } from "@/test/msw/handlers"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import { GymImageEditOverlay } from "./gym-image-edit-overlay"
@@ -97,6 +98,7 @@ describe("GymImageEditOverlay", () => {
 		await waitFor(() => {
 			expect(screen.queryByTestId("mock-cropper")).not.toBeInTheDocument()
 		})
+		expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:mock-url")
 	})
 
 	test("cancelar fecha o dialog sem chamar upload e revoga object URL", async () => {
@@ -117,10 +119,8 @@ describe("GymImageEditOverlay", () => {
 	})
 
 	test("falha no upload exibe toast de erro e mantém o dialog aberto (FR-015)", async () => {
-		const apiBaseUrl =
-			process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 		server.use(
-			http.post(`${apiBaseUrl}/gyms/:id/image`, () =>
+			http.post(endpoint("/gyms/:id/image"), () =>
 				HttpResponse.json(
 					{ message: "Internal Server Error" },
 					{ status: 500 },
