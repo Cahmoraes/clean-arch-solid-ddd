@@ -1,6 +1,6 @@
 # Task 1: Criar GymImageEditOverlay: componente, testes e handler MSW [FR-005, FR-006, FR-007, FR-009, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-edit-upload-overlay.md`
 **Spec:** `../specs/gym-edit-upload-overlay-design.md`
 **Tier:** standard
