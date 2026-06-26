@@ -64,11 +64,16 @@ export function GymImageEditOverlay({
 		if (inputRef.current) inputRef.current.value = ""
 	}
 
+	async function cropAndUpload(src: string, pixels: CropArea) {
+		const blob = await getCroppedBlob(src, pixels)
+		if (!blob) throw new Error("Falha ao recortar imagem")
+		await mutateAsync({ id: gymId, file: blob })
+	}
+
 	async function handleConfirm() {
 		if (!imageSrc || !croppedAreaPixels) return
 		try {
-			const blob = await getCroppedBlob(imageSrc, croppedAreaPixels)
-			await mutateAsync({ id: gymId, file: blob })
+			await cropAndUpload(imageSrc, croppedAreaPixels)
 			toast.success("Imagem atualizada com sucesso")
 			handleClose()
 		} catch {
@@ -104,7 +109,7 @@ export function GymImageEditOverlay({
 			<Dialog
 				open={dialogOpen}
 				onOpenChange={(open) => {
-					if (!open) handleClose()
+					if (!open && !isPending) handleClose()
 				}}
 			>
 				<DialogContent className="sm:max-w-md max-h-[90dvh] overflow-auto">
@@ -144,7 +149,10 @@ export function GymImageEditOverlay({
 						>
 							Cancelar
 						</Button>
-						<Button onClick={handleConfirm} disabled={isPending}>
+						<Button
+							onClick={handleConfirm}
+							disabled={isPending || !croppedAreaPixels}
+						>
 							Confirmar recorte
 						</Button>
 					</DialogFooter>
