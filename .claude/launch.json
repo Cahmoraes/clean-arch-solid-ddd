@@ -1,0 +1,24 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Frontend (Next.js)",
+      "runtimeExecutable": "wsl",
+      "runtimeArgs": ["-d", "ubuntu", "-u", "cahmoraes", "--", "/home/cahmoraes/.local/bin/pnpm-run.sh", "--dir", "/home/cahmoraes/projects/estudo/clean-arch-solid-ddd", "--filter", "frontend", "exec", "next", "dev", "-p", "3002"],
+      "port": 3002
+    },
+    {
+      "name": "Prisma Studio",
+      "runtimeExecutable": "wsl",
+      "runtimeArgs": ["-d", "ubuntu", "-u", "cahmoraes", "--", "/home/cahmoraes/.local/bin/pnpm-run.sh", "--dir", "/home/cahmoraes/projects/estudo/clean-arch-solid-ddd", "--filter", "backend", "prisma:studio"],
+      "port": 5555,
+      "autoPort": false
+    },
+    {
+      "name": "Worker",
+      "runtimeExecutable": "wsl",
+      "runtimeArgs": ["-d", "ubuntu", "-u", "cahmoraes", "--", "/home/cahmoraes/.local/bin/pnpm-run.sh", "--dir", "/home/cahmoraes/projects/estudo/clean-arch-solid-ddd", "--filter", "backend", "worker"],
+      "port": null
+    }
+  ]
+}
