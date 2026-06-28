@@ -111,7 +111,8 @@ export class FastifyAdapter implements HttpServer {
 				if (!origin || allowedOrigins.includes(origin)) {
 					return callback(null, true)
 				}
-				callback(new Error("Not allowed by CORS"), false)
+				const err = Object.assign(new Error("Not allowed by CORS"), { statusCode: 403 })
+				callback(err, false)
 			},
 			credentials: true,
 			methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
