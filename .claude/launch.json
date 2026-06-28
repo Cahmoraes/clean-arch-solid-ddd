@@ -5,7 +5,8 @@
       "name": "Frontend (Next.js)",
       "runtimeExecutable": "wsl",
       "runtimeArgs": ["-d", "ubuntu", "-u", "cahmoraes", "--", "/home/cahmoraes/.local/bin/pnpm-run.sh", "--dir", "/home/cahmoraes/projects/estudo/clean-arch-solid-ddd", "--filter", "frontend", "exec", "next", "dev", "-p", "3002"],
-      "port": 3002
+      "port": 3002,
+      "autoPort": false
     },
     {
       "name": "Prisma Studio",
