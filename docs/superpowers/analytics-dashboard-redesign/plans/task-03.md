@@ -1,6 +1,6 @@
 # Task 3: Criar componente RetentionMiniStats [FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-analytics-dashboard-redesign.md`
 **Spec:** `../specs/analytics-dashboard-redesign-design.md`
 **Tier:** cheap

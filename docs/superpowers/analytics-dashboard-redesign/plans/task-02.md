@@ -1,6 +1,6 @@
 # Task 2: Criar componente AtRiskAlertZone [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-analytics-dashboard-redesign.md`
 **Spec:** `../specs/analytics-dashboard-redesign-design.md`
 **Tier:** standard

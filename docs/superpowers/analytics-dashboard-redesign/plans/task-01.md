@@ -1,6 +1,6 @@
 # Task 1: Criar componente KpiCardWithSparkline [FR-007, FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-analytics-dashboard-redesign.md`
 **Spec:** `../specs/analytics-dashboard-redesign-design.md`
 **Tier:** standard
