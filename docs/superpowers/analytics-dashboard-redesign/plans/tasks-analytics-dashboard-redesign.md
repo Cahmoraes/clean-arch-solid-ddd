@@ -18,7 +18,7 @@
 - [x] 1. Criar componente KpiCardWithSparkline [FR-007, FR-008, FR-009] → `task-01.md`
 - [x] 2. Criar componente AtRiskAlertZone [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006] → `task-02.md`
 - [x] 3. Criar componente RetentionMiniStats [FR-010, FR-011] → `task-03.md`
-- [ ] 4. Refatorar page.tsx e AnalyticsKpiRow — integração e remoção das seções colapsáveis [FR-012, FR-013, FR-014] → `task-04.md`
+- [x] 4. Refatorar page.tsx e AnalyticsKpiRow — integração e remoção das seções colapsáveis [FR-012, FR-013, FR-014] → `task-04.md`
 
 ## Ondas de Execução
 

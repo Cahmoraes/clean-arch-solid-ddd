@@ -1,6 +1,6 @@
 # Task 4: Refatorar page.tsx e AnalyticsKpiRow — integração e remoção das seções colapsáveis [FR-012, FR-013, FR-014]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-analytics-dashboard-redesign.md`
 **Spec:** `../specs/analytics-dashboard-redesign-design.md`
 **Tier:** capable
