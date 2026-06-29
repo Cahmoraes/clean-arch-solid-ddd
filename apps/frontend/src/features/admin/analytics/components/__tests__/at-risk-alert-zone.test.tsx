@@ -78,6 +78,15 @@ describe("AtRiskAlertZone", () => {
 		expect(badge.className).toContain("text-warning")
 	})
 
+	test("'ver menos' colapsa lista de volta aos 3 primeiros membros", async () => {
+		const user = userEvent.setup()
+		render(<AtRiskAlertZone members={fourMembers} isLoading={false} />)
+		await user.click(screen.getByRole("button", { name: /ver todos/i }))
+		expect(screen.getByText("João Souza")).toBeInTheDocument()
+		await user.click(screen.getByRole("button", { name: /ver menos/i }))
+		expect(screen.queryByText("João Souza")).not.toBeInTheDocument()
+	})
+
 	test("exibe Skeleton quando isLoading é true", () => {
 		const { container } = render(<AtRiskAlertZone members={[]} isLoading />)
 		expect(

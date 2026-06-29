@@ -33,6 +33,9 @@ function MemberRow({ member }: { member: AtRiskMember }) {
 				)}
 			>
 				{member.daysSinceLastCheckIn} dias sem check-in
+				<span className="sr-only">
+					{isCritical ? " — crítico" : " — em risco"}
+				</span>
 			</span>
 		</li>
 	)
