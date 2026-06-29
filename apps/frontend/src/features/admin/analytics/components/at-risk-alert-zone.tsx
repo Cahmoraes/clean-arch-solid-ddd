@@ -53,12 +53,12 @@ export function AtRiskAlertZone({ members, isLoading }: AtRiskAlertZoneProps) {
 	)
 
 	if (isLoading) {
-		return <Skeleton className="h-16 w-full rounded-[14px]" />
+		return <Skeleton className="h-16 w-full rounded" />
 	}
 
 	if (members.length === 0) {
 		return (
-			<div className="flex items-center gap-3 rounded-[14px] border border-success/25 bg-success-soft px-5 py-3">
+			<div className="flex items-center gap-3 rounded border border-success/25 bg-success-soft px-5 py-3">
 				<CheckCircle2 className="size-4 shrink-0 text-primary" />
 				<div>
 					<p className="font-semibold text-primary">Academia saudável</p>
@@ -74,7 +74,7 @@ export function AtRiskAlertZone({ members, isLoading }: AtRiskAlertZoneProps) {
 	const hasMore = members.length > 3
 
 	return (
-		<div className="rounded-[14px] border border-warning/25 bg-warning-soft px-5 py-4">
+		<div className="rounded border border-warning/25 bg-warning-soft px-5 py-4">
 			<div className="flex items-center gap-2">
 				<AlertTriangle className="size-4 shrink-0 text-warning" />
 				<span className="font-bold text-warning">
