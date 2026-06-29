@@ -3,28 +3,33 @@
 import { Suspense } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { PageHeader } from "@/components/ui/page-header"
+import { useRetentionMetrics } from "@/features/admin/analytics/api/use-retention-metrics"
 import { AnalyticsKpiRow } from "@/features/admin/analytics/components/analytics-kpi-row"
-import { CheckInMetricsSection } from "@/features/admin/analytics/components/check-in-metrics-section"
-import { GrowthMetricsSection } from "@/features/admin/analytics/components/growth-metrics-section"
+import { AtRiskAlertZone } from "@/features/admin/analytics/components/at-risk-alert-zone"
 import { PeriodSelector } from "@/features/admin/analytics/components/period-selector"
-import { RetentionMetricsSection } from "@/features/admin/analytics/components/retention-metrics-section"
+import { RetentionMiniStats } from "@/features/admin/analytics/components/retention-mini-stats"
 import { useAnalyticsPeriod } from "@/features/admin/analytics/hooks/use-analytics-period"
 
 function AnalyticsContent() {
 	const { period, setPeriod } = useAnalyticsPeriod()
+	const retentionQuery = useRetentionMetrics(period)
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center justify-between">
-				<div />
+			<div className="flex justify-end">
 				<PeriodSelector value={period} onValueChange={setPeriod} />
 			</div>
-
+			<AtRiskAlertZone
+				members={retentionQuery.data?.atRiskMembers ?? []}
+				isLoading={retentionQuery.isPending}
+			/>
 			<AnalyticsKpiRow period={period} />
-
-			<CheckInMetricsSection period={period} />
-			<RetentionMetricsSection period={period} />
-			<GrowthMetricsSection period={period} />
+			<RetentionMiniStats
+				activeCount={retentionQuery.data?.activeCount ?? 0}
+				inactiveCount={retentionQuery.data?.inactiveCount ?? 0}
+				churnRate={retentionQuery.data?.churnRate ?? 0}
+				isLoading={retentionQuery.isPending}
+			/>
 		</div>
 	)
 }
