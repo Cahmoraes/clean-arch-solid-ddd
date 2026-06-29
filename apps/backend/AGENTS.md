@@ -6,7 +6,7 @@
 - **SEMPRE verifique APIs dos pacotes dependentes** antes de código de integração/testes, evita código errado
 - **NUNCA gambiarras** — skill `no-workarounds` p/ correção/debug + `testing-anti-patterns` p/ testes
 - **SEMPRE skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
-- **NUNCA ferramentas web** p/ código local — use Grep/Glob
+- **NUNCA ferramentas web** p/ código local — use `sg` (padrões AST: decorators, generics, shapes), Grep ou Glob. Prefira `sg` a `grep` para buscas estruturais
 - **NUNCA COMMITS sem permissão** — pergunte
 
 ## REQUISITOS OBRIGATÓRIOS
@@ -95,7 +95,7 @@ pnpm "stripe webhook"           # Iniciar listener de webhook do Stripe
 | Correção de bug / debug | `systematic-debugging` + `no-workarounds` |
 | Escrita/alteração de testes | `test-antipatterns` |
 | Criação de feature nova (domínio, use case, controller) | `brainstorming` (antes de implementar) |
-| Análise arquitetural / dead code / violações de camada | `architectural-analysis` |
+| Análise arquitetural / dead code / violações de camada | `improve-codebase-architecture` |
 | Consulta de docs de libs externas | `context7` |
 | Rebase e resolução de conflitos de merge | `git-rebase` |
 | Escrita/configuração de testes unitários e business-flow | `vitest` |
@@ -327,7 +327,7 @@ describe('CreateUserUseCase', () => {
 })
 ```
 
-**Único teste**: `pnpm test -- --t "should create"`
+**Único teste**: `pnpm test -- -t "should create"`
 **Cobertura**: `pnpm test:cov`
 
 ### 2. Testes Business Flow (`*.business-flow-test.ts`)
@@ -440,6 +440,8 @@ import { UserRepository } from './user-repository'      // ❌ Evitar
 - Migration: `pnpm prisma:migrate:dev`
 - Testes: usar `InMemory*Repository` ao invés de Prisma
 - Repositories concretos apenas em `infra/repository/`
+
+**Atenção**: após qualquer `prisma:migrate:dev`, rodar `prisma:generate` antes de usar o cliente — o client gerado fica stale e causa erro "Unknown argument" até ser regenerado.
 
 ## Ambiente e Infraestrutura
 

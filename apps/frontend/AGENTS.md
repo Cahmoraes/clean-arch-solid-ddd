@@ -6,7 +6,7 @@
 - **SEMPRE verifique APIs dos pacotes dependentes** antes de escrever código de integração/testes, evita código errado
 - **NUNCA use gambiarras** — use skill `no-workarounds` para correção/debug + `test-antipatterns` para testes
 - **SEMPRE use skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
-- **NUNCA use ferramentas** web para código local — use Grep/Glob
+- **NUNCA use ferramentas** web para código local — use `sg` (padrões AST: decorators, generics, shapes), Grep ou Glob. Prefira `sg` a `grep` para buscas estruturais
 - **NUNCA FAÇA COMMITS sem permissão** — sempre pergunte
 
 ## REQUISITOS OBRIGATÓRIOS
@@ -45,13 +45,17 @@ pnpm lint:fix           # Formatar/lint com Biome (write mode)
 
 ### Testing
 ```bash
-pnpm test               # Testes unitários (Vitest, *.test.ts/tsx)
+pnpm test -- --run      # Testes unitários sem watch (Vitest, *.test.ts/tsx)
 pnpm test -- -t "nome"  # Executar teste único por nome
 pnpm test:watch         # Testes em modo watch
 pnpm test:coverage      # Testes com cobertura
 pnpm e2e                # Testes E2E (Playwright)
 pnpm e2e:ui             # Testes E2E com UI interativa
 ```
+
+**Atenção**: `pnpm test:run` não existe neste workspace. Para rodar sem watch:
+- Da raiz do monorepo: `pnpm --filter frontend test -- --run`
+- Dentro de `apps/frontend`: `pnpm test -- --run`
 
 ## Skills Obrigatórias por Tipo de Tarefa
 
@@ -72,7 +76,6 @@ pnpm e2e:ui             # Testes E2E com UI interativa
 | Composição de componentes React | `vercel-composition-patterns` + `vercel-react-best-practices` |
 | Consulta de docs de libs | `context7` |
 | Criação de feature nova | `brainstorming` (antes de implementar) |
-| TDD | `tdd` |
 | QA e validação | `qa-execution` ou `qa-report` |
 | Decisões arquiteturais de alto impacto / trade-offs | `council` |
 | Rebase e resolução de conflitos de merge | `git-rebase` |
