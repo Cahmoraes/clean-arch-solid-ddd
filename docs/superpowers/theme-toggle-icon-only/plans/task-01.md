@@ -1,6 +1,6 @@
 # Task 1: Remover texto do ThemeToggle e animar ícone na troca de tema
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/theme-toggle-icon-only-design.md`
 **Tier:** standard

@@ -15,7 +15,7 @@
 
 ## Tarefas
 
-- [ ] 1. Remover texto do ThemeToggle e animar ícone na troca de tema → `task-01.md`
+- [x] 1. Remover texto do ThemeToggle e animar ícone na troca de tema → `task-01.md`
 
 ## Ondas de Execução
 
