@@ -28,4 +28,17 @@ describe("ThemeToggle", () => {
 		fireEvent.click(screen.getByRole("button", { name: /modo/i }))
 		expect(setTheme).toHaveBeenCalledWith("dark")
 	})
+
+	test("não exibe texto visível de Claro/Escuro", () => {
+		render(<ThemeToggle />)
+		expect(screen.queryByText("Claro")).toBeNull()
+		expect(screen.queryByText("Escuro")).toBeNull()
+	})
+
+	test("mantém o mesmo tamanho compacto em qualquer largura, sem breakpoint especial", () => {
+		render(<ThemeToggle />)
+		const button = screen.getByRole("button", { name: /modo/i })
+		expect(button.className).toContain("w-16")
+		expect(button.className).not.toContain("max-[860px]")
+	})
 })

@@ -240,3 +240,20 @@
 		animation: shimmer 1.6s ease-in-out infinite;
 	}
 }
+
+@keyframes themeToggleIconIn {
+	from {
+		opacity: 0;
+		transform: rotate(-90deg) scale(0.6);
+	}
+	to {
+		opacity: 1;
+		transform: rotate(0deg) scale(1);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.theme-toggle-icon {
+		animation: themeToggleIconIn 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+}
