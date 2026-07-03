@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify"
 
 import type { Gym } from "@/gym/domain/gym"
+import { env } from "@/shared/infra/env"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 
 import type { GymRepository } from "../repository/gym-repository"
@@ -10,7 +11,7 @@ export interface SearchGymUseCaseInput {
 	page?: number
 }
 
-export interface SearchGymUseCaseOutput {
+export interface SearchGymUseCaseOutput_DTO {
 	id: string
 	title: string
 	description: string | null
@@ -18,6 +19,15 @@ export interface SearchGymUseCaseOutput {
 	imageKey: string | null
 	latitude: number
 	longitude: number
+}
+
+export interface SearchGymUseCaseOutput {
+	data: SearchGymUseCaseOutput_DTO[]
+	pagination: {
+		total: number
+		page: number
+		limit: number
+	}
 }
 
 @injectable()
@@ -29,19 +39,30 @@ export class SearchGymUseCase {
 
 	public async execute(
 		input: SearchGymUseCaseInput,
-	): Promise<SearchGymUseCaseOutput[]> {
-		const gyms = await this.gymRepository.fetchGyms({
+	): Promise<SearchGymUseCaseOutput> {
+		const page = this.pageNumberOrDefault(input.page)
+		const { items, total } = await this.gymRepository.fetchGyms({
 			title: input.name,
-			page: this.pageNumberOrDefault(input.page),
+			page,
 		})
-		return this.createGymDTO(gyms)
+
+		const data = this.createGymDTO(items)
+
+		return {
+			data,
+			pagination: {
+				total,
+				page,
+				limit: env.ITEMS_PER_PAGE,
+			},
+		}
 	}
 
 	private pageNumberOrDefault(page?: number): number {
 		return page ?? 1
 	}
 
-	private createGymDTO(gym: Gym[]): SearchGymUseCaseOutput[] {
+	private createGymDTO(gym: Gym[]): SearchGymUseCaseOutput_DTO[] {
 		return gym.map((g) => ({
 			id: g.id,
 			title: g.title,
