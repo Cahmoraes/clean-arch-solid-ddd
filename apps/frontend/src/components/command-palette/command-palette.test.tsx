@@ -63,16 +63,19 @@ describe("CommandPalette", () => {
 	test("exibe GymGroup após digitar 2+ chars", async () => {
 		server.use(
 			http.get("*/gyms/search/:name", () =>
-				HttpResponse.json([
-					{
-						id: "1",
-						title: "Academia Power",
-						description: "",
-						phone: "",
-						latitude: 0,
-						longitude: 0,
-					},
-				]),
+				HttpResponse.json({
+					gyms: [
+						{
+							id: "1",
+							title: "Academia Power",
+							description: "",
+							phone: "",
+							latitude: 0,
+							longitude: 0,
+						},
+					],
+					pagination: { total: 1, page: 1, limit: 20 },
+				}),
 			),
 		)
 		useAuthStore.getState().setSession(makeTestJwt({ role: "MEMBER" }))

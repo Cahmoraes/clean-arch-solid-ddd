@@ -11,7 +11,11 @@ import type { CreateGymInput } from "@/features/gyms/schemas/create-gym-schema"
 import { API_BASE_URL, api } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
-import { type GymSummary, getGymsExtendedClient } from "./extended-paths"
+import {
+	type GymSummary,
+	getGymsExtendedClient,
+	type PaginatedGyms,
+} from "./extended-paths"
 
 export type Gym = GymSummary
 
@@ -44,15 +48,23 @@ function isNotFoundError(err: unknown): boolean {
 	return err instanceof ApiError && err.status === 404
 }
 
-async function searchGymsByName(name: string, page: number): Promise<Gym[]> {
+async function searchGymsByName(
+	name: string,
+	page: number,
+): Promise<PaginatedGyms> {
 	try {
 		const { data, error } = await api.GET("/gyms/search/{name}", {
 			params: { path: { name }, query: { page } },
 		})
 		if (error || !data) throw toApiError(error)
-		return data as Gym[]
+		const { gyms, pagination } = data
+		return {
+			items: gyms as GymSummary[],
+			page: pagination.page,
+			total: pagination.total,
+		}
 	} catch (err) {
-		if (isNotFoundError(err)) return []
+		if (isNotFoundError(err)) return { items: [], page, total: 0 }
 		throw toApiError(err)
 	}
 }
@@ -96,22 +108,23 @@ export function useGymsByName({
 	name,
 	page,
 	enabled = true,
-}: GymsByNameParams): UseQueryResult<Gym[], ApiError> {
+}: GymsByNameParams): UseQueryResult<PaginatedGyms, ApiError> {
 	const trimmed = name.trim()
-	return useQuery<Gym[], ApiError>({
+	return useQuery<PaginatedGyms, ApiError>({
 		queryKey: gymsKeys.search(trimmed, page),
 		enabled: enabled && trimmed.length > 0,
 		queryFn: () => searchGymsByName(trimmed, page),
 	})
 }
 
-async function fetchAllGyms(page: number): Promise<Gym[]> {
+async function fetchAllGyms(page: number): Promise<PaginatedGyms> {
 	const client = getGymsExtendedClient()
 	const { data, error } = await client.GET("/gyms", {
 		params: { query: { page } },
 	})
 	if (error || !data) throw toApiError(error)
-	return data
+	const { gyms, pagination } = data
+	return { items: gyms, page: pagination.page, total: pagination.total }
 }
 
 export interface AllGymsParams {
@@ -123,8 +136,8 @@ export interface AllGymsParams {
 export function useAllGyms({
 	page,
 	enabled = true,
-}: AllGymsParams): UseQueryResult<Gym[], ApiError> {
-	return useQuery<Gym[], ApiError>({
+}: AllGymsParams): UseQueryResult<PaginatedGyms, ApiError> {
+	return useQuery<PaginatedGyms, ApiError>({
 		queryKey: gymsKeys.list(page),
 		enabled,
 		queryFn: () => fetchAllGyms(page),

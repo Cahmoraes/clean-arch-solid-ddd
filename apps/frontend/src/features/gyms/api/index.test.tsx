@@ -42,16 +42,19 @@ describe("useGymsByName", () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/search/:name`, () =>
 				HttpResponse.json(
-					[
-						{
-							id: "gym-1",
-							title: "Iron Gym",
-							description: null,
-							phone: null,
-							latitude: -23.5,
-							longitude: -46.6,
-						},
-					],
+					{
+						gyms: [
+							{
+								id: "gym-1",
+								title: "Iron Gym",
+								description: null,
+								phone: null,
+								latitude: -23.5,
+								longitude: -46.6,
+							},
+						],
+						pagination: { total: 1, page: 1, limit: 20 },
+					},
 					{ status: 200 },
 				),
 			),
@@ -62,8 +65,10 @@ describe("useGymsByName", () => {
 			{ wrapper: Wrapper },
 		)
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
-		expect(result.current.data).toHaveLength(1)
-		expect(result.current.data?.[0]?.title).toBe("Iron Gym")
+		expect(result.current.data?.items).toHaveLength(1)
+		expect(result.current.data?.items[0]?.title).toBe("Iron Gym")
+		expect(result.current.data?.total).toBe(1)
+		expect(result.current.data?.page).toBe(1)
 	})
 
 	it("trata 404 (no gyms found) como lista vazia, sem erro", async () => {
@@ -78,7 +83,8 @@ describe("useGymsByName", () => {
 			{ wrapper: Wrapper },
 		)
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
-		expect(result.current.data).toEqual([])
+		expect(result.current.data?.items).toEqual([])
+		expect(result.current.data?.total).toBe(0)
 	})
 })
 
@@ -87,16 +93,19 @@ describe("useAllGyms", () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms`, () =>
 				HttpResponse.json(
-					[
-						{
-							id: "gym-1",
-							title: "Iron Gym",
-							description: null,
-							phone: null,
-							latitude: -23.5,
-							longitude: -46.6,
-						},
-					],
+					{
+						gyms: [
+							{
+								id: "gym-1",
+								title: "Iron Gym",
+								description: null,
+								phone: null,
+								latitude: -23.5,
+								longitude: -46.6,
+							},
+						],
+						pagination: { total: 1, page: 1, limit: 20 },
+					},
 					{ status: 200 },
 				),
 			),
@@ -106,8 +115,10 @@ describe("useAllGyms", () => {
 			wrapper: Wrapper,
 		})
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
-		expect(result.current.data).toHaveLength(1)
-		expect(result.current.data?.[0]?.title).toBe("Iron Gym")
+		expect(result.current.data?.items).toHaveLength(1)
+		expect(result.current.data?.items[0]?.title).toBe("Iron Gym")
+		expect(result.current.data?.total).toBe(1)
+		expect(result.current.data?.page).toBe(1)
 	})
 
 	it("desabilita query quando enabled é false", () => {

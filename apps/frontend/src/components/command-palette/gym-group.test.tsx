@@ -40,7 +40,10 @@ describe("GymGroup", () => {
 		server.use(
 			http.get("*/gyms/search/:name", () => {
 				fetchSpy()
-				return HttpResponse.json([])
+				return HttpResponse.json({
+					gyms: [],
+					pagination: { total: 0, page: 1, limit: 20 },
+				})
 			}),
 		)
 		renderGymGroup("academia", false)
@@ -52,7 +55,10 @@ describe("GymGroup", () => {
 		server.use(
 			http.get("*/gyms/search/:name", async () => {
 				await new Promise((r) => setTimeout(r, 100))
-				return HttpResponse.json([])
+				return HttpResponse.json({
+					gyms: [],
+					pagination: { total: 0, page: 1, limit: 20 },
+				})
 			}),
 		)
 		renderGymGroup("academia")
@@ -62,24 +68,27 @@ describe("GymGroup", () => {
 	test("exibe academias retornadas pela API", async () => {
 		server.use(
 			http.get("*/gyms/search/:name", () =>
-				HttpResponse.json([
-					{
-						id: "1",
-						title: "Academia Fit",
-						description: "",
-						phone: "",
-						latitude: 0,
-						longitude: 0,
-					},
-					{
-						id: "2",
-						title: "Gym Power",
-						description: "",
-						phone: "",
-						latitude: 0,
-						longitude: 0,
-					},
-				]),
+				HttpResponse.json({
+					gyms: [
+						{
+							id: "1",
+							title: "Academia Fit",
+							description: "",
+							phone: "",
+							latitude: 0,
+							longitude: 0,
+						},
+						{
+							id: "2",
+							title: "Gym Power",
+							description: "",
+							phone: "",
+							latitude: 0,
+							longitude: 0,
+						},
+					],
+					pagination: { total: 2, page: 1, limit: 20 },
+				}),
 			),
 		)
 		renderGymGroup("academia")
@@ -90,7 +99,14 @@ describe("GymGroup", () => {
 	})
 
 	test("exibe estado vazio quando API retorna lista vazia", async () => {
-		server.use(http.get("*/gyms/search/:name", () => HttpResponse.json([])))
+		server.use(
+			http.get("*/gyms/search/:name", () =>
+				HttpResponse.json({
+					gyms: [],
+					pagination: { total: 0, page: 1, limit: 20 },
+				}),
+			),
+		)
 		renderGymGroup("xxxx")
 		await waitFor(() =>
 			expect(
@@ -103,16 +119,19 @@ describe("GymGroup", () => {
 		const onSelect = vi.fn()
 		server.use(
 			http.get("*/gyms/search/:name", () =>
-				HttpResponse.json([
-					{
-						id: "1",
-						title: "Academia Fit",
-						description: "",
-						phone: "",
-						latitude: 0,
-						longitude: 0,
-					},
-				]),
+				HttpResponse.json({
+					gyms: [
+						{
+							id: "1",
+							title: "Academia Fit",
+							description: "",
+							phone: "",
+							latitude: 0,
+							longitude: 0,
+						},
+					],
+					pagination: { total: 1, page: 1, limit: 20 },
+				}),
 			),
 		)
 		renderWithProviders(

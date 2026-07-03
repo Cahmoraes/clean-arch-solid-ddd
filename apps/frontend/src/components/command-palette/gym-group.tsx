@@ -14,11 +14,12 @@ interface GymGroupProps {
 export function GymGroup({ query, isActive, onSelect }: GymGroupProps) {
 	const router = useRouter()
 
-	const { data: gyms = [], isLoading } = useGymsByName({
+	const { data, isLoading } = useGymsByName({
 		name: isActive ? query : "",
 		page: 1,
 		enabled: isActive,
 	})
+	const gyms = data?.items ?? []
 
 	if (!isActive) return null
 

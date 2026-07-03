@@ -39,7 +39,18 @@ export interface GymExtendedPaths {
 		get: {
 			parameters: { query?: { page?: number } }
 			responses: {
-				200: { content: { "application/json": GymSummary[] } }
+				200: {
+					content: {
+						"application/json": {
+							gyms: GymSummary[]
+							pagination: {
+								total: number
+								page: number
+								limit: number
+							}
+						}
+					}
+				}
 			}
 		}
 	}

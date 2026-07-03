@@ -96,10 +96,22 @@ export const handlers = [
 			{ status: 200 },
 		)
 	}),
-	http.get(endpoint("/gyms"), () => HttpResponse.json([], { status: 200 })),
-	http.get(endpoint("/gyms/search/:name"), () =>
-		HttpResponse.json([], { status: 200 }),
-	),
+	http.get(endpoint("/gyms"), ({ request }) => {
+		const url = new URL(request.url)
+		const page = Number(url.searchParams.get("page") ?? "1")
+		return HttpResponse.json(
+			{ gyms: [], pagination: { page, limit: 20, total: 0 } },
+			{ status: 200 },
+		)
+	}),
+	http.get(endpoint("/gyms/search/:name"), ({ request }) => {
+		const url = new URL(request.url)
+		const page = Number(url.searchParams.get("page") ?? "1")
+		return HttpResponse.json(
+			{ gyms: [], pagination: { page, limit: 20, total: 0 } },
+			{ status: 200 },
+		)
+	}),
 	http.get(endpoint("/gyms/:id"), ({ params }) =>
 		HttpResponse.json(
 			{
