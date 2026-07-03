@@ -18,7 +18,12 @@ const fetchUsersRequestSchema = z.object({
 	limit: z.coerce
 		.number()
 		.meta({ description: "Number of users per page", example: 10 }),
-	page: z.coerce.number().meta({ description: "Page number", example: 1 }),
+	page: z.coerce
+		.number()
+		.int()
+		.min(1)
+		.default(1)
+		.meta({ description: "Page number", example: 1 }),
 	query: z
 		.string()
 		.max(100)
