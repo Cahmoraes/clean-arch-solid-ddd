@@ -1,13 +1,6 @@
 "use client"
 
-import {
-	Pagination,
-	PaginationContent,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination"
+import { NumberedPagination } from "@/components/ui/numbered-pagination"
 
 interface CheckInsPagerProps {
 	page: number
@@ -23,33 +16,13 @@ export function CheckInsPager({
 	testId = "checkins",
 }: CheckInsPagerProps) {
 	if (pages <= 1) return null
+
 	return (
-		<Pagination>
-			<PaginationContent>
-				<PaginationItem>
-					<PaginationPrevious
-						data-testid={`${testId}-prev`}
-						aria-disabled={page <= 1}
-						onClick={(event) => {
-							event.preventDefault()
-							if (page > 1) onChange(page - 1)
-						}}
-					/>
-				</PaginationItem>
-				<PaginationItem>
-					<PaginationLink isActive>{page}</PaginationLink>
-				</PaginationItem>
-				<PaginationItem>
-					<PaginationNext
-						data-testid={`${testId}-next`}
-						aria-disabled={page >= pages}
-						onClick={(event) => {
-							event.preventDefault()
-							if (page < pages) onChange(page + 1)
-						}}
-					/>
-				</PaginationItem>
-			</PaginationContent>
-		</Pagination>
+		<NumberedPagination
+			page={page}
+			totalPages={pages}
+			onChange={onChange}
+			testIdPrefix={testId}
+		/>
 	)
 }
