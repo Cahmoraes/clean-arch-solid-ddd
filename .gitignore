@@ -15,6 +15,7 @@ coverage/
 .playwright-cli
 .memory/memory.db
 .serena
+.serena/*
 
 
 # Python bytecode (skill scripts)
