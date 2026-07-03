@@ -3,12 +3,13 @@ import type { Gym } from "@/gym/domain/gym"
 import { env } from "@/shared/infra/env"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 import type { GymRepository } from "../repository/gym-repository"
+import type { GymPaginationMeta } from "./gym-pagination-meta"
 
 export interface FetchAllGymsUseCaseInput {
 	page?: number
 }
 
-export interface FetchAllGymsUseCaseOutput_DTO {
+export interface FetchAllGymsUseCaseOutputDTO {
 	id: string
 	title: string
 	description: string | null
@@ -20,12 +21,8 @@ export interface FetchAllGymsUseCaseOutput_DTO {
 }
 
 export interface FetchAllGymsUseCaseOutput {
-	data: FetchAllGymsUseCaseOutput_DTO[]
-	pagination: {
-		total: number
-		page: number
-		limit: number
-	}
+	data: FetchAllGymsUseCaseOutputDTO[]
+	pagination: GymPaginationMeta
 }
 
 @injectable()
@@ -55,7 +52,7 @@ export class FetchAllGymsUseCase {
 		}
 	}
 
-	private toDTO(gyms: Gym[]): FetchAllGymsUseCaseOutput_DTO[] {
+	private toDTO(gyms: Gym[]): FetchAllGymsUseCaseOutputDTO[] {
 		return gyms.map((g) => ({
 			id: g.id,
 			title: g.title,
