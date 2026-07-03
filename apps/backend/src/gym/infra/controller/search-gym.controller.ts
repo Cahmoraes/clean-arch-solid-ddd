@@ -23,6 +23,7 @@ export type SearchGymPayload = z.infer<typeof searchGymRequestSchema>
 const searchGymParamsSchema = z.object({
 	page: z.coerce
 		.number()
+		.min(1)
 		.optional()
 		.meta({ description: "Page number for pagination", example: 1 }),
 })
