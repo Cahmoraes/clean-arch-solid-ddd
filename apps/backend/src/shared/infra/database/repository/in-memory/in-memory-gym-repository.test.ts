@@ -22,6 +22,46 @@ describe("InMemoryGymRepository", () => {
 	})
 
 	describe("fetchGyms", () => {
+		it("deve retornar items e total corretos quando há mais registros do que o tamanho da página", async () => {
+			for (let index = 1; index <= 25; index++) {
+				await sut.save(
+					makeGym({
+						id: `gym-${index}`,
+						title: `Academia ${index}`,
+					}),
+				)
+			}
+
+			const result = await sut.fetchGyms({ page: 1 })
+
+			expect(result.total).toBe(25)
+			expect(result.items).toHaveLength(env.ITEMS_PER_PAGE)
+			expect(result.items[0]?.title).toBe("Academia 1")
+		})
+
+		it("deve retornar a segunda página com os itens restantes e o mesmo total", async () => {
+			for (let index = 1; index <= 25; index++) {
+				await sut.save(
+					makeGym({
+						id: `gym-${index}`,
+						title: `Academia ${index}`,
+					}),
+				)
+			}
+
+			const result = await sut.fetchGyms({ page: 2 })
+
+			expect(result.total).toBe(25)
+			expect(result.items).toHaveLength(5)
+		})
+
+		it("deve retornar items vazio e total 0 quando não há registros", async () => {
+			const result = await sut.fetchGyms({ page: 1 })
+
+			expect(result.items).toEqual([])
+			expect(result.total).toBe(0)
+		})
+
 		it("deve retornar todas as academias paginadas quando title não for informado", async () => {
 			for (let index = 1; index <= env.ITEMS_PER_PAGE + 5; index++) {
 				await sut.save(
@@ -34,9 +74,10 @@ describe("InMemoryGymRepository", () => {
 
 			const result = await sut.fetchGyms({ page: 1 })
 
-			expect(result).toHaveLength(env.ITEMS_PER_PAGE)
-			expect(result[0]?.title).toBe("Academia 1")
-			expect(result.at(-1)?.title).toBe(`Academia ${env.ITEMS_PER_PAGE}`)
+			expect(result.items).toHaveLength(env.ITEMS_PER_PAGE)
+			expect(result.total).toBe(env.ITEMS_PER_PAGE + 5)
+			expect(result.items[0]?.title).toBe("Academia 1")
+			expect(result.items.at(-1)?.title).toBe(`Academia ${env.ITEMS_PER_PAGE}`)
 		})
 
 		it("deve retornar apenas academias cujo nome contém o título informado", async () => {
@@ -46,8 +87,9 @@ describe("InMemoryGymRepository", () => {
 
 			const result = await sut.fetchGyms({ title: "CrossFit", page: 1 })
 
-			expect(result).toHaveLength(2)
-			expect(result.map((gym) => gym.title)).toEqual([
+			expect(result.items).toHaveLength(2)
+			expect(result.total).toBe(2)
+			expect(result.items.map((gym) => gym.title)).toEqual([
 				"CrossFit Downtown",
 				"crossfit Riverside",
 			])
