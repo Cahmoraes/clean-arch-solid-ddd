@@ -47,17 +47,20 @@ describe("Buscar Academia", () => {
 			.send(input)
 
 		expect(response.status).toBe(HTTP_STATUS.OK)
-		expect(response.body).toEqual([
-			{
-				id: gym.id,
-				title: gym.title,
-				description: gym.description,
-				phone: gym.phone,
-				imageKey: gym.imageKey ?? null,
-				latitude: gym.latitude,
-				longitude: gym.longitude,
-			},
-		])
+		expect(response.body).toEqual({
+			gyms: [
+				{
+					id: gym.id,
+					title: gym.title,
+					description: gym.description,
+					phone: gym.phone,
+					imageKey: gym.imageKey ?? null,
+					latitude: gym.latitude,
+					longitude: gym.longitude,
+				},
+			],
+			pagination: { total: 1, page: 1, limit: 20 },
+		})
 	})
 
 	test("Deve retornar 404 se a academia não for encontrada", async () => {
@@ -104,7 +107,12 @@ describe("Buscar Academia", () => {
 			.send(input)
 
 		expect(response.status).toBe(HTTP_STATUS.OK)
-		expect(response.body).toHaveLength(3)
+		expect(response.body.gyms).toHaveLength(3)
+		expect(response.body.pagination).toEqual({
+			total: 23,
+			page: 2,
+			limit: 20,
+		})
 	})
 
 	function toPath(path: string) {
