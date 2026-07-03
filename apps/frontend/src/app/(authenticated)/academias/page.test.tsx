@@ -76,7 +76,10 @@ describe("AcademiasPage", () => {
 	test("exibe lista de academias no load inicial (modo browse)", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms`, () =>
-				HttpResponse.json(fakeGyms(3), { status: 200 }),
+				HttpResponse.json({
+					gyms: fakeGyms(3),
+					pagination: { total: 3, page: 1, limit: 20 },
+				}),
 			),
 		)
 		renderWithProviders(<AcademiasPage />)
@@ -90,7 +93,10 @@ describe("AcademiasPage", () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/search/:name`, async () => {
 				await deferred.promise
-				return HttpResponse.json(fakeGyms(3), { status: 200 })
+				return HttpResponse.json({
+					gyms: fakeGyms(3),
+					pagination: { total: 3, page: 1, limit: 20 },
+				})
 			}),
 		)
 		const user = userEvent.setup()
@@ -128,14 +134,16 @@ describe("AcademiasPage", () => {
 		).toBeInTheDocument()
 	})
 
-	test("paginação: Próxima incrementa página e nova request é feita", async () => {
-		const requestedPages: string[] = []
+	test("paginação: clicar na página 2 ativa o link correspondente", async () => {
 		const RESULTS_PER_PAGE = 20
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/search/:name`, ({ request }) => {
 				const url = new URL(request.url)
-				requestedPages.push(url.searchParams.get("page") ?? "1")
-				return HttpResponse.json(fakeGyms(RESULTS_PER_PAGE), { status: 200 })
+				const page = Number(url.searchParams.get("page") ?? "1")
+				return HttpResponse.json({
+					gyms: fakeGyms(RESULTS_PER_PAGE),
+					pagination: { total: 45, page, limit: RESULTS_PER_PAGE },
+				})
 			}),
 		)
 		const user = userEvent.setup()
@@ -144,26 +152,22 @@ describe("AcademiasPage", () => {
 		await user.click(screen.getByTestId("gym-search-submit"))
 
 		await screen.findByTestId("gym-card-gym-1")
-		expect(screen.getByTestId("gym-pagination-page").textContent).toMatch(
-			/Página 1/,
-		)
+		const page2Link = await screen.findByTestId("gym-pagination-page-2")
+		await user.click(page2Link)
 
-		await user.click(screen.getByTestId("gym-pagination-next"))
-
-		await waitFor(() => {
-			expect(screen.getByTestId("gym-pagination-page").textContent).toMatch(
-				/Página 2/,
-			)
-		})
-		await waitFor(() => {
-			expect(requestedPages).toContain("2")
+		await waitFor(async () => {
+			const activePage = await screen.findByTestId("gym-pagination-page-2")
+			expect(activePage).toHaveAttribute("aria-current", "page")
 		})
 	})
 
 	test("links dos cards apontam para detalhe da academia", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/search/:name`, () =>
-				HttpResponse.json(fakeGyms(2), { status: 200 }),
+				HttpResponse.json({
+					gyms: fakeGyms(2),
+					pagination: { total: 2, page: 1, limit: 20 },
+				}),
 			),
 		)
 		const user = userEvent.setup()
@@ -190,7 +194,10 @@ describe("AcademiasPage", () => {
 		setUser("ADMIN")
 		server.use(
 			http.get(`${apiBaseUrl}/gyms`, () =>
-				HttpResponse.json(fakeGyms(2), { status: 200 }),
+				HttpResponse.json({
+					gyms: fakeGyms(2),
+					pagination: { total: 2, page: 1, limit: 20 },
+				}),
 			),
 		)
 		renderWithProviders(<AcademiasPage />)
@@ -203,7 +210,10 @@ describe("AcademiasPage", () => {
 		setUser("MEMBER")
 		server.use(
 			http.get(`${apiBaseUrl}/gyms`, () =>
-				HttpResponse.json(fakeGyms(2), { status: 200 }),
+				HttpResponse.json({
+					gyms: fakeGyms(2),
+					pagination: { total: 2, page: 1, limit: 20 },
+				}),
 			),
 		)
 		renderWithProviders(<AcademiasPage />)
