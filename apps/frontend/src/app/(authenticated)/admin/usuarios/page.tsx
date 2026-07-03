@@ -2,19 +2,12 @@
 
 import { Users } from "lucide-react"
 import { useSearchParams } from "next/navigation"
-import type { KeyboardEvent, MouseEvent } from "react"
+import type { KeyboardEvent } from "react"
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { EmptyState } from "@/components/ui/empty-state"
+import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { PageHeader } from "@/components/ui/page-header"
-import {
-	Pagination,
-	PaginationContent,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from "@/components/ui/pagination"
 import { SearchBar } from "@/components/ui/search-bar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useUserStats } from "@/features/admin/api/use-user-stats"
@@ -41,13 +34,6 @@ function clampPage(page: number, totalPages: number): number {
 	if (page < 1) return 1
 	if (page > totalPages) return totalPages
 	return page
-}
-
-function pageNumbers(currentPage: number, totalPages: number): number[] {
-	if (totalPages <= 0) return []
-	const max = Math.min(totalPages, 5)
-	const start = Math.max(1, Math.min(currentPage - 2, totalPages - max + 1))
-	return Array.from({ length: max }, (_, idx) => start + idx)
 }
 
 function LoadingState() {
@@ -89,58 +75,6 @@ function UsersEmpty() {
 	)
 }
 
-interface UsersPaginationProps {
-	page: number
-	totalPages: number
-	onChange: (target: number) => void
-}
-
-function UsersPagination({ page, totalPages, onChange }: UsersPaginationProps) {
-	function handlePrev(event: MouseEvent) {
-		event.preventDefault()
-		if (page > 1) onChange(page - 1)
-	}
-	function handleNext(event: MouseEvent) {
-		event.preventDefault()
-		if (page < totalPages) onChange(page + 1)
-	}
-	function handleSelect(event: MouseEvent, target: number) {
-		event.preventDefault()
-		onChange(target)
-	}
-	return (
-		<Pagination data-testid="admin-users-pagination" className="mt-6">
-			<PaginationContent>
-				<PaginationItem>
-					<PaginationPrevious
-						data-testid="admin-users-prev"
-						aria-disabled={page <= 1}
-						onClick={handlePrev}
-					/>
-				</PaginationItem>
-				{pageNumbers(page, totalPages).map((p) => (
-					<PaginationItem key={p}>
-						<PaginationLink
-							data-testid={`admin-users-page-${p}`}
-							isActive={p === page}
-							onClick={(event) => handleSelect(event, p)}
-						>
-							{p}
-						</PaginationLink>
-					</PaginationItem>
-				))}
-				<PaginationItem>
-					<PaginationNext
-						data-testid="admin-users-next"
-						aria-disabled={page >= totalPages}
-						onClick={handleNext}
-					/>
-				</PaginationItem>
-			</PaginationContent>
-		</Pagination>
-	)
-}
-
 interface UsersListProps {
 	users: ReadonlyArray<AdminUser>
 	page: number
@@ -171,10 +105,12 @@ function UsersList({
 				))}
 			</ul>
 			{totalPages > 1 ? (
-				<UsersPagination
+				<NumberedPagination
 					page={page}
 					totalPages={totalPages}
 					onChange={onPageChange}
+					testIdPrefix="admin-users"
+					className="mt-6"
 				/>
 			) : null}
 		</>
