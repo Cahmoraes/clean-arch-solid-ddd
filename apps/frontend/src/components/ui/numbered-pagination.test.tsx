@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, test, vi } from "vitest"
 import { NumberedPagination } from "./numbered-pagination"
 
 describe("NumberedPagination", () => {
-	it("renders testids with given prefix", () => {
+	test("renderiza testids com prefixo fornecido", () => {
 		render(
 			<NumberedPagination
 				page={1}
@@ -20,7 +20,7 @@ describe("NumberedPagination", () => {
 		expect(screen.getByTestId("test-next")).toBeInTheDocument()
 	})
 
-	it("calls onChange with clicked page", async () => {
+	test("chama onChange com página clicada", async () => {
 		const onChange = vi.fn()
 		const user = userEvent.setup()
 		render(
@@ -37,7 +37,7 @@ describe("NumberedPagination", () => {
 		expect(onChange).toHaveBeenCalledWith(2)
 	})
 
-	it("calls onChange with page - 1 on prev click", async () => {
+	test("chama onChange com página - 1 ao clicar anterior", async () => {
 		const onChange = vi.fn()
 		const user = userEvent.setup()
 		render(
@@ -54,7 +54,7 @@ describe("NumberedPagination", () => {
 		expect(onChange).toHaveBeenCalledWith(1)
 	})
 
-	it("calls onChange with page + 1 on next click", async () => {
+	test("chama onChange com página + 1 ao clicar próximo", async () => {
 		const onChange = vi.fn()
 		const user = userEvent.setup()
 		render(
@@ -71,7 +71,7 @@ describe("NumberedPagination", () => {
 		expect(onChange).toHaveBeenCalledWith(2)
 	})
 
-	it("does not go below page 1 on prev", async () => {
+	test("não vai abaixo de página 1 ao clicar anterior", async () => {
 		const onChange = vi.fn()
 		const user = userEvent.setup()
 		render(
@@ -88,7 +88,7 @@ describe("NumberedPagination", () => {
 		expect(onChange).not.toHaveBeenCalled()
 	})
 
-	it("does not go above totalPages on next", async () => {
+	test("não vai acima de totalPages ao clicar próximo", async () => {
 		const onChange = vi.fn()
 		const user = userEvent.setup()
 		render(
@@ -105,7 +105,7 @@ describe("NumberedPagination", () => {
 		expect(onChange).not.toHaveBeenCalled()
 	})
 
-	it("marks correct page as active", () => {
+	test("marca página correta como ativa", () => {
 		render(
 			<NumberedPagination
 				page={2}
@@ -119,7 +119,7 @@ describe("NumberedPagination", () => {
 		expect(page2).toHaveAttribute("aria-current", "page")
 	})
 
-	it("shows window of 5 pages max", () => {
+	test("mostra janela de máximo 5 páginas", () => {
 		render(
 			<NumberedPagination
 				page={5}
