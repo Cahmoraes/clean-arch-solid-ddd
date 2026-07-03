@@ -2,6 +2,7 @@ import type { Decimal } from "@prisma/client/runtime/client"
 import { inject, injectable } from "inversify"
 import type {
 	FetchGymsInput,
+	FetchGymsOutput,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
@@ -76,20 +77,25 @@ export class PrismaGymRepository implements GymRepository {
 		})
 	}
 
-	public async fetchGyms(input: FetchGymsInput): Promise<Gym[]> {
-		const gymData = await this.prismaClient.gym.findMany({
-			where: input.title
-				? {
-						title: {
-							contains: input.title,
-							mode: "insensitive",
-						},
-					}
-				: undefined,
-			skip: (input.page - 1) * env.ITEMS_PER_PAGE,
-			take: env.ITEMS_PER_PAGE,
-		})
-		return gymData.map(this.createGym)
+	public async fetchGyms(input: FetchGymsInput): Promise<FetchGymsOutput> {
+		const where: Prisma.GymWhereInput | undefined = input.title
+			? {
+					title: {
+						contains: input.title,
+						mode: "insensitive" as const,
+					},
+				}
+			: undefined
+
+		const skip = (input.page - 1) * env.ITEMS_PER_PAGE
+		const take = env.ITEMS_PER_PAGE
+
+		const [gymData, total] = await Promise.all([
+			this.prismaClient.gym.findMany({ where, skip, take }),
+			this.prismaClient.gym.count({ where }),
+		])
+
+		return { items: gymData.map(this.createGym), total }
 	}
 
 	private createGym(props: GymCreateProps): Gym {

@@ -23,6 +23,7 @@ export type SearchGymPayload = z.infer<typeof searchGymRequestSchema>
 const searchGymParamsSchema = z.object({
 	page: z.coerce
 		.number()
+		.min(1)
 		.optional()
 		.meta({ description: "Page number for pagination", example: 1 }),
 })
@@ -86,14 +87,45 @@ export class SearchGymController extends BaseController {
 
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
-			body: result,
+			body: { gyms: result.data, pagination: result.pagination },
 		})
 	}
 
-	private isGymNotFound(result: SearchGymUseCaseOutput[]): boolean {
-		return !result.length
+	private isGymNotFound(result: SearchGymUseCaseOutput): boolean {
+		return !result.data.length
 	}
 }
+
+const gymSearchItemSchema = z.object({
+	id: z.string().meta({
+		description: "Gym ID",
+		example: "550e8400-e29b-41d4-a716-446655440000",
+	}),
+	title: z.string().meta({ description: "Gym name", example: "Iron Gym" }),
+	description: z.string().nullable().meta({ description: "Gym description" }),
+	phone: z.string().nullable().meta({ description: "Gym phone number" }),
+	imageKey: z
+		.string()
+		.nullable()
+		.meta({ description: "Relative key of the gym image" }),
+	latitude: z.number().meta({ description: "Latitude", example: -23.5505 }),
+	longitude: z.number().meta({ description: "Longitude", example: -46.6333 }),
+})
+
+const searchGymResponseSchema = z.object({
+	gyms: z
+		.array(gymSearchItemSchema)
+		.meta({ description: "Lista de academias encontradas na busca" }),
+	pagination: z
+		.object({
+			total: z
+				.number()
+				.meta({ description: "Total de academias que satisfazem o filtro" }),
+			page: z.number().meta({ description: "Página atual" }),
+			limit: z.number().meta({ description: "Itens por página" }),
+		})
+		.meta({ description: "Metadados de paginação" }),
+})
 
 function makeSearchGymSwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
@@ -106,35 +138,7 @@ function makeSearchGymSwaggerSchema(): Schema {
 		responses: {
 			200: {
 				description: "List of gyms matching the search",
-				schema: z.array(
-					z.object({
-						id: z.string().meta({
-							description: "Gym ID",
-							example: "550e8400-e29b-41d4-a716-446655440000",
-						}),
-						title: z
-							.string()
-							.meta({ description: "Gym name", example: "Iron Gym" }),
-						description: z
-							.string()
-							.nullable()
-							.meta({ description: "Gym description" }),
-						phone: z
-							.string()
-							.nullable()
-							.meta({ description: "Gym phone number" }),
-						imageKey: z
-							.string()
-							.nullable()
-							.meta({ description: "Relative key of the gym image" }),
-						latitude: z
-							.number()
-							.meta({ description: "Latitude", example: -23.5505 }),
-						longitude: z
-							.number()
-							.meta({ description: "Longitude", example: -46.6333 }),
-					}),
-				),
+				schema: searchGymResponseSchema,
 			},
 			400: {
 				description: "Invalid params",

@@ -1808,35 +1808,47 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /**
-                             * @description Gym ID
-                             * @example 550e8400-e29b-41d4-a716-446655440000
-                             */
-                            id: string;
-                            /**
-                             * @description Gym name
-                             * @example Iron Gym
-                             */
-                            title: string;
-                            /** @description Gym description */
-                            description: string | null;
-                            /** @description Gym phone number */
-                            phone: string | null;
-                            /** @description Full gym address */
-                            address: string | null;
-                            /** @description Relative key of the gym image */
-                            imageKey: string | null;
-                            /**
-                             * @description Latitude
-                             * @example -23.5505
-                             */
-                            latitude: number;
-                            /**
-                             * @description Longitude
-                             * @example -46.6333
-                             */
-                            longitude: number;
-                        }[];
+                            /** @description Lista de academias da página atual */
+                            gyms: {
+                                /**
+                                 * @description Gym ID
+                                 * @example 550e8400-e29b-41d4-a716-446655440000
+                                 */
+                                id: string;
+                                /**
+                                 * @description Gym name
+                                 * @example Iron Gym
+                                 */
+                                title: string;
+                                /** @description Gym description */
+                                description: string | null;
+                                /** @description Gym phone number */
+                                phone: string | null;
+                                /** @description Full gym address */
+                                address: string | null;
+                                /** @description Relative key of the gym image */
+                                imageKey: string | null;
+                                /**
+                                 * @description Latitude
+                                 * @example -23.5505
+                                 */
+                                latitude: number;
+                                /**
+                                 * @description Longitude
+                                 * @example -46.6333
+                                 */
+                                longitude: number;
+                            }[];
+                            /** @description Metadados de paginação */
+                            pagination: {
+                                /** @description Total de academias que satisfazem o filtro */
+                                total: number;
+                                /** @description Página atual */
+                                page: number;
+                                /** @description Itens por página */
+                                limit: number;
+                            };
+                        };
                     };
                 };
             };
@@ -2187,33 +2199,45 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            /**
-                             * @description Gym ID
-                             * @example 550e8400-e29b-41d4-a716-446655440000
-                             */
-                            id: string;
-                            /**
-                             * @description Gym name
-                             * @example Iron Gym
-                             */
-                            title: string;
-                            /** @description Gym description */
-                            description: string | null;
-                            /** @description Gym phone number */
-                            phone: string | null;
-                            /** @description Relative key of the gym image */
-                            imageKey: string | null;
-                            /**
-                             * @description Latitude
-                             * @example -23.5505
-                             */
-                            latitude: number;
-                            /**
-                             * @description Longitude
-                             * @example -46.6333
-                             */
-                            longitude: number;
-                        }[];
+                            /** @description Lista de academias encontradas na busca */
+                            gyms: {
+                                /**
+                                 * @description Gym ID
+                                 * @example 550e8400-e29b-41d4-a716-446655440000
+                                 */
+                                id: string;
+                                /**
+                                 * @description Gym name
+                                 * @example Iron Gym
+                                 */
+                                title: string;
+                                /** @description Gym description */
+                                description: string | null;
+                                /** @description Gym phone number */
+                                phone: string | null;
+                                /** @description Relative key of the gym image */
+                                imageKey: string | null;
+                                /**
+                                 * @description Latitude
+                                 * @example -23.5505
+                                 */
+                                latitude: number;
+                                /**
+                                 * @description Longitude
+                                 * @example -46.6333
+                                 */
+                                longitude: number;
+                            }[];
+                            /** @description Metadados de paginação */
+                            pagination: {
+                                /** @description Total de academias que satisfazem o filtro */
+                                total: number;
+                                /** @description Página atual */
+                                page: number;
+                                /** @description Itens por página */
+                                limit: number;
+                            };
+                        };
                     };
                 };
                 /** @description Invalid params */

@@ -31,7 +31,10 @@ describe("Listar Academias", () => {
 		const response = await request(fastifyServer.server).get(GymRoutes.LIST)
 
 		expect(response.status).toBe(HTTP_STATUS.OK)
-		expect(response.body).toEqual([])
+		expect(response.body).toEqual({
+			gyms: [],
+			pagination: { total: 0, page: 1, limit: 20 },
+		})
 	})
 
 	test("Deve retornar lista de academias cadastradas", async () => {
@@ -55,8 +58,13 @@ describe("Listar Academias", () => {
 		const response = await request(fastifyServer.server).get(GymRoutes.LIST)
 
 		expect(response.status).toBe(HTTP_STATUS.OK)
-		expect(response.body).toHaveLength(2)
-		expect(response.body[0]).toMatchObject({ title: "Academia Teste 1" })
+		expect(response.body.gyms).toHaveLength(2)
+		expect(response.body.gyms[0]).toMatchObject({ title: "Academia Teste 1" })
+		expect(response.body.pagination).toEqual({
+			total: 2,
+			page: 1,
+			limit: 20,
+		})
 	})
 
 	test("Deve paginar os resultados corretamente", async () => {
@@ -75,13 +83,23 @@ describe("Listar Academias", () => {
 			.query({ page: 1 })
 
 		expect(page1.status).toBe(HTTP_STATUS.OK)
-		expect(page1.body).toHaveLength(20)
+		expect(page1.body.gyms).toHaveLength(20)
+		expect(page1.body.pagination).toEqual({
+			total: 23,
+			page: 1,
+			limit: 20,
+		})
 
 		const page2 = await request(fastifyServer.server)
 			.get(GymRoutes.LIST)
 			.query({ page: 2 })
 
 		expect(page2.status).toBe(HTTP_STATUS.OK)
-		expect(page2.body).toHaveLength(3)
+		expect(page2.body.gyms).toHaveLength(3)
+		expect(page2.body.pagination).toEqual({
+			total: 23,
+			page: 2,
+			limit: 20,
+		})
 	})
 })

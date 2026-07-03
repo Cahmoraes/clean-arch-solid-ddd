@@ -16,6 +16,10 @@ import { useAuthStore } from "@/lib/auth/auth-store"
 
 const RESULTS_PER_PAGE = 20
 
+function computeTotalPages(total: number | undefined): number {
+	return Math.ceil((total ?? 0) / RESULTS_PER_PAGE)
+}
+
 interface AcademiasContentProps {
 	initialSearch: string
 }
@@ -34,7 +38,8 @@ function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 	const allGymsQuery = useAllGyms({ page, enabled: isBrowseMode })
 	const searchQuery = useGymsByName({ name: trimmed, page })
 	const activeQuery = isBrowseMode ? allGymsQuery : searchQuery
-	const items = activeQuery.data ?? []
+	const items = activeQuery.data?.items ?? []
+	const totalPages = computeTotalPages(activeQuery.data?.total)
 	const showPagination =
 		!activeQuery.isLoading && !activeQuery.isError && items.length > 0
 
@@ -110,10 +115,8 @@ function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 					<div className="mt-8">
 						<GymPagination
 							page={page}
-							hasPrevious={page > 1}
-							hasNext={items.length >= RESULTS_PER_PAGE}
-							onPrevious={() => setPage((current) => Math.max(1, current - 1))}
-							onNext={() => setPage((current) => current + 1)}
+							totalPages={totalPages}
+							onChange={setPage}
 						/>
 					</div>
 				) : null}

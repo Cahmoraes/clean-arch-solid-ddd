@@ -1,13 +1,15 @@
 import { inject, injectable } from "inversify"
 import type { Gym } from "@/gym/domain/gym"
+import { env } from "@/shared/infra/env"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 import type { GymRepository } from "../repository/gym-repository"
+import type { GymPaginationMeta } from "./gym-pagination-meta"
 
 export interface FetchAllGymsUseCaseInput {
 	page?: number
 }
 
-export interface FetchAllGymsUseCaseOutput {
+export interface FetchAllGymsUseCaseOutputDTO {
 	id: string
 	title: string
 	description: string | null
@@ -16,6 +18,11 @@ export interface FetchAllGymsUseCaseOutput {
 	imageKey: string | null
 	latitude: number
 	longitude: number
+}
+
+export interface FetchAllGymsUseCaseOutput {
+	data: FetchAllGymsUseCaseOutputDTO[]
+	pagination: GymPaginationMeta
 }
 
 @injectable()
@@ -27,14 +34,25 @@ export class FetchAllGymsUseCase {
 
 	public async execute(
 		input: FetchAllGymsUseCaseInput,
-	): Promise<FetchAllGymsUseCaseOutput[]> {
-		const gyms = await this.gymRepository.fetchGyms({
-			page: input.page ?? 1,
+	): Promise<FetchAllGymsUseCaseOutput> {
+		const page = input.page ?? 1
+		const { items, total } = await this.gymRepository.fetchGyms({
+			page,
 		})
-		return this.toDTO(gyms)
+
+		const data = this.toDTO(items)
+
+		return {
+			data,
+			pagination: {
+				total,
+				page,
+				limit: env.ITEMS_PER_PAGE,
+			},
+		}
 	}
 
-	private toDTO(gyms: Gym[]): FetchAllGymsUseCaseOutput[] {
+	private toDTO(gyms: Gym[]): FetchAllGymsUseCaseOutputDTO[] {
 		return gyms.map((g) => ({
 			id: g.id,
 			title: g.title,

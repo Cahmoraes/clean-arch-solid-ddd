@@ -58,10 +58,42 @@ export class FetchAllGymsController extends BaseController {
 		})
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
-			body: result,
+			body: { gyms: result.data, pagination: result.pagination },
 		})
 	}
 }
+
+const gymSummarySchema = z.object({
+	id: z.string().meta({
+		description: "Gym ID",
+		example: "550e8400-e29b-41d4-a716-446655440000",
+	}),
+	title: z.string().meta({ description: "Gym name", example: "Iron Gym" }),
+	description: z.string().nullable().meta({ description: "Gym description" }),
+	phone: z.string().nullable().meta({ description: "Gym phone number" }),
+	address: z.string().nullable().meta({ description: "Full gym address" }),
+	imageKey: z
+		.string()
+		.nullable()
+		.meta({ description: "Relative key of the gym image" }),
+	latitude: z.number().meta({ description: "Latitude", example: -23.5505 }),
+	longitude: z.number().meta({ description: "Longitude", example: -46.6333 }),
+})
+
+const fetchAllGymsResponseSchema = z.object({
+	gyms: z
+		.array(gymSummarySchema)
+		.meta({ description: "Lista de academias da página atual" }),
+	pagination: z
+		.object({
+			total: z
+				.number()
+				.meta({ description: "Total de academias que satisfazem o filtro" }),
+			page: z.number().meta({ description: "Página atual" }),
+			limit: z.number().meta({ description: "Itens por página" }),
+		})
+		.meta({ description: "Metadados de paginação" }),
+})
 
 function makeFetchAllGymsSwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
@@ -73,39 +105,7 @@ function makeFetchAllGymsSwaggerSchema(): Schema {
 		responses: {
 			200: {
 				description: "List of gyms",
-				schema: z.array(
-					z.object({
-						id: z.string().meta({
-							description: "Gym ID",
-							example: "550e8400-e29b-41d4-a716-446655440000",
-						}),
-						title: z
-							.string()
-							.meta({ description: "Gym name", example: "Iron Gym" }),
-						description: z
-							.string()
-							.nullable()
-							.meta({ description: "Gym description" }),
-						phone: z
-							.string()
-							.nullable()
-							.meta({ description: "Gym phone number" }),
-						address: z
-							.string()
-							.nullable()
-							.meta({ description: "Full gym address" }),
-						imageKey: z
-							.string()
-							.nullable()
-							.meta({ description: "Relative key of the gym image" }),
-						latitude: z
-							.number()
-							.meta({ description: "Latitude", example: -23.5505 }),
-						longitude: z
-							.number()
-							.meta({ description: "Longitude", example: -46.6333 }),
-					}),
-				),
+				schema: fetchAllGymsResponseSchema,
 			},
 		},
 	})

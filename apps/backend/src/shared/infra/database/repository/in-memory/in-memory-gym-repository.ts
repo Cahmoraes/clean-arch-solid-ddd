@@ -2,6 +2,7 @@ import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
 import type {
 	FetchGymsInput,
+	FetchGymsOutput,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
@@ -56,18 +57,19 @@ export class InMemoryGymRepository implements GymRepository {
 		return this.gyms.find((gym) => gym.id === id)
 	}
 
-	public async fetchGyms(input: FetchGymsInput): Promise<Gym[]> {
+	public async fetchGyms(input: FetchGymsInput): Promise<FetchGymsOutput> {
 		const title = input.title?.toLocaleLowerCase()
 		const filteredGyms = title
 			? this.gyms.filter((gym) => gym.title.toLocaleLowerCase().includes(title))
 			: this.gyms
 
-		return filteredGyms
-			.toArray()
-			.slice(
-				(input.page - 1) * env.ITEMS_PER_PAGE,
-				input.page * env.ITEMS_PER_PAGE,
-			)
+		const all = filteredGyms.toArray()
+		const items = all.slice(
+			(input.page - 1) * env.ITEMS_PER_PAGE,
+			input.page * env.ITEMS_PER_PAGE,
+		)
+
+		return { items, total: all.length }
 	}
 
 	public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {

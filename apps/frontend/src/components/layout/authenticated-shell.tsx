@@ -286,7 +286,7 @@ export function AuthenticatedShell({
 				</div>
 			</aside>
 
-			<div className="flex min-w-0 flex-col">
+			<div className="flex min-h-0 min-w-0 flex-col">
 				<header className="sticky top-0 z-30 flex items-center gap-4 border-b border-border bg-background/80 px-8 py-4 backdrop-blur-md max-[560px]:px-4">
 					<SearchBar
 						showShortcut
