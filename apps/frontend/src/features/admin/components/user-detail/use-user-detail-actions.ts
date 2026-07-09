@@ -42,8 +42,10 @@ interface PermissionCtx {
 
 function canEditProfileRule(ctx: PermissionCtx): boolean {
 	if (!ctx.currentUser) return false
-	if (ctx.isSelf) return true
-	return ctx.requesterIsRoot
+	if (ctx.isSelf) return false
+	if (ctx.requesterIsRoot) return true
+	if (ctx.targetIsRoot) return false
+	return ctx.requesterIsAdmin && ctx.targetIsMember
 }
 
 function canChangeStatusRule(ctx: PermissionCtx): boolean {

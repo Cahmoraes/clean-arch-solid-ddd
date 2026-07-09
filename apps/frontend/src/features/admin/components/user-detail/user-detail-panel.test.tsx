@@ -72,13 +72,26 @@ describe("UserDetailPanel", () => {
 		).not.toBeInTheDocument()
 	})
 
-	test("admin comum não exibe o botão Editar dados ao visualizar outro usuário", () => {
+	test("admin comum exibe o botão Editar dados ao visualizar um membro", () => {
 		useAuthStore
 			.getState()
 			.setSession(
 				makeTestJwt({ sub: "admin-id", role: "ADMIN", isSuperAdmin: false }),
 			)
 		renderPanel(buildUser({ id: "target-id", role: "MEMBER" }))
+
+		expect(
+			screen.getByRole("button", { name: /editar dados/i }),
+		).toBeInTheDocument()
+	})
+
+	test("admin comum não exibe o botão Editar dados ao visualizar o próprio perfil", () => {
+		useAuthStore
+			.getState()
+			.setSession(
+				makeTestJwt({ sub: "admin-id", role: "ADMIN", isSuperAdmin: false }),
+			)
+		renderPanel(buildUser({ id: "admin-id", role: "ADMIN" }))
 
 		expect(
 			screen.queryByRole("button", { name: /editar dados/i }),

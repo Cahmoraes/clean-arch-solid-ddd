@@ -83,7 +83,7 @@ export class UpdateUserProfileController extends BaseController {
 
 		return ResponseFactory.CREATED({
 			body: {
-				message: "User created",
+				message: "User updated",
 				email: profileUpdateResult.value.email,
 			},
 		})
@@ -93,7 +93,7 @@ export class UpdateUserProfileController extends BaseController {
 const updateUserProfileResponseSchema = z.object({
 	message: z
 		.string()
-		.meta({ description: "Success message", example: "User created" }),
+		.meta({ description: "Success message", example: "User updated" }),
 	email: z
 		.string()
 		.meta({ description: "Updated user email", example: "john@example.com" }),

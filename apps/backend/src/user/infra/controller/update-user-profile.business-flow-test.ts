@@ -76,7 +76,7 @@ describe("Atualizar Perfil de Usuário", () => {
 
 		expect(response.status).toBe(HTTP_STATUS.CREATED)
 		expect(response.body).toEqual({
-			message: "User created",
+			message: "User updated",
 			email: "new@profile.test",
 		})
 		const updated = await userRepository.userOfId(targetMemberId)
