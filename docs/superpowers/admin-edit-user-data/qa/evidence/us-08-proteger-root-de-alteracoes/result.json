@@ -1,0 +1,12 @@
+{
+  "us_id": "US-08",
+  "user_story": "Como qualquer administrador, eu quero que o administrador root (admin@admin) nunca tenha seu status ou role alterados por ninguém para que a conta raiz permaneça protegida.",
+  "requirements": ["FR-009"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "apps/backend/src/user/domain/service/user-management-policy.test.ts: 15/15 passed — confirma canChangeStatus/canChangeRole retornam false quando target é root (isSuperAdmin true), inclusive root tentando alterar OUTRO root (linhas 103-110: 'root não altera o próprio role' cobre root x root e root x anotherRoot). apps/backend/src/user/application/use-case/{promote-to-admin,demote-from-admin,suspend-user,active-user,update-user-profile}.usecase.test.ts: 45/45 passed. Verificado em apps/backend/src/user/domain/user.ts que _isSuperAdmin é setado apenas no construtor (linha 117, a partir de props.isSuperAdmin) e exposto só via getter (linha 207-208) — sem setter ou método de mutação em toda a entidade User, logo isSuperAdmin é imutável pós-criação.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "screenshot intentionally skipped — backend authorization invariant. Cobertura de testes já existente é abrangente (root x root, admin x root, verificação de imutabilidade de isSuperAdmin); nenhum teste novo necessário."
+}

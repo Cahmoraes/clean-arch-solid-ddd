@@ -1,0 +1,13 @@
+docs/superpowers/admin-edit-user-data/qa/evidence/us-07-ver-apenas-campos-permitidos/us-07-admin-vs-admin-gap.test.tsx
+
+Motivo: user-detail-panel.test.tsx cobria admin comum vendo MEMBER (botao visivel)
+e admin comum vendo o proprio perfil (botao oculto), mas nao cobria o caso central
+de FR-002/US-07 no nivel de componente: admin comum vendo OUTRO admin (id diferente,
+role ADMIN) deve ocultar o botao "Editar dados". Regra unitaria ja existia em
+use-user-detail-actions.test.ts ("admin comum nao pode editar perfil de outro admin"),
+mas faltava o equivalente de integracao no UserDetailPanel.
+
+Execucao: por o teste viver fora de src/ (evidence dir, por restricao do prompt),
+rodou-se com config vitest temporaria (aliases apontando para
+apps/frontend/node_modules), criada e removida so para essa execucao —
+nao ficou nada no source tree. Resultado: 1 passed (1 test file).

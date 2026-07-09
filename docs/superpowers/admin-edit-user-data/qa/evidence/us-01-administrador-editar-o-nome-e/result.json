@@ -1,0 +1,12 @@
+{
+  "us_id": "US-01",
+  "user_story": "Como administrador, eu quero editar o nome e o email de um membro para que eu possa corrigir cadastros incorretos.",
+  "requirements": ["FR-001", "FR-003", "FR-005", "FR-006", "FR-010"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Backend: apps/backend/src/user/domain/service/user-management-policy.test.ts and apps/backend/src/user/application/use-case/update-user-profile.usecase.test.ts covered in full unit suite run (107 test files, 641 tests, 0 failures). Backend business-flow apps/backend/src/user/infra/controller/update-user-profile.business-flow-test.ts run directly: 2 suites, 6 tests, 0 failures, including 'Admin deve atualizar nome e email de um membro e responder 201' (full flow: admin auth -> PATCH /users/:userId -> 201 + persisted change), 401 no JWT, 400 invalid email, 404 target not found (FR-012), 403 admin comum editando outro admin (FR-012), and regression FR-011 self-edit PATCH /users/me. Frontend: apps/frontend/src/features/admin/api/use-update-user.test.tsx and apps/frontend/src/features/admin/components/user-detail/*.test.tsx run directly: 91 tests, 0 failures.",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Comprehensive existing tests cover FR-001/FR-003 (edit flow, partial field update) and FR-005/FR-006/FR-010 (authorization matrix in UserManagementPolicy.canEditProfile: admin comum edits MEMBER, denies self-edit, denies editing other admins). No new acceptance test needed. Screenshot captured via playwright-cli: logged in as seed super admin (admin@admin.com), navigated to /admin/usuarios, opened member 'Beverly Botsford' detail panel, clicked 'Editar dados' to reveal inline-editable Nome/E-mail fields (Aba Detalhes editável inline). Full stack (docker services, backend dev on :3333, frontend dev on :3000) started fresh for this verification; chromium browser for playwright-cli was installed on demand."
+}

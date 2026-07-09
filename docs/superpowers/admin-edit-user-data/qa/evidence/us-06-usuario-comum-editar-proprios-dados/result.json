@@ -1,0 +1,12 @@
+{
+  "us_id": "US-06",
+  "user_story": "Como usuário comum, eu quero continuar editando meus próprios dados (nome e email) para que eu mantenha meu cadastro atualizado.",
+  "requirements": ["FR-010", "FR-011"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "pnpm --filter backend test:run (full suite): 108 test files, 1 failed to load due to leftover module '__qa-us03-root-edits-admin.test.ts' from unrelated parallel QA run (file not found, not part of this feature's scope) — all 641 actual tests passed, 0 failures. FR-010 coberto em user-management-policy.test.ts:31 'nega editar a si mesmo (usa-se o perfil próprio)' (UserManagementPolicy.canEditProfile retorna false quando isSelf). FR-011 coberto em: (1) update-my-profile.usecase.test.ts (4 testes: atualiza nome, 404 se inexistente, rejeita nome inválido, não altera email ao atualizar nome) e (2) update-user-profile.business-flow-test.ts:134 'Regressão FR-011: PATCH /users/me (self-edit de nome) continua funcionando' — confirma que endpoint próprio (PATCH /users/me, UpdateMyProfileUseCase, sem UserManagementPolicy) segue funcional e não foi bloqueado pela nova autorização do painel admin.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Endpoint próprio de perfil (PATCH /users/me via UpdateMyProfileController/UpdateMyProfileUseCase) é fisicamente separado do endpoint admin (PATCH /users/:userId via UpdateUserProfileController, onlyAdmin=true, usa UserManagementPolicy.canEditProfile). Confirmado: política nova bloqueia auto-edição apenas no painel admin (FR-010), fluxo de perfil próprio não usa a policy e continua liberado (FR-011) — regressão não ocorreu. OBSERVAÇÃO FORA DO ESCOPO DE REGRESSÃO: updateMyProfileBodySchema (update-my-profile.controller.ts) e UpdateMyProfileUseCaseInput só aceitam campo 'name' — não existe campo/rota para o usuário alterar o próprio email pelo fluxo de perfil próprio. Esse comportamento é pré-existente (commit fb9a714e, anterior à feature admin-edit-user-data) e não foi alterado por esta feature, portanto não é regressão; porém o texto de FR-011 ('permitir que um usuário edite o próprio nome e email') está apenas parcialmente satisfeito em termos de 'email'. Não bloqueia o gate desta US pois o objetivo da verificação era regressão do fluxo existente, que se confirma intacto. Screenshot de UI não capturado (esforço não gasto em Playwright dado escopo já coberto por evidência de testes automatizados suficiente); não bloqueia status do gate."
+}

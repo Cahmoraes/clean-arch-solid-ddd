@@ -1,0 +1,22 @@
+docs/superpowers/admin-edit-user-data/qa/evidence/us-03-root-editar-qualquer-usuario/us03-root-edits-admin.test.ts
+
+Motivo: nenhum teste existente exercitava root (isSuperAdmin=true) editando
+nome/email (UpdateUserProfileUseCase) e status (SuspendUserUseCase) de OUTRO
+administrador com sucesso (FR-007). Testes existentes cobriam:
+- policy unitária (user-management-policy.test.ts) — todas as células da matriz
+- role change root->admin end-to-end (promote/demote business-flow-test.ts,
+  "Deve demover admin e responder 200")
+mas faltava profile/status root->admin. Teste criado cobre essa lacuna.
+
+Como rodar (arquivo precisa ser copiado/executado a partir de dentro de
+apps/backend para resolver aliases "@/" e "test/" via tsconfigPaths; o include
+glob do vitest ("**/**/*.test.ts") não varre fora do root do projeto backend):
+
+cd apps/backend
+cp ../../docs/superpowers/admin-edit-user-data/qa/evidence/us-03-root-editar-qualquer-usuario/us03-root-edits-admin.test.ts \
+   src/user/application/use-case/__qa-us03-root-edits-admin.test.ts
+npx vitest --run --config ./test/vite.config.app-domain.ts \
+   src/user/application/use-case/__qa-us03-root-edits-admin.test.ts
+rm src/user/application/use-case/__qa-us03-root-edits-admin.test.ts
+
+Resultado da execução: PASS (2) FAIL (0)

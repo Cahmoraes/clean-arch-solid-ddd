@@ -1,0 +1,12 @@
+{
+  "us_id": "US-04",
+  "user_story": "Como administrador root, eu quero promover um membro a administrador ou rebaixar um administrador para que eu seja o único responsável por definir quem tem poderes administrativos.",
+  "requirements": ["FR-002", "FR-006", "FR-007", "FR-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Cobertura existente abrangente para promover/rebaixar admin, sem necessidade de novo teste de aceitação. Backend unit (pnpm --filter backend test:run): 107 arquivos, 641 testes, 100% passed — inclui apps/backend/src/user/application/use-case/promote-to-admin.usecase.test.ts, apps/backend/src/user/application/use-case/demote-from-admin.usecase.test.ts e apps/backend/src/user/domain/service/user-management-policy.test.ts (regra canChangeRole: apenas root altera role, root imune, ninguém altera a si mesmo). Backend business-flow (vitest run --config test/vite.config.business-flow.ts): apps/backend/src/user/infra/controller/promote-to-admin.business-flow-test.ts e demote-from-admin.business-flow-test.ts — 2 arquivos, 17 testes, 100% passed (inclui verificação HTTP 403 quando não-root tenta alterar role e 409 em conflito de estado). Frontend (pnpm --filter frontend test -- --run): 123 arquivos, 703 testes, 100% passed — inclui use-promote-to-admin.test.tsx, use-demote-from-admin.test.tsx e details-edit-form.test.tsx (UI de promover/rebaixar restrita a root).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Screenshot de UI via playwright-cli não capturado: exigiria subir docker (postgres/redis/rabbitmq), backend e frontend em dev, provisionar usuário root e navegar até o painel — esforço desproporcional dado que a lógica de autorização (UserManagementPolicy.canChangeRole) e os fluxos promote/demote já têm cobertura automatizada completa e verde em unit, business-flow e frontend. Não bloqueia o gate conforme instrução da task."
+}

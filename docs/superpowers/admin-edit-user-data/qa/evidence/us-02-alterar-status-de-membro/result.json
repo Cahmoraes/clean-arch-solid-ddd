@@ -1,0 +1,12 @@
+{
+  "us_id": "US-02",
+  "user_story": "Como administrador, eu quero alterar o status (ativar/suspender) de um membro para que eu possa gerenciar o acesso dele à plataforma.",
+  "requirements": ["FR-004", "FR-005", "FR-006", "FR-009"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Suíte unitária completa: 107 arquivos, 641 testes passando (inclui user-management-policy.test.ts cobrindo cada célula da matriz canChangeStatus — root/admin/member, imunidade do super admin, bloqueio de auto-edição — e suspend-user.usecase.test.ts / active-user.usecase.test.ts). Testes de integração HTTP (business-flow): suspend-user.business-flow-test.ts e activate-user.business-flow-test.ts, 2 arquivos, 11 testes passando, exercitando PATCH /users/suspend e /users/activate ponta a ponta (autenticação JWT, autorização via UserManagementPolicy, 403 para membro/admin comum sem permissão, sucesso e persistência de status para admin/root agindo sobre membro).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Cobertura já existente e abrangente (unitária + HTTP), nenhum teste de aceitação novo foi necessário. Screenshot de UI não capturado: backend/frontend/docker não estavam em execução no ambiente e subir a stack completa (docker compose, seed de admin+membro, dev servers) estava fora do escopo razoável desta verificação, já que o fluxo E2E de status já é validado por testes HTTP reais (business-flow) que cobrem requester, policy, persistência e resposta HTTP."
+}

@@ -1,0 +1,9 @@
+Nenhum teste de aceitação novo criado — cobertura existente já é abrangente.
+
+Testes existentes que verificam US-05 (admin comum negado ao editar/alterar status/role de outro admin):
+- apps/backend/src/user/domain/service/user-management-policy.test.ts (linhas 45-48, 71-73, 98-101)
+- apps/backend/src/user/application/use-case/demote-from-admin.usecase.test.ts (linha 71)
+- apps/backend/src/user/application/use-case/suspend-user.usecase.test.ts (linhas 122, 135)
+- apps/backend/src/user/application/use-case/promote-to-admin.usecase.test.ts (linha 71)
+- apps/backend/src/user/application/use-case/active-user.usecase.test.ts (linhas 175, 197)
+- apps/backend/src/user/application/use-case/update-user-profile.usecase.test.ts (linha 130)

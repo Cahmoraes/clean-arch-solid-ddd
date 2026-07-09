@@ -1,0 +1,14 @@
+{
+  "us_id": "US-03",
+  "user_story": "Como administrador root, eu quero editar os dados de qualquer usuário, incluindo outros administradores, para que eu tenha controle total da gestão de contas.",
+  "requirements": ["FR-001", "FR-004", "FR-006", "FR-007"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/admin-edit-user-data/qa/evidence/us-03-root-editar-qualquer-usuario/us03-root-edits-admin.test.ts"
+  ],
+  "test_output_summary": "apps/backend/src/user/domain/service/user-management-policy.test.ts + update-user-profile.usecase.test.ts + suspend-user.usecase.test.ts + active-user.usecase.test.ts + promote-to-admin.usecase.test.ts + demote-from-admin.usecase.test.ts: PASS (60) FAIL (0). Business-flow (promote-to-admin.business-flow-test.ts + demote-from-admin.business-flow-test.ts): PASS (17) FAIL (0), incluindo 'Deve demover admin e responder 200' (root demove outro admin via HTTP end-to-end, cobrindo role root->admin). Gap identificado: nenhum teste existente cobria root editando profile/status de outro admin com sucesso (apenas policy unitária + role via promote/demote). Acceptance test criado em evidence dir cobre esse gap: PASS (2) FAIL (0).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Screenshot de UI não capturado — verificação focou em unit/use-case/business-flow (fonte da verdade do backend, per design doc: 'Backend é a fonte da verdade'). UserManagementPolicy cobre todas as células da matriz de autorização para root (canEditProfile, canChangeStatus, canChangeRole), incluindo imunidade do próprio root a alterações de status/role. Teste acceptance criado precisa ser copiado para dentro de apps/backend/src para rodar (aliases @/ e test/ resolvidos via tsconfigPaths no root do projeto backend) — instruções em acceptance-tests-created.txt."
+}
