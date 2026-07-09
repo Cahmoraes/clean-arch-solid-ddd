@@ -8,6 +8,8 @@
 		"build": "turbo build",
 		"test": "turbo test",
 		"lint": "turbo lint",
+		"backend:tsc:check": "pnpm --filter backend tsc:check",
+		"front:tsc:check": "pnpm --filter frontend tsc:check",
 		"generate:types": "pnpm --filter backend openapi:export && pnpm --filter backend openapi:generate-client"
 	},
 	"devDependencies": {
