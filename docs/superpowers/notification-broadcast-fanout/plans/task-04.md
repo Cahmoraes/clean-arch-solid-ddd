@@ -9,10 +9,17 @@
 ## Visão Geral
 
 Criar `NotificationBroadcastPublisher`, um componente injetável que encapsula a publicação de
-payloads na exchange fanout `notificationBroadcast` via `Queue.publish` (agora com suporte a tipo de
-exchange, da Task 2), e registrá-lo no container Inversify do módulo `notification`. Os bindings de
-`RedisNotificationPublisher`/`RedisNotificationSubscriber` permanecem intactos — serão removidos na
-Task 8.
+payloads na exchange fanout `notificationBroadcast` via `Queue.publish` (agora com suporte a tipo e
+durabilidade de exchange, da Task 2), e registrá-lo no container Inversify do módulo `notification`.
+Os bindings de `RedisNotificationPublisher`/`RedisNotificationSubscriber` permanecem intactos —
+serão removidos na Task 8.
+
+**Importante (ver D4 na spec):** o `publish` deve passar `durable: false` explicitamente como 4º
+argumento. `NotificationBroadcastSubscriber` (Task 6) declara a mesma exchange
+`notificationBroadcast` com `durable: false` via `amqp-connection-manager` — se este publisher
+usar o default `true` de `Queue.publish` (Task 2), o RabbitMQ recusa a segunda declaração com
+`PRECONDITION_FAILED` e fecha o canal assim que ambos os componentes estiverem ativos. Os dois
+pontos de declaração precisam concordar no mesmo valor.
 
 ## Arquivos
 
@@ -34,6 +41,7 @@ Task 8.
 ```typescript
 import { describe, expect, it, vi } from "vitest"
 import type { Queue } from "@/shared/infra/queue/queue"
+import type { Logger } from "@/shared/infra/logger/logger"
 import { NotificationBroadcastPublisher } from "./notification-broadcast-publisher"
 
 function makeMockQueue(): Queue {
@@ -44,11 +52,16 @@ function makeMockQueue(): Queue {
 	}
 }
 
+function makeMockLogger(): Logger {
+	return { info: vi.fn(), error: vi.fn() } as unknown as Logger
+}
+
 describe("NotificationBroadcastPublisher", () => {
 	describe("publish", () => {
 		it("should publish payload to the notificationBroadcast fanout exchange", async () => {
 			const queue = makeMockQueue()
-			const publisher = new NotificationBroadcastPublisher(queue)
+			const logger = makeMockLogger()
+			const publisher = new NotificationBroadcastPublisher(queue, logger)
 
 			await publisher.publish({ userId: "u1", notificationId: "n1" })
 
@@ -56,11 +69,42 @@ describe("NotificationBroadcastPublisher", () => {
 				"notificationBroadcast",
 				{ userId: "u1", notificationId: "n1" },
 				"fanout",
+				false,
 			)
+		})
+
+		it("should log the publish event", async () => {
+			const queue = makeMockQueue()
+			const logger = makeMockLogger()
+			const publisher = new NotificationBroadcastPublisher(queue, logger)
+
+			await publisher.publish({ userId: "u1", notificationId: "n1" })
+
+			expect(logger.info).toHaveBeenCalled()
+		})
+
+		it("should log and rethrow when queue.publish fails", async () => {
+			const queue = makeMockQueue()
+			const publishError = new Error("amqp down")
+			queue.publish = vi.fn().mockRejectedValue(publishError)
+			const logger = makeMockLogger()
+			const publisher = new NotificationBroadcastPublisher(queue, logger)
+
+			await expect(publisher.publish({ userId: "u1", notificationId: "n1" })).rejects.toThrow(
+				publishError,
+			)
+			expect(logger.error).toHaveBeenCalled()
 		})
 	})
 })
 ```
+
+Confirmar o caminho exato de `Logger` — mesmo import de tipo usado por `rabbitmq-adapter.ts`:
+`@/shared/infra/logger/logger`. Diferente do `RabbitMQAdapter` (que usa `LazyInject` por campo),
+aqui a injeção é por construtor (`@inject(SHARED_TYPES.Logger)`), consistente com o padrão de
+injeção do restante do projeto (ver `AGENTS.md` — Use Cases/Controllers) e mais simples de testar
+sem depender do container global. O que se replica do `RabbitMQAdapter` é o comportamento de
+observabilidade (log em cada publish bem-sucedido e em cada erro), não o mecanismo de injeção.
 
 - **Step 2: Run test to verify it fails**
 
@@ -73,14 +117,24 @@ Expected: FAIL (módulo não existe).
 import { inject, injectable } from "inversify"
 import { EXCHANGES } from "@/shared/infra/queue/exchanges"
 import type { Queue } from "@/shared/infra/queue/queue"
+import type { Logger } from "@/shared/infra/logger/logger"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 
 @injectable()
 export class NotificationBroadcastPublisher {
-	constructor(@inject(SHARED_TYPES.Queue) private readonly queue: Queue) {}
+	constructor(
+		@inject(SHARED_TYPES.Queue) private readonly queue: Queue,
+		@inject(SHARED_TYPES.Logger) private readonly logger: Logger,
+	) {}
 
 	public async publish<TPayload>(payload: TPayload): Promise<void> {
-		await this.queue.publish(EXCHANGES.NOTIFICATION_BROADCAST, payload, "fanout")
+		try {
+			await this.queue.publish(EXCHANGES.NOTIFICATION_BROADCAST, payload, "fanout", false)
+			this.logger.info(this, { exchange: EXCHANGES.NOTIFICATION_BROADCAST })
+		} catch (error) {
+			this.logger.error(this, { exchange: EXCHANGES.NOTIFICATION_BROADCAST, error })
+			throw error
+		}
 	}
 }
 ```
@@ -122,5 +176,9 @@ git commit -m "feat(notification): adiciona NotificationBroadcastPublisher"
 ## Critérios de Sucesso
 
 - Teste novo passa.
+- `queue.publish` é chamado com `durable: false` como 4º argumento (mesmo valor asserido pelo
+  `NotificationBroadcastSubscriber` na Task 6, evitando o `PRECONDITION_FAILED` descrito em D4).
+- `logger.info` é chamado a cada publish bem-sucedido; `logger.error` é chamado (e o erro
+  relançado) quando `queue.publish` falha.
 - Binding Inversify presente em `notification-module.ts`.
 - `tsc:check` limpo.

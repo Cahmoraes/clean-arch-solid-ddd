@@ -20,6 +20,9 @@ remoção.
 - Delete: `apps/backend/src/notification/infra/redis/redis-notification-subscriber.ts`
 - Modify: `apps/backend/src/shared/infra/ioc/module/notification/notification-module.ts`
 - Modify: `apps/backend/src/shared/infra/ioc/module/service-identifier/notification-types.ts`
+- Modify: `apps/backend/test/setup-test.ts`
+- Modify: `apps/backend/src/notification/infra/controller/notification-stream.controller.business-flow-test.ts`
+- Modify: `apps/backend/src/notification/infra/controller/get-notifications.controller.business-flow-test.ts`
 
 ### Conformidade com as Skills Padrão
 
@@ -32,9 +35,15 @@ remoção.
 
 - **Step 1: Confirmar que não há outros consumidores**
 
-Run: `grep -rn "RedisNotificationPublisher\|RedisNotificationSubscriber" apps/backend/src/`
-Expected: apenas o binding em `notification-module.ts` e os dois arquivos-fonte a remover — nenhum
-outro consumidor, já que as Tasks 4-7 já migraram todos os usos.
+Run: `grep -rn "RedisNotificationPublisher\|RedisNotificationSubscriber" apps/backend/src/ apps/backend/test/`
+Expected: o binding em `notification-module.ts`, os dois arquivos-fonte a remover, e três arquivos
+de teste que fazem `container.rebind(NOTIFICATION_TYPES.Infra.RedisNotificationSubscriber)` contra o
+símbolo que esta task remove — `apps/backend/test/setup-test.ts`,
+`apps/backend/src/notification/infra/controller/notification-stream.controller.business-flow-test.ts`
+e `apps/backend/src/notification/infra/controller/get-notifications.controller.business-flow-test.ts`.
+Os três precisam ser atualizados nesta task (Step 4b) — sem isso, `tsc:check` falha (símbolo
+removido) e, se corrigido pela metade, cada teste de `test:business-flow` abriria uma conexão AMQP
+real via `NotificationBroadcastSubscriber` sem nunca fechá-la.
 
 - **Step 2: Write minimal implementation — remover bindings e imports**
 
@@ -69,15 +78,68 @@ git rm apps/backend/src/notification/infra/redis/redis-notification-publisher.ts
 
 Se a pasta `apps/backend/src/notification/infra/redis/` ficar vazia, removê-la também.
 
+- **Step 4b: Atualizar os rebinds de teste para o novo símbolo**
+
+Em `apps/backend/test/setup-test.ts`, substituir:
+
+```typescript
+container
+	.rebind(NOTIFICATION_TYPES.Infra.RedisNotificationSubscriber)
+	.toConstantValue({
+		subscribe: async () => undefined,
+		disconnect: async () => undefined,
+	})
+```
+
+por:
+
+```typescript
+container
+	.rebind(NOTIFICATION_TYPES.Infra.NotificationBroadcastSubscriber)
+	.toConstantValue({
+		start: async () => undefined,
+		stop: async () => undefined,
+	})
+```
+
+Em `apps/backend/src/notification/infra/controller/notification-stream.controller.business-flow-test.ts`
+e em `apps/backend/src/notification/infra/controller/get-notifications.controller.business-flow-test.ts`,
+substituir (mesmo bloco nos dois arquivos):
+
+```typescript
+container
+	.rebind(NOTIFICATION_TYPES.Infra.RedisNotificationSubscriber)
+	.toConstantValue({
+		subscribe: vi.fn().mockResolvedValue(undefined),
+		disconnect: vi.fn().mockResolvedValue(undefined),
+	})
+```
+
+por:
+
+```typescript
+container
+	.rebind(NOTIFICATION_TYPES.Infra.NotificationBroadcastSubscriber)
+	.toConstantValue({
+		start: vi.fn().mockResolvedValue(undefined),
+		stop: vi.fn().mockResolvedValue(undefined),
+	})
+```
+
 - **Step 5: Verificar tipos**
 
 Run: `pnpm --filter backend tsc:check`
 Expected: PASS (nenhuma referência pendente).
 
-- **Step 6: Rodar a suíte completa de unit tests do backend**
+- **Step 6: Rodar a suíte completa de unit tests e de business-flow do backend**
 
 Run: `pnpm --filter backend test:run`
 Expected: PASS.
+
+Run: `pnpm --filter backend test:business-flow`
+Expected: PASS — confirma que o setup global (`test/setup-test.ts`) e os dois controller tests do
+módulo notification inicializam corretamente com o novo rebind de `NotificationBroadcastSubscriber`,
+sem abrir nenhuma conexão AMQP real durante a suíte de contract tests.
 
 - **Step 7: Confirmar que nenhum outro uso de Redis foi afetado**
 
@@ -89,12 +151,15 @@ Expected: continua retornando `shared/infra/database/redis/redis-adapter.ts`,
 - **Step 8: Commit**
 
 ```bash
-git add -A apps/backend/src/notification/infra/redis apps/backend/src/shared/infra/ioc/module/notification/notification-module.ts apps/backend/src/shared/infra/ioc/module/service-identifier/notification-types.ts
+git add -A apps/backend/src/notification/infra/redis apps/backend/src/shared/infra/ioc/module/notification/notification-module.ts apps/backend/src/shared/infra/ioc/module/service-identifier/notification-types.ts apps/backend/test/setup-test.ts apps/backend/src/notification/infra/controller/notification-stream.controller.business-flow-test.ts apps/backend/src/notification/infra/controller/get-notifications.controller.business-flow-test.ts
 git commit -m "chore(notification): remove RedisNotificationPublisher/Subscriber obsoletos"
 ```
 
 ## Critérios de Sucesso
 
-- `grep` não retorna nenhuma referência a `RedisNotificationPublisher`/`RedisNotificationSubscriber`.
-- `tsc:check` e a suíte de unit tests do backend passam.
+- `grep` não retorna nenhuma referência a `RedisNotificationPublisher`/`RedisNotificationSubscriber`
+  em `apps/backend/src/` nem em `apps/backend/test/`.
+- `tsc:check`, a suíte de unit tests e a suíte de `test:business-flow` do backend passam.
+- `test/setup-test.ts` e os dois controller tests do módulo notification fazem rebind de
+  `NotificationBroadcastSubscriber` (não mais `RedisNotificationSubscriber`).
 - Nenhum arquivo de rate-limit/BullMQ/redis-adapter compartilhado foi tocado.

@@ -1,4 +1,4 @@
-# Task 9: Teste de integração multi-instância (fanout real via RabbitMQ) [FR-002, FR-003, FR-004, FR-007]
+# Task 9: Teste de integração multi-instância (fanout real via RabbitMQ) [FR-002, FR-003, FR-004]
 
 **Status:** PENDING
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
@@ -15,17 +15,17 @@ exclusiva/auto-delete, devem receber o mesmo payload publicado uma única vez na
 deliberadamente não mocka o broker, pois o objetivo é provar o comportamento real de fanout entre
 múltiplas filas concorrentes.
 
-**Atenção:** antes de criar o arquivo, confirmar a convenção real de nome/local de teste de
-integração com RabbitMQ usada no projeto (se houver precedente) e o comando exato para rodá-lo — não
-presumir sem verificar.
+**Convenção confirmada:** a suíte de integração real do projeto usa o sufixo `*.integration-test.ts`,
+incluído pelo glob de `test/vite.config.integration.ts` e rodado via
+`pnpm --filter backend test:e2e:prisma`. Precedentes existentes:
+`prisma-subscription-repository.integration-test.ts` e
+`prisma-stripe-webhook-event-repository.integration-test.ts`. Este teste segue o mesmo sufixo, ainda
+que o alvo aqui seja RabbitMQ e não Prisma — o script/config são agnósticos ao broker.
 
 ## Arquivos
 
-- Create: `apps/backend/src/notification/infra/queue/notification-broadcast.e2e-test.ts` (ou o
-  padrão de nome usado pela suíte `test:e2e:prisma`/RabbitMQ do projeto — confirmar convenção real
-  de nome de arquivo de teste de integração com RabbitMQ antes de criar; se não houver precedente de
-  teste de integração com RabbitMQ real no repo, seguir o padrão `*.business-flow-test.ts` adaptado
-  para infraestrutura, rodando contra o RabbitMQ local subido via `pnpm --filter backend docker:up`)
+- Create: `apps/backend/src/notification/infra/queue/notification-broadcast.integration-test.ts`,
+  rodando contra o RabbitMQ local subido via `pnpm --filter backend docker:up`
 
 ### Conformidade com as Skills Padrão
 
@@ -96,20 +96,17 @@ describe("Notification broadcast fanout (integração real com RabbitMQ)", () =>
 
 - **Step 3: Run test to verify it passes against real RabbitMQ**
 
-Run o comando exato conforme a suíte de integração do backend — usar
-`pnpm --filter backend test:e2e:prisma` como referência de comando se este teste for colocado nessa
-suíte, ou o script equivalente configurado no `package.json` do backend para testes que dependem de
-infraestrutura real. Confirmar o nome exato do script antes de rodar, lendo
-`apps/backend/package.json`.
+Run: `pnpm --filter backend test:e2e:prisma -- -t "notification-broadcast"`
 Expected: PASS — cada instância simulada (subscriber A e B) recebe a mesma mensagem via sua própria
 fila exclusiva, confirmando fan-out real (FR-002), coexistência de múltiplas filas exclusivas
-simultâneas sem colisão (FR-003 implícito) e ausência de perda de mensagem entre publish e consumo
-(FR-004/FR-007 no caminho feliz).
+simultâneas sem colisão (FR-003 implícito) e redeclaração após reconexão (FR-004). Não cobre FR-007
+(persistência de notificação criada sem nenhuma instância no ar) — esse requisito é satisfeito pela
+persistência em Postgres/`GET /api/v1/notifications`, fora do escopo deste teste de fanout.
 
 - **Step 4: Commit**
 
 ```bash
-git add apps/backend/src/notification/infra/queue/notification-broadcast.e2e-test.ts
+git add apps/backend/src/notification/infra/queue/notification-broadcast.integration-test.ts
 git commit -m "test(notification): integração real de fanout multi-instância via RabbitMQ"
 ```
 

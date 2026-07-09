@@ -14,6 +14,11 @@ exclusiva/auto-delete vinculada a ela, repassando cada mensagem consumida ao `Ss
 lib redeclara automaticamente exchange/fila/bind (via `setup`) em cada reconexão de TCP, garantindo
 que a instância volte a receber broadcasts sem código adicional após uma queda de conexão.
 
+**Importante (ver D4 na spec):** a exchange `notificationBroadcast` é asserida aqui com
+`durable: false` — o mesmo valor que `NotificationBroadcastPublisher` (Task 4) deve passar
+explicitamente ao `Queue.publish`. Se os dois pontos divergirem, o RabbitMQ recusa a segunda
+declaração (`PRECONDITION_FAILED`) e fecha o canal.
+
 ## Arquivos
 
 - Create: `apps/backend/src/notification/infra/queue/notification-broadcast-subscriber.ts`
@@ -45,6 +50,7 @@ assinatura de `connection.createChannel({ setup })`. Ajustar os imports/tipos do
 ```typescript
 import { describe, expect, it, vi } from "vitest"
 import type { SseManager } from "@/notification/infra/sse/sse-manager"
+import type { Logger } from "@/shared/infra/logger/logger"
 
 const mockChannelWrapper = {
 	waitForConnect: vi.fn().mockResolvedValue(undefined),
@@ -60,11 +66,15 @@ vi.mock("amqp-connection-manager", () => ({
 
 import { NotificationBroadcastSubscriber } from "./notification-broadcast-subscriber"
 
+function makeMockLogger(): Logger {
+	return { info: vi.fn(), error: vi.fn() } as unknown as Logger
+}
+
 describe("NotificationBroadcastSubscriber", () => {
 	describe("start", () => {
 		it("should declare the fanout exchange and an exclusive auto-delete queue via setup", async () => {
 			const sseManager = { send: vi.fn() } as unknown as SseManager
-			const subscriber = new NotificationBroadcastSubscriber(sseManager)
+			const subscriber = new NotificationBroadcastSubscriber(sseManager, makeMockLogger())
 
 			await subscriber.start()
 
@@ -75,7 +85,7 @@ describe("NotificationBroadcastSubscriber", () => {
 
 		it("should forward a consumed message to SseManager.send", async () => {
 			const sseManager = { send: vi.fn() } as unknown as SseManager
-			const subscriber = new NotificationBroadcastSubscriber(sseManager)
+			const subscriber = new NotificationBroadcastSubscriber(sseManager, makeMockLogger())
 			await subscriber.start()
 
 			const setupFn = mockConnection.createChannel.mock.calls[0][0].setup
@@ -99,6 +109,56 @@ describe("NotificationBroadcastSubscriber", () => {
 			expect(sseManager.send).toHaveBeenCalledWith("u1", { type: "notification", payload: { userId: "u1", notificationId: "n1" } })
 			expect(fakeChannel.ack).toHaveBeenCalled()
 		})
+
+		it("should redeclare exchange, queue and bind when setup runs again after a simulated reconnect", async () => {
+			const sseManager = { send: vi.fn() } as unknown as SseManager
+			const subscriber = new NotificationBroadcastSubscriber(sseManager, makeMockLogger())
+			await subscriber.start()
+
+			const setupFn = mockConnection.createChannel.mock.calls[0][0].setup
+			const makeFakeChannel = () => ({
+				assertExchange: vi.fn().mockResolvedValue(undefined),
+				assertQueue: vi.fn().mockResolvedValue({ queue: "amq.gen-xyz" }),
+				bindQueue: vi.fn().mockResolvedValue(undefined),
+				consume: vi.fn().mockResolvedValue(undefined),
+				ack: vi.fn(),
+			})
+
+			// amqp-connection-manager invoca `setup` de novo a cada reconexão de TCP; a segunda
+			// chamada precisa redeclarar exchange/fila/bind do zero na nova conexão do broker.
+			const firstChannel = makeFakeChannel()
+			await setupFn(firstChannel)
+			const reconnectedChannel = makeFakeChannel()
+			await setupFn(reconnectedChannel)
+
+			expect(reconnectedChannel.assertExchange).toHaveBeenCalledWith("notificationBroadcast", "fanout", { durable: false })
+			expect(reconnectedChannel.assertQueue).toHaveBeenCalledWith("", { exclusive: true, autoDelete: true })
+			expect(reconnectedChannel.bindQueue).toHaveBeenCalledWith("amq.gen-xyz", "notificationBroadcast", "")
+		})
+
+		it("should log and ack without crashing when a malformed message is consumed", async () => {
+			const sseManager = { send: vi.fn() } as unknown as SseManager
+			const logger = makeMockLogger()
+			const subscriber = new NotificationBroadcastSubscriber(sseManager, logger)
+			await subscriber.start()
+
+			const setupFn = mockConnection.createChannel.mock.calls[0][0].setup
+			const fakeChannel = {
+				assertExchange: vi.fn().mockResolvedValue(undefined),
+				assertQueue: vi.fn().mockResolvedValue({ queue: "amq.gen-xyz" }),
+				bindQueue: vi.fn().mockResolvedValue(undefined),
+				consume: vi.fn((_queue, onMessage) => {
+					onMessage({ content: Buffer.from("not-json") })
+					return Promise.resolve()
+				}),
+				ack: vi.fn(),
+			}
+
+			await expect(setupFn(fakeChannel)).resolves.not.toThrow()
+			expect(sseManager.send).not.toHaveBeenCalled()
+			expect(fakeChannel.ack).toHaveBeenCalled()
+			expect(logger.error).toHaveBeenCalled()
+		})
 	})
 })
 ```
@@ -116,7 +176,8 @@ import type { Channel, ConsumeMessage } from "amqplib"
 import { inject, injectable } from "inversify"
 import { EXCHANGES } from "@/shared/infra/queue/exchanges"
 import { env } from "@/shared/infra/env"
-import { NOTIFICATION_TYPES } from "@/shared/infra/ioc/types"
+import type { Logger } from "@/shared/infra/logger/logger"
+import { NOTIFICATION_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { SseManager } from "./sse-manager"
 
 @injectable()
@@ -125,6 +186,7 @@ export class NotificationBroadcastSubscriber {
 
 	constructor(
 		@inject(NOTIFICATION_TYPES.Infra.SseManager) private readonly sseManager: SseManager,
+		@inject(SHARED_TYPES.Logger) private readonly logger: Logger,
 	) {}
 
 	public async start(): Promise<void> {
@@ -136,9 +198,15 @@ export class NotificationBroadcastSubscriber {
 				await channel.bindQueue(queue, EXCHANGES.NOTIFICATION_BROADCAST, "")
 				await channel.consume(queue, (msg: ConsumeMessage | null) => {
 					if (!msg) return
-					const payload = JSON.parse(msg.content.toString())
-					this.sseManager.send(payload.userId, { type: "notification", payload })
-					channel.ack(msg)
+					try {
+						const payload = JSON.parse(msg.content.toString())
+						this.sseManager.send(payload.userId, { type: "notification", payload })
+					} catch (error) {
+						// mensagem malformada não deve ser reenfileirada em loop — loga e faz ack mesmo assim.
+						this.logger.error(this, { exchange: EXCHANGES.NOTIFICATION_BROADCAST, error })
+					} finally {
+						channel.ack(msg)
+					}
 				})
 			},
 		})
@@ -158,7 +226,7 @@ separada) — importar de `./sse-manager` (mesmo diretório `infra/sse`, path re
 - **Step 4: Run test to verify it passes**
 
 Run: `pnpm --filter backend test:run -- -t "NotificationBroadcastSubscriber"`
-Expected: PASS (ambos os testes).
+Expected: PASS (os 4 testes).
 
 - **Step 5: Registrar no container**
 
@@ -185,7 +253,10 @@ git commit -m "feat(notification): adiciona NotificationBroadcastSubscriber com 
 
 ## Critérios de Sucesso
 
-- Os 2 testes novos passam.
+- Os 4 testes novos passam (declaração via `setup`, forward ao `SseManager`, redeclaração após
+  reconexão simulada, e resiliência a mensagem malformada).
+- `logger.error` é chamado (e a mensagem é `ack`eada, não reenfileirada) quando o payload consumido
+  não é JSON válido.
 - Binding Inversify presente em `notification-module.ts`.
 - `tsc:check` limpo.
 - API real de `amqp-connection-manager@5.0.0` confirmada via `context7` no Step 0 — imports/tipos
