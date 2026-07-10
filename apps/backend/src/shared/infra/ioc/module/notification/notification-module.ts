@@ -12,8 +12,6 @@ import { MarkAsReadController } from "@/notification/infra/controller/mark-as-re
 import { NotificationStreamController } from "@/notification/infra/controller/notification-stream.controller.js"
 import { NotificationBroadcastPublisher } from "@/notification/infra/queue/notification-broadcast-publisher"
 import { NotificationBroadcastSubscriber } from "@/notification/infra/queue/notification-broadcast-subscriber"
-import { RedisNotificationPublisher } from "@/notification/infra/redis/redis-notification-publisher"
-import { RedisNotificationSubscriber } from "@/notification/infra/redis/redis-notification-subscriber"
 import { NotificationRepositoryProvider } from "@/notification/infra/repository/notification-repository-provider"
 import { SseManager } from "@/notification/infra/sse/sse-manager"
 import { NotificationQueueWorker } from "@/notification/infra/worker/notification-queue-worker"
@@ -31,12 +29,6 @@ export const notificationModule = new ContainerModule(({ bind }) => {
 		.to(CreateNotificationOnCheckInEventHandler)
 		.inSingletonScope()
 	bind(NOTIFICATION_TYPES.Infra.SseManager).to(SseManager).inSingletonScope()
-	bind(NOTIFICATION_TYPES.Infra.RedisNotificationPublisher)
-		.to(RedisNotificationPublisher)
-		.inSingletonScope()
-	bind(NOTIFICATION_TYPES.Infra.RedisNotificationSubscriber)
-		.to(RedisNotificationSubscriber)
-		.inSingletonScope()
 	bind(NOTIFICATION_TYPES.Infra.NotificationQueueWorker)
 		.to(NotificationQueueWorker)
 		.inSingletonScope()

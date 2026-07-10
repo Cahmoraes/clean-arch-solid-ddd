@@ -30,10 +30,10 @@ describe("Notification REST controllers", () => {
 			.rebind(NOTIFICATION_TYPES.Repositories.Notification)
 			.toConstantValue(notificationRepository)
 		container
-			.rebind(NOTIFICATION_TYPES.Infra.RedisNotificationSubscriber)
+			.rebind(NOTIFICATION_TYPES.Infra.NotificationBroadcastSubscriber)
 			.toConstantValue({
-				subscribe: vi.fn().mockResolvedValue(undefined),
-				disconnect: vi.fn().mockResolvedValue(undefined),
+				start: vi.fn().mockResolvedValue(undefined),
+				stop: vi.fn().mockResolvedValue(undefined),
 			})
 		container
 			.rebind(NOTIFICATION_TYPES.Infra.NotificationQueueWorker)
