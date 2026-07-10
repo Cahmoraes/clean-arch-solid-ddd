@@ -1,6 +1,6 @@
 # Task 7: Atualizar IoC e bootstrap para os novos componentes [FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** standard
