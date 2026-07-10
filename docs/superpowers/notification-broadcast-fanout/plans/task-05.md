@@ -1,6 +1,6 @@
 # Task 5: Atualizar `NotificationQueueWorker` para publicar via `NotificationBroadcastPublisher` [FR-001, FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** standard
