@@ -5,7 +5,7 @@ import { Logger as LoggerDecorate } from "../decorator/logger"
 import { env } from "../env"
 import { SHARED_TYPES } from "../ioc/types"
 import type { Logger } from "../logger/logger"
-import type { Queue } from "./queue"
+import type { ExchangeKind, Queue } from "./queue"
 
 @injectable()
 export class RabbitMQAdapter implements Queue {
@@ -25,9 +25,14 @@ export class RabbitMQAdapter implements Queue {
 		await this.connection.close()
 	}
 
-	public async publish<TData>(exchange: string, data: TData): Promise<void> {
+	public async publish<TData>(
+		exchange: string,
+		data: TData,
+		type: ExchangeKind = "direct",
+		durable = true,
+	): Promise<void> {
 		const channel = await this.channel()
-		await channel.assertExchange(exchange, "direct", { durable: true })
+		await channel.assertExchange(exchange, type, { durable })
 		const buffer = Buffer.from(JSON.stringify(data))
 		this.logger.info(this, { exchange })
 		channel.publish(exchange, "", buffer)
