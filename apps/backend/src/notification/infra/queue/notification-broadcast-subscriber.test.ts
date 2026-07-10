@@ -1,38 +1,32 @@
 import { describe, expect, it, vi } from "vitest"
 import type { SseManager } from "@/notification/infra/sse/sse-manager"
 import type { Logger } from "@/shared/infra/logger/logger"
-
-// vi.mock é hoisted para o topo do arquivo, então os mocks referenciados
-// dentro da factory precisam ser criados via vi.hoisted() — do contrário
-// `mockConnection`/`mockChannelWrapper` seriam acessados antes de inicializar.
-const { mockConnection } = vi.hoisted(() => {
-	const mockChannelWrapper = {
-		waitForConnect: vi.fn().mockResolvedValue(undefined),
-	}
-	const mockConnection = {
-		createChannel: vi.fn().mockReturnValue(mockChannelWrapper),
-	}
-	return { mockConnection }
-})
-vi.mock("amqp-connection-manager", () => ({
-	default: {
-		connect: vi.fn().mockReturnValue(mockConnection),
-	},
-}))
-
 import { NotificationBroadcastSubscriber } from "./notification-broadcast-subscriber"
 
 function makeMockLogger(): Logger {
 	return { info: vi.fn(), error: vi.fn() } as unknown as Logger
 }
 
+function makeMockConnection() {
+	const mockChannelWrapper = {
+		waitForConnect: vi.fn().mockResolvedValue(undefined),
+	}
+	const mockConnection = {
+		createChannel: vi.fn().mockReturnValue(mockChannelWrapper),
+	}
+	return { mockConnection, mockChannelWrapper }
+}
+
 describe("NotificationBroadcastSubscriber", () => {
 	describe("start", () => {
 		it("should declare the fanout exchange and an exclusive auto-delete queue via setup", async () => {
 			const sseManager = { send: vi.fn() } as unknown as SseManager
+			const { mockConnection } = makeMockConnection()
+			const connect = vi.fn().mockReturnValue(mockConnection)
 			const subscriber = new NotificationBroadcastSubscriber(
 				sseManager,
 				makeMockLogger(),
+				connect,
 			)
 
 			await subscriber.start()
@@ -44,17 +38,16 @@ describe("NotificationBroadcastSubscriber", () => {
 
 		it("should forward a consumed message to SseManager.send", async () => {
 			const sseManager = { send: vi.fn() } as unknown as SseManager
+			const { mockConnection } = makeMockConnection()
+			const connect = vi.fn().mockReturnValue(mockConnection)
 			const subscriber = new NotificationBroadcastSubscriber(
 				sseManager,
 				makeMockLogger(),
+				connect,
 			)
 			await subscriber.start()
 
-			// Usa a última chamada (não a [0]) porque os mocks de módulo são
-			// compartilhados entre testes: cada `start()` acumula uma nova
-			// entrada em `mock.calls`, e a closure de `setup` é específica da
-			// instância do subscriber criada neste teste.
-			const setupFn = mockConnection.createChannel.mock.calls.at(-1)?.[0].setup
+			const setupFn = mockConnection.createChannel.mock.calls[0]?.[0].setup
 			const fakeChannel = {
 				assertExchange: vi.fn().mockResolvedValue(undefined),
 				assertQueue: vi.fn().mockResolvedValue({ queue: "amq.gen-xyz" }),
@@ -94,13 +87,16 @@ describe("NotificationBroadcastSubscriber", () => {
 
 		it("should redeclare exchange, queue and bind when setup runs again after a simulated reconnect", async () => {
 			const sseManager = { send: vi.fn() } as unknown as SseManager
+			const { mockConnection } = makeMockConnection()
+			const connect = vi.fn().mockReturnValue(mockConnection)
 			const subscriber = new NotificationBroadcastSubscriber(
 				sseManager,
 				makeMockLogger(),
+				connect,
 			)
 			await subscriber.start()
 
-			const setupFn = mockConnection.createChannel.mock.calls.at(-1)?.[0].setup
+			const setupFn = mockConnection.createChannel.mock.calls[0]?.[0].setup
 			const makeFakeChannel = () => ({
 				assertExchange: vi.fn().mockResolvedValue(undefined),
 				assertQueue: vi.fn().mockResolvedValue({ queue: "amq.gen-xyz" }),
@@ -133,10 +129,16 @@ describe("NotificationBroadcastSubscriber", () => {
 		it("should log and ack without crashing when a malformed message is consumed", async () => {
 			const sseManager = { send: vi.fn() } as unknown as SseManager
 			const logger = makeMockLogger()
-			const subscriber = new NotificationBroadcastSubscriber(sseManager, logger)
+			const { mockConnection } = makeMockConnection()
+			const connect = vi.fn().mockReturnValue(mockConnection)
+			const subscriber = new NotificationBroadcastSubscriber(
+				sseManager,
+				logger,
+				connect,
+			)
 			await subscriber.start()
 
-			const setupFn = mockConnection.createChannel.mock.calls.at(-1)?.[0].setup
+			const setupFn = mockConnection.createChannel.mock.calls[0]?.[0].setup
 			const fakeChannel = {
 				assertExchange: vi.fn().mockResolvedValue(undefined),
 				assertQueue: vi.fn().mockResolvedValue({ queue: "amq.gen-xyz" }),

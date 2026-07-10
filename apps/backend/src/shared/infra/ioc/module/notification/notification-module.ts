@@ -1,3 +1,4 @@
+import { connect } from "amqp-connection-manager"
 import { ContainerModule } from "inversify"
 import { CreateNotificationOnCheckInEventHandler } from "@/notification/application/event-handler/create-notification-on-check-in-event.handler"
 import { GetNotificationsUseCase } from "@/notification/application/use-case/get-notifications.usecase"
@@ -10,6 +11,7 @@ import { MarkAllAsReadController } from "@/notification/infra/controller/mark-al
 import { MarkAsReadController } from "@/notification/infra/controller/mark-as-read.controller.js"
 import { NotificationStreamController } from "@/notification/infra/controller/notification-stream.controller.js"
 import { NotificationBroadcastPublisher } from "@/notification/infra/queue/notification-broadcast-publisher"
+import { NotificationBroadcastSubscriber } from "@/notification/infra/queue/notification-broadcast-subscriber"
 import { RedisNotificationPublisher } from "@/notification/infra/redis/redis-notification-publisher"
 import { RedisNotificationSubscriber } from "@/notification/infra/redis/redis-notification-subscriber"
 import { NotificationRepositoryProvider } from "@/notification/infra/repository/notification-repository-provider"
@@ -41,6 +43,10 @@ export const notificationModule = new ContainerModule(({ bind }) => {
 	bind(NOTIFICATION_TYPES.Infra.NotificationBroadcastPublisher)
 		.to(NotificationBroadcastPublisher)
 		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Infra.NotificationBroadcastSubscriber)
+		.to(NotificationBroadcastSubscriber)
+		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Infra.AmqpConnect).toConstantValue(connect)
 	bind(NOTIFICATION_TYPES.Controllers.GetNotifications)
 		.to(GetNotificationsController)
 		.inSingletonScope()

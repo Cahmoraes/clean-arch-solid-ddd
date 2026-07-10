@@ -31,5 +31,6 @@ export const NOTIFICATION_TYPES = {
 		NotificationBroadcastSubscriber: Symbol.for(
 			"NotificationBroadcastSubscriber",
 		),
+		AmqpConnect: Symbol.for("AmqpConnect"),
 	},
 } as const
