@@ -1,6 +1,6 @@
 # Task 4: Criar `NotificationBroadcastPublisher` [FR-001]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** standard
