@@ -1,6 +1,6 @@
 # Task 9: Teste de integração multi-instância (fanout real via RabbitMQ) [FR-002, FR-003, FR-004]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** capable

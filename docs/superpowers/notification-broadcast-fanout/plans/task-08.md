@@ -1,6 +1,6 @@
 # Task 8: Remover componentes Redis Pub/Sub obsoletos [FR-010, FR-011]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** cheap

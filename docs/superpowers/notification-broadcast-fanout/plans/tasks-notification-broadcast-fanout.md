@@ -22,8 +22,8 @@
 - [x] 5. Atualizar `NotificationQueueWorker` para publicar via `NotificationBroadcastPublisher` [FR-001, FR-005, FR-006] → `task-05.md`
 - [x] 6. Criar `NotificationBroadcastSubscriber` com `amqp-connection-manager` [FR-002, FR-003, FR-004] → `task-06.md`
 - [x] 7. Atualizar IoC e bootstrap para os novos componentes [FR-010, FR-011] → `task-07.md`
-- [ ] 8. Remover componentes Redis Pub/Sub obsoletos [FR-010, FR-011] → `task-08.md`
-- [ ] 9. Teste de integração multi-instância (fanout real via RabbitMQ) [FR-002, FR-003, FR-004, FR-007] → `task-09.md`
+- [x] 8. Remover componentes Redis Pub/Sub obsoletos [FR-010, FR-011] → `task-08.md`
+- [x] 9. Teste de integração multi-instância (fanout real via RabbitMQ) [FR-002, FR-003, FR-004, FR-007] → `task-09.md`
 
 ## Ondas de Execução
 
