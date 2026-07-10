@@ -25,5 +25,11 @@ export const NOTIFICATION_TYPES = {
 		RedisNotificationPublisher: Symbol.for("RedisNotificationPublisher"),
 		RedisNotificationSubscriber: Symbol.for("RedisNotificationSubscriber"),
 		NotificationQueueWorker: Symbol.for("NotificationQueueWorker"),
+		NotificationBroadcastPublisher: Symbol.for(
+			"NotificationBroadcastPublisher",
+		),
+		NotificationBroadcastSubscriber: Symbol.for(
+			"NotificationBroadcastSubscriber",
+		),
 	},
 } as const

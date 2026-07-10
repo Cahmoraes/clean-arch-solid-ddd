@@ -6,6 +6,7 @@ export const EXCHANGES = {
 	STRIPE_WEBHOOK: "stripeWebhook",
 	RATE_LIMIT_EXCEEDED: "rateLimitExceeded",
 	NOTIFICATION_CREATED: "notificationCreated",
+	NOTIFICATION_BROADCAST: "notificationBroadcast",
 } as const
 
 export type ExchangeTypes = (typeof EXCHANGES)[keyof typeof EXCHANGES]
