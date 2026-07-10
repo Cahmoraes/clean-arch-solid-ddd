@@ -1,0 +1,12 @@
+{
+  "us_id": "us-01",
+  "user_story": "Como usuário autenticado da aplicação, eu quero continuar recebendo notificações em tempo real (check-in aprovado/rejeitado, alerta de segurança) no sino do header, para que eu não perceba nenhuma diferença na experiência após o refactor de infraestrutura.",
+  "requirements": ["FR-001", "FR-002", "FR-005", "FR-006"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "pnpm --filter backend test:run (suíte completa, 112 arquivos / 652 testes) — 0 falhas. Inclui notification-queue-worker.test.ts ('should publish the consumed payload via NotificationBroadcastPublisher instead of Redis' — cobre FR-001, worker publica via NotificationBroadcastPublisher em vez de Redis pub/sub direto), notification-broadcast-publisher.test.ts e notification-broadcast-subscriber.test.ts (unitários), e notification-broadcast.integration-test.ts (integração real com RabbitMQ, 'deve entregar o mesmo payload de broadcast para duas instâncias assinantes independentes' — cobre FR-002, exchange fanout com filas exclusivas por instância). pnpm --filter backend test:business-flow -- src/notification/infra/controller/notification-stream.controller.business-flow-test.ts (executado dentro da suíte completa de business-flow, 44 arquivos / 181 testes) — 0 falhas. Inclui 'GET /stream returns SSE headers and initial event', 'GET /stream includes CORS headers when request has allowed origin', 'GET /stream returns 401 without token' — cobre entrega ao cliente via SSE. FR-005 (persistência antes do broadcast) e FR-006 (ack só após broadcast bem-sucedido) verificados por leitura do worker (NotificationQueueWorker consome da fila durável, chama broadcastPublisher.publish antes de retornar da callback de consume, sem catch que faça ack prematuro) e do publisher (publish via RabbitMQAdapter para exchange fanout). Nota: os filtros de arquivo passados via 'pnpm test:run -- <path>' e 'pnpm test:business-flow -- <path>' não restringiram a suíte (rodou suíte completa em ambos os comandos); resultado permanece válido pois os arquivos-alvo estão inclusos e passaram.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Task 2 pulada: cobertura ponta-a-ponta já existe (persistência → fila durável → broadcast fanout via RabbitMQ real → SseManager → SSE) através dos testes existentes mapeados na Task 1, sem necessidade de teste de aceitação adicional. Task 3 (screenshot) não aplicável — feature é infraestrutura backend sem UI nova."
+}

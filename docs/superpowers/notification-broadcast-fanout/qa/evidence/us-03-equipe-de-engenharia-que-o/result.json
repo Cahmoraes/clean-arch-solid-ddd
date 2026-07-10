@@ -1,0 +1,12 @@
+{
+  "us_id": "us-03",
+  "user_story": "Como equipe de engenharia, eu quero que o broadcast multi-instância dependa apenas do RabbitMQ (já usado no projeto), para que tenhamos uma peça de infraestrutura a menos para operar, monitorar e depurar neste fluxo.",
+  "requirements": ["FR-010", "FR-011"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "grep -rn 'RedisNotificationPublisher|RedisNotificationSubscriber' apps/backend/src apps/backend/test -> nenhuma ocorrência (FR-010 confirmado, componentes Redis Pub/Sub removidos). grep -rln 'REDIS_HOST|redis-adapter|RedisAdapter|ioredis' apps/backend/src -> aparece apenas em shared/infra/health/cache/cache-health-provider.ts, shared/infra/ioc/module/infra/cache-db-provider.ts, shared/infra/database/redis/redis-adapter.ts, shared/infra/server/plugins/rate-limit-plugin.ts, shared/infra/queue/bullmq-adapter.ts, shared/infra/env/index.ts e 2 testes do módulo user (fetch-users/get-user-stats, uso de cache) — nenhum arquivo do bounded context notification, confirmando FR-011 (Redis segue servindo apenas cache/rate-limit/BullMQ, não broadcast). Inspeção direta de notification-broadcast-publisher.ts e notification-broadcast-subscriber.ts confirma uso exclusivo de amqp-connection-manager/amqplib (RabbitMQ), sem import de Redis/ioredis. pnpm --filter backend test:run -- src/notification/infra/queue/ src/notification/infra/worker/ executou a suíte completa do backend (o filtro de path não restringiu o runner): 112 arquivos de teste, 652 testes, todos passaram (Duration 201.81s), incluindo notification-broadcast-publisher.test.ts, notification-broadcast-subscriber.test.ts, notification-broadcast.integration-test.ts e notification-queue-worker.test.ts.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Story estrutural (ausência de dependência), verificada via grep + inspeção de imports + suíte de testes existente, sem necessidade de novo teste de aceitação nem screenshot (sem UI nova)."
+}

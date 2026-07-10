@@ -1,0 +1,12 @@
+{
+  "us_id": "us-04",
+  "user_story": "Como equipe de engenharia, eu quero que uma nova instância Fastify comece a receber o broadcast de notificações automaticamente ao subir, sem exigir configuração manual por instância, para que a escala horizontal continue simples de operar.",
+  "requirements": ["FR-002", "FR-003", "FR-004"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Teste de integração real (RabbitMQ vivo via docker) src/notification/infra/queue/notification-broadcast.integration-test.ts: sobe duas instâncias independentes de NotificationBroadcastSubscriber (simulando duas instâncias Fastify), cada uma declarando sua própria fila exclusiva/auto-delete via `channel.assertQueue('', { exclusive: true, autoDelete: true })` dentro do `setup` de createChannel, sem nenhuma config manual. Publica 1 evento no exchange fanout 'notificationBroadcast' e confirma que AMBAS as instâncias recebem o mesmo payload (1 mensagem cada). PASSOU (1/1). As outras falhas observadas na mesma execução de test:e2e:prisma (prisma-subscription-repository e prisma-stripe-webhook-event-repository) são pré-existentes e não relacionadas — causadas por credenciais inválidas do usuário 'test' no Postgres local, fora do escopo desta feature. Unit test notification-broadcast-subscriber.test.ts: rodado dentro da suíte completa `pnpm test:run` (112 arquivos, 652 testes) — 100% verde, incluindo o subscriber, que cobre a redeclaração automática do setup após reconexão AMQP (amqp-connection-manager reexecuta o `setup` a cada reconexão, garantindo FR-004). Leitura do código-fonte de notification-broadcast-subscriber.ts confirma: fila declarada com `exclusive: true, autoDelete: true` dentro do `setup` passado a `connection.createChannel` (FR-002), fila exclusiva/auto-delete é destruída pelo broker ao fechar conexão (FR-003), e o amqp-connection-manager reexecuta esse `setup` a cada reconexão TCP (FR-004), conforme documentado no comentário JSDoc da classe.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Feature é infraestrutura backend pura, sem UI. RabbitMQ local confirmado ativo via docker ps antes dos testes. Falhas em prisma-subscription-repository.integration-test.ts e prisma-stripe-webhook-event-repository.integration-test.ts (auth failed contra DB 'test') são pré-existentes e não relacionadas a esta story."
+}

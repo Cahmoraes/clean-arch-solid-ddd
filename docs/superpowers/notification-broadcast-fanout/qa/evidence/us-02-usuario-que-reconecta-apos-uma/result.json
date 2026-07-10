@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como usuário que reconecta após uma queda momentânea de rede, eu quero que notificações perdidas durante desconexão apareçam via catch-up (Last-Event-ID), para que eu não perca nenhuma notificação relevante.",
+  "requirements": ["FR-007"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "pnpm --filter backend test:run: 112 arquivos, 652 testes passaram (inclui create-notification-on-check-in-event.handler.test.ts e get-notifications.usecase.test.ts). pnpm --filter backend test:business-flow: 44 arquivos, 181 testes passaram (inclui get-notifications.controller.business-flow-test.ts e notification-stream.controller.business-flow-test.ts). Nenhuma falha em nenhuma suíte.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Mecanismo real de catch-up: grep -rl 'Last-Event-ID' em apps/backend/src/notification retornou vazio — não existe implementação literal de Last-Event-ID no backend (nem no frontend, conforme a própria spec da feature reconhece explicitamente em specs/notification-broadcast-fanout-design.md, linhas 36 e 248: 'não há catch-up automático via SSE (nem Last-Event-ID nem equivalente existe hoje)'). O catch-up real é: Postgres como fonte da verdade + endpoint GET /api/v1/notifications (GetNotificationsUseCase -> NotificationRepository.findManyByUserId), que lista notificações persistidas independente do estado do broadcast em tempo real (RabbitMQ/SSE). Confirmado no código que CreateNotificationOnCheckInEventHandler.persistAndPublish() sempre persiste no repository ANTES de publicar no RabbitMQ (apps/backend/src/notification/application/event-handler/create-notification-on-check-in-event.handler.ts, linhas 86-98) — logo notificação fica disponível via GET mesmo se publish/broadcast falhar ou nenhuma instância estiver escutando. Diff da feature (git diff main...HEAD -- apps/backend/src/notification) toca apenas infra de fila (publisher/subscriber RabbitMQ, worker, testes de integração) e um rebind mecânico de nome de token DI em get-notifications.controller.business-flow-test.ts (RedisNotificationSubscriber -> NotificationBroadcastSubscriber, troca de shape do mock subscribe/disconnect -> start/stop) — nenhuma lógica de persistência, GetNotificationsUseCase ou controller GET foi alterada. Regressão zero confirmada por diff + suíte completa verde."
+}

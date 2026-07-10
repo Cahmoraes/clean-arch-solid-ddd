@@ -1,0 +1,12 @@
+{
+  "us_id": "us-05",
+  "user_story": "Como equipe de engenharia, eu quero que os exchanges RabbitMQ direct já existentes no projeto continuem funcionando exatamente como hoje, para que o refactor não introduza regressão em nenhum outro bounded context que dependa do RabbitMQAdapter.",
+  "requirements": ["FR-008", "FR-009"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "1) Assinatura confirmada em apps/backend/src/shared/infra/queue/rabbitmq-adapter.ts:28-38 -> publish<TData>(exchange, data, type: ExchangeKind = \"direct\", durable = true); assertExchange(exchange, type, { durable }). Defaults direct/durable=true preservados. 2) Mapeamento de callers de Queue.publish (grep 'queue.publish' em apps/backend/src, exclui .test.ts): create-user.usecase.ts, define-password.usecase.ts, stripe-webhook.controller.ts, global-error-handler.ts, rate-limit-plugin.ts, server-build.ts, create-notification-on-check-in-event.handler.ts, check-in.usecase.ts -- todos chamam publish sem passar type/durable, logo usam defaults direct/true inalterados. Único chamador que passa argumentos explícitos é notification-broadcast-publisher.ts (novo, feature) com \"fanout\", false -- aditivo, não substitui comportamento existente. 3) pnpm --filter backend test:run (suíte completa, inclui rabbitmq-adapter.test.ts): 112 arquivos passed (112), 652 testes passed (652), 0 falhas. 4) pnpm --filter backend test:business-flow (suíte completa cross-context): 44 arquivos passed (44), 181 testes passed (181), 0 falhas, duration 195.73s. Nenhuma regressão detectada em nenhum bounded context.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Task 3 (screenshot) pulada -- feature de infraestrutura backend, sem UI nova. Task 2 (teste de aceitação novo) não aplicável -- cobertura de regressão já garantida pela suíte de business-flow completa + unit test do adapter, ambos pré-existentes."
+}
