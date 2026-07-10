@@ -94,6 +94,7 @@
 		"@react-email/render": "2.0.8",
 		"@react-email/section": "0.0.17",
 		"@react-email/text": "0.1.6",
+		"amqp-connection-manager": "5.0.0",
 		"amqplib": "2.0.1",
 		"bcryptjs": "3.0.3",
 		"better-sqlite3": "12.10.0",
