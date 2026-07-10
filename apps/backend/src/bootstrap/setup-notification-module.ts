@@ -4,7 +4,7 @@ import type { GetUnreadCountController } from "@/notification/infra/controller/g
 import type { MarkAllAsReadController } from "@/notification/infra/controller/mark-all-as-read.controller.js"
 import type { MarkAsReadController } from "@/notification/infra/controller/mark-as-read.controller.js"
 import type { NotificationStreamController } from "@/notification/infra/controller/notification-stream.controller.js"
-import type { RedisNotificationSubscriber } from "@/notification/infra/redis/redis-notification-subscriber"
+import type { NotificationBroadcastSubscriber } from "@/notification/infra/queue/notification-broadcast-subscriber"
 import type { NotificationQueueWorker } from "@/notification/infra/worker/notification-queue-worker"
 import { NOTIFICATION_TYPES } from "@/shared/infra/ioc/types"
 
@@ -16,10 +16,11 @@ export async function setupNotificationModule(): Promise<ModuleControllers> {
 			NOTIFICATION_TYPES.EventHandlers.CreateNotificationOnCheckIn,
 		)
 	createNotificationOnCheckInEventHandler.subscribe()
-	const redisNotificationSubscriber = resolve<RedisNotificationSubscriber>(
-		NOTIFICATION_TYPES.Infra.RedisNotificationSubscriber,
-	)
-	await redisNotificationSubscriber.subscribe()
+	const notificationBroadcastSubscriber =
+		resolve<NotificationBroadcastSubscriber>(
+			NOTIFICATION_TYPES.Infra.NotificationBroadcastSubscriber,
+		)
+	await notificationBroadcastSubscriber.start()
 	const notificationQueueWorker = resolve<NotificationQueueWorker>(
 		NOTIFICATION_TYPES.Infra.NotificationQueueWorker,
 	)
