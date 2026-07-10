@@ -1,6 +1,6 @@
 # Task 2: Generalizar `RabbitMQAdapter.publish` para aceitar tipo e durabilidade de exchange [FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** standard

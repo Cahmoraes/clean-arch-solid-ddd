@@ -14,7 +14,7 @@ describe("RabbitMQAdapter", () => {
 			const adapter = new RabbitMQAdapter()
 			const channel = makeMockChannel()
 			// @ts-expect-error acessa campo privado para injetar canal fake no teste
-			adapter["_channel"] = channel
+			adapter._channel = channel
 
 			await adapter.publish("some-exchange", { foo: "bar" })
 
@@ -31,7 +31,7 @@ describe("RabbitMQAdapter", () => {
 			const adapter = new RabbitMQAdapter()
 			const channel = makeMockChannel()
 			// @ts-expect-error acessa campo privado para injetar canal fake no teste
-			adapter["_channel"] = channel
+			adapter._channel = channel
 
 			await adapter.publish(
 				"notificationBroadcast",

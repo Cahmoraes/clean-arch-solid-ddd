@@ -1,6 +1,6 @@
 # Task 1: Adicionar dependência `amqp-connection-manager` [FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** cheap

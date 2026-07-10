@@ -15,9 +15,9 @@
 
 ## Tarefas
 
-- [ ] 1. Adicionar dependência `amqp-connection-manager` [FR-004] → `task-01.md`
-- [ ] 2. Generalizar `RabbitMQAdapter.publish` para aceitar tipo de exchange (`direct` default, `fanout`) [FR-008, FR-009] → `task-02.md`
-- [ ] 3. Adicionar exchange `NOTIFICATION_BROADCAST` e novos symbols Inversify [FR-009] → `task-03.md`
+- [x] 1. Adicionar dependência `amqp-connection-manager` [FR-004] → `task-01.md`
+- [x] 2. Generalizar `RabbitMQAdapter.publish` para aceitar tipo de exchange (`direct` default, `fanout`) [FR-008, FR-009] → `task-02.md`
+- [x] 3. Adicionar exchange `NOTIFICATION_BROADCAST` e novos symbols Inversify [FR-009] → `task-03.md`
 - [ ] 4. Criar `NotificationBroadcastPublisher` [FR-001] → `task-04.md`
 - [ ] 5. Atualizar `NotificationQueueWorker` para publicar via `NotificationBroadcastPublisher` [FR-001, FR-005, FR-006] → `task-05.md`
 - [ ] 6. Criar `NotificationBroadcastSubscriber` com `amqp-connection-manager` [FR-002, FR-003, FR-004] → `task-06.md`

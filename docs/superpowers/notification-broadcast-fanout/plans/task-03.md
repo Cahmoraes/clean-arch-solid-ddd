@@ -1,6 +1,6 @@
 # Task 3: Adicionar exchange `NOTIFICATION_BROADCAST` e novos symbols Inversify [FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** cheap
