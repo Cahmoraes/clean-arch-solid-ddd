@@ -1,6 +1,6 @@
 # Task 6: Criar `NotificationBroadcastSubscriber` com `amqp-connection-manager` [FR-002, FR-003, FR-004]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-notification-broadcast-fanout.md`
 **Spec:** `../specs/notification-broadcast-fanout-design.md`
 **Tier:** capable
