@@ -22,8 +22,6 @@ export const NOTIFICATION_TYPES = {
 	},
 	Infra: {
 		SseManager: Symbol.for("SseManager"),
-		RedisNotificationPublisher: Symbol.for("RedisNotificationPublisher"),
-		RedisNotificationSubscriber: Symbol.for("RedisNotificationSubscriber"),
 		NotificationQueueWorker: Symbol.for("NotificationQueueWorker"),
 		NotificationBroadcastPublisher: Symbol.for(
 			"NotificationBroadcastPublisher",

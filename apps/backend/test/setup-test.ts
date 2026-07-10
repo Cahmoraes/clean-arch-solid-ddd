@@ -25,10 +25,10 @@ container
 		subscribe: () => undefined,
 	})
 container
-	.rebind(NOTIFICATION_TYPES.Infra.RedisNotificationSubscriber)
+	.rebind(NOTIFICATION_TYPES.Infra.NotificationBroadcastSubscriber)
 	.toConstantValue({
-		subscribe: async () => undefined,
-		disconnect: async () => undefined,
+		start: async () => undefined,
+		stop: async () => undefined,
 	})
 container
 	.rebind(NOTIFICATION_TYPES.Infra.NotificationQueueWorker)
