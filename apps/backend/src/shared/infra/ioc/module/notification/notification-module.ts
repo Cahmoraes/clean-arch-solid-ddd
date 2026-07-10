@@ -9,6 +9,7 @@ import { GetUnreadCountController } from "@/notification/infra/controller/get-un
 import { MarkAllAsReadController } from "@/notification/infra/controller/mark-all-as-read.controller.js"
 import { MarkAsReadController } from "@/notification/infra/controller/mark-as-read.controller.js"
 import { NotificationStreamController } from "@/notification/infra/controller/notification-stream.controller.js"
+import { NotificationBroadcastPublisher } from "@/notification/infra/queue/notification-broadcast-publisher"
 import { RedisNotificationPublisher } from "@/notification/infra/redis/redis-notification-publisher"
 import { RedisNotificationSubscriber } from "@/notification/infra/redis/redis-notification-subscriber"
 import { NotificationRepositoryProvider } from "@/notification/infra/repository/notification-repository-provider"
@@ -36,6 +37,9 @@ export const notificationModule = new ContainerModule(({ bind }) => {
 		.inSingletonScope()
 	bind(NOTIFICATION_TYPES.Infra.NotificationQueueWorker)
 		.to(NotificationQueueWorker)
+		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Infra.NotificationBroadcastPublisher)
+		.to(NotificationBroadcastPublisher)
 		.inSingletonScope()
 	bind(NOTIFICATION_TYPES.Controllers.GetNotifications)
 		.to(GetNotificationsController)
