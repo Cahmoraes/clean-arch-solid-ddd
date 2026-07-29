@@ -1,6 +1,6 @@
 # Task 1: Adicionar link voltar e renomear botão cancelar na edição de academia
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/academia-botao-voltar-design.md`
 **Tier:** cheap

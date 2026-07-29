@@ -15,7 +15,7 @@
 
 ## Tarefas
 
-- [ ] 1. Adicionar link voltar e renomear botão cancelar na edição de academia → `task-01.md`
+- [x] 1. Adicionar link voltar e renomear botão cancelar na edição de academia → `task-01.md`
 
 ## Ondas de Execução
 
