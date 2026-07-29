@@ -102,4 +102,30 @@ describe("GymResults — alternância de view", () => {
 		expect(screen.getByTestId("gym-row-g1")).toBeInTheDocument()
 		expect(screen.queryByTestId("gym-card-g1")).not.toBeInTheDocument()
 	})
+
+	test("com view cards, o container usa a classe de grid", () => {
+		renderWithProviders(<GymResults {...baseProps()} />)
+		const list = screen.getByTestId("gym-results-list")
+		expect(list).toHaveClass(
+			"grid",
+			"grid-cols-[repeat(auto-fill,minmax(280px,1fr))]",
+			"gap-[18px]",
+		)
+		expect(list).not.toHaveClass("flex", "flex-col")
+	})
+
+	test("com view rows, o container usa a classe de lista em coluna com borda externa", () => {
+		useGymViewStore.getState().setView("rows")
+		renderWithProviders(<GymResults {...baseProps()} />)
+		const list = screen.getByTestId("gym-results-list")
+		expect(list).toHaveClass(
+			"flex",
+			"flex-col",
+			"overflow-hidden",
+			"rounded-[22px]",
+			"border",
+			"border-border",
+		)
+		expect(list).not.toHaveClass("grid")
+	})
 })
