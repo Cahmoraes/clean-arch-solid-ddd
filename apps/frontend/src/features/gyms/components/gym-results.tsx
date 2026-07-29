@@ -7,6 +7,10 @@ import { EmptyState } from "@/components/ui/empty-state"
 import type { Gym } from "@/features/gyms/api"
 import { GymCard } from "@/features/gyms/components/gym-card"
 import { GymCardSkeleton } from "@/features/gyms/components/gym-card-skeleton"
+import { GymRow } from "@/features/gyms/components/gym-row"
+import { cn } from "@/lib/cn"
+import type { GymView } from "@/lib/ui-state/gym-view-cookie"
+import { useGymViewStore } from "@/lib/ui-state/gym-view-store"
 
 const SKELETON_COUNT = 6
 
@@ -94,30 +98,59 @@ function ResultsEmptyBrowse() {
 	)
 }
 
+function ResultsListItem({
+	gym,
+	view,
+	adminEditHref,
+}: {
+	gym: Gym
+	view: GymView
+	adminEditHref?: string
+}) {
+	return (
+		<motion.li
+			variants={cardVariants}
+			exit={cardVariants.exit}
+			className={cn(
+				view === "cards"
+					? "flex flex-col"
+					: "border-b border-border last:border-b-0",
+			)}
+		>
+			{view === "cards" ? (
+				<GymCard gym={gym} adminEditHref={adminEditHref} />
+			) : (
+				<GymRow gym={gym} adminEditHref={adminEditHref} />
+			)}
+		</motion.li>
+	)
+}
+
 function ResultsList({ items, isAdmin }: { items: Gym[]; isAdmin?: boolean }) {
+	const view = useGymViewStore((state) => state.view)
+
 	return (
 		<motion.ul
 			data-testid="gym-results-list"
 			variants={listVariants}
 			initial="hidden"
 			animate="show"
-			className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]"
+			className={cn(
+				view === "cards"
+					? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]"
+					: "flex flex-col overflow-hidden rounded-[22px] border border-border",
+			)}
 		>
 			<AnimatePresence>
 				{items.map((gym) => (
-					<motion.li
+					<ResultsListItem
 						key={gym.id}
-						variants={cardVariants}
-						exit={cardVariants.exit}
-						className="flex flex-col"
-					>
-						<GymCard
-							gym={gym}
-							adminEditHref={
-								isAdmin ? `/admin/academias/${gym.id}/editar` : undefined
-							}
-						/>
-					</motion.li>
+						gym={gym}
+						view={view}
+						adminEditHref={
+							isAdmin ? `/admin/academias/${gym.id}/editar` : undefined
+						}
+					/>
 				))}
 			</AnimatePresence>
 		</motion.ul>
