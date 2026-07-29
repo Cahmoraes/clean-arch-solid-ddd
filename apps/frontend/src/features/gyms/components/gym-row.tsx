@@ -15,7 +15,7 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 			<Link
 				href={`/academias/${gym.id}`}
 				data-testid={`gym-row-${gym.id}`}
-				className="flex w-full items-center gap-[14px] bg-card px-4 py-3"
+				className={`flex w-full items-center gap-[14px] bg-card px-4 py-3 ${adminEditHref ? "pr-14" : ""}`}
 			>
 				<div className="relative h-11 w-11 flex-shrink-0">
 					<GymImage
