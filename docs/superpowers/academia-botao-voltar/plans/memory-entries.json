@@ -1,0 +1,20 @@
+{
+  "feature": "academia-botao-voltar",
+  "entries": [
+    {
+      "content": "Feature: academia-botao-voltar. Decisions: Add a top back link on /admin/academias/[id]/editar pointing to /academias, replicating the existing detail page pattern (next/link + ArrowLeft from lucide-react + muted text classes). Rename the bottom form Cancelar button to Descartar alterações for semantic clarity. Constraints: Keep changes inside a single page file; reuse existing shadcn/ui Button; do not introduce new shared components.",
+      "tags": "architecture,decision,academia-botao-voltar,frontend,academias",
+      "source": "assistant"
+    },
+    {
+      "content": "Feature: academia-botao-voltar. Objective: Add a back button to the gym edit screen so users can return to the gym list without submitting the form. Scope: render Voltar para a busca link above the page title; rename Cancelar to Descartar alterações; update page.test.tsx assertions. Out-of-scope: changing form validation, navigation behavior of the bottom button, creating new shared components, altering the detail page.",
+      "tags": "scope,prd,academia-botao-voltar,frontend,academias",
+      "source": "assistant"
+    },
+    {
+      "content": "Feature: academia-botao-voltar. Artifacts — Spec: docs/superpowers/academia-botao-voltar/specs/academia-botao-voltar-design.md | PRD: N/A | Tasks: docs/superpowers/academia-botao-voltar/plans/tasks-academia-botao-voltar.md | Task count: 1.",
+      "tags": "artifacts,paths,academia-botao-voltar",
+      "source": "assistant"
+    }
+  ]
+}
