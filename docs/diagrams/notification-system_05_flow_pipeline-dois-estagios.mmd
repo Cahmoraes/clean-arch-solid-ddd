@@ -1,0 +1,17 @@
+flowchart LR
+    classDef stage1 fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
+    classDef stage2 fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    classDef db fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+
+    Event[⚡ Domain Event<br/>CheckInApprovedEvent] --> Handler[📋 EventHandler]
+    Handler --> Persist[(💾 Postgres<br/>notification)]
+    Handler --> Q1["📬 fila notificationCreated<br/>durável = true<br/>estágio 1: persistência da mensagem"]
+    Q1 --> Worker[⚙️ NotificationQueueWorker]
+    Worker --> Ex["🐰 exchange notificationBroadcast<br/>fanout, durable = false<br/>estágio 2: distribuição em tempo real"]
+    Ex --> Fan1[fila exclusiva instância 1]
+    Ex --> Fan2[fila exclusiva instância 2]
+    Ex --> FanN[fila exclusiva instância N]
+
+    class Handler,Q1,Worker stage1
+    class Ex,Fan1,Fan2,FanN stage2
+    class Persist db

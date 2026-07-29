@@ -1,0 +1,63 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Página inicial VOLT" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e6]:
+            - img [ref=e8]
+            - generic [ref=e10]: VOLT
+        - navigation "Ações de autenticação" [ref=e11]:
+          - link "Entrar" [ref=e12] [cursor=pointer]:
+            - /url: /login
+          - link "Criar conta" [ref=e13] [cursor=pointer]:
+            - /url: /cadastro
+    - main [ref=e14]:
+      - generic [ref=e16]:
+        - complementary [ref=e17]:
+          - heading "Treine onde você estiver." [level=2] [ref=e18]:
+            - text: Treine onde
+            - text: você estiver.
+          - generic [ref=e19]:
+            - generic [ref=e20]:
+              - generic [ref=e21]: "312"
+              - generic [ref=e22]: academias parceiras
+            - generic [ref=e23]:
+              - generic [ref=e24]: 48k
+              - generic [ref=e25]: check-ins por mês
+            - generic [ref=e26]:
+              - generic [ref=e27]: "4.9"
+              - generic [ref=e28]: avaliação média
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Acesse sua conta
+            - heading "Entrar" [level=1] [ref=e33]
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]: E-mail
+              - textbox "E-mail" [ref=e37]
+            - generic [ref=e38]:
+              - generic [ref=e39]: Senha
+              - textbox "Senha" [ref=e40]
+            - link "Esqueceu sua senha?" [ref=e42] [cursor=pointer]:
+              - /url: /recuperar-senha
+            - button "Entrar" [ref=e43] [cursor=pointer]
+          - generic [ref=e46]: ou
+          - generic [ref=e65]:
+            - button "Fazer Login com o Google. Abre em uma nova guia" [ref=e67] [cursor=pointer]:
+              - generic [ref=e69]:
+                - img [ref=e71]
+                - generic [ref=e78]: Fazer Login com o Google
+            - iframe
+          - paragraph [ref=e49]:
+            - text: Não tem conta?
+            - link "Crie agora" [ref=e50] [cursor=pointer]:
+              - /url: /cadastro
+    - contentinfo [ref=e51]:
+      - generic [ref=e52]:
+        - generic [ref=e53]: © 2026 VOLT
+        - generic [ref=e54]: Plataforma de acesso a academias
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e60] [cursor=pointer]:
+    - img [ref=e61]
+  - alert [ref=e79]

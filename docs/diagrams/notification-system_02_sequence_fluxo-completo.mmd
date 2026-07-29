@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    actor UA as 👤 Usuário A<br/>(SSE na Instância 1)
+    actor UB as 👤 Usuário B<br/>(SSE na Instância 2)
+    participant CI as ⚙️ CheckIn Domain
+    participant EH as 📋 CreateNotificationOnCheckInEventHandler
+    participant DB as 💾 PostgreSQL
+    participant QC as 📬 Fila notificationCreated<br/>(durável)
+    participant W as ⚙️ NotificationQueueWorker
+    participant EX as 🐰 Exchange fanout<br/>notificationBroadcast
+    participant Q1 as 📥 Fila exclusiva<br/>Instância 1
+    participant Q2 as 📥 Fila exclusiva<br/>Instância 2
+    participant S1 as 📡 SseManager<br/>Instância 1
+    participant S2 as 📡 SseManager<br/>Instância 2
+
+    UA->>CI: realiza ação (ex: check-in aprovado)
+    CI->>EH: publica CheckInApprovedEvent (domínio, síncrono)
+    EH->>DB: Notification.create() + save()
+    EH->>QC: queue.publish(NOTIFICATION_CREATED, payload)
+    Note over EH,QC: fila durável, garante que a<br/>notificação não se perca mesmo<br/>se todas as instâncias caírem
+
+    QC->>W: consume(NOTIFICATION_CREATED)
+    W->>EX: notificationBroadcastPublisher.publish(payload)
+    Note over W,EX: exchange fanout, durable:false<br/>routing key ignorada
+
+    EX->>Q1: fan-out (mensagem copiada)
+    EX->>Q2: fan-out (mensagem copiada)
+
+    Q1->>S1: handleMessage(payload)
+    S1->>S1: clients.get(userId=A) → existe!
+    S1-->>UA: data: {"type":"notification", payload}
+
+    Q2->>S2: handleMessage(payload)
+    S2->>S2: clients.get(userId=A) → não existe (B está conectado, não A)
+    Note over S2: no-op silencioso — não escreve<br/>nada no socket de B
+
+    Note over UA,UB: Somente o Usuário A recebe o evento,<br/>mesmo a mensagem tendo chegado<br/>em TODAS as instâncias

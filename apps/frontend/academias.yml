@@ -1,0 +1,419 @@
+- main [ref=e171]:
+  - region [ref=e173]:
+    - generic [ref=e174]:
+      - generic [ref=e175]:
+        - generic [ref=e176]: Rede
+        - heading "Academias" [level=1] [ref=e177]
+        - paragraph [ref=e178]: Busque por nome ou navegue pelas academias disponíveis.
+      - link "Cadastrar" [ref=e180] [cursor=pointer]:
+        - /url: /admin/academias/nova
+        - img [ref=e181]
+        - text: Cadastrar
+    - form "Buscar academias" [ref=e182]:
+      - generic [ref=e183]: Buscar academias por nome
+      - generic [ref=e184]:
+        - img [ref=e185]
+        - searchbox "Buscar academias por nome" [ref=e188]
+      - button "Buscar" [ref=e189] [cursor=pointer]:
+        - img [ref=e190]
+        - text: Buscar
+      - group "Alternar visualização" [ref=e194]:
+        - button [pressed] [ref=e195] [cursor=pointer]:
+          - img [ref=e196]
+        - button [ref=e201] [cursor=pointer]:
+          - img [ref=e202]
+    - list [ref=e204]:
+      - listitem [ref=e205]:
+        - generic [ref=e206]:
+          - link "Klocko, Johnston and Block Gym Disponível Klocko, Johnston and Block Gym Grass-roots value-added monitoring 3450 Oscar Plain Suite 746 14950862457 Check-in" [ref=e207] [cursor=pointer]:
+            - /url: /academias/03fdfed6-0e94-43cb-b64f-5acb65020162
+            - generic [ref=e208]:
+              - img "Klocko, Johnston and Block Gym" [ref=e210]
+              - generic [ref=e211]: Disponível
+            - generic [ref=e213]:
+              - paragraph [ref=e214]: Klocko, Johnston and Block Gym
+              - paragraph [ref=e215]: Grass-roots value-added monitoring
+              - paragraph [ref=e216]:
+                - img [ref=e217]
+                - generic [ref=e220]: 3450 Oscar Plain Suite 746
+              - generic [ref=e221]:
+                - generic [ref=e222]: "14950862457"
+                - generic [ref=e223]: Check-in
+          - link "Editar academia Klocko, Johnston and Block Gym" [ref=e224] [cursor=pointer]:
+            - /url: /admin/academias/03fdfed6-0e94-43cb-b64f-5acb65020162/editar
+            - img [ref=e225]
+      - listitem [ref=e228]:
+        - generic [ref=e229]:
+          - link "Disponível Koepp, Little and Schoen Gym Multi-tiered analyzing productivity 9700 Kuphal Common Suite 837 61938068142 Check-in" [ref=e230] [cursor=pointer]:
+            - /url: /academias/06717c34-ab74-4d99-bbe4-c2d08b520915
+            - generic [ref=e231]:
+              - img [ref=e234]
+              - generic [ref=e238]: Disponível
+            - generic [ref=e240]:
+              - paragraph [ref=e241]: Koepp, Little and Schoen Gym
+              - paragraph [ref=e242]: Multi-tiered analyzing productivity
+              - paragraph [ref=e243]:
+                - img [ref=e244]
+                - generic [ref=e247]: 9700 Kuphal Common Suite 837
+              - generic [ref=e248]:
+                - generic [ref=e249]: "61938068142"
+                - generic [ref=e250]: Check-in
+          - link "Editar academia Koepp, Little and Schoen Gym" [ref=e251] [cursor=pointer]:
+            - /url: /admin/academias/06717c34-ab74-4d99-bbe4-c2d08b520915/editar
+            - img [ref=e252]
+      - listitem [ref=e255]:
+        - generic [ref=e256]:
+          - link "Disponível Reinger, Watsica and Balistreri Gym Immersive stable website 995 Waterside Suite 341 38988742033 Check-in" [ref=e257] [cursor=pointer]:
+            - /url: /academias/08a4a77c-7afe-4342-a3f2-294027977e6d
+            - generic [ref=e258]:
+              - img [ref=e261]
+              - generic [ref=e265]: Disponível
+            - generic [ref=e267]:
+              - paragraph [ref=e268]: Reinger, Watsica and Balistreri Gym
+              - paragraph [ref=e269]: Immersive stable website
+              - paragraph [ref=e270]:
+                - img [ref=e271]
+                - generic [ref=e274]: 995 Waterside Suite 341
+              - generic [ref=e275]:
+                - generic [ref=e276]: "38988742033"
+                - generic [ref=e277]: Check-in
+          - link "Editar academia Reinger, Watsica and Balistreri Gym" [ref=e278] [cursor=pointer]:
+            - /url: /admin/academias/08a4a77c-7afe-4342-a3f2-294027977e6d/editar
+            - img [ref=e279]
+      - listitem [ref=e282]:
+        - generic [ref=e283]:
+          - link "Disponível Dibbert and Sons Gym Multi-tiered hybrid benchmark 102 Delmer Forest Suite 570 68946218856 Check-in" [ref=e284] [cursor=pointer]:
+            - /url: /academias/091ed601-deaf-4d3d-8491-3170bade87d3
+            - generic [ref=e285]:
+              - img [ref=e288]
+              - generic [ref=e292]: Disponível
+            - generic [ref=e294]:
+              - paragraph [ref=e295]: Dibbert and Sons Gym
+              - paragraph [ref=e296]: Multi-tiered hybrid benchmark
+              - paragraph [ref=e297]:
+                - img [ref=e298]
+                - generic [ref=e301]: 102 Delmer Forest Suite 570
+              - generic [ref=e302]:
+                - generic [ref=e303]: "68946218856"
+                - generic [ref=e304]: Check-in
+          - link "Editar academia Dibbert and Sons Gym" [ref=e305] [cursor=pointer]:
+            - /url: /admin/academias/091ed601-deaf-4d3d-8491-3170bade87d3/editar
+            - img [ref=e306]
+      - listitem [ref=e309]:
+        - generic [ref=e310]:
+          - link "Disponível Grimes-Runte - DuBuque Gym Cross-platform mission-critical process improvement 44469 Sonja Pines Apt. 888 51912750922 Check-in" [ref=e311] [cursor=pointer]:
+            - /url: /academias/0ef4d62c-f86c-42b0-b2b3-6051a7edb44b
+            - generic [ref=e312]:
+              - img [ref=e315]
+              - generic [ref=e319]: Disponível
+            - generic [ref=e321]:
+              - paragraph [ref=e322]: Grimes-Runte - DuBuque Gym
+              - paragraph [ref=e323]: Cross-platform mission-critical process improvement
+              - paragraph [ref=e324]:
+                - img [ref=e325]
+                - generic [ref=e328]: 44469 Sonja Pines Apt. 888
+              - generic [ref=e329]:
+                - generic [ref=e330]: "51912750922"
+                - generic [ref=e331]: Check-in
+          - link "Editar academia Grimes-Runte - DuBuque Gym" [ref=e332] [cursor=pointer]:
+            - /url: /admin/academias/0ef4d62c-f86c-42b0-b2b3-6051a7edb44b/editar
+            - img [ref=e333]
+      - listitem [ref=e336]:
+        - generic [ref=e337]:
+          - link "Disponível Sanford, Rowe and Bartoletti Gym Universal mission-critical project 44626 Stoney Lane Apt. 512 16972769001 Check-in" [ref=e338] [cursor=pointer]:
+            - /url: /academias/165f3437-0565-4066-b595-1d8bba4569e3
+            - generic [ref=e339]:
+              - img [ref=e342]
+              - generic [ref=e346]: Disponível
+            - generic [ref=e348]:
+              - paragraph [ref=e349]: Sanford, Rowe and Bartoletti Gym
+              - paragraph [ref=e350]: Universal mission-critical project
+              - paragraph [ref=e351]:
+                - img [ref=e352]
+                - generic [ref=e355]: 44626 Stoney Lane Apt. 512
+              - generic [ref=e356]:
+                - generic [ref=e357]: "16972769001"
+                - generic [ref=e358]: Check-in
+          - link "Editar academia Sanford, Rowe and Bartoletti Gym" [ref=e359] [cursor=pointer]:
+            - /url: /admin/academias/165f3437-0565-4066-b595-1d8bba4569e3/editar
+            - img [ref=e360]
+      - listitem [ref=e363]:
+        - generic [ref=e364]:
+          - link "Disponível Kerluke and Sons Gym Phased tertiary hierarchy 33401 Jeff Drives Suite 325 46983611621 Check-in" [ref=e365] [cursor=pointer]:
+            - /url: /academias/18127e0e-1fa0-4b96-bf3d-984adbb404eb
+            - generic [ref=e366]:
+              - img [ref=e369]
+              - generic [ref=e373]: Disponível
+            - generic [ref=e375]:
+              - paragraph [ref=e376]: Kerluke and Sons Gym
+              - paragraph [ref=e377]: Phased tertiary hierarchy
+              - paragraph [ref=e378]:
+                - img [ref=e379]
+                - generic [ref=e382]: 33401 Jeff Drives Suite 325
+              - generic [ref=e383]:
+                - generic [ref=e384]: "46983611621"
+                - generic [ref=e385]: Check-in
+          - link "Editar academia Kerluke and Sons Gym" [ref=e386] [cursor=pointer]:
+            - /url: /admin/academias/18127e0e-1fa0-4b96-bf3d-984adbb404eb/editar
+            - img [ref=e387]
+      - listitem [ref=e390]:
+        - generic [ref=e391]:
+          - link "Disponível Bergnaum, Schiller and Torphy Gym Polarised data-driven adapter 7213 Angelica Bridge Suite 436 66911388919 Check-in" [ref=e392] [cursor=pointer]:
+            - /url: /academias/2150e172-cd26-4136-b765-eff12d58db7f
+            - generic [ref=e393]:
+              - img [ref=e396]
+              - generic [ref=e400]: Disponível
+            - generic [ref=e402]:
+              - paragraph [ref=e403]: Bergnaum, Schiller and Torphy Gym
+              - paragraph [ref=e404]: Polarised data-driven adapter
+              - paragraph [ref=e405]:
+                - img [ref=e406]
+                - generic [ref=e409]: 7213 Angelica Bridge Suite 436
+              - generic [ref=e410]:
+                - generic [ref=e411]: "66911388919"
+                - generic [ref=e412]: Check-in
+          - link "Editar academia Bergnaum, Schiller and Torphy Gym" [ref=e413] [cursor=pointer]:
+            - /url: /admin/academias/2150e172-cd26-4136-b765-eff12d58db7f/editar
+            - img [ref=e414]
+      - listitem [ref=e417]:
+        - generic [ref=e418]:
+          - link "Disponível Klocko, Orn and Hackett Gym Reactive content-based monitoring 726 Oberbrunner Wells Apt. 948 66931729307 Check-in" [ref=e419] [cursor=pointer]:
+            - /url: /academias/25c0f128-e955-469b-8137-b7543451a825
+            - generic [ref=e420]:
+              - img [ref=e423]
+              - generic [ref=e427]: Disponível
+            - generic [ref=e429]:
+              - paragraph [ref=e430]: Klocko, Orn and Hackett Gym
+              - paragraph [ref=e431]: Reactive content-based monitoring
+              - paragraph [ref=e432]:
+                - img [ref=e433]
+                - generic [ref=e436]: 726 Oberbrunner Wells Apt. 948
+              - generic [ref=e437]:
+                - generic [ref=e438]: "66931729307"
+                - generic [ref=e439]: Check-in
+          - link "Editar academia Klocko, Orn and Hackett Gym" [ref=e440] [cursor=pointer]:
+            - /url: /admin/academias/25c0f128-e955-469b-8137-b7543451a825/editar
+            - img [ref=e441]
+      - listitem [ref=e444]:
+        - generic [ref=e445]:
+          - link "Disponível Lemke - Tromp Gym Adaptive needs-based toolset 22285 Reichert Center Suite 504 35921399400 Check-in" [ref=e446] [cursor=pointer]:
+            - /url: /academias/2895ffc9-64e7-4b6a-a6f9-f9bcf82e942b
+            - generic [ref=e447]:
+              - img [ref=e450]
+              - generic [ref=e454]: Disponível
+            - generic [ref=e456]:
+              - paragraph [ref=e457]: Lemke - Tromp Gym
+              - paragraph [ref=e458]: Adaptive needs-based toolset
+              - paragraph [ref=e459]:
+                - img [ref=e460]
+                - generic [ref=e463]: 22285 Reichert Center Suite 504
+              - generic [ref=e464]:
+                - generic [ref=e465]: "35921399400"
+                - generic [ref=e466]: Check-in
+          - link "Editar academia Lemke - Tromp Gym" [ref=e467] [cursor=pointer]:
+            - /url: /admin/academias/2895ffc9-64e7-4b6a-a6f9-f9bcf82e942b/editar
+            - img [ref=e468]
+      - listitem [ref=e471]:
+        - generic [ref=e472]:
+          - link "Disponível Rempel, Dare and Wehner-Baumbach Gym Devolved client-driven parallelism 37904 Depot Street Suite 761 19909843885 Check-in" [ref=e473] [cursor=pointer]:
+            - /url: /academias/37f2bd2d-e8ea-4525-b77e-9fc200c9432f
+            - generic [ref=e474]:
+              - img [ref=e477]
+              - generic [ref=e481]: Disponível
+            - generic [ref=e483]:
+              - paragraph [ref=e484]: Rempel, Dare and Wehner-Baumbach Gym
+              - paragraph [ref=e485]: Devolved client-driven parallelism
+              - paragraph [ref=e486]:
+                - img [ref=e487]
+                - generic [ref=e490]: 37904 Depot Street Suite 761
+              - generic [ref=e491]:
+                - generic [ref=e492]: "19909843885"
+                - generic [ref=e493]: Check-in
+          - link "Editar academia Rempel, Dare and Wehner-Baumbach Gym" [ref=e494] [cursor=pointer]:
+            - /url: /admin/academias/37f2bd2d-e8ea-4525-b77e-9fc200c9432f/editar
+            - img [ref=e495]
+      - listitem [ref=e498]:
+        - generic [ref=e499]:
+          - link "Disponível Fritsch Inc Gym Digitized transitional matrices 66479 Maple Close Apt. 981 44946570401 Check-in" [ref=e500] [cursor=pointer]:
+            - /url: /academias/3a3f6fb5-b4ce-4b20-a12f-d6f043ff7e1a
+            - generic [ref=e501]:
+              - img [ref=e504]
+              - generic [ref=e508]: Disponível
+            - generic [ref=e510]:
+              - paragraph [ref=e511]: Fritsch Inc Gym
+              - paragraph [ref=e512]: Digitized transitional matrices
+              - paragraph [ref=e513]:
+                - img [ref=e514]
+                - generic [ref=e517]: 66479 Maple Close Apt. 981
+              - generic [ref=e518]:
+                - generic [ref=e519]: "44946570401"
+                - generic [ref=e520]: Check-in
+          - link "Editar academia Fritsch Inc Gym" [ref=e521] [cursor=pointer]:
+            - /url: /admin/academias/3a3f6fb5-b4ce-4b20-a12f-d6f043ff7e1a/editar
+            - img [ref=e522]
+      - listitem [ref=e525]:
+        - generic [ref=e526]:
+          - link "Disponível Lubowitz, Hintz and Kunze Gym Centralized contextually-based moratorium 688 The Willows Suite 767 38926686618 Check-in" [ref=e527] [cursor=pointer]:
+            - /url: /academias/3d8a0197-ad37-498a-b4e5-86e15a2f79b0
+            - generic [ref=e528]:
+              - img [ref=e531]
+              - generic [ref=e535]: Disponível
+            - generic [ref=e537]:
+              - paragraph [ref=e538]: Lubowitz, Hintz and Kunze Gym
+              - paragraph [ref=e539]: Centralized contextually-based moratorium
+              - paragraph [ref=e540]:
+                - img [ref=e541]
+                - generic [ref=e544]: 688 The Willows Suite 767
+              - generic [ref=e545]:
+                - generic [ref=e546]: "38926686618"
+                - generic [ref=e547]: Check-in
+          - link "Editar academia Lubowitz, Hintz and Kunze Gym" [ref=e548] [cursor=pointer]:
+            - /url: /admin/academias/3d8a0197-ad37-498a-b4e5-86e15a2f79b0/editar
+            - img [ref=e549]
+      - listitem [ref=e552]:
+        - generic [ref=e553]:
+          - link "Disponível Swift and Sons Gym Intuitive discrete matrix 5351 O'Reilly Glen Suite 294 85932923367 Check-in" [ref=e554] [cursor=pointer]:
+            - /url: /academias/3dcd436c-9645-4f5c-ab5f-95b2d1335440
+            - generic [ref=e555]:
+              - img [ref=e558]
+              - generic [ref=e562]: Disponível
+            - generic [ref=e564]:
+              - paragraph [ref=e565]: Swift and Sons Gym
+              - paragraph [ref=e566]: Intuitive discrete matrix
+              - paragraph [ref=e567]:
+                - img [ref=e568]
+                - generic [ref=e571]: 5351 O'Reilly Glen Suite 294
+              - generic [ref=e572]:
+                - generic [ref=e573]: "85932923367"
+                - generic [ref=e574]: Check-in
+          - link "Editar academia Swift and Sons Gym" [ref=e575] [cursor=pointer]:
+            - /url: /admin/academias/3dcd436c-9645-4f5c-ab5f-95b2d1335440/editar
+            - img [ref=e576]
+      - listitem [ref=e579]:
+        - generic [ref=e580]:
+          - link "Disponível Swaniawski LLC Gym Sharable national neural-net 948 Grange Avenue Suite 152 95977842161 Check-in" [ref=e581] [cursor=pointer]:
+            - /url: /academias/3f0c4282-2964-4b9c-bb34-19f190cb33e1
+            - generic [ref=e582]:
+              - img [ref=e585]
+              - generic [ref=e589]: Disponível
+            - generic [ref=e591]:
+              - paragraph [ref=e592]: Swaniawski LLC Gym
+              - paragraph [ref=e593]: Sharable national neural-net
+              - paragraph [ref=e594]:
+                - img [ref=e595]
+                - generic [ref=e598]: 948 Grange Avenue Suite 152
+              - generic [ref=e599]:
+                - generic [ref=e600]: "95977842161"
+                - generic [ref=e601]: Check-in
+          - link "Editar academia Swaniawski LLC Gym" [ref=e602] [cursor=pointer]:
+            - /url: /admin/academias/3f0c4282-2964-4b9c-bb34-19f190cb33e1/editar
+            - img [ref=e603]
+      - listitem [ref=e606]:
+        - generic [ref=e607]:
+          - link "Disponível Becker Inc Gym Sharable 24 hour firmware 6606 Gustavo Circles Suite 550 65930916655 Check-in" [ref=e608] [cursor=pointer]:
+            - /url: /academias/42f3a46f-b265-437b-9889-47fd8aa0acab
+            - generic [ref=e609]:
+              - img [ref=e612]
+              - generic [ref=e616]: Disponível
+            - generic [ref=e618]:
+              - paragraph [ref=e619]: Becker Inc Gym
+              - paragraph [ref=e620]: Sharable 24 hour firmware
+              - paragraph [ref=e621]:
+                - img [ref=e622]
+                - generic [ref=e625]: 6606 Gustavo Circles Suite 550
+              - generic [ref=e626]:
+                - generic [ref=e627]: "65930916655"
+                - generic [ref=e628]: Check-in
+          - link "Editar academia Becker Inc Gym" [ref=e629] [cursor=pointer]:
+            - /url: /admin/academias/42f3a46f-b265-437b-9889-47fd8aa0acab/editar
+            - img [ref=e630]
+      - listitem [ref=e633]:
+        - generic [ref=e634]:
+          - link "Disponível Treutel - Beier Gym Upgradable explicit archive 57152 Milton Road Suite 506 87950134884 Check-in" [ref=e635] [cursor=pointer]:
+            - /url: /academias/4501a7d0-95bc-44d0-98eb-79b472f22a95
+            - generic [ref=e636]:
+              - img [ref=e639]
+              - generic [ref=e643]: Disponível
+            - generic [ref=e645]:
+              - paragraph [ref=e646]: Treutel - Beier Gym
+              - paragraph [ref=e647]: Upgradable explicit archive
+              - paragraph [ref=e648]:
+                - img [ref=e649]
+                - generic [ref=e652]: 57152 Milton Road Suite 506
+              - generic [ref=e653]:
+                - generic [ref=e654]: "87950134884"
+                - generic [ref=e655]: Check-in
+          - link "Editar academia Treutel - Beier Gym" [ref=e656] [cursor=pointer]:
+            - /url: /admin/academias/4501a7d0-95bc-44d0-98eb-79b472f22a95/editar
+            - img [ref=e657]
+      - listitem [ref=e660]:
+        - generic [ref=e661]:
+          - link "Disponível Swaniawski - Lindgren Gym Compatible dedicated access 80598 Miller Corners Apt. 968 32956850304 Check-in" [ref=e662] [cursor=pointer]:
+            - /url: /academias/47e272c9-2001-4700-847b-3672ff83ad0b
+            - generic [ref=e663]:
+              - img [ref=e666]
+              - generic [ref=e670]: Disponível
+            - generic [ref=e672]:
+              - paragraph [ref=e673]: Swaniawski - Lindgren Gym
+              - paragraph [ref=e674]: Compatible dedicated access
+              - paragraph [ref=e675]:
+                - img [ref=e676]
+                - generic [ref=e679]: 80598 Miller Corners Apt. 968
+              - generic [ref=e680]:
+                - generic [ref=e681]: "32956850304"
+                - generic [ref=e682]: Check-in
+          - link "Editar academia Swaniawski - Lindgren Gym" [ref=e683] [cursor=pointer]:
+            - /url: /admin/academias/47e272c9-2001-4700-847b-3672ff83ad0b/editar
+            - img [ref=e684]
+      - listitem [ref=e687]:
+        - generic [ref=e688]:
+          - link "Disponível Barton LLC Gym Diverse zero administration frame 4705 McClure Mount Suite 668 68922910410 Check-in" [ref=e689] [cursor=pointer]:
+            - /url: /academias/4948ab14-8071-46b7-bec9-3ab38d298bbb
+            - generic [ref=e690]:
+              - img [ref=e693]
+              - generic [ref=e697]: Disponível
+            - generic [ref=e699]:
+              - paragraph [ref=e700]: Barton LLC Gym
+              - paragraph [ref=e701]: Diverse zero administration frame
+              - paragraph [ref=e702]:
+                - img [ref=e703]
+                - generic [ref=e706]: 4705 McClure Mount Suite 668
+              - generic [ref=e707]:
+                - generic [ref=e708]: "68922910410"
+                - generic [ref=e709]: Check-in
+          - link "Editar academia Barton LLC Gym" [ref=e710] [cursor=pointer]:
+            - /url: /admin/academias/4948ab14-8071-46b7-bec9-3ab38d298bbb/editar
+            - img [ref=e711]
+      - listitem [ref=e714]:
+        - generic [ref=e715]:
+          - link "Disponível Mann Inc Gym Programmable value-added parallelism 564 Marquise Forest Suite 409 24950690508 Check-in" [ref=e716] [cursor=pointer]:
+            - /url: /academias/4a3b50e8-8e08-4155-af38-2164280608a1
+            - generic [ref=e717]:
+              - img [ref=e720]
+              - generic [ref=e724]: Disponível
+            - generic [ref=e726]:
+              - paragraph [ref=e727]: Mann Inc Gym
+              - paragraph [ref=e728]: Programmable value-added parallelism
+              - paragraph [ref=e729]:
+                - img [ref=e730]
+                - generic [ref=e733]: 564 Marquise Forest Suite 409
+              - generic [ref=e734]:
+                - generic [ref=e735]: "24950690508"
+                - generic [ref=e736]: Check-in
+          - link "Editar academia Mann Inc Gym" [ref=e737] [cursor=pointer]:
+            - /url: /admin/academias/4a3b50e8-8e08-4155-af38-2164280608a1/editar
+            - img [ref=e738]
+    - navigation "pagination" [ref=e742]:
+      - list [ref=e743]:
+        - listitem [ref=e744]:
+          - generic "Go to previous page" [ref=e745] [cursor=pointer]:
+            - img [ref=e746]
+        - listitem [ref=e748]:
+          - generic [ref=e749] [cursor=pointer]: "1"
+        - listitem [ref=e750]:
+          - generic [ref=e751] [cursor=pointer]: "2"
+        - listitem [ref=e752]:
+          - generic [ref=e753] [cursor=pointer]: "3"
+        - listitem [ref=e754]:
+          - generic "Go to next page" [ref=e755] [cursor=pointer]:
+            - img [ref=e756]

@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    actor U as 👤 Usuário (2 abas)
+    participant Ctrl as 🌐 NotificationStreamController
+    participant Sse as 📡 SseManager (Map userId → Set de clients)
+
+    U->>Ctrl: GET /notifications/stream (aba 1, JWT)
+    Ctrl->>Ctrl: reply.hijack() — assume controle raw do socket
+    Ctrl->>U: headers text/event-stream + evento "connected"
+    Ctrl->>Sse: add(userId, replyAba1)
+    Sse->>Sse: clients.set(userId, Set{replyAba1})
+
+    U->>Ctrl: GET /notifications/stream (aba 2, mesmo JWT)
+    Ctrl->>Sse: add(userId, replyAba2)
+    Sse->>Sse: Set já existe → adiciona replyAba2<br/>Set{replyAba1, replyAba2}
+
+    Note over Sse: clientCount(userId) = 2<br/>ambas as abas recebem o mesmo evento
+
+    U->>Ctrl: fecha aba 1 (navegador dispara close no socket)
+    Ctrl->>Sse: remove(userId, replyAba1)
+    Sse->>Sse: Set.delete(replyAba1) → Set{replyAba2}
+
+    U->>Ctrl: fecha aba 2
+    Ctrl->>Sse: remove(userId, replyAba2)
+    Sse->>Sse: Set.delete(replyAba2) → Set vazio<br/>clients.delete(userId)
+
+    Note over Sse: chave userId removida do Map<br/>evita memory leak de entradas órfãs

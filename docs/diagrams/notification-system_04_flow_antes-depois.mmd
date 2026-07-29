@@ -1,0 +1,25 @@
+flowchart TB
+    classDef removed fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:black
+    classDef kept fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef new fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+
+    subgraph Antes["❌ ANTES — Redis Pub/Sub + RabbitMQ"]
+        direction TB
+        A1[⚙️ Worker] -->|"PUBLISH notifications:*"| A2[("🔴 Redis Pub/Sub")]
+        A2 -->|"PSUBSCRIBE notifications:*"| A3[📡 RedisNotificationSubscriber<br/>por instância]
+        A3 --> A4[SseManager]
+    end
+
+    subgraph Depois["✅ DEPOIS — Somente RabbitMQ"]
+        direction TB
+        D1[⚙️ NotificationQueueWorker] -->|"publish fanout"| D2{{"🐰 exchange notificationBroadcast"}}
+        D2 -->|bind| D3[("fila exclusiva<br/>auto-delete<br/>por instância")]
+        D3 -->|"amqp-connection-manager<br/>consume + reconexão automática"| D4[NotificationBroadcastSubscriber]
+        D4 --> D5[SseManager]
+    end
+
+    Antes -. "refatoração: remove peça de infra redundante" .-> Depois
+
+    class A2,A3 removed
+    class D2,D3,D4 new
+    class A4,D5,D1 kept

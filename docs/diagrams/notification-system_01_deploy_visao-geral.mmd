@@ -1,0 +1,51 @@
+graph TB
+    classDef client fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
+    classDef app fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef broker fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    classDef db fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+
+    UserA[👤 Usuário A<br/>navegador]
+    UserB[👤 Usuário B<br/>navegador]
+
+    subgraph LB[🌐 Load Balancer]
+        direction TB
+        note[Distribui conexões HTTP/SSE<br/>entre as instâncias]
+    end
+
+    subgraph Instance1[⚙️ Instância 1 - Fastify]
+        SSE1[📡 SseManager<br/>Map userId → conexões]
+    end
+
+    subgraph Instance2[⚙️ Instância 2 - Fastify]
+        SSE2[📡 SseManager<br/>Map userId → conexões]
+    end
+
+    subgraph Broker[🐰 RabbitMQ]
+        direction TB
+        ExB{{"fanout: notificationBroadcast<br/>(durable: false)"}}
+        Q1[("fila exclusiva<br/>auto-delete<br/>instância 1")]
+        Q2[("fila exclusiva<br/>auto-delete<br/>instância 2")]
+        ExB --> Q1
+        ExB --> Q2
+    end
+
+    DB[(💾 PostgreSQL<br/>tabela notification)]
+
+    UserA -- "1. conecta GET /notifications/stream" --> LB
+    LB -- roteia p/ qualquer instância --> Instance1
+    UserB -- "1. conecta GET /notifications/stream" --> LB
+    LB -- roteia p/ qualquer instância --> Instance2
+
+    Instance1 -- publica evento --> Broker
+    Broker -- fan-out p/ todas as filas --> Q1
+    Broker -- fan-out p/ todas as filas --> Q2
+    Q1 -- consumida por --> SSE1
+    Q2 -- consumida por --> SSE2
+
+    Instance1 -.-> DB
+    Instance2 -.-> DB
+
+    class UserA,UserB client
+    class Instance1,Instance2,SSE1,SSE2 app
+    class ExB,Q1,Q2 broker
+    class DB db
