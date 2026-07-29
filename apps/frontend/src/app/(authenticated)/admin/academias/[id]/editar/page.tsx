@@ -140,7 +140,6 @@ function EditGymForm({ gym }: { gym: Gym }) {
 				<Button
 					type="button"
 					variant="outline"
-					data-testid="gym-form-cancel"
 					onClick={() => router.push("/academias")}
 				>
 					Descartar alterações
@@ -168,14 +167,16 @@ export default function AdminEditarAcademiaPage() {
 			width="narrow"
 			aria-labelledby="editar-academia-title"
 		>
-			<Link
-				href="/academias"
-				data-testid="gym-edit-back-link"
-				className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-			>
-				<ArrowLeft aria-hidden className="h-4 w-4" />
-				Voltar para a busca
-			</Link>
+			<div>
+				<Link
+					href="/academias"
+					data-testid="gym-edit-back-link"
+					className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+				>
+					<ArrowLeft aria-hidden className="h-4 w-4" />
+					Voltar para a busca
+				</Link>
+			</div>
 			<header className="flex flex-col gap-2">
 				<h1
 					id="editar-academia-title"
