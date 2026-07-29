@@ -221,4 +221,31 @@ describe("AcademiasPage", () => {
 		expect(await screen.findByTestId("gym-card-gym-1")).toBeInTheDocument()
 		expect(screen.queryByTestId("gym-edit-gym-1")).not.toBeInTheDocument()
 	})
+
+	test("exibe o toggle de visualização na toolbar", () => {
+		renderWithProviders(<AcademiasPage />)
+		expect(screen.getByTestId("gym-view-toggle")).toBeInTheDocument()
+	})
+
+	test("clicar no item de linhas do toggle alterna a visualização para GymRow", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/gyms`, () =>
+				HttpResponse.json({
+					gyms: fakeGyms(2),
+					pagination: { total: 2, page: 1, limit: 20 },
+				}),
+			),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<AcademiasPage />)
+
+		await screen.findByTestId("gym-card-gym-1")
+		const toggle = screen.getByTestId("gym-view-toggle")
+		await user.click(
+			within(toggle).getByTestId("view-toggle-rows").closest("button")!,
+		)
+
+		expect(await screen.findByTestId("gym-row-gym-1")).toBeInTheDocument()
+		expect(screen.queryByTestId("gym-card-gym-1")).not.toBeInTheDocument()
+	})
 })

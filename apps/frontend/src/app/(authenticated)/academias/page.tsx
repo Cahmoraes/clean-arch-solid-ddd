@@ -1,23 +1,70 @@
 "use client"
 
-import { Plus, Search } from "lucide-react"
+import { LayoutGrid, List, Plus, Search } from "lucide-react"
 import { MotionConfig } from "motion/react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { Suspense, useId, useState } from "react"
+import { Suspense, useId, useRef, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/page-header"
 import { SearchBar } from "@/components/ui/search-bar"
+import { SegmentedControl } from "@/components/ui/segmented-control"
 import { useAllGyms, useGymsByName } from "@/features/gyms/api"
 import { GymPagination } from "@/features/gyms/components/gym-pagination"
 import { GymResults } from "@/features/gyms/components/gym-results"
 import { useAuthStore } from "@/lib/auth/auth-store"
+import {
+	GYM_VIEW_COOKIE,
+	type GymView,
+	parseGymViewCookie,
+} from "@/lib/ui-state/gym-view-cookie"
+import { useGymViewStore } from "@/lib/ui-state/gym-view-store"
 
 const RESULTS_PER_PAGE = 20
 
+const VIEW_TOGGLE_ITEMS = [
+	{
+		value: "cards" as GymView,
+		label: (
+			<LayoutGrid
+				data-testid="view-toggle-cards"
+				className="h-4 w-4"
+				aria-hidden="true"
+			/>
+		),
+	},
+	{
+		value: "rows" as GymView,
+		label: (
+			<List
+				data-testid="view-toggle-rows"
+				className="h-4 w-4"
+				aria-hidden="true"
+			/>
+		),
+	},
+]
+
 function computeTotalPages(total: number | undefined): number {
 	return Math.ceil((total ?? 0) / RESULTS_PER_PAGE)
+}
+
+function readGymViewCookie(): GymView {
+	if (typeof document === "undefined") return "cards"
+	const match = document.cookie
+		.split("; ")
+		.find((row) => row.startsWith(`${GYM_VIEW_COOKIE}=`))
+	return parseGymViewCookie(match?.split("=")[1])
+}
+
+function useHydratedGymView(): GymView {
+	const hydratedViewRef = useRef(false)
+	if (!hydratedViewRef.current) {
+		useGymViewStore.getState().hydrate(readGymViewCookie())
+		hydratedViewRef.current = true
+	}
+	return useGymViewStore((state) => state.view)
 }
 
 interface AcademiasContentProps {
@@ -28,6 +75,9 @@ function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 	const user = useAuthStore((state) => state.user)
 	const isAdmin = user?.role === "ADMIN"
 	const inputId = useId()
+
+	const view = useHydratedGymView()
+
 	const [draftQuery, setDraftQuery] = useState(initialSearch)
 	const [submittedQuery, setSubmittedQuery] = useState(initialSearch)
 	const [page, setPage] = useState(1)
@@ -96,6 +146,15 @@ function AcademiasContent({ initialSearch }: AcademiasContentProps) {
 						<Search aria-hidden className="h-4 w-4" />
 						Buscar
 					</Button>
+
+					<div data-testid="gym-view-toggle" className="sm:ml-auto">
+						<SegmentedControl
+							items={VIEW_TOGGLE_ITEMS}
+							value={view}
+							onValueChange={(next) => useGymViewStore.getState().setView(next)}
+							aria-label="Alternar visualização"
+						/>
+					</div>
 				</form>
 
 				<div data-testid="gym-results" className="flex flex-col gap-4">
