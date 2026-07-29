@@ -2,9 +2,11 @@ import { screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import { useSearchParams } from "next/navigation"
-import { beforeEach, describe, expect, test, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 import { useAuthStore } from "@/lib/auth/auth-store"
+import { GYM_VIEW_COOKIE } from "@/lib/ui-state/gym-view-cookie"
+import { useGymViewStore } from "@/lib/ui-state/gym-view-store"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import AcademiasPage from "./page"
@@ -46,12 +48,23 @@ function setUser(role: "MEMBER" | "ADMIN") {
 	})
 }
 
+function clearGymViewCookie() {
+	// biome-ignore lint/suspicious/noDocumentCookie: happy-dom não apaga cookie com max-age=0; expires no passado funciona
+	document.cookie = `${GYM_VIEW_COOKIE}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
+}
+
 describe("AcademiasPage", () => {
 	beforeEach(() => {
 		useAuthStore.getState().clear()
+		useGymViewStore.setState({ view: "cards", hydrated: false })
+		clearGymViewCookie()
 		vi.mocked(useSearchParams).mockReturnValue(
 			new URLSearchParams("") as unknown as ReturnType<typeof useSearchParams>,
 		)
+	})
+
+	afterEach(() => {
+		clearGymViewCookie()
 	})
 
 	test("exibe botão 'Cadastrar Academia' para usuário ADMIN", () => {
@@ -244,6 +257,24 @@ describe("AcademiasPage", () => {
 		await user.click(
 			within(toggle).getByTestId("view-toggle-rows").closest("button")!,
 		)
+
+		expect(await screen.findByTestId("gym-row-gym-1")).toBeInTheDocument()
+		expect(screen.queryByTestId("gym-card-gym-1")).not.toBeInTheDocument()
+	})
+
+	test("hidrata a view inicial a partir do cookie gym_view=rows, sem clique no toggle", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/gyms`, () =>
+				HttpResponse.json({
+					gyms: fakeGyms(2),
+					pagination: { total: 2, page: 1, limit: 20 },
+				}),
+			),
+		)
+		// biome-ignore lint/suspicious/noDocumentCookie: simula cookie já gravado antes do mount
+		document.cookie = `${GYM_VIEW_COOKIE}=rows; path=/`
+
+		renderWithProviders(<AcademiasPage />)
 
 		expect(await screen.findByTestId("gym-row-gym-1")).toBeInTheDocument()
 		expect(screen.queryByTestId("gym-card-gym-1")).not.toBeInTheDocument()
