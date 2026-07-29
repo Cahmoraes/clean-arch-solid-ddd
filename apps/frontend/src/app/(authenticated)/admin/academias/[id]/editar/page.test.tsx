@@ -13,6 +13,12 @@ vi.mock("next/navigation", () => ({
 	useParams: () => ({ id: "gym-123" }),
 }))
 
+vi.mock("next/link", () => ({
+	default: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+		<a {...props} data-next-link="true" />
+	),
+}))
+
 vi.mock("@/features/gyms/components/gym-image-edit-overlay", () => ({
 	GymImageEditOverlay: () => <div data-testid="gym-image-edit-overlay-mock" />,
 }))
@@ -33,6 +39,7 @@ describe("AdminEditarAcademiaPage", () => {
 		expect(backLink).toBeInTheDocument()
 		expect(backLink).toHaveAttribute("href", "/academias")
 		expect(backLink).toHaveTextContent("Voltar para a busca")
+		expect(backLink).toHaveAttribute("data-next-link", "true")
 	})
 
 	test("pré-preenche o formulário com os dados da academia", async () => {
