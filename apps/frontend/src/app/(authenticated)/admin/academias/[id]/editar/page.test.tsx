@@ -27,6 +27,14 @@ beforeEach(() => {
 })
 
 describe("AdminEditarAcademiaPage", () => {
+	test("deve renderizar o link Voltar para a busca", async () => {
+		renderWithProviders(<AdminEditarAcademiaPage />)
+		const backLink = await screen.findByTestId("gym-edit-back-link")
+		expect(backLink).toBeInTheDocument()
+		expect(backLink).toHaveAttribute("href", "/academias")
+		expect(backLink).toHaveTextContent("Voltar para a busca")
+	})
+
 	test("pré-preenche o formulário com os dados da academia", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/:id`, () =>
@@ -58,17 +66,21 @@ describe("AdminEditarAcademiaPage", () => {
 		expect(screen.queryByTestId("gym-image-input")).not.toBeInTheDocument()
 	})
 
-	test("deve renderizar o botão Cancelar com variant outline", async () => {
+	test("deve renderizar o botão Descartar alterações com variant outline", async () => {
 		renderWithProviders(<AdminEditarAcademiaPage />)
-		const cancelBtn = await screen.findByTestId("gym-form-cancel")
+		const cancelBtn = await screen.findByRole("button", {
+			name: /descartar alterações/i,
+		})
 		expect(cancelBtn).toBeInTheDocument()
 		expect(cancelBtn).toHaveClass("border-border")
 	})
 
-	test("deve navegar para /academias ao clicar em Cancelar", async () => {
+	test("deve navegar para /academias ao clicar em Descartar alterações", async () => {
 		const user = userEvent.setup()
 		renderWithProviders(<AdminEditarAcademiaPage />)
-		const cancelBtn = await screen.findByTestId("gym-form-cancel")
+		const cancelBtn = await screen.findByRole("button", {
+			name: /descartar alterações/i,
+		})
 		await user.click(cancelBtn)
 		expect(mockPush).toHaveBeenCalledWith("/academias")
 	})

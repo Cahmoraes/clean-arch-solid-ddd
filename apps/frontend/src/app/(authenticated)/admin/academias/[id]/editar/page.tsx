@@ -1,6 +1,8 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useId } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -141,7 +143,7 @@ function EditGymForm({ gym }: { gym: Gym }) {
 					data-testid="gym-form-cancel"
 					onClick={() => router.push("/academias")}
 				>
-					Cancelar
+					Descartar alterações
 				</Button>
 				<Button
 					type="submit"
@@ -166,6 +168,14 @@ export default function AdminEditarAcademiaPage() {
 			width="narrow"
 			aria-labelledby="editar-academia-title"
 		>
+			<Link
+				href="/academias"
+				data-testid="gym-edit-back-link"
+				className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+			>
+				<ArrowLeft aria-hidden className="h-4 w-4" />
+				Voltar para a busca
+			</Link>
 			<header className="flex flex-col gap-2">
 				<h1
 					id="editar-academia-title"
