@@ -3,15 +3,11 @@ import { motion } from "motion/react"
 import Link from "next/link"
 import type { Gym } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
+import { resolveLocation } from "@/features/gyms/lib/resolve-location"
 
 export interface GymCardProps {
 	gym: Gym
 	adminEditHref?: string
-}
-
-function resolveLocation(gym: Gym): string {
-	if (gym.address) return gym.address
-	return `${gym.latitude.toFixed(4)}, ${gym.longitude.toFixed(4)}`
 }
 
 const cardMotionVariants = {
