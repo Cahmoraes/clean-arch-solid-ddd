@@ -1,8 +1,9 @@
+import type { ReactNode } from "react"
 import { cn } from "@/lib/cn"
 
 export interface SegmentedItem<T extends string = string> {
 	value: T
-	label: string
+	label: ReactNode
 	count?: number
 }
 
