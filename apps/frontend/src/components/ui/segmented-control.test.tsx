@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react"
+import { LayoutGrid } from "lucide-react"
 import { describe, expect, test, vi } from "vitest"
 import { SegmentedControl } from "./segmented-control"
 
@@ -41,5 +42,18 @@ describe("SegmentedControl", () => {
 			/>,
 		)
 		expect(screen.getByRole("group", { name: "Filtrar" })).toBeInTheDocument()
+	})
+	test("aceita um ReactNode (ícone) como label", () => {
+		render(
+			<SegmentedControl
+				items={[
+					{ value: "cards", label: <LayoutGrid data-testid="icon-cards" /> },
+					{ value: "rows", label: "Linhas" },
+				]}
+				value="cards"
+				onValueChange={vi.fn()}
+			/>,
+		)
+		expect(screen.getByTestId("icon-cards")).toBeInTheDocument()
 	})
 })
