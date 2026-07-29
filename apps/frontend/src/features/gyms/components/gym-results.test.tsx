@@ -1,6 +1,7 @@
 import { screen } from "@testing-library/react"
-import { describe, expect, test } from "vitest"
+import { beforeEach, describe, expect, test } from "vitest"
 import type { Gym } from "@/features/gyms/api"
+import { useGymViewStore } from "@/lib/ui-state/gym-view-store"
 import { renderWithProviders } from "@/test/render"
 import { GymResults } from "./gym-results"
 
@@ -81,5 +82,24 @@ describe("GymResults", () => {
 		const list = screen.getByTestId("gym-results-list")
 		const listItems = list.querySelectorAll("li")
 		expect(listItems.length).toBe(2)
+	})
+})
+
+describe("GymResults — alternância de view", () => {
+	beforeEach(() => {
+		useGymViewStore.setState({ view: "cards", hydrated: false })
+	})
+
+	test("com view cards, renderiza GymCard por item", () => {
+		renderWithProviders(<GymResults {...baseProps()} />)
+		expect(screen.getByTestId("gym-card-g1")).toBeInTheDocument()
+		expect(screen.queryByTestId("gym-row-g1")).not.toBeInTheDocument()
+	})
+
+	test("com view rows, renderiza GymRow por item", () => {
+		useGymViewStore.getState().setView("rows")
+		renderWithProviders(<GymResults {...baseProps()} />)
+		expect(screen.getByTestId("gym-row-g1")).toBeInTheDocument()
+		expect(screen.queryByTestId("gym-card-g1")).not.toBeInTheDocument()
 	})
 })
