@@ -10,6 +10,7 @@ import { SearchGymUseCase } from "@/gym/application/use-case/search-gym.usecase"
 import { SetGymImageUseCase } from "@/gym/application/use-case/set-gym-image.usecase"
 import { UpdateGymUseCase } from "@/gym/application/use-case/update-gym.usecase"
 import { CreateGymController } from "@/gym/infra/controller/create-gym.controller"
+import { DeactivateGymController } from "@/gym/infra/controller/deactivate-gym.controller"
 import { FetchAllGymsController } from "@/gym/infra/controller/fetch-all-gyms.controller"
 import { FetchGymByIdController } from "@/gym/infra/controller/fetch-gym-by-id.controller"
 import { GymImageController } from "@/gym/infra/controller/gym-image.controller"
@@ -25,6 +26,7 @@ export const gymModule = new ContainerModule(({ bind }) => {
 		GymRepositoryProvider.provide,
 	)
 	bind(GYM_TYPES.Controllers.CreateGym).to(CreateGymController)
+	bind(GYM_TYPES.Controllers.DeactivateGym).to(DeactivateGymController)
 	bind(GYM_TYPES.Controllers.UpdateGym).to(UpdateGymController)
 	bind(GYM_TYPES.Controllers.SearchGym).to(SearchGymController)
 	bind(GYM_TYPES.Controllers.FetchAllGyms).to(FetchAllGymsController)
