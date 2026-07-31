@@ -1,6 +1,7 @@
 import { createAndSaveGym } from "test/factory/create-and-save-gym"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 
+import { vi } from "vitest"
 import type { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
@@ -46,11 +47,15 @@ describe("DeactivateGymUseCase", () => {
 		const gym = await createAndSaveGym({ gymRepository })
 		await sut.execute({ gymId: gym.id })
 
+		const updateSpy = vi.spyOn(gymRepository, "update")
+		updateSpy.mockClear()
+
 		const result = await sut.execute({ gymId: gym.id })
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.forceFailure().value).toBeInstanceOf(
 			GymAlreadyDeactivatedError,
 		)
+		expect(updateSpy).not.toHaveBeenCalled()
 	})
 })

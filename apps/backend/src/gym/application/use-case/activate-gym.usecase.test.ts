@@ -1,6 +1,8 @@
 import { createAndSaveGym } from "test/factory/create-and-save-gym"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
 
+import { vi } from "vitest"
+
 import type { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
@@ -46,10 +48,12 @@ describe("ActivateGymUseCase", () => {
 
 	test("retorna failure(GymAlreadyActivatedError) ao reativar uma academia já ativa", async () => {
 		const gym = await createAndSaveGym({ gymRepository })
+		const updateSpy = vi.spyOn(gymRepository, "update")
 
 		const result = await sut.execute({ gymId: gym.id })
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.forceFailure().value).toBeInstanceOf(GymAlreadyActivatedError)
+		expect(updateSpy).not.toHaveBeenCalled()
 	})
 })
