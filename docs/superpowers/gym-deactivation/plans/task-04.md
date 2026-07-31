@@ -1,6 +1,6 @@
 # Task 4: `GymRepository` (interface + Prisma + in-memory) — persiste `status` e filtra por `includeInactive` [FR-006, FR-008, FR-009, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

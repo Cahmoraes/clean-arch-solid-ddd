@@ -1,6 +1,6 @@
 # Task 3: Entidade `Gym` — campo/getter `status` + `deactivate()`/`activate()` [FR-001, FR-002, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap
