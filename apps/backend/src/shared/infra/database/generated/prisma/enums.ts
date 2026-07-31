@@ -36,6 +36,14 @@ export const UserStatus = {
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
 
+export const GymStatus = {
+  activated: 'activated',
+  deactivated: 'deactivated'
+} as const
+
+export type GymStatus = (typeof GymStatus)[keyof typeof GymStatus]
+
+
 export const SubscriptionStatus = {
   active: 'active',
   canceled: 'canceled',

@@ -1010,6 +1010,7 @@ export const GymScalarFieldEnum = {
   image_key: 'image_key',
   latitude: 'latitude',
   longitude: 'longitude',
+  status: 'status',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const
@@ -1173,6 +1174,20 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'GymStatus'
+ */
+export type EnumGymStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GymStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'GymStatus[]'
+ */
+export type ListEnumGymStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GymStatus[]'>
     
 
 
