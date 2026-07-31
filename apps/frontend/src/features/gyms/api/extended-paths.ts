@@ -34,6 +34,10 @@ export interface PaginatedGyms {
 	total: number
 }
 
+export interface GymStatusChangeResult {
+	message: string
+}
+
 export interface GymExtendedPaths {
 	"/gyms": {
 		get: {
@@ -67,6 +71,26 @@ export interface GymExtendedPaths {
 			responses: {
 				200: {
 					content: { "application/json": { message: string; id: string } }
+				}
+			}
+		}
+	}
+	"/gyms/{gymId}/deactivate": {
+		patch: {
+			parameters: { path: { gymId: string } }
+			responses: {
+				200: {
+					content: { "application/json": GymStatusChangeResult }
+				}
+			}
+		}
+	}
+	"/gyms/{gymId}/activate": {
+		patch: {
+			parameters: { path: { gymId: string } }
+			responses: {
+				200: {
+					content: { "application/json": GymStatusChangeResult }
 				}
 			}
 		}
