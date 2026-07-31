@@ -30,6 +30,7 @@ export class InMemoryGymRepository implements GymRepository {
 			cnpj: gym.cnpj,
 			address: gym.address,
 			imageKey: gym.imageKey,
+			status: gym.status,
 		})
 		this.gyms.add(gymWithId)
 		return { id: gym.id }
@@ -49,19 +50,31 @@ export class InMemoryGymRepository implements GymRepository {
 				cnpj: gym.cnpj,
 				address: gym.address,
 				imageKey: gym.imageKey,
+				status: gym.status,
 			}),
 		)
 	}
 
-	public async gymOfId(id: string): Promise<Gym | null> {
-		return this.gyms.find((gym) => gym.id === id)
+	public async gymOfId(
+		id: string,
+		options?: { includeInactive?: boolean },
+	): Promise<Gym | null> {
+		const gym = this.gyms.find((gym) => gym.id === id)
+		if (!gym) return null
+		if (options?.includeInactive === false && gym.status !== "activated")
+			return null
+		return gym
 	}
 
 	public async fetchGyms(input: FetchGymsInput): Promise<FetchGymsOutput> {
 		const title = input.title?.toLocaleLowerCase()
-		const filteredGyms = title
+		let filteredGyms = title
 			? this.gyms.filter((gym) => gym.title.toLocaleLowerCase().includes(title))
 			: this.gyms
+
+		if (input.includeInactive === false) {
+			filteredGyms = filteredGyms.filter((gym) => gym.status === "activated")
+		}
 
 		const all = filteredGyms.toArray()
 		const items = all.slice(
@@ -72,14 +85,20 @@ export class InMemoryGymRepository implements GymRepository {
 		return { items, total: all.length }
 	}
 
-	public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {
+	public async fetchNearbyCoord(
+		coordinate: Coordinate,
+		options?: { includeInactive?: boolean },
+	): Promise<Gym[]> {
 		const nearbyGyms = this.gyms.filter((gym) => {
 			const gymCoordinate = Coordinate.restore({
 				latitude: gym.latitude,
 				longitude: gym.longitude,
 			})
 			const distance = coordinate.distanceTo(gymCoordinate)
-			return distance <= InMemoryGymRepository.KILOMETER
+			if (distance > InMemoryGymRepository.KILOMETER) return false
+			if (options?.includeInactive === false && gym.status !== "activated")
+				return false
+			return true
 		})
 		return nearbyGyms.toArray()
 	}

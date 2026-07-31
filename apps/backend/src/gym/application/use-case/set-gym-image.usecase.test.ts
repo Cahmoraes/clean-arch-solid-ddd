@@ -44,6 +44,7 @@ describe("SetGymImageUseCase", () => {
 				longitude: 0,
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
+				status: "activated",
 			}),
 		)
 		const { storage } = makeStorage()
@@ -70,6 +71,7 @@ describe("SetGymImageUseCase", () => {
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
 				imageKey: "gyms/old.webp",
+				status: "activated",
 			}),
 		)
 		const { storage, deleted } = makeStorage()
@@ -90,6 +92,7 @@ describe("SetGymImageUseCase", () => {
 				longitude: 0,
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
+				status: "activated",
 			}),
 		)
 		gymRepository.update = async () => {
@@ -127,6 +130,7 @@ describe("SetGymImageUseCase", () => {
 				longitude: 0,
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
+				status: "activated",
 			}),
 		)
 		const { storage, deleted } = makeStorage()

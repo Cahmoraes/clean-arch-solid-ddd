@@ -1,3 +1,5 @@
+import { GymAlreadyActivatedError } from "./error/gym-already-activated-error.js"
+import { GymAlreadyDeactivatedError } from "./error/gym-already-deactivated-error.js"
 import { Gym, type GymCreateProps, type GymRestoreProps } from "./gym"
 
 describe("Gym Entity", () => {
@@ -30,6 +32,7 @@ describe("Gym Entity", () => {
 			id: "fake_id",
 			cnpj: "11.222.333/0001-81",
 			address: "Rua das Flores, 123, São Paulo - SP",
+			status: "activated",
 		}
 		const gym = Gym.restore(input)
 		expect(gym.address).toBe(input.address)
@@ -44,6 +47,7 @@ describe("Gym Entity", () => {
 			phone: "11971457899",
 			id: "fake_id",
 			cnpj: "11.222.333/0001-81",
+			status: "activated",
 		}
 		const gym = Gym.restore(input)
 		expect(gym.address).toBeUndefined()
@@ -83,6 +87,7 @@ describe("Gym imageKey", () => {
 			cnpj: "11.222.333/0001-81",
 			address: "Rua Padrão, 1",
 			imageKey: "gyms/xyz.webp",
+			status: "activated",
 		})
 		expect(gym.imageKey).toBe("gyms/xyz.webp")
 	})
@@ -95,7 +100,83 @@ describe("Gym imageKey", () => {
 			longitude: 0,
 			cnpj: "11.222.333/0001-81",
 			address: "Rua Padrão, 1",
+			status: "activated",
 		})
 		expect(gym.imageKey).toBeUndefined()
+	})
+})
+
+describe("Gym status", () => {
+	test("Gym.create() resulta em status 'activated'", () => {
+		const gymOrError = Gym.create({
+			title: "Academia Central",
+			latitude: -23.55,
+			longitude: -46.63,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua das Flores, 123",
+		})
+		const gym = gymOrError.forceSuccess().value
+		expect(gym.status).toBe("activated")
+	})
+
+	test("gym.deactivate() muda o status para 'deactivated' e retorna sucesso", () => {
+		const gymOrError = Gym.create({
+			title: "Academia Central",
+			latitude: -23.55,
+			longitude: -46.63,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua das Flores, 123",
+		})
+		const gym = gymOrError.forceSuccess().value
+		const result = gym.deactivate()
+		expect(result.isSuccess()).toBe(true)
+		expect(gym.status).toBe("deactivated")
+	})
+
+	test("gym.deactivate() chamado duas vezes seguidas retorna failure na segunda chamada", () => {
+		const gymOrError = Gym.create({
+			title: "Academia Central",
+			latitude: -23.55,
+			longitude: -46.63,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua das Flores, 123",
+		})
+		const gym = gymOrError.forceSuccess().value
+		gym.deactivate()
+		const secondResult = gym.deactivate()
+		expect(secondResult.isFailure()).toBe(true)
+		expect(secondResult.forceFailure().value).toBeInstanceOf(
+			GymAlreadyDeactivatedError,
+		)
+		expect(gym.status).toBe("deactivated")
+	})
+
+	test("gym.activate() numa academia desativada muda o status para 'activated'", () => {
+		const gymOrError = Gym.create({
+			title: "Academia Central",
+			latitude: -23.55,
+			longitude: -46.63,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua das Flores, 123",
+		})
+		const gym = gymOrError.forceSuccess().value
+		gym.deactivate()
+		const result = gym.activate()
+		expect(result.isSuccess()).toBe(true)
+		expect(gym.status).toBe("activated")
+	})
+
+	test("gym.activate() numa academia já ativa retorna failure(GymAlreadyActivatedError)", () => {
+		const gymOrError = Gym.create({
+			title: "Academia Central",
+			latitude: -23.55,
+			longitude: -46.63,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua das Flores, 123",
+		})
+		const gym = gymOrError.forceSuccess().value
+		const result = gym.activate()
+		expect(result.isFailure()).toBe(true)
+		expect(result.forceFailure().value).toBeInstanceOf(GymAlreadyActivatedError)
 	})
 })

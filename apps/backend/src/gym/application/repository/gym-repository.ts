@@ -8,6 +8,7 @@ export interface SaveGymResult {
 export interface FetchGymsInput {
 	title?: string
 	page: number
+	includeInactive?: boolean
 }
 
 export interface FetchGymsOutput {
@@ -18,8 +19,14 @@ export interface FetchGymsOutput {
 export interface GymRepository {
 	save(gym: Gym): Promise<SaveGymResult>
 	update(gym: Gym): Promise<void>
-	gymOfId(id: string): Promise<Gym | null>
-	fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]>
+	gymOfId(
+		id: string,
+		options?: { includeInactive?: boolean },
+	): Promise<Gym | null>
+	fetchNearbyCoord(
+		coordinate: Coordinate,
+		options?: { includeInactive?: boolean },
+	): Promise<Gym[]>
 	gymOfCNPJ(cnpj: string): Promise<Gym | null>
 	fetchGyms(input: FetchGymsInput): Promise<FetchGymsOutput>
 	withTransaction<TX extends object>(object: TX): GymRepository

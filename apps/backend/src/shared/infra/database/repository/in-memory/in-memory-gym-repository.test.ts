@@ -118,6 +118,7 @@ describe("InMemoryGymRepository update", () => {
 			cnpj: "11.222.333/0001-81",
 			address: "Rua B, 2",
 			imageKey: "gyms/novo.webp",
+			status: "activated",
 		})
 		await repository.update(updated)
 

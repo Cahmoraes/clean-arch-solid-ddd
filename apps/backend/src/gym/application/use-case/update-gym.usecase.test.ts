@@ -22,6 +22,7 @@ describe("UpdateGymUseCase", () => {
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
 				imageKey: "gyms/atual.webp",
+				status: "activated",
 			}),
 		)
 
@@ -53,6 +54,7 @@ describe("UpdateGymUseCase", () => {
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
 				imageKey: "gyms/atual.webp",
+				status: "activated",
 			}),
 		)
 
@@ -93,6 +95,7 @@ describe("UpdateGymUseCase", () => {
 				longitude: 0,
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
+				status: "activated",
 			}),
 		)
 		await gymRepository.save(
@@ -103,6 +106,7 @@ describe("UpdateGymUseCase", () => {
 				longitude: 0,
 				cnpj: "11.444.777/0001-61",
 				address: "Rua B, 2",
+				status: "activated",
 			}),
 		)
 

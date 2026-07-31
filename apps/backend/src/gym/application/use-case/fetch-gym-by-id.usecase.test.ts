@@ -93,6 +93,7 @@ describe("FetchGymByIdUseCase imageKey", () => {
 			cnpj: "11.222.333/0001-81",
 			address: "Rua A, 1",
 			imageKey: "gyms/foto.webp",
+			status: "activated",
 		})
 		await gymRepository.save(gym)
 		const sut = new FetchGymByIdUseCaseImpl(gymRepository)
@@ -111,6 +112,7 @@ describe("FetchGymByIdUseCase imageKey", () => {
 			longitude: 0,
 			cnpj: "11.222.333/0001-81",
 			address: "Rua B, 2",
+			status: "activated",
 		})
 		await gymRepository.save(gym)
 		const sut = new FetchGymByIdUseCaseImpl(gymRepository)

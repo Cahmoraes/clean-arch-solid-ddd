@@ -10,9 +10,15 @@ import { Id } from "@/shared/domain/value-object/id"
 import type { InvalidNameLengthError } from "@/user/domain/error/invalid-name-length-error"
 import { Name } from "@/user/domain/value-object/name"
 import { Phone } from "@/user/domain/value-object/phone"
-
+import type { GymAlreadyActivatedError } from "./error/gym-already-activated-error.js"
+import type { GymAlreadyDeactivatedError } from "./error/gym-already-deactivated-error.js"
 import type { InvalidCNPJError } from "./error/invalid-cnpj-error"
 import { CNPJ } from "./value-object/CNPJ"
+import {
+	type GymStatus,
+	GymStatusFactory,
+	type GymStatusTypes,
+} from "./value-object/gym-status.js"
 
 interface GymConstructor {
 	id: Id
@@ -23,11 +29,12 @@ interface GymConstructor {
 	coordinate: Coordinate
 	address?: string
 	imageKey?: string
+	status: GymStatusTypes
 }
 
 export type GymCreateProps = Omit<
 	GymConstructor,
-	"id" | "coordinate" | "title" | "phone" | "cnpj"
+	"id" | "coordinate" | "title" | "phone" | "cnpj" | "status"
 > & {
 	id?: string
 	phone?: string
@@ -49,6 +56,7 @@ export type GymRestoreProps = Omit<
 	longitude: number
 	cnpj: string
 	address?: string
+	status: GymStatusTypes
 }
 
 export class Gym {
@@ -60,6 +68,7 @@ export class Gym {
 	private readonly _cnpj: CNPJ
 	private readonly _address?: string
 	private readonly _imageKey?: string
+	private _status: GymStatus
 
 	private constructor(gymProps: GymConstructor) {
 		this._id = gymProps.id
@@ -70,6 +79,7 @@ export class Gym {
 		this._cnpj = gymProps.cnpj
 		this._address = gymProps.address
 		this._imageKey = gymProps.imageKey
+		this._status = GymStatusFactory.create(this, gymProps.status)
 	}
 
 	public static create(
@@ -100,6 +110,7 @@ export class Gym {
 			title: nameOrError.value,
 			phone: phoneOrError.value,
 			cnpj: cnpjOrError.value,
+			status: "activated",
 		})
 		return success(gym)
 	}
@@ -113,7 +124,15 @@ export class Gym {
 			longitude: gymProps.longitude,
 		})
 		const cnpj = CNPJ.restore(gymProps.cnpj)
-		return new Gym({ ...gymProps, id, coordinate, title, phone, cnpj })
+		return new Gym({
+			...gymProps,
+			id,
+			coordinate,
+			title,
+			phone,
+			cnpj,
+			status: gymProps.status,
+		})
 	}
 
 	get id(): string {
@@ -150,5 +169,21 @@ export class Gym {
 
 	get imageKey(): string | undefined {
 		return this._imageKey
+	}
+
+	get status(): GymStatusTypes {
+		return this._status.type
+	}
+
+	public _changeStatus(gymStatus: GymStatus): void {
+		this._status = gymStatus
+	}
+
+	public deactivate(): Either<GymAlreadyDeactivatedError, void> {
+		return this._status.deactivate()
+	}
+
+	public activate(): Either<GymAlreadyActivatedError, void> {
+		return this._status.activate()
 	}
 }
