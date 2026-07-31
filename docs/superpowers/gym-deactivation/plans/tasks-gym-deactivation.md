@@ -26,7 +26,7 @@
 - [x] 9. `FetchGymByIdUseCase` — `includeInactive` por papel + `status` no DTO [FR-008, FR-009] → `task-09.md`
 - [x] 10. `CheckInUseCase` — bloqueia check-in em academia desativada [FR-007] → `task-10.md`
 - [x] 11. `DeactivateGymController` + rota + DI [FR-001, FR-005] → `task-11.md`
-- [ ] 12. `ActivateGymController` + rota + DI [FR-002, FR-005] → `task-12.md`
+- [x] 12. `ActivateGymController` + rota + DI [FR-002, FR-005] → `task-12.md`
 - [x] 13. `FetchAllGymsController` — `isProtected: true` + papel repassado [FR-006, FR-012] → `task-13.md`
 - [x] 14. `SearchGymController` — `isProtected: true` + papel repassado [FR-006, FR-012] → `task-14.md`
 - [x] 15. `FetchGymByIdController` — `isProtected: true` + papel repassado [FR-008, FR-009] → `task-15.md`
