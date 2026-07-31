@@ -1,6 +1,6 @@
 # Task 10: `CheckInUseCase` — bloqueia check-in em academia desativada [FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

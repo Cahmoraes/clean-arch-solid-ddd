@@ -21,10 +21,10 @@
 - [x] 4. `GymRepository` (interface + Prisma + in-memory) — persiste `status` e filtra por `includeInactive` [FR-006, FR-008, FR-009, FR-011] → `task-04.md`
 - [ ] 5. `DeactivateGymUseCase` [FR-001, FR-005, FR-010, FR-011] → `task-05.md`
 - [ ] 6. `ActivateGymUseCase` [FR-002, FR-005, FR-010, FR-011] → `task-06.md`
-- [ ] 7. `FetchAllGymsUseCase` — `includeInactive` por papel + `status` no DTO [FR-006, FR-012] → `task-07.md`
-- [ ] 8. `SearchGymUseCase` — `includeInactive` por papel + `status` no DTO [FR-006, FR-012] → `task-08.md`
-- [ ] 9. `FetchGymByIdUseCase` — `includeInactive` por papel + `status` no DTO [FR-008, FR-009] → `task-09.md`
-- [ ] 10. `CheckInUseCase` — bloqueia check-in em academia desativada [FR-007] → `task-10.md`
+- [x] 7. `FetchAllGymsUseCase` — `includeInactive` por papel + `status` no DTO [FR-006, FR-012] → `task-07.md`
+- [x] 8. `SearchGymUseCase` — `includeInactive` por papel + `status` no DTO [FR-006, FR-012] → `task-08.md`
+- [x] 9. `FetchGymByIdUseCase` — `includeInactive` por papel + `status` no DTO [FR-008, FR-009] → `task-09.md`
+- [x] 10. `CheckInUseCase` — bloqueia check-in em academia desativada [FR-007] → `task-10.md`
 - [ ] 11. `DeactivateGymController` + rota + DI [FR-001, FR-005] → `task-11.md`
 - [ ] 12. `ActivateGymController` + rota + DI [FR-002, FR-005] → `task-12.md`
 - [ ] 13. `FetchAllGymsController` — `isProtected: true` + papel repassado [FR-006, FR-012] → `task-13.md`
