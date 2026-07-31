@@ -16,6 +16,7 @@ export interface GymSummary {
 	cnpj?: string
 	latitude: number
 	longitude: number
+	status?: "activated" | "deactivated"
 }
 
 export interface GymUpdateBody {

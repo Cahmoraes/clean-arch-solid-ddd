@@ -47,9 +47,20 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 						className="h-full w-full"
 						hoverEffect={false}
 					/>
-					<span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
-						<span className="h-1.5 w-1.5 rounded-full bg-current" /> Disponível
-					</span>
+					{adminEditHref && gym.status === "deactivated" ? (
+						<span
+							data-testid={`gym-card-status-${gym.id}`}
+							className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-destructive/90 px-2.5 py-1 text-[11.5px] font-semibold text-destructive-foreground backdrop-blur"
+						>
+							<span className="h-1.5 w-1.5 rounded-full bg-current" />{" "}
+							Desativada
+						</span>
+					) : (
+						<span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
+							<span className="h-1.5 w-1.5 rounded-full bg-current" />{" "}
+							Disponível
+						</span>
+					)}
 				</div>
 				<div className="flex flex-1 flex-col gap-2.5 p-[18px]">
 					<p className="font-display text-base font-semibold text-card-foreground">
