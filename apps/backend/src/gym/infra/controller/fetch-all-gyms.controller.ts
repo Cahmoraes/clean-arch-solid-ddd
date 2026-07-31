@@ -9,6 +9,7 @@ import { GYM_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import { RoleValues } from "@/user/domain/value-object/role"
 import { GymRoutes } from "./routes/gym-routes"
 
 const fetchAllGymsQuerySchema = z.object({
@@ -53,7 +54,7 @@ export class FetchAllGymsController extends BaseController {
 			return this.createResponseError(parsedQueryOrError)
 		}
 
-		const isAdmin = req.user?.sub.role === "ADMIN"
+		const isAdmin = req.user?.sub.role === RoleValues.ADMIN
 		const result = await this.fetchAllGymsUseCase.execute({
 			page: parsedQueryOrError.value.page ?? 1,
 			includeInactive: isAdmin,
