@@ -9,6 +9,8 @@ export const GYM_TYPES = {
 		CreateGym: Symbol.for("CreateGymUseCase"),
 		UpdateGym: Symbol.for("UpdateGymUseCase"),
 		DeleteGym: Symbol.for("DeleteGymUseCase"),
+		DeactivateGym: Symbol.for("DeactivateGymUseCase"),
+		ActivateGym: Symbol.for("ActivateGymUseCase"),
 		SearchGym: Symbol.for("SearchGymUseCase"),
 		FetchNearbyGym: Symbol.for("FetchNearbyGymUseCase"),
 		FetchAllGyms: Symbol.for("FetchAllGymsUseCase"),
