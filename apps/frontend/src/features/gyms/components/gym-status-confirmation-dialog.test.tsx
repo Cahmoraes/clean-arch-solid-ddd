@@ -21,7 +21,7 @@ describe("GymStatusConfirmationDialog", () => {
 			screen.getByRole("heading", { name: "Confirmar desativação" }),
 		).toBeInTheDocument()
 		expect(
-			screen.getByText(/deixará de aparecer nas buscas/i),
+			screen.getByText(/Iron Gym.*deixará de aparecer nas buscas/i),
 		).toBeInTheDocument()
 		expect(
 			screen.getByRole("button", { name: "Confirmar desativação" }),
@@ -44,7 +44,7 @@ describe("GymStatusConfirmationDialog", () => {
 			screen.getByRole("heading", { name: "Confirmar reativação" }),
 		).toBeInTheDocument()
 		expect(
-			screen.getByText(/voltará a aparecer nas buscas/i),
+			screen.getByText(/Iron Gym.*voltará a aparecer nas buscas/i),
 		).toBeInTheDocument()
 		expect(
 			screen.getByRole("button", { name: "Confirmar reativação" }),
