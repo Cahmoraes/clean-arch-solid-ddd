@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> Activated
+
+    Activated --> Deactivated : deactivate() [admin]
+    Deactivated --> Activated : activate() [admin]
+
+    Deactivated --> Deactivated : deactivate() [admin, already deactivated]<br/>throws GymAlreadyDeactivatedError (409)
+    Activated --> Activated : activate() [admin, already activated]<br/>throws GymAlreadyActivatedError (409)
+
+    note right of Activated
+        Visible in search and check-in
+        for everyone (public + admin)
+    end note
+
+    note right of Deactivated
+        Visible only to admins.
+        Non-admin reads and check-in
+        attempts get GymNotFoundError
+    end note
