@@ -125,6 +125,7 @@ describe("FetchAllGymsUseCase", () => {
 		const result = await sut.execute({ page: 1 })
 
 		expect(result.data.some((g) => g.id === deactivatedGym.id)).toBe(false)
+		expect(result.pagination.total).toBe(1)
 	})
 
 	test("com includeInactive: true, a academia desativada aparece com status 'deactivated' no DTO", async () => {
@@ -155,5 +156,6 @@ describe("FetchAllGymsUseCase", () => {
 		const result = await sut.execute({ page: 1, includeInactive: false })
 
 		expect(result.data.some((g) => g.id === deactivatedGym.id)).toBe(false)
+		expect(result.pagination.total).toBe(1)
 	})
 })

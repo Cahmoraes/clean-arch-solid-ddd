@@ -44,6 +44,7 @@ export class FetchGymByIdUseCase {
 		input: FetchGymByIdUseCaseInput,
 	): Promise<FetchGymByIdUseCaseOutput> {
 		const gym = await this.gymRepository.gymOfId(input.gymId, {
+			// fail-closed: esconde academias desativadas salvo pedido explícito
 			includeInactive: input.includeInactive ?? false,
 		})
 		if (!gym) return failure(new GymNotFoundError())

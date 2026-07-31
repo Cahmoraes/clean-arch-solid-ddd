@@ -41,6 +41,7 @@ export class SearchGymUseCase {
 		input: SearchGymUseCaseInput,
 	): Promise<SearchGymUseCaseOutput> {
 		const page = this.pageNumberOrDefault(input.page)
+		// fail-closed: esconde academias desativadas salvo pedido explícito
 		const { items, total } = await this.gymRepository.fetchGyms({
 			title: input.name,
 			page,

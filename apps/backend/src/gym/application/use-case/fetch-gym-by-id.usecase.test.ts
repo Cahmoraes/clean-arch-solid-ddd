@@ -126,6 +126,28 @@ describe("FetchGymByIdUseCase", () => {
 			expect(result.value.id).toBe(gym.id)
 		}
 	})
+
+	test("com includeInactive omitido, o default fail-closed: academia desativada retorna failure(GymNotFoundError)", async () => {
+		const gym = await createAndSaveGym({
+			id: "gym-deactivated-omitted",
+			gymRepository,
+			title: "Academia Desativada Omitted",
+			latitude: -23.0,
+			longitude: -46.0,
+		})
+		gym.deactivate()
+		await gymRepository.update(gym)
+
+		const result = await sut.execute({
+			gymId: gym.id,
+		})
+
+		expect(result.isFailure()).toBe(true)
+		if (result.isFailure()) {
+			expect(result.value).toBeInstanceOf(Error)
+			expect(result.value.message).toBe("Gym not found")
+		}
+	})
 })
 
 describe("FetchGymByIdUseCase imageKey", () => {

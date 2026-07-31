@@ -41,6 +41,7 @@ export class FetchAllGymsUseCase {
 		const page = input.page ?? 1
 		const { items, total } = await this.gymRepository.fetchGyms({
 			page,
+			// fail-closed: esconde academias desativadas salvo pedido explícito
 			includeInactive: input.includeInactive ?? false,
 		})
 

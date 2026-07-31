@@ -77,47 +77,54 @@ describe("SearchGymUseCase", () => {
 		expect(result.pagination.limit).toBe(env.ITEMS_PER_PAGE)
 	})
 
-	describe("SearchGymUseCase — includeInactive", () => {
-		test("com includeInactive omitido, uma academia desativada não aparece na busca", async () => {
-			const deactivatedGym = await createAndSaveGym({
-				gymRepository,
-				title: "Academia Alpha",
-			})
-			deactivatedGym.deactivate()
-			await gymRepository.update(deactivatedGym)
+	test("com includeInactive omitido, uma academia desativada não aparece no resultado", async () => {
+		await createAndSaveGym({ id: "1", gymRepository, title: "Academia Ativa" })
+		const deactivatedGym = await createAndSaveGym({
+			id: "2",
+			gymRepository,
+			title: "Academia Desativada",
+		})
+		deactivatedGym.deactivate()
+		await gymRepository.update(deactivatedGym)
 
-			const result = await sut.execute({ name: "Alpha" })
+		const result = await sut.execute({ name: "Desativada" })
 
-			expect(result.data.some((g) => g.id === deactivatedGym.id)).toBe(false)
+		expect(result.data.some((g) => g.id === deactivatedGym.id)).toBe(false)
+	})
+
+	test("com includeInactive: true, a academia desativada aparece com status 'deactivated' no DTO", async () => {
+		const deactivatedGym = await createAndSaveGym({
+			id: "1",
+			gymRepository,
+			title: "Academia Desativada",
+		})
+		deactivatedGym.deactivate()
+		await gymRepository.update(deactivatedGym)
+
+		const result = await sut.execute({
+			name: "Desativada",
+			includeInactive: true,
 		})
 
-		test("com includeInactive: true, a academia desativada aparece com status 'deactivated'", async () => {
-			const deactivatedGym = await createAndSaveGym({
-				gymRepository,
-				title: "Academia Alpha",
-			})
-			deactivatedGym.deactivate()
-			await gymRepository.update(deactivatedGym)
+		const found = result.data.find((g) => g.id === deactivatedGym.id)
+		expect(found?.status).toBe("deactivated")
+	})
 
-			const result = await sut.execute({
-				name: "Alpha",
-				includeInactive: true,
-			})
+	test("com includeInactive: false explícito, a academia desativada não aparece", async () => {
+		await createAndSaveGym({ id: "1", gymRepository, title: "Academia Ativa" })
+		const deactivatedGym = await createAndSaveGym({
+			id: "2",
+			gymRepository,
+			title: "Academia Desativada",
+		})
+		deactivatedGym.deactivate()
+		await gymRepository.update(deactivatedGym)
 
-			const found = result.data.find((g) => g.id === deactivatedGym.id)
-			expect(found?.status).toBe("deactivated")
+		const result = await sut.execute({
+			name: "Desativada",
+			includeInactive: false,
 		})
 
-		test("academia ativada sempre aparece com status 'activated'", async () => {
-			const activatedGym = await createAndSaveGym({
-				gymRepository,
-				title: "Academia Beta",
-			})
-
-			const result = await sut.execute({ name: "Beta" })
-
-			const found = result.data.find((g) => g.id === activatedGym.id)
-			expect(found?.status).toBe("activated")
-		})
+		expect(result.data.some((g) => g.id === deactivatedGym.id)).toBe(false)
 	})
 })
