@@ -12,6 +12,7 @@ import { GYM_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import { RoleValues } from "@/user/domain/value-object/role"
 import { GymRoutes } from "./routes/gym-routes"
 
 const searchGymRequestSchema = z.object({
@@ -52,6 +53,7 @@ export class SearchGymController extends BaseController {
 			GymRoutes.SEARCH,
 			{
 				callback: this.callback,
+				isProtected: true,
 			},
 			makeSearchGymSwaggerSchema(),
 		)
@@ -74,9 +76,11 @@ export class SearchGymController extends BaseController {
 			return this.createResponseError(parsedQueryOrError)
 		}
 
+		const isAdmin = req.user?.sub.role === RoleValues.ADMIN
 		const result = await this.searchGymUseCase.execute({
 			name: parsedParamsOrError.value.name,
 			page: parsedQueryOrError.value.page,
+			includeInactive: isAdmin,
 		})
 		if (this.isGymNotFound(result)) {
 			return ResponseFactory.create({
@@ -110,6 +114,9 @@ const gymSearchItemSchema = z.object({
 		.meta({ description: "Relative key of the gym image" }),
 	latitude: z.number().meta({ description: "Latitude", example: -23.5505 }),
 	longitude: z.number().meta({ description: "Longitude", example: -46.6333 }),
+	status: z
+		.enum(["activated", "deactivated"])
+		.meta({ description: "Gym status", example: "activated" }),
 })
 
 const searchGymResponseSchema = z.object({

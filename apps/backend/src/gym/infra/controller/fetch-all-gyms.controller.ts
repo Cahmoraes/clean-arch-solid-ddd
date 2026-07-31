@@ -39,7 +39,7 @@ export class FetchAllGymsController extends BaseController {
 		this.server.register(
 			"get",
 			GymRoutes.LIST,
-			{ callback: this.callback },
+			{ callback: this.callback, isProtected: true },
 			makeFetchAllGymsSwaggerSchema(),
 		)
 	}
@@ -53,8 +53,10 @@ export class FetchAllGymsController extends BaseController {
 			return this.createResponseError(parsedQueryOrError)
 		}
 
+		const isAdmin = req.user?.sub.role === "ADMIN"
 		const result = await this.fetchAllGymsUseCase.execute({
 			page: parsedQueryOrError.value.page ?? 1,
+			includeInactive: isAdmin,
 		})
 		return ResponseFactory.create({
 			status: HTTP_STATUS.OK,
@@ -78,6 +80,9 @@ const gymSummarySchema = z.object({
 		.meta({ description: "Relative key of the gym image" }),
 	latitude: z.number().meta({ description: "Latitude", example: -23.5505 }),
 	longitude: z.number().meta({ description: "Longitude", example: -46.6333 }),
+	status: z
+		.enum(["activated", "deactivated"])
+		.meta({ description: "Gym status", example: "activated" }),
 })
 
 const fetchAllGymsResponseSchema = z.object({
