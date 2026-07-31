@@ -1,6 +1,6 @@
 # Task 15: `FetchGymByIdController` — `isProtected: true` + papel repassado [FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

@@ -1,6 +1,6 @@
 # Task 11: `DeactivateGymController` + rota + DI [FR-001, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap
