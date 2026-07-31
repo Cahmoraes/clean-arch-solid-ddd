@@ -26,7 +26,7 @@ export interface GymStatusConfirmationDialogProps {
 
 interface StatusActionConfig {
 	title: string
-	description: string
+	description: (gymTitle: string) => string
 	confirmLabel: string
 	pendingLabel: string
 	variant: ButtonProps["variant"]
@@ -35,16 +35,16 @@ interface StatusActionConfig {
 const STATUS_ACTION_CONFIG: Record<GymStatusAction, StatusActionConfig> = {
 	deactivate: {
 		title: "Confirmar desativação",
-		description:
-			"Essa academia deixará de aparecer nas buscas e não será mais possível fazer check-in nela. Os check-ins e dados já registrados são mantidos. Você pode reverter essa ação depois.",
+		description: (gymTitle) =>
+			`A academia "${gymTitle}" deixará de aparecer nas buscas e não será mais possível fazer check-in nela. Os check-ins e dados já registrados são mantidos. Você pode reverter essa ação depois.`,
 		confirmLabel: "Confirmar desativação",
 		pendingLabel: "Desativando...",
 		variant: "destructive",
 	},
 	activate: {
 		title: "Confirmar reativação",
-		description:
-			"Essa academia voltará a aparecer nas buscas e será possível fazer check-in nela novamente.",
+		description: (gymTitle) =>
+			`A academia "${gymTitle}" voltará a aparecer nas buscas e será possível fazer check-in nela novamente.`,
 		confirmLabel: "Confirmar reativação",
 		pendingLabel: "Reativando...",
 		variant: "primary",
@@ -66,7 +66,9 @@ export function GymStatusConfirmationDialog({
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>{config.title}</AlertDialogTitle>
-					<AlertDialogDescription>{config.description}</AlertDialogDescription>
+					<AlertDialogDescription>
+						{config.description(gymTitle)}
+					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
