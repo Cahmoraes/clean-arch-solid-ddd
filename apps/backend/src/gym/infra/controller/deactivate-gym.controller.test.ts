@@ -66,6 +66,16 @@ describe("DeactivateGymController", () => {
 		return result.force.success().value.token
 	}
 
+	test("sem token, retorna 401", async () => {
+		const gym = await createAndSaveGym({ gymRepository })
+
+		const response = await request(fastifyServer.server).patch(
+			GymRoutes.DEACTIVATE.replace(":gymId", gym.id),
+		)
+
+		expect(response.status).toBe(401)
+	})
+
 	test("admin desativa uma academia ativa e recebe 200", async () => {
 		const token = await getAdminToken()
 		const gym = await createAndSaveGym({ gymRepository })

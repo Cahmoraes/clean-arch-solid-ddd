@@ -46,7 +46,7 @@ describe("Listar Academias", () => {
 			email: "test@gym-list.test",
 			password: "any_password",
 		})
-		token = result.forceSuccess().value.token
+		token = result.force.success().value.token
 	})
 
 	afterEach(async () => {

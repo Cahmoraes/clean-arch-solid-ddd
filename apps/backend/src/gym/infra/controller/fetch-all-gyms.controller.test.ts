@@ -52,7 +52,7 @@ describe("FetchAllGymsController — includeInactive por papel", () => {
 			email,
 			password: "any_password",
 		})
-		return result.forceSuccess().value.token
+		return result.force.success().value.token
 	}
 
 	test("sem token, retorna 401", async () => {
