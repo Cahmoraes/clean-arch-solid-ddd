@@ -83,7 +83,9 @@ export class CheckInUseCase {
 		if (checkInUserIsEligible.isFailure()) {
 			return failure(checkInUserIsEligible.value)
 		}
-		const gymFound = await this.gymRepository.gymOfId(input.gymId)
+		const gymFound = await this.gymRepository.gymOfId(input.gymId, {
+			includeInactive: false,
+		})
 		if (!gymFound) return failure(new GymNotFoundError())
 		const validateDistanceResult = await this.validateDistanceEligibility(
 			input,

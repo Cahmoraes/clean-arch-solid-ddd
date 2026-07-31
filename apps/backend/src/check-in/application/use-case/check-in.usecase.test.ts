@@ -179,6 +179,26 @@ describe("CheckInUseCase", () => {
 		)
 	})
 
+	test("check-in em uma academia previamente desativada retorna failure(GymNotFoundError)", async () => {
+		const userId = "any_user_id"
+		await createAndSaveUser({ userRepository, id: userId })
+		const gymId = "any_gym_id"
+		const gym = await _createAndSaveGym(gymId, -27.0747279, -49.4889672)
+		gym.deactivate()
+		await gymRepository.update(gym)
+		const input: CheckInUseCaseInput = {
+			userId,
+			gymId,
+			userLatitude: -27.0747279,
+			userLongitude: -49.4889672,
+		}
+
+		const result = await sut.execute(input)
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.forceFailure().value).toBeInstanceOf(GymNotFoundError)
+	})
+
 	async function _createAndSaveGym(id?: string, latitude = 0, longitude = 0) {
 		const gymId = id ?? "any_gym_id"
 		const gym = Gym.create({
