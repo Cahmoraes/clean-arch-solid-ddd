@@ -59,4 +59,13 @@ describe("GymStatus", () => {
 		expect(result.isFailure()).toBe(true)
 		expect(result.forceFailure().value).toBeInstanceOf(GymAlreadyActivatedError)
 	})
+
+	test("factory lança erro para status desconhecido (dados corrompidos)", () => {
+		const gym = { _changeStatus: () => undefined } as unknown as Parameters<
+			typeof GymStatusFactory.create
+		>[0]
+		expect(() => {
+			GymStatusFactory.create(gym, "unknown_status" as never)
+		}).toThrow("Unrecognized gym status: unknown_status")
+	})
 })

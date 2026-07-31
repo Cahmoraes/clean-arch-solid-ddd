@@ -52,6 +52,22 @@ describe("Gym Entity", () => {
 		const gym = Gym.restore(input)
 		expect(gym.address).toBeUndefined()
 	})
+
+	test("Deve restaurar uma academia com status 'deactivated' e permitir reativação", () => {
+		const gym = Gym.restore({
+			id: "gym-deactivated",
+			title: "Academia Desativada",
+			latitude: -23.55052,
+			longitude: -46.633308,
+			cnpj: "11.222.333/0001-81",
+			address: "Rua das Flores, 123",
+			status: "deactivated",
+		})
+		expect(gym.status).toBe("deactivated")
+		const result = gym.activate()
+		expect(result.isSuccess()).toBe(true)
+		expect(gym.status).toBe("activated")
+	})
 })
 
 describe("Gym imageKey", () => {

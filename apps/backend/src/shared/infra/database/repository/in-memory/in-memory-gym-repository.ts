@@ -3,10 +3,12 @@ import { injectable } from "inversify"
 import type {
 	FetchGymsInput,
 	FetchGymsOutput,
+	GymFetchOptions,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
+import { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
 import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import { env } from "@/shared/infra/env"
 
@@ -57,11 +59,14 @@ export class InMemoryGymRepository implements GymRepository {
 
 	public async gymOfId(
 		id: string,
-		options?: { includeInactive?: boolean },
+		options?: GymFetchOptions,
 	): Promise<Gym | null> {
 		const gym = this.gyms.find((gym) => gym.id === id)
 		if (!gym) return null
-		if (options?.includeInactive === false && gym.status !== "activated")
+		if (
+			options?.includeInactive === false &&
+			gym.status !== GymStatusTypes.ACTIVATED
+		)
 			return null
 		return gym
 	}
@@ -73,7 +78,9 @@ export class InMemoryGymRepository implements GymRepository {
 			: this.gyms
 
 		if (input.includeInactive === false) {
-			filteredGyms = filteredGyms.filter((gym) => gym.status === "activated")
+			filteredGyms = filteredGyms.filter(
+				(gym) => gym.status === GymStatusTypes.ACTIVATED,
+			)
 		}
 
 		const all = filteredGyms.toArray()
@@ -87,7 +94,7 @@ export class InMemoryGymRepository implements GymRepository {
 
 	public async fetchNearbyCoord(
 		coordinate: Coordinate,
-		options?: { includeInactive?: boolean },
+		options?: GymFetchOptions,
 	): Promise<Gym[]> {
 		const nearbyGyms = this.gyms.filter((gym) => {
 			const gymCoordinate = Coordinate.restore({
@@ -96,7 +103,10 @@ export class InMemoryGymRepository implements GymRepository {
 			})
 			const distance = coordinate.distanceTo(gymCoordinate)
 			if (distance > InMemoryGymRepository.KILOMETER) return false
-			if (options?.includeInactive === false && gym.status !== "activated")
+			if (
+				options?.includeInactive === false &&
+				gym.status !== GymStatusTypes.ACTIVATED
+			)
 				return false
 			return true
 		})

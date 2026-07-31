@@ -59,7 +59,7 @@ export class GymStatusFactory {
 			case "deactivated":
 				return new DeactivatedStatus(gym)
 			default:
-				return new ActivatedStatus(gym)
+				throw new Error(`Unrecognized gym status: ${statusType}`)
 		}
 	}
 }

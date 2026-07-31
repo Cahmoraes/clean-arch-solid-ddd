@@ -1,6 +1,10 @@
 import type { Gym } from "@/gym/domain/gym"
 import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 
+export interface GymFetchOptions {
+	includeInactive?: boolean
+}
+
 export interface SaveGymResult {
 	id: string
 }
@@ -19,13 +23,10 @@ export interface FetchGymsOutput {
 export interface GymRepository {
 	save(gym: Gym): Promise<SaveGymResult>
 	update(gym: Gym): Promise<void>
-	gymOfId(
-		id: string,
-		options?: { includeInactive?: boolean },
-	): Promise<Gym | null>
+	gymOfId(id: string, options?: GymFetchOptions): Promise<Gym | null>
 	fetchNearbyCoord(
 		coordinate: Coordinate,
-		options?: { includeInactive?: boolean },
+		options?: GymFetchOptions,
 	): Promise<Gym[]>
 	gymOfCNPJ(cnpj: string): Promise<Gym | null>
 	fetchGyms(input: FetchGymsInput): Promise<FetchGymsOutput>

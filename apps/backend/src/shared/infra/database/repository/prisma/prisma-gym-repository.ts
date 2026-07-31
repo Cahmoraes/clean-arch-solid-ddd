@@ -3,10 +3,12 @@ import { inject, injectable } from "inversify"
 import type {
 	FetchGymsInput,
 	FetchGymsOutput,
+	GymFetchOptions,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
+import { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
 import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import {
 	Prisma,
@@ -82,7 +84,9 @@ export class PrismaGymRepository implements GymRepository {
 
 	public async fetchGyms(input: FetchGymsInput): Promise<FetchGymsOutput> {
 		const statusFilter =
-			input.includeInactive === false ? { status: "activated" as const } : {}
+			input.includeInactive === false
+				? { status: GymStatusTypes.ACTIVATED }
+				: {}
 		const where: Prisma.GymWhereInput = {
 			...(input.title
 				? {
@@ -123,13 +127,13 @@ export class PrismaGymRepository implements GymRepository {
 
 	public async gymOfId(
 		id: string,
-		options?: { includeInactive?: boolean },
+		options?: GymFetchOptions,
 	): Promise<Gym | null> {
 		const gymData = await this.prismaClient.gym.findFirst({
 			where: {
 				id,
 				...(options?.includeInactive === false
-					? { status: "activated" as const }
+					? { status: GymStatusTypes.ACTIVATED }
 					: {}),
 			},
 		})
@@ -139,11 +143,11 @@ export class PrismaGymRepository implements GymRepository {
 
 	public async fetchNearbyCoord(
 		coordinate: Coordinate,
-		options?: { includeInactive?: boolean },
+		options?: GymFetchOptions,
 	): Promise<Gym[]> {
 		const statusClause =
 			options?.includeInactive === false
-				? Prisma.sql`AND status = 'activated'`
+				? Prisma.sql`AND status = ${GymStatusTypes.ACTIVATED}`
 				: Prisma.empty
 		const gyms = await this.prismaClient.$queryRaw<GymCreateProps[]>`
       SELECT * FROM "gyms"
