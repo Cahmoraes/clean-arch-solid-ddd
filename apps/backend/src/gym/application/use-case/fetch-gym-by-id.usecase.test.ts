@@ -80,6 +80,52 @@ describe("FetchGymByIdUseCase", () => {
 			expect(result.value.phone).toBeNull()
 		}
 	})
+
+	test("com includeInactive: false, buscar uma academia desativada retorna failure(GymNotFoundError)", async () => {
+		const gym = await createAndSaveGym({
+			id: "gym-deactivated",
+			gymRepository,
+			title: "Academia Desativada",
+			latitude: -23.0,
+			longitude: -46.0,
+		})
+		gym.deactivate()
+		await gymRepository.update(gym)
+
+		const result = await sut.execute({
+			gymId: gym.id,
+			includeInactive: false,
+		})
+
+		expect(result.isFailure()).toBe(true)
+		if (result.isFailure()) {
+			expect(result.value).toBeInstanceOf(Error)
+			expect(result.value.message).toBe("Gym not found")
+		}
+	})
+
+	test("com includeInactive: true, retorna sucesso com status 'deactivated' no DTO", async () => {
+		const gym = await createAndSaveGym({
+			id: "gym-deactivated-2",
+			gymRepository,
+			title: "Academia Desativada 2",
+			latitude: -23.0,
+			longitude: -46.0,
+		})
+		gym.deactivate()
+		await gymRepository.update(gym)
+
+		const result = await sut.execute({
+			gymId: gym.id,
+			includeInactive: true,
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		if (result.isSuccess()) {
+			expect(result.value.status).toBe("deactivated")
+			expect(result.value.id).toBe(gym.id)
+		}
+	})
 })
 
 describe("FetchGymByIdUseCase imageKey", () => {

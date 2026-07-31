@@ -76,4 +76,48 @@ describe("SearchGymUseCase", () => {
 		expect(result.pagination.page).toBe(2)
 		expect(result.pagination.limit).toBe(env.ITEMS_PER_PAGE)
 	})
+
+	describe("SearchGymUseCase — includeInactive", () => {
+		test("com includeInactive omitido, uma academia desativada não aparece na busca", async () => {
+			const deactivatedGym = await createAndSaveGym({
+				gymRepository,
+				title: "Academia Alpha",
+			})
+			deactivatedGym.deactivate()
+			await gymRepository.update(deactivatedGym)
+
+			const result = await sut.execute({ name: "Alpha" })
+
+			expect(result.data.some((g) => g.id === deactivatedGym.id)).toBe(false)
+		})
+
+		test("com includeInactive: true, a academia desativada aparece com status 'deactivated'", async () => {
+			const deactivatedGym = await createAndSaveGym({
+				gymRepository,
+				title: "Academia Alpha",
+			})
+			deactivatedGym.deactivate()
+			await gymRepository.update(deactivatedGym)
+
+			const result = await sut.execute({
+				name: "Alpha",
+				includeInactive: true,
+			})
+
+			const found = result.data.find((g) => g.id === deactivatedGym.id)
+			expect(found?.status).toBe("deactivated")
+		})
+
+		test("academia ativada sempre aparece com status 'activated'", async () => {
+			const activatedGym = await createAndSaveGym({
+				gymRepository,
+				title: "Academia Beta",
+			})
+
+			const result = await sut.execute({ name: "Beta" })
+
+			const found = result.data.find((g) => g.id === activatedGym.id)
+			expect(found?.status).toBe("activated")
+		})
+	})
 })

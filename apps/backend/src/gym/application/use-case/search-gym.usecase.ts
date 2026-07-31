@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify"
 
 import type { Gym } from "@/gym/domain/gym"
+import type { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
 import { env } from "@/shared/infra/env"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 
@@ -10,6 +11,7 @@ import type { GymPaginationMeta } from "./gym-pagination-meta"
 export interface SearchGymUseCaseInput {
 	name: string
 	page?: number
+	includeInactive?: boolean
 }
 
 export interface SearchGymUseCaseOutputDTO {
@@ -20,6 +22,7 @@ export interface SearchGymUseCaseOutputDTO {
 	imageKey: string | null
 	latitude: number
 	longitude: number
+	status: GymStatusTypes
 }
 
 export interface SearchGymUseCaseOutput {
@@ -41,6 +44,7 @@ export class SearchGymUseCase {
 		const { items, total } = await this.gymRepository.fetchGyms({
 			title: input.name,
 			page,
+			includeInactive: input.includeInactive ?? false,
 		})
 
 		const data = this.createGymDTO(items)
@@ -68,6 +72,7 @@ export class SearchGymUseCase {
 			imageKey: g.imageKey ?? null,
 			latitude: g.latitude,
 			longitude: g.longitude,
+			status: g.status,
 		}))
 	}
 }
