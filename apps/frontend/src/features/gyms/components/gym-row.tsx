@@ -10,17 +10,15 @@ export interface GymRowProps {
 }
 
 function renderStatusBadge(
-	gymId: string,
 	adminEditHref: string | undefined,
 	status: "activated" | "deactivated" | undefined,
 ) {
 	const isDeactivated = adminEditHref && status === "deactivated"
 	return (
 		<span
-			data-testid={isDeactivated ? `gym-row-status-${gymId}` : undefined}
 			className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
 				isDeactivated
-					? "bg-destructive/90 text-destructive-foreground"
+					? "bg-destructive-soft text-destructive"
 					: "bg-background/80 text-subtle"
 			}`}
 		>
@@ -51,7 +49,7 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 						<p className="font-display text-sm font-semibold text-card-foreground">
 							{gym.title}
 						</p>
-						{renderStatusBadge(gym.id, adminEditHref, gym.status)}
+						{renderStatusBadge(adminEditHref, gym.status)}
 					</div>
 					{gym.description ? (
 						<p className="line-clamp-1 text-[13px] text-muted-foreground">
