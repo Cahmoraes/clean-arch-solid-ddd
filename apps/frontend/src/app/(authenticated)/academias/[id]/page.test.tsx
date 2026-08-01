@@ -435,4 +435,53 @@ describe("GymDetailPage", () => {
 			screen.queryByTestId("gym-detail-status-toggle"),
 		).not.toBeInTheDocument()
 	})
+
+	test("mostra erro 409 quando tenta desativar academia já desativada", async () => {
+		useAuthStore.setState({
+			accessToken: "fake",
+			expiresAt: Date.now() + 60_000,
+			user: { id: "admin-1", role: "ADMIN" },
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json(
+					{
+						id: "gym-1",
+						title: "Iron Gym",
+						description: null,
+						phone: null,
+						latitude: -23.5,
+						longitude: -46.6,
+						status: "activated",
+					},
+					{ status: 200 },
+				),
+			),
+			http.patch(`${apiBaseUrl}/gyms/:id/deactivate`, () =>
+				HttpResponse.json(
+					{ message: "Gym already deactivated" },
+					{ status: 409 },
+				),
+			),
+		)
+
+		const user = userEvent.setup()
+		renderWithProviders(<GymDetailPage />)
+
+		const toggleButton = await screen.findByRole("button", {
+			name: "Desativar academia Iron Gym",
+		})
+		await user.click(toggleButton)
+
+		const confirmButton = await screen.findByRole("button", {
+			name: "Confirmar desativação",
+		})
+		await user.click(confirmButton)
+
+		await waitFor(() => {
+			expect(toast.error).toHaveBeenCalledWith(
+				"A academia já está neste estado. Recarregue a página.",
+			)
+		})
+	})
 })

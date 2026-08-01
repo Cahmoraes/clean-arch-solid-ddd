@@ -180,6 +180,13 @@ function getStatusConfig(
 	}
 }
 
+function getErrorMessage(err: unknown, fallbackMsg: string): string {
+	if (err instanceof ApiError && err.status === 409) {
+		return "A academia já está neste estado. Recarregue a página."
+	}
+	return fallbackMsg
+}
+
 function GymStatusToggleButton({ gym }: GymStatusToggleButtonProps) {
 	const [open, setOpen] = useState(false)
 	const deactivateGym = useDeactivateGym()
@@ -193,8 +200,8 @@ function GymStatusToggleButton({ gym }: GymStatusToggleButtonProps) {
 			await mutation.mutateAsync(gym.id)
 			toast.success(config.successMsg)
 			setOpen(false)
-		} catch {
-			toast.error(config.errorMsg)
+		} catch (err) {
+			toast.error(getErrorMessage(err, config.errorMsg))
 		}
 	}
 
