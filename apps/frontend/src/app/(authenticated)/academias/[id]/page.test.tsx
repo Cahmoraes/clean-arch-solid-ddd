@@ -312,4 +312,127 @@ describe("GymDetailPage", () => {
 		await screen.findByTestId("gym-detail-title")
 		expect(screen.queryByTestId("gym-detail-edit")).not.toBeInTheDocument()
 	})
+
+	test("admin vê o botão de desativar em uma academia ativa e confirma a desativação", async () => {
+		useAuthStore.setState({
+			accessToken: "fake",
+			expiresAt: Date.now() + 60_000,
+			user: { id: "admin-1", role: "ADMIN" },
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json(
+					{
+						id: "gym-1",
+						title: "Iron Gym",
+						description: null,
+						phone: null,
+						latitude: -23.5,
+						longitude: -46.6,
+						status: "activated",
+					},
+					{ status: 200 },
+				),
+			),
+			http.patch(`${apiBaseUrl}/gyms/:id/deactivate`, () =>
+				HttpResponse.json({ message: "Gym deactivated" }),
+			),
+		)
+
+		const user = userEvent.setup()
+		renderWithProviders(<GymDetailPage />)
+
+		const toggleButton = await screen.findByRole("button", {
+			name: "Desativar academia Iron Gym",
+		})
+		await user.click(toggleButton)
+
+		const confirmButton = await screen.findByRole("button", {
+			name: "Confirmar desativação",
+		})
+		await user.click(confirmButton)
+
+		await waitFor(() => {
+			expect(toast.success).toHaveBeenCalledWith(
+				"Academia desativada com sucesso!",
+			)
+		})
+	})
+
+	test("admin vê o botão de reativar em uma academia desativada e confirma a reativação", async () => {
+		useAuthStore.setState({
+			accessToken: "fake",
+			expiresAt: Date.now() + 60_000,
+			user: { id: "admin-1", role: "ADMIN" },
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json(
+					{
+						id: "gym-1",
+						title: "Iron Gym",
+						description: null,
+						phone: null,
+						latitude: -23.5,
+						longitude: -46.6,
+						status: "deactivated",
+					},
+					{ status: 200 },
+				),
+			),
+			http.patch(`${apiBaseUrl}/gyms/:id/activate`, () =>
+				HttpResponse.json({ message: "Gym activated" }),
+			),
+		)
+
+		const user = userEvent.setup()
+		renderWithProviders(<GymDetailPage />)
+
+		const toggleButton = await screen.findByRole("button", {
+			name: "Reativar academia Iron Gym",
+		})
+		await user.click(toggleButton)
+
+		const confirmButton = await screen.findByRole("button", {
+			name: "Confirmar reativação",
+		})
+		await user.click(confirmButton)
+
+		await waitFor(() => {
+			expect(toast.success).toHaveBeenCalledWith(
+				"Academia reativada com sucesso!",
+			)
+		})
+	})
+
+	test("usuário não-admin não vê o botão de alternância de status", async () => {
+		useAuthStore.setState({
+			accessToken: "fake",
+			expiresAt: Date.now() + 60_000,
+			user: { id: "user-1", role: "MEMBER" },
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json(
+					{
+						id: "gym-1",
+						title: "Iron Gym",
+						description: null,
+						phone: null,
+						latitude: -23.5,
+						longitude: -46.6,
+						status: "activated",
+					},
+					{ status: 200 },
+				),
+			),
+		)
+
+		renderWithProviders(<GymDetailPage />)
+
+		await screen.findByTestId("gym-detail-title")
+		expect(
+			screen.queryByTestId("gym-detail-status-toggle"),
+		).not.toBeInTheDocument()
+	})
 })
