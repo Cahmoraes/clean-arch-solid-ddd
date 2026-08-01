@@ -1,5 +1,6 @@
 import { createAndSaveGym } from "test/factory/create-and-save-gym"
 
+import { Gym } from "@/gym/domain/gym"
 import { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
@@ -110,6 +111,51 @@ describe("FetchNearbyGymUsecase", () => {
 			expect.arrayContaining(["Academia 1", "Academia 2", "Academia 3"]),
 		)
 		expect(gymRepository.gyms.toArray()).toHaveLength(4)
+	})
+
+	test("Não deve retornar academias desativadas por padrão (fail-closed)", async () => {
+		await gymRepository.save(
+			Gym.restore({
+				id: "gym-desativada",
+				title: "Academia Desativada",
+				latitude: -23.55052,
+				longitude: -46.633308,
+				cnpj: "11.222.333/0001-81",
+				address: "Rua A, 1",
+				status: "deactivated",
+			}),
+		)
+
+		const input: FetchNearbyGymInput = {
+			userLatitude: -23.55052,
+			userLongitude: -46.633308,
+		}
+		const result = await sut.execute(input)
+		const gyms = result.force.success().value
+		expect(gyms).toHaveLength(0)
+	})
+
+	test("Deve retornar academias desativadas quando includeInactive=true", async () => {
+		await gymRepository.save(
+			Gym.restore({
+				id: "gym-desativada",
+				title: "Academia Desativada",
+				latitude: -23.55052,
+				longitude: -46.633308,
+				cnpj: "11.222.333/0001-81",
+				address: "Rua A, 1",
+				status: "deactivated",
+			}),
+		)
+
+		const input: FetchNearbyGymInput = {
+			userLatitude: -23.55052,
+			userLongitude: -46.633308,
+			includeInactive: true,
+		}
+		const result = await sut.execute(input)
+		const gyms = result.force.success().value
+		expect(gyms).toHaveLength(1)
 	})
 
 	test("Deve retornar erro ao passar uma coordenada inválida", async () => {
