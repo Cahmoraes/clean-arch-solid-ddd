@@ -87,4 +87,41 @@ describe("GymStatusConfirmationDialog", () => {
 
 		expect(onConfirm).toHaveBeenCalledTimes(1)
 	})
+
+	test("click botão Cancelar chama onOpenChange(false) e não chama onConfirm", async () => {
+		const user = userEvent.setup()
+		const onOpenChange = vi.fn()
+		const onConfirm = vi.fn()
+		renderWithProviders(
+			<GymStatusConfirmationDialog
+				open
+				action="deactivate"
+				gymTitle="Iron Gym"
+				isPending={false}
+				onOpenChange={onOpenChange}
+				onConfirm={onConfirm}
+			/>,
+		)
+
+		await user.click(screen.getByRole("button", { name: "Cancelar" }))
+
+		expect(onOpenChange).toHaveBeenCalledWith(false)
+		expect(onConfirm).not.toHaveBeenCalled()
+	})
+
+	test("durante isPending, botão Cancelar fica disabled", () => {
+		renderWithProviders(
+			<GymStatusConfirmationDialog
+				open
+				action="activate"
+				gymTitle="Iron Gym"
+				isPending
+				onOpenChange={vi.fn()}
+				onConfirm={vi.fn()}
+			/>,
+		)
+
+		const cancelButton = screen.getByRole("button", { name: "Cancelar" })
+		expect(cancelButton).toBeDisabled()
+	})
 })
