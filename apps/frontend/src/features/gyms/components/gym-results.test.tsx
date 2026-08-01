@@ -15,6 +15,7 @@ const gyms: Gym[] = [
 		imageKey: null,
 		latitude: -23.5,
 		longitude: -46.6,
+		status: "activated",
 	},
 	{
 		id: "g2",
@@ -25,6 +26,7 @@ const gyms: Gym[] = [
 		imageKey: null,
 		latitude: -23.6,
 		longitude: -46.7,
+		status: "activated",
 	},
 ]
 

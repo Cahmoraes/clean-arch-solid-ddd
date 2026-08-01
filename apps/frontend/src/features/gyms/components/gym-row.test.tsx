@@ -13,6 +13,7 @@ const gym: Gym = {
 	imageKey: "gyms/volt.webp",
 	latitude: -23.5,
 	longitude: -46.6,
+	status: "activated",
 }
 
 describe("GymRow VOLT", () => {
