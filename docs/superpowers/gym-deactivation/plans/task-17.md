@@ -1,6 +1,6 @@
 # Task 17: `useDeactivateGym`/`useActivateGym` (frontend) [FR-001, FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

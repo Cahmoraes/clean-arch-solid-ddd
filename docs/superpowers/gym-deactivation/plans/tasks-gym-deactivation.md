@@ -31,9 +31,9 @@
 - [x] 14. `SearchGymController` — `isProtected: true` + papel repassado [FR-006, FR-012] → `task-14.md`
 - [x] 15. `FetchGymByIdController` — `isProtected: true` + papel repassado [FR-008, FR-009] → `task-15.md`
 - [x] 16. `GymStatusConfirmationDialog` (frontend) [FR-004] → `task-16.md`
-- [ ] 17. `useDeactivateGym`/`useActivateGym` (frontend) [FR-001, FR-002] → `task-17.md`
-- [ ] 18. Botão de alternância de status em `/academias/[id]` [FR-003, FR-004] → `task-18.md`
-- [ ] 19. Selo "Desativada" em `GymCard`/`GymRow` para admin [FR-012] → `task-19.md`
+- [x] 17. `useDeactivateGym`/`useActivateGym` (frontend) [FR-001, FR-002] → `task-17.md`
+- [x] 18. Botão de alternância de status em `/academias/[id]` [FR-003, FR-004] → `task-18.md`
+- [x] 19. Selo "Desativada" em `GymCard`/`GymRow` para admin [FR-012] → `task-19.md`
 
 ## Ondas de Execução
 

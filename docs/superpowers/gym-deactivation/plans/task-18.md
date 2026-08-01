@@ -1,6 +1,6 @@
 # Task 18: Botão de alternância de status em `/academias/[id]` [FR-003, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap
