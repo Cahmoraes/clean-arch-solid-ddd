@@ -2,11 +2,12 @@ import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import openapiTS, { astToString } from "openapi-typescript"
 
-const SPEC_PATH = resolve(process.cwd(), "docs/openapi-spec.json")
-const OUTPUT_FILE = resolve(
-	import.meta.dirname,
-	"../../../packages/api-types/index.d.ts",
+const PACKAGE_ROOT = resolve(import.meta.dirname, "..")
+const SPEC_PATH = resolve(
+	PACKAGE_ROOT,
+	"../../apps/backend/docs/openapi-spec.json",
 )
+const OUTPUT_FILE = resolve(PACKAGE_ROOT, "index.d.ts")
 
 async function generateClient(): Promise<void> {
 	const specUrl = new URL(`file://${SPEC_PATH}`)

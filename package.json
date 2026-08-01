@@ -10,7 +10,7 @@
 		"lint": "turbo lint",
 		"backend:tsc:check": "pnpm --filter backend tsc:check",
 		"front:tsc:check": "pnpm --filter frontend tsc:check",
-		"generate:types": "pnpm --filter backend openapi:export && pnpm --filter backend openapi:generate-client"
+		"generate:types": "pnpm --filter backend openapi:export && pnpm --filter @repo/api-types openapi:generate-client"
 	},
 	"devDependencies": {
 		"turbo": "latest"

@@ -4,5 +4,13 @@
 	"exports": {
 		".": "./index.d.ts"
 	},
-	"types": "./index.d.ts"
+	"types": "./index.d.ts",
+	"scripts": {
+		"openapi:generate-client": "tsx scripts/generate-client.ts"
+	},
+	"devDependencies": {
+		"openapi-typescript": "7.13.0",
+		"tsx": "4.22.4",
+		"typescript": "5.9.3"
+	}
 }

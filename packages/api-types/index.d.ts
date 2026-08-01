@@ -422,7 +422,7 @@ export interface paths {
                         "application/json": {
                             /**
                              * @description Success message
-                             * @example User created
+                             * @example User updated
                              */
                             message: string;
                             /**
