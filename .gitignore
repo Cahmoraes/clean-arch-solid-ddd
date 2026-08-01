@@ -16,7 +16,9 @@ coverage/
 .memory/memory.db
 .serena
 .serena/*
-
+.headroom_wrap_marker
+.github
+.claude
 
 # Python bytecode (skill scripts)
 __pycache__/
