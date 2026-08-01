@@ -11,6 +11,7 @@ const baseGym: Gym = {
 	imageKey: null,
 	latitude: -23.5,
 	longitude: -46.6,
+	status: "activated",
 }
 
 describe("resolveLocation", () => {

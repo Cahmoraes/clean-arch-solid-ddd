@@ -3,14 +3,16 @@ import { inject, injectable } from "inversify"
 import type {
 	FetchGymsInput,
 	FetchGymsOutput,
+	GymFetchOptions,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
+import { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
 import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
-import type {
+import {
 	Prisma,
-	PrismaClient,
+	type PrismaClient,
 } from "@/shared/infra/database/generated/prisma/client"
 import { env } from "@/shared/infra/env"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
@@ -27,6 +29,7 @@ export interface GymCreateProps {
 	latitude: Decimal
 	longitude: Decimal
 	cnpj: string
+	status: "activated" | "deactivated"
 }
 
 @injectable()
@@ -55,6 +58,7 @@ export class PrismaGymRepository implements GymRepository {
 				latitude: gym.latitude,
 				longitude: gym.longitude,
 				cnpj: gym.cnpj,
+				status: gym.status,
 			},
 			select: { id: true },
 		})
@@ -73,19 +77,27 @@ export class PrismaGymRepository implements GymRepository {
 				latitude: gym.latitude,
 				longitude: gym.longitude,
 				cnpj: gym.cnpj,
+				status: gym.status,
 			},
 		})
 	}
 
 	public async fetchGyms(input: FetchGymsInput): Promise<FetchGymsOutput> {
-		const where: Prisma.GymWhereInput | undefined = input.title
-			? {
-					title: {
-						contains: input.title,
-						mode: "insensitive" as const,
-					},
-				}
-			: undefined
+		const statusFilter =
+			input.includeInactive === false
+				? { status: GymStatusTypes.ACTIVATED }
+				: {}
+		const where: Prisma.GymWhereInput = {
+			...(input.title
+				? {
+						title: {
+							contains: input.title,
+							mode: "insensitive" as const,
+						},
+					}
+				: {}),
+			...statusFilter,
+		}
 
 		const skip = (input.page - 1) * env.ITEMS_PER_PAGE
 		const take = env.ITEMS_PER_PAGE
@@ -109,26 +121,43 @@ export class PrismaGymRepository implements GymRepository {
 			latitude: props.latitude.toNumber(),
 			longitude: props.longitude.toNumber(),
 			cnpj: props.cnpj,
+			status: props.status,
 		})
 	}
 
-	public async gymOfId(id: string): Promise<Gym | null> {
-		const gymData = await this.prismaClient.gym.findUnique({
-			where: { id },
+	public async gymOfId(
+		id: string,
+		options?: GymFetchOptions,
+	): Promise<Gym | null> {
+		const gymData = await this.prismaClient.gym.findFirst({
+			where: {
+				id,
+				...(options?.includeInactive === false
+					? { status: GymStatusTypes.ACTIVATED }
+					: {}),
+			},
 		})
 		if (!gymData) return null
 		return this.createGym(gymData)
 	}
 
-	public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {
+	public async fetchNearbyCoord(
+		coordinate: Coordinate,
+		options?: GymFetchOptions,
+	): Promise<Gym[]> {
+		const statusClause =
+			options?.includeInactive === false
+				? Prisma.sql`AND status = ${GymStatusTypes.ACTIVATED}`
+				: Prisma.empty
 		const gyms = await this.prismaClient.$queryRaw<GymCreateProps[]>`
       SELECT * FROM "gyms"
       WHERE ST_DistanceSphere(
         ST_MakePoint("longitude", "latitude"),
         ST_MakePoint(${coordinate.longitude}, ${coordinate.latitude})
       ) <= 10000
+      ${statusClause}
     `
-		return gyms.map(this.createGym)
+		return gyms.map((props) => this.createGym(props))
 	}
 
 	public async gymOfCNPJ(cnpj: string): Promise<Gym | null> {

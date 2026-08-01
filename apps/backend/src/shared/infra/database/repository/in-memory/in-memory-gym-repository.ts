@@ -3,10 +3,12 @@ import { injectable } from "inversify"
 import type {
 	FetchGymsInput,
 	FetchGymsOutput,
+	GymFetchOptions,
 	GymRepository,
 	SaveGymResult,
 } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
+import { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
 import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import { env } from "@/shared/infra/env"
 
@@ -30,6 +32,7 @@ export class InMemoryGymRepository implements GymRepository {
 			cnpj: gym.cnpj,
 			address: gym.address,
 			imageKey: gym.imageKey,
+			status: gym.status,
 		})
 		this.gyms.add(gymWithId)
 		return { id: gym.id }
@@ -49,19 +52,36 @@ export class InMemoryGymRepository implements GymRepository {
 				cnpj: gym.cnpj,
 				address: gym.address,
 				imageKey: gym.imageKey,
+				status: gym.status,
 			}),
 		)
 	}
 
-	public async gymOfId(id: string): Promise<Gym | null> {
-		return this.gyms.find((gym) => gym.id === id)
+	public async gymOfId(
+		id: string,
+		options?: GymFetchOptions,
+	): Promise<Gym | null> {
+		const gym = this.gyms.find((gym) => gym.id === id)
+		if (!gym) return null
+		if (
+			options?.includeInactive === false &&
+			gym.status !== GymStatusTypes.ACTIVATED
+		)
+			return null
+		return gym
 	}
 
 	public async fetchGyms(input: FetchGymsInput): Promise<FetchGymsOutput> {
 		const title = input.title?.toLocaleLowerCase()
-		const filteredGyms = title
+		let filteredGyms = title
 			? this.gyms.filter((gym) => gym.title.toLocaleLowerCase().includes(title))
 			: this.gyms
+
+		if (input.includeInactive === false) {
+			filteredGyms = filteredGyms.filter(
+				(gym) => gym.status === GymStatusTypes.ACTIVATED,
+			)
+		}
 
 		const all = filteredGyms.toArray()
 		const items = all.slice(
@@ -72,14 +92,23 @@ export class InMemoryGymRepository implements GymRepository {
 		return { items, total: all.length }
 	}
 
-	public async fetchNearbyCoord(coordinate: Coordinate): Promise<Gym[]> {
+	public async fetchNearbyCoord(
+		coordinate: Coordinate,
+		options?: GymFetchOptions,
+	): Promise<Gym[]> {
 		const nearbyGyms = this.gyms.filter((gym) => {
 			const gymCoordinate = Coordinate.restore({
 				latitude: gym.latitude,
 				longitude: gym.longitude,
 			})
 			const distance = coordinate.distanceTo(gymCoordinate)
-			return distance <= InMemoryGymRepository.KILOMETER
+			if (distance > InMemoryGymRepository.KILOMETER) return false
+			if (
+				options?.includeInactive === false &&
+				gym.status !== GymStatusTypes.ACTIVATED
+			)
+				return false
+			return true
 		})
 		return nearbyGyms.toArray()
 	}

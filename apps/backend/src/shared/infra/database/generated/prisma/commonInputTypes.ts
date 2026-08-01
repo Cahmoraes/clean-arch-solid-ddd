@@ -236,6 +236,23 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
+export type EnumGymStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.GymStatus | Prisma.EnumGymStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.GymStatus[] | Prisma.ListEnumGymStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.GymStatus[] | Prisma.ListEnumGymStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumGymStatusFilter<$PrismaModel> | $Enums.GymStatus
+}
+
+export type EnumGymStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.GymStatus | Prisma.EnumGymStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.GymStatus[] | Prisma.ListEnumGymStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.GymStatus[] | Prisma.ListEnumGymStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumGymStatusWithAggregatesFilter<$PrismaModel> | $Enums.GymStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumGymStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumGymStatusFilter<$PrismaModel>
+}
+
 export type EnumSubscriptionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.SubscriptionStatus | Prisma.EnumSubscriptionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.SubscriptionStatus[] | Prisma.ListEnumSubscriptionStatusFieldRefInput<$PrismaModel>
@@ -501,6 +518,23 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
+}
+
+export type NestedEnumGymStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.GymStatus | Prisma.EnumGymStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.GymStatus[] | Prisma.ListEnumGymStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.GymStatus[] | Prisma.ListEnumGymStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumGymStatusFilter<$PrismaModel> | $Enums.GymStatus
+}
+
+export type NestedEnumGymStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.GymStatus | Prisma.EnumGymStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.GymStatus[] | Prisma.ListEnumGymStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.GymStatus[] | Prisma.ListEnumGymStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumGymStatusWithAggregatesFilter<$PrismaModel> | $Enums.GymStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumGymStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumGymStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumSubscriptionStatusFilter<$PrismaModel = never> = {

@@ -58,6 +58,7 @@ model Gym {
   image_key   String?
   latitude    Decimal
   longitude   Decimal
+  status      GymStatus @default(activated)
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   checkIns    CheckIn[]
@@ -140,6 +141,11 @@ enum UserStatus {
   activated
   suspended
   locked
+}
+
+enum GymStatus {
+  activated
+  deactivated
 }
 
 enum SubscriptionStatus {

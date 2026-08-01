@@ -5,6 +5,8 @@ export const GymRoutes = {
 	UPDATE: "/gyms/:gymId",
 	UPLOAD_IMAGE: "/gyms/:gymId/image",
 	SEARCH: "/gyms/search/:name",
+	DEACTIVATE: "/gyms/:gymId/deactivate",
+	ACTIVATE: "/gyms/:gymId/activate",
 } as const
 
 export type GymRoutesTypes = (typeof GymRoutes)[keyof typeof GymRoutes]

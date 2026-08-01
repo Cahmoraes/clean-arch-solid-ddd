@@ -1,6 +1,6 @@
 # Task 2: Domain — `GymStatus` value object (state pattern) + erros de conflito [FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

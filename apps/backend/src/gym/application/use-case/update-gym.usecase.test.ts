@@ -22,6 +22,7 @@ describe("UpdateGymUseCase", () => {
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
 				imageKey: "gyms/atual.webp",
+				status: "activated",
 			}),
 		)
 
@@ -53,6 +54,7 @@ describe("UpdateGymUseCase", () => {
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
 				imageKey: "gyms/atual.webp",
+				status: "activated",
 			}),
 		)
 
@@ -83,6 +85,37 @@ describe("UpdateGymUseCase", () => {
 		expect(result.value).toBeInstanceOf(GymNotFoundError)
 	})
 
+	test("mantém a academia desativada ao atualizar seus dados", async () => {
+		const { gymRepository, sut } = makeSut()
+		await gymRepository.save(
+			Gym.restore({
+				id: "gym-1",
+				title: "Nome Antigo",
+				latitude: 0,
+				longitude: 0,
+				cnpj: "11.222.333/0001-81",
+				address: "Rua A, 1",
+				status: "deactivated",
+			}),
+		)
+
+		const result = await sut.execute({
+			gymId: "gym-1",
+			cnpj: "11.222.333/0001-81",
+			title: "Nome Novo",
+			latitude: -23.5,
+			longitude: -46.6,
+			address: "Rua B, 2",
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		const found = await gymRepository.gymOfId("gym-1", {
+			includeInactive: true,
+		})
+		expect(found?.title).toBe("Nome Novo")
+		expect(found?.status).toBe("deactivated")
+	})
+
 	test("retorna conflito quando o CNPJ pertence a outra academia", async () => {
 		const { gymRepository, sut } = makeSut()
 		await gymRepository.save(
@@ -93,6 +126,7 @@ describe("UpdateGymUseCase", () => {
 				longitude: 0,
 				cnpj: "11.222.333/0001-81",
 				address: "Rua A, 1",
+				status: "activated",
 			}),
 		)
 		await gymRepository.save(
@@ -103,6 +137,7 @@ describe("UpdateGymUseCase", () => {
 				longitude: 0,
 				cnpj: "11.444.777/0001-61",
 				address: "Rua B, 2",
+				status: "activated",
 			}),
 		)
 

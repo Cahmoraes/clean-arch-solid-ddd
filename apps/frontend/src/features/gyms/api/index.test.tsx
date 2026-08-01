@@ -6,8 +6,10 @@ import { describe, expect, it } from "vitest"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import {
+	useActivateGym,
 	useAllGyms,
 	useCreateGym,
+	useDeactivateGym,
 	useGymById,
 	useGymsByName,
 	useSetGymImage,
@@ -282,5 +284,99 @@ describe("useSetGymImage", () => {
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
 		expect(sentAuth).toBe("Bearer tok-123")
 		useAuthStore.setState({ accessToken: null })
+	})
+})
+
+describe("useDeactivateGym", () => {
+	it("desativa a academia via PATCH e retorna mensagem de sucesso", async () => {
+		server.use(
+			http.patch(`${apiBaseUrl}/gyms/:gymId/deactivate`, () =>
+				HttpResponse.json({ message: "Gym deactivated" }, { status: 200 }),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useDeactivateGym(), {
+			wrapper: Wrapper,
+		})
+		result.current.mutate("gym-1")
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data?.message).toBe("Gym deactivated")
+	})
+
+	it("propaga ApiError quando backend retorna 409 (já desativada)", async () => {
+		server.use(
+			http.patch(`${apiBaseUrl}/gyms/:gymId/deactivate`, () =>
+				HttpResponse.json(
+					{ message: "Gym is already deactivated" },
+					{ status: 409 },
+				),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useDeactivateGym(), {
+			wrapper: Wrapper,
+		})
+		await expect(result.current.mutateAsync("gym-1")).rejects.toMatchObject({
+			status: 409,
+		})
+	})
+
+	it("propaga ApiError quando backend retorna 404", async () => {
+		server.use(
+			http.patch(`${apiBaseUrl}/gyms/:gymId/deactivate`, () =>
+				HttpResponse.json({ message: "Gym not found" }, { status: 404 }),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useDeactivateGym(), {
+			wrapper: Wrapper,
+		})
+		await expect(
+			result.current.mutateAsync("gym-not-exist"),
+		).rejects.toMatchObject({ status: 404 })
+	})
+})
+
+describe("useActivateGym", () => {
+	it("ativa a academia via PATCH e retorna mensagem de sucesso", async () => {
+		server.use(
+			http.patch(`${apiBaseUrl}/gyms/:gymId/activate`, () =>
+				HttpResponse.json({ message: "Gym activated" }, { status: 200 }),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useActivateGym(), { wrapper: Wrapper })
+		result.current.mutate("gym-1")
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data?.message).toBe("Gym activated")
+	})
+
+	it("propaga ApiError quando backend retorna 409 (já ativada)", async () => {
+		server.use(
+			http.patch(`${apiBaseUrl}/gyms/:gymId/activate`, () =>
+				HttpResponse.json(
+					{ message: "Gym is already activated" },
+					{ status: 409 },
+				),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useActivateGym(), { wrapper: Wrapper })
+		await expect(result.current.mutateAsync("gym-1")).rejects.toMatchObject({
+			status: 409,
+		})
+	})
+
+	it("propaga ApiError quando backend retorna 404", async () => {
+		server.use(
+			http.patch(`${apiBaseUrl}/gyms/:gymId/activate`, () =>
+				HttpResponse.json({ message: "Gym not found" }, { status: 404 }),
+			),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useActivateGym(), { wrapper: Wrapper })
+		await expect(
+			result.current.mutateAsync("gym-not-exist"),
+		).rejects.toMatchObject({ status: 404 })
 	})
 })

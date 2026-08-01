@@ -80,6 +80,74 @@ describe("FetchGymByIdUseCase", () => {
 			expect(result.value.phone).toBeNull()
 		}
 	})
+
+	test("com includeInactive: false, buscar uma academia desativada retorna failure(GymNotFoundError)", async () => {
+		const gym = await createAndSaveGym({
+			id: "gym-deactivated",
+			gymRepository,
+			title: "Academia Desativada",
+			latitude: -23.0,
+			longitude: -46.0,
+		})
+		gym.deactivate()
+		await gymRepository.update(gym)
+
+		const result = await sut.execute({
+			gymId: gym.id,
+			includeInactive: false,
+		})
+
+		expect(result.isFailure()).toBe(true)
+		if (result.isFailure()) {
+			expect(result.value).toBeInstanceOf(Error)
+			expect(result.value.message).toBe("Gym not found")
+		}
+	})
+
+	test("com includeInactive: true, retorna sucesso com status 'deactivated' no DTO", async () => {
+		const gym = await createAndSaveGym({
+			id: "gym-deactivated-2",
+			gymRepository,
+			title: "Academia Desativada 2",
+			latitude: -23.0,
+			longitude: -46.0,
+		})
+		gym.deactivate()
+		await gymRepository.update(gym)
+
+		const result = await sut.execute({
+			gymId: gym.id,
+			includeInactive: true,
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		if (result.isSuccess()) {
+			expect(result.value.status).toBe("deactivated")
+			expect(result.value.id).toBe(gym.id)
+		}
+	})
+
+	test("com includeInactive omitido, o default fail-closed: academia desativada retorna failure(GymNotFoundError)", async () => {
+		const gym = await createAndSaveGym({
+			id: "gym-deactivated-omitted",
+			gymRepository,
+			title: "Academia Desativada Omitted",
+			latitude: -23.0,
+			longitude: -46.0,
+		})
+		gym.deactivate()
+		await gymRepository.update(gym)
+
+		const result = await sut.execute({
+			gymId: gym.id,
+		})
+
+		expect(result.isFailure()).toBe(true)
+		if (result.isFailure()) {
+			expect(result.value).toBeInstanceOf(Error)
+			expect(result.value.message).toBe("Gym not found")
+		}
+	})
 })
 
 describe("FetchGymByIdUseCase imageKey", () => {
@@ -93,6 +161,7 @@ describe("FetchGymByIdUseCase imageKey", () => {
 			cnpj: "11.222.333/0001-81",
 			address: "Rua A, 1",
 			imageKey: "gyms/foto.webp",
+			status: "activated",
 		})
 		await gymRepository.save(gym)
 		const sut = new FetchGymByIdUseCaseImpl(gymRepository)
@@ -111,6 +180,7 @@ describe("FetchGymByIdUseCase imageKey", () => {
 			longitude: 0,
 			cnpj: "11.222.333/0001-81",
 			address: "Rua B, 2",
+			status: "activated",
 		})
 		await gymRepository.save(gym)
 		const sut = new FetchGymByIdUseCaseImpl(gymRepository)

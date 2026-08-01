@@ -1,6 +1,13 @@
 "use client"
 
-import { ArrowLeft, MapPin, Pencil, Phone } from "lucide-react"
+import {
+	ArrowLeft,
+	MapPin,
+	Pencil,
+	Phone,
+	Power,
+	RotateCcw,
+} from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useState } from "react"
@@ -10,8 +17,17 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCreateCheckIn } from "@/features/check-ins/api"
-import { type Gym, useGymById } from "@/features/gyms/api"
+import {
+	type Gym,
+	useActivateGym,
+	useDeactivateGym,
+	useGymById,
+} from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
+import {
+	type GymStatusAction,
+	GymStatusConfirmationDialog,
+} from "@/features/gyms/components/gym-status-confirmation-dialog"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError } from "@/lib/errors"
 
@@ -125,6 +141,95 @@ function CheckInButton({ gym }: CheckInButtonProps) {
 	)
 }
 
+interface GymStatusToggleButtonProps {
+	gym: Gym
+}
+
+interface StatusConfig {
+	action: GymStatusAction
+	successMsg: string
+	errorMsg: string
+	ariaLabel: string
+	buttonClass: string
+	icon: typeof Power | typeof RotateCcw
+}
+
+function getStatusConfig(
+	isDeactivated: boolean,
+	gymTitle: string,
+): StatusConfig {
+	if (isDeactivated) {
+		return {
+			action: "activate",
+			successMsg: "Academia reativada com sucesso!",
+			errorMsg: "Não foi possível reativar a academia. Tente novamente.",
+			ariaLabel: `Reativar academia ${gymTitle}`,
+			buttonClass:
+				"inline-flex h-9 w-9 items-center justify-center rounded-md border border-primary bg-primary text-primary-foreground transition-colors hover:bg-primary/90",
+			icon: RotateCcw,
+		}
+	}
+	return {
+		action: "deactivate",
+		successMsg: "Academia desativada com sucesso!",
+		errorMsg: "Não foi possível desativar a academia. Tente novamente.",
+		ariaLabel: `Desativar academia ${gymTitle}`,
+		buttonClass:
+			"inline-flex h-9 w-9 items-center justify-center rounded-md border border-destructive bg-destructive text-destructive-foreground transition-colors hover:bg-destructive/90",
+		icon: Power,
+	}
+}
+
+function getErrorMessage(err: unknown, fallbackMsg: string): string {
+	if (err instanceof ApiError && err.status === 409) {
+		return "A academia já está neste estado. Recarregue a página."
+	}
+	return fallbackMsg
+}
+
+function GymStatusToggleButton({ gym }: GymStatusToggleButtonProps) {
+	const [open, setOpen] = useState(false)
+	const deactivateGym = useDeactivateGym()
+	const activateGym = useActivateGym()
+	const isDeactivated = gym.status === "deactivated"
+	const config = getStatusConfig(isDeactivated, gym.title)
+	const mutation = isDeactivated ? activateGym : deactivateGym
+
+	async function handleConfirm() {
+		try {
+			await mutation.mutateAsync(gym.id)
+			toast.success(config.successMsg)
+			setOpen(false)
+		} catch (err) {
+			toast.error(getErrorMessage(err, config.errorMsg))
+		}
+	}
+
+	const IconComponent = config.icon
+
+	return (
+		<>
+			<button
+				type="button"
+				data-testid="gym-detail-status-toggle"
+				aria-label={config.ariaLabel}
+				onClick={() => setOpen(true)}
+				className={config.buttonClass}
+			>
+				<IconComponent className="h-4 w-4" aria-hidden="true" />
+			</button>
+			<GymStatusConfirmationDialog
+				open={open}
+				action={config.action}
+				gymTitle={gym.title}
+				isPending={mutation.isPending}
+				onOpenChange={setOpen}
+				onConfirm={handleConfirm}
+			/>
+		</>
+	)
+}
+
 interface DetailCardProps {
 	gym: Gym
 	adminEditHref?: string
@@ -144,14 +249,17 @@ function DetailCard({ gym, adminEditHref }: DetailCardProps) {
 					loading="eager"
 				/>
 				{adminEditHref ? (
-					<Link
-						href={adminEditHref}
-						data-testid="gym-detail-edit"
-						aria-label={`Editar academia ${gym.title}`}
-						className="absolute right-3 top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background/80 text-foreground backdrop-blur transition-colors hover:bg-background hover:text-primary"
-					>
-						<Pencil className="h-4 w-4" aria-hidden="true" />
-					</Link>
+					<div className="absolute right-3 top-3 z-20 flex items-center gap-2">
+						<Link
+							href={adminEditHref}
+							data-testid="gym-detail-edit"
+							aria-label={`Editar academia ${gym.title}`}
+							className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background/80 text-foreground backdrop-blur transition-colors hover:bg-background hover:text-primary"
+						>
+							<Pencil className="h-4 w-4" aria-hidden="true" />
+						</Link>
+						<GymStatusToggleButton gym={gym} />
+					</div>
 				) : null}
 			</div>
 			<header className="flex flex-col gap-2">

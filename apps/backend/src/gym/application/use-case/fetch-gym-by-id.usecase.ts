@@ -1,17 +1,18 @@
 import { inject, injectable } from "inversify"
-
+import type { Gym } from "@/gym/domain/gym"
+import type { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
 import {
 	type Either,
 	failure,
 	success,
 } from "@/shared/domain/value-object/either"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
-
 import { GymNotFoundError } from "../error/gym-not-found-error"
 import type { GymRepository } from "../repository/gym-repository"
 
 export interface FetchGymByIdUseCaseInput {
 	gymId: string
+	includeInactive?: boolean
 }
 
 export interface FetchGymByIdUseCaseOutputDTO {
@@ -24,6 +25,7 @@ export interface FetchGymByIdUseCaseOutputDTO {
 	imageKey: string | null
 	latitude: number
 	longitude: number
+	status: GymStatusTypes
 }
 
 export type FetchGymByIdUseCaseOutput = Either<
@@ -41,9 +43,16 @@ export class FetchGymByIdUseCase {
 	public async execute(
 		input: FetchGymByIdUseCaseInput,
 	): Promise<FetchGymByIdUseCaseOutput> {
-		const gym = await this.gymRepository.gymOfId(input.gymId)
+		const gym = await this.gymRepository.gymOfId(input.gymId, {
+			// fail-closed: esconde academias desativadas salvo pedido explícito
+			includeInactive: input.includeInactive ?? false,
+		})
 		if (!gym) return failure(new GymNotFoundError())
-		return success({
+		return success(this.toDTO(gym))
+	}
+
+	private toDTO(gym: Gym): FetchGymByIdUseCaseOutputDTO {
+		return {
 			id: gym.id,
 			cnpj: gym.cnpj,
 			title: gym.title,
@@ -53,6 +62,7 @@ export class FetchGymByIdUseCase {
 			imageKey: gym.imageKey ?? null,
 			latitude: gym.latitude,
 			longitude: gym.longitude,
-		})
+			status: gym.status,
+		}
 	}
 }

@@ -17,11 +17,13 @@ describe("Gym Contract Tests", () => {
 	let userRepository: InMemoryUserRepository
 	let gymRepository: InMemoryGymRepository
 	let authenticate: AuthenticateUseCase
+	let userCounter = 0
 
 	beforeEach(async () => {
 		container.snapshot()
 		userRepository = new InMemoryUserRepository()
 		gymRepository = new InMemoryGymRepository()
+		userCounter = 0
 		container
 			.rebind(USER_TYPES.Repositories.User)
 			.toConstantValue(userRepository)
@@ -47,6 +49,22 @@ describe("Gym Contract Tests", () => {
 		})
 		const result = await authenticate.execute({
 			email: "admin@test.com",
+			password: "any_password",
+		})
+		return result.force.success().value.token
+	}
+
+	async function getTokenForMember(): Promise<string> {
+		userCounter++
+		const email = `member${userCounter}@test.com`
+		await createAndSaveUser({
+			userRepository,
+			email,
+			password: "any_password",
+			role: RoleValues.MEMBER,
+		})
+		const result = await authenticate.execute({
+			email,
 			password: "any_password",
 		})
 		return result.force.success().value.token
@@ -89,23 +107,25 @@ describe("Gym Contract Tests", () => {
 
 	describe("GET /gyms/search/:name", () => {
 		test("deve satisfazer a spec com status 200 ao buscar academia", async () => {
+			const token = await getTokenForMember()
 			await createAndSaveGym({
 				gymRepository,
 				title: "Smart Fit",
 			})
 
-			const response = await request(fastifyServer.server).get(
-				GymRoutes.SEARCH.replace(":name", "Smart"),
-			)
+			const response = await request(fastifyServer.server)
+				.get(GymRoutes.SEARCH.replace(":name", "Smart"))
+				.set("Authorization", `Bearer ${token}`)
 
 			expect(response.status).toBe(200)
 			expect(response).toSatisfyApiSpec()
 		})
 
 		test("deve satisfazer a spec com status 404 quando nao encontrar", async () => {
-			const response = await request(fastifyServer.server).get(
-				GymRoutes.SEARCH.replace(":name", "Inexistente"),
-			)
+			const token = await getTokenForMember()
+			const response = await request(fastifyServer.server)
+				.get(GymRoutes.SEARCH.replace(":name", "Inexistente"))
+				.set("Authorization", `Bearer ${token}`)
 
 			expect(response.status).toBe(404)
 			expect(response).toSatisfyApiSpec()

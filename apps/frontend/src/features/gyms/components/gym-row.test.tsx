@@ -13,6 +13,7 @@ const gym: Gym = {
 	imageKey: "gyms/volt.webp",
 	latitude: -23.5,
 	longitude: -46.6,
+	status: "activated",
 }
 
 describe("GymRow VOLT", () => {
@@ -69,5 +70,24 @@ describe("GymRow VOLT", () => {
 		const editLink = screen.getByTestId("gym-row-edit-g1")
 		expect(editLink).toBeInTheDocument()
 		expect(editLink).toHaveAttribute("href", "/admin/academias/g1/editar")
+	})
+
+	test("mostra o selo 'Desativada' quando a academia está desativada e adminEditHref é informado", () => {
+		const deactivatedGym: Gym = { ...gym, status: "deactivated" }
+		renderWithProviders(
+			<GymRow
+				gym={deactivatedGym}
+				adminEditHref="/admin/academias/g1/editar"
+			/>,
+		)
+		expect(screen.getByText("Desativada")).toBeInTheDocument()
+		expect(screen.queryByText("Disponível")).not.toBeInTheDocument()
+	})
+
+	test("não mostra o selo 'Desativada' sem adminEditHref, mesmo com status desativado", () => {
+		const deactivatedGym: Gym = { ...gym, status: "deactivated" }
+		renderWithProviders(<GymRow gym={deactivatedGym} />)
+		expect(screen.queryByText("Desativada")).not.toBeInTheDocument()
+		expect(screen.getByText("Disponível")).toBeInTheDocument()
 	})
 })

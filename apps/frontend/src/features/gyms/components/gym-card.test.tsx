@@ -13,6 +13,7 @@ const gym: Gym = {
 	imageKey: "gyms/volt.webp",
 	latitude: -23.5,
 	longitude: -46.6,
+	status: "activated",
 }
 
 describe("GymCard VOLT", () => {
@@ -84,5 +85,33 @@ describe("GymCard VOLT", () => {
 		expect(link.className).not.toContain("hover:border-border-strong")
 		expect(link.className).not.toContain("transition-[transform,border-color]")
 		expect(link.className).not.toContain("group")
+	})
+
+	test("mostra o selo 'Desativada' quando a academia está desativada e adminEditHref é informado", () => {
+		const deactivatedGym: Gym = { ...gym, status: "deactivated" }
+		renderWithProviders(
+			<GymCard
+				gym={deactivatedGym}
+				adminEditHref="/admin/academias/g1/editar"
+			/>,
+		)
+		expect(screen.getByText("Desativada")).toBeInTheDocument()
+		expect(screen.queryByText("Disponível")).not.toBeInTheDocument()
+	})
+
+	test("não mostra o selo 'Desativada' sem adminEditHref, mesmo com status desativado", () => {
+		const deactivatedGym: Gym = { ...gym, status: "deactivated" }
+		renderWithProviders(<GymCard gym={deactivatedGym} />)
+		expect(screen.queryByText("Desativada")).not.toBeInTheDocument()
+		expect(screen.getByText("Disponível")).toBeInTheDocument()
+	})
+
+	test("mostra 'Disponível' quando status é 'activated', mesmo para admin", () => {
+		const activeGym: Gym = { ...gym, status: "activated" }
+		renderWithProviders(
+			<GymCard gym={activeGym} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		expect(screen.getByText("Disponível")).toBeInTheDocument()
+		expect(screen.queryByText("Desativada")).not.toBeInTheDocument()
 	})
 })

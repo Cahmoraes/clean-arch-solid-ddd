@@ -1,6 +1,6 @@
 # Task 9: `FetchGymByIdUseCase` — `includeInactive` por papel + `status` no DTO [FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

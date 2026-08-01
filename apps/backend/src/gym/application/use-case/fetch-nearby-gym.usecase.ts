@@ -15,6 +15,7 @@ import type { GymRepository } from "../repository/gym-repository"
 export interface FetchNearbyGymInput {
 	userLatitude: number
 	userLongitude: number
+	includeInactive?: boolean
 }
 
 export interface FetchNearbyGymOutput {
@@ -46,7 +47,10 @@ export class FetchNearbyGym {
 			longitude: input.userLongitude,
 		})
 		if (coordOrError.isFailure()) return failure(coordOrError.value)
-		const gyms = await this.gymRepository.fetchNearbyCoord(coordOrError.value)
+		const gyms = await this.gymRepository.fetchNearbyCoord(coordOrError.value, {
+			// fail-closed: esconde academias desativadas salvo pedido explícito
+			includeInactive: input.includeInactive ?? false,
+		})
 		return success(this.createGymsDTO(gyms))
 	}
 

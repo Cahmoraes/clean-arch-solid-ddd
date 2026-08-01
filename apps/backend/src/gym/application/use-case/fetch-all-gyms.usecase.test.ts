@@ -111,4 +111,51 @@ describe("FetchAllGymsUseCase", () => {
 		const page2Ids = page2.data.map((gym) => gym.id)
 		expect(page1Ids).not.toEqual(expect.arrayContaining(page2Ids))
 	})
+
+	test("com includeInactive omitido, uma academia desativada não aparece no resultado", async () => {
+		await createAndSaveGym({ id: "1", gymRepository, title: "Academia Ativa" })
+		const deactivatedGym = await createAndSaveGym({
+			id: "2",
+			gymRepository,
+			title: "Academia Desativada",
+		})
+		deactivatedGym.deactivate()
+		await gymRepository.update(deactivatedGym)
+
+		const result = await sut.execute({ page: 1 })
+
+		expect(result.data.some((g) => g.id === deactivatedGym.id)).toBe(false)
+		expect(result.pagination.total).toBe(1)
+	})
+
+	test("com includeInactive: true, a academia desativada aparece com status 'deactivated' no DTO", async () => {
+		const deactivatedGym = await createAndSaveGym({
+			id: "1",
+			gymRepository,
+			title: "Academia Desativada",
+		})
+		deactivatedGym.deactivate()
+		await gymRepository.update(deactivatedGym)
+
+		const result = await sut.execute({ page: 1, includeInactive: true })
+
+		const found = result.data.find((g) => g.id === deactivatedGym.id)
+		expect(found?.status).toBe("deactivated")
+	})
+
+	test("com includeInactive: false explícito, a academia desativada não aparece", async () => {
+		await createAndSaveGym({ id: "1", gymRepository, title: "Academia Ativa" })
+		const deactivatedGym = await createAndSaveGym({
+			id: "2",
+			gymRepository,
+			title: "Academia Desativada",
+		})
+		deactivatedGym.deactivate()
+		await gymRepository.update(deactivatedGym)
+
+		const result = await sut.execute({ page: 1, includeInactive: false })
+
+		expect(result.data.some((g) => g.id === deactivatedGym.id)).toBe(false)
+		expect(result.pagination.total).toBe(1)
+	})
 })

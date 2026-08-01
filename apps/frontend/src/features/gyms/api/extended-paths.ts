@@ -16,6 +16,7 @@ export interface GymSummary {
 	cnpj?: string
 	latitude: number
 	longitude: number
+	status: "activated" | "deactivated"
 }
 
 export interface GymUpdateBody {
@@ -32,6 +33,10 @@ export interface PaginatedGyms {
 	items: GymSummary[]
 	page: number
 	total: number
+}
+
+export interface GymStatusChangeResult {
+	message: string
 }
 
 export interface GymExtendedPaths {
@@ -67,6 +72,26 @@ export interface GymExtendedPaths {
 			responses: {
 				200: {
 					content: { "application/json": { message: string; id: string } }
+				}
+			}
+		}
+	}
+	"/gyms/{gymId}/deactivate": {
+		patch: {
+			parameters: { path: { gymId: string } }
+			responses: {
+				200: {
+					content: { "application/json": GymStatusChangeResult }
+				}
+			}
+		}
+	}
+	"/gyms/{gymId}/activate": {
+		patch: {
+			parameters: { path: { gymId: string } }
+			responses: {
+				200: {
+					content: { "application/json": GymStatusChangeResult }
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 # Task 16: `GymStatusConfirmationDialog` (frontend) [FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

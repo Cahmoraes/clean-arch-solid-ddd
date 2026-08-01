@@ -1,13 +1,17 @@
 import { ContainerModule } from "inversify"
 import type { GymRepository } from "@/gym/application/repository/gym-repository"
+import { ActivateGymUseCase } from "@/gym/application/use-case/activate-gym.usecase"
 import { CreateGymUseCase } from "@/gym/application/use-case/create-gym.usecase"
+import { DeactivateGymUseCase } from "@/gym/application/use-case/deactivate-gym.usecase"
 import { FetchAllGymsUseCase } from "@/gym/application/use-case/fetch-all-gyms.usecase"
 import { FetchGymByIdUseCase } from "@/gym/application/use-case/fetch-gym-by-id.usecase"
 import { FetchNearbyGym } from "@/gym/application/use-case/fetch-nearby-gym.usecase"
 import { SearchGymUseCase } from "@/gym/application/use-case/search-gym.usecase"
 import { SetGymImageUseCase } from "@/gym/application/use-case/set-gym-image.usecase"
 import { UpdateGymUseCase } from "@/gym/application/use-case/update-gym.usecase"
+import { ActivateGymController } from "@/gym/infra/controller/activate-gym.controller"
 import { CreateGymController } from "@/gym/infra/controller/create-gym.controller"
+import { DeactivateGymController } from "@/gym/infra/controller/deactivate-gym.controller"
 import { FetchAllGymsController } from "@/gym/infra/controller/fetch-all-gyms.controller"
 import { FetchGymByIdController } from "@/gym/infra/controller/fetch-gym-by-id.controller"
 import { GymImageController } from "@/gym/infra/controller/gym-image.controller"
@@ -23,6 +27,8 @@ export const gymModule = new ContainerModule(({ bind }) => {
 		GymRepositoryProvider.provide,
 	)
 	bind(GYM_TYPES.Controllers.CreateGym).to(CreateGymController)
+	bind(GYM_TYPES.Controllers.ActivateGym).to(ActivateGymController)
+	bind(GYM_TYPES.Controllers.DeactivateGym).to(DeactivateGymController)
 	bind(GYM_TYPES.Controllers.UpdateGym).to(UpdateGymController)
 	bind(GYM_TYPES.Controllers.SearchGym).to(SearchGymController)
 	bind(GYM_TYPES.Controllers.FetchAllGyms).to(FetchAllGymsController)
@@ -30,6 +36,8 @@ export const gymModule = new ContainerModule(({ bind }) => {
 	bind(GYM_TYPES.Controllers.GymImage).to(GymImageController)
 	bind(GYM_TYPES.UseCases.CreateGym).to(CreateGymUseCase)
 	bind(GYM_TYPES.UseCases.UpdateGym).to(UpdateGymUseCase)
+	bind(GYM_TYPES.UseCases.DeactivateGym).to(DeactivateGymUseCase)
+	bind(GYM_TYPES.UseCases.ActivateGym).to(ActivateGymUseCase)
 	bind(GYM_TYPES.UseCases.SearchGym).to(SearchGymUseCase)
 	bind(GYM_TYPES.UseCases.FetchNearbyGym).to(FetchNearbyGym)
 	bind(GYM_TYPES.UseCases.FetchAllGyms).to(FetchAllGymsUseCase)

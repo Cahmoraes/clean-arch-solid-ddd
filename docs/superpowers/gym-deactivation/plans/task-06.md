@@ -1,6 +1,6 @@
 # Task 6: `ActivateGymUseCase` [FR-002, FR-005, FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

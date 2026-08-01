@@ -64,7 +64,12 @@ export class UpdateGymUseCase {
 		})
 		if (gymOrError.isFailure()) return failure(gymOrError.value)
 
-		await this.gymRepository.update(gymOrError.value)
+		const gym = gymOrError.value
+		// Gym.create sempre nasce "activated" (FR-011); preserva o status
+		// anterior para não reativar silenciosamente uma academia desativada.
+		if (existingGym.status === "deactivated") gym.deactivate()
+
+		await this.gymRepository.update(gym)
 		return success({ gymId: input.gymId })
 	}
 }

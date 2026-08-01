@@ -12,6 +12,7 @@ import { GYM_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
+import { RoleValues } from "@/user/domain/value-object/role"
 import { GymRoutes } from "./routes/gym-routes"
 
 const fetchGymByIdParamsSchema = z.object({
@@ -41,7 +42,7 @@ export class FetchGymByIdController extends BaseController {
 		this.server.register(
 			"get",
 			GymRoutes.GET,
-			{ callback: this.callback },
+			{ callback: this.callback, isProtected: true },
 			makeFetchGymByIdSwaggerSchema(),
 		)
 	}
@@ -55,8 +56,10 @@ export class FetchGymByIdController extends BaseController {
 			return this.createResponseError(parsedParamsOrError)
 		}
 
+		const isAdmin = req.user?.sub.role === RoleValues.ADMIN
 		const result = await this.fetchGymByIdUseCase.execute({
 			gymId: parsedParamsOrError.value.gymId,
+			includeInactive: isAdmin,
 		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)
@@ -85,6 +88,9 @@ const gymResponseSchema = z.object({
 	}),
 	latitude: z.number().meta({ description: "Latitude", example: -23.5505 }),
 	longitude: z.number().meta({ description: "Longitude", example: -46.6333 }),
+	status: z
+		.enum(["activated", "deactivated"])
+		.meta({ description: "Gym status", example: "activated" }),
 })
 
 function makeFetchGymByIdSwaggerSchema(): Schema {

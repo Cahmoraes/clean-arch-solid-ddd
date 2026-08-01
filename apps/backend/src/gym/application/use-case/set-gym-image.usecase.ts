@@ -66,6 +66,7 @@ export class SetGymImageUseCase {
 					cnpj: gym.cnpj,
 					address: gym.address,
 					imageKey: key,
+					status: gym.status,
 				}),
 			)
 		} catch (error) {

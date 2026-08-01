@@ -1,6 +1,6 @@
 # Task 19: Selo "Desativada" em `GymCard`/`GymRow` para admin [FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

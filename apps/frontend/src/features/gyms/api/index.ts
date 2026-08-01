@@ -12,6 +12,7 @@ import { API_BASE_URL, api } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
 import {
+	type GymStatusChangeResult,
 	type GymSummary,
 	getGymsExtendedClient,
 	type PaginatedGyms,
@@ -237,6 +238,56 @@ export function useSetGymImage(): UseMutationResult<
 	const queryClient = useQueryClient()
 	return useMutation<SetGymImageResult, ApiError, SetGymImageVariables>({
 		mutationFn: setGymImageRequest,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: gymsKeys.all })
+		},
+	})
+}
+
+async function deactivateGymRequest(
+	gymId: string,
+): Promise<GymStatusChangeResult> {
+	const client = getGymsExtendedClient()
+	const { data, error } = await client.PATCH("/gyms/{gymId}/deactivate", {
+		params: { path: { gymId } },
+	})
+	if (error || !data) throw toApiError(error)
+	return data
+}
+
+export function useDeactivateGym(): UseMutationResult<
+	GymStatusChangeResult,
+	ApiError,
+	string
+> {
+	const queryClient = useQueryClient()
+	return useMutation<GymStatusChangeResult, ApiError, string>({
+		mutationFn: deactivateGymRequest,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: gymsKeys.all })
+		},
+	})
+}
+
+async function activateGymRequest(
+	gymId: string,
+): Promise<GymStatusChangeResult> {
+	const client = getGymsExtendedClient()
+	const { data, error } = await client.PATCH("/gyms/{gymId}/activate", {
+		params: { path: { gymId } },
+	})
+	if (error || !data) throw toApiError(error)
+	return data
+}
+
+export function useActivateGym(): UseMutationResult<
+	GymStatusChangeResult,
+	ApiError,
+	string
+> {
+	const queryClient = useQueryClient()
+	return useMutation<GymStatusChangeResult, ApiError, string>({
+		mutationFn: activateGymRequest,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: gymsKeys.all })
 		},

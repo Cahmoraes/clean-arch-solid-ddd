@@ -1,6 +1,6 @@
 # Task 1: Migration Prisma — enum `GymStatus` (activated/deactivated) + campo `status` em `Gym` [FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-gym-deactivation.md`
 **Spec:** `../specs/gym-deactivation-design.md`
 **Tier:** cheap

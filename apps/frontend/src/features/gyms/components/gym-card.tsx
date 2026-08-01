@@ -10,6 +10,25 @@ export interface GymCardProps {
 	adminEditHref?: string
 }
 
+function renderStatusBadge(
+	adminEditHref: string | undefined,
+	status: "activated" | "deactivated" | undefined,
+) {
+	const isDeactivated = adminEditHref && status === "deactivated"
+	return (
+		<span
+			className={`absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold backdrop-blur ${
+				isDeactivated
+					? "bg-destructive-soft text-destructive"
+					: "bg-background/80 text-subtle"
+			}`}
+		>
+			<span className="h-1.5 w-1.5 rounded-full bg-current" />{" "}
+			{isDeactivated ? "Desativada" : "Disponível"}
+		</span>
+	)
+}
+
 const cardMotionVariants = {
 	rest: {
 		y: 0,
@@ -47,9 +66,7 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 						className="h-full w-full"
 						hoverEffect={false}
 					/>
-					<span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-[11.5px] font-semibold text-subtle backdrop-blur">
-						<span className="h-1.5 w-1.5 rounded-full bg-current" /> Disponível
-					</span>
+					{renderStatusBadge(adminEditHref, gym.status)}
 				</div>
 				<div className="flex flex-1 flex-col gap-2.5 p-[18px]">
 					<p className="font-display text-base font-semibold text-card-foreground">
