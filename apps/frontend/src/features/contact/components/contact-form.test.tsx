@@ -108,4 +108,22 @@ describe("ContactForm", () => {
 			).toBeInTheDocument()
 		})
 	})
+	test("exibe campos lado a lado com autocomplete e botão full-width", () => {
+		const { Wrapper } = makeWrapper()
+		render(<ContactForm />, { wrapper: Wrapper })
+		expect(screen.getByLabelText(/nome/i)).toHaveAttribute(
+			"autocomplete",
+			"name",
+		)
+		expect(screen.getByLabelText(/e-mail/i)).toHaveAttribute(
+			"autocomplete",
+			"email",
+		)
+		expect(screen.getByLabelText(/nome/i).closest(".grid")).toHaveClass(
+			"sm:grid-cols-2",
+		)
+		expect(screen.getByRole("button", { name: /enviar/i })).toHaveClass(
+			"w-full",
+		)
+	})
 })
