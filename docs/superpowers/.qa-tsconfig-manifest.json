@@ -1,0 +1,6 @@
+{
+  "frontend": {
+    "appRoot": "apps/frontend",
+    "templatePath": "docs/superpowers/tsconfig.frontend-qa.json"
+  }
+}

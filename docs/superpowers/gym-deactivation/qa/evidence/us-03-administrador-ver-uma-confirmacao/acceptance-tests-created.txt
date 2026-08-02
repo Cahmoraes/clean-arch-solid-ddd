@@ -1,0 +1,1 @@
+docs/superpowers/gym-deactivation/qa/evidence/us-03-administrador-ver-uma-confirmacao/us-03-administrador-ver-uma-confirmacao-screenshot.spec.ts

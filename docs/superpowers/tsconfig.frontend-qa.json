@@ -1,0 +1,24 @@
+{
+  "extends": "../../apps/frontend/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "../../apps/frontend/src/*"
+      ],
+      "@/components/*": [
+        "../../apps/frontend/src/components/*"
+      ],
+      "@/lib/*": [
+        "../../apps/frontend/src/lib/*"
+      ],
+      "@/features/*": [
+        "../../apps/frontend/src/features/*"
+      ]
+    }
+  },
+  "include": [
+    "**/qa/evidence/**/*.ts",
+    "**/qa/evidence/**/*.tsx"
+  ]
+}

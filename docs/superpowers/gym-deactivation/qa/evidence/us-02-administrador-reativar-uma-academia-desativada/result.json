@@ -1,0 +1,12 @@
+{
+  "us_id": "US-02",
+  "user_story": "Como administrador, eu quero reativar uma academia desativada para que ela volte a ficar visível e disponível para check-ins",
+  "requirements": ["FR-002", "FR-003", "FR-004", "FR-010", "FR-011"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Suítes existentes já cobrem US-02 integralmente (ver IV report validation-gym-deactivation.md, 14/14 AC PASS, 21/21 mutantes mortos). Rodadas nesta verificação: pnpm --filter backend test:run -> 706 passed (121 arquivos), inclui activate-gym.usecase.test.ts (AC-02, FR-002) e activate-gym.controller.test.ts (403 não-admin FR-005, 409 já-ativa FR-010). pnpm --filter backend test:business-flow -> 182 passed (45 arquivos), inclui deactivate-reactivate-gym-checkin.business-flow-test.ts cobrindo ciclo completo desativar->check-in bloqueado->reativar->check-in funciona (FR-002, FR-011, D2). pnpm --filter frontend test -> 755 passed (128 arquivos), inclui gym-status-confirmation-dialog.test.tsx (FR-003 ícone/label distintos, FR-004 modal confirmar/cancelar) e academias/[id]/page.test.tsx (aria-label 'Reativar academia X'). Nenhuma falha relacionada a US-02.",
+  "screenshot_path": "docs/superpowers/gym-deactivation/qa/evidence/us-02-administrador-reativar-uma-academia-desativada/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificação end-to-end manual via playwright-cli confirmou o fluxo real: login como admin@admin.com, academia 'Klocko, Johnston and Block Gym' (id 03fdfed6-0e94-43cb-b64f-5acb65020162) desativada -> botão mudou para 'Reativar academia X' com ícone/cor distintos (verde, FR-003) -> clique abriu modal 'Confirmar reativação' com texto de consequência e botões Cancelar/Confirmar (FR-004, screenshot.png) -> confirmação reativou com sucesso (FR-002), estado restaurado ao original ao final do teste. Testado também via API: PATCH /gyms/{id}/activate em academia já ativa retornou 409 'Gym is already activated' (FR-010), confirmando comportamento também coberto pelos testes automatizados. FR-011 (sem exclusão física) confirmado pelo IV report via migration.sql sem DROP/DELETE. screenshot-deactivate-dialog.png (evidência extra) mostra o modal simétrico de desativação. Nenhum novo teste de aceitação precisou ser criado dada a cobertura já robusta (sensor de mutação 21/21 mortos)."
+}

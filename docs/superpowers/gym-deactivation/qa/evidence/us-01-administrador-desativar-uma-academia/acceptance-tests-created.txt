@@ -1,0 +1,1 @@
+Existing tests covered story fully. No new acceptance tests needed.

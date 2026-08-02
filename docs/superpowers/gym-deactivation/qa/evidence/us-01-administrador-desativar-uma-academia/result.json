@@ -1,0 +1,12 @@
+{
+  "us_id": "US-01",
+  "user_story": "Como administrador, eu quero desativar uma academia para que ela deixe de ser encontrada por outros usuários e não permita novos check-ins",
+  "requirements": ["FR-001", "FR-003", "FR-004", "FR-010", "FR-011"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "IV report (validation-gym-deactivation.md) já cobre AC-01 (FR-001), AC-03 (FR-003), AC-04 (FR-004), AC-10 (FR-010) e AC-11 (FR-011) com 14/14 critérios PASS e sensor de mutação 21/21 killed. Reexecutei nesta sessão, de forma isolada, os arquivos citados: `npx vitest --run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/application/use-case/deactivate-gym.usecase.test.ts apps/backend/src/gym/infra/controller/deactivate-gym.controller.test.ts` -> 2 arquivos, 8 testes, todos passed (inclui 'admin desativa uma academia ativa e recebe 200' e 'desativar uma academia já desativada retorna 409', cobrindo FR-001/FR-010). `npx vitest run apps/frontend/src/features/gyms/components/gym-status-confirmation-dialog.test.tsx` -> 1 arquivo, 6 testes, todos passed (cobre modal de confirmação com texto de consequência, confirmar e cancelar, FR-004). FR-011 (sem exclusão física) verificado via migração `apps/backend/prisma/migrations/20260731190554_add_gym_status/migration.sql` que apenas adiciona coluna status, sem DELETE/DROP, e teste `update-gym.usecase.test.ts:116`.",
+  "screenshot_path": "docs/superpowers/gym-deactivation/qa/evidence/us-01-administrador-desativar-uma-academia/screenshot.png",
+  "failure_details": null,
+  "notes": "Não foram criados novos testes de aceitação pois a cobertura existente já é completa e foi reverificada nesta sessão (não apenas aceita por declaração do IV report). Screenshot capturado via playwright-cli logado como admin (admin@admin.com), navegando Dashboard -> Academias -> card da academia -> botão de status (ícone vermelho de power, FR-003) -> clique abre modal 'Confirmar desativação' com texto de consequência e botões Cancelar/Confirmar desativação (FR-004). Modal foi fechado com Cancelar (nenhuma mutação de estado persistida nesta verificação). Durante navegação inicial ocorreram 401/429 transitórios de sessions/refresh por tentativas de login repetidas; resolvido limpando dados do browser (playwright-cli delete-data) e refazendo login limpo uma única vez antes da captura final."
+}

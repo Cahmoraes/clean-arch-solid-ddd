@@ -1,0 +1,12 @@
+{
+  "us_id": "US-07",
+  "user_story": "Como administrador, eu quero identificar visualmente quais academias estão desativadas na lista de busca para gerenciá-las com facilidade",
+  "requirements": ["FR-012"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Suíte completa de frontend executada (128 arquivos de teste, 755 testes, todos PASS). Testes específicos da US-07: gym-card.test.tsx (linhas 90-116: 'mostra o selo Desativada quando a academia está desativada e adminEditHref é informado' PASS; 'não mostra o selo Desativada sem adminEditHref, mesmo com status desativado' PASS; 'mostra Disponível quando status é activated, mesmo para admin' PASS) e gym-row.test.tsx (casos análogos, linhas 83 e 90) — ambos cobrindo FR-012 integralmente (visibilidade condicionada a adminEditHref truthy + status === 'deactivated'). Nenhuma falha relacionada à US-07; a única falha observada na primeira execução (com pattern amplo de path) foi em um teste não relacionado (admin/academias/[id]/editar/page.test.tsx), fora do escopo desta história, e não se repetiu na execução filtrada por nome de arquivo.",
+  "screenshot_path": "docs/superpowers/gym-deactivation/qa/evidence/us-07-administrador-identificar-visualmente/us-07-desativada-badge.png",
+  "failure_details": null,
+  "notes": "Verificação end-to-end real via playwright-cli: login como admin (admin@admin.com), academia 'Klocko, Johnston and Block Gym' desativada via API (PATCH /gyms/:id/deactivate), lista de busca em /academias recarregada e badge 'Desativada' confirmado visualmente (cor de destaque, contrastando com selo 'Disponível' das demais academias). Estado da academia restaurado ao final (PATCH /gyms/:id/activate) para não deixar dados de teste residuais. Nenhum novo teste de aceitação foi criado pois a cobertura unitária existente (gym-card.test.tsx e gym-row.test.tsx) já valida integralmente o requisito FR-012, e a validação de UI real confirmou o comportamento em produção."
+}

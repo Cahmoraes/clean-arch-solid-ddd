@@ -1,0 +1,12 @@
+{
+  "us_id": "US-05",
+  "user_story": "Como usuário comum, eu quero que academias desativadas não apareçam nas minhas buscas para não tentar visitar um local indisponível",
+  "requirements": ["FR-006", "FR-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Suite completa do backend (pnpm --filter backend test:run) executada: 121 arquivos de teste, 706 testes, 0 falhas. Testes-alvo confirmados no output e conteúdo inspecionado manualmente: fetch-all-gyms.usecase.test.ts:127 (FR-006, listagem geral não retorna academia desativada), search-gym.usecase.test.ts:92 (FR-006, busca textual não retorna academia desativada), fetch-nearby-gym.usecase.test.ts:135 (FR-006, busca por proximidade retorna 0 resultados para academia desativada, com teste complementar confirmando includeInactive=true retorna a academia), fetch-gym-by-id.controller.test.ts:91 (FR-008, usuário comum recebe 404 ao acessar detalhe de academia desativada via URL direta, com teste irmão confirmando mesmo 404 para gymId inexistente, garantindo que não há vazamento de informação sobre existência). Todos os 4 arquivos-alvo passaram integralmente dentro da execução completa da suíte.",
+  "screenshot_path": "",
+  "failure_details": null,
+  "notes": "O runner de teste (npx vitest --run) ignora argumentos de path filtrados e sempre executa a suíte completa via vite.config.app-domain.ts; por isso a verificação foi feita confirmando que a suíte completa passa (706/706) e inspecionando diretamente o conteúdo dos 4 arquivos-alvo para validar que as asserções batem com o relatado no IV report. Cobertura existente já é completa e end-to-end para FR-006 (unit) e FR-008 (nível de controller/HTTP), não havendo necessidade de criar novos testes de aceitação. Screenshot de UI não capturado por se tratar de comportamento primariamente backend/API, conforme permitido pela tarefa (opcional)."
+}

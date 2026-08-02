@@ -1,0 +1,12 @@
+{
+  "us_id": "US-06",
+  "user_story": "Como usuário comum, eu quero ser impedido de fazer check-in em uma academia desativada para não gerar um registro inválido",
+  "requirements": ["FR-007"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "1) apps/backend/src/check-in/application/use-case/check-in.usecase.test.ts (via `pnpm --filter backend test:run`): suíte completa 121 arquivos / 706 testes, todos passaram (0 falhas), incluindo os casos que verificam `result.forceFailure().value` sendo instância de `GymNotFoundError` ao tentar check-in em academia desativada (linhas 182 e 199). 2) apps/backend/src/gym/infra/controller/deactivate-reactivate-gym-checkin.business-flow-test.ts executado isoladamente via `npx vitest run --config ./test/vite.config.business-flow.ts src/gym/infra/controller/deactivate-reactivate-gym-checkin.business-flow-test.ts`: 1 arquivo / 1 teste passou - 'desativar bloqueia check-in com o mesmo erro de academia inexistente, reativar libera o check-in novamente' (1021ms). Este teste cobre o ciclo completo: desativar academia -> check-in retorna 404 (GymNotFoundError) -> resposta idêntica byte-a-byte à de check-in em academia inexistente -> reativar -> check-in volta a funcionar (201).",
+  "screenshot_path": "",
+  "failure_details": null,
+  "notes": "Comportamento primariamente backend/API; nenhuma tela de UI dedicada para este fluxo de erro, por isso nenhum screenshot foi capturado (opcional conforme instrução da tarefa). Testes já existentes no repositório cobrem completamente FR-007 e o ciclo completo (AC-07 e AC-14 do relatório IV), portanto nenhum novo teste de aceitação precisou ser criado."
+}

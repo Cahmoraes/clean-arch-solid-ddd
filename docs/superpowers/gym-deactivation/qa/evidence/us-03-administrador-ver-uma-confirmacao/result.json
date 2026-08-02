@@ -1,0 +1,14 @@
+{
+  "us_id": "US-03",
+  "user_story": "Como administrador, eu quero ver uma confirmação antes de desativar ou reativar uma academia para evitar cliques acidentais",
+  "requirements": ["FR-004"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/gym-deactivation/qa/evidence/us-03-administrador-ver-uma-confirmacao/us-03-administrador-ver-uma-confirmacao-screenshot.spec.ts"
+  ],
+  "test_output_summary": "Teste existente apps/frontend/src/features/gyms/components/gym-status-confirmation-dialog.test.tsx cobre o comportamento (título/descrição por ação, botão Confirmar chama onConfirm, botão Cancelar chama onOpenChange(false) sem chamar onConfirm, botão Cancelar desabilitado durante isPending). Executado via `pnpm --filter frontend test -- --run`: 128 arquivos, 755 testes, todos passaram (exit 0), incluindo a suíte do dialog de confirmação. IV report (validation-gym-deactivation.md) já classifica AC-04 (FR-004) como PASS com evidência file:line em gym-status-confirmation-dialog.test.tsx:20-28,43-51 (confirmar) e :91-109 (cancelar). Adicionalmente criei e executei um teste E2E Playwright de ponta a ponta (login real como admin, navegação até /academias/{id}, clique no botão de alternância de status), rodado com `npx playwright test` contra o app já em execução em http://localhost:3000/3333: 1 passed, confirmando que o modal real da UI exibe título 'Confirmar reativação', descrição explicando a consequência ('A academia ... voltará a aparecer nas buscas e será possível fazer check-in nela novamente.') e botões Cancelar/Confirmar reativação, sem alterar o status real da academia (verificado via GET /gyms/{id} antes e depois, status permaneceu 'activated').",
+  "screenshot_path": "docs/superpowers/gym-deactivation/qa/evidence/us-03-administrador-ver-uma-confirmacao/confirmation-modal.png",
+  "failure_details": null,
+  "notes": "A academia de teste (03fdfed6-0e94-43cb-b64f-5acb65020162) já estava com status 'deactivated' no momento da captura, por isso o modal exibido é o de reativação ('Confirmar reativação'), não o de desativação; ambos os textos são cobertos pelo mesmo componente e pelos testes unitários existentes (título/descrição parametrizados por ação). O teste E2E apenas abriu o modal (sem clicar em Confirmar), portanto não houve mutação de estado no backend."
+}

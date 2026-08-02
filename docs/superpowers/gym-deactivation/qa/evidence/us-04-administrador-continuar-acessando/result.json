@@ -1,0 +1,12 @@
+{
+  "us_id": "US-04",
+  "user_story": "Como administrador, eu quero continuar acessando o detalhe de uma academia desativada para poder gerenciá-la e reativá-la",
+  "requirements": ["FR-009"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Suíte completa de testes unitários/controller do backend executada via `pnpm --filter backend test:run` (121 arquivos, 706 testes, todos ✅ PASSED). Teste específico do AC-09/FR-009 confirmado em apps/backend/src/gym/infra/controller/fetch-gym-by-id.controller.test.ts:66-79 - \"admin autenticado vê o detalhe de uma academia desativada, com status 'deactivated'\": cria academia, chama gym.deactivate(), persiste, faz GET autenticado como ADMIN e valida `expect(response.status).toBe(200)` e `expect(response.body.status).toBe('deactivated')`. Este teste está incluído na execução acima e passou.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Cobertura existente já valida o comportamento fim-a-fim no nível de controller/HTTP (equivalente a um teste de aceitação). Não foi criado teste de aceitação adicional pois a cobertura já é direta e específica ao FR-009. Status PARTIAL porque não foi capturada evidência visual (screenshot) da UI do admin acessando o detalhe da academia desativada - a verificação foi feita apenas via testes HTTP de backend, sem exercitar o fluxo de frontend/Playwright dentro do tempo disponível."
+}

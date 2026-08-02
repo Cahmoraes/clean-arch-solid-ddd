@@ -1,0 +1,1 @@
+Nenhum teste de aceitação novo foi criado - cobertura existente do IV report (14/14 AC PASS, 21/21 mutantes mortos) já é abrangente para US-02.
