@@ -32,22 +32,26 @@ export function ContactForm() {
 
 	return (
 		<form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
-			<FormField
-				id="contact-nome"
-				label="Nome"
-				type="text"
-				placeholder="Seu nome"
-				{...register("nome")}
-				error={errors.nome?.message}
-			/>
-			<FormField
-				id="contact-email"
-				label="E-mail"
-				type="email"
-				placeholder="seu@email.com"
-				{...register("email")}
-				error={errors.email?.message}
-			/>
+			<div className="grid gap-4 sm:grid-cols-2">
+				<FormField
+					id="contact-nome"
+					label="Nome"
+					type="text"
+					placeholder="Seu nome"
+					autoComplete="name"
+					{...register("nome")}
+					error={errors.nome?.message}
+				/>
+				<FormField
+					id="contact-email"
+					label="E-mail"
+					type="email"
+					placeholder="seu@email.com"
+					autoComplete="email"
+					{...register("email")}
+					error={errors.email?.message}
+				/>
+			</div>
 			<FieldShell
 				id="contact-mensagem"
 				label="Mensagem"
@@ -70,7 +74,7 @@ export function ContactForm() {
 					Não foi possível enviar sua mensagem. Tente novamente.
 				</p>
 			)}
-			<Button type="submit" disabled={isPending} className="mt-2">
+			<Button type="submit" disabled={isPending} className="mt-2 w-full">
 				{isPending ? "Enviando…" : "Enviar mensagem"}
 			</Button>
 		</form>

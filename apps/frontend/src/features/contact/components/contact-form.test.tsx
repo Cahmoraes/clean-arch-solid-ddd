@@ -108,4 +108,16 @@ describe("ContactForm", () => {
 			).toBeInTheDocument()
 		})
 	})
+	test("campos nome e e-mail definem autocomplete para preenchimento automático", () => {
+		const { Wrapper } = makeWrapper()
+		render(<ContactForm />, { wrapper: Wrapper })
+		expect(screen.getByLabelText(/nome/i)).toHaveAttribute(
+			"autocomplete",
+			"name",
+		)
+		expect(screen.getByLabelText(/e-mail/i)).toHaveAttribute(
+			"autocomplete",
+			"email",
+		)
+	})
 })
