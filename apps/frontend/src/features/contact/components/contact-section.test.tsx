@@ -13,6 +13,11 @@ describe("ContactSection", () => {
 			"aria-labelledby",
 			"contact-heading",
 		)
+		expect(heading.closest("section")).toHaveClass(
+			"mx-auto",
+			"w-full",
+			"max-w-xl",
+		)
 		expect(screen.getByLabelText(/nome/i)).toBeInTheDocument()
 		expect(screen.getByLabelText(/e-mail/i)).toBeInTheDocument()
 		expect(screen.getByLabelText(/mensagem/i)).toBeInTheDocument()

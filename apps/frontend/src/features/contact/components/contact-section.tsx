@@ -5,7 +5,10 @@ import { ContactForm } from "./contact-form"
 
 export function ContactSection() {
 	return (
-		<section aria-labelledby="contact-heading" className="mx-auto w-full">
+		<section
+			aria-labelledby="contact-heading"
+			className="mx-auto w-full max-w-xl"
+		>
 			<div className="flex flex-col items-center text-center">
 				<h2
 					id="contact-heading"
