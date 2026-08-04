@@ -63,7 +63,9 @@ export class InMemoryUserRepository implements UserRepository {
 	}
 
 	public async usersOfIds(ids: string[]): Promise<User[]> {
-		return this.users.filter((user) => ids.includes(user.id)).toArray()
+		return this.users
+			.filter((user) => !user.isDeleted && ids.includes(user.id))
+			.toArray()
 	}
 
 	public async updateManyStatus(

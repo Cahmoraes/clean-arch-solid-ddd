@@ -77,7 +77,7 @@ export function UserRow({
 			className={cn(
 				"flex w-full items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 text-left transition-[border-color] duration-300 ease-out",
 				isInteractive && "cursor-pointer hover:border-border-strong",
-				isSelected && "border-accent bg-accent/40",
+				(isSelected || checked) && "border-accent bg-accent/40",
 				className,
 			)}
 		>

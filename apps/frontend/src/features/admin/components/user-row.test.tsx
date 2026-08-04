@@ -195,4 +195,19 @@ describe("seleção em massa", () => {
 		expect(onToggleSelect).toHaveBeenCalledTimes(1)
 		expect(onSelect).not.toHaveBeenCalled()
 	})
+
+	test("aplica destaque visual quando checked é verdadeiro", () => {
+		const adminUser = buildUser()
+
+		render(
+			<ul>
+				<UserRow user={adminUser} selectable checked={true} />
+			</ul>,
+		)
+
+		const row = screen.getByTestId(`user-row-${adminUser.id}`)
+
+		expect(row.className).toContain("border-accent")
+		expect(row.className).toContain("bg-accent/40")
+	})
 })

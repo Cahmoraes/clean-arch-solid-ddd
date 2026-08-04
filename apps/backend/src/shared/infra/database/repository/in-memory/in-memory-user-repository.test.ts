@@ -122,6 +122,26 @@ describe("usersOfIds", () => {
 		expect(result).toHaveLength(2)
 		expect(result.map((user) => user.id).sort()).toEqual(["user-a", "user-c"])
 	})
+
+	test("ignora usuários com exclusão lógica (soft-deleted)", async () => {
+		const sut = new InMemoryUserRepository()
+		const activeUser = await makeUser({
+			id: "user-active",
+			email: "active@example.com",
+		})
+		const deletedUser = await makeUser({
+			id: "user-deleted",
+			email: "deleted@example.com",
+		})
+		deletedUser.delete()
+		await sut.save(activeUser)
+		await sut.save(deletedUser)
+
+		const result = await sut.usersOfIds(["user-active", "user-deleted"])
+
+		expect(result).toHaveLength(1)
+		expect(result[0]?.id).toBe("user-active")
+	})
 })
 
 describe("updateManyStatus", () => {
