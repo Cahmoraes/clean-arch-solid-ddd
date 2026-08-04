@@ -1,6 +1,6 @@
 # Task 10: BulkStatusConfirmationDialog — diálogo de confirmação [FR-005]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** standard

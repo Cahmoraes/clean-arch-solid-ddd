@@ -1,6 +1,6 @@
 # Task 9: BulkActionBar — barra de ações fixa no rodapé [FR-004]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** standard

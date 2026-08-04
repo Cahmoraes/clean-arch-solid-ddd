@@ -1,6 +1,6 @@
 # Task 6: UserRow — checkbox de seleção com suporte a desabilitado [FR-001, FR-003]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** standard
