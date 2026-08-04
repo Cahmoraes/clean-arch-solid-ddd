@@ -38,7 +38,7 @@ function isActivationKey(key: string): boolean {
 
 interface InteractiveRowProps {
 	onClick: () => void
-	onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void
+	onKeyDown: (event: KeyboardEvent<HTMLElement>) => void
 	role: "button"
 	tabIndex: number
 	"aria-pressed": boolean
@@ -67,15 +67,43 @@ function buildInteractiveRowProps(
 
 function rowClassName(
 	isInteractive: boolean,
+	hasNestedCheckbox: boolean,
 	isHighlighted: boolean,
 	className: string | undefined,
 ): string {
 	return cn(
 		"flex w-full items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 transition-[border-color] duration-300 ease-out",
-		isInteractive && "hover:border-border-strong",
+		isInteractive &&
+			!hasNestedCheckbox &&
+			"cursor-pointer hover:border-border-strong",
 		isHighlighted && "border-accent bg-accent/40",
 		className,
 	)
+}
+
+function contentClassName(isInteractive: boolean, hasNestedCheckbox: boolean) {
+	return cn(
+		"flex min-w-0 flex-1 items-center gap-4 text-left",
+		isInteractive && hasNestedCheckbox && "cursor-pointer",
+	)
+}
+
+interface ResolvedInteractiveProps {
+	rowProps: Partial<InteractiveRowProps>
+	contentProps: Partial<InteractiveRowProps>
+}
+
+function resolveInteractiveProps(
+	isInteractive: boolean,
+	hasNestedCheckbox: boolean,
+	onSelect: () => void,
+	isSelected: boolean | undefined,
+): ResolvedInteractiveProps {
+	if (!isInteractive) return { rowProps: {}, contentProps: {} }
+	const props = buildInteractiveRowProps(onSelect, isSelected)
+	return hasNestedCheckbox
+		? { rowProps: {}, contentProps: props }
+		: { rowProps: props, contentProps: {} }
 }
 
 export function UserRow({
@@ -89,20 +117,33 @@ export function UserRow({
 	onToggleSelect,
 }: UserRowProps) {
 	const isInteractive = typeof onSelect === "function"
+	// Só existe risco de aninhamento (checkbox dentro de role="button") quando
+	// selectable ativa o checkbox. Sem checkbox, o próprio <li> permanece o
+	// elemento interativo, preservando o contrato já usado por consumidores
+	// existentes (ex.: página de usuários sem seleção em massa).
+	const hasNestedCheckbox = Boolean(selectable)
 
 	function handleSelect() {
 		onSelect?.(user)
 	}
 
-	const interactiveProps = isInteractive
-		? buildInteractiveRowProps(handleSelect, isSelected)
-		: {}
+	const {
+		rowProps: rowInteractiveProps,
+		contentProps: contentInteractiveProps,
+	} = resolveInteractiveProps(
+		isInteractive,
+		hasNestedCheckbox,
+		handleSelect,
+		isSelected,
+	)
 
 	return (
 		<li
 			data-testid={`user-row-${user.id}`}
+			{...rowInteractiveProps}
 			className={rowClassName(
 				isInteractive,
+				hasNestedCheckbox,
 				Boolean(isSelected || checked),
 				className,
 			)}
@@ -118,11 +159,8 @@ export function UserRow({
 				/>
 			)}
 			<div
-				{...interactiveProps}
-				className={cn(
-					"flex min-w-0 flex-1 items-center gap-4 text-left",
-					isInteractive && "cursor-pointer",
-				)}
+				{...contentInteractiveProps}
+				className={contentClassName(isInteractive, hasNestedCheckbox)}
 			>
 				<Avatar name={user.name} size="sm" />
 				<div className="flex min-w-0 flex-1 flex-col gap-0.5">

@@ -76,7 +76,7 @@ describe("UserRow VOLT", () => {
 			</ul>,
 		)
 
-		await user.click(screen.getByRole("button"))
+		await user.click(screen.getByTestId("user-row-u1"))
 
 		expect(onSelect).toHaveBeenCalledTimes(1)
 		expect(onSelect).toHaveBeenCalledWith(adminUser)
@@ -93,7 +93,7 @@ describe("UserRow VOLT", () => {
 			</ul>,
 		)
 
-		const rowElement = screen.getByRole("button")
+		const rowElement = screen.getByTestId("user-row-u1")
 		rowElement.focus()
 		await user.keyboard("{Enter}")
 
@@ -115,7 +115,8 @@ describe("UserRow VOLT", () => {
 		await user.click(rowElement)
 
 		expect(onSelect).not.toHaveBeenCalled()
-		expect(screen.queryByRole("button")).not.toBeInTheDocument()
+		expect(rowElement).not.toHaveAttribute("role", "button")
+		expect(rowElement).not.toHaveAttribute("tabindex")
 	})
 
 	test("aplica aria-pressed quando isSelected é verdadeiro", () => {
@@ -124,7 +125,10 @@ describe("UserRow VOLT", () => {
 				<UserRow user={buildUser()} onSelect={() => {}} isSelected={true} />
 			</ul>,
 		)
-		expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true")
+		expect(screen.getByTestId("user-row-u1")).toHaveAttribute(
+			"aria-pressed",
+			"true",
+		)
 	})
 })
 
@@ -190,6 +194,20 @@ describe("seleção em massa", () => {
 
 		expect(onToggleSelect).toHaveBeenCalledTimes(1)
 		expect(onSelect).not.toHaveBeenCalled()
+	})
+
+	test("quando selectable e onSelect coexistem, o checkbox não fica aninhado dentro do wrapper role=button", () => {
+		render(
+			<ul>
+				<UserRow user={buildUser()} selectable onSelect={() => {}} />
+			</ul>,
+		)
+
+		const checkbox = screen.getByRole("checkbox")
+		const rowButton = screen.getByRole("button")
+
+		expect(rowButton.contains(checkbox)).toBe(false)
+		expect(rowButton).toHaveAttribute("aria-pressed")
 	})
 
 	test("aplica destaque visual quando checked é verdadeiro", () => {
