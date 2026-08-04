@@ -76,7 +76,7 @@ describe("UserRow VOLT", () => {
 			</ul>,
 		)
 
-		await user.click(screen.getByTestId("user-row-u1"))
+		await user.click(screen.getByRole("button"))
 
 		expect(onSelect).toHaveBeenCalledTimes(1)
 		expect(onSelect).toHaveBeenCalledWith(adminUser)
@@ -93,7 +93,7 @@ describe("UserRow VOLT", () => {
 			</ul>,
 		)
 
-		const rowElement = screen.getByTestId("user-row-u1")
+		const rowElement = screen.getByRole("button")
 		rowElement.focus()
 		await user.keyboard("{Enter}")
 
@@ -115,8 +115,7 @@ describe("UserRow VOLT", () => {
 		await user.click(rowElement)
 
 		expect(onSelect).not.toHaveBeenCalled()
-		expect(rowElement).not.toHaveAttribute("role", "button")
-		expect(rowElement).not.toHaveAttribute("tabindex")
+		expect(screen.queryByRole("button")).not.toBeInTheDocument()
 	})
 
 	test("aplica aria-pressed quando isSelected é verdadeiro", () => {
@@ -125,10 +124,7 @@ describe("UserRow VOLT", () => {
 				<UserRow user={buildUser()} onSelect={() => {}} isSelected={true} />
 			</ul>,
 		)
-		expect(screen.getByTestId("user-row-u1")).toHaveAttribute(
-			"aria-pressed",
-			"true",
-		)
+		expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true")
 	})
 })
 
