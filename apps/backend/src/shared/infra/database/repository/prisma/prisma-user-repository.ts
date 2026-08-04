@@ -82,6 +82,24 @@ export class PrismaUserRepository implements UserRepository {
 		return this.restoreUser(userDataOrNull)
 	}
 
+	public async usersOfIds(ids: string[]): Promise<User[]> {
+		const rows = await this.prisma.user.findMany({
+			where: { id: { in: ids }, deleted_at: null },
+		})
+		return Promise.all(rows.map((row) => this.restoreUser(row)))
+	}
+
+	public async updateManyStatus(
+		ids: string[],
+		status: StatusTypes,
+	): Promise<number> {
+		const result = await this.prisma.user.updateMany({
+			where: { id: { in: ids }, status: { not: status } },
+			data: { status },
+		})
+		return result.count
+	}
+
 	private async restoreUser(userData: UserData): Promise<User> {
 		return User.restore({
 			id: userData.id,

@@ -186,4 +186,37 @@ export class SQLiteUserRepository implements UserRepository {
 		}
 		return this
 	}
+
+	public async usersOfIds(ids: string[]): Promise<User[]> {
+		if (ids.length === 0) return []
+		const placeholders = ids.map(() => "?").join(", ")
+		const rows = this.sqliteConnection
+			.query(/*SQL*/ `
+        SELECT * FROM
+          "users"
+        WHERE
+          "id" IN (${placeholders}) AND "deleted_at" IS NULL
+      `)
+			.all(...ids) as UserData[]
+		return Promise.all(rows.map((row) => this.restoreUser(row)))
+	}
+
+	public async updateManyStatus(
+		ids: string[],
+		status: StatusTypes,
+	): Promise<number> {
+		if (ids.length === 0) return 0
+		const placeholders = ids.map(() => "?").join(", ")
+		const result = this.sqliteConnection
+			.query(/*SQL*/ `
+        UPDATE
+          "users"
+        SET
+          "status" = ?
+        WHERE
+          "id" IN (${placeholders}) AND "status" != ?
+      `)
+			.run(status, ...ids, status)
+		return result.changes
+	}
 }

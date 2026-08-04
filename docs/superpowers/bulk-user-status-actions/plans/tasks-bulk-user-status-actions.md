@@ -30,8 +30,12 @@
 
 ## Ondas de Execução
 
-- **Wave 1** (parallel): 1, 6, 9, 10, 11
+> **Correção pós-descoberta (execução em ondas):** Tasks 11 e 12 usam `api.PATCH("/users/bulk-activate"|"/users/bulk-deactivate", ...)`, tipado contra `paths` de `@repo/api-types` — essas literais só existem depois que Tasks 4 E 5 (backend) registram as rotas E `pnpm generate:types` roda. Isso é uma dependência de artefato gerado, não capturada pela análise de escrita de arquivos (`check-wave-disjoint.cjs`). Rodar 11 na Wave 1 (antes mesmo da 4/5) e 12 na Wave 4 (junto da 4, antes da 5) quebraria `tsc:check` de ambas. Ondas corrigidas abaixo: 11 e 12 movidas para depois da Wave 5 (backend completo), cada uma como onda sequencial própria.
+
+- **Wave 1** (parallel): 1, 6, 9, 10
 - **Wave 2** (parallel): 2, 7
 - **Wave 3** (parallel): 3, 8
-- **Wave 4** (parallel): 4, 12
+- **Wave 4** (sequential): 4
 - **Wave 5** (sequential): 5
+- **Wave 6** (sequential): 11 (depende operacionalmente de 4+5 via `pnpm generate:types`)
+- **Wave 7** (sequential): 12 (depende de 7,8,9,10,11)

@@ -1,4 +1,5 @@
 import type { User } from "@/user/domain/user"
+import type { StatusTypes } from "@/user/domain/value-object/status"
 import type { UserQuery } from "./user-query"
 
 export interface UserRepository {
@@ -9,4 +10,6 @@ export interface UserRepository {
 	save(user: User): Promise<void>
 	update(user: User): Promise<void>
 	withTransaction<TX extends object>(object: TX): UserRepository
+	usersOfIds(ids: string[]): Promise<User[]>
+	updateManyStatus(ids: string[], status: StatusTypes): Promise<number>
 }

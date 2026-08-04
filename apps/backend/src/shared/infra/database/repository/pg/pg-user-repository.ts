@@ -100,4 +100,12 @@ export class PgUserRepository implements UserRepository {
 	public async get(): Promise<User | null> {
 		throw new Error("Method not implemented.")
 	}
+
+	public async usersOfIds(): Promise<User[]> {
+		throw new Error("Method not implemented.")
+	}
+
+	public async updateManyStatus(): Promise<number> {
+		throw new Error("Method not implemented.")
+	}
 }

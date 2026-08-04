@@ -3,6 +3,7 @@ import { injectable } from "inversify"
 import type { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
+import type { StatusTypes } from "@/user/domain/value-object/status"
 
 @injectable()
 export class InMemoryUserRepository implements UserRepository {
@@ -60,4 +61,31 @@ export class InMemoryUserRepository implements UserRepository {
 	public async userOfId(id: string): Promise<User | null> {
 		return this.users.find((user) => !user.isDeleted && user.id === id)
 	}
+
+	public async usersOfIds(ids: string[]): Promise<User[]> {
+		return this.users.filter((user) => ids.includes(user.id)).toArray()
+	}
+
+	public async updateManyStatus(
+		ids: string[],
+		status: StatusTypes,
+	): Promise<number> {
+		const targets = this.users
+			.filter((user) => ids.includes(user.id) && user.status !== status)
+			.toArray()
+		for (const user of targets) {
+			applyStatusTransition(user, status)
+			await this.update(user)
+		}
+		return targets.length
+	}
+}
+
+function applyStatusTransition(user: User, status: StatusTypes): void {
+	const transitions: Record<StatusTypes, () => void> = {
+		activated: () => user.activate(),
+		suspended: () => user.suspend(),
+		locked: () => user.lock(),
+	}
+	transitions[status]()
 }

@@ -1,5 +1,6 @@
-import type { KeyboardEvent } from "react"
+import type { KeyboardEvent, MouseEvent } from "react"
 import { Avatar } from "@/components/ui/avatar"
+import { Checkbox } from "@/components/ui/checkbox"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { StatusBadge } from "@/components/ui/status-badge"
 import type { AdminUser } from "@/features/admin/api/use-users"
@@ -10,6 +11,10 @@ export interface UserRowProps {
 	onSelect?: (user: AdminUser) => void
 	isSelected?: boolean
 	className?: string
+	selectable?: boolean
+	checked?: boolean
+	selectDisabled?: boolean
+	onToggleSelect?: (user: AdminUser, checked: boolean) => void
 }
 
 type StatusTone = "success" | "warning" | "neutral"
@@ -32,6 +37,10 @@ export function UserRow({
 	onSelect,
 	isSelected,
 	className,
+	selectable,
+	checked,
+	selectDisabled,
+	onToggleSelect,
 }: UserRowProps) {
 	const isInteractive = typeof onSelect === "function"
 
@@ -43,6 +52,12 @@ export function UserRow({
 		if (event.key !== "Enter" && event.key !== " ") return
 		event.preventDefault()
 		handleSelect()
+	}
+
+	function stopRowInteraction(
+		event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>,
+	) {
+		event.stopPropagation()
 	}
 
 	const interactiveProps = isInteractive
@@ -66,6 +81,18 @@ export function UserRow({
 				className,
 			)}
 		>
+			{selectable ? (
+				<Checkbox
+					checked={checked}
+					disabled={selectDisabled}
+					aria-label={`Selecionar ${user.name}`}
+					onClick={stopRowInteraction}
+					onKeyDown={stopRowInteraction}
+					onCheckedChange={(value) => {
+						onToggleSelect?.(user, value === true)
+					}}
+				/>
+			) : null}
 			<Avatar name={user.name} size="sm" />
 			<div className="flex min-w-0 flex-1 flex-col gap-0.5">
 				<span className="text-[15.5px] font-semibold text-card-foreground">

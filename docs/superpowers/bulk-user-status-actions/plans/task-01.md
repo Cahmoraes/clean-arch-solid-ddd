@@ -1,6 +1,6 @@
 # Task 1: Estender UserRepository com busca por IDs e atualização em massa [FR-007, FR-009]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** standard

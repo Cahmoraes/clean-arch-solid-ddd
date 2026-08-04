@@ -102,3 +102,57 @@ describe("InMemoryUserRepository soft delete filter", () => {
 		expect(await repository.userOfId("user-4")).toBeNull()
 	})
 })
+
+describe("usersOfIds", () => {
+	test("retorna apenas os usuários cujos IDs estão na lista, ignorando IDs inexistentes", async () => {
+		const sut = new InMemoryUserRepository()
+		const userA = await makeUser({ id: "user-a", email: "a@example.com" })
+		const userB = await makeUser({ id: "user-b", email: "b@example.com" })
+		const userC = await makeUser({ id: "user-c", email: "c@example.com" })
+		await sut.save(userA)
+		await sut.save(userB)
+		await sut.save(userC)
+
+		const result = await sut.usersOfIds([
+			"user-a",
+			"user-c",
+			"user-nonexistent",
+		])
+
+		expect(result).toHaveLength(2)
+		expect(result.map((user) => user.id).sort()).toEqual(["user-a", "user-c"])
+	})
+})
+
+describe("updateManyStatus", () => {
+	test("atualiza apenas os usuários com status diferente do alvo e é idempotente", async () => {
+		const sut = new InMemoryUserRepository()
+		const suspendedUser = await makeUser({
+			id: "user-suspended",
+			email: "suspended@example.com",
+		})
+		suspendedUser.suspend()
+		const alreadyActivatedUser = await makeUser({
+			id: "user-already-activated",
+			email: "already@example.com",
+		})
+		await sut.save(suspendedUser)
+		await sut.save(alreadyActivatedUser)
+
+		const firstCallCount = await sut.updateManyStatus(
+			["user-suspended", "user-already-activated"],
+			"activated",
+		)
+
+		expect(firstCallCount).toBe(1)
+		const updatedUser = await sut.userOfId("user-suspended")
+		expect(updatedUser?.status).toBe("activated")
+
+		const secondCallCount = await sut.updateManyStatus(
+			["user-suspended", "user-already-activated"],
+			"activated",
+		)
+
+		expect(secondCallCount).toBe(0)
+	})
+})

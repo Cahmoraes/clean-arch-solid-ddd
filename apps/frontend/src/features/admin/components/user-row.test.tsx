@@ -131,3 +131,68 @@ describe("UserRow VOLT", () => {
 		)
 	})
 })
+
+describe("seleção em massa", () => {
+	test("exibe o checkbox quando selectable é true e chama onToggleSelect ao marcar", async () => {
+		const user = userEvent.setup()
+		const onToggleSelect = vi.fn()
+		const adminUser = buildUser()
+
+		render(
+			<ul>
+				<UserRow user={adminUser} selectable onToggleSelect={onToggleSelect} />
+			</ul>,
+		)
+
+		const checkbox = screen.getByRole("checkbox")
+		await user.click(checkbox)
+
+		expect(onToggleSelect).toHaveBeenCalledTimes(1)
+		expect(onToggleSelect).toHaveBeenCalledWith(adminUser, true)
+	})
+
+	test("fica disabled quando selectDisabled é true e não dispara onToggleSelect", async () => {
+		const user = userEvent.setup()
+		const onToggleSelect = vi.fn()
+
+		render(
+			<ul>
+				<UserRow
+					user={buildUser()}
+					selectable
+					selectDisabled
+					onToggleSelect={onToggleSelect}
+				/>
+			</ul>,
+		)
+
+		const checkbox = screen.getByRole("checkbox")
+		expect(checkbox).toBeDisabled()
+
+		await user.click(checkbox)
+
+		expect(onToggleSelect).not.toHaveBeenCalled()
+	})
+
+	test("clicar no checkbox não aciona onSelect do card", async () => {
+		const user = userEvent.setup()
+		const onSelect = vi.fn()
+		const onToggleSelect = vi.fn()
+
+		render(
+			<ul>
+				<UserRow
+					user={buildUser()}
+					selectable
+					onSelect={onSelect}
+					onToggleSelect={onToggleSelect}
+				/>
+			</ul>,
+		)
+
+		await user.click(screen.getByRole("checkbox"))
+
+		expect(onToggleSelect).toHaveBeenCalledTimes(1)
+		expect(onSelect).not.toHaveBeenCalled()
+	})
+})
