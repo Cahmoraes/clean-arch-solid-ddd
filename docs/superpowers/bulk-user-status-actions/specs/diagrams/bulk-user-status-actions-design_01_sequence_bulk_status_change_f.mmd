@@ -1,0 +1,51 @@
+sequenceDiagram
+    actor Admin as 👤 Admin
+    participant FE as 🌐 Frontend (React)
+    participant API as 🚪 API Gateway
+    participant Ctrl as ⚙️ Bulk{Activate|Deactivate}Controller
+    participant UC as ⚙️ BulkChangeUserStatusUseCase
+    participant Policy as 🔐 UserManagementPolicy
+    participant Repo as 💾 UserRepository
+    participant DB as 💾 PostgreSQL (Prisma)
+    participant Cache as ⚡ Redis Cache
+    participant Query as 🌐 TanStack Query Cache
+
+    Admin->>FE: Select users (checkboxes, current page)
+    Admin->>FE: Click "Ativar"/"Desativar" (sticky bar)
+    FE->>Admin: Show AlertDialog (confirm)
+    Admin->>FE: Confirm action
+
+    FE->>API: PATCH /users/bulk-activate { userIds }
+    API->>Ctrl: Route request
+    Ctrl->>UC: execute({ requesterId, userIds, targetStatus })
+
+    UC->>Repo: userOfId(requesterId)
+    Repo->>DB: SELECT requester
+    DB-->>Repo: requester row
+    Repo-->>UC: requester
+
+    UC->>Repo: usersOfIds(userIds)
+    Repo->>DB: SELECT candidates WHERE id IN (...)
+    DB-->>Repo: candidate rows
+    Repo-->>UC: candidates
+
+    loop for each candidate
+        UC->>Policy: canChangeStatus(requester, candidate)
+        Policy-->>UC: true / false
+    end
+    Note over UC: Filters in-memory -> eligibleIds, skippedIds
+
+    UC->>Repo: updateManyStatus(eligibleIds, targetStatus)
+    Repo->>DB: UPDATE users SET status<br/>WHERE id IN (eligibleIds)<br/>AND status != targetStatus
+    DB-->>Repo: updated count
+    Repo-->>UC: updated count
+
+    UC->>Cache: DEL fetch-users:*, user-stats
+    Cache-->>UC: ack
+
+    UC-->>Ctrl: { updated, requested, skipped }
+    Ctrl-->>API: 200 OK { updated, requested, skipped }
+    API-->>FE: 200 OK { updated, requested, skipped }
+
+    FE->>Query: invalidateQueries(["users"], ["user-stats"])
+    FE-->>Admin: Toast: "N atualizados, M ignorados"
