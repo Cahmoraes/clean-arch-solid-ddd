@@ -19,7 +19,7 @@
 - [x] 2. BulkChangeUserStatusUseCase — revalidação de política de autorização [FR-009] → `task-02.md`
 - [x] 3. BulkChangeUserStatusUseCase — escrita idempotente, desbloqueio e resposta agregada [FR-006, FR-007, FR-008, FR-010] → `task-03.md`
 - [x] 4. BulkActivateUsersController e rota PATCH /users/bulk-activate [FR-007, FR-012] → `task-04.md`
-- [ ] 5. BulkDeactivateUsersController e rota PATCH /users/bulk-deactivate [FR-007, FR-012] → `task-05.md`
+- [x] 5. BulkDeactivateUsersController e rota PATCH /users/bulk-deactivate [FR-007, FR-012] → `task-05.md`
 - [x] 6. UserRow — checkbox de seleção com suporte a desabilitado [FR-001, FR-003] → `task-06.md`
 - [x] 7. AdminUsersContent — estado de seleção e checkbox de página indeterminado [FR-001, FR-002] → `task-07.md`
 - [x] 8. AdminUsersContent — limpar seleção ao mudar página/filtro/busca [FR-011] → `task-08.md`

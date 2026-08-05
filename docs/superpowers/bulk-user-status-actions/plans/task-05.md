@@ -1,6 +1,6 @@
 # Task 5: BulkDeactivateUsersController e rota PATCH /users/bulk-deactivate [FR-007, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** standard
