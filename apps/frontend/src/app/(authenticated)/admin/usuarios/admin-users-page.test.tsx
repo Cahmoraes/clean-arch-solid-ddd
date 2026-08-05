@@ -42,6 +42,16 @@ function buildUser(
 	}
 }
 
+function buildManyUsers(count: number) {
+	return Array.from({ length: count }, (_, index) =>
+		buildUser({
+			id: `user-${index + 1}`,
+			name: `Usuário ${index + 1}`,
+			email: `usuario${index + 1}@example.com`,
+		}),
+	)
+}
+
 function mockUsersList(users = [buildUser()]) {
 	server.use(
 		http.get(`${apiBaseUrl}/users`, ({ request }) => {
@@ -376,4 +386,74 @@ describe("seleção em massa", () => {
 			within(screen.getByTestId("user-row-user-3")).getByRole("checkbox"),
 		).toHaveAttribute("aria-checked", "false")
 	})
+
+	test("mudar de página limpa a seleção atual", async () => {
+		const user = userEvent.setup()
+		mockUsersList(buildManyUsers(15))
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+		await user.click(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		)
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		).toHaveAttribute("aria-checked", "true")
+
+		await user.click(screen.getByTestId("admin-users-page-2"))
+
+		await waitFor(() => {
+			expect(
+				within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+			).toHaveAttribute("aria-checked", "false")
+		})
+	})
+
+	test("mudar o filtro ativo limpa a seleção atual", async () => {
+		const user = userEvent.setup()
+		mockUsersList([buildUser({ id: "user-1" }), buildUser({ id: "user-2" })])
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+		await user.click(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		)
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		).toHaveAttribute("aria-checked", "true")
+
+		await user.click(await screen.findByRole("button", { name: /inativos/i }))
+
+		await waitFor(() => {
+			expect(
+				within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+			).toHaveAttribute("aria-checked", "false")
+		})
+	})
+
+	test("digitar na busca (após o debounce) limpa a seleção atual", async () => {
+		const user = userEvent.setup()
+		mockUsersList([buildUser({ id: "user-1" }), buildUser({ id: "user-2" })])
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+		await user.click(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		)
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		).toHaveAttribute("aria-checked", "true")
+
+		const searchInput = screen.getByTestId("admin-users-search")
+		await user.type(searchInput, "ana")
+
+		await waitFor(
+			() => {
+				expect(
+					within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+				).toHaveAttribute("aria-checked", "false")
+			},
+			{ timeout: 2000 },
+		)
+	}, 20_000)
 })

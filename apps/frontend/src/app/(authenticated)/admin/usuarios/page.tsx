@@ -253,6 +253,11 @@ function AdminUsersContent({
 		setPage(1)
 	}, [debouncedQuery])
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: page, activeFilter e debouncedQuery são os gatilhos intencionais para limpar a seleção; nenhum é consumido no corpo do efeito
+	useEffect(() => {
+		setSelectedIds(new Set())
+	}, [page, activeFilter, debouncedQuery])
+
 	const { data, isLoading, isError, error, isFetching } = useUsers({
 		page,
 		limit,

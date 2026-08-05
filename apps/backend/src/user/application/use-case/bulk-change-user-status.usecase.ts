@@ -10,6 +10,7 @@ import { UserManagementPolicy } from "@/user/domain/service/user-management-poli
 import type { StatusTypes } from "@/user/domain/value-object/status"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
+import { USER_STATS_CACHE_KEY } from "./get-user-stats.usecase"
 
 export interface BulkChangeUserStatusUseCaseInput {
 	requesterId: string
@@ -18,9 +19,9 @@ export interface BulkChangeUserStatusUseCaseInput {
 }
 
 export interface BulkChangeUserStatusResult {
-	eligibleIds: string[]
-	skippedCount: number
-	requestedCount: number
+	updated: number
+	requested: number
+	skipped: number
 }
 
 export type BulkChangeUserStatusUseCaseOutput = Promise<
@@ -32,7 +33,6 @@ export class BulkChangeUserStatusUseCase {
 	constructor(
 		@inject(USER_TYPES.Repositories.User)
 		private readonly userRepository: UserRepository,
-		// TODO(Task 3): invalidar "fetch-users:*" e USER_STATS_CACHE_KEY após a escrita em massa
 		@inject(SHARED_TYPES.Redis)
 		private readonly cacheDB: CacheDB,
 	) {}
@@ -45,20 +45,21 @@ export class BulkChangeUserStatusUseCase {
 
 		const candidates = await this.userRepository.usersOfIds(input.userIds)
 
-		const eligibleIds: string[] = []
-		let skippedCount = 0
-		for (const candidate of candidates) {
-			if (UserManagementPolicy.canChangeStatus(requester, candidate)) {
-				eligibleIds.push(candidate.id)
-			} else {
-				skippedCount++
-			}
-		}
+		const eligibleIds = candidates
+			.filter((candidate) =>
+				UserManagementPolicy.canChangeStatus(requester, candidate),
+			)
+			.map((candidate) => candidate.id)
 
-		return success({
+		const updated = await this.userRepository.updateManyStatus(
 			eligibleIds,
-			skippedCount,
-			requestedCount: input.userIds.length,
-		})
+			input.targetStatus,
+		)
+
+		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
+		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
+
+		const requested = input.userIds.length
+		return success({ updated, requested, skipped: requested - updated })
 	}
 }

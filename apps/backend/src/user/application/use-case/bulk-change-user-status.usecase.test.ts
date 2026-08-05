@@ -32,7 +32,7 @@ describe("BulkChangeUserStatusUseCase", () => {
 		sut = new BulkChangeUserStatusUseCase(userRepository, new CacheDBMemory())
 	})
 
-	test("exclui de eligibleIds o próprio requester, outro admin e o super admin, contabilizando em skippedCount", async () => {
+	test("exclui usuários inelegíveis da escrita em massa e contabiliza em skipped", async () => {
 		await userRepository.save(restoreUser("admin-id", "ADMIN"))
 		await userRepository.save(restoreUser("other-admin-id", "ADMIN"))
 		await userRepository.save(restoreUser("root-id", "ADMIN", true))
@@ -48,9 +48,13 @@ describe("BulkChangeUserStatusUseCase", () => {
 
 		expect(result.isSuccess()).toBe(true)
 		if (!result.isSuccess()) return
-		expect(result.value.eligibleIds).toEqual(["member-id"])
-		expect(result.value.skippedCount).toBe(3)
-		expect(result.value.requestedCount).toBe(4)
+		expect(result.value.updated).toBe(1)
+		expect(result.value.requested).toBe(4)
+		expect(result.value.skipped).toBe(3)
+		const memberUpdated = await userRepository.userOfId("member-id")
+		expect(memberUpdated?.status).toBe("suspended")
+		const otherAdminUnchanged = await userRepository.userOfId("other-admin-id")
+		expect(otherAdminUnchanged?.status).toBe("activated")
 	})
 
 	test("requester inexistente falha fechado com NotAllowedToManageUserError", async () => {
@@ -65,10 +69,14 @@ describe("BulkChangeUserStatusUseCase", () => {
 		expect(result.value).toBeInstanceOf(NotAllowedToManageUserError)
 	})
 
-	test("seleção 100% elegível não gera skippedCount", async () => {
+	test("seleção 100% elegível atualiza todos e não gera skipped", async () => {
 		await userRepository.save(restoreUser("admin-id", "ADMIN"))
-		await userRepository.save(restoreUser("member-1", "MEMBER"))
-		await userRepository.save(restoreUser("member-2", "MEMBER"))
+		const member1 = restoreUser("member-1", "MEMBER")
+		member1.suspend()
+		await userRepository.save(member1)
+		const member2 = restoreUser("member-2", "MEMBER")
+		member2.suspend()
+		await userRepository.save(member2)
 
 		const result = await sut.execute({
 			requesterId: "admin-id",
@@ -78,8 +86,55 @@ describe("BulkChangeUserStatusUseCase", () => {
 
 		expect(result.isSuccess()).toBe(true)
 		if (!result.isSuccess()) return
-		expect(result.value.eligibleIds.sort()).toEqual(["member-1", "member-2"])
-		expect(result.value.skippedCount).toBe(0)
-		expect(result.value.requestedCount).toBe(2)
+		expect(result.value.updated).toBe(2)
+		expect(result.value.requested).toBe(2)
+		expect(result.value.skipped).toBe(0)
+		const updatedMember1 = await userRepository.userOfId("member-1")
+		expect(updatedMember1?.status).toBe("activated")
+		const updatedMember2 = await userRepository.userOfId("member-2")
+		expect(updatedMember2?.status).toBe("activated")
+	})
+
+	test("usuário locked selecionado para ativar em massa termina ativado (desbloqueio automático)", async () => {
+		await userRepository.save(restoreUser("admin-id", "ADMIN"))
+		const lockedUser = restoreUser("locked-member", "MEMBER")
+		lockedUser.lock()
+		await userRepository.save(lockedUser)
+
+		const result = await sut.execute({
+			requesterId: "admin-id",
+			userIds: ["locked-member"],
+			targetStatus: "activated",
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		if (!result.isSuccess()) return
+		expect(result.value.updated).toBe(1)
+		const updatedUser = await userRepository.userOfId("locked-member")
+		expect(updatedUser?.status).toBe("activated")
+	})
+
+	test("uma segunda chamada idêntica retorna updated: 0 (idempotência)", async () => {
+		await userRepository.save(restoreUser("admin-id", "ADMIN"))
+		await userRepository.save(restoreUser("member-1", "MEMBER"))
+
+		const firstResult = await sut.execute({
+			requesterId: "admin-id",
+			userIds: ["member-1"],
+			targetStatus: "suspended",
+		})
+		expect(firstResult.isSuccess()).toBe(true)
+		if (!firstResult.isSuccess()) return
+		expect(firstResult.value.updated).toBe(1)
+
+		const secondResult = await sut.execute({
+			requesterId: "admin-id",
+			userIds: ["member-1"],
+			targetStatus: "suspended",
+		})
+		expect(secondResult.isSuccess()).toBe(true)
+		if (!secondResult.isSuccess()) return
+		expect(secondResult.value.updated).toBe(0)
+		expect(secondResult.value.skipped).toBe(1)
 	})
 })
