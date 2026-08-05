@@ -2,6 +2,7 @@ import { ContainerModule } from "inversify"
 import { RefreshTokenController } from "@/session/infra/controller/refresh-token.controller"
 import { PgUserRepository } from "@/shared/infra/database/repository/pg/pg-user-repository"
 import { ActiveUserUseCase } from "@/user/application/use-case/active-user.usecase"
+import { BulkChangeUserStatusUseCase } from "@/user/application/use-case/bulk-change-user-status.usecase"
 import { ChangePasswordUseCase } from "@/user/application/use-case/change-password.usecase"
 import { CreatePasswordReauthGrantUseCase } from "@/user/application/use-case/create-password-reauth-grant.usecase"
 import { CreateUserUseCase } from "@/user/application/use-case/create-user.usecase"
@@ -19,6 +20,7 @@ import { UpdateUserProfileUseCase } from "@/user/application/use-case/update-use
 import { UserMetricsUseCase } from "@/user/application/use-case/user-metrics.usecase"
 import { UserProfileUseCase } from "@/user/application/use-case/user-profile.usecase"
 import { ActivateUserController } from "@/user/infra/controller/activate-user.controller"
+import { BulkActivateUsersController } from "@/user/infra/controller/bulk-activate-users.controller"
 import { ChangePasswordController } from "@/user/infra/controller/change-password.controller"
 import { CreatePasswordReauthGrantController } from "@/user/infra/controller/create-password-reauth-grant.controller"
 import { CreateUserController } from "@/user/infra/controller/create-user.controller"
@@ -91,11 +93,13 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.UseCases.UpdateMyProfile).to(UpdateMyProfileUseCase)
 	bind(USER_TYPES.UseCases.UpdateUserProfile).to(UpdateUserProfileUseCase)
 	bind(USER_TYPES.UseCases.SuspendUser).to(SuspendUserUseCase)
+	bind(USER_TYPES.UseCases.BulkChangeUserStatus).to(BulkChangeUserStatusUseCase)
 	bind(USER_TYPES.UseCases.PromoteToAdmin).to(PromoteToAdminUseCase)
 	bind(USER_TYPES.UseCases.DemoteFromAdmin).to(DemoteFromAdminUseCase)
 	bind(USER_TYPES.UseCases.ActivateUser).to(ActiveUserUseCase)
 	bind(USER_TYPES.Controllers.ActivateUser).to(ActivateUserController)
 	bind(USER_TYPES.Controllers.SuspendUser).to(SuspendUserController)
+	bind(USER_TYPES.Controllers.BulkActivateUsers).to(BulkActivateUsersController)
 	bind(USER_TYPES.Controllers.PromoteToAdmin).to(PromoteToAdminController)
 	bind(USER_TYPES.Controllers.DemoteFromAdmin).to(DemoteFromAdminController)
 	bind(USER_TYPES.UseCases.DeleteUser).to(DeleteUserUseCase)

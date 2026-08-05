@@ -14,6 +14,7 @@ export const UserRoutes = {
 	RESET_PASSWORD: "/password/reset",
 	ACTIVATE_USER: `${PREFIX}/activate`,
 	SUSPEND_USER: `${PREFIX}/suspend`,
+	BULK_ACTIVATE_USERS: `${PREFIX}/bulk-activate`,
 	PROMOTE_TO_ADMIN: `${PREFIX}/promote-admin`,
 	DEMOTE_FROM_ADMIN: `${PREFIX}/demote-admin`,
 	DELETE: `${PREFIX}/:userId`,
