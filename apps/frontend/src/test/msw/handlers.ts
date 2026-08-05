@@ -20,6 +20,18 @@ export const handlers = [
 	http.patch(endpoint("/users/demote-admin"), () =>
 		HttpResponse.json({}, { status: 200 }),
 	),
+	http.patch(endpoint("/users/bulk-activate"), () =>
+		HttpResponse.json(
+			{ updated: 0, requested: 0, skipped: 0 },
+			{ status: 200 },
+		),
+	),
+	http.patch(endpoint("/users/bulk-deactivate"), () =>
+		HttpResponse.json(
+			{ updated: 0, requested: 0, skipped: 0 },
+			{ status: 200 },
+		),
+	),
 	http.post(endpoint("/sessions"), () =>
 		HttpResponse.json(
 			{ token: "stub-token", refreshToken: "stub-refresh" },
