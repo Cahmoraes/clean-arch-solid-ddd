@@ -1,6 +1,6 @@
 # Task 2: BulkChangeUserStatusUseCase — revalidação de política de autorização [FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** capable

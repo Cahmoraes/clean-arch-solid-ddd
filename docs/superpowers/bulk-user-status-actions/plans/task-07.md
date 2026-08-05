@@ -1,6 +1,6 @@
 # Task 7: AdminUsersContent — estado de seleção e checkbox de página indeterminado [FR-001, FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** standard
