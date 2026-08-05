@@ -1,5 +1,6 @@
 "use client"
 
+import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/cn"
 
@@ -54,8 +55,15 @@ export function BulkActionBar({
 				>
 					Desativar
 				</Button>
-				<Button type="button" variant="ghost" size="sm" onClick={onClear}>
-					Limpar seleção
+				<Button
+					type="button"
+					variant="ghost"
+					size="sm"
+					className="w-8 px-0"
+					onClick={onClear}
+					aria-label="Limpar seleção"
+				>
+					<X aria-hidden="true" />
 				</Button>
 			</div>
 		</div>
