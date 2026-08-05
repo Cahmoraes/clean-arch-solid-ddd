@@ -1,6 +1,6 @@
 # Task 11: useBulkChangeUserStatus — hook de mutation com resumo e invalidação de cache [FR-007, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** standard
