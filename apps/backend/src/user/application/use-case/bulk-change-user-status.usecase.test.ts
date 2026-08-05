@@ -1,6 +1,7 @@
 import { CacheDBMemory } from "@/shared/infra/database/redis/cache-db-memory"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { User } from "@/user/domain/user"
+import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import {
 	BulkChangeUserStatusUseCase,
 	type BulkChangeUserStatusUseCaseInput,
@@ -50,6 +51,18 @@ describe("BulkChangeUserStatusUseCase", () => {
 		expect(result.value.eligibleIds).toEqual(["member-id"])
 		expect(result.value.skippedCount).toBe(3)
 		expect(result.value.requestedCount).toBe(4)
+	})
+
+	test("requester inexistente falha fechado com NotAllowedToManageUserError", async () => {
+		const result = await sut.execute({
+			requesterId: "requester-inexistente",
+			userIds: ["member-id"],
+			targetStatus: "suspended",
+		})
+
+		expect(result.isFailure()).toBe(true)
+		if (!result.isFailure()) return
+		expect(result.value).toBeInstanceOf(NotAllowedToManageUserError)
 	})
 
 	test("seleção 100% elegível não gera skippedCount", async () => {

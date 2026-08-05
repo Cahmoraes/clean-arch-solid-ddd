@@ -32,6 +32,7 @@ export class BulkChangeUserStatusUseCase {
 	constructor(
 		@inject(USER_TYPES.Repositories.User)
 		private readonly userRepository: UserRepository,
+		// TODO(Task 3): invalidar "fetch-users:*" e USER_STATS_CACHE_KEY após a escrita em massa
 		@inject(SHARED_TYPES.Redis)
 		private readonly cacheDB: CacheDB,
 	) {}
