@@ -1,0 +1,12 @@
+{
+  "us_id": "US-06",
+  "user_story": "Como administrador, eu quero poder repetir a mesma ação em massa (por exemplo, após uma falha de rede) sem me preocupar em causar um efeito duplicado ou inesperado.",
+  "requirements": ["FR-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Testes de unidade: 2 arquivos, 15 testes passaram (0 falhas). Testes de fluxo HTTP: 1 arquivo, 7 testes passaram (0 falhas). A idempotência de FR-008 foi exercitada pelas asserções existentes que verificam `updated: 0` na segunda chamada idêntica e `secondCallCount: 0` no repositório.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "A cobertura existente já é abrangente (relatório IV validou FR-008 com file:line + mutation testing), portanto nenhum teste de aceitação adicional foi criado. Screenshot de UI não aplicável — a idempotência é uma garantia do servidor, já exercitada nos níveis de use case, repositório e controller; reproduzir uma repetição por falha de rede via automação de browser não agregaria evidência distinta."
+}

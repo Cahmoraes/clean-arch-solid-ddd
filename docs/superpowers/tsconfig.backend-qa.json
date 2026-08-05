@@ -1,0 +1,18 @@
+{
+  "extends": "../../apps/backend/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "../../apps/backend/src/*"
+      ],
+      "test/*": [
+        "../../apps/backend/test/*"
+      ]
+    }
+  },
+  "include": [
+    "**/qa/evidence/**/*.ts",
+    "**/qa/evidence/**/*.tsx"
+  ]
+}

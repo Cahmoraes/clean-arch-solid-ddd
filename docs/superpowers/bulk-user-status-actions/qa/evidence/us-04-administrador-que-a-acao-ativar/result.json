@@ -1,0 +1,12 @@
+{
+  "us_id": "US-04",
+  "user_story": "Como administrador, eu quero que a ação \"Ativar\" em massa também desbloqueie usuários bloqueados, para que o comportamento seja consistente com a ativação individual.",
+  "requirements": ["FR-006"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Testes específicos executados com sucesso. Teste de unidade: 6/6 passaram (inclui o cenário 'usuário locked selecionado para ativar em massa termina ativado (desbloqueio automático)' que valida a transição de status locked -> activated). Teste de business-flow HTTP: 7/7 passaram (inclui ativação em massa de seleção mista com retorno 200 e contadores updated/requested/skipped).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Cobertura existente validada pelo relatório IV e re-executada localmente: FR-006 está demonstrada pelo assertion em apps/backend/src/user/application/use-case/bulk-change-user-status.usecase.test.ts:114 (expect(updatedUser?.status).toBe('activated')). Não foram criados novos testes de aceitação porque a cobertura já é abrangente. Screenshot da UI não obtido: o comportamento é server-side e não há estado de UI distinto para usuário bloqueado facilmente reproduzível sem mutar dados seedados; a tentativa de login automatizado pelo playwright-cli não localizou o campo de senha pelo seletor esperado."
+}

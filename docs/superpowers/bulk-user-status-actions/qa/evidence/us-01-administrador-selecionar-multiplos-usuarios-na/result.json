@@ -1,0 +1,12 @@
+{
+  "us_id": "US-01",
+  "user_story": "Como administrador, eu quero selecionar múltiplos usuários na listagem e aplicar Ativar ou Desativar de uma vez, para não precisar repetir a ação individualmente para cada usuário.",
+  "requirements": ["FR-001", "FR-002", "FR-004", "FR-007", "FR-012"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Frontend: 3 arquivos de teste executados, 37 testes passaram, 0 falhas, 0 skipped. Backend (unidade): 2 arquivos de teste executados, 15 testes passaram, 0 falhas, 0 skipped. Todos os testes relacionados a US-01 (FR-001, FR-002, FR-004, FR-007, FR-012) passaram.",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Screenshot capturado com sucesso mostrando a página /admin/usuarios com três usuários selecionados, checkbox de página em estado indeterminado (mixed) e a barra de ações em massa visível com as opções Ativar, Desativar e Limpar seleção. A cobertura de testes existente foi considerada completa pelo relatório IV (21/21 critérios PASS, 0 gaps), portanto nenhum teste de aceitação adicional foi criado."
+}

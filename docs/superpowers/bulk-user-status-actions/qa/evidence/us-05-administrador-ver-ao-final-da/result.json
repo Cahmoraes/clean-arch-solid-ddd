@@ -1,0 +1,12 @@
+{
+	"us_id": "US-05",
+	"user_story": "Como administrador, eu quero ver, ao final da operação, quantos usuários foram efetivamente atualizados e quantos foram ignorados, para entender o resultado real da ação em massa.",
+	"requirements": ["FR-010"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "Testes específicos da feature passaram: backend unitário (bulk-change-user-status.usecase.test.ts) — 6/6; backend business-flow (bulk-activate-users.business-flow-test.ts + bulk-deactivate-users.business-flow-test.ts) — 14/14; frontend (admin-users-page.test.tsx + use-bulk-change-user-status.test.tsx) — 21/21. Nenhuma regressão observada nos arquivos selecionados.",
+	"screenshot_path": "screenshot.png",
+	"failure_details": null,
+	"notes": "O resultado agregado {updated, requested, skipped} é retornado pela API (validado pelos testes de business-flow e unidade). No frontend, o hook useBulkChangeUserStatus exibe um toast com a contagem de atualizados e, quando maior que zero, também de ignorados, conforme print screenshot.png (2 ativados) e screenshot-skipped.png (0 ativados, 2 ignorados). A contagem de 'solicitados' não aparece no toast, mas a US-05 pede apenas atualizados/ignorados; o retorno agregado sem quebra por usuário está dentro do escopo definido no PRD."
+}

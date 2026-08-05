@@ -2,5 +2,9 @@
   "frontend": {
     "appRoot": "apps/frontend",
     "templatePath": "docs/superpowers/tsconfig.frontend-qa.json"
+  },
+  "backend": {
+    "appRoot": "apps/backend",
+    "templatePath": "docs/superpowers/tsconfig.backend-qa.json"
   }
 }

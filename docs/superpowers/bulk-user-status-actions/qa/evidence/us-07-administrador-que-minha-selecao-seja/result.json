@@ -1,0 +1,12 @@
+{
+	"us_id": "US-07",
+	"user_story": "Como administrador, eu quero que minha seleção seja limpa automaticamente ao trocar de página, filtro ou busca, para não correr o risco de aplicar uma ação a uma seleção que não corresponde mais ao que estou vendo na tela.",
+	"requirements": ["FR-011"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "Arquivo apps/frontend/src/app/(authenticated)/admin/usuarios/admin-users-page.test.tsx executado isoladamente: 19 testes, 19 passaram, 0 falharam. Cobertura de FR-011 confirmada pelos testes 'mudar de página limpa a seleção atual', 'mudar o filtro ativo limpa a seleção atual' e 'digitar na busca (após o debounce) limpa a seleção atual'.",
+	"screenshot_path": "screenshot.png",
+	"failure_details": null,
+	"notes": "A seleção em massa é limpa automaticamente ao alterar página, filtro de status ou termo de busca, conforme evidenciado pelos testes unitários e pelo screenshot da UI. Para a evidência visual, o login inicial foi realizado com as credenciais fornecidas; durante as primeiras tentativas o endpoint /sessions retornou rate limit, então aguardou-se o reset e a captura foi refeita com sucesso. Foram gerados três screenshots (estado inicial, com seleção ativa, e após a busca limpar a seleção)."
+}

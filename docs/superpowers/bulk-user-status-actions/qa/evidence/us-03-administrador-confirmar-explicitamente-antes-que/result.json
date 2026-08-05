@@ -1,0 +1,12 @@
+{
+	"us_id": "US-03",
+	"user_story": "Como administrador, eu quero confirmar explicitamente antes que a ação em massa seja aplicada, para evitar que um clique acidental afete vários usuários de uma vez.",
+	"requirements": ["FR-005"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "23 testes passaram (4 em bulk-status-confirmation-dialog.test.tsx e 19 em admin-users-page.test.tsx), 0 falhas. A cobertura validou o diálogo de confirmação para ativação e desativação, a abertura do diálogo pelo botão Ativar, a chamada da mutation apenas após a confirmação, a proteção contra fechamento do diálogo durante mutation em voo e a limpeza da seleção sem abrir diálogo.",
+	"screenshot_path": "screenshot.png",
+	"failure_details": null,
+	"notes": "Screenshot capturado via playwright-cli mostrando o diálogo 'Confirmar ativação em massa' após selecionar 1 usuário e clicar em Ativar. A ação não foi confirmada, evitando mutação dos dados seedados. Os testes existentes já cobrem FR-005 de forma abrangente (conforme relatório IV), portanto nenhum teste de aceitação adicional foi criado."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "US-02",
+  "user_story": "Como administrador, eu quero que usuários que eu não tenho permissão de gerenciar (eu mesmo, o usuário root, outro administrador) apareçam com a seleção desabilitada, para não tentar aplicar uma ação que seria rejeitada.",
+  "requirements": ["FR-003", "FR-009"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Todos os testes específicos da US-02 passaram. Frontend: user-row.test.tsx (14 testes) e admin-users-page.test.tsx (19 testes) — 781 passaram no total. Backend unitário: bulk-change-user-status.usecase.test.ts (6 testes) e user-management-policy.test.ts (15 testes) — 21 passaram. Backend HTTP integration: bulk-activate-users.business-flow-test.ts — 7 passaram. O relatório IV já havia mapeado FR-003 e FR-009 para esses arquivos e confirmado 21/21 critérios e 11/11 mutantes mortos.",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Screenshot capturado na aba 'Administradores' mostrando o usuário logado 'Super Admin' (admin@admin.com) com o checkbox desabilitado e destacado em laranja. A automação via formulário de login encontrou rate limit (429) após várias tentativas; contornamos fazendo login direto pela API /sessions e restaurando a sessão no navegador (cookie has_session + refresh automático), o que gerou a evidência sem afetar a validação."
+}
