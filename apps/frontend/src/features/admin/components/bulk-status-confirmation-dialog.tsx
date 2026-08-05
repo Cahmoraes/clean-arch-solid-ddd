@@ -66,9 +66,13 @@ export function BulkStatusConfirmationDialog({
 }: BulkStatusConfirmationDialogProps) {
 	const content = resolveDialogContent(action, count)
 
+	function preventCloseWhilePending(event: { preventDefault: () => void }) {
+		if (isPending) event.preventDefault()
+	}
+
 	return (
 		<AlertDialog open={open} onOpenChange={onOpenChange}>
-			<AlertDialogContent>
+			<AlertDialogContent onEscapeKeyDown={preventCloseWhilePending}>
 				<AlertDialogHeader>
 					<AlertDialogTitle>{content.title}</AlertDialogTitle>
 					<AlertDialogDescription>{content.description}</AlertDialogDescription>
@@ -83,7 +87,14 @@ export function BulkStatusConfirmationDialog({
 									? "bg-accent text-accent-foreground hover:bg-primary-strong"
 									: undefined
 							}
-							onClick={onConfirm}
+							onClick={(event) => {
+								// AlertDialogAction é o próprio Dialog.Close do Radix: sem
+								// preventDefault, ele fecha o diálogo a cada clique, mesmo
+								// com a mutation ainda em voo. O fechamento real é decidido
+								// pelo estado controlado (`open`) via onSuccess/Cancelar.
+								event.preventDefault()
+								onConfirm()
+							}}
 							disabled={isPending}
 							aria-busy={isPending}
 						>

@@ -76,4 +76,27 @@ describe("BulkStatusConfirmationDialog", () => {
 		await user.click(screen.getByRole("button", { name: "Cancelar" }))
 		expect(onOpenChange).toHaveBeenCalledWith(false)
 	})
+
+	test("com isPending, Escape não chama onOpenChange (evita fechar o diálogo com a mutation em voo)", async () => {
+		const user = userEvent.setup()
+		const onOpenChange = vi.fn()
+
+		render(
+			<BulkStatusConfirmationDialog
+				open
+				action="activate"
+				count={2}
+				isPending
+				onOpenChange={onOpenChange}
+				onConfirm={vi.fn()}
+			/>,
+		)
+
+		await user.keyboard("{Escape}")
+
+		expect(onOpenChange).not.toHaveBeenCalled()
+		expect(
+			screen.getByRole("heading", { name: "Confirmar ativação em massa" }),
+		).toBeInTheDocument()
+	})
 })

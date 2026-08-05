@@ -43,7 +43,8 @@ export class BulkChangeUserStatusUseCase {
 		const requester = await this.userRepository.userOfId(input.requesterId)
 		if (!requester) return failure(new NotAllowedToManageUserError())
 
-		const candidates = await this.userRepository.usersOfIds(input.userIds)
+		const uniqueUserIds = Array.from(new Set(input.userIds))
+		const candidates = await this.userRepository.usersOfIds(uniqueUserIds)
 
 		const eligibleIds = candidates
 			.filter((candidate) =>
@@ -59,7 +60,7 @@ export class BulkChangeUserStatusUseCase {
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
 		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
 
-		const requested = input.userIds.length
+		const requested = uniqueUserIds.length
 		return success({ updated, requested, skipped: requested - updated })
 	}
 }

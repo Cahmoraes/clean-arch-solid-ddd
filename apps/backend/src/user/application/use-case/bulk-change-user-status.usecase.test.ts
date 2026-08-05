@@ -137,4 +137,21 @@ describe("BulkChangeUserStatusUseCase", () => {
 		expect(secondResult.value.updated).toBe(0)
 		expect(secondResult.value.skipped).toBe(1)
 	})
+
+	test("IDs duplicados na mesma requisição são deduplicados antes de calcular requested/skipped", async () => {
+		await userRepository.save(restoreUser("admin-id", "ADMIN"))
+		await userRepository.save(restoreUser("member-1", "MEMBER"))
+
+		const result = await sut.execute({
+			requesterId: "admin-id",
+			userIds: ["member-1", "member-1", "member-1"],
+			targetStatus: "suspended",
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		if (!result.isSuccess()) return
+		expect(result.value.updated).toBe(1)
+		expect(result.value.requested).toBe(1)
+		expect(result.value.skipped).toBe(0)
+	})
 })

@@ -520,6 +520,56 @@ describe("seleção em massa", () => {
 		expect(screen.queryByTestId("bulk-action-bar")).not.toBeInTheDocument()
 	})
 
+	test("pressionar Escape durante a mutation em voo não fecha o diálogo (evita corrida com a seleção)", async () => {
+		const user = userEvent.setup()
+		mockUsersList([
+			buildUser({ id: "user-1", status: "suspended" }),
+			buildUser({ id: "user-2", status: "suspended" }),
+		])
+
+		let resolveResponse: (() => void) | undefined
+		const responsePending = new Promise<void>((resolve) => {
+			resolveResponse = resolve
+		})
+		server.use(
+			http.patch(`${apiBaseUrl}/users/bulk-activate`, async () => {
+				await responsePending
+				return HttpResponse.json(
+					{ updated: 1, requested: 1, skipped: 0 },
+					{ status: 200 },
+				)
+			}),
+		)
+
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+		await user.click(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		)
+		await user.click(screen.getByRole("button", { name: "Ativar" }))
+		await user.click(screen.getByRole("button", { name: "Confirmar ativação" }))
+
+		await screen.findByRole("button", { name: "Ativando..." })
+
+		await user.keyboard("{Escape}")
+
+		expect(
+			screen.getByRole("heading", { name: "Confirmar ativação em massa" }),
+		).toBeInTheDocument()
+
+		resolveResponse?.()
+
+		await waitFor(() => {
+			expect(
+				screen.queryByRole("heading", {
+					name: "Confirmar ativação em massa",
+				}),
+			).not.toBeInTheDocument()
+		})
+		expect(screen.queryByTestId("bulk-action-bar")).not.toBeInTheDocument()
+	})
+
 	test("clicar em 'Limpar seleção' zera a seleção sem abrir nenhum diálogo", async () => {
 		const user = userEvent.setup()
 		mockUsersList([
