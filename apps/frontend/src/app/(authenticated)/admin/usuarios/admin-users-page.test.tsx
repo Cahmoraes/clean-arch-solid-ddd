@@ -456,4 +456,91 @@ describe("seleção em massa", () => {
 			{ timeout: 2000 },
 		)
 	}, 20_000)
+
+	test("clicar em 'Ativar' na barra de ações abre o diálogo de confirmação de ativação", async () => {
+		const user = userEvent.setup()
+		mockUsersList([
+			buildUser({ id: "user-1", status: "suspended" }),
+			buildUser({ id: "user-2", status: "suspended" }),
+		])
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+		await user.click(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		)
+
+		await user.click(screen.getByRole("button", { name: "Ativar" }))
+
+		expect(
+			screen.getByRole("heading", { name: "Confirmar ativação em massa" }),
+		).toBeInTheDocument()
+	})
+
+	test("confirmar o diálogo chama a mutation com os IDs selecionados e limpa a seleção ao suceder", async () => {
+		const user = userEvent.setup()
+		mockUsersList([
+			buildUser({ id: "user-1", status: "suspended" }),
+			buildUser({ id: "user-2", status: "suspended" }),
+		])
+
+		let receivedBody: { userIds?: string[] } = {}
+		server.use(
+			http.patch(`${apiBaseUrl}/users/bulk-activate`, async ({ request }) => {
+				receivedBody = (await request.json()) as { userIds?: string[] }
+				return HttpResponse.json(
+					{ updated: 2, requested: 2, skipped: 0 },
+					{ status: 200 },
+				)
+			}),
+		)
+
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+		await user.click(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		)
+		await user.click(
+			within(screen.getByTestId("user-row-user-2")).getByRole("checkbox"),
+		)
+
+		await user.click(screen.getByRole("button", { name: "Ativar" }))
+		await user.click(screen.getByRole("button", { name: "Confirmar ativação" }))
+
+		await waitFor(() => {
+			expect(
+				screen.queryByRole("heading", {
+					name: "Confirmar ativação em massa",
+				}),
+			).not.toBeInTheDocument()
+		})
+
+		expect(receivedBody.userIds?.sort()).toEqual(["user-1", "user-2"])
+		expect(screen.queryByTestId("bulk-action-bar")).not.toBeInTheDocument()
+	})
+
+	test("clicar em 'Limpar seleção' zera a seleção sem abrir nenhum diálogo", async () => {
+		const user = userEvent.setup()
+		mockUsersList([
+			buildUser({ id: "user-1", status: "suspended" }),
+			buildUser({ id: "user-2", status: "suspended" }),
+		])
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+		await user.click(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		)
+
+		expect(screen.getByTestId("bulk-action-bar")).toBeInTheDocument()
+
+		await user.click(screen.getByRole("button", { name: "Limpar seleção" }))
+
+		expect(screen.queryByTestId("bulk-action-bar")).not.toBeInTheDocument()
+		expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		).toHaveAttribute("aria-checked", "false")
+	})
 })

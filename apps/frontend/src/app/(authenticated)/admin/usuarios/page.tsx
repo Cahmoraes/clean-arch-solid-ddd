@@ -11,12 +11,18 @@ import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { PageHeader } from "@/components/ui/page-header"
 import { SearchBar } from "@/components/ui/search-bar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useBulkChangeUserStatus } from "@/features/admin/api/use-bulk-change-user-status"
 import { useUserStats } from "@/features/admin/api/use-user-stats"
 import {
 	ADMIN_USERS_DEFAULT_LIMIT,
 	type AdminUser,
 	useUsers,
 } from "@/features/admin/api/use-users"
+import { BulkActionBar } from "@/features/admin/components/bulk-action-bar"
+import {
+	type BulkStatusAction,
+	BulkStatusConfirmationDialog,
+} from "@/features/admin/components/bulk-status-confirmation-dialog"
 import { resolvePermissions } from "@/features/admin/components/user-detail/use-user-detail-actions"
 import { UserDetailContainer } from "@/features/admin/components/user-detail/user-detail-container"
 import { UserFilterBar } from "@/features/admin/components/user-filter-bar"
@@ -241,6 +247,8 @@ function AdminUsersContent({
 	const [page, setPage] = useState(1)
 	const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+	const [bulkAction, setBulkAction] = useState<BulkStatusAction | null>(null)
+	const bulkChangeUserStatus = useBulkChangeUserStatus()
 	const currentUser = useAuthStore((state) => state.user)
 	const [inputQuery, setInputQuery] = useState(initialQuery)
 	const debouncedQuery = useDebounce(inputQuery, 500)
@@ -319,6 +327,35 @@ function AdminUsersContent({
 		return resolvePermissions(user, currentUser).canChangeStatus
 	}
 
+	function handleBulkActivate() {
+		setBulkAction("activate")
+	}
+
+	function handleBulkDeactivate() {
+		setBulkAction("deactivate")
+	}
+
+	function handleBulkClear() {
+		setSelectedIds(new Set())
+	}
+
+	function handleBulkDialogOpenChange(open: boolean) {
+		if (!open) setBulkAction(null)
+	}
+
+	function handleBulkConfirm() {
+		if (!bulkAction) return
+		bulkChangeUserStatus.mutate(
+			{ userIds: Array.from(selectedIds), action: bulkAction },
+			{
+				onSuccess: () => {
+					setSelectedIds(new Set())
+					setBulkAction(null)
+				},
+			},
+		)
+	}
+
 	function handleFilterChange(filter: UserFilter) {
 		setActiveFilter(filter)
 		setPage(1)
@@ -388,6 +425,21 @@ function AdminUsersContent({
 					onUserPatched={handleUserPatched}
 				/>
 			</div>
+
+			<BulkActionBar
+				selectedCount={selectedIds.size}
+				onActivate={handleBulkActivate}
+				onDeactivate={handleBulkDeactivate}
+				onClear={handleBulkClear}
+			/>
+			<BulkStatusConfirmationDialog
+				open={bulkAction !== null}
+				onOpenChange={handleBulkDialogOpenChange}
+				action={bulkAction ?? "activate"}
+				count={selectedIds.size}
+				isPending={bulkChangeUserStatus.isPending}
+				onConfirm={handleBulkConfirm}
+			/>
 		</PageContainer>
 	)
 }
