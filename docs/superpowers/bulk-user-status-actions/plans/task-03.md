@@ -1,6 +1,6 @@
 # Task 3: BulkChangeUserStatusUseCase — escrita idempotente, desbloqueio e resposta agregada [FR-006, FR-007, FR-008, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** standard

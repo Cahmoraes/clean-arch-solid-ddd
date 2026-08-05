@@ -1,6 +1,6 @@
 # Task 8: AdminUsersContent — limpar seleção ao mudar página/filtro/busca [FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** cheap
