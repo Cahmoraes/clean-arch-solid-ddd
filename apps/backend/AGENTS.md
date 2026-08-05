@@ -15,16 +15,6 @@
 
 Pular verificação = REJEIÇÃO IMEDIATA DA TAREFA.
 
-<MOST_CRITICAL>
-
-- ABSOLUTAMENTE OBRIGATÓRIO: modo Plan, após usuário aceitar plano, SEMPRE escreva plano aceito em Markdown dentro de docs/plans/.
-
-- OBRIGATÓRIO: se plano aceito atualizado depois, atualize/acrescente no Markdown correspondente em docs/plans/.
-
-- VIOLAÇÃO: não persistir planos aceitos do modo Plan em docs/plans/ = não conformidade com política do workspace.
-
-</MOST_CRITICAL>
-
 # Overview do Projeto
 
 ## Restrições de Comunicação
