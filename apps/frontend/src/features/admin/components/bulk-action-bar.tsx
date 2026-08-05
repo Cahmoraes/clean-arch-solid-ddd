@@ -28,7 +28,7 @@ export function BulkActionBar({
 		<div
 			data-testid="bulk-action-bar"
 			className={cn(
-				"sticky bottom-0 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-5 py-4 shadow-lg",
+				"sticky bottom-4 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-5 py-4 shadow-lg",
 				className,
 			)}
 		>
