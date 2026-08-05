@@ -41,6 +41,7 @@ export const USER_TYPES = {
 		ActivateUser: Symbol.for("ActivateUserController"),
 		SuspendUser: Symbol.for("SuspendUserController"),
 		BulkActivateUsers: Symbol.for("BulkActivateUsersController"),
+		BulkDeactivateUsers: Symbol.for("BulkDeactivateUsersController"),
 		MyProfile: Symbol.for("MyProfileController"),
 		UpdateMyProfile: Symbol.for("UpdateMyProfileController"),
 		UserMetrics: Symbol.for("UserMetricsController"),

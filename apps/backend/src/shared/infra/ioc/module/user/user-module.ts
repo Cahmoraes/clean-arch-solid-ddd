@@ -21,6 +21,7 @@ import { UserMetricsUseCase } from "@/user/application/use-case/user-metrics.use
 import { UserProfileUseCase } from "@/user/application/use-case/user-profile.usecase"
 import { ActivateUserController } from "@/user/infra/controller/activate-user.controller"
 import { BulkActivateUsersController } from "@/user/infra/controller/bulk-activate-users.controller"
+import { BulkDeactivateUsersController } from "@/user/infra/controller/bulk-deactivate-users.controller"
 import { ChangePasswordController } from "@/user/infra/controller/change-password.controller"
 import { CreatePasswordReauthGrantController } from "@/user/infra/controller/create-password-reauth-grant.controller"
 import { CreateUserController } from "@/user/infra/controller/create-user.controller"
@@ -100,6 +101,9 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Controllers.ActivateUser).to(ActivateUserController)
 	bind(USER_TYPES.Controllers.SuspendUser).to(SuspendUserController)
 	bind(USER_TYPES.Controllers.BulkActivateUsers).to(BulkActivateUsersController)
+	bind(USER_TYPES.Controllers.BulkDeactivateUsers).to(
+		BulkDeactivateUsersController,
+	)
 	bind(USER_TYPES.Controllers.PromoteToAdmin).to(PromoteToAdminController)
 	bind(USER_TYPES.Controllers.DemoteFromAdmin).to(DemoteFromAdminController)
 	bind(USER_TYPES.UseCases.DeleteUser).to(DeleteUserUseCase)
