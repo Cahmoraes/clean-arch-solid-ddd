@@ -340,16 +340,22 @@ function AdminUsersContent({
 	}
 
 	function handleBulkDialogOpenChange(open: boolean) {
-		if (!open) setBulkAction(null)
+		if (open || bulkChangeUserStatus.isPending) return
+		setBulkAction(null)
 	}
 
 	function handleBulkConfirm() {
 		if (!bulkAction) return
+		const submittedIds = Array.from(selectedIds)
 		bulkChangeUserStatus.mutate(
-			{ userIds: Array.from(selectedIds), action: bulkAction },
+			{ userIds: submittedIds, action: bulkAction },
 			{
 				onSuccess: () => {
-					setSelectedIds(new Set())
+					setSelectedIds((current) => {
+						const remaining = new Set(current)
+						for (const id of submittedIds) remaining.delete(id)
+						return remaining
+					})
 					setBulkAction(null)
 				},
 			},
