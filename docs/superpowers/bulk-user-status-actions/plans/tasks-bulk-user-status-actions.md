@@ -18,7 +18,7 @@
 - [x] 1. Estender UserRepository com busca por IDs e atualização em massa [FR-007, FR-009] → `task-01.md`
 - [x] 2. BulkChangeUserStatusUseCase — revalidação de política de autorização [FR-009] → `task-02.md`
 - [x] 3. BulkChangeUserStatusUseCase — escrita idempotente, desbloqueio e resposta agregada [FR-006, FR-007, FR-008, FR-010] → `task-03.md`
-- [ ] 4. BulkActivateUsersController e rota PATCH /users/bulk-activate [FR-007, FR-012] → `task-04.md`
+- [x] 4. BulkActivateUsersController e rota PATCH /users/bulk-activate [FR-007, FR-012] → `task-04.md`
 - [ ] 5. BulkDeactivateUsersController e rota PATCH /users/bulk-deactivate [FR-007, FR-012] → `task-05.md`
 - [x] 6. UserRow — checkbox de seleção com suporte a desabilitado [FR-001, FR-003] → `task-06.md`
 - [x] 7. AdminUsersContent — estado de seleção e checkbox de página indeterminado [FR-001, FR-002] → `task-07.md`
@@ -37,5 +37,7 @@
 - **Wave 3** (parallel): 3, 8
 - **Wave 4** (sequential): 4
 - **Wave 5** (sequential): 5
-- **Wave 6** (sequential): 11 (depende operacionalmente de 4+5 via `pnpm generate:types`)
-- **Wave 7** (sequential): 12 (depende de 7,8,9,10,11)
+- **Wave 6** (sequential): 11
+  - Nota: depende operacionalmente das tasks anteriores via `pnpm generate:types`.
+- **Wave 7** (sequential): 12
+  - Nota: depende das tasks anteriores da Wave 1 à Wave 6.
