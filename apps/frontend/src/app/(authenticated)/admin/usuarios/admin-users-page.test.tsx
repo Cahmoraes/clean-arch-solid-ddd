@@ -27,6 +27,7 @@ function buildUser(
 		role: "ADMIN" | "MEMBER"
 		status: "activated" | "suspended"
 		createdAt: string
+		isSuperAdmin: boolean
 	}> = {},
 ) {
 	return {
@@ -36,6 +37,7 @@ function buildUser(
 		role: "MEMBER" as const,
 		status: "activated" as const,
 		createdAt: "2024-01-15T12:00:00.000Z",
+		isSuperAdmin: false,
 		...overrides,
 	}
 }
@@ -91,13 +93,14 @@ describe("AdminUsersPage modal integration", () => {
 		mockUsersList()
 		renderPage()
 
-		await user.click(await screen.findByTestId("user-row-user-1"))
+		await user.click(
+			within(await screen.findByTestId("user-row-user-1")).getByRole("button"),
+		)
 
 		expect(screen.getByRole("tab", { name: "Detalhes" })).toBeInTheDocument()
-		expect(screen.getByTestId("user-row-user-1")).toHaveAttribute(
-			"aria-pressed",
-			"true",
-		)
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("button"),
+		).toHaveAttribute("aria-pressed", "true")
 		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
 	})
 
@@ -113,21 +116,22 @@ describe("AdminUsersPage modal integration", () => {
 		])
 		renderPage()
 
-		await user.click(await screen.findByTestId("user-row-user-1"))
-		expect(screen.getByTestId("user-row-user-1")).toHaveAttribute(
-			"aria-pressed",
-			"true",
+		await user.click(
+			within(await screen.findByTestId("user-row-user-1")).getByRole("button"),
 		)
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("button"),
+		).toHaveAttribute("aria-pressed", "true")
 
-		await user.click(screen.getByTestId("user-row-user-2"))
-		expect(screen.getByTestId("user-row-user-2")).toHaveAttribute(
-			"aria-pressed",
-			"true",
+		await user.click(
+			within(screen.getByTestId("user-row-user-2")).getByRole("button"),
 		)
-		expect(screen.getByTestId("user-row-user-1")).toHaveAttribute(
-			"aria-pressed",
-			"false",
-		)
+		expect(
+			within(screen.getByTestId("user-row-user-2")).getByRole("button"),
+		).toHaveAttribute("aria-pressed", "true")
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("button"),
+		).toHaveAttribute("aria-pressed", "false")
 		expect(screen.getByRole("tab", { name: "Detalhes" })).toBeInTheDocument()
 	})
 
@@ -137,7 +141,9 @@ describe("AdminUsersPage modal integration", () => {
 		mockUsersList()
 		renderPage()
 
-		await user.click(await screen.findByTestId("user-row-user-1"))
+		await user.click(
+			within(await screen.findByTestId("user-row-user-1")).getByRole("button"),
+		)
 
 		const dialog = screen.getByRole("dialog")
 		expect(within(dialog).getByText("Detalhes do usuário")).toBeInTheDocument()
@@ -256,7 +262,9 @@ describe("AdminUsersPage modal integration", () => {
 		renderPage()
 
 		await user.click(await screen.findByRole("button", { name: /inativos/i }))
-		await user.click(await screen.findByTestId("user-row-user-1"))
+		await user.click(
+			within(await screen.findByTestId("user-row-user-1")).getByRole("button"),
+		)
 
 		await user.click(screen.getByRole("button", { name: /mais ações/i }))
 		await user.click(screen.getByRole("menuitem", { name: /^ativar$/i }))
@@ -306,4 +314,66 @@ describe("AdminUsersPage modal integration", () => {
 		await new Promise((resolve) => setTimeout(resolve, 250))
 		expect(callCount).toBe(initialCallCount)
 	}, 20_000)
+})
+
+describe("seleção em massa", () => {
+	beforeEach(() => {
+		isDesktopMock.mockReturnValue(true)
+		useAuthStore.setState({
+			accessToken: "token",
+			expiresAt: Date.now() + 60_000,
+			user: { id: "admin-logged", role: "ADMIN" },
+		})
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("") as unknown as ReturnType<typeof useSearchParams>,
+		)
+	})
+
+	test("marcar 2 checkboxes individuais deixa o checkbox de página em estado indeterminado", async () => {
+		const user = userEvent.setup()
+		mockUsersList([
+			buildUser({ id: "user-1" }),
+			buildUser({ id: "user-2" }),
+			buildUser({ id: "user-3" }),
+		])
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+
+		await user.click(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		)
+		await user.click(
+			within(screen.getByTestId("user-row-user-2")).getByRole("checkbox"),
+		)
+
+		expect(screen.getByTestId("admin-users-select-page")).toHaveAttribute(
+			"aria-checked",
+			"mixed",
+		)
+	})
+
+	test("marcar o checkbox de página seleciona todos os usuários elegíveis da página (e ignora os desabilitados)", async () => {
+		const user = userEvent.setup()
+		mockUsersList([
+			buildUser({ id: "user-1", role: "MEMBER" }),
+			buildUser({ id: "user-2", role: "MEMBER" }),
+			buildUser({ id: "user-3", role: "ADMIN" }),
+		])
+		renderWithProviders(<AdminUsersPage />)
+
+		await screen.findByTestId("user-row-user-1")
+
+		await user.click(screen.getByTestId("admin-users-select-page"))
+
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("checkbox"),
+		).toHaveAttribute("aria-checked", "true")
+		expect(
+			within(screen.getByTestId("user-row-user-2")).getByRole("checkbox"),
+		).toHaveAttribute("aria-checked", "true")
+		expect(
+			within(screen.getByTestId("user-row-user-3")).getByRole("checkbox"),
+		).toHaveAttribute("aria-checked", "false")
+	})
 })

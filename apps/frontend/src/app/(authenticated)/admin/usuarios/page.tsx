@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation"
 import type { KeyboardEvent } from "react"
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
+import { Checkbox } from "@/components/ui/checkbox"
 import { EmptyState } from "@/components/ui/empty-state"
 import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { PageHeader } from "@/components/ui/page-header"
@@ -16,11 +17,13 @@ import {
 	type AdminUser,
 	useUsers,
 } from "@/features/admin/api/use-users"
+import { resolvePermissions } from "@/features/admin/components/user-detail/use-user-detail-actions"
 import { UserDetailContainer } from "@/features/admin/components/user-detail/user-detail-container"
 import { UserFilterBar } from "@/features/admin/components/user-filter-bar"
 import { UserRow } from "@/features/admin/components/user-row"
 import type { UserFilter } from "@/features/admin/types"
 import { useDebounce } from "@/hooks/use-debounce"
+import { useAuthStore } from "@/lib/auth/auth-store"
 import type { ApiError } from "@/lib/errors"
 
 const SKELETON_ROWS = 5
@@ -82,6 +85,18 @@ interface UsersListProps {
 	selectedUserId: string | null
 	onPageChange: (target: number) => void
 	onSelect: (user: AdminUser) => void
+	selectedIds: Set<string>
+	onToggleSelect: (user: AdminUser, checked: boolean) => void
+	isUserSelectable: (user: AdminUser) => boolean
+}
+
+function resolvePageCheckboxState(
+	selectedOnPageCount: number,
+	selectableCount: number,
+): boolean | "indeterminate" {
+	if (selectableCount === 0 || selectedOnPageCount === 0) return false
+	if (selectedOnPageCount === selectableCount) return true
+	return "indeterminate"
 }
 
 function UsersList({
@@ -91,9 +106,38 @@ function UsersList({
 	selectedUserId,
 	onPageChange,
 	onSelect,
+	selectedIds,
+	onToggleSelect,
+	isUserSelectable,
 }: UsersListProps) {
+	const selectableUsers = users.filter(isUserSelectable)
+	const selectedOnPageCount = selectableUsers.filter((user) =>
+		selectedIds.has(user.id),
+	).length
+	const pageCheckboxState = resolvePageCheckboxState(
+		selectedOnPageCount,
+		selectableUsers.length,
+	)
+
+	function handleTogglePage(checked: boolean) {
+		for (const user of selectableUsers) {
+			onToggleSelect(user, checked)
+		}
+	}
+
 	return (
 		<>
+			{selectableUsers.length > 0 ? (
+				<div className="flex items-center gap-2 px-1 pb-1">
+					<Checkbox
+						checked={pageCheckboxState}
+						data-testid="admin-users-select-page"
+						aria-label="Selecionar todos os usuários da página"
+						onCheckedChange={(value) => handleTogglePage(value === true)}
+					/>
+					<span className="text-sm text-subtle">Selecionar página</span>
+				</div>
+			) : null}
 			<ul data-testid="admin-users-list" className="flex flex-col gap-2">
 				{users.map((user) => (
 					<UserRow
@@ -101,6 +145,10 @@ function UsersList({
 						user={user}
 						onSelect={onSelect}
 						isSelected={user.id === selectedUserId}
+						selectable
+						checked={selectedIds.has(user.id)}
+						selectDisabled={!isUserSelectable(user)}
+						onToggleSelect={onToggleSelect}
 					/>
 				))}
 			</ul>
@@ -127,6 +175,9 @@ interface UsersContentProps {
 	selectedUserId: string | null
 	onPageChange: (target: number) => void
 	onSelect: (user: AdminUser) => void
+	selectedIds: Set<string>
+	onToggleSelect: (user: AdminUser, checked: boolean) => void
+	isUserSelectable: (user: AdminUser) => boolean
 }
 
 function UsersContent({
@@ -139,6 +190,9 @@ function UsersContent({
 	selectedUserId,
 	onPageChange,
 	onSelect,
+	selectedIds,
+	onToggleSelect,
+	isUserSelectable,
 }: UsersContentProps) {
 	if (isLoading) return <LoadingState />
 	if (isError) return <ErrorState error={error} />
@@ -152,6 +206,9 @@ function UsersContent({
 			selectedUserId={selectedUserId}
 			onPageChange={onPageChange}
 			onSelect={onSelect}
+			selectedIds={selectedIds}
+			onToggleSelect={onToggleSelect}
+			isUserSelectable={isUserSelectable}
 		/>
 	)
 }
@@ -183,6 +240,8 @@ function AdminUsersContent({
 }: AdminUsersContentProps) {
 	const [page, setPage] = useState(1)
 	const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+	const currentUser = useAuthStore((state) => state.user)
 	const [inputQuery, setInputQuery] = useState(initialQuery)
 	const debouncedQuery = useDebounce(inputQuery, 500)
 	const limit = ADMIN_USERS_DEFAULT_LIMIT
@@ -242,6 +301,19 @@ function AdminUsersContent({
 		setSelectedUser((current) => (current ? { ...current, ...patch } : current))
 	}
 
+	function toggleSelect(user: AdminUser, checked: boolean) {
+		setSelectedIds((current) => {
+			const next = new Set(current)
+			if (checked) next.add(user.id)
+			else next.delete(user.id)
+			return next
+		})
+	}
+
+	function isUserSelectable(user: AdminUser): boolean {
+		return resolvePermissions(user, currentUser).canChangeStatus
+	}
+
 	function handleFilterChange(filter: UserFilter) {
 		setActiveFilter(filter)
 		setPage(1)
@@ -299,6 +371,9 @@ function AdminUsersContent({
 						selectedUserId={activeSelectedUser?.id ?? null}
 						onPageChange={handlePageChange}
 						onSelect={handleUserSelect}
+						selectedIds={selectedIds}
+						onToggleSelect={toggleSelect}
+						isUserSelectable={isUserSelectable}
 					/>
 				</div>
 
