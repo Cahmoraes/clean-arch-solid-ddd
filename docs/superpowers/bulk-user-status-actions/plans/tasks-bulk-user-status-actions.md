@@ -26,7 +26,7 @@
 - [x] 9. BulkActionBar — barra de ações fixa no rodapé [FR-004] → `task-09.md`
 - [x] 10. BulkStatusConfirmationDialog — diálogo de confirmação [FR-005] → `task-10.md`
 - [x] 11. useBulkChangeUserStatus — hook de mutation com resumo e invalidação de cache [FR-007, FR-010] → `task-11.md`
-- [ ] 12. AdminUsersContent — integração final (barra + diálogo + hook) [FR-004, FR-005] → `task-12.md`
+- [x] 12. AdminUsersContent — integração final (barra + diálogo + hook) [FR-004, FR-005] → `task-12.md`
 
 ## Ondas de Execução
 

@@ -1,6 +1,6 @@
 # Task 12: AdminUsersContent — integração final (barra + diálogo + hook) [FR-004, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-bulk-user-status-actions.md
 **Spec:** ../specs/bulk-user-status-actions-design.md
 **Tier:** capable
