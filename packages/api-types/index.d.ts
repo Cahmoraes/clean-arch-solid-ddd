@@ -1582,6 +1582,182 @@ export interface paths {
         };
         trace?: never;
     };
+    "/users/bulk-activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Bulk activate users
+         * @description Activates multiple user accounts at once (1 to 100 IDs). Requires admin authentication.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description IDs dos usuários a ativar em massa (1 a 100) */
+                        userIds: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Users processed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Quantidade de usuários efetivamente ativados */
+                            updated: number;
+                            /** @description Quantidade de IDs solicitados na requisição */
+                            requested: number;
+                            /** @description Quantidade de usuários ignorados (fora da política de permissão ou já no status alvo) */
+                            skipped: number;
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/users/bulk-deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Bulk deactivate users
+         * @description Deactivates multiple user accounts at once (1 to 100 IDs). Requires admin authentication.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @description IDs dos usuários a desativar em massa (1 a 100) */
+                        userIds: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Users processed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Quantidade de usuários efetivamente desativados */
+                            updated: number;
+                            /** @description Quantidade de IDs solicitados na requisição */
+                            requested: number;
+                            /** @description Quantidade de usuários ignorados (fora da política de permissão ou já no status alvo) */
+                            skipped: number;
+                        };
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/users/promote-admin": {
         parameters: {
             query?: never;
@@ -1838,6 +2014,12 @@ export interface paths {
                                  * @example -46.6333
                                  */
                                 longitude: number;
+                                /**
+                                 * @description Gym status
+                                 * @example activated
+                                 * @enum {string}
+                                 */
+                                status: "activated" | "deactivated";
                             }[];
                             /** @description Metadados de paginação */
                             pagination: {
@@ -2025,6 +2207,12 @@ export interface paths {
                              * @example -46.6333
                              */
                             longitude: number;
+                            /**
+                             * @description Gym status
+                             * @example activated
+                             * @enum {string}
+                             */
+                            status: "activated" | "deactivated";
                         };
                     };
                 };
@@ -2166,6 +2354,140 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/gyms/{gymId}/activate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Activate a gym
+         * @description Reactivates a previously deactivated gym, making it visible in listings/search again and allowing new check-ins. Requires ADMIN role
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Gym ID */
+                    gymId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Gym activated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example Gym activated */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Gym not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Conflict - gym is already activated */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/gyms/{gymId}/deactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Deactivate a gym
+         * @description Deactivates a gym so it stops appearing in listings/search and blocks new check-ins. Requires ADMIN role
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Gym ID */
+                    gymId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Gym deactivated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example Gym deactivated */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Gym not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Conflict - gym is already deactivated */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
     "/gyms/search/{name}": {
         parameters: {
             query?: never;
@@ -2227,6 +2549,12 @@ export interface paths {
                                  * @example -46.6333
                                  */
                                 longitude: number;
+                                /**
+                                 * @description Gym status
+                                 * @example activated
+                                 * @enum {string}
+                                 */
+                                status: "activated" | "deactivated";
                             }[];
                             /** @description Metadados de paginação */
                             pagination: {
