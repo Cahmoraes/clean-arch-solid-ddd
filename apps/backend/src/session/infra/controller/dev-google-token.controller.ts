@@ -12,7 +12,7 @@ import { SessionRoutes } from "./routes/session-routes.js"
 const devGoogleTokenBodySchema = z.object({
 	idToken: z.string().min(1),
 	sub: z.string().min(1),
-	email: z.string().email(),
+	email: z.email(),
 	name: z.string().min(1),
 	emailVerified: z.boolean().default(true),
 })
@@ -42,18 +42,15 @@ export class DevGoogleTokenController extends BaseController {
 	private async callback(req: FastifyRequest) {
 		const parsedBody = this.parseRequest(devGoogleTokenBodySchema, req.body)
 		if (parsedBody.isFailure()) return this.createResponseError(parsedBody)
-
 		if (!(this.googleAuthProvider instanceof InMemoryGoogleAuthProvider)) {
 			return ResponseFactory.NOT_FOUND({ message: "Not Found" })
 		}
-
 		this.googleAuthProvider.addValidToken(parsedBody.value.idToken, {
 			sub: parsedBody.value.sub,
 			email: parsedBody.value.email,
 			name: parsedBody.value.name,
 			emailVerified: parsedBody.value.emailVerified,
 		})
-
 		return ResponseFactory.CREATED({ body: { ok: true } })
 	}
 }
