@@ -24,4 +24,26 @@ describe("SearchBar", () => {
 		expect(screen.queryByRole("button")).not.toBeInTheDocument()
 		expect(screen.getByPlaceholderText("buscar")).toBeInTheDocument()
 	})
+
+	test("renderiza só o botão-ícone quando compact é true, mesmo com showShortcut", () => {
+		render(
+			<SearchBar
+				compact
+				showShortcut
+				onActivate={vi.fn()}
+				placeholder="buscar"
+			/>,
+		)
+		const button = screen.getByRole("button", { name: "Buscar" })
+		expect(button).toBeInTheDocument()
+		expect(screen.queryByText("buscar")).not.toBeInTheDocument()
+		expect(screen.queryByText("⌘K")).not.toBeInTheDocument()
+	})
+
+	test("chama onActivate ao clicar no botão-ícone compacto", async () => {
+		const onActivate = vi.fn()
+		render(<SearchBar compact onActivate={onActivate} placeholder="buscar" />)
+		await userEvent.click(screen.getByRole("button", { name: "Buscar" }))
+		expect(onActivate).toHaveBeenCalledTimes(1)
+	})
 })

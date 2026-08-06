@@ -8,6 +8,7 @@ export interface SearchBarProps
 	extends Omit<InputHTMLAttributes<HTMLInputElement>, "className"> {
 	className?: string
 	showShortcut?: boolean
+	compact?: boolean
 	/**
 	 * When provided, renders as a keyboard-accessible button that triggers
 	 * the Command Palette. The inner input is replaced with a decorative span.
@@ -18,6 +19,7 @@ export interface SearchBarProps
 export function SearchBar({
 	className,
 	showShortcut = false,
+	compact,
 	onActivate,
 	placeholder,
 	...inputProps
@@ -26,6 +28,22 @@ export function SearchBar({
 		"flex h-[52px] items-center gap-3 rounded-md border border-border bg-surface px-4 text-subtle",
 		className,
 	)
+
+	if (onActivate && compact) {
+		return (
+			<button
+				type="button"
+				onClick={onActivate}
+				aria-label="Buscar"
+				className={cn(
+					"flex h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-md border border-border bg-surface text-subtle",
+					className,
+				)}
+			>
+				<Search className="h-4 w-4" aria-hidden="true" />
+			</button>
+		)
+	}
 
 	if (onActivate) {
 		return (
