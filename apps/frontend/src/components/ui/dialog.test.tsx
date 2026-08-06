@@ -28,7 +28,7 @@ function ControlledDialog() {
 }
 
 describe("Dialog", () => {
-	test("DialogContent deve ter rounded-xl e shadow-md", () => {
+	test("DialogContent deve ter rounded-xl, shadow-md, respiro lateral e contenção vertical", () => {
 		render(
 			<Dialog open>
 				<DialogContent>conteúdo</DialogContent>
@@ -37,6 +37,9 @@ describe("Dialog", () => {
 		const content = screen.getByRole("dialog")
 		expect(content).toHaveClass("rounded-xl")
 		expect(content).toHaveClass("shadow-md")
+		expect(content).toHaveClass("w-[calc(100%-2rem)]")
+		expect(content).toHaveClass("max-h-[calc(100dvh-2rem)]")
+		expect(content).toHaveClass("overflow-y-auto")
 	})
 
 	test("opens via trigger and closes via close button", async () => {
