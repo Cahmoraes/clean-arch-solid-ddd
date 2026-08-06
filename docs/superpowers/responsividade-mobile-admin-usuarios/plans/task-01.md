@@ -1,6 +1,6 @@
 # Task 1: Modais: respiro lateral incondicional e contenção vertical no `DialogContent` e `AlertDialogContent`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/responsividade-mobile-admin-usuarios-design.md`
 **Tier:** cheap

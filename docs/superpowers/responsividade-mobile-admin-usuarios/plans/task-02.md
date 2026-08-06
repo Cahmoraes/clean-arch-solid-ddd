@@ -1,6 +1,6 @@
 # Task 2: `SearchBar`: variante `compact` (botão-ícone)
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/responsividade-mobile-admin-usuarios-design.md`
 **Tier:** cheap

@@ -1,6 +1,6 @@
 # Task 3: `ThemeToggle`: variante `compact` (botão redondo)
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/responsividade-mobile-admin-usuarios-design.md`
 **Tier:** cheap

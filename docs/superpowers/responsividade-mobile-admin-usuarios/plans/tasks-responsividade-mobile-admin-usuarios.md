@@ -17,9 +17,9 @@
 
 ## Tarefas
 
-- [ ] 1. Modais: respiro lateral incondicional e contenção vertical no `DialogContent`/`AlertDialogContent` → `task-01.md`
-- [ ] 2. `SearchBar`: variante `compact` (botão-ícone) → `task-02.md`
-- [ ] 3. `ThemeToggle`: variante `compact` (botão redondo) → `task-03.md`
+- [x] 1. Modais: respiro lateral incondicional e contenção vertical no `DialogContent`/`AlertDialogContent` → `task-01.md`
+- [x] 2. `SearchBar`: variante `compact` (botão-ícone) → `task-02.md`
+- [x] 3. `ThemeToggle`: variante `compact` (botão redondo) → `task-03.md`
 - [ ] 4. Header do `authenticated-shell`: duas instâncias de cada componente → `task-04.md`
 
 ## Ondas de Execução
