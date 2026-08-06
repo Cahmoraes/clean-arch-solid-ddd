@@ -71,14 +71,27 @@ describe("AuthenticatedShell — VOLT", () => {
 		expect(screen.getByRole("link", { name: /Usuários/ })).toBeInTheDocument()
 	})
 
-	test("renderiza o toggle de tema na topbar", () => {
+	test("renderiza as duas instâncias do toggle de tema (completa e compacta) na topbar", () => {
 		setRole("MEMBER")
 		renderWithProviders(
 			<AuthenticatedShell>
 				<p>conteúdo</p>
 			</AuthenticatedShell>,
 		)
-		expect(screen.getByRole("button", { name: /modo/i })).toBeInTheDocument()
+		expect(screen.getAllByRole("button", { name: /modo/i })).toHaveLength(2)
+	})
+
+	test("renderiza duas instâncias de busca (completa e compacta) na topbar", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		expect(
+			screen.getByRole("button", { name: /buscar\.\.\./i }),
+		).toBeInTheDocument()
+		expect(screen.getByRole("button", { name: "Buscar" })).toBeInTheDocument()
 	})
 
 	test("exibe o botão Sair na sidebar para MEMBER", () => {

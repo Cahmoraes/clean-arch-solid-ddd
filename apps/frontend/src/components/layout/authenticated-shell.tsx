@@ -295,8 +295,15 @@ export function AuthenticatedShell({
 						className="max-w-[460px] flex-1 max-[560px]:hidden"
 						onActivate={() => setIsCommandPaletteOpen(true)}
 					/>
+					<SearchBar
+						compact
+						placeholder="Buscar..."
+						className="hidden max-[560px]:flex"
+						onActivate={() => setIsCommandPaletteOpen(true)}
+					/>
 					<div className="ml-auto flex items-center gap-3">
-						<ThemeToggle />
+						<ThemeToggle className="max-[560px]:hidden" />
+						<ThemeToggle compact className="hidden max-[560px]:flex" />
 						<NotificationBell />
 						<Link href="/perfil" aria-label="Ir para perfil">
 							<Avatar name={meData?.name} size="sm" />

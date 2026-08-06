@@ -91,7 +91,7 @@ describe("RF-002 — Clique no SearchBar abre palette", () => {
 			</AuthenticatedShell>,
 		)
 		// busca o botão da SearchBar (tem role=button quando onActivate fornecido)
-		const searchBtn = screen.getByRole("button", { name: /buscar/i })
+		const searchBtn = screen.getByRole("button", { name: /buscar\.\.\./i })
 		await userEvent.click(searchBtn)
 
 		expect(
