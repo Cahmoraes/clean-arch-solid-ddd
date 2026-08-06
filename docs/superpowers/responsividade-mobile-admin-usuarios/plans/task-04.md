@@ -1,6 +1,6 @@
 # Task 4: Header do `authenticated-shell`: duas instâncias de cada componente
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/responsividade-mobile-admin-usuarios-design.md`
 **Tier:** standard
