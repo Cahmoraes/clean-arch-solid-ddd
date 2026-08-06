@@ -41,4 +41,27 @@ describe("ThemeToggle", () => {
 		expect(button.className).toContain("w-16")
 		expect(button.className).not.toContain("max-[860px]")
 	})
+
+	test("compact: renderiza botão redondo (~36px) sem trilho/pill deslizante", () => {
+		render(<ThemeToggle compact />)
+		const button = screen.getByRole("button", { name: /modo/i })
+		expect(button.className).toContain("rounded-full")
+		expect(button.className).toContain("h-9")
+		expect(button.className).toContain("w-9")
+		expect(button.className).not.toContain("w-16")
+	})
+
+	test("compact: alterna tema no clique", () => {
+		render(<ThemeToggle compact />)
+		fireEvent.click(screen.getByRole("button", { name: /modo/i }))
+		expect(setTheme).toHaveBeenCalledWith("light")
+	})
+
+	test("compact: aria-label reflete o estado, igual à variante completa", () => {
+		currentTheme = "light"
+		render(<ThemeToggle compact />)
+		expect(
+			screen.getByRole("button", { name: "Ativar modo escuro" }),
+		).toBeInTheDocument()
+	})
 })

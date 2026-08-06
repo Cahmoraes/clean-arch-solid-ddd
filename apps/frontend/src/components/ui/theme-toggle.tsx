@@ -22,9 +22,10 @@ const THEME_CONFIG = {
 
 export interface ThemeToggleProps {
 	className?: string
+	compact?: boolean
 }
 
-export function ThemeToggle({ className }: ThemeToggleProps) {
+export function ThemeToggle({ className, compact }: ThemeToggleProps) {
 	const { theme, setTheme } = useTheme()
 	const [mounted, setMounted] = useState(false)
 
@@ -37,6 +38,28 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
 	const isDark = theme === "dark"
 	const { next, ariaLabel, pillLeft, Icon } =
 		THEME_CONFIG[isDark ? "dark" : "light"]
+	const iconKey = isDark ? "moon" : "sun"
+
+	if (compact) {
+		return (
+			<button
+				type="button"
+				onClick={() => setTheme(next)}
+				aria-label={ariaLabel}
+				aria-pressed={isDark}
+				className={cn(
+					"inline-flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground",
+					className,
+				)}
+			>
+				<Icon
+					key={iconKey}
+					className="h-4 w-4 flex-shrink-0"
+					aria-hidden="true"
+				/>
+			</button>
+		)
+	}
 
 	return (
 		<button
@@ -56,7 +79,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
 				)}
 			>
 				<Icon
-					key={isDark ? "moon" : "sun"}
+					key={iconKey}
 					className="theme-toggle-icon h-3.5 w-3.5 flex-shrink-0"
 					aria-hidden="true"
 				/>
