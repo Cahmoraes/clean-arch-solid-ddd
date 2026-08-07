@@ -1,6 +1,6 @@
 # Task 6: Botão "Editar dados" ícone-só + tooltip [FR-001, FR-008]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** ../prd/prd-admin-semantic-icons.md
 **Spec:** ../specs/admin-semantic-icons-design.md
 **Tier:** standard

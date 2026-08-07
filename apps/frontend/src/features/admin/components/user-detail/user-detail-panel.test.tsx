@@ -3,6 +3,7 @@ import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import type { ReactNode } from "react"
 import { afterEach, describe, expect, test } from "vitest"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { makeTestJwt } from "@/test/render"
@@ -29,7 +30,9 @@ function renderPanel(user: AdminUser) {
 		},
 	})
 	const wrapper = ({ children }: { children: ReactNode }) => (
-		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+		<QueryClientProvider client={queryClient}>
+			<TooltipProvider>{children}</TooltipProvider>
+		</QueryClientProvider>
 	)
 	return render(<UserDetailPanel user={user} />, { wrapper })
 }
