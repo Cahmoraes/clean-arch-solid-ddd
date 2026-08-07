@@ -114,4 +114,11 @@ describe("GymCard VOLT", () => {
 		expect(screen.getByText("Disponível")).toBeInTheDocument()
 		expect(screen.queryByText("Desativada")).not.toBeInTheDocument()
 	})
+
+	test("o selo de status usa o StatusBadge compartilhado (com ícone semântico)", () => {
+		renderWithProviders(<GymCard gym={gym} />)
+		const badge = screen.getByText("Disponível").closest("span")
+		expect(badge).not.toBeNull()
+		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
+	})
 })

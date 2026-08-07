@@ -90,4 +90,11 @@ describe("GymRow VOLT", () => {
 		expect(screen.queryByText("Desativada")).not.toBeInTheDocument()
 		expect(screen.getByText("Disponível")).toBeInTheDocument()
 	})
+
+	test("o selo de status usa o StatusBadge compartilhado (com ícone semântico)", () => {
+		renderWithProviders(<GymRow gym={gym} />)
+		const badge = screen.getByText("Disponível").closest("span")
+		expect(badge).not.toBeNull()
+		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
+	})
 })

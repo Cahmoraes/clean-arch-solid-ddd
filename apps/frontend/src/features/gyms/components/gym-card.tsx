@@ -1,6 +1,7 @@
 import { MapPin, Pencil } from "lucide-react"
 import { motion } from "motion/react"
 import Link from "next/link"
+import { StatusBadge } from "@/components/ui/status-badge"
 import type { Gym } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
 import { resolveLocation } from "@/features/gyms/lib/resolve-location"
@@ -8,25 +9,6 @@ import { resolveLocation } from "@/features/gyms/lib/resolve-location"
 export interface GymCardProps {
 	gym: Gym
 	adminEditHref?: string
-}
-
-function renderStatusBadge(
-	adminEditHref: string | undefined,
-	status: "activated" | "deactivated" | undefined,
-) {
-	const isDeactivated = adminEditHref && status === "deactivated"
-	return (
-		<span
-			className={`absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold backdrop-blur ${
-				isDeactivated
-					? "bg-destructive-soft text-destructive"
-					: "bg-background/80 text-subtle"
-			}`}
-		>
-			<span className="h-1.5 w-1.5 rounded-full bg-current" />{" "}
-			{isDeactivated ? "Desativada" : "Disponível"}
-		</span>
-	)
 }
 
 const cardMotionVariants = {
@@ -43,7 +25,18 @@ const cardMotionVariants = {
 	},
 }
 
+function resolveGymStatusBadge(gym: Gym, adminEditHref?: string) {
+	const isDeactivated = adminEditHref && gym.status === "deactivated"
+	return isDeactivated
+		? { tone: "danger" as const, label: "Desativada" }
+		: { tone: "success" as const, label: "Disponível" }
+}
+
 export function GymCard({ gym, adminEditHref }: GymCardProps) {
+	const { tone: statusTone, label: statusLabel } = resolveGymStatusBadge(
+		gym,
+		adminEditHref,
+	)
 	return (
 		<motion.div
 			data-testid="gym-card-wrapper"
@@ -66,7 +59,12 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 						className="h-full w-full"
 						hoverEffect={false}
 					/>
-					{renderStatusBadge(adminEditHref, gym.status)}
+					<StatusBadge
+						tone={statusTone}
+						className="absolute left-3 top-3 z-10 backdrop-blur"
+					>
+						{statusLabel}
+					</StatusBadge>
 				</div>
 				<div className="flex flex-1 flex-col gap-2.5 p-[18px]">
 					<p className="font-display text-base font-semibold text-card-foreground">
