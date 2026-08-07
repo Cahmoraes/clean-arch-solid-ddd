@@ -17,7 +17,7 @@ export interface UserRowProps {
 	onToggleSelect?: (user: AdminUser, checked: boolean) => void
 }
 
-type StatusTone = "success" | "warning" | "neutral"
+type StatusTone = "success" | "warning" | "danger" | "neutral"
 
 function statusLabel(status: string): string {
 	if (status === "activated") return "Ativo"
@@ -29,6 +29,7 @@ function statusLabel(status: string): string {
 function statusTone(status: string): StatusTone {
 	if (status === "activated") return "success"
 	if (status === "locked") return "warning"
+	if (status === "suspended") return "danger"
 	return "neutral"
 }
 

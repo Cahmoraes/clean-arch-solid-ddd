@@ -65,6 +65,17 @@ describe("UserRow VOLT", () => {
 		expect(screen.getByText("Bloqueado")).toBeInTheDocument()
 	})
 
+	test("status Inativo (suspenso) renderiza com ícone semântico (tone danger)", () => {
+		render(
+			<ul>
+				<UserRow user={buildUser({ status: "suspended" })} />
+			</ul>,
+		)
+		const badge = screen.getByText("Inativo").closest("span")
+		expect(badge).not.toBeNull()
+		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
+	})
+
 	test("chama onSelect com os dados do usuário ao clicar na linha", async () => {
 		const user = userEvent.setup()
 		const onSelect = vi.fn()

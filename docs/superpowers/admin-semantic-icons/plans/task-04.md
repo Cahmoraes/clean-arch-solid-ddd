@@ -1,6 +1,6 @@
 # Task 4: StatusBadge — ícone semântico e vocabulário de academia [FR-003, FR-004]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** ../prd/prd-admin-semantic-icons.md
 **Spec:** ../specs/admin-semantic-icons-design.md
 **Tier:** standard

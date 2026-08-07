@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { STATUS_ICON, type StatusIconTone } from "@/components/ui/status-icon"
 import { cn } from "@/lib/cn"
 
 type StatusTone = "success" | "warning" | "danger" | "neutral"
@@ -16,7 +17,12 @@ export interface StatusBadgeProps {
 	className?: string
 }
 
+function isIconTone(tone: StatusTone): tone is StatusIconTone {
+	return tone !== "neutral"
+}
+
 export function StatusBadge({ tone, children, className }: StatusBadgeProps) {
+	const Icon = isIconTone(tone) ? STATUS_ICON[tone] : null
 	return (
 		<span
 			className={cn(
@@ -25,10 +31,7 @@ export function StatusBadge({ tone, children, className }: StatusBadgeProps) {
 				className,
 			)}
 		>
-			<span
-				className="h-1.5 w-1.5 rounded-full bg-current"
-				aria-hidden="true"
-			/>
+			{Icon ? <Icon className="h-3.5 w-3.5" aria-hidden="true" /> : null}
 			{children}
 		</span>
 	)
