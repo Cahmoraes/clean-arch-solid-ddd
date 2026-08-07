@@ -17,8 +17,8 @@
 
 - [x] 1. Componente Tooltip (hand-built sobre radix-ui) → `task-01.md`
 - [x] 2. Mapeamento centralizado de ícones (status-icon.ts) → `task-02.md`
-- [ ] 3. TooltipProvider na árvore de providers → `task-03.md`
-- [ ] 4. StatusBadge — ícone semântico e vocabulário de academia [FR-003, FR-004] → `task-04.md`
+- [x] 3. TooltipProvider na árvore de providers → `task-03.md`
+- [x] 4. StatusBadge — ícone semântico e vocabulário de academia [FR-003, FR-004] → `task-04.md`
 - [ ] 5. Badge de status de academias usa StatusBadge compartilhado (list + grid) [FR-005] → `task-05.md`
 - [ ] 6. Botão "Editar dados" ícone-só + tooltip [FR-001, FR-008] → `task-06.md`
 - [ ] 7. Trigger "Mais ações" ícone-só + tooltip [FR-002, FR-007, FR-008] → `task-07.md`
