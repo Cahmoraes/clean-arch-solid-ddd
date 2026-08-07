@@ -3,6 +3,7 @@
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { type ReactNode, useEffect, useLayoutEffect, useState } from "react"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { getApi } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { getTokenRefreshScheduler } from "@/lib/auth/token-refresh"
@@ -65,10 +66,12 @@ export function Providers({ children }: { children: ReactNode }) {
 	const [queryClient] = useState(() => createQueryClient())
 
 	return (
-		<GoogleOAuthProvider clientId={googleClientId}>
-			<QueryClientProvider client={queryClient}>
-				<AuthProvider>{children}</AuthProvider>
-			</QueryClientProvider>
-		</GoogleOAuthProvider>
+		<TooltipProvider>
+			<GoogleOAuthProvider clientId={googleClientId}>
+				<QueryClientProvider client={queryClient}>
+					<AuthProvider>{children}</AuthProvider>
+				</QueryClientProvider>
+			</GoogleOAuthProvider>
+		</TooltipProvider>
 	)
 }

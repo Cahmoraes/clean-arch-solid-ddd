@@ -1,6 +1,6 @@
 # Task 3: TooltipProvider na árvore de providers
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** ../prd/prd-admin-semantic-icons.md
 **Spec:** ../specs/admin-semantic-icons-design.md
 **Tier:** cheap

@@ -5,6 +5,7 @@ import {
 	render,
 } from "@testing-library/react"
 import { type ReactElement, type ReactNode, Suspense } from "react"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 interface ProviderProps {
 	children: ReactNode
@@ -35,7 +36,9 @@ export function renderWithProviders(
 	function Wrapper({ children }: ProviderProps): ReactElement {
 		return (
 			<QueryClientProvider client={queryClient}>
-				<Suspense fallback={null}>{children}</Suspense>
+				<TooltipProvider>
+					<Suspense fallback={null}>{children}</Suspense>
+				</TooltipProvider>
 			</QueryClientProvider>
 		)
 	}
