@@ -1,6 +1,6 @@
 # Task 1: Componente Tooltip (hand-built sobre radix-ui)
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** ../prd/prd-admin-semantic-icons.md
 **Spec:** ../specs/admin-semantic-icons-design.md
 **Tier:** standard
