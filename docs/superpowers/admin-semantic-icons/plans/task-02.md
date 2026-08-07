@@ -1,6 +1,6 @@
 # Task 2: Mapeamento centralizado de ícones (status-icon.ts)
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** ../prd/prd-admin-semantic-icons.md
 **Spec:** ../specs/admin-semantic-icons-design.md
 **Tier:** cheap
