@@ -1,6 +1,5 @@
 "use client"
 
-import { ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
 	DropdownMenu,
@@ -9,7 +8,15 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ACTION_ICON } from "@/components/ui/status-icon"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip"
 import type { UserDetailPermissions } from "./use-user-detail-actions"
+
+const MoreActionsIcon = ACTION_ICON.moreActions
 
 export interface ActionFlags {
 	isPending: boolean
@@ -144,23 +151,28 @@ export function MoreActionsMenu({
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button
-					variant="outline"
-					className="h-11 rounded-md px-4 font-semibold"
-					disabled={
-						flags.isPending ||
-						flags.isActivating ||
-						flags.isSuspending ||
-						flags.isPromoting ||
-						flags.isDemoting ||
-						flags.isDeleting
-					}
-				>
-					Mais ações
-					<ChevronDown className="ml-1 size-4" />
-				</Button>
-			</DropdownMenuTrigger>
+			<Tooltip>
+				<TooltipTrigger asChild>
+					<DropdownMenuTrigger asChild>
+						<Button
+							variant="outline"
+							size="icon"
+							aria-label="Mais ações"
+							disabled={
+								flags.isPending ||
+								flags.isActivating ||
+								flags.isSuspending ||
+								flags.isPromoting ||
+								flags.isDemoting ||
+								flags.isDeleting
+							}
+						>
+							<MoreActionsIcon className="h-4 w-4" aria-hidden="true" />
+						</Button>
+					</DropdownMenuTrigger>
+				</TooltipTrigger>
+				<TooltipContent>Mais ações</TooltipContent>
+			</Tooltip>
 			<DropdownMenuContent align="start">
 				<AdminSection
 					permissions={permissions}
