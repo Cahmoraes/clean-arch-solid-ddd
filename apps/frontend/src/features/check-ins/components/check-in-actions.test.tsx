@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react"
+import { screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 
 vi.mock("sonner", () => ({
 	toast: { success: vi.fn(), error: vi.fn() },
@@ -9,6 +9,7 @@ vi.mock("sonner", () => ({
 import { toast } from "sonner"
 import { useRejectCheckIn, useValidateCheckIn } from "@/features/check-ins/api"
 import { ApiError } from "@/lib/errors"
+import { renderWithProviders } from "@/test/render"
 import { CheckInActions } from "./check-in-actions.js"
 
 vi.mock("@/features/check-ins/api", () => ({
@@ -58,24 +59,26 @@ describe("CheckInActions", () => {
 		)
 	})
 
-	it("renders Aprovar and Rejeitar buttons for a pending check-in", () => {
-		render(<CheckInActions checkIn={pendingCheckIn} />)
+	test("renders Aprovar and Rejeitar buttons for a pending check-in", () => {
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
 		expect(screen.getByTestId("checkin-approve-ci-1")).toBeInTheDocument()
 		expect(screen.getByTestId("checkin-reject-ci-1")).toBeInTheDocument()
 	})
 
-	it("renders only Rejeitar button for a validated check-in", () => {
-		render(<CheckInActions checkIn={validatedCheckIn} />)
+	test("renders only Rejeitar button for a validated check-in", () => {
+		renderWithProviders(<CheckInActions checkIn={validatedCheckIn} />)
 		expect(screen.getByTestId("checkin-reject-ci-2")).toBeInTheDocument()
 		expect(screen.queryByTestId("checkin-approve-ci-2")).not.toBeInTheDocument()
 	})
 
-	it("renders nothing for a rejected check-in", () => {
-		const { container } = render(<CheckInActions checkIn={rejectedCheckIn} />)
+	test("renders nothing for a rejected check-in", () => {
+		const { container } = renderWithProviders(
+			<CheckInActions checkIn={rejectedCheckIn} />,
+		)
 		expect(container).toBeEmptyDOMElement()
 	})
 
-	it("calls validate.mutateAsync and shows success toast on Aprovar click", async () => {
+	test("calls validate.mutateAsync and shows success toast on Aprovar click", async () => {
 		const mutateAsync = vi.fn().mockResolvedValue(undefined)
 		vi.mocked(useValidateCheckIn).mockReturnValue(
 			makeMutation({ mutateAsync }) as unknown as ReturnType<
@@ -83,13 +86,13 @@ describe("CheckInActions", () => {
 			>,
 		)
 		const user = userEvent.setup()
-		render(<CheckInActions checkIn={pendingCheckIn} />)
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
 		await user.click(screen.getByTestId("checkin-approve-ci-1"))
 		expect(mutateAsync).toHaveBeenCalledWith("ci-1")
 		expect(toast.success).toHaveBeenCalledWith("Check-in aprovado com sucesso.")
 	})
 
-	it("calls reject.mutateAsync and shows success toast on Rejeitar click (pending)", async () => {
+	test("calls reject.mutateAsync and shows success toast on Rejeitar click (pending)", async () => {
 		const mutateAsync = vi.fn().mockResolvedValue(undefined)
 		vi.mocked(useRejectCheckIn).mockReturnValue(
 			makeMutation({ mutateAsync }) as unknown as ReturnType<
@@ -97,13 +100,13 @@ describe("CheckInActions", () => {
 			>,
 		)
 		const user = userEvent.setup()
-		render(<CheckInActions checkIn={pendingCheckIn} />)
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
 		await user.click(screen.getByTestId("checkin-reject-ci-1"))
 		expect(mutateAsync).toHaveBeenCalledWith("ci-1")
 		expect(toast.success).toHaveBeenCalledWith("Check-in rejeitado.")
 	})
 
-	it("calls reject.mutateAsync and shows success toast on Rejeitar click (validated)", async () => {
+	test("calls reject.mutateAsync and shows success toast on Rejeitar click (validated)", async () => {
 		const mutateAsync = vi.fn().mockResolvedValue(undefined)
 		vi.mocked(useRejectCheckIn).mockReturnValue(
 			makeMutation({ mutateAsync }) as unknown as ReturnType<
@@ -111,13 +114,13 @@ describe("CheckInActions", () => {
 			>,
 		)
 		const user = userEvent.setup()
-		render(<CheckInActions checkIn={validatedCheckIn} />)
+		renderWithProviders(<CheckInActions checkIn={validatedCheckIn} />)
 		await user.click(screen.getByTestId("checkin-reject-ci-2"))
 		expect(mutateAsync).toHaveBeenCalledWith("ci-2")
 		expect(toast.success).toHaveBeenCalledWith("Check-in rejeitado.")
 	})
 
-	it("shows error toast with ApiError.userMessage when validate fails", async () => {
+	test("shows error toast with ApiError.userMessage when validate fails", async () => {
 		const apiError = new ApiError(
 			409,
 			"already_validated",
@@ -129,24 +132,64 @@ describe("CheckInActions", () => {
 			}) as unknown as ReturnType<typeof useValidateCheckIn>,
 		)
 		const user = userEvent.setup()
-		render(<CheckInActions checkIn={pendingCheckIn} />)
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
 		await user.click(screen.getByTestId("checkin-approve-ci-1"))
 		expect(toast.error).toHaveBeenCalledWith(
 			"Conflito ao processar a solicitação.",
 		)
 	})
 
-	it("shows fallback error toast when reject fails with unknown error", async () => {
+	test("shows fallback error toast when reject fails with unknown error", async () => {
 		vi.mocked(useRejectCheckIn).mockReturnValue(
 			makeMutation({
 				mutateAsync: vi.fn().mockRejectedValue(new Error("network")),
 			}) as unknown as ReturnType<typeof useRejectCheckIn>,
 		)
 		const user = userEvent.setup()
-		render(<CheckInActions checkIn={pendingCheckIn} />)
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
 		await user.click(screen.getByTestId("checkin-reject-ci-1"))
 		expect(toast.error).toHaveBeenCalledWith(
 			"Não foi possível rejeitar o check-in.",
 		)
+	})
+
+	test("FR-006: os botões usam o componente Button compartilhado, sem texto visível", () => {
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
+		const approveBtn = screen.getByTestId("checkin-approve-ci-1")
+		const rejectBtn = screen.getByTestId("checkin-reject-ci-1")
+		expect(within(approveBtn).queryByText("Aprovar")).not.toBeInTheDocument()
+		expect(approveBtn).toHaveAttribute("aria-label", "Aprovar")
+		expect(within(rejectBtn).queryByText("Rejeitar")).not.toBeInTheDocument()
+		expect(rejectBtn).toHaveAttribute("aria-label", "Rejeitar")
+	})
+
+	test("FR-008: exibe tooltip no hover e no foco de teclado de cada botão", async () => {
+		const user = userEvent.setup()
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
+		const approveBtn = screen.getByTestId("checkin-approve-ci-1")
+
+		await user.hover(approveBtn)
+		expect(await screen.findByRole("tooltip")).toHaveTextContent("Aprovar")
+		await user.unhover(approveBtn)
+
+		approveBtn.focus()
+		expect(await screen.findByRole("tooltip")).toHaveTextContent("Aprovar")
+	})
+
+	test("mostra um ícone de carregamento apenas no botão que está de fato pendente", () => {
+		vi.mocked(useValidateCheckIn).mockReturnValue(
+			makeMutation({ isPending: true }) as unknown as ReturnType<
+				typeof useValidateCheckIn
+			>,
+		)
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
+		const approveBtn = screen.getByTestId("checkin-approve-ci-1")
+		const rejectBtn = screen.getByTestId("checkin-reject-ci-1")
+		expect(
+			(approveBtn as HTMLElement).querySelector(".animate-spin"),
+		).toBeInTheDocument()
+		expect(
+			(rejectBtn as HTMLElement).querySelector(".animate-spin"),
+		).not.toBeInTheDocument()
 	})
 })

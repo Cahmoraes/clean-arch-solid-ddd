@@ -1,6 +1,14 @@
 "use client"
 
+import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { ACTION_ICON } from "@/components/ui/status-icon"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip"
 import type { CheckIn } from "@/features/check-ins/api"
 import { useRejectCheckIn, useValidateCheckIn } from "@/features/check-ins/api"
 import { ApiError } from "@/lib/errors"
@@ -21,23 +29,38 @@ interface RejectButtonProps {
 	isPending: boolean
 }
 
+const ApproveIcon = ACTION_ICON.approve
+const RejectIcon = ACTION_ICON.reject
+
 function RejectButton({
 	checkInId,
 	onClick,
 	isLoading,
 	isPending,
 }: RejectButtonProps) {
+	const label = isPending ? "Rejeitando..." : "Rejeitar"
 	return (
-		<button
-			type="button"
-			onClick={onClick}
-			disabled={isLoading}
-			aria-busy={isPending}
-			data-testid={`checkin-reject-${checkInId}`}
-			className="h-[38px] rounded-md bg-destructive-soft px-3.5 text-[13.5px] font-semibold text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground disabled:opacity-60"
-		>
-			{isPending ? "Rejeitando..." : "Rejeitar"}
-		</button>
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<Button
+					variant="ghost"
+					size="icon"
+					onClick={onClick}
+					disabled={isLoading}
+					aria-busy={isPending}
+					aria-label={label}
+					data-testid={`checkin-reject-${checkInId}`}
+					className="bg-destructive-soft text-destructive hover:bg-destructive hover:text-destructive-foreground"
+				>
+					{isPending ? (
+						<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+					) : (
+						<RejectIcon className="h-4 w-4" aria-hidden="true" />
+					)}
+				</Button>
+			</TooltipTrigger>
+			<TooltipContent>{label}</TooltipContent>
+		</Tooltip>
 	)
 }
 
@@ -54,17 +77,29 @@ function ApproveButton({
 	isLoading,
 	isPending,
 }: ApproveButtonProps) {
+	const label = isPending ? "Aprovando..." : "Aprovar"
 	return (
-		<button
-			type="button"
-			onClick={onClick}
-			disabled={isLoading}
-			aria-busy={isPending}
-			data-testid={`checkin-approve-${checkInId}`}
-			className="h-[38px] rounded-md bg-accent px-3.5 text-[13.5px] font-semibold text-accent-foreground transition-colors hover:bg-primary-strong disabled:opacity-60"
-		>
-			{isPending ? "Aprovando..." : "Aprovar"}
-		</button>
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<Button
+					variant="ghost"
+					size="icon"
+					onClick={onClick}
+					disabled={isLoading}
+					aria-busy={isPending}
+					aria-label={label}
+					data-testid={`checkin-approve-${checkInId}`}
+					className="bg-accent text-accent-foreground hover:bg-primary-strong"
+				>
+					{isPending ? (
+						<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+					) : (
+						<ApproveIcon className="h-4 w-4" aria-hidden="true" />
+					)}
+				</Button>
+			</TooltipTrigger>
+			<TooltipContent>{label}</TooltipContent>
+		</Tooltip>
 	)
 }
 

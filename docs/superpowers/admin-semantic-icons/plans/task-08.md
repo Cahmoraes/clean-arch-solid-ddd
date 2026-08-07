@@ -1,6 +1,6 @@
 # Task 8: Botões Aprovar/Rejeitar ícone-só + tooltip em check-ins [FR-006, FR-008]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** ../prd/prd-admin-semantic-icons.md
 **Spec:** ../specs/admin-semantic-icons-design.md
 **Tier:** standard
