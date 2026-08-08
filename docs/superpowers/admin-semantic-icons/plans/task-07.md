@@ -1,6 +1,6 @@
 # Task 7: Trigger "Mais ações" ícone-só + tooltip [FR-002, FR-007, FR-008]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** ../prd/prd-admin-semantic-icons.md
 **Spec:** ../specs/admin-semantic-icons-design.md
 **Tier:** standard

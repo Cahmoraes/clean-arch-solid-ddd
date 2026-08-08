@@ -1,6 +1,6 @@
 # Task 5: Badge de status de academias usa StatusBadge compartilhado (list + grid) [FR-005]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** ../prd/prd-admin-semantic-icons.md
 **Spec:** ../specs/admin-semantic-icons-design.md
 **Tier:** standard

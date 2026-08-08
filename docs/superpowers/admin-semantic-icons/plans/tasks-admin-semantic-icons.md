@@ -19,10 +19,10 @@
 - [x] 2. Mapeamento centralizado de ícones (status-icon.ts) → `task-02.md`
 - [x] 3. TooltipProvider na árvore de providers → `task-03.md`
 - [x] 4. StatusBadge — ícone semântico e vocabulário de academia [FR-003, FR-004] → `task-04.md`
-- [ ] 5. Badge de status de academias usa StatusBadge compartilhado (list + grid) [FR-005] → `task-05.md`
-- [ ] 6. Botão "Editar dados" ícone-só + tooltip [FR-001, FR-008] → `task-06.md`
-- [ ] 7. Trigger "Mais ações" ícone-só + tooltip [FR-002, FR-007, FR-008] → `task-07.md`
-- [ ] 8. Botões Aprovar/Rejeitar ícone-só + tooltip em check-ins [FR-006, FR-008] → `task-08.md`
+- [x] 5. Badge de status de academias usa StatusBadge compartilhado (list + grid) [FR-005] → `task-05.md`
+- [x] 6. Botão "Editar dados" ícone-só + tooltip [FR-001, FR-008] → `task-06.md`
+- [x] 7. Trigger "Mais ações" ícone-só + tooltip [FR-002, FR-007, FR-008] → `task-07.md`
+- [x] 8. Botões Aprovar/Rejeitar ícone-só + tooltip em check-ins [FR-006, FR-008] → `task-08.md`
 
 <!-- FR-007 é uma restrição de não-mudança (RoleBadge e itens internos do dropdown continuam em texto); mapeada na task 7, que é o único ponto de código real adjacente a essa garantia (o trigger do dropdown que ela protege). RoleBadge não é tocado por nenhuma task — confirmado como fora de escopo na spec e no PRD. -->
 
