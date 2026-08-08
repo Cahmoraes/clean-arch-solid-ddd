@@ -76,6 +76,15 @@ describe("UserDetailPanel", () => {
 		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
 	})
 
+	test("status Ativo renderiza com ícone semântico (tone success)", () => {
+		renderPanel(buildUser({ status: "activated" }))
+		const header = within(screen.getByRole("banner"))
+		const badge = header.getByText("Ativo").closest("span")
+		expect(badge).not.toBeNull()
+		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
+		expect(badge as HTMLElement).toHaveClass("text-success")
+	})
+
 	test("não exibe o botão Editar dados sem usuário autenticado", () => {
 		renderPanel(buildUser({ role: "MEMBER" }))
 		expect(

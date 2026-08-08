@@ -70,6 +70,21 @@ describe("DetailsTab", () => {
 		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
 	})
 
+	test("status Ativo renderiza com ícone semântico (tone success)", () => {
+		render(
+			<DetailsTab
+				user={buildUser({ status: "activated" })}
+				permissions={noPermissions}
+				editing={false}
+				onStopEdit={() => {}}
+			/>,
+		)
+		const badge = screen.getByText("Ativo").closest("span")
+		expect(badge).not.toBeNull()
+		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
+		expect(badge as HTMLElement).toHaveClass("text-success")
+	})
+
 	test("exibe fallback gracioso para último acesso ausente", () => {
 		render(
 			<DetailsTab

@@ -176,6 +176,32 @@ describe("CheckInActions", () => {
 		expect(await screen.findByRole("tooltip")).toHaveTextContent("Aprovar")
 	})
 
+	test("FR-008: exibe tooltip no hover e no foco de teclado do botão Rejeitar", async () => {
+		const user = userEvent.setup()
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
+		const rejectBtn = screen.getByTestId("checkin-reject-ci-1")
+
+		await user.hover(rejectBtn)
+		expect(await screen.findByRole("tooltip")).toHaveTextContent("Rejeitar")
+		await user.unhover(rejectBtn)
+
+		rejectBtn.focus()
+		expect(await screen.findByRole("tooltip")).toHaveTextContent("Rejeitar")
+	})
+
+	test("aria-label do botão muda dinamicamente para 'Aprovando...'/'Rejeitando...' durante o estado pendente", () => {
+		vi.mocked(useValidateCheckIn).mockReturnValue(
+			makeMutation({ isPending: true }) as unknown as ReturnType<
+				typeof useValidateCheckIn
+			>,
+		)
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
+		const approveBtn = screen.getByTestId("checkin-approve-ci-1")
+		const rejectBtn = screen.getByTestId("checkin-reject-ci-1")
+		expect(approveBtn).toHaveAttribute("aria-label", "Aprovando...")
+		expect(rejectBtn).toHaveAttribute("aria-label", "Rejeitar")
+	})
+
 	test("mostra um ícone de carregamento apenas no botão que está de fato pendente", () => {
 		vi.mocked(useValidateCheckIn).mockReturnValue(
 			makeMutation({ isPending: true }) as unknown as ReturnType<

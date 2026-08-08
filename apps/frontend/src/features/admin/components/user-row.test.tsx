@@ -76,6 +76,19 @@ describe("UserRow VOLT", () => {
 		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
 	})
 
+	test("status Bloqueado (locked) renderiza com ícone semântico (tone warning)", () => {
+		render(
+			<ul>
+				<UserRow user={buildUser({ status: "locked" })} />
+			</ul>,
+		)
+		const badge = screen.getByText("Bloqueado").closest("span")
+		expect(badge).not.toBeNull()
+		const icon = (badge as HTMLElement).querySelector("svg")
+		expect(icon).toBeInTheDocument()
+		expect(icon).toHaveClass("lucide-triangle-alert")
+	})
+
 	test("chama onSelect com os dados do usuário ao clicar na linha", async () => {
 		const user = userEvent.setup()
 		const onSelect = vi.fn()
