@@ -68,6 +68,14 @@ describe("UserDetailPanel", () => {
 		expect(header.getByText("joao@example.com")).toBeInTheDocument()
 	})
 
+	test("status Inativo (suspenso) renderiza com ícone semântico (tone danger)", () => {
+		renderPanel(buildUser({ status: "suspended" }))
+		const header = within(screen.getByRole("banner"))
+		const badge = header.getByText("Inativo").closest("span")
+		expect(badge).not.toBeNull()
+		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
+	})
+
 	test("não exibe o botão Editar dados sem usuário autenticado", () => {
 		renderPanel(buildUser({ role: "MEMBER" }))
 		expect(

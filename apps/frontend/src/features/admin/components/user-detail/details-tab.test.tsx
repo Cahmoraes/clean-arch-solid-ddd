@@ -56,6 +56,20 @@ describe("DetailsTab", () => {
 		expect(screen.getByText("Inativo")).toBeInTheDocument()
 	})
 
+	test("status Inativo (suspenso) renderiza com ícone semântico (tone danger)", () => {
+		render(
+			<DetailsTab
+				user={buildUser({ status: "suspended" })}
+				permissions={noPermissions}
+				editing={false}
+				onStopEdit={() => {}}
+			/>,
+		)
+		const badge = screen.getByText("Inativo").closest("span")
+		expect(badge).not.toBeNull()
+		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
+	})
+
 	test("exibe fallback gracioso para último acesso ausente", () => {
 		render(
 			<DetailsTab

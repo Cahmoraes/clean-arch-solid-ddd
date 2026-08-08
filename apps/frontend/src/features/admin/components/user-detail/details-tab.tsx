@@ -2,15 +2,11 @@
 
 import type { ReactNode } from "react"
 import { RoleBadge } from "@/components/ui/role-badge"
+import { StatusBadge } from "@/components/ui/status-badge"
 import type { AdminUser } from "@/features/admin/api/use-users"
-import { cn } from "@/lib/cn"
 import { DetailsEditForm } from "./details-edit-form"
 import type { UserDetailPermissions } from "./use-user-detail-actions"
-import {
-	formatCreatedAt,
-	statusBadgeClassName,
-	statusLabel,
-} from "./user-detail-format"
+import { formatCreatedAt, statusLabel, statusTone } from "./user-detail-format"
 
 function InfoItem({ label, value }: { label: string; value: ReactNode }) {
 	return (
@@ -56,14 +52,9 @@ export function DetailsTab({
 			<InfoItem
 				label="Status"
 				value={
-					<span
-						className={cn(
-							"inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-xs font-medium",
-							statusBadgeClassName(user.status),
-						)}
-					>
+					<StatusBadge tone={statusTone(user.status)}>
 						{statusLabel(user.status)}
-					</span>
+					</StatusBadge>
 				}
 			/>
 			<InfoItem label="Permissão" value={<RoleBadge role={user.role} />} />

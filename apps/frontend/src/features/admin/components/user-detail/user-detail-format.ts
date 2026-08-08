@@ -5,17 +5,13 @@ export function statusLabel(status: string): string {
 	return status
 }
 
-export function statusBadgeClassName(status: string): string {
-	if (status === "activated") {
-		return "border-transparent bg-success-soft text-success"
-	}
-	if (status === "suspended") {
-		return "border-transparent bg-destructive-soft text-destructive"
-	}
-	if (status === "locked") {
-		return "border-transparent bg-warning-soft text-warning"
-	}
-	return "border-border bg-muted text-muted-foreground"
+export function statusTone(
+	status: string,
+): "success" | "warning" | "danger" | "neutral" {
+	if (status === "activated") return "success"
+	if (status === "locked") return "warning"
+	if (status === "suspended") return "danger"
+	return "neutral"
 }
 
 export function formatCreatedAt(iso: string): string {

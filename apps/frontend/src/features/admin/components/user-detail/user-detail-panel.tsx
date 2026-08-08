@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { Avatar } from "@/components/ui/avatar"
 import { RoleBadge } from "@/components/ui/role-badge"
+import { StatusBadge } from "@/components/ui/status-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { AdminUser } from "@/features/admin/api/use-users"
-import { cn } from "@/lib/cn"
 import { ActivityTab } from "./activity-tab"
 import {
 	DeleteConfirmationDialog,
@@ -20,7 +20,7 @@ import {
 	useUserDetailActions,
 } from "./use-user-detail-actions"
 import { UserActionsFooter } from "./user-actions-footer"
-import { statusBadgeClassName, statusLabel } from "./user-detail-format"
+import { statusLabel, statusTone } from "./user-detail-format"
 
 export interface UserDetailPanelProps {
 	user: AdminUser
@@ -52,14 +52,9 @@ function UserIdentityHeader({ user }: { user: AdminUser }) {
 					{user.email}
 				</span>
 				<div className="flex flex-wrap gap-2 pt-1">
-					<span
-						className={cn(
-							"inline-flex w-fit items-center rounded-full border px-2 py-0.5 text-xs font-medium",
-							statusBadgeClassName(user.status),
-						)}
-					>
+					<StatusBadge tone={statusTone(user.status)}>
 						{statusLabel(user.status)}
-					</span>
+					</StatusBadge>
 					<RoleBadge role={user.role} />
 				</div>
 			</div>
