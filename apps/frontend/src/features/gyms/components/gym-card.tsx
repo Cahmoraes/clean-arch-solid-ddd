@@ -5,6 +5,7 @@ import { StatusBadge } from "@/components/ui/status-badge"
 import type { Gym } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
 import { resolveLocation } from "@/features/gyms/lib/resolve-location"
+import { resolveGymStatusBadge } from "@/features/gyms/lib/resolve-status-badge"
 
 export interface GymCardProps {
 	gym: Gym
@@ -23,13 +24,6 @@ const cardMotionVariants = {
 		boxShadow:
 			"0 0 0 1px rgba(57,229,140,0.45), 0 10px 30px -12px rgba(0,0,0,0.5)",
 	},
-}
-
-function resolveGymStatusBadge(gym: Gym, adminEditHref?: string) {
-	const isDeactivated = adminEditHref && gym.status === "deactivated"
-	return isDeactivated
-		? { tone: "danger" as const, label: "Desativada" }
-		: { tone: "success" as const, label: "Disponível" }
 }
 
 export function GymCard({ gym, adminEditHref }: GymCardProps) {
