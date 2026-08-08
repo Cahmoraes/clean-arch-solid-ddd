@@ -1,0 +1,12 @@
+{
+  "us_id": "US-03",
+  "user_story": "Como administrador, eu quero que o badge de status de academias (Disponível/Desativada) siga o mesmo padrão visual usado em usuários para que eu tenha uma leitura consistente entre as telas do admin.",
+  "requirements": ["FR-004", "FR-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "4 arquivos de teste, 32 testes, todos passaram (0 falhas). Comando: pnpm --filter frontend exec vitest run src/components/ui/status-badge.test.tsx src/features/gyms/components/gym-row.test.tsx src/features/gyms/components/gym-card.test.tsx src/features/gyms/lib/resolve-status-badge.test.ts. Duração 3.07s, exit 0.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Relatório de Verificação Independente (docs/superpowers/admin-semantic-icons/qa/validation-admin-semantic-icons.md) já confirma FR-004 e FR-005 com veredito PASS: StatusBadge aceita vocabulário de academia (tone='danger', texto 'Desativada') em status-badge.test.tsx:14-21, e gym-row.tsx/gym-card.tsx migraram para StatusBadge compartilhado via resolve-status-badge.ts, preservando a regra isDeactivated = adminEditHref && status === 'deactivated' (resolve-status-badge.ts:4, testado em resolve-status-badge.test.ts:20,28,36). A função renderStatusBadge bespoke foi confirmada removida de gym-row.tsx. Sensor de mutação da IV matou M3/M4 (regras de resolve-status-badge.ts) sem sobreviventes. Reexecução local dos 4 arquivos de teste desta história confirma 32/32 passando, exit 0. Captura de tela não disponível nesta sessão (stack/DB não configurados) — não impacta o veredito pois a IV já validou comportamento via testes automatizados com asserções exatas de file:line."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "US-05",
+  "user_story": "Como usuário de leitor de tela ou navegação por teclado, eu quero que todo botão ícone-só tenha rótulo acessível e tooltip visível também no foco (não só no hover do mouse) para que eu não perca acesso a nenhuma funcionalidade ao usar ícones em vez de texto.",
+  "requirements": ["FR-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "pnpm --filter frontend exec vitest run nos 3 arquivos-alvo: 3 arquivos de teste, 44 testes, todos passaram (44 passed / 0 failed / 0 skipped). Duração 3.26s.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Relatório de IV (docs/superpowers/admin-semantic-icons/qa/validation-admin-semantic-icons.md) já recobre FR-008 nas 4 superfícies de botão ícone-só desta feature (Editar dados, Mais ações, Aprovar, Rejeitar), todas marcadas PASS, incluindo o gap FIX-03(a) da rodada 1 (tooltip do Rejeitar) fechado no commit ac6aded8. Reconferência independente nesta verificação: user-actions-footer.test.tsx:141 ('FR-008: exibe tooltip Editar dados no hover e no foco de teclado'), more-actions-menu.test.tsx:376 ('FR-008: exibe tooltip Mais ações no hover/foco'), check-in-actions.test.tsx:166 (Aprovar) e :179 (Rejeitar) — todos os 4 testes usam user.hover()+unhover() E .focus() explícito no elemento, não apenas hover. Nenhum gap de cobertura keyboard-focus encontrado; nenhum teste novo precisou ser criado. Automação de browser fora de escopo nesta sessão (sem stack local configurada) — screenshot não capturado."
+}

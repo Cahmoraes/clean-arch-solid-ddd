@@ -1,0 +1,12 @@
+{
+  "us_id": "US-04",
+  "user_story": "Como administrador revisando check-ins, eu quero que os botões \"Aprovar\" e \"Rejeitar\" sejam ícones compactos com tooltip para que eu agilize a revisão sem perder clareza sobre qual ação estou tomando.",
+  "requirements": ["FR-006", "FR-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "pnpm --filter frontend exec vitest run src/features/check-ins/components/check-in-actions.test.tsx → 1 arquivo de teste, 13/13 testes passaram, 0 falhas, exit 0 (duração ~2.75s).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Verificação apoiada no relatório de Independent Verification (docs/superpowers/admin-semantic-icons/qa/validation-admin-semantic-icons.md), que já cobre FR-006/FR-008 com asserções exatas em check-in-actions.test.tsx:156-163 (aria-label ícone-só Aprovar/Rejeitar via Button compartilhado), :166-177 (tooltip Aprovar hover+foco) e :179-189 (tooltip Rejeitar hover+foco, gap fechado na rodada 2 pelo commit ac6aded). Sensor de mutação da rodada 2 matou M9 (spinner Aprovar) e M10 (aria-label dinâmico 'Aprovando...' durante pendência) diretamente em check-in-actions.tsx, sem sobreviventes. Reexecutei isoladamente apenas o arquivo de teste da história (13/13 verde), sem rodar a suíte completa, conforme escopo desta tarefa. Captura de tela de UI não disponível nesta sessão (sem stack local/DB configurado) — não editei nenhum arquivo de código-fonte. Dado que a cobertura de testes é exaustiva e mutation-tested (não apenas 'testes passam, mas sem tela'), classifiquei como PASSED em vez de PARTIAL: a ausência de screenshot é compensada por evidência de comportamento (aria-label estático/dinâmico, tooltip em hover e foco, ícone-só via Button compartilhado) verificada por asserções de teste reais e por matança de mutantes direcionados exatamente aos pontos de FR-006/FR-008."
+}

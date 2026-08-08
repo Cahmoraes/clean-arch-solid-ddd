@@ -1,0 +1,12 @@
+{
+  "us_id": "US-01",
+  "user_story": "Como administrador, eu quero que os botões \"Editar dados\" e \"Mais ações\" apareçam como ícones compactos com tooltip para que eu identifique a ação rapidamente sem poluição visual na tela.",
+  "requirements": ["FR-001", "FR-002", "FR-008"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "2 arquivos de teste, 31 testes, todos passaram (0 falhas): user-actions-footer.test.tsx e more-actions-menu.test.tsx. Comando: pnpm --filter frontend exec vitest run src/features/admin/components/user-detail/user-actions-footer.test.tsx src/features/admin/components/user-detail/more-actions-menu.test.tsx.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Relatório de Verificação Independente (docs/superpowers/admin-semantic-icons/qa/validation-admin-semantic-icons.md) já mapeou FR-001, FR-002 e FR-008 para asserções exatas de file:line com veredito PASS: botão 'Editar dados' ícone-só com aria-label e tooltip no hover/foco (user-actions-footer.test.tsx:138,147,151); gatilho 'Mais ações' ícone-só com aria-label/tooltip e itens internos do menu preservados em texto (more-actions-menu.test.tsx:342-349,355-374); tooltip simultâneo a aria-label para ambos os botões (linhas 141-151 e 376-393). Reexecução local confirmou 31/31 testes passando nos dois arquivos-alvo, sem regressões. Status PARTIAL apenas porque captura de screenshot de UI não estava disponível nesta sessão (stack/DB não configurados) — não há gap funcional identificado; comportamento coberto por testes automatizados end-to-end de componente."
+}
