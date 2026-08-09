@@ -77,7 +77,3 @@ export const useAuthStore = create<AuthState>((set) => ({
 		emit(kind, null)
 	},
 }))
-
-export function getAuthSnapshot(): AuthState {
-	return useAuthStore.getState()
-}

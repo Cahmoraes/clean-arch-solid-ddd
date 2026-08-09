@@ -2,7 +2,7 @@
 
 import { fetchEventSource } from "@microsoft/fetch-event-source"
 import { useEffect, useRef } from "react"
-import { getAuthSnapshot } from "@/lib/auth/auth-store"
+import { useAuthStore } from "@/lib/auth/auth-store"
 
 export interface NotificationStreamPayload {
 	notificationId: string
@@ -90,6 +90,7 @@ export function useNotificationStream({
 }: UseNotificationStreamOptions): void {
 	const abortControllerRef = useRef<AbortController | null>(null)
 	const onMessageRef = useRef(onMessage)
+	const accessToken = useAuthStore((state) => state.accessToken)
 	useEffect(() => {
 		onMessageRef.current = onMessage
 	}, [onMessage])
@@ -97,7 +98,6 @@ export function useNotificationStream({
 		if (!enabled) return
 		const controller = new AbortController()
 		abortControllerRef.current = controller
-		const { accessToken } = getAuthSnapshot()
 		void fetchEventSource(SSE_URL, {
 			method: "GET",
 			headers: {
@@ -122,5 +122,5 @@ export function useNotificationStream({
 				abortControllerRef.current = null
 			}
 		}
-	}, [enabled])
+	}, [enabled, accessToken])
 }

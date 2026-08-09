@@ -5,16 +5,26 @@ import {
 } from "@microsoft/fetch-event-source"
 import { renderHook, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, test, vi } from "vitest"
-import { getAuthSnapshot } from "@/lib/auth/auth-store"
 import { useNotificationStream } from "./use-notification-stream"
 
 vi.mock("@microsoft/fetch-event-source", () => ({
 	fetchEventSource: vi.fn(),
 }))
 
-vi.mock("@/lib/auth/auth-store", () => ({
-	getAuthSnapshot: vi.fn(),
+const { mockUseAuthStore } = vi.hoisted(() => ({
+	mockUseAuthStore: vi.fn(),
 }))
+
+vi.mock("@/lib/auth/auth-store", () => ({
+	useAuthStore: (selector: (state: { accessToken: string | null }) => unknown) =>
+		mockUseAuthStore(selector),
+}))
+
+let authState: { accessToken: string | null } = { accessToken: "mock-token" }
+
+function setAccessToken(accessToken: string | null): void {
+	authState = { accessToken }
+}
 
 const notificationEvent: EventSourceMessage = {
 	id: "event-1",
@@ -34,13 +44,11 @@ const notificationEvent: EventSourceMessage = {
 describe("useNotificationStream", () => {
 	beforeEach(() => {
 		vi.clearAllMocks()
-		vi.mocked(getAuthSnapshot).mockReturnValue({
-			accessToken: "mock-token",
-			expiresAt: null,
-			user: { id: "u-1", role: "MEMBER" },
-			setSession: vi.fn(),
-			clear: vi.fn(),
-		})
+		setAccessToken("mock-token")
+		mockUseAuthStore.mockImplementation(
+			(selector: (state: { accessToken: string | null }) => unknown) =>
+				selector(authState),
+		)
 		vi.mocked(fetchEventSource).mockImplementation(
 			async (_url: RequestInfo, options: FetchEventSourceInit) => {
 				options.onmessage?.(notificationEvent)
@@ -108,5 +116,32 @@ describe("useNotificationStream", () => {
 		const options = vi.mocked(fetchEventSource).mock.calls[0]?.[1]
 		unmount()
 		expect(options?.signal?.aborted).toBe(true)
+	})
+
+	test("deve reconectar com o novo token quando o accessToken for atualizado no store", async () => {
+		const { rerender } = renderHook(() =>
+			useNotificationStream({
+				enabled: true,
+				onMessage: vi.fn(),
+			}),
+		)
+		await waitFor(() => expect(fetchEventSource).toHaveBeenCalledOnce())
+		const firstOptions = vi.mocked(fetchEventSource).mock.calls[0]?.[1]
+
+		setAccessToken("refreshed-token")
+		rerender()
+
+		await waitFor(() => expect(fetchEventSource).toHaveBeenCalledTimes(2))
+		expect(firstOptions?.signal?.aborted).toBe(true)
+		expect(fetchEventSource).toHaveBeenNthCalledWith(
+			2,
+			"http://localhost:3333/api/v1/notifications/stream",
+			expect.objectContaining({
+				headers: {
+					Accept: "text/event-stream",
+					Authorization: "Bearer refreshed-token",
+				},
+			}),
+		)
 	})
 })
