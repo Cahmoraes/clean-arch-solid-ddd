@@ -1,15 +1,3 @@
-/**
- * // Métodos principais
-user.suspend()     // Suspender usuário
-user.activate()    // Ativar usuário
-user.deactivate()  // Desativar usuário
-
-// Métodos de consulta
-user.isActive()    // Verificar se está ativo
-user.isSuspended() // Verificar se está suspenso
-user.isInactive()  // Verificar se está inativo
- */
-
 import type { User } from "../user"
 
 export const StatusTypes = {
