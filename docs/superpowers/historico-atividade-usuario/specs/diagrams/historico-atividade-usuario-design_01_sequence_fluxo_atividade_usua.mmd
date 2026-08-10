@@ -1,0 +1,59 @@
+sequenceDiagram
+    actor Admin as 👤 Admin
+    participant UseCase as ⚙️ UseCase<br/>Auth / TrocaSenha / VinculoGoogle<br/>Bloqueio / Perfil / Role / Status
+    participant Publisher as 📡 DomainEventPublisher
+    participant Subscriber as ⚙️ RecordUserActivitySubscriber
+    participant ActivityRepo as 💾 UserActivityRepository
+    participant DB as 🗄️ Prisma DB<br/>UserActivityEvent
+    participant Frontend as 🌐 Frontend
+    participant GetActivity as ⚙️ GetUserActivityUseCase
+    participant Dao as 💾 UserActivityDao
+    participant CheckInDB as 🗄️ CheckIn table
+
+    Note over UseCase,DB: Fase 1 - Registro do evento (write path)
+
+    UseCase->>UseCase: Executa acao de conta
+    UseCase->>Publisher: publish(DomainEvent)
+    activate Publisher
+    Publisher--)Subscriber: notify(event)
+    deactivate Publisher
+
+    activate Subscriber
+    Subscriber->>Subscriber: Formata descricao por tipo de evento
+    Subscriber->>ActivityRepo: save(UserActivityEvent)
+    activate ActivityRepo
+    ActivityRepo->>DB: INSERT UserActivityEvent
+    activate DB
+    DB-->>ActivityRepo: OK
+    deactivate DB
+    ActivityRepo-->>Subscriber: Success
+    deactivate ActivityRepo
+    deactivate Subscriber
+
+    Note over Admin,CheckInDB: Fase 2 - Exibicao na aba Atividade (read path)
+
+    Admin->>Frontend: Abre aba Atividade
+    activate Frontend
+    Frontend->>GetActivity: GET /users/:id/activity
+    activate GetActivity
+
+    GetActivity->>Dao: findActivity(userId)
+    activate Dao
+    Dao->>DB: SELECT UserActivityEvent WHERE userId
+    activate DB
+    DB-->>Dao: eventos de conta
+    deactivate DB
+    Dao->>CheckInDB: SELECT CheckIn WHERE userId
+    activate CheckInDB
+    CheckInDB-->>Dao: check-ins
+    deactivate CheckInDB
+
+    Dao->>Dao: Merge por timestamp, ordena desc, limita a 20
+    Dao-->>GetActivity: lista combinada
+    deactivate Dao
+    GetActivity-->>Frontend: HTTP 200 OK com activities
+    deactivate GetActivity
+
+    Frontend->>Frontend: Agrupa por data e define icone por tipo
+    Frontend-->>Admin: Exibe linha do tempo de atividade
+    deactivate Frontend
