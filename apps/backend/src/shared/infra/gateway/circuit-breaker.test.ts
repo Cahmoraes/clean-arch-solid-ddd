@@ -30,7 +30,7 @@ describe("CircuitBreaker", () => {
 	})
 
 	test("Deve criar um CircuitBreaker", async () => {
-		const circuitBreakerProps: CircuitBreakerConstructor = {
+		const circuitBreakerProps: CircuitBreakerConstructor<typeof onlyASuccessFunction> = {
 			callback: onlyASuccessFunction,
 			failureThresholdPercentageLimit: 3,
 			resetTimeout: 1000,
@@ -43,7 +43,7 @@ describe("CircuitBreaker", () => {
 	})
 
 	test("Deve permanecer fechado quando a taxa de falha estiver no limite configurado", async () => {
-		const circuitBreakerProps: CircuitBreakerConstructor = {
+		const circuitBreakerProps: CircuitBreakerConstructor<typeof failureAtLimit> = {
 			callback: failureAtLimit,
 			failureThresholdPercentageLimit: 50,
 			resetTimeout: 1000,
@@ -58,7 +58,7 @@ describe("CircuitBreaker", () => {
 	})
 
 	test("Deve permitir nova tentativa após o timeout de reset", async () => {
-		const circuitBreakerProps: CircuitBreakerConstructor = {
+		const circuitBreakerProps: CircuitBreakerConstructor<typeof onlyFailure> = {
 			callback: onlyFailure,
 			failureThresholdPercentageLimit: 50,
 			resetTimeout: 1000,
