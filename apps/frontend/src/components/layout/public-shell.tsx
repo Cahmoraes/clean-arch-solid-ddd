@@ -27,6 +27,12 @@ export function PublicShell({ children, className }: PublicShellProps) {
 						className="flex items-center gap-2"
 					>
 						<Link
+							href="/clima"
+							className="rounded-md border border-border-strong px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-surface-2"
+						>
+							Clima
+						</Link>
+						<Link
 							href="/login"
 							className="rounded-md border border-border-strong px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-surface-2"
 						>
