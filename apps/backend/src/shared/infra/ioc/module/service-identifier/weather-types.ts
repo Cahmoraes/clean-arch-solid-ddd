@@ -6,4 +6,7 @@ export const WEATHER_TYPES = {
 	USE_CASES: {
 		GetCurrentWeatherByCity: Symbol.for("GetCurrentWeatherByCityUseCase"),
 	},
+	CONTROLLERS: {
+		Weather: Symbol.for("WeatherController"),
+	},
 } as const
