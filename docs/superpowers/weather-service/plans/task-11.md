@@ -1,6 +1,6 @@
 # Task 11: Backend: injeção de dependência (`weather-module.ts`, `setup-weather-module.ts`) + `AGENTS.md` do módulo
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md
 **Tier:** standard
