@@ -46,11 +46,7 @@ export function WeatherSearchForm({
 				error={errors.city?.message}
 				{...register("city")}
 			/>
-			<Button
-				type="submit"
-				disabled={isPending}
-				data-testid="weather-search-submit"
-			>
+			<Button type="submit" disabled={isPending}>
 				{isPending ? "Consultando…" : "Consultar"}
 			</Button>
 		</form>
