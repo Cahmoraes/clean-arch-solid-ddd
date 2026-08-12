@@ -182,4 +182,12 @@ export const handlers = [
 			{ status: 201 },
 		),
 	),
+	http.get(endpoint("/weather"), ({ request }) => {
+		const url = new URL(request.url)
+		const city = url.searchParams.get("city") ?? "São Paulo"
+		return HttpResponse.json(
+			{ city, temperature: { current: 24, min: 18, max: 27 } },
+			{ status: 200 },
+		)
+	}),
 ]
