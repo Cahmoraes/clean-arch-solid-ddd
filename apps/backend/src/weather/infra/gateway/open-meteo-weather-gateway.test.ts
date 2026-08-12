@@ -58,6 +58,11 @@ describe("OpenMeteoWeatherGateway", () => {
 		await vi.advanceTimersByTimeAsync(2000)
 		const result = await resultPromise
 
+		// A CircuitBreaker eh compartilhada entre as 3 tentativas do Retry.
+		// Apos a 1a falha, failureThreshold (1/1 = 100% > 50%) abre o circuito
+		// imediatamente, entao as tentativas 2 e 3 sao bloqueadas por
+		// OpenCircleError sem nunca chegar a fetchForecast/fetch de novo.
+		expect(fetch).toHaveBeenCalledTimes(1)
 		expect(result.isFailure()).toBe(true)
 		expect(result.force.failure().value.name).toBe(
 			"WeatherProviderUnavailableError",
