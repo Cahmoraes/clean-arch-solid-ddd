@@ -119,4 +119,49 @@ describe("WeatherPage", () => {
 			),
 		).toBeInTheDocument()
 	})
+
+	test("bloqueia nova submissão enquanto uma consulta está em andamento", async () => {
+		const user = userEvent.setup()
+		const replaceMock = vi.fn()
+		vi.mocked(useRouter).mockReturnValue({
+			replace: replaceMock,
+		} as unknown as ReturnType<typeof useRouter>)
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("city=São Paulo") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+
+		let resolveRequest: (() => void) | undefined
+		const requestPending = new Promise<void>((resolve) => {
+			resolveRequest = resolve
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/weather`, async () => {
+				await requestPending
+				return HttpResponse.json(
+					{
+						city: "São Paulo",
+						temperature: { current: 24, min: 18, max: 27 },
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+
+		renderWithProviders(<WeatherPage />)
+
+		const consultingButton = screen.getByRole("button", {
+			name: "Consultando…",
+		})
+		await waitFor(() => expect(consultingButton).toBeDisabled())
+
+		await user.clear(screen.getByLabelText("Cidade"))
+		await user.type(screen.getByLabelText("Cidade"), "Curitiba")
+		await user.keyboard("{Enter}")
+
+		expect(replaceMock).not.toHaveBeenCalled()
+
+		resolveRequest?.()
+	})
 })

@@ -29,6 +29,7 @@ export function WeatherSearchForm({
 	})
 
 	function onSubmit(values: CityInput) {
+		if (isPending) return
 		onSearch(values.city)
 	}
 

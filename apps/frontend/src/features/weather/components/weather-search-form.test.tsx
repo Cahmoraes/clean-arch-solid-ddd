@@ -35,4 +35,15 @@ describe("WeatherSearchForm", () => {
 		expect(button).toBeDisabled()
 		expect(button).toHaveTextContent("Consultando…")
 	})
+
+	test("não chama onSearch ao submeter via Enter enquanto isPending é true", async () => {
+		const user = userEvent.setup()
+		const onSearch = vi.fn()
+		render(<WeatherSearchForm onSearch={onSearch} isPending={true} />)
+
+		await user.type(screen.getByLabelText("Cidade"), "São Paulo")
+		await user.keyboard("{Enter}")
+
+		expect(onSearch).not.toHaveBeenCalled()
+	})
 })

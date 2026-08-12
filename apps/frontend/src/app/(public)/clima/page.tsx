@@ -1,5 +1,6 @@
 "use client"
 
+import { useIsFetching } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -19,7 +20,8 @@ function WeatherPageContent() {
 	const router = useRouter()
 	const city = searchParams.get("city")
 
-	const { data, error, isFetching } = useWeatherQuery(city)
+	const { data, error } = useWeatherQuery(city)
+	const isPending = useIsFetching({ queryKey: ["weather"] }) > 0
 
 	function handleSearch(nextCity: string) {
 		const params = new URLSearchParams(searchParams.toString())
@@ -40,7 +42,7 @@ function WeatherPageContent() {
 
 			<WeatherSearchForm
 				onSearch={handleSearch}
-				isPending={isFetching}
+				isPending={isPending}
 				defaultCity={city ?? undefined}
 			/>
 
