@@ -1,6 +1,6 @@
 ---
 created_at: "2026-08-12T09:50:34-03:00"
-updated_at: "2026-08-12T10:45:00-03:00"
+updated_at: "2026-08-12T11:15:00-03:00"
 ---
 
 # Design — Serviço de Meteorologia
@@ -156,12 +156,13 @@ Segue a convenção do repositório: lógica de negócio nunca lança exceção 
 - `CityNotFoundError extends DomainError` — cidade não encontrada pelo geocoding → HTTP 404, corpo `{ code: "city_not_found", message: "City not found" }`.
 - `WeatherProviderUnavailableError extends DomainError` — falha técnica do provedor externo (timeout, 5xx, circuito aberto) → HTTP 503, corpo `{ code: "weather_provider_unavailable", message: "Weather provider unavailable" }`.
 - Corpo de erro segue a convenção já usada por todos os controllers do repo (`{ code, message }`, ex.: `create-password-reauth-grant.controller.ts`) — não o formato genérico `{ error }`.
+- Nenhum `ErrorKind` existente mapeia para HTTP 503, então o mapeamento genérico via `kind` (`STATUS_BY_ERROR_KIND`) não alcança `WeatherProviderUnavailableError`. `WeatherController` sobrescreve `mapResponseError()` (mesmo padrão de `create-password-reauth-grant.controller.ts`) para tratar `CityNotFoundError` e `WeatherProviderUnavailableError` explicitamente, retornando o corpo `{ code, message }` correto para cada um.
 - Erros 4xx do provedor externo (ex.: requisição malformada) não são retentados pelo `Retry`; falhas de rede/5xx são.
 
 ## Testes
 
 - **Unitários:** `GetCurrentWeatherByCityUseCase` testado com `InMemoryGeocodingGateway` e `InMemoryWeatherGateway` (fakes), cobrindo: sucesso, cidade não encontrada, provedor indisponível.
-- **Business-flow:** servidor Fastify em memória + supertest, gateways rebindados via `container.rebindSync(...)` para as fakes, seguindo o padrão de `*.business-flow-test.ts` já usado no repo.
+- **Business-flow:** servidor Fastify em memória + supertest, gateways rebindados via `container.snapshot()` → `container.rebind(...)` para as fakes → `container.restore()`, seguindo o padrão de `*.business-flow-test.ts` já usado no repo (ex.: `fetch-users.business-flow-test.ts`). `container.rebindSync` não existe neste repositório.
 - **Fitness functions** (`pnpm test:fitness`): nenhuma alteração necessária nas regras de `dependency-cruiser` — o novo módulo `src/weather/` segue a mesma direção de dependência (`domain/ → application/ → infra/`) já validada para os demais contextos.
 
 ## Injeção de Dependência
@@ -170,9 +171,9 @@ Segue o padrão de 3 passos já usado no repo:
 
 1. `shared/infra/ioc/module/service-identifier/weather-types.ts` — símbolos `WEATHER_TYPES.GeocodingGateway`, `.WeatherGateway`, `.GetCurrentWeatherByCityUseCase`, `.WeatherController`.
 2. `shared/infra/ioc/module/weather/weather-container.ts` — `ContainerModule` ligando as interfaces às implementações concretas (`OpenMeteoGeocodingGateway`, `OpenMeteoWeatherGateway`).
-3. `bootstrap/setup-weather-module.ts` — registra o controller e as rotas. `WeatherController.init()` chama `httpServer.register("get", WeatherRoutes.GET, { callback, isProtected: false }, makeWeatherSwaggerSchema())`, onde `makeWeatherSwaggerSchema()` usa `OpenApiSchemaBuilder.build({ querystring, responses: { 200, 404, 503 } })` — mesmo padrão de `fetch-users.controller.ts` — para que `/weather` seja incluído no documento OpenAPI e, consequentemente, em `@repo/api-types` (`pnpm openapi:generate-client`), do qual o frontend depende.
+3. `bootstrap/setup-weather-module.ts` — registra o controller e as rotas. `WeatherController.init()` chama `httpServer.register("get", WeatherRoutes.GET, { callback }, makeWeatherSwaggerSchema())` — `isProtected` omitido (endpoint público), mesmo padrão de `send-contact-email.controller.ts`. `makeWeatherSwaggerSchema()` usa `OpenApiSchemaBuilder.build({ querystring, responses: { 200, 404, 503 } })` — mesmo padrão de `fetch-users.controller.ts` — para que `/weather` seja incluído no documento OpenAPI e, consequentemente, em `@repo/api-types` (`pnpm openapi:export` + `pnpm openapi:generate-client`), do qual o frontend depende.
 
-Não há Provider pattern (env-based real/fake) como em repositórios — os gateways seguem o padrão já usado por `SubscriptionGateway`/`MailerGateway`: uma única implementação concreta ligada no container, com fakes usados apenas em testes via `rebindSync`.
+Sem Provider pattern (env-based real/fake): diferente de `SubscriptionGateway`/`MailerGateway` — que usam `toDynamicValue(XProvider.provide)` para alternar entre implementação real e fake fora de testes, evitando efeitos colaterais reais (e-mail, cobrança) em desenvolvimento — as chamadas ao Open-Meteo são leituras públicas e gratuitas, sem efeito colateral, então não há motivo para gating por ambiente. Os gateways são ligados diretamente (`.to(OpenMeteoGeocodingGateway).inSingletonScope()`), com fakes usados apenas em testes via `container.rebind(...)`.
 
 ## Estrutura de Diretórios
 
