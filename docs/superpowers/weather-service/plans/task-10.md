@@ -1,6 +1,6 @@
 # Task 10: Backend: `WeatherController` (validação, mapeamento de erro, schema OpenAPI) + rotas + teste business-flow
 
-**Status:** DONE
+**Status:** IN_PROGRESS
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md
 **Tier:** capable
