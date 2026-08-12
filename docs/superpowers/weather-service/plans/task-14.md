@@ -1,6 +1,6 @@
 # Task 14: Frontend: rota `WeatherPage` (`/clima`) — orquestração de estados + link de navegação
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-frontend-design.md
 **Tier:** standard
