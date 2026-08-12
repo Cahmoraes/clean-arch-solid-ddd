@@ -1,6 +1,6 @@
 # Task 12: Integração: regenerar `@repo/api-types` com o contrato `/weather`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md e ../specs/weather-service-frontend-design.md
 **Tier:** cheap

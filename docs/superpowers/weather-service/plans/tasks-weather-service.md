@@ -24,7 +24,7 @@
 - [x] 9. Backend: `GetCurrentWeatherByCityUseCase` → `task-09.md`
 - [x] 10. Backend: `WeatherController` + rotas + schema OpenAPI + teste business-flow → `task-10.md`
 - [x] 11. Backend: injeção de dependência (`weather-types.ts`, `weather-module.ts`, `setup-weather-module.ts`) + `AGENTS.md` do módulo → `task-11.md`
-- [ ] 12. Integração: regenerar `@repo/api-types` com o contrato `/weather` → `task-12.md`
+- [x] 12. Integração: regenerar `@repo/api-types` com o contrato `/weather` → `task-12.md`
 - [ ] 13. Frontend: hook `useWeatherQuery` (TanStack Query + cliente OpenAPI) → `task-13.md`
 - [ ] 14. Frontend: rota `WeatherPage` (`/clima`) — orquestração de estados + link de navegação → `task-14.md`
 
