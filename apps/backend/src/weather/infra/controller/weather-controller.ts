@@ -17,7 +17,7 @@ import type { GetCurrentWeatherByCityUseCase } from "@/weather/application/use-c
 import { WeatherRoutes } from "./routes/weather-routes.js"
 
 const weatherQuerySchema = z.object({
-	city: z.string().min(1).meta({
+	city: z.string().min(1).max(100).meta({
 		description: "City name",
 		example: "São Paulo",
 	}),

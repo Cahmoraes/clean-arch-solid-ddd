@@ -4,12 +4,14 @@ import { OpenMeteoGeocodingGateway } from "./open-meteo-geocoding-gateway.js"
 describe("OpenMeteoGeocodingGateway", () => {
 	afterEach(() => {
 		vi.unstubAllGlobals()
+		vi.useRealTimers()
 	})
 
 	test("resolve Coordinate quando a API retorna resultados", async () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async () => ({
+				ok: true,
 				json: async () => ({
 					results: [{ latitude: -23.5505, longitude: -46.6333 }],
 				}),
@@ -28,6 +30,7 @@ describe("OpenMeteoGeocodingGateway", () => {
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async () => ({
+				ok: true,
 				json: async () => ({ results: [] }),
 			})),
 		)
@@ -37,5 +40,28 @@ describe("OpenMeteoGeocodingGateway", () => {
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.force.failure().value.name).toBe("CityNotFoundError")
+	})
+
+	test("falha com WeatherProviderUnavailableError quando a API responde com erro", async () => {
+		vi.useFakeTimers()
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async () => ({
+				ok: false,
+				status: 500,
+				json: async () => ({}),
+			})),
+		)
+		const gateway = new OpenMeteoGeocodingGateway()
+
+		const resultPromise = gateway.geocode("São Paulo")
+		await vi.advanceTimersByTimeAsync(2000)
+		const result = await resultPromise
+
+		expect(fetch).toHaveBeenCalledTimes(1)
+		expect(result.isFailure()).toBe(true)
+		expect(result.force.failure().value.name).toBe(
+			"WeatherProviderUnavailableError",
+		)
 	})
 })

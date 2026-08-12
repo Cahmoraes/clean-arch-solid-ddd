@@ -70,6 +70,20 @@ describe("Consultar clima atual por cidade", () => {
 		})
 	})
 
+	test("Deve retornar 503 quando o provider de geocoding está indisponível", async () => {
+		geocodingGateway.simulateProviderUnavailable()
+
+		const response = await request(fastifyServer.server).get(
+			"/weather?city=S%C3%A3o%20Paulo",
+		)
+
+		expect(response.status).toBe(HTTP_STATUS.SERVICE_UNAVAILABLE)
+		expect(response.body).toEqual({
+			code: "weather_provider_unavailable",
+			message: "Weather provider unavailable",
+		})
+	})
+
 	test("Deve retornar 400 quando city não é informado", async () => {
 		const response = await request(fastifyServer.server).get("/weather")
 

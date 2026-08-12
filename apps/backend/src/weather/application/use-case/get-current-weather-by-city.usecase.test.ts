@@ -35,6 +35,19 @@ describe("GetCurrentWeatherByCityUseCase", () => {
 		expect(getCurrentWeatherSpy).not.toHaveBeenCalled()
 	})
 
+	test("geocoding indisponível falha com WeatherProviderUnavailableError sem chamar weatherGateway", async () => {
+		geocodingGateway.simulateProviderUnavailable()
+		const getCurrentWeatherSpy = vi.spyOn(weatherGateway, "getCurrentWeather")
+
+		const result = await sut.execute({ city: "São Paulo" })
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.force.failure().value.name).toBe(
+			"WeatherProviderUnavailableError",
+		)
+		expect(getCurrentWeatherSpy).not.toHaveBeenCalled()
+	})
+
 	test("cidade conhecida com provider indisponível falha com WeatherProviderUnavailableError", async () => {
 		weatherGateway.simulateProviderUnavailable()
 

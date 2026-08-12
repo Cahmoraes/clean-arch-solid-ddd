@@ -26,4 +26,13 @@ describe("citySchema", () => {
 			"Informe o nome de uma cidade.",
 		)
 	})
+
+	test("rejeita string com mais de 100 caracteres", () => {
+		const result = citySchema.safeParse({ city: "a".repeat(101) })
+
+		expect(result.success).toBe(false)
+		expect(result.success ? undefined : result.error.issues[0]?.message).toBe(
+			"Nome de cidade muito longo.",
+		)
+	})
 })

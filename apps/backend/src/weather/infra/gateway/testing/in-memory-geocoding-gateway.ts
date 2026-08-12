@@ -7,6 +7,7 @@ import {
 } from "@/shared/domain/value-object/either.js"
 import type { GeocodingGateway } from "@/weather/application/gateway/geocoding-gateway.js"
 import { CityNotFoundError } from "@/weather/domain/error/city-not-found-error.js"
+import { WeatherProviderUnavailableError } from "@/weather/domain/error/weather-provider-unavailable-error.js"
 
 @injectable()
 export class InMemoryGeocodingGateway implements GeocodingGateway {
@@ -14,10 +15,16 @@ export class InMemoryGeocodingGateway implements GeocodingGateway {
 		string,
 		{ latitude: number; longitude: number }
 	>([["São Paulo", { latitude: -23.5505, longitude: -46.6333 }]])
+	private shouldFail = false
 
 	async geocode(
 		cityName: string,
-	): Promise<Either<CityNotFoundError, Coordinate>> {
+	): Promise<
+		Either<CityNotFoundError | WeatherProviderUnavailableError, Coordinate>
+	> {
+		if (this.shouldFail) {
+			return failure(new WeatherProviderUnavailableError())
+		}
 		const coords = this.knownCities.get(cityName)
 		if (!coords) {
 			return failure(new CityNotFoundError(cityName))
@@ -36,5 +43,9 @@ export class InMemoryGeocodingGateway implements GeocodingGateway {
 		coords: { latitude: number; longitude: number },
 	): void {
 		this.knownCities.set(cityName, coords)
+	}
+
+	simulateProviderUnavailable(): void {
+		this.shouldFail = true
 	}
 }
