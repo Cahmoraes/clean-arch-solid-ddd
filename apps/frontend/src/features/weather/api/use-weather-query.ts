@@ -23,7 +23,7 @@ export function useWeatherQuery(
 		queryKey: ["weather", city],
 		queryFn: async () => {
 			const { data, error } = await api.GET("/weather", {
-				params: { query: { city: city as string } },
+				params: { query: { city: city ?? "" } },
 			})
 			if (error || !data) throw toApiError(error)
 			return data
