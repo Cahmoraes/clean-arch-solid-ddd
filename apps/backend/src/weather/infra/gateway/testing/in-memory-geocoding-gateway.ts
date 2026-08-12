@@ -1,8 +1,12 @@
 import { injectable } from "inversify"
-import { Coordinate } from "@/shared/domain/value-object/coordinate"
-import { type Either, failure, success } from "@/shared/domain/value-object/either"
-import type { GeocodingGateway } from "@/weather/application/gateway/geocoding-gateway"
-import { CityNotFoundError } from "@/weather/domain/error/city-not-found-error"
+import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
+import {
+	type Either,
+	failure,
+	success,
+} from "@/shared/domain/value-object/either.js"
+import type { GeocodingGateway } from "@/weather/application/gateway/geocoding-gateway.js"
+import { CityNotFoundError } from "@/weather/domain/error/city-not-found-error.js"
 
 @injectable()
 export class InMemoryGeocodingGateway implements GeocodingGateway {
@@ -20,7 +24,9 @@ export class InMemoryGeocodingGateway implements GeocodingGateway {
 		}
 		const coordinateOrError = Coordinate.create(coords)
 		if (coordinateOrError.isFailure()) {
-			return failure(new CityNotFoundError(cityName))
+			throw new Error(
+				`InMemoryGeocodingGateway: Coordinate.create failed for known city "${cityName}" with coords ${JSON.stringify(coords)}. This indicates malformed seed data.`,
+			)
 		}
 		return success(coordinateOrError.value)
 	}
