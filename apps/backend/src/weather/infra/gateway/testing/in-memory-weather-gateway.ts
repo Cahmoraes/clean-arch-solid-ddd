@@ -1,9 +1,9 @@
 import { injectable } from "inversify"
-import { type Either, failure, success } from "@/shared/domain/value-object/either"
-import type { Coordinate } from "@/shared/domain/value-object/coordinate"
-import type { WeatherGateway } from "@/weather/application/gateway/weather-gateway"
-import { WeatherProviderUnavailableError } from "@/weather/domain/error/weather-provider-unavailable-error"
-import type { Temperature } from "@/weather/domain/value-object/current-weather"
+import { type Either, failure, success } from "@/shared/domain/value-object/either.js"
+import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
+import type { WeatherGateway } from "@/weather/application/gateway/weather-gateway.js"
+import { WeatherProviderUnavailableError } from "@/weather/domain/error/weather-provider-unavailable-error.js"
+import type { Temperature } from "@/weather/domain/value-object/current-weather.js"
 
 @injectable()
 export class InMemoryWeatherGateway implements WeatherGateway {

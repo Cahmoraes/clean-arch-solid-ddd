@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
-import { Coordinate } from "@/shared/domain/value-object/coordinate"
-import { InMemoryWeatherGateway } from "./in-memory-weather-gateway"
+import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
+import { InMemoryWeatherGateway } from "./in-memory-weather-gateway.js"
 
 describe("InMemoryWeatherGateway", () => {
 	test("retorna a temperatura padrão com sucesso", async () => {

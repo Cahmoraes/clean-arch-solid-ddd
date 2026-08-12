@@ -1,7 +1,7 @@
-import type { Coordinate } from "@/shared/domain/value-object/coordinate"
-import type { Either } from "@/shared/domain/value-object/either"
-import type { WeatherProviderUnavailableError } from "@/weather/domain/error/weather-provider-unavailable-error"
-import type { Temperature } from "@/weather/domain/value-object/current-weather"
+import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
+import type { Either } from "@/shared/domain/value-object/either.js"
+import type { WeatherProviderUnavailableError } from "@/weather/domain/error/weather-provider-unavailable-error.js"
+import type { Temperature } from "@/weather/domain/value-object/current-weather.js"
 
 export interface WeatherGateway {
 	getCurrentWeather(
