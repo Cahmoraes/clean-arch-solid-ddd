@@ -29,12 +29,12 @@ sequenceDiagram
 
         alt Provider available
             UseCase-->>Controller: WeatherData
-            Controller-->>Client: HTTP 200 OK { city, temperature, conditions }
+            Controller-->>Client: HTTP 200 OK { city, temperature: { current, min, max } }
         else Provider unavailable
             UseCase-->>Controller: ❌ ProviderUnavailableError
-            Controller-->>Client: HTTP 503 Service Unavailable { error: "Weather provider unavailable" }
+            Controller-->>Client: HTTP 503 Service Unavailable { code: "weather_provider_unavailable", message: "Weather provider unavailable" }
         end
     else City not found
         UseCase-->>Controller: ❌ CityNotFoundError
-        Controller-->>Client: HTTP 404 Not Found { error: "City not found" }
+        Controller-->>Client: HTTP 404 Not Found { code: "city_not_found", message: "City not found" }
     end

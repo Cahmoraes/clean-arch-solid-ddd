@@ -1,7 +1,7 @@
 ---
 feature: weather-service-frontend
 created_at: "2026-08-12T10:18:19-03:00"
-updated_at: "2026-08-12T10:18:19-03:00"
+updated_at: "2026-08-12T10:45:00-03:00"
 depends_on: docs/superpowers/weather-service/specs/weather-service-design.md
 ---
 
@@ -23,8 +23,8 @@ Página pública `/clima` no frontend (Next.js App Router, `apps/frontend`) que 
 |---|---|---|---|
 | `WeatherPage` (`app/(public)/clima/page.tsx`) | Orquestra a leitura da URL, o formulário e a renderização condicional dos estados (vazio, carregando, erro, resultado) | `useSearchParams`, `WeatherSearchForm`, `useWeatherQuery`, `CurrentWeatherDisplay` | — (raiz da rota) |
 | `WeatherSearchForm` | Captura o nome da cidade e atualiza o parâmetro `city` na URL ao submeter | `Input`, `Button`, `FormField` (design system), schema Zod | `WeatherPage` |
-| `useWeatherQuery` | Busca o clima atual de uma cidade via cliente OpenAPI (`lib/api.ts`) e expõe estado de carregamento/erro/dado via TanStack Query | Cliente OpenAPI gerado, contrato `/weather?city=` | `WeatherPage` |
-| `CurrentWeatherDisplay` | Renderiza o resultado (temperatura atual em destaque + mínima/máxima em tiles secundários) | Dado retornado por `useWeatherQuery` | `WeatherPage` |
+| `useWeatherQuery` | Busca o clima atual de uma cidade via cliente OpenAPI (`lib/api.ts`) e expõe estado de carregamento/erro/dado via TanStack Query | Cliente OpenAPI gerado (`@repo/api-types`), contrato `GET /weather?city=` → `{ city, temperature: { current, min, max } }` | `WeatherPage` |
+| `CurrentWeatherDisplay` | Renderiza o resultado (`temperature.current` em destaque + `temperature.min`/`temperature.max` em tiles secundários) | Dado retornado por `useWeatherQuery` | `WeatherPage` |
 
 ## Fluxo de Interação
 
@@ -34,8 +34,10 @@ Página pública `/clima` no frontend (Next.js App Router, `apps/frontend`) que 
 4. Mudança na URL dispara `useWeatherQuery`, que chama `/weather?city=` via cliente OpenAPI.
 5. Durante a chamada, o botão de busca fica desabilitado com label "Consultando…" (sem skeleton).
 6. Sucesso → `CurrentWeatherDisplay` renderiza temperatura atual + mínima/máxima.
-7. Erro 404 (`CityNotFoundError`) → mensagem inline "Cidade não encontrada. Verifique o nome e tente novamente."
-8. Erro 503 (`WeatherProviderUnavailableError`) → mensagem inline "Serviço de meteorologia indisponível no momento. Tente novamente em instantes."
+7. Erro `code: "city_not_found"` (HTTP 404) → mensagem inline "Cidade não encontrada. Verifique o nome e tente novamente."
+8. Erro `code: "weather_provider_unavailable"` (HTTP 503) → mensagem inline "Serviço de meteorologia indisponível no momento. Tente novamente em instantes."
+
+Mapeamento feito por `ApiError.code` (populado pelo `errorNormalizationMiddleware` já existente em `lib/api.ts`), não por parsing de texto — corpo de erro do backend segue `{ code, message }` (ver [weather-service-design.md § Contrato HTTP](./weather-service-design.md#contrato-http)).
 
 ## Decisões Arquiteturais
 
@@ -57,7 +59,7 @@ Página pública `/clima` no frontend (Next.js App Router, `apps/frontend`) que 
 
 ## Riscos
 
-- 🟡 **R1 — Dependência do contrato OpenAPI do backend ainda não implementado**: o endpoint `/weather` precisa existir no backend e ser incluído na geração de tipos (`@repo/api-types`) antes da integração real. **Mitigação**: desenvolver a UI contra mock MSW local primeiro; trocar para o cliente real quando o backend estiver disponível.
+- 🟡 **R1 — Dependência do contrato OpenAPI do backend ainda não implementado**: o endpoint `/weather` precisa existir no backend, registrar schema OpenAPI via `OpenApiSchemaBuilder` (ver weather-service-design.md § Injeção de Dependência) e ser incluído na geração de tipos (`pnpm openapi:generate-client` → `@repo/api-types`) antes da integração real. **Mitigação**: desenvolver a UI contra mock MSW local primeiro (usando o contrato de `§ Contrato HTTP` do spec de backend); trocar para o cliente real quando o backend estiver disponível.
 - 🟢 **R2 — Ambiguidade de nome de cidade** (ex.: "Springfield"): já resolvida no backend (retorna o primeiro resultado do geocoding); frontend não precisa de UI de desambiguação — fora de escopo, herdado da decisão original do backend.
 
 ## Especificação Visual

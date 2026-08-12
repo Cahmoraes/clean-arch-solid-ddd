@@ -1,6 +1,6 @@
 ---
 created_at: "2026-08-12T09:50:34-03:00"
-updated_at: "2026-08-12T09:50:34-03:00"
+updated_at: "2026-08-12T10:45:00-03:00"
 ---
 
 # Design — Serviço de Meteorologia
@@ -64,18 +64,42 @@ sequenceDiagram
 
         alt Provider available
             UseCase-->>Controller: WeatherData
-            Controller-->>Client: HTTP 200 OK { city, temperature, conditions }
+            Controller-->>Client: HTTP 200 OK { city, temperature: { current, min, max } }
         else Provider unavailable
             UseCase-->>Controller: ❌ ProviderUnavailableError
-            Controller-->>Client: HTTP 503 Service Unavailable { error: "Weather provider unavailable" }
+            Controller-->>Client: HTTP 503 Service Unavailable { code: "weather_provider_unavailable", message: "Weather provider unavailable" }
         end
     else City not found
         UseCase-->>Controller: ❌ CityNotFoundError
-        Controller-->>Client: HTTP 404 Not Found { error: "City not found" }
+        Controller-->>Client: HTTP 404 Not Found { code: "city_not_found", message: "City not found" }
     end
 ```
 
 Diagrama fonte: `specs/diagrams/weather-service-design_01_sequence_weather_service_flow.mmd`
+
+## Contrato HTTP
+
+Corpo literal das respostas, alinhado à convenção do repositório (`ResponseFactory` + `{ code, message }` para erros, já usada por todos os controllers existentes):
+
+**200 OK**
+```json
+{
+  "city": "São Paulo",
+  "temperature": { "current": 24, "min": 18, "max": 27 }
+}
+```
+
+**404 Not Found**
+```json
+{ "code": "city_not_found", "message": "City not found" }
+```
+
+**503 Service Unavailable**
+```json
+{ "code": "weather_provider_unavailable", "message": "Weather provider unavailable" }
+```
+
+Sem campo `conditions` ou qualquer condição climática textual — fora de escopo (ver "Fora de Escopo"). `CurrentWeather` (VO) mapeia 1:1 para o corpo de sucesso: `city`, `temperature.current`, `temperature.min`, `temperature.max`.
 
 ## Estrutura de Componentes
 
@@ -86,8 +110,8 @@ Diagrama fonte: `specs/diagrams/weather-service-design_01_sequence_weather_servi
 | `OpenMeteoGeocodingGateway` (adapter, infra) | Implementa `GeocodingGateway` chamando a API de geocoding do Open-Meteo, envolta em `CircuitBreaker` + `Retry` | HTTP client, utilitários de resiliência existentes (`shared/infra/gateway`) | IoC container |
 | `OpenMeteoWeatherGateway` (adapter, infra) | Implementa `WeatherGateway` chamando a API de forecast do Open-Meteo, envolta em `CircuitBreaker` + `Retry` | idem | IoC container |
 | `GetCurrentWeatherByCityUseCase` (application) | Orquestra: nome da cidade → coordenada → clima atual; retorna `Either<Error, CurrentWeather>` | `GeocodingGateway`, `WeatherGateway` | `WeatherController` |
-| `CurrentWeather` (Value Object, domain) | Modela o resultado (temperatura atual, mín/máx do dia, nome da cidade resolvida) — sem identidade/persistência | — | Use case, controller |
-| `WeatherController` (infra) | Valida query params (Zod), chama o use case, mapeia `Either` para resposta HTTP via `ResponseFactory` | Use case | Rotas Fastify |
+| `CurrentWeather` (Value Object, domain) | Modela o resultado (`city`, `temperature.current`, `temperature.min`, `temperature.max`) — sem identidade/persistência | — | Use case, controller |
+| `WeatherController` (infra) | Valida query params (Zod), chama o use case, mapeia `Either` para resposta HTTP via `ResponseFactory`, e registra o schema OpenAPI (querystring + responses 200/404/503) via `OpenApiSchemaBuilder`, seguindo o padrão de `FetchUsersController` | Use case, `OpenApiSchemaBuilder` | Rotas Fastify, geração de `@repo/api-types` (`pnpm openapi:generate-client`) |
 
 `GeocodingGateway` e `WeatherGateway` foram mantidos como interfaces separadas mesmo usando o mesmo provedor: representam falhas de naturezas diferentes (cidade não encontrada vs. provedor indisponível) e podem ser trocadas de provedor de forma independente no futuro.
 
@@ -129,8 +153,9 @@ Diagrama fonte: `specs/diagrams/weather-service-design_01_sequence_weather_servi
 
 Segue a convenção do repositório: lógica de negócio nunca lança exceção — use cases retornam `Either<Error, Success>` (`@/shared/domain/value-object/either`).
 
-- `CityNotFoundError extends DomainError` — cidade não encontrada pelo geocoding → HTTP 404.
-- `WeatherProviderUnavailableError extends DomainError` — falha técnica do provedor externo (timeout, 5xx, circuito aberto) → HTTP 503.
+- `CityNotFoundError extends DomainError` — cidade não encontrada pelo geocoding → HTTP 404, corpo `{ code: "city_not_found", message: "City not found" }`.
+- `WeatherProviderUnavailableError extends DomainError` — falha técnica do provedor externo (timeout, 5xx, circuito aberto) → HTTP 503, corpo `{ code: "weather_provider_unavailable", message: "Weather provider unavailable" }`.
+- Corpo de erro segue a convenção já usada por todos os controllers do repo (`{ code, message }`, ex.: `create-password-reauth-grant.controller.ts`) — não o formato genérico `{ error }`.
 - Erros 4xx do provedor externo (ex.: requisição malformada) não são retentados pelo `Retry`; falhas de rede/5xx são.
 
 ## Testes
@@ -145,7 +170,7 @@ Segue o padrão de 3 passos já usado no repo:
 
 1. `shared/infra/ioc/module/service-identifier/weather-types.ts` — símbolos `WEATHER_TYPES.GeocodingGateway`, `.WeatherGateway`, `.GetCurrentWeatherByCityUseCase`, `.WeatherController`.
 2. `shared/infra/ioc/module/weather/weather-container.ts` — `ContainerModule` ligando as interfaces às implementações concretas (`OpenMeteoGeocodingGateway`, `OpenMeteoWeatherGateway`).
-3. `bootstrap/setup-weather-module.ts` — registra o controller e as rotas.
+3. `bootstrap/setup-weather-module.ts` — registra o controller e as rotas. `WeatherController.init()` chama `httpServer.register("get", WeatherRoutes.GET, { callback, isProtected: false }, makeWeatherSwaggerSchema())`, onde `makeWeatherSwaggerSchema()` usa `OpenApiSchemaBuilder.build({ querystring, responses: { 200, 404, 503 } })` — mesmo padrão de `fetch-users.controller.ts` — para que `/weather` seja incluído no documento OpenAPI e, consequentemente, em `@repo/api-types` (`pnpm openapi:generate-client`), do qual o frontend depende.
 
 Não há Provider pattern (env-based real/fake) como em repositórios — os gateways seguem o padrão já usado por `SubscriptionGateway`/`MailerGateway`: uma única implementação concreta ligada no container, com fakes usados apenas em testes via `rebindSync`.
 
