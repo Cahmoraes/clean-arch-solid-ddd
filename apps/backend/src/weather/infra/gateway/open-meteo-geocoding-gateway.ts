@@ -17,17 +17,25 @@ interface OpenMeteoGeocodingResponse {
 @injectable()
 export class OpenMeteoGeocodingGateway implements GeocodingGateway {
 	private readonly baseUrl = "https://geocoding-api.open-meteo.com/v1/search"
+	// CircuitBreaker.wrap() binds a fixed zero-arg callback at construction
+	// time, so it cannot close over a per-call `cityName` directly. Building
+	// the breaker ONCE here (instance field) lets its failure count / open
+	// state accumulate across every geocode() call, as a real circuit
+	// breaker must. The callback reads the city from `cityNameForRequest`,
+	// which geocode() updates right before each `breaker.run()`.
+	private cityNameForRequest = ""
+	private readonly breaker = CircuitBreaker.wrap({
+		callback: () => this.fetchGeocode(this.cityNameForRequest),
+		failureThresholdPercentageLimit: 50,
+		resetTimeout: 30_000,
+	})
 
 	async geocode(
 		cityName: string,
 	): Promise<Either<CityNotFoundError, Coordinate>> {
-		const breaker = CircuitBreaker.wrap({
-			callback: () => this.fetchGeocode(cityName),
-			failureThresholdPercentageLimit: 50,
-			resetTimeout: 30_000,
-		})
+		this.cityNameForRequest = cityName
 		const retry = Retry.wrap({
-			callback: () => breaker.run(),
+			callback: () => this.breaker.run(),
 			maxAttempts: 3,
 			time: 500,
 		})

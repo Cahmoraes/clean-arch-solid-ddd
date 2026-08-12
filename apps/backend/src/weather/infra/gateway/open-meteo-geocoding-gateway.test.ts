@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest"
-import { OpenMeteoGeocodingGateway } from "./open-meteo-geocoding-gateway"
+import { OpenMeteoGeocodingGateway } from "./open-meteo-geocoding-gateway.js"
 
 describe("OpenMeteoGeocodingGateway", () => {
 	afterEach(() => {
