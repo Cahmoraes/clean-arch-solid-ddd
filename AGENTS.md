@@ -19,7 +19,7 @@
 ## Restrições de Comunicação
 
 - Responder sempre em PT-BR, preservar termos técnicos
-- Nunca usar emojis
+- Nunca usar emojis em respostas, apenas quando for necessário como em diagramas
 
 ## Monorepo Structure
 
