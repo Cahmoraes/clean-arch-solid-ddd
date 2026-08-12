@@ -10,7 +10,7 @@ describe("PublicShell", () => {
 			</PublicShell>,
 		)
 		const nav = screen.getByRole("navigation", {
-			name: /ações de autenticação/i,
+			name: /navegação principal/i,
 		})
 		expect(nav).toBeInTheDocument()
 		const entrar = screen.getByRole("link", { name: /entrar/i })
