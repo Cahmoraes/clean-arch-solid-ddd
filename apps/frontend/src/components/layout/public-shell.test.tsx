@@ -13,8 +13,10 @@ describe("PublicShell", () => {
 			name: /navegação principal/i,
 		})
 		expect(nav).toBeInTheDocument()
+		const clima = screen.getByRole("link", { name: /clima/i })
 		const entrar = screen.getByRole("link", { name: /entrar/i })
 		const cadastrar = screen.getByRole("link", { name: /criar conta/i })
+		expect(clima).toHaveAttribute("href", "/clima")
 		expect(entrar).toHaveAttribute("href", "/login")
 		expect(cadastrar).toHaveAttribute("href", "/cadastro")
 	})
