@@ -23,7 +23,7 @@ export function PublicShell({ children, className }: PublicShellProps) {
 						<BrandMark className="text-foreground" />
 					</Link>
 					<nav
-						aria-label="Ações de autenticação"
+						aria-label="Navegação principal"
 						className="flex items-center gap-2"
 					>
 						<Link
