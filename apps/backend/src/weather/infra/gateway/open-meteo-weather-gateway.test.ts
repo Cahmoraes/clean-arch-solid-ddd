@@ -5,6 +5,7 @@ import { OpenMeteoWeatherGateway } from "./open-meteo-weather-gateway.js"
 describe("OpenMeteoWeatherGateway", () => {
 	afterEach(() => {
 		vi.unstubAllGlobals()
+		vi.useRealTimers()
 	})
 
 	test("resolve Temperature quando a API responde com sucesso", async () => {
@@ -38,6 +39,7 @@ describe("OpenMeteoWeatherGateway", () => {
 	})
 
 	test("falha com WeatherProviderUnavailableError quando a API responde com erro", async () => {
+		vi.useFakeTimers()
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async () => ({
@@ -52,7 +54,9 @@ describe("OpenMeteoWeatherGateway", () => {
 			longitude: -46.6333,
 		}).force.success().value
 
-		const result = await gateway.getCurrentWeather(coordinate)
+		const resultPromise = gateway.getCurrentWeather(coordinate)
+		await vi.advanceTimersByTimeAsync(2000)
+		const result = await resultPromise
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.force.failure().value.name).toBe(

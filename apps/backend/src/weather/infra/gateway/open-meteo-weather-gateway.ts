@@ -19,20 +19,22 @@ interface OpenMeteoForecastResponse {
 @injectable()
 export class OpenMeteoWeatherGateway implements WeatherGateway {
 	private readonly baseUrl = "https://api.open-meteo.com/v1/forecast"
+	private coordinate!: Coordinate
+	private readonly breaker = CircuitBreaker.wrap({
+		callback: () => this.fetchForecast(this.coordinate),
+		failureThresholdPercentageLimit: 50,
+		resetTimeout: 30_000,
+	})
 
 	async getCurrentWeather(
 		coordinate: Coordinate,
 	): Promise<Either<WeatherProviderUnavailableError, Temperature>> {
 		try {
-			const breaker = CircuitBreaker.wrap({
-				callback: () => this.fetchForecast(coordinate),
-				failureThresholdPercentageLimit: 50,
-				resetTimeout: 30_000,
-			})
+			this.coordinate = coordinate
 			const retry = Retry.wrap({
-				callback: () => breaker.run(),
+				callback: () => this.breaker.run(),
 				maxAttempts: 3,
-				time: 100,
+				time: 500,
 			})
 			const data: OpenMeteoForecastResponse = await retry.run()
 			return success({
