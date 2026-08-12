@@ -19,9 +19,16 @@ interface OpenMeteoForecastResponse {
 @injectable()
 export class OpenMeteoWeatherGateway implements WeatherGateway {
 	private readonly baseUrl = "https://api.open-meteo.com/v1/forecast"
-	private coordinate!: Coordinate
+	// CircuitBreaker is built ONCE here (instance field) so its failure
+	// count / open state accumulate across every getCurrentWeather() call,
+	// as a real circuit breaker must. `coordinate` is a real per-call
+	// argument forwarded through `breaker.run(coordinate)`, not a shared
+	// mutable field: each getCurrentWeather() invocation has its own local
+	// `coordinate` parameter, so concurrent calls for different coordinates
+	// can never clobber each other, even across the Retry suspension point
+	// during `sleep`.
 	private readonly breaker = CircuitBreaker.wrap({
-		callback: () => this.fetchForecast(this.coordinate),
+		callback: (coordinate: Coordinate) => this.fetchForecast(coordinate),
 		failureThresholdPercentageLimit: 50,
 		resetTimeout: 30_000,
 	})
@@ -30,9 +37,8 @@ export class OpenMeteoWeatherGateway implements WeatherGateway {
 		coordinate: Coordinate,
 	): Promise<Either<WeatherProviderUnavailableError, Temperature>> {
 		try {
-			this.coordinate = coordinate
 			const retry = Retry.wrap({
-				callback: () => this.breaker.run(),
+				callback: () => this.breaker.run(coordinate),
 				maxAttempts: 3,
 				time: 500,
 			})
