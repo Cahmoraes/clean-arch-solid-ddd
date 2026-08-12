@@ -17,6 +17,7 @@ coverage/
 .serena
 .serena/*
 .headroom_wrap_marker
+.worktrees/
 .github
 .claude
 
