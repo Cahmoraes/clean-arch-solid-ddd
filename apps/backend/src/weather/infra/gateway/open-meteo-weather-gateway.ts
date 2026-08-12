@@ -1,0 +1,62 @@
+import { injectable } from "inversify"
+import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
+import {
+	type Either,
+	failure,
+	success,
+} from "@/shared/domain/value-object/either.js"
+import { CircuitBreaker } from "@/shared/infra/gateway/circuit-breaker.js"
+import { Retry } from "@/shared/infra/gateway/retry.js"
+import type { WeatherGateway } from "@/weather/application/gateway/weather-gateway.js"
+import { WeatherProviderUnavailableError } from "@/weather/domain/error/weather-provider-unavailable-error.js"
+import type { Temperature } from "@/weather/domain/value-object/current-weather.js"
+
+interface OpenMeteoForecastResponse {
+	current: { temperature_2m: number }
+	daily: { temperature_2m_max: number[]; temperature_2m_min: number[] }
+}
+
+@injectable()
+export class OpenMeteoWeatherGateway implements WeatherGateway {
+	private readonly baseUrl = "https://api.open-meteo.com/v1/forecast"
+
+	async getCurrentWeather(
+		coordinate: Coordinate,
+	): Promise<Either<WeatherProviderUnavailableError, Temperature>> {
+		try {
+			const breaker = CircuitBreaker.wrap({
+				callback: () => this.fetchForecast(coordinate),
+				failureThresholdPercentageLimit: 50,
+				resetTimeout: 30_000,
+			})
+			const retry = Retry.wrap({
+				callback: () => breaker.run(),
+				maxAttempts: 3,
+				time: 100,
+			})
+			const data: OpenMeteoForecastResponse = await retry.run()
+			return success({
+				current: data.current.temperature_2m,
+				min: data.daily.temperature_2m_min[0],
+				max: data.daily.temperature_2m_max[0],
+			})
+		} catch {
+			return failure(new WeatherProviderUnavailableError())
+		}
+	}
+
+	private async fetchForecast(
+		coordinate: Coordinate,
+	): Promise<OpenMeteoForecastResponse> {
+		const url =
+			`${this.baseUrl}?latitude=${coordinate.latitude}&longitude=${coordinate.longitude}` +
+			"&current=temperature_2m&daily=temperature_2m_max,temperature_2m_min&timezone=auto"
+		const response = await fetch(url)
+		if (!response.ok) {
+			throw new Error(
+				`Open-Meteo forecast request failed with status ${response.status}`,
+			)
+		}
+		return response.json() as Promise<OpenMeteoForecastResponse>
+	}
+}

@@ -1,0 +1,62 @@
+import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
+import { afterEach, describe, expect, test, vi } from "vitest"
+import { OpenMeteoWeatherGateway } from "./open-meteo-weather-gateway.js"
+
+describe("OpenMeteoWeatherGateway", () => {
+	afterEach(() => {
+		vi.unstubAllGlobals()
+	})
+
+	test("resolve Temperature quando a API responde com sucesso", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async () => ({
+				ok: true,
+				json: async () => ({
+					current: { temperature_2m: 24 },
+					daily: {
+						temperature_2m_max: [27],
+						temperature_2m_min: [18],
+					},
+				}),
+			})),
+		)
+		const gateway = new OpenMeteoWeatherGateway()
+		const coordinate = Coordinate.create({
+			latitude: -23.5505,
+			longitude: -46.6333,
+		}).force.success().value
+
+		const result = await gateway.getCurrentWeather(coordinate)
+
+		expect(result.isSuccess()).toBe(true)
+		expect(result.force.success().value).toEqual({
+			current: 24,
+			min: 18,
+			max: 27,
+		})
+	})
+
+	test("falha com WeatherProviderUnavailableError quando a API responde com erro", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(async () => ({
+				ok: false,
+				status: 500,
+				json: async () => ({}),
+			})),
+		)
+		const gateway = new OpenMeteoWeatherGateway()
+		const coordinate = Coordinate.create({
+			latitude: -23.5505,
+			longitude: -46.6333,
+		}).force.success().value
+
+		const result = await gateway.getCurrentWeather(coordinate)
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.force.failure().value.name).toBe(
+			"WeatherProviderUnavailableError",
+		)
+	})
+})
