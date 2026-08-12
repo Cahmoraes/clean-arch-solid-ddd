@@ -1,6 +1,6 @@
 # Task 09: Backend: `GetCurrentWeatherByCityUseCase`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md
 **Tier:** standard
