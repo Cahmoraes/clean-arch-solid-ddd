@@ -20,7 +20,7 @@
 - [x] 5. Backend: `WeatherGateway` (interface) + `InMemoryWeatherGateway` (fake) → `task-05.md`
 - [x] 6. Frontend: componente `WeatherSearchForm` (input + sync de URL) → `task-06.md`
 - [x] 7. Backend: `OpenMeteoGeocodingGateway` (adapter real, CircuitBreaker+Retry) → `task-07.md`
-- [ ] 8. Backend: `OpenMeteoWeatherGateway` (adapter real, CircuitBreaker+Retry) → `task-08.md`
+- [x] 8. Backend: `OpenMeteoWeatherGateway` (adapter real, CircuitBreaker+Retry) → `task-08.md`
 - [x] 9. Backend: `GetCurrentWeatherByCityUseCase` → `task-09.md`
 - [ ] 10. Backend: `WeatherController` + rotas + schema OpenAPI + teste business-flow → `task-10.md`
 - [ ] 11. Backend: injeção de dependência (`weather-types.ts`, `weather-module.ts`, `setup-weather-module.ts`) + `AGENTS.md` do módulo → `task-11.md`

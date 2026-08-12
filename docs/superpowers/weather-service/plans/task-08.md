@@ -1,6 +1,6 @@
 # Task 08: Backend: `OpenMeteoWeatherGateway` (adapter real)
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md
 **Tier:** standard
