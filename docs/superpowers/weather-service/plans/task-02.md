@@ -1,6 +1,6 @@
 # Task 02: Frontend: schema Zod de validação do nome da cidade
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-frontend-design.md
 **Tier:** cheap

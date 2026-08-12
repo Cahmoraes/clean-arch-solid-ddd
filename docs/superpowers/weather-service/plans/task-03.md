@@ -1,6 +1,6 @@
 # Task 03: Frontend: componente `CurrentWeatherDisplay`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-frontend-design.md
 **Tier:** standard

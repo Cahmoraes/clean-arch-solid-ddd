@@ -1,6 +1,6 @@
 # Task 01: Domain layer: `CurrentWeather` VO + `CityNotFoundError` + `WeatherProviderUnavailableError`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md
 **Tier:** cheap
