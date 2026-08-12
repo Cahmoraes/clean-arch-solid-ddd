@@ -9,6 +9,7 @@ import { notificationModule } from "./module/notification/notification-module"
 import { sessionModule } from "./module/session/session-module"
 import { subscriptionModule } from "./module/subscription/subscription-module"
 import { userModule } from "./module/user/user-module"
+import { weatherModule } from "./module/weather/weather-module"
 
 export const container = new Container()
 container.load(
@@ -22,4 +23,5 @@ container.load(
 	notificationModule,
 	analyticsModule,
 	contactModule,
+	weatherModule,
 )

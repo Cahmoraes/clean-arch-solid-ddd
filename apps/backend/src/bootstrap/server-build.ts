@@ -14,6 +14,7 @@ import { setupNotificationModule } from "./setup-notification-module"
 import { setupSessionModule } from "./setup-session-module"
 import { setupSubscriptionModule } from "./setup-subscription-module"
 import { setupUserModule } from "./setup-user-module"
+import { setupWeatherModule } from "./setup-weather-module"
 
 export interface ModuleControllers {
 	controllers: Controller[]
@@ -38,6 +39,7 @@ export async function serverBuild() {
 		await setupNotificationModule(),
 		await setupAnalyticsModule(),
 		setupContactModule(),
+		setupWeatherModule(),
 	]
 
 	await initializeControllers(modules.flatMap((m) => m.controllers))
