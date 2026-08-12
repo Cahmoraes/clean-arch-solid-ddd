@@ -1,0 +1,40 @@
+sequenceDiagram
+    actor Client as 👤 Client
+    participant Controller as ⚙️ WeatherController
+    participant UseCase as ⚙️ GetCurrentWeatherByCityUseCase
+    participant GeoGateway as 🔌 GeocodingGateway
+    participant GeoAPI as ☁️ Open-Meteo Geocoding API
+    participant WeatherGateway as 🔌 WeatherGateway
+    participant WeatherAPI as ☁️ Open-Meteo Forecast API
+
+    Client->>Controller: GET /weather?city={cityName}
+    Controller->>UseCase: execute({ city })
+
+    rect rgb(230, 245, 255)
+        Note over UseCase,GeoAPI: CircuitBreaker + Retry
+        UseCase->>+GeoGateway: geocode(city)
+        GeoGateway->>+GeoAPI: GET /v1/search?name={city}
+        GeoAPI-->>-GeoGateway: 200 OK { results }
+        GeoGateway-->>-UseCase: Coordinates or CityNotFoundError
+    end
+
+    alt City found
+        rect rgb(255, 245, 225)
+            Note over UseCase,WeatherAPI: CircuitBreaker + Retry
+            UseCase->>+WeatherGateway: getCurrentWeather(lat, lon)
+            WeatherGateway->>+WeatherAPI: GET /v1/forecast?lat&lon
+            WeatherAPI-->>-WeatherGateway: 200 OK or ❌ timeout/5xx
+            WeatherGateway-->>-UseCase: WeatherData or ProviderUnavailableError
+        end
+
+        alt Provider available
+            UseCase-->>Controller: WeatherData
+            Controller-->>Client: HTTP 200 OK { city, temperature, conditions }
+        else Provider unavailable
+            UseCase-->>Controller: ❌ ProviderUnavailableError
+            Controller-->>Client: HTTP 503 Service Unavailable { error: "Weather provider unavailable" }
+        end
+    else City not found
+        UseCase-->>Controller: ❌ CityNotFoundError
+        Controller-->>Client: HTTP 404 Not Found { error: "City not found" }
+    end
