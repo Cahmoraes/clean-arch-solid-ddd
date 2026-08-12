@@ -1,6 +1,6 @@
 # Task 05: Backend: `WeatherGateway` (interface) + `InMemoryWeatherGateway` (fake)
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md
 **Tier:** cheap

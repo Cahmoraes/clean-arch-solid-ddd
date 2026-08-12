@@ -1,6 +1,6 @@
 # Task 06: Frontend: componente `WeatherSearchForm`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-frontend-design.md
 **Tier:** standard

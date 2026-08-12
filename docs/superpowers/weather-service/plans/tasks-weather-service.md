@@ -16,9 +16,9 @@
 - [x] 1. Domain layer: `CurrentWeather` VO + `CityNotFoundError` + `WeatherProviderUnavailableError` → `task-01.md`
 - [x] 2. Frontend: schema Zod de validação do nome da cidade → `task-02.md`
 - [x] 3. Frontend: componente `CurrentWeatherDisplay` (hero + tiles min/max) → `task-03.md`
-- [ ] 4. Backend: `GeocodingGateway` (interface) + `InMemoryGeocodingGateway` (fake) → `task-04.md`
-- [ ] 5. Backend: `WeatherGateway` (interface) + `InMemoryWeatherGateway` (fake) → `task-05.md`
-- [ ] 6. Frontend: componente `WeatherSearchForm` (input + sync de URL) → `task-06.md`
+- [x] 4. Backend: `GeocodingGateway` (interface) + `InMemoryGeocodingGateway` (fake) → `task-04.md`
+- [x] 5. Backend: `WeatherGateway` (interface) + `InMemoryWeatherGateway` (fake) → `task-05.md`
+- [x] 6. Frontend: componente `WeatherSearchForm` (input + sync de URL) → `task-06.md`
 - [ ] 7. Backend: `OpenMeteoGeocodingGateway` (adapter real, CircuitBreaker+Retry) → `task-07.md`
 - [ ] 8. Backend: `OpenMeteoWeatherGateway` (adapter real, CircuitBreaker+Retry) → `task-08.md`
 - [ ] 9. Backend: `GetCurrentWeatherByCityUseCase` → `task-09.md`

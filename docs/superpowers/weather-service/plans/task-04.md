@@ -1,6 +1,6 @@
 # Task 04: Backend: `GeocodingGateway` (interface) + `InMemoryGeocodingGateway` (fake)
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md
 **Tier:** cheap
