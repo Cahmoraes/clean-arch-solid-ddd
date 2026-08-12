@@ -35,7 +35,7 @@ export function WeatherSearchForm({
 	return (
 		<form
 			noValidate
-			className="flex gap-2"
+			className="flex items-end gap-2"
 			onSubmit={handleSubmit(onSubmit)}
 			aria-busy={isPending}
 		>

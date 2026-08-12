@@ -51,7 +51,10 @@ function WeatherPageContent() {
 				</p>
 			)}
 			{city && data && (
-				<CurrentWeatherDisplay city={data.city} temperature={data.temperature} />
+				<CurrentWeatherDisplay
+					city={data.city}
+					temperature={data.temperature}
+				/>
 			)}
 		</section>
 	)

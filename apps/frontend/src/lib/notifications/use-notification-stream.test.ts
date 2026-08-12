@@ -16,8 +16,9 @@ const { mockUseAuthStore } = vi.hoisted(() => ({
 }))
 
 vi.mock("@/lib/auth/auth-store", () => ({
-	useAuthStore: (selector: (state: { accessToken: string | null }) => unknown) =>
-		mockUseAuthStore(selector),
+	useAuthStore: (
+		selector: (state: { accessToken: string | null }) => unknown,
+	) => mockUseAuthStore(selector),
 }))
 
 let authState: { accessToken: string | null } = { accessToken: "mock-token" }
