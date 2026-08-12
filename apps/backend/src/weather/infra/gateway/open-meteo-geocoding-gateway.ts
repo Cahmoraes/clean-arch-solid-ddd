@@ -17,15 +17,15 @@ interface OpenMeteoGeocodingResponse {
 @injectable()
 export class OpenMeteoGeocodingGateway implements GeocodingGateway {
 	private readonly baseUrl = "https://geocoding-api.open-meteo.com/v1/search"
-	// CircuitBreaker.wrap() binds a fixed zero-arg callback at construction
-	// time, so it cannot close over a per-call `cityName` directly. Building
-	// the breaker ONCE here (instance field) lets its failure count / open
-	// state accumulate across every geocode() call, as a real circuit
-	// breaker must. The callback reads the city from `cityNameForRequest`,
-	// which geocode() updates right before each `breaker.run()`.
-	private cityNameForRequest = ""
+	// CircuitBreaker is built ONCE here (instance field) so its failure
+	// count / open state accumulate across every geocode() call, as a real
+	// circuit breaker must. `cityName` is now a real per-call argument
+	// forwarded through `breaker.run(cityName)`, not a shared mutable field:
+	// each geocode() invocation has its own local `cityName` parameter, so
+	// concurrent calls for different cities can never clobber each other,
+	// even across the Retry suspension point during `sleep`.
 	private readonly breaker = CircuitBreaker.wrap({
-		callback: () => this.fetchGeocode(this.cityNameForRequest),
+		callback: (cityName: string) => this.fetchGeocode(cityName),
 		failureThresholdPercentageLimit: 50,
 		resetTimeout: 30_000,
 	})
@@ -33,9 +33,8 @@ export class OpenMeteoGeocodingGateway implements GeocodingGateway {
 	async geocode(
 		cityName: string,
 	): Promise<Either<CityNotFoundError, Coordinate>> {
-		this.cityNameForRequest = cityName
 		const retry = Retry.wrap({
-			callback: () => this.breaker.run(),
+			callback: () => this.breaker.run(cityName),
 			maxAttempts: 3,
 			time: 500,
 		})
