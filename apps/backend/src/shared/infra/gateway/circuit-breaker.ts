@@ -1,23 +1,23 @@
 type AsyncFunction = (...args: any) => Promise<any>
 type State = "open" | "closed" | "half-open"
 
-export interface CircuitBreakerConstructor {
-	callback: AsyncFunction
+export interface CircuitBreakerConstructor<Callback extends AsyncFunction> {
+	callback: Callback
 	failureThresholdPercentageLimit: number
 	resetTimeout: number
 }
 
-export class CircuitBreaker {
+export class CircuitBreaker<Callback extends AsyncFunction> {
 	private _totalRequests: number
 	private _totalFailures: number
 	private _totalSuccess: number
 	private _state: State
 	private _lastFailureTime: number | null
-	private readonly callback: AsyncFunction
+	private readonly callback: Callback
 	private readonly failureThresholdPercentageLimit: number
 	private readonly resetTimeout: number
 
-	private constructor(props: CircuitBreakerConstructor) {
+	private constructor(props: CircuitBreakerConstructor<Callback>) {
 		this._state = "closed"
 		this._totalRequests = 0
 		this._totalFailures = 0
@@ -28,14 +28,18 @@ export class CircuitBreaker {
 		this.resetTimeout = props.resetTimeout
 	}
 
-	public static wrap(props: CircuitBreakerConstructor): CircuitBreaker {
+	public static wrap<T extends AsyncFunction>(
+		props: CircuitBreakerConstructor<T>,
+	): CircuitBreaker<T> {
 		return new CircuitBreaker(props)
 	}
 
-	public async run(): Promise<any> {
+	public async run(
+		...args: Parameters<Callback>
+	): Promise<ReturnType<Callback>> {
 		try {
 			this.incrementTotalRequests()
-			return await this.performRun()
+			return await this.performRun(...args)
 		} catch (e) {
 			this.performCatch()
 			throw e
@@ -62,11 +66,13 @@ export class CircuitBreaker {
 		this._totalSuccess++
 	}
 
-	private async performRun(): Promise<any> {
+	private async performRun(
+		...args: Parameters<Callback>
+	): Promise<ReturnType<Callback>> {
 		this.incrementTotalSuccess()
 		if (this.checkHalfOpenEligibility) this.halfOpen()
 		if (this.isOpen) throw new OpenCircleError()
-		const result = await this.callback()
+		const result = await this.callback(...args)
 		if (this.shouldCloseCircuit) this.close()
 		return result
 	}

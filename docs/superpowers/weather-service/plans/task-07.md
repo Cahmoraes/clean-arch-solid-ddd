@@ -1,6 +1,6 @@
 # Task 07: Backend: `OpenMeteoGeocodingGateway` (adapter real)
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** ../specs/weather-service-design.md
 **Tier:** standard
