@@ -1,5 +1,8 @@
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import { CacheDBMemory } from "@/shared/infra/database/redis/cache-db-memory"
 import { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
+import { UserStatusChangedEvent } from "@/user/domain/event/user-status-changed.event"
 import { User } from "@/user/domain/user"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import {
@@ -153,5 +156,53 @@ describe("BulkChangeUserStatusUseCase", () => {
 		expect(result.value.updated).toBe(1)
 		expect(result.value.requested).toBe(1)
 		expect(result.value.skipped).toBe(0)
+	})
+
+	test("deve publicar um UserStatusChangedEvent por usuário efetivamente alterado, ignorando quem já está no status alvo ou é inelegível por política", async () => {
+		await userRepository.save(restoreUser("admin-id", "ADMIN"))
+		await userRepository.save(restoreUser("member-a-id", "MEMBER"))
+		await userRepository.save(
+			User.restore({
+				id: "member-b-id",
+				name: "User member-b-id",
+				email: "member-b-id@test.com",
+				role: "MEMBER",
+				status: "suspended",
+				createdAt: new Date(),
+				isSuperAdmin: false,
+			}),
+		)
+		await userRepository.save(restoreUser("other-admin-id", "ADMIN"))
+
+		const receivedEvents: UserStatusChangedEvent[] = []
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof UserStatusChangedEvent) receivedEvents.push(event)
+		}
+		DomainEventPublisher.instance.subscribe("userStatusChanged", subscriber)
+
+		try {
+			const input: BulkChangeUserStatusUseCaseInput = {
+				requesterId: "admin-id",
+				userIds: ["member-a-id", "member-b-id", "other-admin-id"],
+				targetStatus: "suspended",
+			}
+			const result = await sut.execute(input)
+			expect(result.isSuccess()).toBe(true)
+			if (!result.isSuccess()) return
+			expect(result.value.updated).toBe(1)
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("userStatusChanged", subscriber)
+		}
+
+		expect(receivedEvents).toHaveLength(1)
+		expect(receivedEvents[0]).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userId: "member-a-id",
+					previousStatus: "activated",
+					newStatus: "suspended",
+				}),
+			}),
+		)
 	})
 })
