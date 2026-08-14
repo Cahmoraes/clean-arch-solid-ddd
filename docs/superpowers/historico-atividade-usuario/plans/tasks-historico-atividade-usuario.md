@@ -28,7 +28,7 @@
 - [x] 13. `UserActivityDao` (interface + implementação Prisma) — merge `UserActivityEvent` + `CheckIn`, ordena desc, limita 20 [FR-001, FR-012] → `task-13.md`
 - [x] 14. `GetUserActivityUseCase` (leitura, limit 20) [FR-001, FR-002, FR-013] → `task-14.md`
 - [x] 15. `GET /users/:id/activity` — controller + rota + DI [FR-001] → `task-15.md`
-- [ ] 16. Hook `use-user-activity` (React Query) [FR-001] → `task-16.md`
+- [x] 16. Hook `use-user-activity` (React Query) [FR-001] → `task-16.md`
 - [x] 17. `ActivityTab` — agrupamento por data + ícone por categoria [FR-002, FR-003, FR-004, FR-013] → `task-17.md`
 - [ ] 18. `user-detail-panel.tsx` busca e passa `events` para `ActivityTab` [FR-001] → `task-18.md`
 
