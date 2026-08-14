@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import {
 	type Either,
 	failure,
@@ -6,6 +7,7 @@ import {
 } from "@/shared/domain/value-object/either"
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { UserStatusChangedEvent } from "@/user/domain/event/user-status-changed.event"
 import { UserManagementPolicy } from "@/user/domain/service/user-management-policy"
 import type { StatusTypes } from "@/user/domain/value-object/status"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
@@ -52,6 +54,23 @@ export class BulkChangeUserStatusUseCase {
 			)
 			.map((candidate) => candidate.id)
 
+		// Snapshot dos dados ANTES do update: `candidates` referencia as mesmas
+		// instâncias de User mantidas pelo repositório, então após
+		// updateManyStatus() o `status` já estaria mutado in-place — capturar
+		// previousStatus aqui evita ler o status novo por engano.
+		const changedCandidateSnapshots = candidates
+			.filter(
+				(candidate) =>
+					eligibleIds.includes(candidate.id) &&
+					candidate.status !== input.targetStatus,
+			)
+			.map((candidate) => ({
+				userId: candidate.id,
+				userEmail: candidate.email,
+				userName: candidate.name,
+				previousStatus: candidate.status,
+			}))
+
 		const updated = await this.userRepository.updateManyStatus(
 			eligibleIds,
 			input.targetStatus,
@@ -59,6 +78,20 @@ export class BulkChangeUserStatusUseCase {
 
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
 		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
+
+		await Promise.all(
+			changedCandidateSnapshots.map((snapshot) =>
+				DomainEventPublisher.instance.publish(
+					new UserStatusChangedEvent({
+						userId: snapshot.userId,
+						userEmail: snapshot.userEmail,
+						userName: snapshot.userName,
+						previousStatus: snapshot.previousStatus,
+						newStatus: input.targetStatus,
+					}),
+				),
+			),
+		)
 
 		const requested = uniqueUserIds.length
 		return success({ updated, requested, skipped: requested - updated })
