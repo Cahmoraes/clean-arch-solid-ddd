@@ -100,4 +100,37 @@ describe("PrismaUserActivityDao", () => {
 
 		expect(result).toHaveLength(20)
 	})
+
+	it("deve aplicar o limite no merge quando ambas as fontes somam mais que o limite", async () => {
+		const now = new Date("2025-06-30T12:00:00.000Z").getTime()
+		await Promise.all(
+			Array.from({ length: 15 }, (_, index) =>
+				prismaClient.userActivityEvent.create({
+					data: {
+						userId,
+						type: "LOGIN",
+						description: "Login realizado",
+						occurredAt: new Date(now - index * 86_400_000),
+					},
+				}),
+			),
+		)
+		await Promise.all(
+			Array.from({ length: 10 }, (_, index) =>
+				prismaClient.checkIn.create({
+					data: {
+						user_id: userId,
+						gym_id: gymId,
+						latitude: 0,
+						longitude: 0,
+						created_at: new Date(now + index * 86_400_000),
+					},
+				}),
+			),
+		)
+
+		const result = await sut.findRecentActivity(userId, 20)
+
+		expect(result).toHaveLength(20)
+	})
 })

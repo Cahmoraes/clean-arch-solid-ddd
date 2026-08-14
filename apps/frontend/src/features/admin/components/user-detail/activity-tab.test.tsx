@@ -68,9 +68,89 @@ describe("ActivityTab", () => {
 				description: "Check-in — Academia Central",
 			}),
 		]
-		render(<ActivityTab events={events} />)
+		const { container } = render(<ActivityTab events={events} />)
 
-		expect(screen.getByRole("img", { name: "Check-in" })).toBeInTheDocument()
+		const badge = screen.getByRole("img", { name: "Check-in" })
+		expect(badge).toHaveClass("bg-accent/16")
+		expect(badge.querySelector("svg")).toHaveClass("text-accent")
+		expect(container.querySelector("svg")).not.toBeNull()
+	})
+
+	test("exibe ícone com cor de segurança para eventos de senha e bloqueio", () => {
+		const events: UserActivityEvent[] = [
+			buildEvent({
+				id: "e1",
+				type: "PASSWORD_CHANGED",
+				description: "Senha alterada",
+			}),
+			buildEvent({
+				id: "e2",
+				type: "ACCOUNT_LOCKED",
+				description: "Conta bloqueada por segurança",
+			}),
+		]
+		const { container } = render(<ActivityTab events={events} />)
+
+		const securityBadges = screen.getAllByRole("img", { name: "Segurança" })
+		expect(securityBadges).toHaveLength(2)
+		expect(
+			securityBadges.every((badge) =>
+				badge.classList.contains("bg-warning-soft"),
+			),
+		).toBe(true)
+
+		const svgClasses = Array.from(container.querySelectorAll("svg")).map(
+			(svg) => svg.getAttribute("class") ?? "",
+		)
+		expect(svgClasses).toHaveLength(2)
+		expect(svgClasses.every((cls) => cls.includes("text-warning"))).toBe(true)
+	})
+
+	test("exibe ícone com cor de conta/perfil/administrativo para eventos de conta, perfil, role e status", () => {
+		const events: UserActivityEvent[] = [
+			buildEvent({
+				id: "e1",
+				type: "GOOGLE_LINKED",
+				description: "Conta Google vinculada",
+			}),
+			buildEvent({
+				id: "e2",
+				type: "PROFILE_UPDATED",
+				description: "Perfil atualizado",
+			}),
+			buildEvent({
+				id: "e3",
+				type: "ROLE_CHANGED",
+				description: "Role alterada",
+			}),
+			buildEvent({
+				id: "e4",
+				type: "STATUS_CHANGED",
+				description: "Status alterado",
+			}),
+			buildEvent({
+				id: "e5",
+				type: "LOGIN",
+				description: "Login realizado",
+			}),
+		]
+		const { container } = render(<ActivityTab events={events} />)
+
+		const badges = screen.getAllByRole("img", {
+			name: /Conta|Perfil|Administrativo/,
+		})
+		expect(badges).toHaveLength(5)
+		expect(
+			badges.every((badge) => badge.classList.contains("bg-surface-3")),
+		).toBe(true)
+
+		const svgClasses = Array.from(container.querySelectorAll("svg")).map(
+			(svg) => svg.getAttribute("class") ?? "",
+		)
+		expect(svgClasses).toHaveLength(5)
+		expect(
+			svgClasses.every((cls) => cls.includes("text-muted-foreground")),
+		).toBe(true)
 	})
 
 	test("exibe o horário formatado do evento, não o ISO cru", () => {
