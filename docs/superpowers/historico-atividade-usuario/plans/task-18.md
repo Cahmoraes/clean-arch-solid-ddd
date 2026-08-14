@@ -1,6 +1,6 @@
 # Task 18: user-detail-panel.tsx busca e passa events para ActivityTab [FR-001]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** cheap
