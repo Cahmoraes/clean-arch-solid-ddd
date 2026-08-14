@@ -104,6 +104,7 @@ interface ActivityGroup {
 	events: UserActivityEvent[]
 }
 
+// Assume events já ordenado por occurredAt desc (garantia do backend/DAO); sem reordenação/validação aqui.
 function groupEventsByDate(events: UserActivityEvent[]): ActivityGroup[] {
 	const groups: ActivityGroup[] = []
 	for (const event of events) {

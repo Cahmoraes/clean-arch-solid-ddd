@@ -70,10 +70,7 @@ describe("ActivityTab", () => {
 		]
 		render(<ActivityTab events={events} />)
 
-		const item = screen.getByText("Check-in — Academia Central").closest("li")
-		expect(item).not.toBeNull()
-		const badge = (item as HTMLElement).querySelector(".bg-accent\\/16")
-		expect(badge).not.toBeNull()
+		expect(screen.getByRole("img", { name: "Check-in" })).toBeInTheDocument()
 	})
 
 	test("exibe o horário formatado do evento, não o ISO cru", () => {
