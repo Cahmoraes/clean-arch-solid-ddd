@@ -1,8 +1,11 @@
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { UserRoleChangedEvent } from "@/user/domain/event/user-role-changed.event"
 import { User } from "@/user/domain/user"
 import { CannotDemoteSelfError } from "../error/cannot-demote-self-error"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
@@ -213,6 +216,43 @@ describe("DemoteFromAdminUseCase", () => {
 
 		const cached = await cacheDB.get("fetch-users:1:10")
 		expect(cached).toBeNull()
+	})
+
+	test("deve publicar UserRoleChangedEvent ao rebaixar um administrador a membro", async () => {
+		await userRepository.save(makeRoot())
+		const user = (
+			await User.create({
+				id: "admin-id",
+				email: "admin@test.com",
+				name: "Admin User",
+				password: "password",
+				role: "ADMIN",
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+
+		let receivedEvent: UserRoleChangedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof UserRoleChangedEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("userRoleChanged", subscriber)
+
+		try {
+			await sut.execute({ requesterId: "root-id", userId: "admin-id" })
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("userRoleChanged", subscriber)
+		}
+
+		expect(receivedEvent).not.toBeNull()
+		expect(receivedEvent).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userId: "admin-id",
+					previousRole: "ADMIN",
+					newRole: "MEMBER",
+				}),
+			}),
+		)
 	})
 
 	test("Deve invalidar o cache user-stats após demover", async () => {
