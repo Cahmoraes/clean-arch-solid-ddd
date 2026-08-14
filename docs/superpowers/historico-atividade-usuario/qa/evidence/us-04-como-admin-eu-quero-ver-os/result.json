@@ -1,0 +1,12 @@
+{
+  "us_id": "us-04",
+  "user_story": "Como administrador, eu quero ver os check-ins do usuário misturados com os demais eventos, para ter uma visão unificada de atividade.",
+  "requirements": ["FR-012"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "14 testes passaram, 0 falharam (2 arquivos). Backend integration (1 arquivo, 3 testes): prisma-user-activity-dao.integration-test.ts inclui a asserção de FR-012 verificada no IV (prisma-user-activity-dao.integration-test.ts:78-81) — item sintetico CHECK_IN com description 'Check-in — Academia Central' e ocorrencia ordenada junto ao LOGIN no merge desc. Frontend (1 arquivo, 11 testes): activity-tab.test.tsx inclui 'renderiza a lista de eventos quando fornecida' com o item de check-in renderizado. Todos com 0 falhas.",
+  "screenshot_path": "docs/superpowers/historico-atividade-usuario/qa/evidence/us-04-como-admin-eu-quero-ver-os/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificado de ponta a ponta contra a stack rodando (backend :3333 production/Prisma + frontend :3000). Seed via API+psql: admin qa-us04-admin@example.com (force role=ADMIN/activated via psql), membro qa-us04-member@example.com com gym 'Academia QA' criada e INSERT direto em check_ins (created_at=now()-1h) + eventos LOGIN (now()-30min) e PROFILE_UPDATED (now()-2h) em user_activity_events. Confirmacao via API: GET /users/:id/activity retornou 200 com ['LOGIN', 'CHECK_IN', 'PROFILE_UPDATED'] ordenados por occurredAt desc, e o CHECK_IN com description 'Check-in — Academia QA' e occurredAt=created_at do check-in (confirma FR-012 no caminho de leitura real). UI: login como admin, /admin/usuarios, busca pelo e-mail, abertura do modal e clique na tab 'Atividade'. O snapshot DOM confirmou o comportamento observavel da US: tabpanel 'Atividade' com agrupamento 'Hoje' listando 'Login realizado' (18:52), 'Check-in — Academia QA' (18:22) e 'Perfil atualizado' (17:22) — o check-in aparece mesclado com os demais eventos em ordem cronologica decrescente, com descricao 'Check-in — {gym.title}' e horario = created_at do check-in. Screenshot capturado (PNG valido 1280x720, 89KB). Observacao: o modelo de QA nao suporta leitura de imagem anexada; a validacao visual foi feita pelo snapshot textual da pagina, não pela imagem em si. Testes existentes ja cobriam FR-012 de forma abrangente (assert no DAO e render no componente) — nenhum teste de aceitacao novo foi criado."
+}

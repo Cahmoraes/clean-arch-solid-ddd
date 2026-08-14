@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como administrador, eu quero ver quando um usuário fez login pela última vez, para confirmar se a conta está ativa e em uso.",
+  "requirements": ["FR-005", "FR-002"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "40 testes passaram, 0 falharam (4 arquivos). Backend domain/app (3 arquivos, 29 testes): record-user-activity.subscriber.test.ts (8) inclui 'deve gravar atividade LOGIN ao publicar LoginSucceededEvent' gravando type=LOGIN/description=Login realizado; authenticate.usecase.test.ts (9) inclui 'deve publicar LoginSucceededEvent após um login bem-sucedido'; authenticate-with-google.usecase.test.ts (9) inclui 'deve publicar LoginSucceededEvent ao autenticar usuário existente com googleId' e 'deve publicar GoogleAccountLinkedEvent e LoginSucceededEvent ao religar uma conta Google'. Frontend activity-tab.test.tsx (11) inclui 'renderiza a lista de eventos quando fornecida' (LOGIN/Login realizado visível), 'exibe o horário formatado do evento, não o ISO cru' (horário Intl.DateTimeFormat pt-BR, não ISO) e testes de categoria/ícone que cobrem LOGIN.",
+  "screenshot_path": "docs/superpowers/historico-atividade-usuario/qa/evidence/us-02-como-admin-eu-quero-ver-login/screenshot.png",
+  "failure_details": null,
+  "notes": "Comportamento observável verificado ao vivo: admin (qa-us02-admin@example.com, force role=ADMIN/status=activated via psql) logado na UI, abriu /admin/usuarios, buscou o membro qa-us02-member@example.com, abriu o modal e clicou na aba 'Atividade'. O feed exibiu o evento 'Login realizado' (importado: type=LOGIN, description='Login realizado', occurred_at=now()-2h via INSERT em user_activity_events) sob o cabeçalho 'Hoje' com horário formatado (17:16, renderização local do Intl.DateTimeFormat), junto de 'Senha alterada' sob 'Ontem'. Confirma US-02 (admin vê último login) e FR-002 (tipo + horário por evento) ponta a ponta. Screenshot capturado (screenshot.png, 87KB) pela playwright-cli mostrando o tabpanel Atividade com os dois itens grupo+horário; conteúdo também confirmado via snapshot DOM da playwright-cli. Nota: o modelo de QA não suporta leitura de imagem anexada, então a validação visual da screenshot foi feita pelo snapshot textual da página, não pela imagem em si. Testes existentes já cobriam os requisitos da história de forma abrangente — nenhum teste de aceitação novo foi criado; não há eventos/decisões pendentes."
+}

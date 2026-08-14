@@ -1,0 +1,171 @@
+- generic [ref=f2e1]:
+  - generic [ref=f2e83]:
+    - complementary [ref=f2e84]:
+      - generic [ref=f2e85]:
+        - link "VOLT" [ref=f2e86] [cursor=pointer]:
+          - /url: /inicio
+          - generic [ref=f2e87]:
+            - img [ref=f2e89]
+            - generic [ref=f2e91]: VOLT
+        - button "Recolher menu" [expanded] [ref=f2e92] [cursor=pointer]:
+          - img [ref=f2e93]
+      - navigation "Navegação principal" [ref=f2e96]:
+        - paragraph [ref=f2e97]: Principal
+        - link "Dashboard" [ref=f2e98] [cursor=pointer]:
+          - /url: /inicio
+          - img [ref=f2e99]
+          - generic [ref=f2e104]: Dashboard
+        - link "Check-ins" [ref=f2e105] [cursor=pointer]:
+          - /url: /check-ins
+          - img [ref=f2e106]
+          - generic [ref=f2e109]: Check-ins
+        - link "Academias" [ref=f2e110] [cursor=pointer]:
+          - /url: /academias
+          - img [ref=f2e111]
+          - generic [ref=f2e115]: Academias
+        - link "Perfil" [ref=f2e116] [cursor=pointer]:
+          - /url: /perfil
+          - img [ref=f2e117]
+          - generic [ref=f2e120]: Perfil
+        - link "Assinatura" [ref=f2e121] [cursor=pointer]:
+          - /url: /assinatura
+          - img [ref=f2e122]
+          - generic [ref=f2e124]: Assinatura
+        - paragraph [ref=f2e125]: Admin
+        - link "Usuários" [ref=f2e126] [cursor=pointer]:
+          - /url: /admin/usuarios
+          - img [ref=f2e127]
+          - generic [ref=f2e132]: Usuários
+        - link "Check-ins" [ref=f2e133] [cursor=pointer]:
+          - /url: /admin/check-ins
+          - img [ref=f2e134]
+          - generic [ref=f2e137]: Check-ins
+        - link "Analytics" [ref=f2e138] [cursor=pointer]:
+          - /url: /admin/analytics
+          - img [ref=f2e139]
+          - generic [ref=f2e141]: Analytics
+        - button "Sair" [ref=f2e143] [cursor=pointer]:
+          - img [ref=f2e144]
+          - generic [ref=f2e147]: Sair
+      - generic [ref=f2e149]:
+        - generic [ref=f2e150]: QU
+        - generic [ref=f2e151]:
+          - paragraph [ref=f2e152]: QA US06 Admin
+          - paragraph [ref=f2e153]: ADMIN
+    - generic [ref=f2e154]:
+      - banner [ref=f2e155]:
+        - button "Buscar... ⌘K" [ref=f2e156] [cursor=pointer]:
+          - img [ref=f2e157]
+          - generic [ref=f2e160]: Buscar...
+          - generic [ref=f2e161]: ⌘K
+        - generic [ref=f2e162]:
+          - button "Ativar modo claro" [pressed] [ref=f2e163] [cursor=pointer]:
+            - img [ref=f2e165]
+          - button "Notificações" [ref=f2e168] [cursor=pointer]:
+            - img [ref=f2e169]
+          - link "Ir para perfil" [ref=f2e172] [cursor=pointer]:
+            - /url: /perfil
+            - generic [ref=f2e173]: QU
+      - main [ref=f2e174]:
+        - generic [ref=f2e176]:
+          - generic [ref=f2e177]:
+            - generic [ref=f2e179]:
+              - generic [ref=f2e180]: Admin
+              - heading "Usuários" [level=1] [ref=f2e181]
+              - paragraph [ref=f2e182]: Gerencie membros e administradores da plataforma
+            - generic [ref=f2e183]:
+              - group "Filtrar usuários por categoria" [ref=f2e185]:
+                - button "Todos 83" [pressed] [ref=f2e186] [cursor=pointer]:
+                  - text: Todos
+                  - generic: "83"
+                - button "Membros 74" [ref=f2e187] [cursor=pointer]:
+                  - text: Membros
+                  - generic: "74"
+                - button "Administradores 9" [ref=f2e188] [cursor=pointer]:
+                  - text: Administradores
+                  - generic: "9"
+                - button "Ativos 80" [ref=f2e189] [cursor=pointer]:
+                  - text: Ativos
+                  - generic: "80"
+                - button "Inativos 3" [ref=f2e190] [cursor=pointer]:
+                  - text: Inativos
+                  - generic: "3"
+              - generic [ref=f2e191]:
+                - img [ref=f2e192]
+                - searchbox "Buscar por nome ou e-mail..." [ref=f2e195]: qa-us06-member@example.com
+          - generic [ref=f2e196]:
+            - generic [ref=f2e197]:
+              - generic [ref=f2e198]:
+                - checkbox "Selecionar todos os usuários da página" [ref=f2e199] [cursor=pointer]
+                - generic [ref=f2e200]: Selecionar página
+              - list [ref=f2e201]:
+                - listitem [ref=f2e202]:
+                  - checkbox "Selecionar QA US06 Membro" [ref=f2e203] [cursor=pointer]
+                  - button "QA US06 Membro qa-us06-member@example.com Membro Ativo" [pressed] [ref=f2e204] [cursor=pointer]:
+                    - generic [ref=f2e205]: QU
+                    - generic [ref=f2e206]:
+                      - generic [ref=f2e207]: QA US06 Membro
+                      - generic [ref=f2e208]: qa-us06-member@example.com
+                    - generic [ref=f2e209]: Membro
+                    - generic [ref=f2e210]:
+                      - img [ref=f2e211]
+                      - text: Ativo
+            - generic [ref=f2e352]:
+              - generic [ref=f2e353]:
+                - generic [ref=f2e354]: QU
+                - generic [ref=f2e355]:
+                  - generic [ref=f2e356]: QA US06 Membro
+                  - generic [ref=f2e357]: qa-us06-member@example.com
+                  - generic [ref=f2e358]:
+                    - generic [ref=f2e359]:
+                      - img [ref=f2e360]
+                      - text: Ativo
+                    - generic [ref=f2e363]: Membro
+              - generic [ref=f2e364]:
+                - tablist [ref=f2e365]:
+                  - tab "Detalhes" [ref=f2e366] [cursor=pointer]
+                  - tab "Atividade" [active] [selected] [ref=f2e367] [cursor=pointer]
+                - tabpanel "Atividade" [ref=f2e406]:
+                  - generic [ref=f2e407]:
+                    - generic [ref=f2e408]:
+                      - generic [ref=f2e409]: Hoje
+                      - list [ref=f2e410]:
+                        - listitem [ref=f2e411]:
+                          - img "Check-in" [ref=f2e412]:
+                            - img [ref=f2e413]
+                          - generic [ref=f2e416]:
+                            - generic [ref=f2e417]: Check-in — Academia QA
+                            - generic [ref=f2e418]: 18:58
+                        - listitem [ref=f2e419]:
+                          - img "Conta" [ref=f2e420]:
+                            - img [ref=f2e421]
+                          - generic [ref=f2e425]:
+                            - generic [ref=f2e426]: Login realizado
+                            - generic [ref=f2e427]: 17:28
+                    - generic [ref=f2e428]:
+                      - generic [ref=f2e429]: Ontem
+                      - list [ref=f2e430]:
+                        - listitem [ref=f2e431]:
+                          - img "Segurança" [ref=f2e432]:
+                            - img [ref=f2e433]
+                          - generic [ref=f2e436]:
+                            - generic [ref=f2e437]: Senha alterada
+                            - generic [ref=f2e438]: 19:28
+                    - generic [ref=f2e439]:
+                      - generic [ref=f2e440]: 12 de agosto de 2026
+                      - list [ref=f2e441]:
+                        - listitem [ref=f2e442]:
+                          - img "Administrativo" [ref=f2e443]:
+                            - img [ref=f2e444]
+                          - generic [ref=f2e447]:
+                            - generic [ref=f2e448]: Role alterada para Administrador
+                            - generic [ref=f2e449]: 19:28
+              - generic [ref=f2e396]:
+                - button "Editar dados" [ref=f2e397] [cursor=pointer]:
+                  - img [ref=f2e398]
+                - button "Mais ações" [ref=f2e401] [cursor=pointer]:
+                  - img [ref=f2e402]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=f2e79] [cursor=pointer]:
+    - img [ref=f2e80]
+  - alert [ref=f2e350]

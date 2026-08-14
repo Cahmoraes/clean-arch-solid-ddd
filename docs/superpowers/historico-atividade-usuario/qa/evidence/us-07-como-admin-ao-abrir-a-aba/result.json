@@ -1,0 +1,12 @@
+{
+  "us_id": "us-07",
+  "user_story": "US-07 — Como administrador, ao abrir a aba \"Atividade\" de um usuário sem nenhum evento registrado, eu quero ver um estado vazio claro, para saber que não há dados em vez de uma tela quebrada ou confusa.",
+  "requirements": ["FR-013"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Frontend: activity-tab.test.tsx — 11 testes passaram, 0 falhou (inclui as asserções do estado vazio 'Sem dados de atividade disponíveis' com events=[] em activity-tab.test.tsx:18-23 e com events omitido/undefined em :25-30). Backend: get-user-activity.usecase.test.ts (vite.config.app-domain.ts) — 3 testes passaram, 0 falhou; o cenário vazio foi filtrado por título e passou (use case retorna { events: [] }). Total: 14 testes existentes passaram, 0 falharam.",
+  "screenshot_path": "docs/superpowers/historico-atividade-usuario/qa/evidence/us-07-como-admin-ao-abrir-a-aba/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificado de ponta a ponta contra a stack rodando (backend :3333 + frontend :3000). Seed via POST /users + psql: admin qa-us07-admin@test.com promovido a role=ADMIN/status=activated; membro qa-us07-member-vazio@test.com criado com role MENBER/activated e SEM nenhum registro — psql confirmou user_activity_events=0 e check_ins=0 para o membro. Read path: GET /users/:id/activity autenticado como admin retornou HTTP 200 com {\"events\":[]} (confirma retorno vazio do use case). Fluxo UI com playwright-cli: login como admin, /admin/usuarios, busca pelo e-mail do membro, abertura do modal de detalhes e clique na aba 'Atividade' — a aba ficou selecionada e renderizou o estado vazio claro: heading 'Sem dados de atividade disponíveis' e texto de apoio 'O histórico de atividade deste usuário ainda não está disponível.' (não é tela quebrada/branca). A requisição de rede GET /users/ff11fdfd-5ed2-495f-af84-b7c0152455e7/activity retornou 200 OK. screenshot.png (PNG 1280x720) e playwright-snapshot.txt salvos no diretório de evidência. Testes existentes já cobrem a story de forma abrangente nas 3 camadas (IV report, activity-tab.test.tsx:20-22 e get-user-activity.usecase.test.ts:63 como apontado no validation-historico-atividade-usuario.md); nenhum teste de aceitação adicional foi criado."
+}

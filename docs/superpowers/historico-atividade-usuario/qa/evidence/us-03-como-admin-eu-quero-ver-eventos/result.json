@@ -1,0 +1,12 @@
+{
+  "us_id": "us-03",
+  "user_story": "US-03 — Como administrador, eu quero ver eventos de segurança (troca de senha, bloqueio por segurança) no histórico, para auditar mudanças sensíveis na conta.",
+  "requirements": ["FR-006", "FR-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Backend unit: record-user-activity.subscriber.test.ts (8 tests) cobre FR-006 (PASSWORD_CHANGED 'Senha alterada', subscriber.test.ts:54-59) e FR-008 (ACCOUNT_LOCKED 'Conta bloqueada por segurança', subscriber.test.ts:89-94); rodados com change-password.usecase.test.ts (10) = 18 passed, 0 failed. autenthicate.usecase.test.ts -t 'bloquear': 3 passed (3ª tentativa inválida bloqueia a conta), 8 skipped. Frontend activity-tab.test.tsx: 11 passed, 0 failed — inclui renderização dos eventos de segurança com descrição 'Senha alterada' e 'Conta bloqueada por segurança' (activity-tab.test.tsx:90-118). Evidência visual: screenshot.png mostra aba 'Atividade' do membro com 'Conta bloqueada por segurança' sob 'Hoje' e 'Senha alterada' sob 'Ontem', ambos com ícone Segurança.",
+  "screenshot_path": "docs/superpowers/historico-atividade-usuario/qa/evidence/us-03-como-admin-eu-quero-ver-eventos/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificado via 3 camadas: (1) IV report (validation-historico-atividade-usuario.md) já apontava FR-006/FR-008 como PASS em file:line; (2) testes unitários re-executados 100% verdes (backend 21 passed, frontend 11 passed); (3) E2E real contra backend em produção/Prisma: seed via POST /users + psql (role ADMIN/MEMBER activated), eventos PASSWORD_CHANGED (now - 1 day) e ACCOUNT_LOCKED (now - 3 hours, metadata reason '3 tentativas inválidas') inseridos para qa-us03-member, admin logou via UI, abriu modal e aba 'Atividade' — ambos os eventos renderizados com descrição correta e ícone de categoria Segurança sob os agrupamentos 'Hoje'/'Ontem'. Testes existentes já cobrem a story de forma abrangente; nenhum teste de aceitação adicional foi criado. Não foi possível inspecionar o PNG diretamente (modelo sem suporte a leitura de imagem), mas o snapshot acessível confirmou o conteúdo renderizado antes do screenshot."
+}

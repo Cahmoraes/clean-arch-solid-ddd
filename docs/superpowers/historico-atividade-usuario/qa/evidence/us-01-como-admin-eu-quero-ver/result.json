@@ -1,0 +1,12 @@
+{
+  "us_id": "us-01",
+  "user_story": "Como administrador, eu quero ver o histórico de atividade de um usuário na aba \"Atividade\" do modal de detalhes, para entender o que ele fez recentemente sem precisar consultar múltiplas fontes.",
+  "requirements": ["FR-001", "FR-002", "FR-013"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "19 testes passaram, 0 falharam: backend unit 5 (get-user-activity.usecase.test.ts + user-activity-dao-memory.test.ts), business-flow 3 (get-user-activity.business-flow-test.ts), frontend 11 (activity-tab.test.tsx). Todos os testes existentes cobrindo FR-001/FR-002/FR-013 passaram 100%.",
+  "screenshot_path": "docs/superpowers/historico-atividade-usuario/qa/evidence/us-01-como-admin-eu-quero-ver/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificado de ponta a ponta contra a stack rodando (backend :3333 + frontend :3000). Seed via API+psql: admin QA promovido a ADMIN/activated, usuario alvo 'Joao Alvo' com 3 eventos (LOGIN 1h atras, PASSWORD_CHANGED 2h atras, LOGIN ontem). Login no UI preenchendo E-mail/Senha (primeira tentativa usou sessao antiga do navegador mostrando role de MEMBRO; apos delete-data e re-login a sidebar exibiu Admin > Usuarios corretamente). Navegacao: /admin/usuarios -> busca pelo e-mail -> abertura do modal de detalhes -> clique na tab 'Atividade'. O snapshot da arvore acessivel confirmou: tab 'Atividade' selecionada, agrupamentos 'Hoje' (Login realizado, Senha alterada) e 'Ontem' (Login realizado), eventos com tipo+horario. Screenshot capturado (PNG valido 1280x720, 82KB) salvo em screenshot.png. API GET /users/:id/activity retornou 200 com 3 eventos ordenados por occurredAt decrescente (confirma FR-001/FR-002). Estado vazio (FR-013) nao foi cenario do screenshot (usuario tinha eventos), mas e coberto com assercao explicita em activity-tab.test.tsx:20-22. Nenhum teste de aceitacao novo necessario pois a cobertura existente e abrangente nas 3 camadas (conforme IV report)."
+}
