@@ -25,9 +25,25 @@ model User {
   subscription      Subscription[]
   userNotifications UserNotification[]
   notifications     Notification[]
+  activityEvents    UserActivityEvent[]
 
   @@index([created_at])
   @@map("users")
+}
+
+model UserActivityEvent {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  type        String
+  description String
+  metadata    Json?
+  occurredAt  DateTime @map("occurred_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, occurredAt])
+  @@map("user_activity_events")
 }
 
 model CheckIn {
