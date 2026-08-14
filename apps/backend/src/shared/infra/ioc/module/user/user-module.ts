@@ -43,16 +43,21 @@ import { SendAccountLockedEmailNotification } from "@/user/infra/email/send-acco
 import { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
 import { SendPasswordResetEmailNotification } from "@/user/infra/email/send-password-reset-email.notification"
 import { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
+import { RecordUserActivitySubscriber } from "@/user/infra/event-handler/record-user-activity.subscriber"
 import { RedisLoginAttemptStore } from "@/user/infra/gateway/redis-login-attempt-store"
 import { RedisPasswordResetTokenStore } from "@/user/infra/gateway/redis-password-reset-token-store"
 import { AUTH_TYPES, USER_TYPES } from "../../types"
 import { UserActivityDaoProvider } from "./user-activity-dao-provider"
+import { UserActivityRepositoryProvider } from "./user-activity-repository-provider"
 import { UserDAOProvider } from "./user-dao-provider"
 import { UserRepositoryProvider } from "./user-repository-provider"
 
 export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Repositories.User)
 		.toDynamicValue(UserRepositoryProvider.provide)
+		.inSingletonScope()
+	bind(USER_TYPES.Repositories.UserActivity)
+		.toDynamicValue(UserActivityRepositoryProvider.provide)
 		.inSingletonScope()
 	bind(USER_TYPES.PG.User).to(PgUserRepository).inRequestScope()
 	bind(USER_TYPES.DAO.User)
@@ -123,5 +128,8 @@ export const userModule = new ContainerModule(({ bind }) => {
 		.inSingletonScope()
 	bind(USER_TYPES.Notifications.SendAccountLockedEmail)
 		.to(SendAccountLockedEmailNotification)
+		.inSingletonScope()
+	bind(USER_TYPES.EventHandlers.RecordUserActivity)
+		.to(RecordUserActivitySubscriber)
 		.inSingletonScope()
 })

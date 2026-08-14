@@ -3,6 +3,7 @@ import type { SendAccountLockedEmailNotification } from "@/user/infra/email/send
 import type { SendPasswordAlertEmailNotification } from "@/user/infra/email/send-password-alert-email.notification"
 import type { SendPasswordResetEmailNotification } from "@/user/infra/email/send-password-reset-email.notification"
 import type { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-email.notification"
+import type { RecordUserActivitySubscriber } from "@/user/infra/event-handler/record-user-activity.subscriber"
 
 import { type ModuleControllers, resolve } from "./server-build"
 
@@ -31,6 +32,11 @@ export function setupUserModule(): ModuleControllers {
 		USER_TYPES.Notifications.SendAccountLockedEmail,
 	)
 	accountLockedEmail.subscribe()
+
+	const recordUserActivitySubscriber = resolve<RecordUserActivitySubscriber>(
+		USER_TYPES.EventHandlers.RecordUserActivity,
+	)
+	recordUserActivitySubscriber.subscribe()
 
 	const controllers = [
 		resolve(USER_TYPES.Controllers.CreateUser),

@@ -265,6 +265,7 @@ export class User extends Observable {
 		this._password = passwordCreateResult.value
 		void this.refreshUpdatedAt()
 		const event = new PasswordChangedEvent({
+			userId: this.id,
 			userName: this.name,
 			userEmail: this.email,
 		})
