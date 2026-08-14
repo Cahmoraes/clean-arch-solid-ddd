@@ -46,6 +46,7 @@ import { SendWelcomeEmailNotification } from "@/user/infra/email/send-welcome-em
 import { RedisLoginAttemptStore } from "@/user/infra/gateway/redis-login-attempt-store"
 import { RedisPasswordResetTokenStore } from "@/user/infra/gateway/redis-password-reset-token-store"
 import { AUTH_TYPES, USER_TYPES } from "../../types"
+import { UserActivityDaoProvider } from "./user-activity-dao-provider"
 import { UserDAOProvider } from "./user-dao-provider"
 import { UserRepositoryProvider } from "./user-repository-provider"
 
@@ -56,6 +57,9 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.PG.User).to(PgUserRepository).inRequestScope()
 	bind(USER_TYPES.DAO.User)
 		.toDynamicValue(UserDAOProvider.provide)
+		.inSingletonScope()
+	bind(USER_TYPES.DAO.UserActivity)
+		.toDynamicValue(UserActivityDaoProvider.provide)
 		.inSingletonScope()
 	bind(USER_TYPES.Gateways.PasswordResetTokenStore)
 		.to(RedisPasswordResetTokenStore)
