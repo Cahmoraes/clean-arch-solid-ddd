@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import {
 	type Either,
 	failure,
@@ -6,6 +7,7 @@ import {
 } from "@/shared/domain/value-object/either"
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { UserRoleChangedEvent } from "@/user/domain/event/user-role-changed.event"
 import { UserManagementPolicy } from "@/user/domain/service/user-management-policy"
 import type { User } from "@/user/domain/user"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
@@ -74,10 +76,20 @@ export class PromoteToAdminUseCase {
 		if (!user.isActive) return failure(new UserIsNotActiveError())
 		if (user.role === "ADMIN") return failure(new UserAlreadyAdminError())
 
+		const previousRole = user.role
 		user.updateRole("ADMIN")
 		await this.userRepository.update(user)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
 		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
+		await DomainEventPublisher.instance.publish(
+			new UserRoleChangedEvent({
+				userId: user.id,
+				userEmail: user.email,
+				userName: user.name,
+				previousRole,
+				newRole: "ADMIN",
+			}),
+		)
 		return success(null)
 	}
 }
