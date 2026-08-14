@@ -1,6 +1,10 @@
 import { injectable } from "inversify"
-import { type Either, failure, success } from "@/shared/domain/value-object/either.js"
 import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
+import {
+	type Either,
+	failure,
+	success,
+} from "@/shared/domain/value-object/either.js"
 import type { WeatherGateway } from "@/weather/application/gateway/weather-gateway.js"
 import { WeatherProviderUnavailableError } from "@/weather/domain/error/weather-provider-unavailable-error.js"
 import type { Temperature } from "@/weather/domain/value-object/current-weather.js"

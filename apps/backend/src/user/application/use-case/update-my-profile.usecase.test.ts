@@ -1,8 +1,11 @@
 import { createAndSaveUser } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { UserNotFoundError } from "@/user/application/error/user-not-found-error"
+import { UserProfileUpdatedEvent } from "@/user/domain/event/user-profile-updated-event"
 import {
 	UpdateMyProfileUseCase,
 	type UpdateMyProfileUseCaseInput,
@@ -86,5 +89,39 @@ describe("UpdateMyProfileUseCase", () => {
 
 		const updated = await userRepository.userOfId(user.id)
 		expect(updated?.email).toBe("joao@example.com")
+	})
+
+	test("deve publicar UserProfileUpdatedEvent ao atualizar o perfil com sucesso", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			name: "João Silva",
+			email: "joao@example.com",
+			password: "Senha123!",
+		})
+
+		let receivedEvent: UserProfileUpdatedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof UserProfileUpdatedEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("userProfileUpdated", subscriber)
+
+		try {
+			await sut.execute({ userId: user.id, name: "João Carlos Silva" })
+		} finally {
+			DomainEventPublisher.instance.unsubscribe(
+				"userProfileUpdated",
+				subscriber,
+			)
+		}
+
+		expect(receivedEvent).not.toBeNull()
+		expect(receivedEvent).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userId: user.id,
+					name: "João Carlos Silva",
+				}),
+			}),
+		)
 	})
 })

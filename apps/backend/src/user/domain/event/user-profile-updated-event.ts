@@ -2,6 +2,7 @@ import { DomainEvent } from "@/shared/domain/event/domain-event"
 import { EVENTS } from "@/shared/domain/event/events"
 
 export interface UserProfileUpdatedEventProps {
+	userId: string
 	name: string
 	email: string
 }

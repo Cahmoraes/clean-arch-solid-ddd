@@ -6,5 +6,7 @@ import type { WeatherProviderUnavailableError } from "@/weather/domain/error/wea
 export interface GeocodingGateway {
 	geocode(
 		cityName: string,
-	): Promise<Either<CityNotFoundError | WeatherProviderUnavailableError, Coordinate>>
+	): Promise<
+		Either<CityNotFoundError | WeatherProviderUnavailableError, Coordinate>
+	>
 }

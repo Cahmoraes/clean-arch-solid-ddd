@@ -1,5 +1,5 @@
-import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import { afterEach, describe, expect, test, vi } from "vitest"
+import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import { OpenMeteoWeatherGateway } from "./open-meteo-weather-gateway.js"
 
 describe("OpenMeteoWeatherGateway", () => {
