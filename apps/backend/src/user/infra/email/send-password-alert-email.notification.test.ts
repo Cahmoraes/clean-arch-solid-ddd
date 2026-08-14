@@ -28,6 +28,7 @@ describe("SendPasswordAlertEmailNotification", () => {
 	test("deve enviar email de alerta quando PasswordChangedEvent é publicado", async () => {
 		await DomainEventPublisher.instance.publish(
 			new PasswordChangedEvent({
+				userId: "any_user_id",
 				userEmail: "joao@example.com",
 				userName: "João Silva",
 			}),
@@ -44,6 +45,7 @@ describe("SendPasswordAlertEmailNotification", () => {
 	test("deve incluir o nome do usuário no HTML do email", async () => {
 		await DomainEventPublisher.instance.publish(
 			new PasswordChangedEvent({
+				userId: "any_user_id",
 				userEmail: "joao@example.com",
 				userName: "João Silva",
 			}),
@@ -55,6 +57,7 @@ describe("SendPasswordAlertEmailNotification", () => {
 	test("deve incluir orientação de contato no HTML do email", async () => {
 		await DomainEventPublisher.instance.publish(
 			new PasswordChangedEvent({
+				userId: "any_user_id",
 				userEmail: "joao@example.com",
 				userName: "João Silva",
 			}),
@@ -66,6 +69,7 @@ describe("SendPasswordAlertEmailNotification", () => {
 	test("não deve incluir senhas ou dados sensíveis no HTML do email", async () => {
 		await DomainEventPublisher.instance.publish(
 			new PasswordChangedEvent({
+				userId: "any_user_id",
 				userEmail: "joao@example.com",
 				userName: "João Silva",
 			}),
@@ -82,6 +86,7 @@ describe("SendPasswordAlertEmailNotification", () => {
 		await expect(
 			DomainEventPublisher.instance.publish(
 				new PasswordChangedEvent({
+					userId: "any_user_id",
 					userEmail: "joao@example.com",
 					userName: "João Silva",
 				}),

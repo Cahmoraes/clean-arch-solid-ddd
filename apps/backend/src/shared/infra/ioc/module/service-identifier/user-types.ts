@@ -1,6 +1,7 @@
 export const USER_TYPES = {
 	Repositories: {
 		User: Symbol.for("UserRepository"),
+		UserActivity: Symbol.for("UserActivityRepository"),
 	},
 	PG: {
 		User: Symbol.for("PgUserRepository"),
@@ -63,5 +64,8 @@ export const USER_TYPES = {
 		SendPasswordAlertEmail: Symbol.for("SendPasswordAlertEmailNotification"),
 		SendPasswordResetEmail: Symbol.for("SendPasswordResetEmailNotification"),
 		SendAccountLockedEmail: Symbol.for("SendAccountLockedEmailNotification"),
+	},
+	EventHandlers: {
+		RecordUserActivity: Symbol.for("RecordUserActivitySubscriber"),
 	},
 } as const

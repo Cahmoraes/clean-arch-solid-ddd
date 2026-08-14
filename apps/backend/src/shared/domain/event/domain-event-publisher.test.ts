@@ -44,6 +44,7 @@ describe("DomainEventPublisher", () => {
 			name: "User Name",
 		})
 		const passwordChangedEvent = new PasswordChangedEvent({
+			userId: "any_user_id",
 			userName: "any-name",
 			userEmail: "user@mail.com",
 		})
