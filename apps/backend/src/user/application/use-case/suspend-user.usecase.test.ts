@@ -221,4 +221,40 @@ describe("SuspendUserUseCase", () => {
 		expect(result.isFailure()).toBe(true)
 		expect(result.value).toBeInstanceOf(NotAllowedToManageUserError)
 	})
+
+	test("Não deve publicar UserStatusChangedEvent ao suspender usuário já suspenso", async () => {
+		const input: SuspendUserUseCaseInput = {
+			requesterId: ROOT_ID,
+			userId: "already-suspended-user",
+		}
+		const user = (
+			await User.create({
+				email: "suspended@email.com",
+				name: "Suspended User",
+				password: "any_password",
+				id: input.userId,
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+
+		// Suspend user first time
+		await sut.execute(input)
+
+		// Setup event listener for second suspend attempt
+		let receivedEvent: UserStatusChangedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof UserStatusChangedEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("userStatusChanged", subscriber)
+
+		try {
+			// Try to suspend already suspended user
+			await sut.execute(input)
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("userStatusChanged", subscriber)
+		}
+
+		// Event should not be published
+		expect(receivedEvent).toBeNull()
+	})
 })

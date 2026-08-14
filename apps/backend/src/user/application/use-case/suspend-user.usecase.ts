@@ -50,15 +50,20 @@ export class SuspendUserUseCase {
 		await this.userRepository.update(userFound)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
 		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
-		await DomainEventPublisher.instance.publish(
-			new UserStatusChangedEvent({
-				userId: userFound.id,
-				userEmail: userFound.email,
-				userName: userFound.name,
-				previousStatus,
-				newStatus: "suspended",
-			}),
-		)
+
+		// Skip event publication if user was already suspended (no state change)
+		if (previousStatus !== "suspended") {
+			await DomainEventPublisher.instance.publish(
+				new UserStatusChangedEvent({
+					userId: userFound.id,
+					userEmail: userFound.email,
+					userName: userFound.name,
+					previousStatus,
+					newStatus: "suspended",
+				}),
+			)
+		}
+
 		return success(null)
 	}
 }
