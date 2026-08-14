@@ -1,8 +1,11 @@
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { UserStatusChangedEvent } from "@/user/domain/event/user-status-changed.event"
 import { User } from "@/user/domain/user"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
@@ -117,6 +120,45 @@ describe("SuspendUserUseCase", () => {
 		await sut.execute(input)
 		const cachedStats = await cacheDB.get("user-stats")
 		expect(cachedStats).toBeNull()
+	})
+
+	test("deve publicar UserStatusChangedEvent ao suspender um usuário", async () => {
+		const input: SuspendUserUseCaseInput = {
+			requesterId: ROOT_ID,
+			userId: "any_user_id",
+		}
+		const user = (
+			await User.create({
+				email: "user@email.com",
+				name: "any_name",
+				password: "any_password",
+				id: input.userId,
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+
+		let receivedEvent: UserStatusChangedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof UserStatusChangedEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("userStatusChanged", subscriber)
+
+		try {
+			await sut.execute(input)
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("userStatusChanged", subscriber)
+		}
+
+		expect(receivedEvent).not.toBeNull()
+		expect(receivedEvent).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userId: input.userId,
+					previousStatus: "activated",
+					newStatus: "suspended",
+				}),
+			}),
+		)
 	})
 
 	test("Admin comum não suspende outro admin (403)", async () => {
