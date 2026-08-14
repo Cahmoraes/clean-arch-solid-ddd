@@ -164,6 +164,9 @@ export class AuthenticateWithGoogleUseCase {
 
 	private handleGoogleAccountLinkedEvent(data: DomainEvent<unknown>): void {
 		if (data instanceof GoogleAccountLinkedEvent) {
+			// notify() (Observable) síncrono, descarta retorno dos handlers → sem
+			// contexto pra await aqui. Fire-and-forget intencional (fora de escopo
+			// alterar Observable/notify()).
 			void DomainEventPublisher.instance.publish(data)
 		}
 	}
