@@ -1,10 +1,12 @@
 import { inject, injectable } from "inversify"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import {
 	type Either,
 	failure,
 	success,
 } from "@/shared/domain/value-object/either"
 import { USER_TYPES } from "@/shared/infra/ioc/types"
+import type { UserProfileUpdatedEvent } from "@/user/domain/event/user-profile-updated-event"
 import { UserManagementPolicy } from "@/user/domain/service/user-management-policy"
 import type { User, UserValidationErrors } from "@/user/domain/user"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
@@ -31,7 +33,14 @@ export class UpdateUserProfileUseCase {
 	constructor(
 		@inject(USER_TYPES.Repositories.User)
 		private readonly userRepository: UserRepository,
-	) {}
+	) {
+		this.bindMethod()
+	}
+
+	private bindMethod(): void {
+		this.handleUserProfileUpdatedEvent =
+			this.handleUserProfileUpdatedEvent.bind(this)
+	}
 
 	public async execute(
 		input: UpdateUserProfileUseCaseInput,
@@ -46,6 +55,7 @@ export class UpdateUserProfileUseCase {
 			return failure(new NotAllowedToManageUserError())
 		}
 
+		user.subscribe(this.handleUserProfileUpdatedEvent)
 		const profileUpdateResult = user.updateProfile({
 			name: input.name,
 			email: input.email,
@@ -55,5 +65,9 @@ export class UpdateUserProfileUseCase {
 		}
 		await this.userRepository.update(user)
 		return success(user)
+	}
+
+	private handleUserProfileUpdatedEvent(data: UserProfileUpdatedEvent): void {
+		void DomainEventPublisher.instance.publish(data)
 	}
 }

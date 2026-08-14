@@ -3,10 +3,13 @@ import {
 	createAndSaveUser,
 } from "test/factory/create-and-save-user"
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { InvalidEmailError } from "@/user/domain/error/invalid-email-error"
 import { InvalidNameLengthError } from "@/user/domain/error/invalid-name-length-error"
+import { UserProfileUpdatedEvent } from "@/user/domain/event/user-profile-updated-event"
 import { User } from "@/user/domain/user"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import {
@@ -60,6 +63,50 @@ describe("UpdateUserProfile", () => {
 		const userMemory = await userRepository.userOfId(userId)
 		expect(userMemory?.email).toBe(input.email)
 		expect(userMemory?.name).toBe(input.name)
+	})
+
+	test("deve publicar UserProfileUpdatedEvent ao atualizar o perfil de outro usuário com sucesso", async () => {
+		const requesterId = "requester-admin-id"
+		const userId = "any_user_id"
+		await userRepository.save(User.restore({ id: requesterId, ...adminProps }))
+		await createAndSaveUser({
+			userRepository,
+			name: "john doe",
+			email: "john@doe.com",
+			password: "any_password",
+			id: userId,
+		})
+
+		let receivedEvent: UserProfileUpdatedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof UserProfileUpdatedEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("userProfileUpdated", subscriber)
+
+		try {
+			await sut.execute({
+				requesterId,
+				userId,
+				name: "Martin Fowler",
+				email: "martin@fowler.com",
+			})
+		} finally {
+			DomainEventPublisher.instance.unsubscribe(
+				"userProfileUpdated",
+				subscriber,
+			)
+		}
+
+		expect(receivedEvent).not.toBeNull()
+		expect(receivedEvent).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userId,
+					name: "Martin Fowler",
+					email: "martin@fowler.com",
+				}),
+			}),
+		)
 	})
 
 	test("Não deve atualizar o perfil de um usuário não existente", async () => {
