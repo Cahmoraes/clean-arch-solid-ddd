@@ -60,6 +60,17 @@ describe("ActivityTab", () => {
 		).toBeInTheDocument()
 	})
 
+	test("rotula eventos de ontem sob o cabeçalho Ontem", () => {
+		const yesterday = new Date()
+		yesterday.setDate(yesterday.getDate() - 1)
+		const events: UserActivityEvent[] = [
+			buildEvent({ id: "e1", occurredAt: yesterday.toISOString() }),
+		]
+		render(<ActivityTab events={events} />)
+
+		expect(screen.getByText("Ontem")).toBeInTheDocument()
+	})
+
 	test("exibe ícone com cor de destaque para eventos do tipo CHECK_IN", () => {
 		const events: UserActivityEvent[] = [
 			buildEvent({
