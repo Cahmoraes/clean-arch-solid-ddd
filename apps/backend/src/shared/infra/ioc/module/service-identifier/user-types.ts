@@ -56,6 +56,7 @@ export const USER_TYPES = {
 	},
 	DAO: {
 		User: Symbol.for("UserDAO"),
+		UserActivity: Symbol.for("UserActivityDao"),
 	},
 	Notifications: {
 		SendWelcomeEmail: Symbol.for("SendWelcomeEmailNotification"),
