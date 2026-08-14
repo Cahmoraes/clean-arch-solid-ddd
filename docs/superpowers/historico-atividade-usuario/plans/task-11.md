@@ -1,6 +1,6 @@
 # Task 11: Modelo UserActivityEvent (Prisma + migration) + UserActivityRepository (interface + implementações) [FR-001]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** standard

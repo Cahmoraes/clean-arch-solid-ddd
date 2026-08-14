@@ -1,6 +1,6 @@
 # Task 1: Domain events novos: LoginSucceededEvent, UserRoleChangedEvent, UserStatusChangedEvent [FR-005, FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** cheap

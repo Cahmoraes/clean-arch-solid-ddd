@@ -1,6 +1,6 @@
 # Task 17: ActivityTab — agrupamento por data + ícone por categoria [FR-002, FR-003, FR-004, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** capable
