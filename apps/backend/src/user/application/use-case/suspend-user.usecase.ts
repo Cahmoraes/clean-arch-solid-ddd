@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import {
 	type Either,
 	failure,
@@ -6,6 +7,7 @@ import {
 } from "@/shared/domain/value-object/either"
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { UserStatusChangedEvent } from "@/user/domain/event/user-status-changed.event"
 import { UserManagementPolicy } from "@/user/domain/service/user-management-policy"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import { UserNotFoundError } from "../error/user-not-found-error"
@@ -43,10 +45,25 @@ export class SuspendUserUseCase {
 			return failure(new NotAllowedToManageUserError())
 		}
 
+		const previousStatus = userFound.status
 		userFound.suspend()
 		await this.userRepository.update(userFound)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
 		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
+
+		// Skip event publication if user was already suspended (no state change)
+		if (previousStatus !== "suspended") {
+			await DomainEventPublisher.instance.publish(
+				new UserStatusChangedEvent({
+					userId: userFound.id,
+					userEmail: userFound.email,
+					userName: userFound.name,
+					previousStatus,
+					newStatus: "suspended",
+				}),
+			)
+		}
+
 		return success(null)
 	}
 }
