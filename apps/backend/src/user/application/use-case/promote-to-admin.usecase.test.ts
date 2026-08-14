@@ -1,8 +1,11 @@
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { CacheDB } from "@/shared/infra/database/redis/cache-db"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { container } from "@/shared/infra/ioc/container"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
+import { UserRoleChangedEvent } from "@/user/domain/event/user-role-changed.event"
 import { User } from "@/user/domain/user"
 import { NotAllowedToManageUserError } from "../error/not-allowed-to-manage-user-error"
 import { UserAlreadyAdminError } from "../error/user-already-admin-error"
@@ -245,5 +248,42 @@ describe("PromoteToAdminUseCase", () => {
 
 		const cachedStats = await cacheDB.get("user-stats")
 		expect(cachedStats).toBeNull()
+	})
+
+	test("deve publicar UserRoleChangedEvent ao promover um membro a administrador", async () => {
+		await userRepository.save(makeRoot())
+		const user = (
+			await User.create({
+				id: "member-id",
+				email: "member@test.com",
+				name: "Member",
+				password: "password",
+				role: "MEMBER",
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+
+		let receivedEvent: UserRoleChangedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof UserRoleChangedEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("userRoleChanged", subscriber)
+
+		try {
+			await sut.execute({ requesterId: "root-id", userId: "member-id" })
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("userRoleChanged", subscriber)
+		}
+
+		expect(receivedEvent).not.toBeNull()
+		expect(receivedEvent).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userId: "member-id",
+					previousRole: "MEMBER",
+					newRole: "ADMIN",
+				}),
+			}),
+		)
 	})
 })
