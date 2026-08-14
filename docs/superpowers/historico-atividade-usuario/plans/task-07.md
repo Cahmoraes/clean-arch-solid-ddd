@@ -1,6 +1,6 @@
 # Task 7: demote-from-admin.usecase.ts publica UserRoleChangedEvent [FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** cheap

@@ -1,6 +1,6 @@
 # Task 2: authenticate.usecase.ts publica LoginSucceededEvent [FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** cheap

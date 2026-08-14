@@ -1,6 +1,6 @@
 # Task 3: authenticate-with-google.usecase.ts publica LoginSucceededEvent e religa GoogleAccountLinkedEvent [FR-005, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** capable

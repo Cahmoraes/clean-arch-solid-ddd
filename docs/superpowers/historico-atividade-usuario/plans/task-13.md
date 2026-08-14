@@ -1,6 +1,6 @@
 # Task 13: UserActivityDao — merge UserActivityEvent + CheckIn, ordena desc, limita 20 [FR-001, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** standard

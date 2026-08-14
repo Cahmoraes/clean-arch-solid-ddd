@@ -14,18 +14,18 @@
 ## Tarefas
 
 - [x] 1. Domain events novos: `LoginSucceededEvent`, `UserRoleChangedEvent`, `UserStatusChangedEvent` [FR-005, FR-010, FR-011] → `task-01.md`
-- [ ] 2. `authenticate.usecase.ts` publica `LoginSucceededEvent` no login por credenciais [FR-005] → `task-02.md`
-- [ ] 3. `authenticate-with-google.usecase.ts` publica `LoginSucceededEvent` e religa `GoogleAccountLinkedEvent` [FR-005, FR-007] → `task-03.md`
+- [x] 2. `authenticate.usecase.ts` publica `LoginSucceededEvent` no login por credenciais [FR-005] → `task-02.md`
+- [x] 3. `authenticate-with-google.usecase.ts` publica `LoginSucceededEvent` e religa `GoogleAccountLinkedEvent` [FR-005, FR-007] → `task-03.md`
 - [x] 4. `update-my-profile.usecase.ts` religa `UserProfileUpdatedEvent` [FR-009] → `task-04.md`
-- [ ] 5. `update-user-profile.usecase.ts` religa `UserProfileUpdatedEvent` [FR-009] → `task-05.md`
-- [ ] 6. `promote-to-admin.usecase.ts` publica `UserRoleChangedEvent` [FR-010] → `task-06.md`
-- [ ] 7. `demote-from-admin.usecase.ts` publica `UserRoleChangedEvent` [FR-010] → `task-07.md`
-- [ ] 8. `suspend-user.usecase.ts` publica `UserStatusChangedEvent` [FR-011] → `task-08.md`
-- [ ] 9. `active-user.usecase.ts` publica `UserStatusChangedEvent` [FR-011] → `task-09.md`
-- [ ] 10. `bulk-change-user-status.usecase.ts` publica `UserStatusChangedEvent` por usuário efetivamente alterado [FR-011] → `task-10.md`
+- [x] 5. `update-user-profile.usecase.ts` religa `UserProfileUpdatedEvent` [FR-009] → `task-05.md`
+- [x] 6. `promote-to-admin.usecase.ts` publica `UserRoleChangedEvent` [FR-010] → `task-06.md`
+- [x] 7. `demote-from-admin.usecase.ts` publica `UserRoleChangedEvent` [FR-010] → `task-07.md`
+- [x] 8. `suspend-user.usecase.ts` publica `UserStatusChangedEvent` [FR-011] → `task-08.md`
+- [x] 9. `active-user.usecase.ts` publica `UserStatusChangedEvent` [FR-011] → `task-09.md`
+- [x] 10. `bulk-change-user-status.usecase.ts` publica `UserStatusChangedEvent` por usuário efetivamente alterado [FR-011] → `task-10.md`
 - [x] 11. Modelo `UserActivityEvent` (Prisma + migration) + `UserActivityRepository` (interface + implementação Prisma) [FR-001] → `task-11.md`
 - [ ] 12. `RecordUserActivitySubscriber` — assina os 7 eventos, formata descrição pt-BR, grava, falha não propaga [FR-006, FR-007, FR-008, FR-009, FR-014] → `task-12.md`
-- [ ] 13. `UserActivityDao` (interface + implementação Prisma) — merge `UserActivityEvent` + `CheckIn`, ordena desc, limita 20 [FR-001, FR-012] → `task-13.md`
+- [x] 13. `UserActivityDao` (interface + implementação Prisma) — merge `UserActivityEvent` + `CheckIn`, ordena desc, limita 20 [FR-001, FR-012] → `task-13.md`
 - [ ] 14. `GetUserActivityUseCase` (leitura, limit 20) [FR-001, FR-002, FR-013] → `task-14.md`
 - [ ] 15. `GET /users/:id/activity` — controller + rota + DI [FR-001] → `task-15.md`
 - [ ] 16. Hook `use-user-activity` (React Query) [FR-001] → `task-16.md`

@@ -1,6 +1,6 @@
 # Task 10: bulk-change-user-status.usecase.ts publica UserStatusChangedEvent por usuário efetivamente alterado [FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** capable

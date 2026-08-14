@@ -1,6 +1,6 @@
 # Task 5: update-user-profile.usecase.ts religa UserProfileUpdatedEvent [FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** cheap

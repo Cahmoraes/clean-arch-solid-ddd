@@ -1,6 +1,6 @@
 # Task 9: active-user.usecase.ts publica UserStatusChangedEvent [FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** cheap
