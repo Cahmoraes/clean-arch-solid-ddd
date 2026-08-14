@@ -51,15 +51,19 @@ export class ActiveUserUseCase {
 		await this.userRepository.update(userFound)
 		void this.cacheDB.deleteByPattern("fetch-users:*").catch(() => {})
 		void this.cacheDB.delete(USER_STATS_CACHE_KEY).catch(() => {})
-		await DomainEventPublisher.instance.publish(
-			new UserStatusChangedEvent({
-				userId: userFound.id,
-				userEmail: userFound.email,
-				userName: userFound.name,
-				previousStatus,
-				newStatus: "activated",
-			}),
-		)
+
+		// Skip event publication if user was already activated (no state change)
+		if (previousStatus !== "activated") {
+			await DomainEventPublisher.instance.publish(
+				new UserStatusChangedEvent({
+					userId: userFound.id,
+					userEmail: userFound.email,
+					userName: userFound.name,
+					previousStatus,
+					newStatus: "activated",
+				}),
+			)
+		}
 		this.loginAttemptStore.deleteLock(userFound.id).catch((err) => {
 			console.error("[ActiveUserUseCase] Falha ao limpar Redis lock:", err)
 		})

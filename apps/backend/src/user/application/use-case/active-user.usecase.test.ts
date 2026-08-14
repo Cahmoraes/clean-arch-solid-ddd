@@ -303,4 +303,38 @@ describe("ActiveUserUseCase", () => {
 			}),
 		)
 	})
+
+	test("Não deve publicar UserStatusChangedEvent ao ativar usuário já ativo", async () => {
+		const input: ActiveUserUseCaseInput = {
+			requesterId: ROOT_ID,
+			userId: "already-activated-user",
+		}
+		const user = (
+			await User.create({
+				email: "active@email.com",
+				name: "Active User",
+				password: "any_password",
+				id: input.userId,
+				status: "activated",
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+
+		// Setup event listener
+		let receivedEvent: UserStatusChangedEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof UserStatusChangedEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("userStatusChanged", subscriber)
+
+		try {
+			// Try to activate already activated user
+			await sut.execute(input)
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("userStatusChanged", subscriber)
+		}
+
+		// Event should not be published
+		expect(receivedEvent).toBeNull()
+	})
 })
