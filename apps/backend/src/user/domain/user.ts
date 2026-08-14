@@ -248,6 +248,7 @@ export class User extends Observable {
 		this._googleId = googleId
 		this.refreshUpdatedAt()
 		const event = new GoogleAccountLinkedEvent({
+			userId: this.id,
 			userEmail: this.email,
 			googleId: googleId.value,
 		})

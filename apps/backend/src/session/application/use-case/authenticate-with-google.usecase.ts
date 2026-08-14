@@ -9,6 +9,7 @@ import type {
 	GoogleUserInfo,
 } from "@/session/application/provider/google-auth-provider.js"
 import type { AuthTokenOutputDTO } from "@/session/application/use-case/authenticate.usecase.js"
+import type { DomainEvent } from "@/shared/domain/event/domain-event.js"
 import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher.js"
 import {
 	type Either,
@@ -19,6 +20,8 @@ import { env } from "@/shared/infra/env/index.js"
 import { AUTH_TYPES, SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import type { AuthToken } from "@/user/application/auth/auth-token"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
+import { GoogleAccountLinkedEvent } from "@/user/domain/event/google-account-linked-event.js"
+import { LoginSucceededEvent } from "@/user/domain/event/login-succeeded.event.js"
 import { UserCreatedEvent } from "@/user/domain/event/user-created-event.js"
 import { User } from "@/user/domain/user"
 import { GoogleId } from "@/user/domain/value-object/google-id.js"
@@ -44,7 +47,14 @@ export class AuthenticateWithGoogleUseCase {
 		private readonly userRepository: UserRepository,
 		@inject(SHARED_TYPES.Tokens.Auth)
 		private readonly authToken: AuthToken,
-	) {}
+	) {
+		this.bindMethods()
+	}
+
+	private bindMethods(): void {
+		this.handleGoogleAccountLinkedEvent =
+			this.handleGoogleAccountLinkedEvent.bind(this)
+	}
 
 	public async execute(
 		input: AuthenticateWithGoogleUseCaseInput,
@@ -69,6 +79,7 @@ export class AuthenticateWithGoogleUseCase {
 			googleUserInfo.sub,
 		)
 		if (userByGoogleId) {
+			await this.publishLoginSucceededEvent(userByGoogleId)
 			return success(this.createAuthTokenOutput(userByGoogleId))
 		}
 		return this.resolveByEmail(googleUserInfo)
@@ -96,8 +107,10 @@ export class AuthenticateWithGoogleUseCase {
 		if (user.googleId && user.googleId !== googleSub) {
 			return failure(new GoogleAccountAlreadyLinkedError())
 		}
+		user.subscribe(this.handleGoogleAccountLinkedEvent)
 		user.linkGoogleAccount(GoogleId.restore(googleSub))
 		await this.userRepository.update(user)
+		await this.publishLoginSucceededEvent(user)
 		return success(this.createAuthTokenOutput(user))
 	}
 
@@ -121,11 +134,13 @@ export class AuthenticateWithGoogleUseCase {
 				googleUserInfo.sub,
 			)
 			if (existing) {
+				await this.publishLoginSucceededEvent(existing)
 				return success(this.createAuthTokenOutput(existing))
 			}
 			throw new Error("Failed to persist Google user account")
 		}
 		await this.publishUserCreatedEvent(createdUserResult.value)
+		await this.publishLoginSucceededEvent(createdUserResult.value)
 		return success(this.createAuthTokenOutput(createdUserResult.value))
 	}
 
@@ -135,6 +150,25 @@ export class AuthenticateWithGoogleUseCase {
 			name: user.name,
 		})
 		await DomainEventPublisher.instance.publish(event)
+	}
+
+	private async publishLoginSucceededEvent(user: User): Promise<void> {
+		await DomainEventPublisher.instance.publish(
+			new LoginSucceededEvent({
+				userId: user.id,
+				userEmail: user.email,
+				userName: user.name,
+			}),
+		)
+	}
+
+	private handleGoogleAccountLinkedEvent(data: DomainEvent<unknown>): void {
+		if (data instanceof GoogleAccountLinkedEvent) {
+			// notify() (Observable) síncrono, descarta retorno dos handlers → sem
+			// contexto pra await aqui. Fire-and-forget intencional (fora de escopo
+			// alterar Observable/notify()).
+			void DomainEventPublisher.instance.publish(data)
+		}
 	}
 
 	private createAuthTokenOutput(user: User): AuthTokenOutputDTO {

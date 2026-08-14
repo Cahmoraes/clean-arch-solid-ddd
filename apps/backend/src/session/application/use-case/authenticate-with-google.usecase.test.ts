@@ -5,11 +5,15 @@ import { GoogleAccountAlreadyLinkedError } from "@/session/application/error/goo
 import { GoogleEmailNotVerifiedError } from "@/session/application/error/google-email-not-verified-error.js"
 import { InvalidGoogleTokenError } from "@/session/application/error/invalid-google-token-error.js"
 import { InMemoryGoogleAuthProvider } from "@/session/infra/provider/in-memory-google-auth-provider.js"
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { InMemoryUserRepository } from "@/shared/infra/database/repository/in-memory/in-memory-user-repository"
 import { env } from "@/shared/infra/env"
 import { container } from "@/shared/infra/ioc/container"
 import { AUTH_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { AuthToken } from "@/user/application/auth/auth-token"
+import { GoogleAccountLinkedEvent } from "@/user/domain/event/google-account-linked-event"
+import { LoginSucceededEvent } from "@/user/domain/event/login-succeeded.event"
 
 import type { AuthenticateWithGoogleUseCase } from "./authenticate-with-google.usecase.js"
 import { AuthenticateWithGoogleUseCase as AuthenticateWithGoogleUseCaseClass } from "./authenticate-with-google.usecase.js"
@@ -213,5 +217,96 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			jwi: expect.any(String),
 		})
 		expect(decodedRefreshToken.sub).toEqual(decoded.sub)
+	})
+
+	test("deve publicar LoginSucceededEvent ao autenticar usuário existente com googleId", async () => {
+		await createAndSaveUser({
+			userRepository,
+			googleId: "google-sub-123",
+			email: "john@doe.com",
+		})
+		googleAuthProvider.addValidToken("valid-token", {
+			sub: "google-sub-123",
+			email: "john@doe.com",
+			name: "John Doe",
+			emailVerified: true,
+		})
+
+		const receivedEvents: LoginSucceededEvent[] = []
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof LoginSucceededEvent) receivedEvents.push(event)
+		}
+		DomainEventPublisher.instance.subscribe("loginSucceeded", subscriber)
+
+		try {
+			await sut.execute({ idToken: "valid-token" })
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("loginSucceeded", subscriber)
+		}
+
+		expect(receivedEvents).toHaveLength(1)
+		expect(receivedEvents[0]).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({ userEmail: "john@doe.com" }),
+			}),
+		)
+	})
+
+	test("deve publicar GoogleAccountLinkedEvent e LoginSucceededEvent ao religar uma conta Google já vinculada encontrada por e-mail", async () => {
+		const existingUser = await createAndSaveUser({
+			userRepository,
+			email: "john@doe.com",
+			name: "John Doe",
+			googleId: "google-sub-999",
+		})
+		googleAuthProvider.addValidToken("relink-token", {
+			sub: "google-sub-999",
+			email: "john@doe.com",
+			name: "John Doe",
+			emailVerified: true,
+		})
+		vi.spyOn(userRepository, "userOfGoogleId").mockResolvedValueOnce(null)
+
+		const receivedLinkedEvents: GoogleAccountLinkedEvent[] = []
+		const linkedSubscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof GoogleAccountLinkedEvent) {
+				receivedLinkedEvents.push(event)
+			}
+		}
+		const receivedLoginEvents: LoginSucceededEvent[] = []
+		const loginSubscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof LoginSucceededEvent) receivedLoginEvents.push(event)
+		}
+		DomainEventPublisher.instance.subscribe(
+			"googleAccountLinked",
+			linkedSubscriber,
+		)
+		DomainEventPublisher.instance.subscribe("loginSucceeded", loginSubscriber)
+
+		try {
+			const result = await sut.execute({ idToken: "relink-token" })
+			expect(result.isSuccess()).toBe(true)
+		} finally {
+			DomainEventPublisher.instance.unsubscribe(
+				"googleAccountLinked",
+				linkedSubscriber,
+			)
+			DomainEventPublisher.instance.unsubscribe(
+				"loginSucceeded",
+				loginSubscriber,
+			)
+			vi.restoreAllMocks()
+		}
+
+		expect(receivedLinkedEvents).toHaveLength(1)
+		expect(receivedLinkedEvents[0]).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userId: existingUser.id,
+					googleId: "google-sub-999",
+				}),
+			}),
+		)
+		expect(receivedLoginEvents).toHaveLength(1)
 	})
 })
