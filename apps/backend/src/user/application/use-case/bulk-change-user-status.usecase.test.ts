@@ -158,7 +158,7 @@ describe("BulkChangeUserStatusUseCase", () => {
 		expect(result.value.skipped).toBe(0)
 	})
 
-	test("deve publicar um UserStatusChangedEvent por usuário efetivamente alterado, ignorando quem já está no status alvo", async () => {
+	test("deve publicar um UserStatusChangedEvent por usuário efetivamente alterado, ignorando quem já está no status alvo ou é inelegível por política", async () => {
 		await userRepository.save(restoreUser("admin-id", "ADMIN"))
 		await userRepository.save(restoreUser("member-a-id", "MEMBER"))
 		await userRepository.save(
@@ -172,6 +172,7 @@ describe("BulkChangeUserStatusUseCase", () => {
 				isSuperAdmin: false,
 			}),
 		)
+		await userRepository.save(restoreUser("other-admin-id", "ADMIN"))
 
 		const receivedEvents: UserStatusChangedEvent[] = []
 		const subscriber: Subscriber<unknown> = (event) => {
@@ -182,7 +183,7 @@ describe("BulkChangeUserStatusUseCase", () => {
 		try {
 			const input: BulkChangeUserStatusUseCaseInput = {
 				requesterId: "admin-id",
-				userIds: ["member-a-id", "member-b-id"],
+				userIds: ["member-a-id", "member-b-id", "other-admin-id"],
 				targetStatus: "suspended",
 			}
 			const result = await sut.execute(input)
