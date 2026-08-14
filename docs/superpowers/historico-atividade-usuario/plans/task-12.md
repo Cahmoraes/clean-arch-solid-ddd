@@ -1,6 +1,6 @@
 # Task 12: RecordUserActivitySubscriber — assina os 7 eventos, formata descrição pt-BR, grava, falha não propaga [FR-006, FR-007, FR-008, FR-009, FR-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** standard

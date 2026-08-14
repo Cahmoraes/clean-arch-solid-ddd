@@ -24,9 +24,9 @@
 - [x] 9. `active-user.usecase.ts` publica `UserStatusChangedEvent` [FR-011] → `task-09.md`
 - [x] 10. `bulk-change-user-status.usecase.ts` publica `UserStatusChangedEvent` por usuário efetivamente alterado [FR-011] → `task-10.md`
 - [x] 11. Modelo `UserActivityEvent` (Prisma + migration) + `UserActivityRepository` (interface + implementação Prisma) [FR-001] → `task-11.md`
-- [ ] 12. `RecordUserActivitySubscriber` — assina os 7 eventos, formata descrição pt-BR, grava, falha não propaga [FR-006, FR-007, FR-008, FR-009, FR-014] → `task-12.md`
+- [x] 12. `RecordUserActivitySubscriber` — assina os 7 eventos, formata descrição pt-BR, grava, falha não propaga [FR-006, FR-007, FR-008, FR-009, FR-014] → `task-12.md`
 - [x] 13. `UserActivityDao` (interface + implementação Prisma) — merge `UserActivityEvent` + `CheckIn`, ordena desc, limita 20 [FR-001, FR-012] → `task-13.md`
-- [ ] 14. `GetUserActivityUseCase` (leitura, limit 20) [FR-001, FR-002, FR-013] → `task-14.md`
+- [x] 14. `GetUserActivityUseCase` (leitura, limit 20) [FR-001, FR-002, FR-013] → `task-14.md`
 - [ ] 15. `GET /users/:id/activity` — controller + rota + DI [FR-001] → `task-15.md`
 - [ ] 16. Hook `use-user-activity` (React Query) [FR-001] → `task-16.md`
 - [x] 17. `ActivityTab` — agrupamento por data + ícone por categoria [FR-002, FR-003, FR-004, FR-013] → `task-17.md`

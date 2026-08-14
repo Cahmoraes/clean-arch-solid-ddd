@@ -1,6 +1,6 @@
 # Task 14: GetUserActivityUseCase [FR-001, FR-002, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** cheap
