@@ -285,6 +285,7 @@ export class User extends Observable {
 		this._email = validationResult.value.email
 		void this.refreshUpdatedAt()
 		const event = new UserProfileUpdatedEvent({
+			userId: this.id,
 			email: this.email,
 			name: this.name,
 		})
