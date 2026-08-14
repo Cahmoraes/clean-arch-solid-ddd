@@ -1,4 +1,6 @@
 import { setupInMemoryRepositories } from "test/factory/setup-in-memory-repositories"
+import type { Subscriber } from "@/shared/domain/event/domain-event-publisher"
+import { DomainEventPublisher } from "@/shared/domain/event/domain-event-publisher"
 import type { Either } from "@/shared/domain/value-object/either"
 import { env } from "@/shared/infra/env"
 import { container } from "@/shared/infra/ioc/container"
@@ -7,6 +9,7 @@ import type { AuthToken } from "@/user/application/auth/auth-token"
 import { InvalidCredentialsError } from "@/user/application/error/invalid-credentials-error"
 import { PasswordNotSetError } from "@/user/application/error/password-not-set-error"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
+import { LoginSucceededEvent } from "@/user/domain/event/login-succeeded.event"
 import {
 	type CreateUserDto,
 	User,
@@ -223,6 +226,36 @@ describe("AuthenticateUseCase", () => {
 			const user = await userRepository.userOfEmail("admin@admin.com")
 			expect(user?.isLocked).toBe(false)
 		})
+	})
+
+	test("deve publicar LoginSucceededEvent após um login bem-sucedido", async () => {
+		await createAndSaveUser({
+			name: "John Doe",
+			email: "john@doe.com",
+			password: "Senha123!",
+		})
+
+		let receivedEvent: LoginSucceededEvent | null = null
+		const subscriber: Subscriber<unknown> = (event) => {
+			if (event instanceof LoginSucceededEvent) receivedEvent = event
+		}
+		DomainEventPublisher.instance.subscribe("loginSucceeded", subscriber)
+
+		try {
+			await sut.execute({ email: "john@doe.com", password: "Senha123!" })
+		} finally {
+			DomainEventPublisher.instance.unsubscribe("loginSucceeded", subscriber)
+		}
+
+		expect(receivedEvent).not.toBeNull()
+		expect(receivedEvent).toEqual(
+			expect.objectContaining({
+				payload: expect.objectContaining({
+					userEmail: "john@doe.com",
+					userName: "John Doe",
+				}),
+			}),
+		)
 	})
 
 	async function createAndSaveUser(userProps: CreateUserDto): Promise<User> {

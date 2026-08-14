@@ -15,6 +15,7 @@ import type { LoginAttemptStore } from "@/user/application/persistence/login-att
 import type { PasswordResetTokenStore } from "@/user/application/persistence/password-reset-token-store"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { AccountLockedBySecurityEvent } from "@/user/domain/event/account-locked-by-security-event"
+import { LoginSucceededEvent } from "@/user/domain/event/login-succeeded.event"
 import type { User } from "@/user/domain/user"
 
 export interface AuthenticateUseCaseInput {
@@ -88,6 +89,13 @@ export class AuthenticateUseCase {
 			await this.loginAttemptStore.deleteFailedAttempts(input.email)
 		}
 		const jwi = this.createJSONWebId()
+		await DomainEventPublisher.instance.publish(
+			new LoginSucceededEvent({
+				userId: user.id,
+				userEmail: user.email,
+				userName: user.name,
+			}),
+		)
 		return success({
 			token: this.signUserToken(user, jwi),
 			refreshToken: this.createRefreshToken(user, jwi),
