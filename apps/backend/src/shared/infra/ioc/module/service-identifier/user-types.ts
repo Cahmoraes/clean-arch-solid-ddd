@@ -26,6 +26,7 @@ export const USER_TYPES = {
 		DemoteFromAdmin: Symbol.for("DemoteFromAdminUseCase"),
 		UserMetrics: Symbol.for("UserMetricsUseCase"),
 		GetUserStats: Symbol.for("GetUserStatsUseCase"),
+		GetUserActivity: Symbol.for("GetUserActivityUseCase"),
 	},
 	Controllers: {
 		CreateUser: Symbol.for("UserController"),
@@ -50,6 +51,7 @@ export const USER_TYPES = {
 		DemoteFromAdmin: Symbol.for("DemoteFromAdminController"),
 		GetUserStats: Symbol.for("GetUserStatsController"),
 		DeleteUser: Symbol.for("DeleteUserController"),
+		GetUserActivity: Symbol.for("GetUserActivityController"),
 	},
 	Gateways: {
 		PasswordResetTokenStore: Symbol.for("PasswordResetTokenStore"),

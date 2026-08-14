@@ -1,6 +1,6 @@
 # Task 15: GET /users/:id/activity — controller + rota + DI [FR-001]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-usuario.md`
 **Spec:** `../specs/historico-atividade-usuario-design.md`
 **Tier:** standard

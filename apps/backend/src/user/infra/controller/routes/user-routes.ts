@@ -5,6 +5,7 @@ export const UserRoutes = {
 	FETCH: PREFIX,
 	STATS: `${PREFIX}/stats`,
 	PROFILE: `${PREFIX}/:userId`,
+	ACTIVITY: `${PREFIX}/:userId/activity`,
 	ME: `${PREFIX}/me`,
 	METRICS: `${PREFIX}/me/metrics`,
 	CHANGE_PASSWORD: `${PREFIX}/me/change-password`,
