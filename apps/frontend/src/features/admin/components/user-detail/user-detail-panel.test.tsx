@@ -1,13 +1,17 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
 import { afterEach, describe, expect, test } from "vitest"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { useAuthStore } from "@/lib/auth/auth-store"
+import { server } from "@/test/msw/server"
 import { makeTestJwt } from "@/test/render"
 import { UserDetailPanel } from "./user-detail-panel"
+
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
 function buildUser(overrides: Partial<AdminUser> = {}): AdminUser {
 	return {
@@ -133,5 +137,49 @@ describe("UserDetailPanel", () => {
 
 		expect(screen.getByLabelText("Nome")).toBeInTheDocument()
 		expect(screen.getByLabelText("E-mail")).toBeInTheDocument()
+	})
+
+	test("busca o histórico de atividade ao abrir a aba Atividade e exibe o evento retornado", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users/:userId/activity`, () =>
+				HttpResponse.json(
+					{
+						events: [
+							{
+								id: "activity-1",
+								type: "LOGIN",
+								description: "Login realizado",
+								occurredAt: new Date().toISOString(),
+							},
+						],
+					},
+					{ status: 200 },
+				),
+			),
+		)
+
+		renderPanel(buildUser({ id: "u1" }))
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(await screen.findByText("Login realizado")).toBeInTheDocument()
+	})
+
+	test("exibe mensagem de erro (não o estado vazio) quando a busca de atividade falha", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users/:userId/activity`, () =>
+				HttpResponse.json({ message: "Internal error" }, { status: 500 }),
+			),
+		)
+
+		renderPanel(buildUser({ id: "u1" }))
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(
+			await screen.findByText(
+				"Não foi possível carregar o histórico de atividade.",
+			),
+		).toBeInTheDocument()
 	})
 })

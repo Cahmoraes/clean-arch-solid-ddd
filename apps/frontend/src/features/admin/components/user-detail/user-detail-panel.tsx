@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/avatar"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useUserActivity } from "@/features/admin/api/use-user-activity"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { ActivityTab } from "./activity-tab"
 import {
@@ -77,6 +78,14 @@ function UserDetailTabs({
 	editing: boolean
 	onStopEdit: () => void
 }) {
+	const {
+		data: activityEvents,
+		isLoading: isActivityLoading,
+		isError: isActivityError,
+	} = useUserActivity(user.id, {
+		enabled: activeTab === "atividade",
+	})
+
 	return (
 		<Tabs
 			value={activeTab}
@@ -96,7 +105,11 @@ function UserDetailTabs({
 				/>
 			</TabsContent>
 			<TabsContent value="atividade">
-				<ActivityTab />
+				<ActivityTab
+					events={activityEvents}
+					isLoading={isActivityLoading}
+					isError={isActivityError}
+				/>
 			</TabsContent>
 		</Tabs>
 	)
