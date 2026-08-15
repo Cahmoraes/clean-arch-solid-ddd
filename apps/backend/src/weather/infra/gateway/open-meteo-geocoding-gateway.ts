@@ -17,21 +17,10 @@ interface OpenMeteoGeocodingResponse {
 
 @injectable()
 export class OpenMeteoGeocodingGateway implements GeocodingGateway {
-	private readonly baseUrl = "https://geocoding-api.open-meteo.com/v1/search"
-	// CircuitBreaker is built ONCE here (instance field) so its failure
-	// count / open state accumulate across every geocode() call, as a real
-	// circuit breaker must. `cityName` is now a real per-call argument
-	// forwarded through `breaker.run(cityName)`, not a shared mutable field:
-	// each geocode() invocation has its own local `cityName` parameter, so
-	// concurrent calls for different cities can never clobber each other,
-	// even across the Retry suspension point during `sleep`.
-	private readonly breaker = CircuitBreaker.wrap({
-		callback: (cityName: string) => this.fetchGeocode(cityName),
-		failureThresholdPercentageLimit: 50,
-		resetTimeout: 30_000,
-	})
+	private static readonly baseUrl =
+		"https://geocoding-api.open-meteo.com/v1/search"
 
-	async geocode(
+	public async geocode(
 		cityName: string,
 	): Promise<
 		Either<CityNotFoundError | WeatherProviderUnavailableError, Coordinate>
@@ -60,10 +49,23 @@ export class OpenMeteoGeocodingGateway implements GeocodingGateway {
 		}
 	}
 
+	// CircuitBreaker is built ONCE here (instance field) so its failure
+	// count / open state accumulate across every geocode() call, as a real
+	// circuit breaker must. `cityName` is now a real per-call argument
+	// forwarded through `breaker.run(cityName)`, not a shared mutable field:
+	// each geocode() invocation has its own local `cityName` parameter, so
+	// concurrent calls for different cities can never clobber each other,
+	// even across the Retry suspension point during `sleep`.
+	private readonly breaker = CircuitBreaker.wrap({
+		callback: (cityName: string) => this.fetchGeocode(cityName),
+		failureThresholdPercentageLimit: 50,
+		resetTimeout: 30_000,
+	})
+
 	private async fetchGeocode(
 		cityName: string,
 	): Promise<OpenMeteoGeocodingResponse> {
-		const url = `${this.baseUrl}?name=${encodeURIComponent(cityName)}&count=1`
+		const url = `${OpenMeteoGeocodingGateway.baseUrl}?name=${encodeURIComponent(cityName)}&count=1`
 		const response = await fetch(url)
 		if (!response.ok) {
 			throw new Error(
