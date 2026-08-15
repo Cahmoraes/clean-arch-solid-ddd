@@ -1,0 +1,34 @@
+flowchart TD
+    Intent(["Intenção de negócio:\nnotificar o cliente quando\no status do pedido mudar"]) --> W1
+
+    subgraph W1["Onda 1 (paralelo)"]
+        direction LR
+        T1["Task 1: regra de quando notificar"]
+        T2["Task 2: texto do e-mail"]
+    end
+
+    W1 --> W2
+
+    subgraph W2["Onda 2 (paralelo)"]
+        direction LR
+        T3["Task 3: endpoint de consulta de status"]
+        T4["Task 4: disparo do e-mail"]
+    end
+
+    W2 --> W3
+
+    subgraph W3["Onda 3 (sequencial)"]
+        T5["Task 5: ligação com o pedido real"]
+    end
+
+    W3 --> W4
+
+    subgraph W4["Onda 4 (sequencial)"]
+        T6["Task 6: testes de ponta a ponta"]
+    end
+
+    classDef startEnd fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+    classDef process fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+
+    class Intent startEnd
+    class T1,T2,T3,T4,T5,T6 process

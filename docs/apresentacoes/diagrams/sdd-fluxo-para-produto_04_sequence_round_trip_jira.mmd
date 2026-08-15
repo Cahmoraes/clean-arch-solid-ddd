@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant Repo as Repositório (specs/tasks)
+    participant Dev as Dev/Arquiteto
+    participant Jira as Jira
+    participant IA as Agente de IA
+
+    Dev->>Repo: Gera tasks (granularidade sob medida para IA)
+    Dev->>Jira: Recria as mesmas tasks manualmente (granularidade humana)
+    IA->>Repo: Executa a partir do repositório
+    Note over Repo,Jira: Spec muda depois → 2 lugares para atualizar à mão

@@ -1,0 +1,14 @@
+flowchart TD
+    A(["Artefatos de negócio já existentes"]) --> B["Brainstorming e entrevista"]
+    B --> C["PRD interno (opcional)"]
+    C --> D["Spec técnico: decisões e fluxo"]
+    D --> E["Decomposição em tasks"]
+    E --> F["Implementação"]
+    F --> G["QA e validação"]
+    G --> H(["Fim do ciclo: specs viram histórico do repositório"])
+
+    classDef startEnd fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+    classDef process fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+
+    class A,H startEnd
+    class B,C,D,E,F,G process

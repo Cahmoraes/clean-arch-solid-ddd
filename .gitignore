@@ -20,6 +20,7 @@ coverage/
 .worktrees/
 .github
 .claude
+.opencode
 
 # Python bytecode (skill scripts)
 __pycache__/

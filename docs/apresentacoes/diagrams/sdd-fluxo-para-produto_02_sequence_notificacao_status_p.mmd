@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant Sistema as Sistema de Pedidos
+    participant Regra as Verificador de Status
+    participant Notificador as Serviço de Notificação
+    participant Cliente as Cliente
+
+    Sistema->>Regra: Status do pedido mudou (ex.: "enviado")
+    Regra->>Notificador: Solicita envio de notificação
+    Notificador->>Cliente: E-mail "Seu pedido foi enviado"
+    Notificador-->>Sistema: Confirma envio (falha não trava o pedido)
