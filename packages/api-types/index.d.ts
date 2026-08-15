@@ -1482,6 +1482,76 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users/me/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get my activity history
+         * @description Retrieve the last 20 activity events for the authenticated user.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User activity retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            events: {
+                                id: string;
+                                /** @enum {string} */
+                                type: "LOGIN" | "PASSWORD_CHANGED" | "ACCOUNT_LOCKED" | "GOOGLE_LINKED" | "PROFILE_UPDATED" | "ROLE_CHANGED" | "STATUS_CHANGED" | "CHECK_IN";
+                                description: string;
+                                occurredAt: string;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description User not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/users/activate": {
         parameters: {
             query?: never;

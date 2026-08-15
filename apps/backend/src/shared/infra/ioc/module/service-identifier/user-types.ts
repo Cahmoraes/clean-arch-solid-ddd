@@ -52,6 +52,7 @@ export const USER_TYPES = {
 		GetUserStats: Symbol.for("GetUserStatsController"),
 		DeleteUser: Symbol.for("DeleteUserController"),
 		GetUserActivity: Symbol.for("GetUserActivityController"),
+		GetMyActivity: Symbol.for("GetMyActivityController"),
 	},
 	Gateways: {
 		PasswordResetTokenStore: Symbol.for("PasswordResetTokenStore"),

@@ -54,6 +54,7 @@ export function setupUserModule(): ModuleControllers {
 		resolve(USER_TYPES.Controllers.FetchUsers),
 		resolve(USER_TYPES.Controllers.GetUserStats),
 		resolve(USER_TYPES.Controllers.GetUserActivity),
+		resolve(USER_TYPES.Controllers.GetMyActivity),
 		resolve(USER_TYPES.Controllers.ActivateUser),
 		resolve(USER_TYPES.Controllers.SuspendUser),
 		resolve(USER_TYPES.Controllers.BulkActivateUsers),

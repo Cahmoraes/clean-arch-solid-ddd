@@ -8,6 +8,7 @@ export const UserRoutes = {
 	ACTIVITY: `${PREFIX}/:userId/activity`,
 	ME: `${PREFIX}/me`,
 	METRICS: `${PREFIX}/me/metrics`,
+	MY_ACTIVITY: `${PREFIX}/me/activity`,
 	CHANGE_PASSWORD: `${PREFIX}/me/change-password`,
 	PASSWORD_REAUTH: `${PREFIX}/me/password/reauth`,
 	PASSWORD: `${PREFIX}/me/password`,

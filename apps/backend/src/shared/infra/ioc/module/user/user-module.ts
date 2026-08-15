@@ -31,6 +31,7 @@ import { DeleteUserController } from "@/user/infra/controller/delete-user.contro
 import { DemoteFromAdminController } from "@/user/infra/controller/demote-from-admin.controller"
 import { FetchUsersController } from "@/user/infra/controller/fetch-users.controller"
 import { ForgotPasswordController } from "@/user/infra/controller/forgot-password.controller"
+import { GetMyActivityController } from "@/user/infra/controller/get-my-activity.controller"
 import { GetUserActivityController } from "@/user/infra/controller/get-user-activity.controller"
 import { GetUserStatsController } from "@/user/infra/controller/get-user-stats.controller"
 import { MyProfileController } from "@/user/infra/controller/my-profile.controller"
@@ -90,6 +91,7 @@ export const userModule = new ContainerModule(({ bind }) => {
 	bind(USER_TYPES.Controllers.FetchUsers).to(FetchUsersController)
 	bind(USER_TYPES.Controllers.GetUserStats).to(GetUserStatsController)
 	bind(USER_TYPES.Controllers.GetUserActivity).to(GetUserActivityController)
+	bind(USER_TYPES.Controllers.GetMyActivity).to(GetMyActivityController)
 	bind(USER_TYPES.Controllers.UpdateUserProfile).to(UpdateUserProfileController)
 	bind(USER_TYPES.UseCases.CreateUser).to(CreateUserUseCase)
 	bind(USER_TYPES.UseCases.UserProfile).to(UserProfileUseCase)
