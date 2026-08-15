@@ -4,8 +4,8 @@
 	"packageManager": "pnpm@11.5.3",
 	"type": "module",
 	"scripts": {
-		"dev": "turbo dev",
-		"build": "turbo build",
+		"dev": "pnpm generate:types && turbo dev",
+		"build": "pnpm generate:types && turbo build",
 		"test": "turbo test",
 		"lint": "turbo lint",
 		"backend:tsc:check": "pnpm --filter backend tsc:check",
