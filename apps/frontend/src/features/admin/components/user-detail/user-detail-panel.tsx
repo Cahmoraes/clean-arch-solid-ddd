@@ -5,9 +5,9 @@ import { Avatar } from "@/components/ui/avatar"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ActivityTab } from "@/features/activity/components/activity-tab"
 import { useUserActivity } from "@/features/admin/api/use-user-activity"
 import type { AdminUser } from "@/features/admin/api/use-users"
-import { ActivityTab } from "./activity-tab"
 import {
 	DeleteConfirmationDialog,
 	DemoteConfirmationDialog,

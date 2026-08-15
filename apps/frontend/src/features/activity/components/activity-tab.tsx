@@ -10,10 +10,7 @@ import type { ComponentType } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/cn"
-import {
-	formatActivityGroupLabel,
-	formatActivityTime,
-} from "./user-detail-format"
+import { formatActivityGroupLabel, formatActivityTime } from "./activity-format"
 
 const ACTIVITY_SKELETON_KEYS = [0, 1, 2] as const
 
