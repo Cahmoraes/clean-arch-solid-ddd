@@ -1,6 +1,6 @@
 # Task 1: Endpoint `GET /users/me/activity` no backend [FR-002, FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-perfil.md`
 **Spec:** `../specs/historico-atividade-perfil-design.md`
 **Tier:** standard

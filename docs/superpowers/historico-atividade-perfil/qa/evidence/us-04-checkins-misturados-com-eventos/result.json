@@ -1,0 +1,12 @@
+{
+  "us_id": "us-04",
+  "user_story": "Como usuário autenticado, eu quero ver meus check-ins misturados com os demais eventos, para ter uma visão unificada da minha atividade.",
+  "requirements": ["FR-004", "FR-003"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Frontend (apps/frontend): 'npx vitest run src/features/activity/components/activity-tab.test.tsx src/app/(authenticated)/perfil/page.test.tsx' -> 2 arquivos passaram, 20 testes passados, 0 falhas (exit 0). Cobre FR-004: activity-tab.test.tsx:74-88 valida CHECK_IN com badge/ícone de destaque (role img 'Check-in', bg-accent/16, text-accent) entre os 8 tipos do feed, e page.test.tsx:201-237 renderiza CHECK_IN + LOGIN misturados na aba Atividade. Backend (apps/backend, config ./test/vite.config.app-domain.ts): 'npx vitest run src/shared/infra/database/dao/in-memory/user-activity-dao-memory.test.ts' -> 1 arquivo passou, 2 testes passados, 0 falhas (exit 0). Cobre FR-003: user-activity-dao-memory.test.ts:26-28 ordena itens mistos (CHECK_IN, LOGIN, PASSWORD_CHANGED) por occurredAt desc ['neg5','neg3','neg1'] e :42-46 trunca para o limite 20 (item-0..item-19). IV já confirma ambos FR com asserções mapeadas em file:line (12/12 critérios PASS, 8/8 mutações mortas). Cobertura existente é compreensiva; nenhum acceptance test novo foi necessário.",
+  "screenshot_path": "docs/superpowers/historico-atividade-perfil/qa/evidence/us-04-checkins-misturados-com-eventos/perfil-atividade-checkin-misturado.png",
+  "failure_details": null,
+  "notes": "Screenshot capturado com autenticação real (usuário criado via POST /users no backend em :3333 e login via UI). Na aba 'Atividade' de /perfil, o feed exibiu um check-in MISTURADO com outros eventos no mesmo grupo 'Hoje': 'Login realizado' (Conta), 'Login realizado' (Conta), 'Check-in na Smart Fit - Moema' (img role 'Check-in'), 'Login realizado' (Conta); e no grupo 'Ontem': 'Conta bloqueada temporariamente' e 'Senha alterada' — exatamente o cenário de US-04 (visão unificada). Validação do PNG não foi possível por inspeção visual (modelo sem suporte a input de imagem), mas a evidência foi confirmada pelo snapshot de DOM do playwright-cli (badges role img 'Check-in' e 'Conta' junto às descrições dos eventos). FR-003 (últimos 20, ordenação desc) e FR-004 (CHECK_IN entre os 8 tipos, sintético no read path compartilhado) cobertos por testes existentes que passam; IV report anexo confirma 12/12 critérios. Nenhum teste foi adicionado ao source tree."
+}

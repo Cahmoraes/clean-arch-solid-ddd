@@ -1,6 +1,6 @@
 # Task 2: Mover `ActivityTab` e helpers de formatação para `features/activity/` [FR-004, FR-005, FR-008, FR-009, FR-010, FR-011, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-perfil.md`
 **Spec:** `../specs/historico-atividade-perfil-design.md`
 **Tier:** standard

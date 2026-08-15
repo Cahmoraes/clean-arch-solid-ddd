@@ -1,0 +1,12 @@
+{
+  "us_id": "us-03",
+  "user_story": "Como usuário autenticado, eu quero ver eventos de segurança (troca de senha, bloqueio por segurança) no meu histórico, para detectar atividade suspeita na minha conta.",
+  "requirements": ["FR-004", "FR-009"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "IV consumido (validation-historico-atividade-perfil.md): FR-004 PASS e FR-009 PASS com asserções já localizadas. Rodados os 2 arquivos-alvo (npx vitest run src/features/activity/components/activity-tab.test.tsx 'src/app/(authenticated)/perfil/page.test.tsx'): 2 arquivos passaram, 20 testes passaram, 0 falhas. FR-004 (tipos de segurança no feed): activity-tab.test.tsx:105-117 renderiza PASSWORD_CHANGED + ACCOUNT_LOCKED com aria-label 'Segurança'; :150-164 cobre os 8 tipos do enum UserActivityEventType (activity-tab.tsx:17-25). FR-009 (ícone com cor distinta por categoria): activity-tab.test.tsx:107-111 assere bg-warning-soft e :113-117 assere text-warning para eventos de segurança; config em activity-tab.tsx:55-66 (PASSWORD_CHANGED/ACCOUNT_LOCKED -> KeyRound/ShieldAlert, iconClassName text-warning, badgeClassName bg-warning-soft). Cobertura existente compreensiva — nenhum teste novo criado.",
+  "screenshot_path": "docs/superpowers/historico-atividade-perfil/qa/evidence/us-03-eventos-de-seguranca/atividade-seguranca.png",
+  "failure_details": null,
+  "notes": "Verificação ao vivo: criei usuário via POST /users, semeei eventos PASSWORD_CHANGED ('Senha alterada'), ACCOUNT_LOCKED ('Conta bloqueada por segurança') e LOGIN na tabela user_activity_events, autentiquei via UI e abri a aba Atividade em /perfil. Snapshot DOM confirmou os 4 eventos renderizados: LOGIN x2 com img 'Conta', 'Conta bloqueada por segurança' com img 'Segurança' e 'Senha alterada' com img 'Segurança' — exatamente o comportamento de US-03. Screenshot PNG salvo (57KB). Limitação: o modelo não suporta inspeção visual da imagem, mas o conteúdo foi confirmado pelo snapshot de DOM do playwright-cli. Sem alterações no source tree."
+}

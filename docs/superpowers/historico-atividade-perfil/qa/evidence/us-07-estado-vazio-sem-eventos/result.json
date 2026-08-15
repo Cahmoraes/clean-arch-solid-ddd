@@ -1,0 +1,12 @@
+{
+  "us_id": "us-07",
+  "user_story": "Como usuário autenticado, ao abrir a aba \"Atividade\" sem nenhum evento registrado, eu quero ver um estado vazio claro, para saber que não há dados em vez de uma tela quebrada ou confusa.",
+  "requirements": ["FR-012"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Cobertura existente compreensiva confirmada (consumida do relatório de Independent Verification em docs/superpowers/historico-atividade-perfil/qa/validation-historico-atividade-perfil.md, que mapeia FR-012 -> activity-tab.test.tsx:20-29 e page.test.tsx:255-257). Rodei os dois arquivos-alvo: `npx vitest run src/app/(authenticated)/perfil/page.test.tsx src/features/activity/components/activity-tab.test.tsx` -> 2 test files passed, 20 tests passed, 0 failed (v4.1.5, 5.41s). O estado vazio é exercitado em: (1) activity-tab.test.tsx:18-30 — 'exibe estado vazio quando não há eventos' (events=[]) e 'exibe estado vazio por padrão quando events é omitido', ambos asserindo getByText('Sem dados de atividade disponíveis'); (2) page.test.tsx:239-258 — 'exibe estado vazio quando não há eventos', MSW mock GET /users/me/activity retorna { events: [] }, clica na aba 'Atividade' e assere findByText('Sem dados de atividade disponíveis'). Complementares (distinção vazio vs erro/loading): activity-tab.test.tsx:185-201 e page.test.tsx:260-302. Nenhum teste de aceitação novo foi necessário (cobertura já era completa).",
+  "screenshot_path": "docs/superpowers/historico-atividade-perfil/qa/evidence/us-07-estado-vazio-sem-eventos/us-07-empty-state.png",
+  "failure_details": null,
+  "notes": "Screenshot capturado via playwright-cli autenticado como member1@example.com (seed: 50 members, senha Member123!) com route interception forçando GET /users/me/activity -> { events: [] }. Nenhum usuário seed possui 0 eventos garantidos (login gera evento LOGIN e seed gera 0-8 check-ins), então o empty state foi verificado com resposta mockada — abordagem sancionada pela task. Snapshot DOM confirmou o EmptyState renderizado: heading level 3 'Sem dados de atividade disponíveis' + paragraph 'O histórico de atividade deste usuário ainda não está disponível.' na tabpanel 'Atividade' (aba selecionada). Screenshot PNG (53KB) salvo no diretório de evidência. Modelo não suporta leitura de imagem, mas o snapshot DOM registrado no log serve como evidência textual do render. FR-012 coberto por testes que passam + evidência visual do empty state."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "us-06",
+  "user_story": "Como usuário autenticado, eu quero que meus eventos sejam agrupados por data com um ícone indicando o tipo, para escanear rapidamente o que aconteceu e quando.",
+  "requirements": ["FR-008", "FR-009"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "IV (validation-historico-atividade-perfil.md) mapeou FR-008 -> activity-tab.test.tsx:51-71 (Hoje/Ontem/data completa via Intl.DateTimeFormat pt-BR) e FR-009 -> activity-tab.test.tsx:85-86 (bg-accent/16 + text-accent p/ check-in), :107-117 (bg-warning-soft + text-warning p/ segurança), :154-164 (bg-surface-3 + text-muted-foreground p/ conta/perfil/administrativo). Rodei `npx vitest run src/features/activity/components/activity-tab.test.tsx src/app/(authenticated)/perfil/page.test.tsx` a partir de apps/frontend: 2 test files passed, 20 tests passed, 0 failed (exit 0). activity-format.test.ts nao existe no tree (formatActivityGroupLabel e coberto indiretamente via activity-tab.test.tsx); mutations M4/M5 do sensor (flip 'Hoje'/'Ontem') foram mortas pelos mesmos testes, comprovando cobertura do formato de agrupamento. Cobertura compreensiva e condizente com o IV: nenhum teste de aceitacao novo necessario.",
+  "screenshot_path": "docs/superpowers/historico-atividade-perfil/qa/evidence/us-06-eventos-agrupados-por-data-icone/activity-tab-agrupado.png",
+  "failure_details": null,
+  "notes": "Screenshot capturado em browser real (playwright-cli) na rota autenticada /perfil -> aba Atividade com usuario seedado qa-us06@example.com. Snapshot de acessibilidade confirmou: grupo 'Hoje' (login + check-in), grupo 'Ontem' (seguranca: conta bloqueada + senha alterada), grupo '12 de agosto de 2026' (perfil atualizado), cada evento com icone role=img e aria-label de categoria (Conta/Check-in/Seguranca/Perfil) e horario pt-BR (HH:MM). Duplicacao visivel de 'Login realizado' em 'Hoje' NAO e bug do front: originada no backend (login via UI gera eventos LOGIN reais no user_activity_events) — feed fiel aos dados. Cores por categoria foram verificadas pelas assercoes de classe CSS em activity-tab.test.tsx (FR-009); o screenshot prova agrupamento + icones no DOM real. Modelo de QA sem suporte a leitura de imagem nao permitiu inspecao visual direta do PNG, mas o snapshot de acessibilidade (texto + role/aria-label) evidencia o comportamento renderizado."
+}

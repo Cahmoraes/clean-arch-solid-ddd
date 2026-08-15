@@ -1,6 +1,6 @@
 # Task 4: Página `/perfil` tabbed com aba "Atividade" [FR-001, FR-003, FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-perfil.md`
 **Spec:** `../specs/historico-atividade-perfil-design.md`
 **Mockup:** `../specs/mockups/historico-atividade-perfil-visual.md`

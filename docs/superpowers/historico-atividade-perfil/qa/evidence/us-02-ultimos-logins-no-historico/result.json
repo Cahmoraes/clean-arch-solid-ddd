@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como usuário autenticado, eu quero ver os meus últimos logins no meu histórico, para saber quando acessei a plataforma.",
+  "requirements": ["FR-004", "FR-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Testes existentes cobrem a história. Rodei `npx vitest run src/features/activity/components/activity-tab.test.tsx 'src/app/(authenticated)/perfil/page.test.tsx'` em apps/frontend: 2 arquivos, 20 testes, 0 falhas, 0 pulados (exit 0). FR-004: activity-tab.test.tsx:142-164 renderiza evento type LOGIN (ícone com aria-label de categoria 'Conta', bg-surface-3); page.test.tsx:214-236 mocka evento LOGIN em GET /users/me/activity e assere que 'Login realizado' é exibido ao abrir a aba 'Atividade'. FR-005: activity-tab.test.tsx:167-183 assere que o horário cru ISO (occurredAt) NÃO aparece no DOM e que o horário formatado pt-BR (Intl.DateTimeFormat 'pt-BR', hour/minute 2-digit) é exibido; activity-tab.tsx:124-125 expõe o tipo via ícone/aria-label. Verdict do Independent Verification (validation-historico-atividade-perfil.md, FR-004/FR-005 PASS) consumido como dado — não re-mapeei.",
+  "screenshot_path": "us-02-login-no-historico.png",
+  "failure_details": null,
+  "notes": "Screenshot capturado via playwright-cli (chrome headless) após autenticar em http://localhost:3000/login com seed admin@admin.com/admin@admin, navegar para /perfil e clicar na aba 'Atividade'. A captura mostra o grupo 'Hoje' com o evento 'Login realizado' e horário formatado '20:12', e o ícone de categoria — evidência visual de FR-004 e FR-005. Requisitos verificados por testes automatizados (status PASSED) e reforçados pela evidência visual. Sem necessidade de criar testes de aceitação novos: cobertura existente é compreensiva. Limitações: a primeira tentativa de screenshot foi descartada porque a sessão foi redirecionada para /login; a segunda (válida) foi salva. Nenhum teste adicionado ao source tree."
+}

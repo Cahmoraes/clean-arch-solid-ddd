@@ -1,6 +1,6 @@
 # Task 3: Mover e generalizar o hook `useUserActivity` para `features/activity/` [FR-002, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-historico-atividade-perfil.md`
 **Spec:** `../specs/historico-atividade-perfil-design.md`
 **Tier:** standard

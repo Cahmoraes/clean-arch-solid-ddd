@@ -13,10 +13,10 @@
 
 ## Tarefas
 
-- [ ] 1. Endpoint `GET /users/me/activity` no backend [FR-002, FR-003] → `task-01.md`
-- [ ] 2. Mover `ActivityTab` e helpers de formatação para `features/activity/` [FR-004, FR-005, FR-008, FR-009, FR-010, FR-011, FR-012] → `task-02.md`
-- [ ] 3. Mover e generalizar o hook `useUserActivity` para `features/activity/` [FR-002, FR-007] → `task-03.md`
-- [ ] 4. Página `/perfil` tabbed com aba "Atividade" [FR-001, FR-003, FR-006, FR-007] → `task-04.md`
+- [x] 1. Endpoint `GET /users/me/activity` no backend [FR-002, FR-003] → `task-01.md`
+- [x] 2. Mover `ActivityTab` e helpers de formatação para `features/activity/` [FR-004, FR-005, FR-008, FR-009, FR-010, FR-011, FR-012] → `task-02.md`
+- [x] 3. Mover e generalizar o hook `useUserActivity` para `features/activity/` [FR-002, FR-007] → `task-03.md`
+- [x] 4. Página `/perfil` tabbed com aba "Atividade" [FR-001, FR-003, FR-006, FR-007] → `task-04.md`
 
 ## Ondas de Execução
 
