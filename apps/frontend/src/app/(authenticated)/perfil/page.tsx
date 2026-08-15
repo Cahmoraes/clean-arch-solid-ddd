@@ -5,11 +5,15 @@ import React from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/ui/status-badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useUserActivity } from "@/features/activity/api/use-user-activity"
+import { ActivityTab } from "@/features/activity/components/activity-tab"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"
 import { EditProfileModal } from "@/features/profile/components/EditProfileModal"
 
@@ -321,6 +325,7 @@ function ProfileCard({
 
 export default function ProfilePage() {
 	const [editOpen, setEditOpen] = React.useState(false)
+	const [activeTab, setActiveTab] = React.useState("overview")
 	const {
 		data: me,
 		isLoading: meLoading,
@@ -334,6 +339,13 @@ export default function ProfilePage() {
 		isError: metricsError,
 		refetch: metricsRefetch,
 	} = useMetrics()
+	const {
+		data: activityEvents,
+		isLoading: isActivityLoading,
+		isError: isActivityError,
+	} = useUserActivity(undefined, {
+		enabled: activeTab === "atividade",
+	})
 
 	return (
 		<PageContainer width="default" className="gap-6">
@@ -347,22 +359,45 @@ export default function ProfilePage() {
 				</p>
 			</header>
 
-			<ProfileCard
-				me={me}
-				meLoading={meLoading}
-				meError={meError}
-				meFetching={meFetching}
-				onRetry={() => void meRefetch()}
-				checkInsCount={metrics?.checkInsCount}
-				metricsLoading={metricsLoading}
-				metricsError={metricsError}
-				onMetricsRetry={() => void metricsRefetch()}
-				onEdit={() => {
-					if (!editOpen) {
-						setEditOpen(true)
-					}
-				}}
-			/>
+			<Tabs
+				value={activeTab}
+				onValueChange={setActiveTab}
+				className="flex flex-col gap-4"
+			>
+				<TabsList>
+					<TabsTrigger value="overview">Visão geral</TabsTrigger>
+					<TabsTrigger value="atividade">Atividade</TabsTrigger>
+				</TabsList>
+				<TabsContent value="overview">
+					<ProfileCard
+						me={me}
+						meLoading={meLoading}
+						meError={meError}
+						meFetching={meFetching}
+						onRetry={() => void meRefetch()}
+						checkInsCount={metrics?.checkInsCount}
+						metricsLoading={metricsLoading}
+						metricsError={metricsError}
+						onMetricsRetry={() => void metricsRefetch()}
+						onEdit={() => {
+							if (!editOpen) {
+								setEditOpen(true)
+							}
+						}}
+					/>
+				</TabsContent>
+				<TabsContent value="atividade">
+					<Card className="w-full">
+						<CardContent>
+							<ActivityTab
+								events={activityEvents}
+								isLoading={isActivityLoading}
+								isError={isActivityError}
+							/>
+						</CardContent>
+					</Card>
+				</TabsContent>
+			</Tabs>
 
 			{me ? (
 				<EditProfileModal

@@ -168,3 +168,136 @@ describe("ProfilePage", () => {
 		)
 	})
 })
+
+describe("ProfilePage — aba Atividade", () => {
+	test("não busca atividade até a aba ser aberta", async () => {
+		const user = userEvent.setup()
+		let activityCalled = false
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, () => {
+				activityCalled = true
+				return HttpResponse.json({ events: [] }, { status: 200 })
+			}),
+		)
+
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+
+		expect(activityCalled).toBe(false)
+		expect(
+			screen.queryByTestId("activity-tab-skeleton"),
+		).not.toBeInTheDocument()
+
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		await waitFor(() => {
+			expect(activityCalled).toBe(true)
+		})
+	})
+
+	test("exibe os eventos de atividade quando a aba é aberta", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, () =>
+				HttpResponse.json(
+					{
+						events: [
+							{
+								id: "activity-1",
+								type: "CHECK_IN",
+								description: "Check-in realizado",
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+							{
+								id: "activity-2",
+								type: "LOGIN",
+								description: "Login realizado",
+								occurredAt: "2025-01-09T08:30:00.000Z",
+							},
+						],
+					},
+					{ status: 200 },
+				),
+			),
+		)
+
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(await screen.findByText("Check-in realizado")).toBeInTheDocument()
+		expect(await screen.findByText("Login realizado")).toBeInTheDocument()
+	})
+
+	test("exibe estado vazio quando não há eventos", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, () =>
+				HttpResponse.json({ events: [] }, { status: 200 }),
+			),
+		)
+
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(
+			await screen.findByText("Sem dados de atividade disponíveis"),
+		).toBeInTheDocument()
+	})
+
+	test("exibe erro distinto do vazio quando a busca falha", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, () =>
+				HttpResponse.json({ message: "erro" }, { status: 500 }),
+			),
+		)
+
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(await screen.findByRole("alert")).toHaveTextContent(
+			"Não foi possível carregar o histórico de atividade.",
+		)
+		expect(
+			screen.queryByText("Sem dados de atividade disponíveis"),
+		).not.toBeInTheDocument()
+	})
+
+	test("exibe skeleton durante o carregamento da atividade", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, async () => {
+				await new Promise((resolve) => setTimeout(resolve, 50))
+				return HttpResponse.json({ events: [] }, { status: 200 })
+			}),
+		)
+
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(screen.getByTestId("activity-tab-skeleton")).toBeInTheDocument()
+	})
+})
