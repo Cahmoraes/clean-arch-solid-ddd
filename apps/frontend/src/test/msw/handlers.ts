@@ -96,6 +96,9 @@ export const handlers = [
 	http.get(endpoint("/users/:userId"), () =>
 		HttpResponse.json({ id: "user-stub", name: "Stub User" }, { status: 200 }),
 	),
+	http.get(endpoint("/users/me/activity"), () =>
+		HttpResponse.json({ events: [] }, { status: 200 }),
+	),
 	http.get(endpoint("/users/:userId/activity"), () =>
 		HttpResponse.json({ events: [] }, { status: 200 }),
 	),

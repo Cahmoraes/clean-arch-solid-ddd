@@ -12,8 +12,8 @@ export type UserActivityEvent = UserActivityResponse["events"][number]
 
 export const USER_ACTIVITY_QUERY_KEY = "user-activity" as const
 
-export function userActivityQueryKey(userId: string) {
-	return [USER_ACTIVITY_QUERY_KEY, userId] as const
+export function userActivityQueryKey(userId: string | undefined) {
+	return [USER_ACTIVITY_QUERY_KEY, userId ?? "me"] as const
 }
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {
@@ -28,16 +28,18 @@ export interface UseUserActivityOptions {
 }
 
 export function useUserActivity(
-	userId: string,
+	userId?: string,
 	options: UseUserActivityOptions = {},
 ): UseQueryResult<UserActivityEvent[], ApiError> {
 	return useQuery<UserActivityEvent[], ApiError>({
 		queryKey: userActivityQueryKey(userId),
 		enabled: options.enabled ?? true,
 		queryFn: async () => {
-			const { data, error } = await api.GET("/users/{userId}/activity", {
-				params: { path: { userId } },
-			})
+			const { data, error } = userId
+				? await api.GET("/users/{userId}/activity", {
+						params: { path: { userId } },
+					})
+				: await api.GET("/users/me/activity")
 			if (error || !data) throw toApiError(error)
 			return data.events
 		},
