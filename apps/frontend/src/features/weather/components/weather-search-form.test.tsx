@@ -9,7 +9,7 @@ describe("WeatherSearchForm", () => {
 		const onSearch = vi.fn()
 		render(<WeatherSearchForm onSearch={onSearch} isPending={false} />)
 
-		await user.type(screen.getByLabelText("Cidade"), "São Paulo")
+		await user.type(screen.getByLabelText("Cidade (obrigatório)"), "São Paulo")
 		await user.click(screen.getByRole("button", { name: "Consultar" }))
 
 		expect(onSearch).toHaveBeenCalledWith("São Paulo")
@@ -41,7 +41,7 @@ describe("WeatherSearchForm", () => {
 		const onSearch = vi.fn()
 		render(<WeatherSearchForm onSearch={onSearch} isPending={true} />)
 
-		await user.type(screen.getByLabelText("Cidade"), "São Paulo")
+		await user.type(screen.getByLabelText("Cidade (obrigatório)"), "São Paulo")
 		await user.keyboard("{Enter}")
 
 		expect(onSearch).not.toHaveBeenCalled()

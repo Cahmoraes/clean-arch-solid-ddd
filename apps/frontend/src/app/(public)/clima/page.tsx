@@ -15,6 +15,14 @@ function weatherErrorMessage(code: string): string {
 	return "Serviço de meteorologia indisponível no momento. Tente novamente em instantes."
 }
 
+function weatherResultAnnouncement(
+	city: string | null,
+	data: { city: string; temperature: { current: number } } | undefined,
+): string {
+	if (!city || !data) return ""
+	return `Temperatura de ${data.city}: ${data.temperature.current} graus`
+}
+
 function WeatherPageContent() {
 	const searchParams = useSearchParams()
 	const router = useRouter()
@@ -58,6 +66,9 @@ function WeatherPageContent() {
 					temperature={data.temperature}
 				/>
 			)}
+			<div role="status" aria-live="polite" className="sr-only">
+				{weatherResultAnnouncement(city, data)}
+			</div>
 		</section>
 	)
 }

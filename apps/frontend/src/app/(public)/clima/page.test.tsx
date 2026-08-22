@@ -40,7 +40,7 @@ describe("WeatherPage", () => {
 		} as unknown as ReturnType<typeof useRouter>)
 		renderWithProviders(<WeatherPage />)
 
-		await user.type(screen.getByLabelText("Cidade"), "São Paulo")
+		await user.type(screen.getByLabelText("Cidade (obrigatório)"), "São Paulo")
 		await user.click(screen.getByRole("button", { name: "Consultar" }))
 
 		expect(replaceMock).toHaveBeenCalledWith(
@@ -156,8 +156,8 @@ describe("WeatherPage", () => {
 		})
 		await waitFor(() => expect(consultingButton).toBeDisabled())
 
-		await user.clear(screen.getByLabelText("Cidade"))
-		await user.type(screen.getByLabelText("Cidade"), "Curitiba")
+		await user.clear(screen.getByLabelText("Cidade (obrigatório)"))
+		await user.type(screen.getByLabelText("Cidade (obrigatório)"), "Curitiba")
 		await user.keyboard("{Enter}")
 
 		expect(replaceMock).not.toHaveBeenCalled()

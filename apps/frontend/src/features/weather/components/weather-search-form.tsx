@@ -42,14 +42,18 @@ export function WeatherSearchForm({
 		>
 			<FormField
 				id={cityId}
-				label="Cidade"
+				label="Cidade (obrigatório)"
 				placeholder="Ex: São Paulo"
 				error={errors.city?.message}
+				required
 				{...register("city")}
 			/>
 			<Button type="submit" disabled={isPending}>
 				{isPending ? "Consultando…" : "Consultar"}
 			</Button>
+			<div role="status" aria-live="polite" className="sr-only">
+				{isPending ? "Consultando temperatura…" : ""}
+			</div>
 		</form>
 	)
 }
