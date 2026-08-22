@@ -5,7 +5,7 @@
 - `biome:fix` tolerância zero. Zero problemas — qualquer issue Biome = falha bloqueante
 - **SEMPRE verifique APIs dos pacotes dependentes** antes de escrever código de integração/testes, evita código errado
 - **NUNCA use gambiarras** — use skill `no-workarounds` para correção/debug + `testing-anti-patterns` para testes
-- **SEMPRE use skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
+- **SEMPRE use skills** `no-workarounds` e `super.systematic-debugging` ao corrigir bugs/problemas complexos
 - **NUNCA use ferramentas** web para código local — use `sg` (busca estrutural TS/JS), Grep ou Glob. Prefira `sg` a `grep` para padrões de AST (decorators, chamadas com generics, shapes de objeto)
 
 <MOST_CRITICAL>
