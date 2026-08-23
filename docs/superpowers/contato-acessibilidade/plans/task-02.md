@@ -1,6 +1,6 @@
 # Task 2: Cards de contato focáveis (alvo de toque + foco visível)
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/contato-acessibilidade-design.md`
 **Tier:** standard

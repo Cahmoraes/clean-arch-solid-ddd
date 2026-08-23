@@ -1,6 +1,6 @@
 # Task 1: Indicador de obrigatoriedade + foco reforçado nos campos do formulário
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/contato-acessibilidade-design.md`
 **Tier:** standard
