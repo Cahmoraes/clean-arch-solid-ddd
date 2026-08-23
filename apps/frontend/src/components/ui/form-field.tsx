@@ -10,6 +10,7 @@ export interface FormFieldProps
 	label: ReactNode
 	error?: string | null
 	containerClassName?: string
+	showRequiredIndicator?: boolean
 }
 
 /**
@@ -18,16 +19,39 @@ export interface FormFieldProps
  * de auth (login, cadastro, alterar senha).
  */
 export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
-	({ id, label, error, containerClassName, ...inputProps }, ref) => {
+	(
+		{
+			id,
+			label,
+			error,
+			containerClassName,
+			showRequiredIndicator,
+			...inputProps
+		},
+		ref,
+	) => {
 		const errorId = error ? `${id}-error` : undefined
 		return (
 			<div className={cn("flex flex-col gap-2", containerClassName)}>
-				<label htmlFor={id} className="text-sm font-medium text-foreground">
+				<label
+					htmlFor={id}
+					className="inline-flex flex-col gap-1 text-sm font-medium text-foreground"
+				>
 					{label}
+					{showRequiredIndicator ? (
+						<>
+							<span className="sr-only">(obrigatório)</span>
+							<span
+								aria-hidden="true"
+								className="h-0.5 w-3.5 rounded-full bg-primary"
+							/>
+						</>
+					) : null}
 				</label>
 				<Input
 					ref={ref}
 					id={id}
+					aria-required={showRequiredIndicator || undefined}
 					aria-invalid={Boolean(error) || undefined}
 					aria-describedby={errorId}
 					{...inputProps}

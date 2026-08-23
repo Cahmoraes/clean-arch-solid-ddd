@@ -126,4 +126,40 @@ describe("ContactForm", () => {
 			"w-full",
 		)
 	})
+	test("indica os 3 campos obrigatórios via aria-required e texto para leitor de tela", () => {
+		const { Wrapper } = makeWrapper()
+		render(<ContactForm />, { wrapper: Wrapper })
+		expect(screen.getByLabelText(/nome/i)).toHaveAttribute(
+			"aria-required",
+			"true",
+		)
+		expect(screen.getByLabelText(/e-mail/i)).toHaveAttribute(
+			"aria-required",
+			"true",
+		)
+		expect(screen.getByLabelText(/mensagem/i)).toHaveAttribute(
+			"aria-required",
+			"true",
+		)
+		expect(screen.getAllByText("(obrigatório)")).toHaveLength(3)
+	})
+	test("reforça o anel de foco (contraste) nos campos e no botão", () => {
+		const { Wrapper } = makeWrapper()
+		render(<ContactForm />, { wrapper: Wrapper })
+		expect(screen.getByLabelText(/nome/i)).toHaveClass(
+			"focus-visible:ring-primary",
+		)
+		expect(screen.getByLabelText(/e-mail/i)).toHaveClass(
+			"focus-visible:ring-primary",
+		)
+		expect(screen.getByLabelText(/mensagem/i)).toHaveClass(
+			"focus-visible:ring-primary",
+		)
+		expect(screen.getByRole("button", { name: /enviar/i })).toHaveClass(
+			"focus-visible:ring-primary",
+		)
+		expect(screen.getByLabelText(/nome/i)).not.toHaveClass(
+			"focus-visible:ring-ring/50",
+		)
+	})
 })

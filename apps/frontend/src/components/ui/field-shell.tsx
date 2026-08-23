@@ -23,17 +23,31 @@ export function FieldShell({
 	id,
 	label,
 	error,
+	showRequiredIndicator,
 	children,
 }: {
 	id: string
 	label: ReactNode
 	error?: string | null
+	showRequiredIndicator?: boolean
 	children: ReactNode
 }) {
 	return (
 		<div className="flex flex-col gap-2">
-			<label htmlFor={id} className="text-sm font-medium text-foreground">
+			<label
+				htmlFor={id}
+				className="inline-flex flex-col gap-1 text-sm font-medium text-foreground"
+			>
 				{label}
+				{showRequiredIndicator ? (
+					<>
+						<span className="sr-only">(obrigatório)</span>
+						<span
+							aria-hidden="true"
+							className="h-0.5 w-3.5 rounded-full bg-primary"
+						/>
+					</>
+				) : null}
 			</label>
 			{children}
 			{error ? (
