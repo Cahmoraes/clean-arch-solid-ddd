@@ -142,6 +142,8 @@ describe("ContactForm", () => {
 			"true",
 		)
 		expect(screen.getAllByText("(obrigatório)")).toHaveLength(3)
+		expect(screen.queryByText("*")).not.toBeInTheDocument()
+		expect(screen.queryByText(/campos obrigatórios/i)).not.toBeInTheDocument()
 	})
 	test("reforça o anel de foco (contraste) nos campos e no botão", () => {
 		const { Wrapper } = makeWrapper()
