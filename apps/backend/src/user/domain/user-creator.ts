@@ -36,22 +36,18 @@ export class UserCreator {
 	> {
 		const authCheck = this.checkAuthMethod()
 		if (authCheck.isFailure()) return failure([authCheck.value])
-
 		const requiredFieldsCheck = this.validateNameAndEmail()
 		if (requiredFieldsCheck.isFailure()) {
 			return failure(requiredFieldsCheck.value)
 		}
-
 		const passwordResult = await this.validatePassword()
 		if (passwordResult?.isFailure()) {
 			return failure([passwordResult.value])
 		}
-
 		const googleIdResult = this.validateGoogleId()
 		if (googleIdResult?.isFailure()) {
 			return failure([googleIdResult.value])
 		}
-
 		return success(this.buildConstructorProps())
 	}
 
@@ -77,7 +73,6 @@ export class UserCreator {
 			if (emailResult.isFailure()) errors.push(emailResult.value)
 			return failure(errors)
 		}
-
 		this.name = nameResult.forceSuccess().value
 		this.email = emailResult.forceSuccess().value
 		return success(null)
