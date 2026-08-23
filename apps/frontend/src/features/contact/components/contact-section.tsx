@@ -23,7 +23,7 @@ export function ContactSection() {
 			</div>
 			<ContactForm />
 			<div className="mt-8 grid gap-4 sm:grid-cols-2">
-				<Card className="py-4">
+				<Card className="relative py-4 transition-colors hover:bg-muted/50">
 					<CardContent className="flex items-center gap-3">
 						<Mail className="size-4 shrink-0 text-accent" aria-hidden="true" />
 						<div>
@@ -32,14 +32,19 @@ export function ContactSection() {
 							</p>
 							<a
 								href={`mailto:${CONTACT_EMAIL}`}
-								className="text-sm font-medium text-foreground transition-colors hover:text-accent"
+								className="text-sm font-medium text-foreground after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-primary focus-visible:after:ring-offset-2"
 							>
 								{CONTACT_EMAIL}
 							</a>
 						</div>
 					</CardContent>
 				</Card>
-				<Card className="py-4">
+				<Card
+					tabIndex={0}
+					role="group"
+					aria-label="Resposta: Em até 24h"
+					className="py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+				>
 					<CardContent className="flex items-center gap-3">
 						<Clock className="size-4 shrink-0 text-accent" aria-hidden="true" />
 						<div>

@@ -26,4 +26,27 @@ describe("ContactSection", () => {
 		expect(emailLink.closest(".grid")).toHaveClass("sm:grid-cols-2")
 		expect(screen.getByText("Em até 24h")).toBeInTheDocument()
 	})
+
+	test("card de e-mail tem alvo de toque e foco cobrindo o card inteiro", () => {
+		renderWithProviders(<ContactSection />)
+		const emailLink = screen.getByRole("link", { name: CONTACT_EMAIL })
+		expect(emailLink).toHaveClass("after:absolute", "after:inset-0")
+		expect(emailLink).toHaveClass(
+			"focus-visible:after:ring-2",
+			"focus-visible:after:ring-primary",
+		)
+		expect(emailLink.closest('[data-slot="card"]')).toHaveClass("relative")
+	})
+
+	test("card 'Resposta' é alcançável por teclado com foco visível", () => {
+		renderWithProviders(<ContactSection />)
+		const responseCard = screen.getByRole("group", {
+			name: /resposta: em até 24h/i,
+		})
+		expect(responseCard.tabIndex).toBe(0)
+		expect(responseCard).toHaveClass(
+			"focus-visible:ring-2",
+			"focus-visible:ring-primary",
+		)
+	})
 })
