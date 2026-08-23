@@ -5,13 +5,13 @@
 - `lint:fix` tolerância zero. Zero problemas — qualquer issue Biome = falha bloqueante
 - **SEMPRE verifique APIs dos pacotes dependentes** antes de escrever código de integração/testes, evita código errado
 - **NUNCA use gambiarras** — use skill `no-workarounds` para correção/debug + `test-antipatterns` para testes
-- **SEMPRE use skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
+- **SEMPRE use skills** `no-workarounds` e `super.systematic-debugging` ao corrigir bugs/problemas complexos
 - **NUNCA use ferramentas** web para código local — use `sg` (padrões AST: decorators, generics, shapes), Grep ou Glob. Prefira `sg` a `grep` para buscas estruturais
 - **NUNCA FAÇA COMMITS sem permissão** — sempre pergunte
 
 ## REQUISITOS OBRIGATÓRIOS
 - DEVE rodar `pnpm lint:fix` antes de concluir QUALQUER subtarefa
-- SEMPRE USE skills `systematic-debugging` + `no-workarounds` antes de corrigir bug
+- SEMPRE USE skills `super.systematic-debugging` + `no-workarounds` antes de corrigir bug
 
 Pular verificação = REJEIÇÃO IMEDIATA DA TAREFA.
 

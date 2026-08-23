@@ -5,14 +5,12 @@
 - `biome:fix` tolerância zero. Zero problemas — qualquer issue Biome = falha bloqueante
 - **SEMPRE verifique APIs dos pacotes dependentes** antes de código de integração/testes, evita código errado
 - **NUNCA gambiarras** — skill `no-workarounds` p/ correção/debug + `testing-anti-patterns` p/ testes
-- **SEMPRE skills** `no-workarounds` e `systematic-debugging` ao corrigir bugs/problemas complexos
+- **SEMPRE skills** `no-workarounds` e `super.systematic-debugging` ao corrigir bugs/problemas complexos
 - **NUNCA ferramentas web** p/ código local — use `sg` (padrões AST: decorators, generics, shapes), Grep ou Glob. Prefira `sg` a `grep` para buscas estruturais
 - **NUNCA COMMITS sem permissão** — pergunte
 
 ## REQUISITOS OBRIGATÓRIOS
 - DEVE rodar `pnpm biome:fix` antes de concluir QUALQUER subtarefa
-- SEMPRE skills `systematic-debugging` + `no-workarounds` antes de corrigir bug
-
 Pular verificação = REJEIÇÃO IMEDIATA DA TAREFA.
 
 # Overview do Projeto
@@ -77,22 +75,6 @@ pnpm wait:rabbit                # Aguardar disponibilidade do RabbitMQ
 pnpm commit                     # Commit interativo com Commitizen (padrão convencional)
 pnpm "stripe webhook"           # Iniciar listener de webhook do Stripe
 ```
-
-## Skills Obrigatórias por Tipo de Tarefa
-
-| Tarefa | Skills Obrigatórias |
-|--------|-------------------|
-| Correção de bug / debug | `systematic-debugging` + `no-workarounds` |
-| Escrita/alteração de testes | `test-antipatterns` |
-| Criação de feature nova (domínio, use case, controller) | `brainstorming` (antes de implementar) |
-| Análise arquitetural / dead code / violações de camada | `improve-codebase-architecture` |
-| Consulta de docs de libs externas | `context7` |
-| Rebase e resolução de conflitos de merge | `git-rebase` |
-| Escrita/configuração de testes unitários e business-flow | `vitest` |
-| Validação de schemas (env, DTOs, inputs) | `zod` |
-| Fluxos de estado complexos com máquinas de estado | `xstate` |
-| Pesquisa na web por documentação e referências técnicas | `exa-web-search-free` |
-| Refatoração | `refactoring` |
 
 ## Arquitetura (Clean Architecture + DDD)
 Estrutura por bounded context em `src/{domain}/`:
