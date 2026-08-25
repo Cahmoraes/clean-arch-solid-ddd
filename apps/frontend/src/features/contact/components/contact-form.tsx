@@ -40,7 +40,7 @@ export function ContactForm() {
 					placeholder="Seu nome"
 					autoComplete="name"
 					showRequiredIndicator
-					className="focus-visible:ring-primary focus-visible:ring-offset-2"
+					className="focus-visible:ring-primary focus-visible:ring-offset-1"
 					{...register("nome")}
 					error={errors.nome?.message}
 				/>
@@ -51,7 +51,7 @@ export function ContactForm() {
 					placeholder="seu@email.com"
 					autoComplete="email"
 					showRequiredIndicator
-					className="focus-visible:ring-primary focus-visible:ring-offset-2"
+					className="focus-visible:ring-primary focus-visible:ring-offset-1"
 					{...register("email")}
 					error={errors.email?.message}
 				/>
@@ -71,7 +71,7 @@ export function ContactForm() {
 					aria-describedby={
 						errors.mensagem ? "contact-mensagem-error" : undefined
 					}
-					className="resize-none rounded-md border border-input bg-background px-4 py-2 text-base text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+					className="resize-none rounded-md border border-input bg-background px-4 py-2 text-base text-foreground placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
 					{...register("mensagem")}
 				/>
 			</FieldShell>
@@ -83,7 +83,7 @@ export function ContactForm() {
 			<Button
 				type="submit"
 				disabled={isPending}
-				className="mt-2 w-full focus-visible:ring-primary focus-visible:ring-offset-2"
+				className="mt-2 w-full focus-visible:ring-primary focus-visible:ring-offset-1"
 			>
 				{isPending ? "Enviando…" : "Enviar mensagem"}
 			</Button>
