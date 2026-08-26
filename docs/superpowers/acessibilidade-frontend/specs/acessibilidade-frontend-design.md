@@ -101,6 +101,14 @@ Precedente direto: `contato-acessibilidade` (QA PASS) já validou o padrão de i
 - **Justificativa de negócio:** mantém a identidade visual "clean" definida no redesign VOLT, evitando reabrir uma decisão visual já validada em produção (QA PASS).
 - **Trade-offs aceitos:** usuário sem contexto pode não reconhecer o traço isoladamente como "campo obrigatório" — risco aceito e registrado, não pendência.
 
+### D7. Contraste de borda de `input.tsx`/`checkbox.tsx` — reaproveitar token `--color-subtle`
+
+- **Contexto:** achado `1.4.11` (borda), não coberto por D2 nem por nenhum FR do PRD — `border-input` (`#e4e4dc` claro / `#2a2a2a` escuro) mede ~1.13-1.4:1 contra os fundos do app, abaixo do mínimo de 3:1; `border-strong` também não resolve (~1.33:1 claro).
+- **Decisão:** aplicar a utility `border-subtle` (gerada automaticamente pelo token `--color-subtle` já existente em `@theme`) diretamente em `input.tsx:13` e `checkbox.tsx:17`, em vez de alterar a variável global `--color-input`.
+- **Justificativa técnica:** `--color-subtle` (`#8a8a80` claro / `#6f6f68` escuro) já atinge ≥3:1 contra `bg-background` (3.07:1 claro / 3.96:1 escuro) e contra `bg-card`/superfícies (3.48:1 claro / 3.58:1 escuro), calculado por luminância relativa WCAG — nenhuma cor nova precisa ser criada.
+- **Justificativa de negócio:** reaproveita um token já validado no design system (mesmo espírito de D2 — evita introduzir uma segunda paleta) e mantém o raio de impacto restrito aos dois componentes citados no FR-003, sem alterar a borda de todo elemento que usa `border-input` na aplicação.
+- **Trade-offs aceitos:** nenhum — mudança aditiva e escopada; `--color-input` global permanece intocado.
+
 ## Riscos
 
 | Risco | Impacto (1-3) | Probabilidade (1-3) | Score | Mitigação |

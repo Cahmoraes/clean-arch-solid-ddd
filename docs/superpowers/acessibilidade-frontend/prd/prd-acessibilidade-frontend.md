@@ -35,6 +35,7 @@ Usuários que dependem de leitor de tela, navegação só por teclado, ou de uma
 
 **Indicador de foco consistente e com contraste adequado** — resolve a falha de contraste do anel de foco atual, hoje abaixo do mínimo em qualquer fundo claro do produto.
 - **FR-003** (US-02) — O indicador de foco global e os indicadores locais de botão, campo de texto e checkbox devem manter contraste ≥3:1 contra o fundo em que aparecem, em ambos os temas (claro e escuro).
+- **FR-011** (US-02) — A borda de campo de texto e checkbox deve manter contraste ≥3:1 contra o fundo em que aparece, em ambos os temas (ver design spec, decisão D7).
 
 **Navegação estrutural** — fecha os dois achados de camada de shell/design system deferidos por features anteriores.
 - **FR-004** (US-03) — Cada layout de shell da aplicação (área pública e área autenticada) deve expor um mecanismo de "pular para o conteúdo principal" que fica invisível até receber foco de teclado.
