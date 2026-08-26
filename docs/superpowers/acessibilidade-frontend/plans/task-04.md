@@ -1,6 +1,6 @@
 # Task 4: `gym-image-uploader` — rótulo associado ao input de imagem [FR-001]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

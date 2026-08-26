@@ -1,6 +1,6 @@
 # Task 5: `gym-cnpj-field` — indicador de obrigatoriedade acessível [FR-002]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

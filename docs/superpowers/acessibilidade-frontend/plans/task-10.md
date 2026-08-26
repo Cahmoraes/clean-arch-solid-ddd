@@ -1,6 +1,6 @@
 # Task 10: `authenticated-shell` — skip-link para o conteúdo principal [FR-004]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

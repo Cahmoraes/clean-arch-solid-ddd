@@ -1,6 +1,6 @@
 # Task 3: `PaginationLink` — `href` obrigatório + ícones decorativos ocultos [FR-007, FR-010]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

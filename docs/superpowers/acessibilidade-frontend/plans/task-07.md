@@ -1,6 +1,6 @@
 # Task 7: `details-edit-form` — indicador de obrigatoriedade + ícones decorativos ocultos [FR-002, FR-007]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** standard

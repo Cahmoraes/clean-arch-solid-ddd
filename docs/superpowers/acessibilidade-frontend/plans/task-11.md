@@ -1,6 +1,6 @@
 # Task 11: `segmented-control` — `aria-label` por item [FR-006]
 
-**Status:** PENDING
+**Status:** IN_PROGRESS
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap
