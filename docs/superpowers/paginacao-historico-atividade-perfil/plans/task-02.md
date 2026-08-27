@@ -1,6 +1,6 @@
 # Task 2: Publicar e gerar o contrato HTTP paginado [FR-001, FR-003, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-paginacao-historico-atividade-perfil.md`
 **Spec:** `../specs/paginacao-historico-atividade-perfil-design.md`
 **Tier:** standard
