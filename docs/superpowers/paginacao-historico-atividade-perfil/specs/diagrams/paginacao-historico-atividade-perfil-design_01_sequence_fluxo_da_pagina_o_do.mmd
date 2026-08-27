@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor User as Usuário
+    participant UI as ActivityTab + URL
+    participant API as GET /users/me/activity
+    participant UC as Listar histórico paginado
+    participant DAO as Consultar atividades paginadas
+    participant DB as PostgreSQL
+
+    User->>UI: Abre /perfil?tab=activity&page=N
+    UI->>API: GET page=N
+    API->>UC: page=N
+    UC->>DAO: page=N, pageSize=20
+    par Consultar página
+        DAO->>DB: findMany(skip, take, orderBy)
+    and Calcular total
+        DAO->>DB: count(where)
+    end
+    DB-->>DAO: Eventos e total
+    DAO-->>UC: events + pagination
+    UC-->>API: Resultado validado
+    API-->>UI: 200 { events, pagination }
+    UI-->>User: Lista e paginação numerada
