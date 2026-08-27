@@ -33,7 +33,7 @@ export function SearchBar({
 	...inputProps
 }: SearchBarProps) {
 	const baseClasses = cn(
-		"flex h-[52px] items-center gap-3 rounded-md border border-border bg-surface px-4 text-subtle",
+		"flex h-13 items-center gap-3 rounded-md border border-border bg-surface px-4 text-subtle focus-ring-duplo",
 		className,
 	)
 	const resolvedAriaLabel = resolveAriaLabel(ariaLabel, placeholder)
@@ -45,7 +45,7 @@ export function SearchBar({
 				onClick={onActivate}
 				aria-label="Buscar"
 				className={cn(
-					"flex h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-md border border-border bg-surface text-subtle",
+					"flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-md border border-border bg-surface text-subtle focus-ring-duplo",
 					className,
 				)}
 			>
@@ -62,7 +62,7 @@ export function SearchBar({
 				aria-label={resolvedAriaLabel}
 				className={cn(baseClasses, "cursor-pointer")}
 			>
-				<Search className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+				<Search className="h-4 w-4 shrink-0" aria-hidden="true" />
 				<span className="flex-1 truncate text-left text-[15px] text-subtle">
 					{placeholder}
 				</span>
@@ -77,12 +77,12 @@ export function SearchBar({
 
 	return (
 		<div className={baseClasses}>
-			<Search className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+			<Search className="h-4 w-4 shrink-0" aria-hidden="true" />
 			<input
 				type="search"
 				placeholder={placeholder}
 				aria-label={resolvedAriaLabel}
-				className="h-full flex-1 border-none bg-transparent text-[15px] text-foreground focus-ring-duplo placeholder:text-subtle"
+				className="h-full flex-1 border-none bg-transparent text-[15px] text-foreground placeholder:text-subtle outline-none focus-visible:outline-none focus-visible:shadow-none"
 				{...inputProps}
 			/>
 			{showShortcut && (

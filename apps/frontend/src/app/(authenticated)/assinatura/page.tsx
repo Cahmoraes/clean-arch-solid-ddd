@@ -119,7 +119,7 @@ function PlanCard({
 				className="sr-only"
 			/>
 			{selected ? (
-				<span className="absolute right-[18px] top-[18px] rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
+				<span className="absolute right-4.5 top-4.5 rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
 					Plano atual
 				</span>
 			) : null}
@@ -157,7 +157,7 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 		<section
 			data-testid="subscription-confirmation"
 			aria-live="polite"
-			className="flex flex-col gap-3 rounded-[16px] border border-primary bg-card p-5"
+			className="flex flex-col gap-3 rounded-2xl border border-primary bg-card p-5"
 		>
 			<div className="flex items-center gap-2">
 				<BadgeCheck className="h-5 w-5 text-foreground" aria-hidden="true" />

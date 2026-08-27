@@ -73,8 +73,11 @@ describe("SearchBar", () => {
 		).toBeInTheDocument()
 	})
 
-	test("reforça o anel de foco duplo no input cru", () => {
+	test("reforça o anel de foco duplo no wrapper e remove do input cru (cobre ícone junto)", () => {
 		render(<SearchBar placeholder="Buscar..." />)
-		expect(screen.getByRole("searchbox")).toHaveClass("focus-ring-duplo")
+		const input = screen.getByRole("searchbox")
+		expect(input).not.toHaveClass("focus-ring-duplo")
+		expect(input).toHaveClass("outline-none")
+		expect(input.parentElement).toHaveClass("focus-ring-duplo")
 	})
 })

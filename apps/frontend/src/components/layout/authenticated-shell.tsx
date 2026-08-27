@@ -99,7 +99,7 @@ function SidebarNavItem({
 					: "text-sidebar-muted hover:bg-white/5 hover:text-sidebar-foreground",
 			)}
 		>
-			<Icon className="h-[18px] w-[18px] flex-shrink-0" aria-hidden="true" />
+			<Icon className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
 			<span className={cn("flex-1 max-[860px]:hidden", collapsed && "hidden")}>
 				{item.label}
 			</span>
@@ -189,15 +189,12 @@ export function AuthenticatedShell({
 						aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
 						aria-expanded={!collapsed}
 						aria-controls="sidebar-nav"
-						className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-white/5 hover:text-sidebar-foreground"
+						className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-white/5 hover:text-sidebar-foreground"
 					>
 						{collapsed ? (
-							<PanelLeftOpen className="h-[18px] w-[18px]" aria-hidden="true" />
+							<PanelLeftOpen className="h-4.5 w-4.5" aria-hidden="true" />
 						) : (
-							<PanelLeftClose
-								className="h-[18px] w-[18px]"
-								aria-hidden="true"
-							/>
+							<PanelLeftClose className="h-4.5 w-4.5" aria-hidden="true" />
 						)}
 					</button>
 				</div>
@@ -255,10 +252,7 @@ export function AuthenticatedShell({
 								collapsed && "justify-center",
 							)}
 						>
-							<LogOut
-								className="h-[18px] w-[18px] flex-shrink-0"
-								aria-hidden="true"
-							/>
+							<LogOut className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
 							<span className={cn("max-[860px]:hidden", collapsed && "hidden")}>
 								Sair
 							</span>
@@ -298,7 +292,7 @@ export function AuthenticatedShell({
 						showShortcut
 						placeholder="Buscar..."
 						aria-label="Buscar"
-						className="max-w-[460px] flex-1 max-[560px]:hidden"
+						className="max-w-115 flex-1 max-[560px]:hidden"
 						onActivate={() => setIsCommandPaletteOpen(true)}
 					/>
 					<SearchBar
@@ -323,7 +317,7 @@ export function AuthenticatedShell({
 				/>
 
 				<main id="main-content" className="flex-1 overflow-y-auto">
-					<div className="route-fade mx-auto max-w-[1180px] px-8 pb-20 pt-9 max-[560px]:px-[18px]">
+					<div className="route-fade mx-auto max-w-295 px-8 pb-20 pt-9 max-[560px]:px-4.5">
 						{children}
 					</div>
 				</main>

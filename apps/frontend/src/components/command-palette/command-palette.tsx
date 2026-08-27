@@ -30,13 +30,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 			<Portal>
 				<Overlay className="fixed inset-0 z-40 bg-black/60" />
 				<Content
-					className="fixed left-1/2 top-[15vh] z-50 w-[calc(100vw-2rem)] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-popover shadow-pop focus-ring-duplo"
+					className="fixed left-1/2 top-[15vh] z-50 w-[calc(100vw-2rem)] max-w-140 -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-popover shadow-pop focus-ring-duplo"
 					aria-describedby={undefined}
 				>
 					<Title className="sr-only">Paleta de comandos</Title>
 					<Command
 						shouldFilter={false}
-						className="flex flex-col font-mono [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-subtle"
+						className="flex flex-col font-mono **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:pb-1 **:[[cmdk-group-heading]]:pt-3 **:[[cmdk-group-heading]]:text-[10px] **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-widest **:[[cmdk-group-heading]]:text-subtle"
 					>
 						<div className="flex items-center gap-3 border-b border-border px-4">
 							<Search
@@ -47,10 +47,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 								value={query}
 								onValueChange={setQuery}
 								placeholder="Buscar páginas, academias, usuários..."
-								className="flex h-12 w-full bg-transparent py-3 text-sm text-foreground placeholder:text-subtle focus-ring-duplo"
+								className="flex h-12 w-full bg-transparent py-3 text-sm text-foreground placeholder:text-subtle outline-none focus-visible:outline-none focus-visible:shadow-none"
 							/>
 						</div>
-						<Command.List className="max-h-[400px] overflow-y-auto py-2">
+						<Command.List className="max-h-100 overflow-y-auto py-2">
 							<Command.Empty className="py-8 text-center text-sm text-subtle">
 								Nenhum resultado encontrado.
 							</Command.Empty>

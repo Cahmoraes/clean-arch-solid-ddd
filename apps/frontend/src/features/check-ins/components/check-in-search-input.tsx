@@ -19,7 +19,7 @@ export function CheckInSearchInput({
 	return (
 		<div
 			className={cn(
-				"relative flex w-full h-[52px] items-center rounded-md border border-border bg-surface px-4 gap-2",
+				"relative flex w-full h-13 items-center rounded-md border border-border bg-surface px-4 gap-2 focus-ring-duplo",
 				className,
 			)}
 		>
@@ -30,7 +30,7 @@ export function CheckInSearchInput({
 				onChange={(e) => onChange(e.target.value)}
 				placeholder={placeholder}
 				aria-label={label}
-				className="flex-1 bg-transparent text-foreground placeholder:text-subtle focus-ring-duplo text-sm"
+				className="flex-1 bg-transparent text-foreground placeholder:text-subtle text-sm outline-none focus-visible:outline-none focus-visible:shadow-none"
 			/>
 			{value && (
 				<button

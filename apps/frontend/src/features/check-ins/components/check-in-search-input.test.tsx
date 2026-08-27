@@ -88,7 +88,7 @@ describe("CheckInSearchInput", () => {
 		).toBeInTheDocument()
 	})
 
-	test("reforça o anel de foco (contraste) no input", () => {
+	test("reforça o anel de foco (contraste) no wrapper e remove do input (cobre ícone junto)", () => {
 		render(
 			<CheckInSearchInput
 				value=""
@@ -97,9 +97,12 @@ describe("CheckInSearchInput", () => {
 				label="Buscar check-in por academia"
 			/>,
 		)
-		expect(
-			screen.getByRole("textbox", { name: "Buscar check-in por academia" }),
-		).toHaveClass("focus-ring-duplo")
+		const input = screen.getByRole("textbox", {
+			name: "Buscar check-in por academia",
+		})
+		expect(input).not.toHaveClass("focus-ring-duplo")
+		expect(input).toHaveClass("outline-none")
+		expect(input.parentElement).toHaveClass("focus-ring-duplo")
 	})
 
 	test("botão limpar busca atinge o alvo mínimo de toque (24x24px)", () => {

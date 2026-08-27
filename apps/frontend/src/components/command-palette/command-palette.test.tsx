@@ -123,10 +123,12 @@ describe("CommandPalette", () => {
 		expect(screen.getByRole("dialog")).toHaveClass("focus-ring-duplo")
 	})
 
-	test("reforça o anel de foco duplo no campo de busca", () => {
+	test("não aplica anel de foco duplo no campo de busca (outline removido para wrapper arredondado)", () => {
 		renderWithProviders(<CommandPalette open={true} onOpenChange={vi.fn()} />)
-		expect(
-			screen.getByPlaceholderText("Buscar páginas, academias, usuários..."),
-		).toHaveClass("focus-ring-duplo")
+		const input = screen.getByPlaceholderText(
+			"Buscar páginas, academias, usuários...",
+		)
+		expect(input).not.toHaveClass("focus-ring-duplo")
+		expect(input).toHaveClass("outline-none")
 	})
 })

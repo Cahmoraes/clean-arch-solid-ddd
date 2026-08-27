@@ -34,7 +34,7 @@ function InlineBadge({ count, active }: { count: number; active: boolean }) {
 
 function FloatBadge({ count }: { count: number }) {
 	return (
-		<span className="pointer-events-none absolute -right-1 -top-2 min-w-[18px] rounded-full border border-background bg-primary px-1 py-0 text-center font-mono text-[10px] font-bold leading-[18px] text-primary-foreground">
+		<span className="pointer-events-none absolute -right-1 -top-2 min-w-4.5 rounded-full border border-background bg-primary px-1 py-0 text-center font-mono text-[10px] font-bold leading-4.5 text-primary-foreground">
 			{count}
 		</span>
 	)
