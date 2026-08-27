@@ -310,4 +310,47 @@ describe("ActivityTab", () => {
 		)
 		expect(screen.queryByTestId("activity-pagination")).not.toBeInTheDocument()
 	})
+
+	test("mantém resumo e pager quando página sem eventos tem total maior que zero", async () => {
+		const onPageChange = vi.fn()
+		const user = userEvent.setup()
+		render(
+			<ActivityTab
+				events={[]}
+				pagination={buildPagination({
+					page: 999,
+					total: 47,
+					totalPages: 3,
+				})}
+				onPageChange={onPageChange}
+			/>,
+		)
+
+		expect(
+			screen.getByText("Sem dados de atividade disponíveis"),
+		).toBeInTheDocument()
+		expect(screen.getByTestId("activity-summary")).toHaveTextContent(
+			"Exibindo 41–47 de 47 atividades",
+		)
+		expect(screen.getByTestId("activity-pagination")).toBeInTheDocument()
+
+		await user.click(screen.getByTestId("activity-page-3"))
+		expect(onPageChange).toHaveBeenCalledWith(3)
+	})
+
+	test("mantém estado vazio legítimo sem footer quando total é zero", () => {
+		render(
+			<ActivityTab
+				events={[]}
+				pagination={buildPagination({ total: 0, totalPages: 0 })}
+				onPageChange={vi.fn()}
+			/>,
+		)
+
+		expect(
+			screen.getByText("Sem dados de atividade disponíveis"),
+		).toBeInTheDocument()
+		expect(screen.queryByTestId("activity-summary")).not.toBeInTheDocument()
+		expect(screen.queryByTestId("activity-pagination")).not.toBeInTheDocument()
+	})
 })

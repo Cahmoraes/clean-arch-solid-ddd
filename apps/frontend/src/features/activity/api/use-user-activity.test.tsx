@@ -139,6 +139,22 @@ describe("useUserActivity", () => {
 		])
 	})
 
+	test("mantém chave administrativa estável e sem colisão com perfil", () => {
+		expect(userActivityQueryKey("user-1", 1)).toEqual([
+			"user-activity",
+			"admin",
+			"user-1",
+		])
+		expect(userActivityQueryKey("user-1", 2)).toEqual([
+			"user-activity",
+			"admin",
+			"user-1",
+		])
+		expect(userActivityQueryKey("me", 1)).not.toEqual(
+			userActivityQueryKey(undefined, 1),
+		)
+	})
+
 	test("usa página 1 por padrão na query key", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users/me/activity`, () =>

@@ -175,9 +175,13 @@ function ActivityPaginationFooter({
 	onPageChange?: (page: number) => void
 	isTransitioning: boolean
 }) {
-	const summaryStart = (pagination.page - 1) * pagination.pageSize + 1
+	const currentPage = Math.min(
+		Math.max(pagination.page, 1),
+		Math.max(pagination.totalPages, 1),
+	)
+	const summaryStart = (currentPage - 1) * pagination.pageSize + 1
 	const summaryEnd = Math.min(
-		pagination.page * pagination.pageSize,
+		currentPage * pagination.pageSize,
 		pagination.total,
 	)
 	const showPagination = pagination.totalPages > 1 && onPageChange
@@ -218,11 +222,20 @@ function ActivityTabContent({
 }) {
 	if (events.length === 0) {
 		return (
-			<EmptyState
-				icon={Activity}
-				title="Sem dados de atividade disponíveis"
-				description="O histórico de atividade deste usuário ainda não está disponível."
-			/>
+			<div className="flex flex-col gap-4">
+				<EmptyState
+					icon={Activity}
+					title="Sem dados de atividade disponíveis"
+					description="O histórico de atividade deste usuário ainda não está disponível."
+				/>
+				{pagination && pagination.total > 0 ? (
+					<ActivityPaginationFooter
+						pagination={pagination}
+						onPageChange={onPageChange}
+						isTransitioning={isTransitioning}
+					/>
+				) : null}
+			</div>
 		)
 	}
 

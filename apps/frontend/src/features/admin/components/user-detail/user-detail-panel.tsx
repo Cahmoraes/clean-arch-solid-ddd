@@ -106,7 +106,7 @@ function UserDetailTabs({
 			</TabsContent>
 			<TabsContent value="atividade">
 				<ActivityTab
-					events={activityEvents}
+					events={activityEvents?.events}
 					isLoading={isActivityLoading}
 					isError={isActivityError}
 				/>

@@ -20,7 +20,9 @@ export interface UserActivityQueryData {
 export const USER_ACTIVITY_QUERY_KEY = "user-activity" as const
 
 export function userActivityQueryKey(userId: string | undefined, page = 1) {
-	return [USER_ACTIVITY_QUERY_KEY, userId ?? "me", page] as const
+	return userId
+		? ([USER_ACTIVITY_QUERY_KEY, "admin", userId] as const)
+		: ([USER_ACTIVITY_QUERY_KEY, "me", page] as const)
 }
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {

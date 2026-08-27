@@ -29,6 +29,11 @@ vi.mock("@/features/profile/api", () => ({
 	useUpdateProfile: () => ({ mutate: vi.fn(), isPending: false }),
 }))
 
+vi.mock("next/navigation", () => ({
+	useRouter: vi.fn(() => ({ replace: vi.fn() })),
+	useSearchParams: vi.fn(() => new URLSearchParams()),
+}))
+
 import ProfilePage from "./page"
 
 describe("Perfil VOLT", () => {
