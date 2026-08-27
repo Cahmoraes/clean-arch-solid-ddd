@@ -1,13 +1,20 @@
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
-import { beforeEach, describe, expect, test } from "vitest"
+import { useRouter, useSearchParams } from "next/navigation"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import ProfilePage from "./page"
 
+vi.mock("next/navigation", () => ({
+	useRouter: vi.fn(),
+	useSearchParams: vi.fn(),
+}))
+
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
+const replaceMock = vi.fn()
 
 function buildMeResponse(overrides: Record<string, unknown> = {}) {
 	return {
@@ -62,6 +69,13 @@ function mockProfileApis({
 
 describe("ProfilePage", () => {
 	beforeEach(() => {
+		replaceMock.mockReset()
+		vi.mocked(useRouter).mockReturnValue({
+			replace: replaceMock,
+		} as unknown as ReturnType<typeof useRouter>)
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>,
+		)
 		mockProfileApis()
 	})
 
@@ -170,6 +184,17 @@ describe("ProfilePage", () => {
 })
 
 describe("ProfilePage — aba Atividade", () => {
+	beforeEach(() => {
+		replaceMock.mockReset()
+		vi.mocked(useRouter).mockReturnValue({
+			replace: replaceMock,
+		} as unknown as ReturnType<typeof useRouter>)
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>,
+		)
+		mockProfileApis()
+	})
+
 	test("não busca atividade até a aba ser aberta", async () => {
 		const user = userEvent.setup()
 		let activityCalled = false
@@ -299,5 +324,97 @@ describe("ProfilePage — aba Atividade", () => {
 		await user.click(screen.getByRole("tab", { name: "Atividade" }))
 
 		expect(screen.getByTestId("activity-tab-skeleton")).toBeInTheDocument()
+	})
+
+	test("lê página da URL, envia na requisição e atualiza somente page", async () => {
+		const user = userEvent.setup()
+		let requestedPage: string | null = null
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, ({ request }) => {
+				requestedPage = new URL(request.url).searchParams.get("page")
+				return HttpResponse.json(
+					{
+						events: [
+							{
+								id: "activity-page-2",
+								type: "LOGIN",
+								description: "Login da página 2",
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+						],
+						pagination: {
+							page: Number(requestedPage),
+							pageSize: 20,
+							total: 47,
+							totalPages: 3,
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("filter=all&page=2") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(await screen.findByText("Login da página 2")).toBeInTheDocument()
+		expect(requestedPage).toBe("2")
+		expect(screen.getByTestId("activity-page-2")).toHaveAttribute(
+			"aria-current",
+			"page",
+		)
+
+		await user.click(screen.getByTestId("activity-page-3"))
+
+		expect(replaceMock).toHaveBeenCalledWith("?filter=all&page=3")
+	})
+
+	test("normaliza página fora do intervalo para última página com atividades", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, () =>
+				HttpResponse.json(
+					{
+						events: [],
+						pagination: {
+							page: 999,
+							pageSize: 20,
+							total: 47,
+							totalPages: 3,
+						},
+					},
+					{ status: 200 },
+				),
+			),
+		)
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("page=999") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+
+		renderWithProviders(<ProfilePage />)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		await waitFor(() => {
+			expect(replaceMock).toHaveBeenCalledWith("?page=3")
+		})
+		expect(screen.getByTestId("activity-tab-skeleton")).toBeInTheDocument()
+		expect(
+			screen.queryByText("Sem dados de atividade disponíveis"),
+		).not.toBeInTheDocument()
 	})
 })

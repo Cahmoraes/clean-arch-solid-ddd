@@ -11,32 +11,26 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/cn"
-import type { UserActivityPagination } from "../api/use-user-activity"
+import type {
+	UserActivityEvent,
+	UserActivityEventType,
+	UserActivityPagination,
+} from "../api/use-user-activity"
 import { formatActivityGroupLabel, formatActivityTime } from "./activity-format"
 
 const ACTIVITY_SKELETON_KEYS = [0, 1, 2] as const
 
-export type UserActivityEventType =
-	| "LOGIN"
-	| "PASSWORD_CHANGED"
-	| "ACCOUNT_LOCKED"
-	| "GOOGLE_LINKED"
-	| "PROFILE_UPDATED"
-	| "ROLE_CHANGED"
-	| "STATUS_CHANGED"
-	| "CHECK_IN"
-
-export interface UserActivityEvent {
-	id: string
-	type: UserActivityEventType
-	description: string
-	occurredAt: string
-}
+export type {
+	UserActivityEvent,
+	UserActivityEventType,
+} from "../api/use-user-activity"
 
 export interface ActivityTabProps {
 	events?: UserActivityEvent[]
 	isLoading?: boolean
 	isError?: boolean
+	isFetching?: boolean
+	isPlaceholderData?: boolean
 	pagination?: UserActivityPagination
 	onPageChange?: (page: number) => void
 }
@@ -175,9 +169,11 @@ function ActivityTabError() {
 function ActivityPaginationFooter({
 	pagination,
 	onPageChange,
+	isTransitioning,
 }: {
 	pagination: UserActivityPagination
 	onPageChange?: (page: number) => void
+	isTransitioning: boolean
 }) {
 	const summaryStart = (pagination.page - 1) * pagination.pageSize + 1
 	const summaryEnd = Math.min(
@@ -190,6 +186,7 @@ function ActivityPaginationFooter({
 		<footer className="mt-2 flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
 			<span
 				data-testid="activity-summary"
+				aria-live="polite"
 				className="font-mono text-sm text-muted-foreground"
 			>
 				Exibindo {summaryStart}–{summaryEnd} de {pagination.total} atividades
@@ -200,6 +197,7 @@ function ActivityPaginationFooter({
 					totalPages={pagination.totalPages}
 					onChange={onPageChange}
 					testIdPrefix="activity"
+					disabled={isTransitioning}
 					className="mx-0 w-auto justify-start sm:justify-end"
 				/>
 			) : null}
@@ -211,10 +209,12 @@ function ActivityTabContent({
 	events,
 	pagination,
 	onPageChange,
+	isTransitioning,
 }: {
 	events: UserActivityEvent[]
 	pagination?: UserActivityPagination
 	onPageChange?: (page: number) => void
+	isTransitioning: boolean
 }) {
 	if (events.length === 0) {
 		return (
@@ -254,9 +254,31 @@ function ActivityTabContent({
 				<ActivityPaginationFooter
 					pagination={pagination}
 					onPageChange={onPageChange}
+					isTransitioning={isTransitioning}
 				/>
 			) : null}
 		</div>
+	)
+}
+
+function ActivityTabBody({
+	isLoading,
+	isError,
+	events,
+	pagination,
+	onPageChange,
+	isTransitioning,
+}: ActivityTabProps & { isTransitioning: boolean }) {
+	if (isLoading) return <ActivityTabSkeleton />
+	if (isError) return <ActivityTabError />
+
+	return (
+		<ActivityTabContent
+			events={events ?? []}
+			pagination={pagination}
+			onPageChange={onPageChange}
+			isTransitioning={isTransitioning}
+		/>
 	)
 }
 
@@ -264,17 +286,23 @@ export function ActivityTab({
 	events = [],
 	isLoading = false,
 	isError = false,
+	isFetching = false,
+	isPlaceholderData = false,
 	pagination,
 	onPageChange,
 }: ActivityTabProps) {
-	if (isLoading) return <ActivityTabSkeleton />
-	if (isError) return <ActivityTabError />
+	const isTransitioning = isFetching || isPlaceholderData
 
 	return (
-		<ActivityTabContent
-			events={events}
-			pagination={pagination}
-			onPageChange={onPageChange}
-		/>
+		<div data-testid="activity-tab" aria-busy={isTransitioning}>
+			<ActivityTabBody
+				isLoading={isLoading}
+				isError={isError}
+				events={events}
+				pagination={pagination}
+				onPageChange={onPageChange}
+				isTransitioning={isTransitioning}
+			/>
+		</div>
 	)
 }

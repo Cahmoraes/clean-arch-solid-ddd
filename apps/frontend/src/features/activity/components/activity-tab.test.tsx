@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, test } from "vitest"
+import userEvent from "@testing-library/user-event"
+import { describe, expect, test, vi } from "vitest"
 import { ActivityTab, type UserActivityEvent } from "./activity-tab"
 
 function buildEvent(
@@ -10,6 +11,23 @@ function buildEvent(
 		type: "LOGIN",
 		description: "Login realizado",
 		occurredAt: new Date().toISOString(),
+		...overrides,
+	}
+}
+
+function buildPagination(
+	overrides: Partial<{
+		page: number
+		pageSize: number
+		total: number
+		totalPages: number
+	}> = {},
+) {
+	return {
+		page: 1,
+		pageSize: 20,
+		total: 47,
+		totalPages: 3,
 		...overrides,
 	}
 }
@@ -198,5 +216,98 @@ describe("ActivityTab", () => {
 		expect(
 			screen.queryByText("Sem dados de atividade disponíveis"),
 		).not.toBeInTheDocument()
+	})
+
+	test("exibe resumo paginado e destaca página atual", () => {
+		render(
+			<ActivityTab
+				events={[buildEvent()]}
+				pagination={buildPagination({ page: 2 })}
+				onPageChange={vi.fn()}
+			/>,
+		)
+
+		expect(screen.getByTestId("activity-summary")).toHaveTextContent(
+			"Exibindo 21–40 de 47 atividades",
+		)
+		expect(screen.getByTestId("activity-page-2")).toHaveAttribute(
+			"aria-current",
+			"page",
+		)
+		expect(screen.getByTestId("activity-pagination")).toBeInTheDocument()
+	})
+
+	test("anuncia resumo e bloqueia pager durante transição", async () => {
+		const onPageChange = vi.fn()
+		const user = userEvent.setup()
+		render(
+			<ActivityTab
+				events={[buildEvent()]}
+				pagination={buildPagination()}
+				onPageChange={onPageChange}
+				isFetching
+			/>,
+		)
+
+		expect(screen.getByTestId("activity-summary")).toHaveAttribute(
+			"aria-live",
+			"polite",
+		)
+		expect(screen.getByTestId("activity-tab")).toHaveAttribute(
+			"aria-busy",
+			"true",
+		)
+		expect(screen.getByTestId("activity-page-2")).toHaveAttribute(
+			"aria-disabled",
+			"true",
+		)
+
+		await user.click(screen.getByTestId("activity-page-2"))
+		expect(onPageChange).not.toHaveBeenCalled()
+	})
+
+	test("atualiza página ao clicar no pager", async () => {
+		const onPageChange = vi.fn()
+		const user = userEvent.setup()
+		render(
+			<ActivityTab
+				events={[buildEvent()]}
+				pagination={buildPagination()}
+				onPageChange={onPageChange}
+			/>,
+		)
+
+		await user.click(screen.getByTestId("activity-page-3"))
+
+		expect(onPageChange).toHaveBeenCalledWith(3)
+	})
+
+	test("ajusta resumo para última página", () => {
+		render(
+			<ActivityTab
+				events={[buildEvent()]}
+				pagination={buildPagination({ page: 3 })}
+				onPageChange={vi.fn()}
+			/>,
+		)
+
+		expect(screen.getByTestId("activity-summary")).toHaveTextContent(
+			"Exibindo 41–47 de 47 atividades",
+		)
+	})
+
+	test("não exibe pager quando há apenas uma página", () => {
+		render(
+			<ActivityTab
+				events={[buildEvent()]}
+				pagination={buildPagination({ total: 20, totalPages: 1 })}
+				onPageChange={vi.fn()}
+			/>,
+		)
+
+		expect(screen.getByTestId("activity-summary")).toHaveTextContent(
+			"Exibindo 1–20 de 20 atividades",
+		)
+		expect(screen.queryByTestId("activity-pagination")).not.toBeInTheDocument()
 	})
 })

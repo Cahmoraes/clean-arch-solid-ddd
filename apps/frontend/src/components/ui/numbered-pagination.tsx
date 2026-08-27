@@ -22,6 +22,7 @@ interface NumberedPaginationProps {
 	totalPages: number
 	onChange: (page: number) => void
 	testIdPrefix: string
+	disabled?: boolean
 	className?: string
 }
 
@@ -30,21 +31,22 @@ export function NumberedPagination({
 	totalPages,
 	onChange,
 	testIdPrefix,
+	disabled = false,
 	className,
 }: NumberedPaginationProps) {
 	function handlePrev(event: MouseEvent) {
 		event.preventDefault()
-		if (page > 1) onChange(page - 1)
+		if (!disabled && page > 1) onChange(page - 1)
 	}
 
 	function handleNext(event: MouseEvent) {
 		event.preventDefault()
-		if (page < totalPages) onChange(page + 1)
+		if (!disabled && page < totalPages) onChange(page + 1)
 	}
 
 	function handleSelect(event: MouseEvent, target: number) {
 		event.preventDefault()
-		onChange(target)
+		if (!disabled) onChange(target)
 	}
 
 	return (
@@ -58,7 +60,8 @@ export function NumberedPagination({
 						href="#"
 						data-testid={`${testIdPrefix}-prev`}
 						className="h-8 w-8 text-sm"
-						aria-disabled={page <= 1}
+						aria-disabled={disabled || page <= 1}
+						tabIndex={disabled ? -1 : undefined}
 						onClick={handlePrev}
 					/>
 				</PaginationItem>
@@ -69,6 +72,8 @@ export function NumberedPagination({
 							data-testid={`${testIdPrefix}-page-${p}`}
 							className="h-8 w-8 text-sm"
 							isActive={p === page}
+							aria-disabled={disabled}
+							tabIndex={disabled ? -1 : undefined}
 							onClick={(event) => handleSelect(event, p)}
 						>
 							{p}
@@ -80,7 +85,8 @@ export function NumberedPagination({
 						href="#"
 						data-testid={`${testIdPrefix}-next`}
 						className="h-8 w-8 text-sm"
-						aria-disabled={page >= totalPages}
+						aria-disabled={disabled || page >= totalPages}
+						tabIndex={disabled ? -1 : undefined}
 						onClick={handleNext}
 					/>
 				</PaginationItem>

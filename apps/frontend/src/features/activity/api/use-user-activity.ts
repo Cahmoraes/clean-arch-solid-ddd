@@ -6,14 +6,21 @@ import { api } from "@/lib/api"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
 
 export type UserActivityResponse =
-	paths["/users/{userId}/activity"]["get"]["responses"][200]["content"]["application/json"]
+	paths["/users/me/activity"]["get"]["responses"][200]["content"]["application/json"]
 
 export type UserActivityEvent = UserActivityResponse["events"][number]
+export type UserActivityEventType = UserActivityEvent["type"]
+export type UserActivityPagination = UserActivityResponse["pagination"]
+
+export interface UserActivityQueryData {
+	events: UserActivityEvent[]
+	pagination?: UserActivityPagination
+}
 
 export const USER_ACTIVITY_QUERY_KEY = "user-activity" as const
 
-export function userActivityQueryKey(userId: string | undefined) {
-	return [USER_ACTIVITY_QUERY_KEY, userId ?? "me"] as const
+export function userActivityQueryKey(userId: string | undefined, page = 1) {
+	return [USER_ACTIVITY_QUERY_KEY, userId ?? "me", page] as const
 }
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {
@@ -23,25 +30,50 @@ function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 	return new ApiError(fallbackStatus, "network_error", message)
 }
 
+async function fetchAdminActivity(
+	userId: string,
+): Promise<UserActivityQueryData> {
+	const { data, error } = await api.GET("/users/{userId}/activity", {
+		params: { path: { userId } },
+	})
+	if (error || !data) throw toApiError(error)
+	return { events: data.events }
+}
+
+async function fetchMyActivity(page: number): Promise<UserActivityQueryData> {
+	const { data, error } = await api.GET("/users/me/activity", {
+		params: { query: { page } },
+	})
+	if (error || !data) throw toApiError(error)
+	return data
+}
+
+function fetchUserActivity(
+	userId: string | undefined,
+	page: number,
+): Promise<UserActivityQueryData> {
+	return userId ? fetchAdminActivity(userId) : fetchMyActivity(page)
+}
+
 export interface UseUserActivityOptions {
 	enabled?: boolean
+	page?: number
 }
 
 export function useUserActivity(
 	userId?: string,
 	options: UseUserActivityOptions = {},
-): UseQueryResult<UserActivityEvent[], ApiError> {
-	return useQuery<UserActivityEvent[], ApiError>({
-		queryKey: userActivityQueryKey(userId),
+): UseQueryResult<UserActivityQueryData, ApiError> {
+	const page = options.page ?? 1
+
+	return useQuery<UserActivityQueryData, ApiError>({
+		queryKey: userActivityQueryKey(userId, page),
 		enabled: options.enabled ?? true,
-		queryFn: async () => {
-			const { data, error } = userId
-				? await api.GET("/users/{userId}/activity", {
-						params: { path: { userId } },
-					})
-				: await api.GET("/users/me/activity")
-			if (error || !data) throw toApiError(error)
-			return data.events
-		},
+		placeholderData:
+			userId === undefined
+				? (previousData, previousQuery) =>
+						previousQuery?.queryKey[1] === "me" ? previousData : undefined
+				: undefined,
+		queryFn: () => fetchUserActivity(userId, page),
 	})
 }

@@ -1,11 +1,18 @@
 "use client"
 
 import { UserCircle } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
 import React from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { RoleBadge } from "@/components/ui/role-badge"
@@ -323,9 +330,13 @@ function ProfileCard({
 	)
 }
 
-export default function ProfilePage() {
+function ProfilePageContent() {
 	const [editOpen, setEditOpen] = React.useState(false)
 	const [activeTab, setActiveTab] = React.useState("overview")
+	const router = useRouter()
+	const searchParams = useSearchParams()
+	const parsedPage = Number(searchParams.get("page"))
+	const page = Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1
 	const {
 		data: me,
 		isLoading: meLoading,
@@ -340,12 +351,35 @@ export default function ProfilePage() {
 		refetch: metricsRefetch,
 	} = useMetrics()
 	const {
-		data: activityEvents,
+		data: activityData,
 		isLoading: isActivityLoading,
 		isError: isActivityError,
+		isFetching: isActivityFetching,
+		isPlaceholderData: isActivityPlaceholderData,
 	} = useUserActivity(undefined, {
 		enabled: activeTab === "atividade",
+		page,
 	})
+	const activityPageOutOfRange =
+		activeTab === "atividade" &&
+		activityData?.pagination !== undefined &&
+		activityData.pagination.total > 0 &&
+		activityData.pagination.totalPages > 0 &&
+		page > activityData.pagination.totalPages
+
+	React.useEffect(() => {
+		if (!activityPageOutOfRange || !activityData?.pagination) return
+
+		const params = new URLSearchParams(searchParams.toString())
+		params.set("page", String(activityData.pagination.totalPages))
+		router.replace(`?${params.toString()}`)
+	}, [activityData, activityPageOutOfRange, router, searchParams])
+
+	function handleActivityPageChange(nextPage: number) {
+		const params = new URLSearchParams(searchParams.toString())
+		params.set("page", String(nextPage))
+		router.replace(`?${params.toString()}`)
+	}
 
 	return (
 		<PageContainer width="default" className="gap-6">
@@ -387,12 +421,22 @@ export default function ProfilePage() {
 					/>
 				</TabsContent>
 				<TabsContent value="atividade">
-					<Card className="w-full">
+					<Card className="w-full gap-0 rounded-[22px]">
+						<CardHeader className="flex flex-row items-center justify-between gap-4 border-b border-border">
+							<CardTitle as="h2">Histórico de atividades</CardTitle>
+							<CardDescription className="font-mono text-xs">
+								20 / página
+							</CardDescription>
+						</CardHeader>
 						<CardContent>
 							<ActivityTab
-								events={activityEvents}
-								isLoading={isActivityLoading}
+								events={activityData?.events}
+								pagination={activityData?.pagination}
+								onPageChange={handleActivityPageChange}
+								isLoading={isActivityLoading || activityPageOutOfRange}
 								isError={isActivityError}
+								isFetching={isActivityFetching}
+								isPlaceholderData={isActivityPlaceholderData}
 							/>
 						</CardContent>
 					</Card>
@@ -408,5 +452,13 @@ export default function ProfilePage() {
 				/>
 			) : null}
 		</PageContainer>
+	)
+}
+
+export default function ProfilePage() {
+	return (
+		<React.Suspense fallback={null}>
+			<ProfilePageContent />
+		</React.Suspense>
 	)
 }
