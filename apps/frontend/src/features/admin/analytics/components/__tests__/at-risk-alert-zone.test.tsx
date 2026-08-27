@@ -93,4 +93,20 @@ describe("AtRiskAlertZone", () => {
 			container.querySelector('[data-testid="skeleton"]'),
 		).toBeInTheDocument()
 	})
+
+	test("oculta o ícone de 'academia saudável' de leitores de tela", () => {
+		const { container } = render(
+			<AtRiskAlertZone members={[]} isLoading={false} />,
+		)
+		const icon = container.querySelector("svg")
+		expect(icon).toHaveAttribute("aria-hidden", "true")
+	})
+
+	test("oculta o ícone de alerta de membros em risco de leitores de tela", () => {
+		const { container } = render(
+			<AtRiskAlertZone members={fourMembers} isLoading={false} />,
+		)
+		const icon = container.querySelector("svg")
+		expect(icon).toHaveAttribute("aria-hidden", "true")
+	})
 })

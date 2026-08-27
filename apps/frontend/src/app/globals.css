@@ -117,6 +117,16 @@
 	--color-sidebar-active-foreground: #0a0a0a;
 }
 
+@utility focus-ring-duplo {
+	&:focus-visible {
+		outline: 2px solid transparent;
+		outline-offset: 2px;
+		box-shadow:
+			0 0 0 3px var(--color-background),
+			0 0 0 6px var(--color-foreground);
+	}
+}
+
 @layer base {
 	*,
 	*::before,
@@ -136,7 +146,7 @@
 		background-color: var(--color-background);
 		color: var(--color-foreground);
 		font-family: var(--font-sans);
-		font-size: 15px;
+		font-size: 0.9375rem;
 		line-height: 1.5;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
@@ -175,8 +185,11 @@
 	}
 
 	*:focus-visible {
-		outline: 2px solid color-mix(in srgb, var(--color-ring) 55%, transparent);
+		outline: 2px solid transparent;
 		outline-offset: 2px;
+		box-shadow:
+			0 0 0 3px var(--color-background),
+			0 0 0 6px var(--color-foreground);
 	}
 }
 

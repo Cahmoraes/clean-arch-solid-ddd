@@ -54,14 +54,14 @@ function renderForm(
 describe("DetailsEditForm", () => {
 	test("renderiza inputs de nome e email quando canEditProfile é true", () => {
 		renderForm()
-		expect(screen.getByLabelText("Nome")).toHaveValue("Maria")
-		expect(screen.getByLabelText("E-mail")).toHaveValue("maria@test.com")
+		expect(screen.getByLabelText(/nome/i)).toHaveValue("Maria")
+		expect(screen.getByLabelText(/e-mail/i)).toHaveValue("maria@test.com")
 	})
 
 	test("oculta campos de nome e email quando canEditProfile é false", () => {
 		renderForm(buildUser(), { ...allPermissions, canEditProfile: false })
-		expect(screen.queryByLabelText("Nome")).not.toBeInTheDocument()
-		expect(screen.queryByLabelText("E-mail")).not.toBeInTheDocument()
+		expect(screen.queryByLabelText(/nome/i)).not.toBeInTheDocument()
+		expect(screen.queryByLabelText(/e-mail/i)).not.toBeInTheDocument()
 	})
 
 	test("renderiza select de status quando canChangeStatus é true", () => {
@@ -94,8 +94,8 @@ describe("DetailsEditForm", () => {
 	test("botão Salvar fica habilitado ao alterar o nome", async () => {
 		const user = userEvent.setup()
 		renderForm()
-		await user.clear(screen.getByLabelText("Nome"))
-		await user.type(screen.getByLabelText("Nome"), "Novo Nome")
+		await user.clear(screen.getByLabelText(/nome/i))
+		await user.type(screen.getByLabelText(/nome/i), "Novo Nome")
 		expect(
 			screen.getByRole("button", { name: "Salvar alterações" }),
 		).toBeEnabled()
@@ -123,8 +123,8 @@ describe("DetailsEditForm", () => {
 
 		renderForm(buildUser(), allPermissions, vi.fn(), onSaved)
 
-		await user.clear(screen.getByLabelText("Nome"))
-		await user.type(screen.getByLabelText("Nome"), "Maria Editada")
+		await user.clear(screen.getByLabelText(/nome/i))
+		await user.type(screen.getByLabelText(/nome/i), "Maria Editada")
 		await user.click(screen.getByRole("button", { name: "Salvar alterações" }))
 
 		await waitFor(() => {
@@ -144,8 +144,8 @@ describe("DetailsEditForm", () => {
 
 		renderForm()
 
-		await user.clear(screen.getByLabelText("Nome"))
-		await user.type(screen.getByLabelText("Nome"), "Outro Nome")
+		await user.clear(screen.getByLabelText(/nome/i))
+		await user.type(screen.getByLabelText(/nome/i), "Outro Nome")
 		await user.click(screen.getByRole("button", { name: "Salvar alterações" }))
 
 		await waitFor(() => {
@@ -221,5 +221,31 @@ describe("DetailsEditForm", () => {
 		const roleSelect = screen.getByLabelText("Permissão")
 		expect(roleSelect).toHaveClass("appearance-none")
 		expect(roleSelect.parentElement?.querySelector("svg")).toBeInTheDocument()
+	})
+
+	test("indica os campos Nome e E-mail como obrigatórios via aria-required e texto para leitor de tela", () => {
+		renderForm()
+		expect(screen.getByLabelText(/nome/i)).toHaveAttribute(
+			"aria-required",
+			"true",
+		)
+		expect(screen.getByLabelText(/e-mail/i)).toHaveAttribute(
+			"aria-required",
+			"true",
+		)
+		expect(screen.getAllByText("(obrigatório)")).toHaveLength(2)
+		expect(screen.queryByText("*")).not.toBeInTheDocument()
+	})
+
+	test("ícones decorativos dos selects de Status e Permissão ficam ocultos de leitores de tela", () => {
+		renderForm()
+		const statusIcon = screen
+			.getByLabelText("Status")
+			.parentElement?.querySelector("svg")
+		const roleIcon = screen
+			.getByLabelText("Permissão")
+			.parentElement?.querySelector("svg")
+		expect(statusIcon).toHaveAttribute("aria-hidden", "true")
+		expect(roleIcon).toHaveAttribute("aria-hidden", "true")
 	})
 })

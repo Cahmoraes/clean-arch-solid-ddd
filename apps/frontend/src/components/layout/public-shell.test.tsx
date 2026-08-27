@@ -58,3 +58,18 @@ describe("PublicShell — marca VOLT", () => {
 		expect(screen.queryByText(/GymPass/i)).not.toBeInTheDocument()
 	})
 })
+
+describe("PublicShell — acessibilidade", () => {
+	test("exibe skip-link para o conteúdo principal", () => {
+		const { container } = render(
+			<PublicShell>
+				<p>conteúdo</p>
+			</PublicShell>,
+		)
+		const skipLink = screen.getByRole("link", {
+			name: "Pular para o conteúdo principal",
+		})
+		expect(skipLink).toHaveAttribute("href", "#main-content")
+		expect(container.querySelector("#main-content")).toBeInTheDocument()
+	})
+})

@@ -44,7 +44,7 @@ PaginationItem.displayName = "PaginationItem"
 type PaginationLinkProps = {
 	isActive?: boolean
 } & Pick<ButtonProps, "size"> &
-	AnchorHTMLAttributes<HTMLAnchorElement>
+	Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & { href: string }
 
 function PaginationLink({
 	className,
@@ -78,7 +78,7 @@ function PaginationPrevious({
 			className={cn("", className)}
 			{...props}
 		>
-			<ChevronLeft className="h-4 w-4" />
+			<ChevronLeft className="h-4 w-4" aria-hidden="true" />
 		</PaginationLink>
 	)
 }
@@ -94,7 +94,7 @@ function PaginationNext({
 			className={cn("", className)}
 			{...props}
 		>
-			<ChevronRight className="h-4 w-4" />
+			<ChevronRight className="h-4 w-4" aria-hidden="true" />
 		</PaginationLink>
 	)
 }

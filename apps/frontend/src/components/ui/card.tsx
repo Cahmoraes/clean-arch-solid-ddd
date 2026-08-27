@@ -1,4 +1,5 @@
 import type * as React from "react"
+import { createElement } from "react"
 
 import { cn } from "@/lib/cn"
 
@@ -28,14 +29,17 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
 	)
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
-	return (
-		<div
-			data-slot="card-title"
-			className={cn("leading-none font-semibold", className)}
-			{...props}
-		/>
-	)
+type CardTitleProps = {
+	as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+} & Omit<React.ComponentProps<"div">, "as">
+
+function CardTitle({ as, className, ...props }: CardTitleProps) {
+	const Component = as ?? "h3"
+	return createElement(Component, {
+		"data-slot": "card-title",
+		className: cn("leading-none font-semibold", className),
+		...props,
+	})
 }
 
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {

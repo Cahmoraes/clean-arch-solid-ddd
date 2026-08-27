@@ -70,4 +70,11 @@ describe("GymImageUploader", () => {
 		)
 		expect(onCropped).not.toHaveBeenCalled()
 	})
+
+	test("associa o rótulo ao input de arquivo via label/htmlFor", () => {
+		renderWithProviders(<GymImageUploader onCropped={vi.fn()} />)
+		expect(screen.getByLabelText(/imagem da academia/i)).toBe(
+			screen.getByTestId("gym-image-input"),
+		)
+	})
 })

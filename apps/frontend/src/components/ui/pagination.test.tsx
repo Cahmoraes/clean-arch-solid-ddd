@@ -14,6 +14,13 @@ describe("PaginationPrevious", () => {
 			screen.getByRole("link", { name: "Go to previous page" }),
 		).toBeInTheDocument()
 	})
+
+	test("oculta o ícone decorativo de leitores de tela e preserva o href", () => {
+		render(<PaginationPrevious href="/page/1" />)
+		const link = screen.getByRole("link", { name: "Go to previous page" })
+		expect(link.querySelector("svg")).toHaveAttribute("aria-hidden", "true")
+		expect(link).toHaveAttribute("href", "/page/1")
+	})
 })
 
 describe("PaginationNext", () => {
@@ -27,5 +34,12 @@ describe("PaginationNext", () => {
 		expect(
 			screen.getByRole("link", { name: "Go to next page" }),
 		).toBeInTheDocument()
+	})
+
+	test("oculta o ícone decorativo de leitores de tela e preserva o href", () => {
+		render(<PaginationNext href="/page/2" />)
+		const link = screen.getByRole("link", { name: "Go to next page" })
+		expect(link.querySelector("svg")).toHaveAttribute("aria-hidden", "true")
+		expect(link).toHaveAttribute("href", "/page/2")
 	})
 })

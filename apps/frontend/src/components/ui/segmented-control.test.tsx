@@ -56,4 +56,23 @@ describe("SegmentedControl", () => {
 		)
 		expect(screen.getByTestId("icon-cards")).toBeInTheDocument()
 	})
+	test("aplica aria-label individual no botão quando o item define ariaLabel", () => {
+		render(
+			<SegmentedControl
+				items={[
+					{
+						value: "cards",
+						label: <LayoutGrid data-testid="icon-cards" />,
+						ariaLabel: "Ver como cards",
+					},
+					{ value: "rows", label: "Linhas" },
+				]}
+				value="cards"
+				onValueChange={vi.fn()}
+			/>,
+		)
+		expect(
+			screen.getByRole("button", { name: "Ver como cards" }),
+		).toBeInTheDocument()
+	})
 })

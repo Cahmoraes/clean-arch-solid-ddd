@@ -135,8 +135,8 @@ describe("UserDetailPanel", () => {
 			screen.getByRole("button", { name: /editar dados/i }),
 		)
 
-		expect(screen.getByLabelText("Nome")).toBeInTheDocument()
-		expect(screen.getByLabelText("E-mail")).toBeInTheDocument()
+		expect(screen.getByLabelText(/nome/i)).toBeInTheDocument()
+		expect(screen.getByLabelText(/e-mail/i)).toBeInTheDocument()
 	})
 
 	test("busca o histórico de atividade ao abrir a aba Atividade e exibe o evento retornado", async () => {

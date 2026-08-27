@@ -25,11 +25,13 @@ export function GymCnpjField({
 	testId,
 }: GymCnpjFieldProps) {
 	return (
-		<FieldShell id={id} label="CNPJ" error={error}>
+		<FieldShell id={id} label="CNPJ" error={error} showRequiredIndicator>
 			<IMaskInput
 				id={id}
 				mask="00.000.000/0000-00"
 				unmask
+				required
+				aria-required="true"
 				value={value}
 				onAccept={onAccept}
 				onBlur={onBlur}

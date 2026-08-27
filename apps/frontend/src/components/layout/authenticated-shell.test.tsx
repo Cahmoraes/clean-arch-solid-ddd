@@ -178,3 +178,19 @@ describe("AuthenticatedShell — recolher/expandir", () => {
 		expect(useSidebarCollapseStore.getState().collapsed).toBe(false)
 	})
 })
+
+describe("AuthenticatedShell — skip-link", () => {
+	test("exibe skip-link para o conteúdo principal", () => {
+		setRole("MEMBER")
+		const { container } = renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		const skipLink = screen.getByRole("link", {
+			name: "Pular para o conteúdo principal",
+		})
+		expect(skipLink).toHaveAttribute("href", "#main-content")
+		expect(container.querySelector("#main-content")).toBeInTheDocument()
+	})
+})

@@ -17,6 +17,12 @@ export function PublicShell({ children, className }: PublicShellProps) {
 				className,
 			)}
 		>
+			<a
+				href="#main-content"
+				className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-accent-foreground"
+			>
+				Pular para o conteúdo principal
+			</a>
 			<header className="border-b border-border bg-background">
 				<div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
 					<Link href="/" aria-label="Página inicial VOLT">
@@ -47,7 +53,9 @@ export function PublicShell({ children, className }: PublicShellProps) {
 					</nav>
 				</div>
 			</header>
-			<main className="flex-1">{children}</main>
+			<main id="main-content" className="flex-1">
+				{children}
+			</main>
 			<footer className="border-t border-border">
 				<div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-1 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
 					<span>© {new Date().getFullYear()} VOLT</span>

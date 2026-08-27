@@ -117,12 +117,15 @@ function ProfileFields({
 					className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground"
 				>
 					Nome
+					<span className="sr-only">(obrigatório)</span>
 				</label>
 				<Input
 					id="edit-name"
 					value={name}
 					onChange={(e) => onNameChange(e.target.value)}
 					disabled={isPending}
+					required
+					aria-required="true"
 				/>
 			</div>
 			<div className="flex flex-col gap-1.5">
@@ -131,6 +134,7 @@ function ProfileFields({
 					className="text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground"
 				>
 					E-mail
+					<span className="sr-only">(obrigatório)</span>
 				</label>
 				<Input
 					id="edit-email"
@@ -138,6 +142,8 @@ function ProfileFields({
 					value={email}
 					onChange={(e) => onEmailChange(e.target.value)}
 					disabled={isPending}
+					required
+					aria-required="true"
 				/>
 			</div>
 		</div>
@@ -172,7 +178,10 @@ function StatusField({
 					<option value="activated">Ativo</option>
 					<option value="suspended">Inativo</option>
 				</select>
-				<ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+				<ChevronDown
+					className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+					aria-hidden="true"
+				/>
 			</div>
 		</div>
 	)
@@ -206,7 +215,10 @@ function RoleField({
 					<option value="MEMBER">Membro</option>
 					<option value="ADMIN">Admin</option>
 				</select>
-				<ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+				<ChevronDown
+					className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+					aria-hidden="true"
+				/>
 			</div>
 		</div>
 	)

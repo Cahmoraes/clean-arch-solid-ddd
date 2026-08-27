@@ -78,7 +78,10 @@ export function EditProfileModal({
 
 				<form onSubmit={handleSubmit} className="flex flex-col gap-5">
 					<div className="flex flex-col gap-2">
-						<Label htmlFor="profile-name">Nome</Label>
+						<Label htmlFor="profile-name">
+							Nome
+							<span className="sr-only">(obrigatório)</span>
+						</Label>
 						<Input
 							id="profile-name"
 							data-testid="edit-profile-name-input"
@@ -92,6 +95,8 @@ export function EditProfileModal({
 							disabled={isPending}
 							autoComplete="name"
 							autoFocus
+							required
+							aria-required="true"
 							aria-invalid={Boolean(nameError) || undefined}
 							aria-describedby={nameError ? "profile-name-error" : undefined}
 						/>

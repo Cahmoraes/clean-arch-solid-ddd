@@ -59,7 +59,10 @@ export function AtRiskAlertZone({ members, isLoading }: AtRiskAlertZoneProps) {
 	if (members.length === 0) {
 		return (
 			<div className="flex items-center gap-3 rounded border border-success/25 bg-success-soft px-5 py-3">
-				<CheckCircle2 className="size-4 shrink-0 text-primary" />
+				<CheckCircle2
+					aria-hidden="true"
+					className="size-4 shrink-0 text-primary"
+				/>
 				<div>
 					<p className="font-semibold text-primary">Academia saudável</p>
 					<p className="text-xs text-muted-foreground">
@@ -76,7 +79,10 @@ export function AtRiskAlertZone({ members, isLoading }: AtRiskAlertZoneProps) {
 	return (
 		<div className="rounded border border-warning/25 bg-warning-soft px-5 py-4">
 			<div className="flex items-center gap-2">
-				<AlertTriangle className="size-4 shrink-0 text-warning" />
+				<AlertTriangle
+					aria-hidden="true"
+					className="size-4 shrink-0 text-warning"
+				/>
 				<span className="font-bold text-warning">
 					{members.length}{" "}
 					{members.length === 1 ? "membro em risco" : "membros em risco"} de

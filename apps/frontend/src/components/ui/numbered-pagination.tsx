@@ -55,6 +55,7 @@ export function NumberedPagination({
 			<PaginationContent>
 				<PaginationItem>
 					<PaginationPrevious
+						href="#"
 						data-testid={`${testIdPrefix}-prev`}
 						aria-disabled={page <= 1}
 						onClick={handlePrev}
@@ -63,6 +64,7 @@ export function NumberedPagination({
 				{pageNumbers(page, totalPages).map((p) => (
 					<PaginationItem key={p}>
 						<PaginationLink
+							href="#"
 							data-testid={`${testIdPrefix}-page-${p}`}
 							isActive={p === page}
 							onClick={(event) => handleSelect(event, p)}
@@ -73,6 +75,7 @@ export function NumberedPagination({
 				))}
 				<PaginationItem>
 					<PaginationNext
+						href="#"
 						data-testid={`${testIdPrefix}-next`}
 						aria-disabled={page >= totalPages}
 						onClick={handleNext}

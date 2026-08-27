@@ -5,6 +5,7 @@ export interface SegmentedItem<T extends string = string> {
 	value: T
 	label: ReactNode
 	count?: number
+	ariaLabel?: string
 }
 
 export interface SegmentedControlProps<T extends string = string> {
@@ -62,6 +63,7 @@ export function SegmentedControl<T extends string = string>({
 						key={item.value}
 						type="button"
 						aria-pressed={active}
+						aria-label={item.ariaLabel}
 						onClick={() => onValueChange(item.value)}
 						className={cn(
 							"inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",

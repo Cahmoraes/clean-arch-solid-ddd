@@ -1,7 +1,7 @@
 "use client"
 
 import type { ChangeEvent } from "react"
-import { useCallback, useState } from "react"
+import { useCallback, useId, useState } from "react"
 import Cropper, { type Area } from "react-easy-crop"
 import { Button } from "@/components/ui/button"
 import { getCroppedBlob } from "@/features/gyms/lib/crop-image"
@@ -23,6 +23,7 @@ export function GymImageUploader({
 	const [area, setArea] = useState<Area | null>(null)
 	const [isProcessing, setIsProcessing] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const fileInputId = useId()
 
 	function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
 		const file = event.target.files?.[0]
@@ -65,8 +66,14 @@ export function GymImageUploader({
 
 	return (
 		<div className="flex flex-col gap-3">
-			<span className="text-sm font-medium text-foreground">{label}</span>
+			<label
+				htmlFor={fileInputId}
+				className="text-sm font-medium text-foreground"
+			>
+				{label}
+			</label>
 			<input
+				id={fileInputId}
 				type="file"
 				accept="image/*"
 				data-testid="gym-image-input"

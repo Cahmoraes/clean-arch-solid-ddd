@@ -161,6 +161,12 @@ export function AuthenticatedShell({
 				className,
 			)}
 		>
+			<a
+				href="#main-content"
+				className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-accent-foreground"
+			>
+				Pular para o conteúdo principal
+			</a>
 			<aside className="flex flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground max-[860px]:px-3">
 				<div
 					className={cn(
@@ -316,7 +322,7 @@ export function AuthenticatedShell({
 					onOpenChange={setIsCommandPaletteOpen}
 				/>
 
-				<main className="flex-1 overflow-y-auto">
+				<main id="main-content" className="flex-1 overflow-y-auto">
 					<div className="route-fade mx-auto max-w-[1180px] px-8 pb-20 pt-9 max-[560px]:px-[18px]">
 						{children}
 					</div>
