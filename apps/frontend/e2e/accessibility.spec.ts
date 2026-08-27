@@ -12,7 +12,9 @@ async function scan(page: Page, url: string): Promise<void> {
 		.getByTestId("auth-boot-skeleton")
 		.waitFor({ state: "hidden", timeout: 10_000 })
 		.catch(() => undefined)
-	await page.waitForLoadState("networkidle")
+	await page
+		.locator("#main-content")
+		.waitFor({ state: "visible", timeout: 10_000 })
 	const results = await new AxeBuilder({ page })
 		.withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
 		.analyze()
