@@ -57,6 +57,24 @@ function fetchUserActivity(
 	return userId ? fetchAdminActivity(userId) : fetchMyActivity(page)
 }
 
+function isOutOfRangePagination(
+	pagination: UserActivityPagination | undefined,
+): boolean {
+	if (!pagination || pagination.total <= 0 || pagination.totalPages <= 0) {
+		return false
+	}
+	return pagination.page < 1 || pagination.page > pagination.totalPages
+}
+
+function preserveMyActivityPlaceholder(
+	previousData: UserActivityQueryData | undefined,
+	previousQueryKey: readonly unknown[] | undefined,
+): UserActivityQueryData | undefined {
+	if (previousQueryKey?.[1] !== "me") return undefined
+	if (isOutOfRangePagination(previousData?.pagination)) return undefined
+	return previousData
+}
+
 export interface UseUserActivityOptions {
 	enabled?: boolean
 	page?: number
@@ -74,7 +92,7 @@ export function useUserActivity(
 		placeholderData:
 			userId === undefined
 				? (previousData, previousQuery) =>
-						previousQuery?.queryKey[1] === "me" ? previousData : undefined
+						preserveMyActivityPlaceholder(previousData, previousQuery?.queryKey)
 				: undefined,
 		queryFn: () => fetchUserActivity(userId, page),
 	})

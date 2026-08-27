@@ -197,7 +197,7 @@ function ActivityPaginationFooter({
 			</span>
 			{showPagination ? (
 				<NumberedPagination
-					page={pagination.page}
+					page={currentPage}
 					totalPages={pagination.totalPages}
 					onChange={onPageChange}
 					testIdPrefix="activity"

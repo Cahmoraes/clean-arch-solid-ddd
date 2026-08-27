@@ -119,6 +119,36 @@ describe("NumberedPagination", () => {
 		expect(page2).toHaveAttribute("aria-current", "page")
 	})
 
+	test("desabilita controles, remove foco e bloqueia navegação", async () => {
+		const onChange = vi.fn()
+		const user = userEvent.setup()
+		render(
+			<NumberedPagination
+				page={2}
+				totalPages={3}
+				onChange={onChange}
+				testIdPrefix="test"
+				disabled
+			/>,
+		)
+
+		const controls = [
+			screen.getByTestId("test-prev"),
+			screen.getByTestId("test-page-1"),
+			screen.getByTestId("test-page-2"),
+			screen.getByTestId("test-page-3"),
+			screen.getByTestId("test-next"),
+		]
+
+		for (const control of controls) {
+			expect(control).toHaveAttribute("aria-disabled", "true")
+			expect(control).toHaveAttribute("tabindex", "-1")
+			await user.click(control)
+		}
+
+		expect(onChange).not.toHaveBeenCalled()
+	})
+
 	test("mostra janela de máximo 5 páginas", () => {
 		render(
 			<NumberedPagination

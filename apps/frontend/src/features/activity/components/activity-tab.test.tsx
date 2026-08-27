@@ -333,6 +333,10 @@ describe("ActivityTab", () => {
 			"Exibindo 41–47 de 47 atividades",
 		)
 		expect(screen.getByTestId("activity-pagination")).toBeInTheDocument()
+		expect(screen.getByTestId("activity-page-3")).toHaveAttribute(
+			"aria-current",
+			"page",
+		)
 
 		await user.click(screen.getByTestId("activity-page-3"))
 		expect(onPageChange).toHaveBeenCalledWith(3)

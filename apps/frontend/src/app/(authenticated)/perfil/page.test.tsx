@@ -14,7 +14,20 @@ vi.mock("next/navigation", () => ({
 }))
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
-const replaceMock = vi.fn()
+let currentSearchParams = new URLSearchParams()
+let rerenderProfile: (() => void) | undefined
+const replaceMock = vi.fn((href: string) => {
+	const query = href.startsWith("?") ? href.slice(1) : href
+	currentSearchParams = new URLSearchParams(query)
+	const rerender = rerenderProfile
+	if (rerender) queueMicrotask(rerender)
+})
+
+function renderProfilePageWithStatefulSearchParams() {
+	const rendered = renderWithProviders(<ProfilePage />)
+	rerenderProfile = () => rendered.rerender(<ProfilePage />)
+	return rendered
+}
 
 function buildMeResponse(overrides: Record<string, unknown> = {}) {
 	return {
@@ -67,14 +80,42 @@ function mockProfileApis({
 	)
 }
 
+function activityResponseForPage(page: string) {
+	return HttpResponse.json(
+		{
+			events:
+				page === "3"
+					? [
+							{
+								id: "activity-page-3",
+								type: "LOGIN",
+								description: "Login da página 3",
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+						]
+					: [],
+			pagination: {
+				page: Number(page),
+				pageSize: 20,
+				total: 47,
+				totalPages: 3,
+			},
+		},
+		{ status: 200 },
+	)
+}
+
 describe("ProfilePage", () => {
 	beforeEach(() => {
-		replaceMock.mockReset()
+		replaceMock.mockClear()
+		currentSearchParams = new URLSearchParams()
+		rerenderProfile = undefined
 		vi.mocked(useRouter).mockReturnValue({
 			replace: replaceMock,
 		} as unknown as ReturnType<typeof useRouter>)
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>,
+		vi.mocked(useSearchParams).mockImplementation(
+			() =>
+				currentSearchParams as unknown as ReturnType<typeof useSearchParams>,
 		)
 		mockProfileApis()
 	})
@@ -185,12 +226,15 @@ describe("ProfilePage", () => {
 
 describe("ProfilePage — aba Atividade", () => {
 	beforeEach(() => {
-		replaceMock.mockReset()
+		replaceMock.mockClear()
+		currentSearchParams = new URLSearchParams()
+		rerenderProfile = undefined
 		vi.mocked(useRouter).mockReturnValue({
 			replace: replaceMock,
 		} as unknown as ReturnType<typeof useRouter>)
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>,
+		vi.mocked(useSearchParams).mockImplementation(
+			() =>
+				currentSearchParams as unknown as ReturnType<typeof useSearchParams>,
 		)
 		mockProfileApis()
 	})
@@ -328,17 +372,19 @@ describe("ProfilePage — aba Atividade", () => {
 
 	test("lê página da URL, envia na requisição e atualiza somente page", async () => {
 		const user = userEvent.setup()
-		let requestedPage: string | null = null
+		const requestedPages: string[] = []
 		server.use(
 			http.get(`${apiBaseUrl}/users/me/activity`, ({ request }) => {
-				requestedPage = new URL(request.url).searchParams.get("page")
+				const requestedPage =
+					new URL(request.url).searchParams.get("page") ?? ""
+				requestedPages.push(requestedPage)
 				return HttpResponse.json(
 					{
 						events: [
 							{
-								id: "activity-page-2",
+								id: `activity-page-${requestedPage}`,
 								type: "LOGIN",
-								description: "Login da página 2",
+								description: `Login da página ${requestedPage}`,
 								occurredAt: "2025-01-10T12:00:00.000Z",
 							},
 						],
@@ -353,13 +399,9 @@ describe("ProfilePage — aba Atividade", () => {
 				)
 			}),
 		)
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("filter=all&page=2") as unknown as ReturnType<
-				typeof useSearchParams
-			>,
-		)
+		currentSearchParams = new URLSearchParams("filter=all&page=2")
 
-		renderWithProviders(<ProfilePage />)
+		renderProfilePageWithStatefulSearchParams()
 
 		await waitFor(() => {
 			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
@@ -367,7 +409,7 @@ describe("ProfilePage — aba Atividade", () => {
 		await user.click(screen.getByRole("tab", { name: "Atividade" }))
 
 		expect(await screen.findByText("Login da página 2")).toBeInTheDocument()
-		expect(requestedPage).toBe("2")
+		expect(requestedPages).toEqual(["2"])
 		expect(screen.getByTestId("activity-page-2")).toHaveAttribute(
 			"aria-current",
 			"page",
@@ -376,33 +418,31 @@ describe("ProfilePage — aba Atividade", () => {
 		await user.click(screen.getByTestId("activity-page-3"))
 
 		expect(replaceMock).toHaveBeenCalledWith("?filter=all&page=3")
+		expect(await screen.findByText("Login da página 3")).toBeInTheDocument()
+		expect(requestedPages).toEqual(["2", "3"])
+		expect(screen.getByTestId("activity-page-3")).toHaveAttribute(
+			"aria-current",
+			"page",
+		)
 	})
 
 	test("normaliza página fora do intervalo para última página com atividades", async () => {
 		const user = userEvent.setup()
+		const requestedPages: string[] = []
 		server.use(
-			http.get(`${apiBaseUrl}/users/me/activity`, () =>
-				HttpResponse.json(
-					{
-						events: [],
-						pagination: {
-							page: 999,
-							pageSize: 20,
-							total: 47,
-							totalPages: 3,
-						},
-					},
-					{ status: 200 },
-				),
-			),
+			http.get(`${apiBaseUrl}/users/me/activity`, async ({ request }) => {
+				const requestedPage =
+					new URL(request.url).searchParams.get("page") ?? ""
+				requestedPages.push(requestedPage)
+				if (requestedPage === "3") {
+					await new Promise((resolve) => setTimeout(resolve, 50))
+				}
+				return activityResponseForPage(requestedPage)
+			}),
 		)
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("page=999") as unknown as ReturnType<
-				typeof useSearchParams
-			>,
-		)
+		currentSearchParams = new URLSearchParams("page=999")
 
-		renderWithProviders(<ProfilePage />)
+		renderProfilePageWithStatefulSearchParams()
 
 		await waitFor(() => {
 			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
@@ -412,9 +452,21 @@ describe("ProfilePage — aba Atividade", () => {
 		await waitFor(() => {
 			expect(replaceMock).toHaveBeenCalledWith("?page=3")
 		})
-		expect(screen.getByTestId("activity-tab-skeleton")).toBeInTheDocument()
+		await waitFor(() => {
+			expect(screen.getByTestId("activity-tab-skeleton")).toBeInTheDocument()
+			expect(
+				screen.queryByText("Sem dados de atividade disponíveis"),
+			).not.toBeInTheDocument()
+		})
+		expect(requestedPages).toEqual(["999", "3"])
+
+		expect(await screen.findByText("Login da página 3")).toBeInTheDocument()
 		expect(
 			screen.queryByText("Sem dados de atividade disponíveis"),
 		).not.toBeInTheDocument()
+		expect(screen.getByTestId("activity-page-3")).toHaveAttribute(
+			"aria-current",
+			"page",
+		)
 	})
 })

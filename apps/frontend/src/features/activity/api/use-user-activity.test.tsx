@@ -8,6 +8,31 @@ import { userActivityQueryKey, useUserActivity } from "./use-user-activity"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
+function activityResponseForPage(page: string) {
+	return HttpResponse.json(
+		{
+			events:
+				page === "3"
+					? [
+							{
+								id: "activity-page-3",
+								type: "LOGIN",
+								description: "Login da página 3",
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+						]
+					: [],
+			pagination: {
+				page: Number(page),
+				pageSize: 20,
+				total: 47,
+				totalPages: 3,
+			},
+		},
+		{ status: 200 },
+	)
+}
+
 function wrapper(): (props: { children: ReactNode }) => React.JSX.Element {
 	const queryClient = new QueryClient({
 		defaultOptions: {
@@ -175,6 +200,38 @@ describe("useUserActivity", () => {
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
 		expect(result.current.data?.events).toEqual([])
 		expect(userActivityQueryKey(undefined)).toEqual(["user-activity", "me", 1])
+	})
+
+	test("descarta placeholder de página inválida durante recuperação", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, async ({ request }) => {
+				const page = new URL(request.url).searchParams.get("page")
+				if (page === "3") {
+					await new Promise((resolve) => setTimeout(resolve, 50))
+				}
+				return activityResponseForPage(page ?? "")
+			}),
+		)
+
+		const { result, rerender } = renderHook(
+			({ page }: { page: number }) => useUserActivity(undefined, { page }),
+			{
+				initialProps: { page: 999 },
+				wrapper: wrapper(),
+			},
+		)
+
+		await waitFor(() => expect(result.current.data?.pagination?.page).toBe(999))
+
+		rerender({ page: 3 })
+
+		expect(result.current.data).toBeUndefined()
+		expect(result.current.isFetching).toBe(true)
+		await waitFor(() =>
+			expect(result.current.data?.events[0].description).toBe(
+				"Login da página 3",
+			),
+		)
 	})
 
 	test("não dispara a busca quando enabled é false", async () => {
