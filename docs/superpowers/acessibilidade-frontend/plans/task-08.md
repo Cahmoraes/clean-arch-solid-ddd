@@ -1,6 +1,6 @@
 # Task 8: `at-risk-alert-zone` — ícones decorativos ocultos de leitores de tela [FR-007]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

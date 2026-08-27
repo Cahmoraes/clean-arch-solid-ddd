@@ -1,6 +1,6 @@
 # Task 6: `EditProfileModal` — indicador de obrigatoriedade acessível no nome [FR-002]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

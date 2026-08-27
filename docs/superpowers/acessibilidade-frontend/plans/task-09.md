@@ -1,6 +1,6 @@
 # Task 9: `public-shell` — skip-link para o conteúdo principal [FR-004]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

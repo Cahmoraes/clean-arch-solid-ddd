@@ -1,6 +1,6 @@
 # Task 1: Tokens globais de acessibilidade em `globals.css` (anel de foco duplo + utility + `font-size` em `rem`) [FR-003, FR-005]
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** capable

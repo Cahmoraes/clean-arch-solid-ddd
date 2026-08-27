@@ -13,17 +13,17 @@
 
 ## Tarefas
 
-- [ ] 1. Tokens globais de acessibilidade em `globals.css` (anel de foco duplo + utility + `font-size` em `rem`) [FR-003, FR-005] → `task-01.md`
-- [ ] 2. `CardTitle` — heading semântico por padrão com prop `as` [FR-009] → `task-02.md`
-- [ ] 3. `PaginationLink` — `href` obrigatório + ícones decorativos ocultos [FR-007, FR-010] → `task-03.md`
-- [ ] 4. `gym-image-uploader` — rótulo associado ao input de imagem [FR-001] → `task-04.md`
-- [ ] 5. `gym-cnpj-field` — indicador de obrigatoriedade acessível [FR-002] → `task-05.md`
-- [ ] 6. `EditProfileModal` — indicador de obrigatoriedade acessível no nome [FR-002] → `task-06.md`
-- [ ] 7. `details-edit-form` — indicador de obrigatoriedade + ícones decorativos ocultos [FR-002, FR-007] → `task-07.md`
-- [ ] 8. `at-risk-alert-zone` — ícones decorativos ocultos de leitores de tela [FR-007] → `task-08.md`
-- [ ] 9. `public-shell` — skip-link para o conteúdo principal [FR-004] → `task-09.md`
-- [ ] 10. `authenticated-shell` — skip-link para o conteúdo principal [FR-004] → `task-10.md`
-- [ ] 11. `segmented-control` — `aria-label` por item [FR-006] → `task-11.md`
+- [x] 1. Tokens globais de acessibilidade em `globals.css` (anel de foco duplo + utility + `font-size` em `rem`) [FR-003, FR-005] → `task-01.md`
+- [x] 2. `CardTitle` — heading semântico por padrão com prop `as` [FR-009] → `task-02.md`
+- [x] 3. `PaginationLink` — `href` obrigatório + ícones decorativos ocultos [FR-007, FR-010] → `task-03.md`
+- [x] 4. `gym-image-uploader` — rótulo associado ao input de imagem [FR-001] → `task-04.md`
+- [x] 5. `gym-cnpj-field` — indicador de obrigatoriedade acessível [FR-002] → `task-05.md`
+- [x] 6. `EditProfileModal` — indicador de obrigatoriedade acessível no nome [FR-002] → `task-06.md`
+- [x] 7. `details-edit-form` — indicador de obrigatoriedade + ícones decorativos ocultos [FR-002, FR-007] → `task-07.md`
+- [x] 8. `at-risk-alert-zone` — ícones decorativos ocultos de leitores de tela [FR-007] → `task-08.md`
+- [x] 9. `public-shell` — skip-link para o conteúdo principal [FR-004] → `task-09.md`
+- [x] 10. `authenticated-shell` — skip-link para o conteúdo principal [FR-004] → `task-10.md`
+- [x] 11. `segmented-control` — `aria-label` por item [FR-006] → `task-11.md`
 - [ ] 12. `button` — anel de foco duplo + documentação de `size="icon"` [FR-003] → `task-12.md`
 - [ ] 13. `input` — anel de foco duplo + borda com contraste [FR-003, FR-011] → `task-13.md`
 - [ ] 14. `checkbox` — anel de foco duplo + borda + alvo de toque + `CheckIcon` oculto [FR-003, FR-011, FR-008, FR-007] → `task-14.md`
