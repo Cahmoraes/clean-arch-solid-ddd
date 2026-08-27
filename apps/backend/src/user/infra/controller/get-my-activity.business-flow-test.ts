@@ -77,6 +77,7 @@ describe("Buscar Meu Histórico de Atividade", () => {
 				occurredAt: occurredAt.toISOString(),
 			},
 		])
+		expect(response.body.pagination).toBeUndefined()
 	})
 
 	test("deve retornar 401 sem token", async () => {

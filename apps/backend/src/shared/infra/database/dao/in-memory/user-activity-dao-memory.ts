@@ -2,6 +2,7 @@ import { injectable } from "inversify"
 import type {
 	UserActivityDao,
 	UserActivityItem,
+	UserActivityPage,
 } from "@/user/application/persistence/dao/user-activity-dao"
 
 @injectable()
@@ -12,12 +13,28 @@ export class InMemoryUserActivityDao implements UserActivityDao {
 		this.items = [...initialItems]
 	}
 
-	public async findRecentActivity(
+	public async findActivityPage(
 		_userId: string,
-		limit: number,
-	): Promise<UserActivityItem[]> {
-		return [...this.items]
-			.sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
-			.slice(0, limit)
+		page: number,
+		pageSize: number,
+	): Promise<UserActivityPage> {
+		const sortedItems = [...this.items].sort((a, b) => {
+			const occurredAtDifference =
+				b.occurredAt.getTime() - a.occurredAt.getTime()
+			if (occurredAtDifference !== 0) return occurredAtDifference
+			return Number(b.id > a.id) - Number(b.id < a.id)
+		})
+		const total = sortedItems.length
+		const skip = (page - 1) * pageSize
+
+		return {
+			items: sortedItems.slice(skip, skip + pageSize),
+			pagination: {
+				page,
+				pageSize,
+				total,
+				totalPages: Math.ceil(total / pageSize),
+			},
+		}
 	}
 }

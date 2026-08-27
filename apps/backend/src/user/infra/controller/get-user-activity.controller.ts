@@ -60,6 +60,7 @@ export class GetUserActivityController extends BaseController {
 
 		const result = await this.getUserActivity.execute({
 			userId: parseParamsResult.value.userId,
+			page: 1,
 		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)
@@ -67,7 +68,7 @@ export class GetUserActivityController extends BaseController {
 
 		return ResponseFactory.create({
 			status: 200,
-			body: result.value,
+			body: { events: result.value.events },
 		})
 	}
 }

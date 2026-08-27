@@ -44,14 +44,14 @@ export class GetMyActivityController extends BaseController {
 		const {
 			sub: { id },
 		} = req.user
-		const result = await this.getUserActivity.execute({ userId: id })
+		const result = await this.getUserActivity.execute({ userId: id, page: 1 })
 		if (result.isFailure()) {
 			return this.createResponseError(result)
 		}
 
 		return ResponseFactory.create({
 			status: 200,
-			body: result.value,
+			body: { events: result.value.events },
 		})
 	}
 }

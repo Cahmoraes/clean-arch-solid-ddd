@@ -15,6 +15,22 @@ export interface UserActivityItem {
 	occurredAt: Date
 }
 
+export interface UserActivityPagination {
+	page: number
+	pageSize: number
+	total: number
+	totalPages: number
+}
+
+export interface UserActivityPage {
+	items: UserActivityItem[]
+	pagination: UserActivityPagination
+}
+
 export interface UserActivityDao {
-	findRecentActivity(userId: string, limit: number): Promise<UserActivityItem[]>
+	findActivityPage(
+		userId: string,
+		page: number,
+		pageSize: number,
+	): Promise<UserActivityPage>
 }

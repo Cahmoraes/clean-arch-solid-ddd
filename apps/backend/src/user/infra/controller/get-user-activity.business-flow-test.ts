@@ -90,6 +90,7 @@ describe("Buscar Histórico de Atividade do Usuário", () => {
 				occurredAt: occurredAt.toISOString(),
 			},
 		])
+		expect(response.body.pagination).toBeUndefined()
 	})
 
 	test("deve retornar 403 quando o solicitante não é admin", async () => {

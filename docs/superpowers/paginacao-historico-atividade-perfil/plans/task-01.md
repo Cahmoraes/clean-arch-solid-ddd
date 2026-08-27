@@ -1,6 +1,6 @@
 # Task 1: Paginar o caso de uso e as fontes de atividades [FR-002, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-paginacao-historico-atividade-perfil.md`
 **Spec:** `../specs/paginacao-historico-atividade-perfil-design.md`
 **Tier:** standard
