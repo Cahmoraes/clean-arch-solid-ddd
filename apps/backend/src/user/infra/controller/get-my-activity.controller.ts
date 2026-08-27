@@ -114,6 +114,10 @@ function makeGetMyActivitySwaggerSchema(): Schema {
 				description: "User activity retrieved successfully",
 				schema: getMyActivityResponseSchema,
 			},
+			400: {
+				description: "Invalid query params",
+				schema: errorResponseSchema,
+			},
 			401: { description: "Unauthorized" },
 			404: { description: "User not found", schema: errorResponseSchema },
 		},

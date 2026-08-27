@@ -1532,6 +1532,18 @@ export interface paths {
                         };
                     };
                 };
+                /** @description Invalid query params */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
