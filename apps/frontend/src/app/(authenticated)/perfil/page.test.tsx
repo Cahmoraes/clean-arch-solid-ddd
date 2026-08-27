@@ -449,6 +449,61 @@ describe("ProfilePage — aba Atividade", () => {
 		)
 	})
 
+	test("canonicaliza inteiro inseguro da URL para página padrão sem repetir replace", async () => {
+		const user = userEvent.setup()
+		const unsafePage = "9007199254740992"
+		const requestedPages: string[] = []
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, ({ request }) => {
+				const requestedPage =
+					new URL(request.url).searchParams.get("page") ?? ""
+				requestedPages.push(requestedPage)
+
+				if (requestedPage === unsafePage) {
+					return HttpResponse.json(
+						{ message: "Invalid query params" },
+						{ status: 400 },
+					)
+				}
+
+				return HttpResponse.json(
+					{
+						events: [
+							{
+								id: "activity-page-1",
+								type: "LOGIN",
+								description: "Login da página 1",
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+						],
+						pagination: {
+							page: Number(requestedPage),
+							pageSize: 20,
+							total: 1,
+							totalPages: 1,
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+		currentSearchParams = new URLSearchParams(`page=${unsafePage}`)
+
+		const rendered = renderProfilePageWithStatefulSearchParams()
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(rendered.getByRole("tab", { name: "Atividade" }))
+
+		await waitFor(() => {
+			expect(replaceMock).toHaveBeenCalledWith("?")
+		})
+		expect(replaceMock).toHaveBeenCalledTimes(1)
+		expect(currentSearchParams.has("page")).toBe(false)
+		expect(requestedPages).toEqual(["1"])
+		expect(await screen.findByText("Login da página 1")).toBeInTheDocument()
+	})
+
 	test("normaliza página fora do intervalo para última página com atividades", async () => {
 		const user = userEvent.setup()
 		const requestedPages: string[] = []

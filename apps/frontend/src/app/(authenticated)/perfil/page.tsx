@@ -335,8 +335,10 @@ function ProfilePageContent() {
 	const [activeTab, setActiveTab] = React.useState("overview")
 	const router = useRouter()
 	const searchParams = useSearchParams()
-	const parsedPage = Number(searchParams.get("page"))
-	const page = Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1
+	const pageParam = searchParams.get("page")
+	const parsedPage = Number(pageParam)
+	const hasValidPage = Number.isSafeInteger(parsedPage) && parsedPage > 0
+	const page = hasValidPage ? parsedPage : 1
 	const {
 		data: me,
 		isLoading: meLoading,
@@ -369,6 +371,15 @@ function ProfilePageContent() {
 		activityData.pagination.total > 0 &&
 		activityData.pagination.totalPages > 0 &&
 		page > activityData.pagination.totalPages
+
+	React.useEffect(() => {
+		if (pageParam === null || hasValidPage) return
+
+		const params = new URLSearchParams(searchParams.toString())
+		params.delete("page")
+		const query = params.toString()
+		router.replace(query ? `?${query}` : "?")
+	}, [hasValidPage, pageParam, router, searchParams])
 
 	React.useEffect(() => {
 		if (!activityPageOutOfRange || !activityData?.pagination) return
