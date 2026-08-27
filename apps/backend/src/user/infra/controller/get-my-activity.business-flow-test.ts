@@ -50,18 +50,55 @@ describe("Buscar Meu Histórico de Atividade", () => {
 		return server
 	}
 
-	test("deve retornar 200 com o histórico do usuário autenticado", async () => {
-		const occurredAt = new Date("2025-01-10T12:00:00.000Z")
-		container.rebind(USER_TYPES.DAO.UserActivity).toConstantValue(
-			new InMemoryUserActivityDao([
+	test("deve retornar a página solicitada com metadados de paginação", async () => {
+		const activities = Array.from({ length: 21 }, (_, index) => ({
+			id: `activity-${index + 1}`,
+			type: "LOGIN" as const,
+			description: `Login ${index + 1}`,
+			occurredAt: new Date(
+				`2025-01-${String(index + 10).padStart(2, "0")}T12:00:00.000Z`,
+			),
+		}))
+		container
+			.rebind(USER_TYPES.DAO.UserActivity)
+			.toConstantValue(new InMemoryUserActivityDao(activities))
+		const server = await bootServerAndAuthenticateMember()
+
+		const response = await request(server.server)
+			.get("/users/me/activity?page=2")
+			.set("Authorization", `Bearer ${memberToken}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body).toEqual({
+			events: [
 				{
 					id: "activity-1",
 					type: "LOGIN",
-					description: "Login realizado",
-					occurredAt,
+					description: "Login 1",
+					occurredAt: activities[0].occurredAt.toISOString(),
 				},
-			]),
-		)
+			],
+			pagination: {
+				page: 2,
+				pageSize: 20,
+				total: 21,
+				totalPages: 2,
+			},
+		})
+	})
+
+	test("deve usar página 1 por padrão", async () => {
+		const activities = Array.from({ length: 21 }, (_, index) => ({
+			id: `activity-${index + 1}`,
+			type: "LOGIN" as const,
+			description: `Login ${index + 1}`,
+			occurredAt: new Date(
+				`2025-01-${String(index + 10).padStart(2, "0")}T12:00:00.000Z`,
+			),
+		}))
+		container
+			.rebind(USER_TYPES.DAO.UserActivity)
+			.toConstantValue(new InMemoryUserActivityDao(activities))
 		const server = await bootServerAndAuthenticateMember()
 
 		const response = await request(server.server)
@@ -69,15 +106,41 @@ describe("Buscar Meu Histórico de Atividade", () => {
 			.set("Authorization", `Bearer ${memberToken}`)
 
 		expect(response.status).toBe(HTTP_STATUS.OK)
-		expect(response.body.events).toEqual([
-			{
-				id: "activity-1",
-				type: "LOGIN",
-				description: "Login realizado",
-				occurredAt: occurredAt.toISOString(),
-			},
-		])
-		expect(response.body.pagination).toBeUndefined()
+		expect(response.body.pagination).toEqual({
+			page: 1,
+			pageSize: 20,
+			total: 21,
+			totalPages: 2,
+		})
+		expect(response.body.events).toHaveLength(20)
+		expect(response.body.events[0]).toEqual({
+			id: "activity-21",
+			type: "LOGIN",
+			description: "Login 21",
+			occurredAt: activities[20].occurredAt.toISOString(),
+		})
+		expect(response.body.events[19]).toEqual({
+			id: "activity-2",
+			type: "LOGIN",
+			description: "Login 2",
+			occurredAt: activities[1].occurredAt.toISOString(),
+		})
+	})
+
+	test.each(["0", "1.5"])("deve rejeitar página inválida %s", async (page) => {
+		container
+			.rebind(USER_TYPES.DAO.UserActivity)
+			.toConstantValue(new InMemoryUserActivityDao([]))
+		const server = await bootServerAndAuthenticateMember()
+
+		const response = await request(server.server)
+			.get(`/users/me/activity?page=${page}`)
+			.set("Authorization", `Bearer ${memberToken}`)
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+		expect(response.body).toEqual({
+			message: expect.any(String),
+		})
 	})
 
 	test("deve retornar 401 sem token", async () => {

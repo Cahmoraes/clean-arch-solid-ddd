@@ -1491,11 +1491,14 @@ export interface paths {
         };
         /**
          * Get my activity history
-         * @description Retrieve the last 20 activity events for the authenticated user.
+         * @description Retrieve a paginated activity history for the authenticated user.
          */
         get: {
             parameters: {
-                query?: never;
+                query: {
+                    /** @description Page number */
+                    page: number;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -1516,6 +1519,16 @@ export interface paths {
                                 description: string;
                                 occurredAt: string;
                             }[];
+                            pagination: {
+                                /** @description Current page */
+                                page: number;
+                                /** @description Events per page */
+                                pageSize: number;
+                                /** @description Total events */
+                                total: number;
+                                /** @description Total pages */
+                                totalPages: number;
+                            };
                         };
                     };
                 };

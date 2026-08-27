@@ -10,6 +10,13 @@ import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import type { GetUserActivityUseCase } from "@/user/application/use-case/get-user-activity.usecase"
 import { UserRoutes } from "./routes/user-routes"
 
+const getMyActivityQuerySchema = z.object({
+	page: z.coerce.number().int().min(1).default(1).meta({
+		description: "Page number",
+		example: 1,
+	}),
+})
+
 export class GetMyActivityController extends BaseController {
 	constructor(
 		@inject(SHARED_TYPES.Server.Fastify)
@@ -41,17 +48,22 @@ export class GetMyActivityController extends BaseController {
 	}
 
 	private async callback(req: FastifyRequest) {
-		const {
-			sub: { id },
-		} = req.user
-		const result = await this.getUserActivity.execute({ userId: id, page: 1 })
+		const parsedQuery = this.parseRequest(getMyActivityQuerySchema, req.query)
+		if (parsedQuery.isFailure()) {
+			return this.createResponseError(parsedQuery)
+		}
+
+		const result = await this.getUserActivity.execute({
+			userId: req.user.sub.id,
+			page: parsedQuery.value.page,
+		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)
 		}
 
 		return ResponseFactory.create({
 			status: 200,
-			body: { events: result.value.events },
+			body: result.value,
 		})
 	}
 }
@@ -76,6 +88,12 @@ const activityEventResponseSchema = z.object({
 
 const getMyActivityResponseSchema = z.object({
 	events: z.array(activityEventResponseSchema),
+	pagination: z.object({
+		page: z.number().int().meta({ description: "Current page" }),
+		pageSize: z.number().int().meta({ description: "Events per page" }),
+		total: z.number().int().meta({ description: "Total events" }),
+		totalPages: z.number().int().meta({ description: "Total pages" }),
+	}),
 })
 
 const errorResponseSchema = z.object({
@@ -87,8 +105,9 @@ function makeGetMyActivitySwaggerSchema(): Schema {
 		tags: ["users"],
 		summary: "Get my activity history",
 		description:
-			"Retrieve the last 20 activity events for the authenticated user.",
+			"Retrieve a paginated activity history for the authenticated user.",
 		security: true,
+		querystring: getMyActivityQuerySchema,
 		responses: {
 			200: {
 				description: "User activity retrieved successfully",
