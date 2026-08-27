@@ -111,4 +111,15 @@ test.describe("Acessibilidade — telas autenticadas", () => {
 		await scan(page, "/perfil")
 		await scan(page, "/check-ins")
 	})
+
+	test("varredura em /admin/usuarios e /assinatura", async ({
+		page,
+		request,
+	}) => {
+		const user = await provisionUser(request, { role: "ADMIN" })
+		await loginViaUi(page, user)
+
+		await scan(page, "/admin/usuarios")
+		await scan(page, "/assinatura")
+	})
 })
