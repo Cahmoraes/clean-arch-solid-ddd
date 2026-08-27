@@ -33,7 +33,7 @@
 - [x] 18. `search-bar` — rótulo acessível (com correção do bug de `aria-label` perdido) + anel de foco duplo [FR-001, FR-003] → `task-18.md`
 - [x] 19. `command-palette` — anel de foco duplo no campo de busca e no container [FR-003] → `task-19.md`
 - [x] 20. `academias/page` — `aria-label` por item no toggle de visualização [FR-006] → `task-20.md`
-- [ ] 21. `accessibility.spec.ts` — cobertura e2e de `/admin/usuarios` e `/assinatura` [FR-001, FR-002, FR-003, FR-004, FR-007, FR-009, FR-010, FR-011] → `task-21.md`
+- [x] 21. `accessibility.spec.ts` — cobertura e2e de `/admin/usuarios` e `/assinatura` [FR-001, FR-002, FR-003, FR-004, FR-007, FR-009, FR-010, FR-011] → `task-21.md`
 
 ## Ondas de Execução
 

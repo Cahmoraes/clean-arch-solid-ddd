@@ -1,6 +1,6 @@
 # Task 21: `accessibility.spec.ts` — cobertura e2e de `/admin/usuarios` e `/assinatura` [FR-001, FR-002, FR-003, FR-004, FR-007, FR-009, FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** capable
