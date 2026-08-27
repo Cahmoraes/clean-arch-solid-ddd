@@ -24,15 +24,15 @@
 - [x] 9. `public-shell` — skip-link para o conteúdo principal [FR-004] → `task-09.md`
 - [x] 10. `authenticated-shell` — skip-link para o conteúdo principal [FR-004] → `task-10.md`
 - [x] 11. `segmented-control` — `aria-label` por item [FR-006] → `task-11.md`
-- [ ] 12. `button` — anel de foco duplo + documentação de `size="icon"` [FR-003] → `task-12.md`
-- [ ] 13. `input` — anel de foco duplo + borda com contraste [FR-003, FR-011] → `task-13.md`
-- [ ] 14. `checkbox` — anel de foco duplo + borda + alvo de toque + `CheckIcon` oculto [FR-003, FR-011, FR-008, FR-007] → `task-14.md`
-- [ ] 15. `field-shell` — anel de foco duplo no campo mascarado (`MASKED_INPUT_CLASS`) [FR-003] → `task-15.md`
-- [ ] 16. `gym-location-picker` — indicador de obrigatoriedade + anel de foco duplo [FR-002, FR-003] → `task-16.md`
-- [ ] 17. `check-in-search-input` — rótulo acessível + anel de foco duplo + alvo de toque do botão "Limpar" [FR-001, FR-003, FR-008] → `task-17.md`
-- [ ] 18. `search-bar` — rótulo acessível (com correção do bug de `aria-label` perdido) + anel de foco duplo [FR-001, FR-003] → `task-18.md`
-- [ ] 19. `command-palette` — anel de foco duplo no campo de busca e no container [FR-003] → `task-19.md`
-- [ ] 20. `academias/page` — `aria-label` por item no toggle de visualização [FR-006] → `task-20.md`
+- [x] 12. `button` — anel de foco duplo + documentação de `size="icon"` [FR-003] → `task-12.md`
+- [x] 13. `input` — anel de foco duplo + borda com contraste [FR-003, FR-011] → `task-13.md`
+- [x] 14. `checkbox` — anel de foco duplo + borda + alvo de toque + `CheckIcon` oculto [FR-003, FR-011, FR-008, FR-007] → `task-14.md`
+- [x] 15. `field-shell` — anel de foco duplo no campo mascarado (`MASKED_INPUT_CLASS`) [FR-003] → `task-15.md`
+- [x] 16. `gym-location-picker` — indicador de obrigatoriedade + anel de foco duplo [FR-002, FR-003] → `task-16.md`
+- [x] 17. `check-in-search-input` — rótulo acessível + anel de foco duplo + alvo de toque do botão "Limpar" [FR-001, FR-003, FR-008] → `task-17.md`
+- [x] 18. `search-bar` — rótulo acessível (com correção do bug de `aria-label` perdido) + anel de foco duplo [FR-001, FR-003] → `task-18.md`
+- [x] 19. `command-palette` — anel de foco duplo no campo de busca e no container [FR-003] → `task-19.md`
+- [x] 20. `academias/page` — `aria-label` por item no toggle de visualização [FR-006] → `task-20.md`
 - [ ] 21. `accessibility.spec.ts` — cobertura e2e de `/admin/usuarios` e `/assinatura` [FR-001, FR-002, FR-003, FR-004, FR-007, FR-009, FR-010, FR-011] → `task-21.md`
 
 ## Ondas de Execução

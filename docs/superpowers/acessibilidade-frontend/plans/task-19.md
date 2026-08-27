@@ -1,6 +1,6 @@
 # Task 19: `command-palette` — anel de foco duplo no campo de busca e no container [FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

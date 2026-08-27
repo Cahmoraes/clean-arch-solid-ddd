@@ -1,6 +1,6 @@
 # Task 16: `gym-location-picker` — indicador de obrigatoriedade + anel de foco duplo [FR-002, FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** standard

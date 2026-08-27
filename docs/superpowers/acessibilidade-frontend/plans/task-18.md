@@ -1,6 +1,6 @@
 # Task 18: `search-bar` — rótulo acessível (com correção do bug de `aria-label` perdido) + anel de foco duplo [FR-001, FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** standard

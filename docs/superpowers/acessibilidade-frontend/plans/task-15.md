@@ -1,6 +1,6 @@
 # Task 15: `field-shell` — anel de foco duplo no campo mascarado (`MASKED_INPUT_CLASS`) [FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

@@ -1,6 +1,6 @@
 # Task 14: `checkbox` — anel de foco duplo + borda + alvo de toque + `CheckIcon` oculto [FR-003, FR-011, FR-008, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** standard

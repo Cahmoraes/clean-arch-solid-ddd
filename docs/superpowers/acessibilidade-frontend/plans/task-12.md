@@ -1,6 +1,6 @@
 # Task 12: `button` — anel de foco duplo + documentação de `size="icon"` [FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** standard

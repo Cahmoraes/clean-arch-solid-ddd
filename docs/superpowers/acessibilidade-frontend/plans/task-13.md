@@ -1,6 +1,6 @@
 # Task 13: `input` — anel de foco duplo + borda com contraste [FR-003, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** standard

@@ -1,6 +1,6 @@
 # Task 20: `academias/page` — `aria-label` por item no toggle de visualização [FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** cheap

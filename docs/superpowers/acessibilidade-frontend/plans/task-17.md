@@ -1,6 +1,6 @@
 # Task 17: `check-in-search-input` — rótulo acessível + anel de foco duplo + alvo de toque do botão "Limpar" [FR-001, FR-003, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-acessibilidade-frontend.md`
 **Spec:** `../specs/acessibilidade-frontend-design.md`
 **Tier:** standard
