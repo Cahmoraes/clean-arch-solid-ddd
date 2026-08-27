@@ -11,9 +11,10 @@ import type { GetUserActivityUseCase } from "@/user/application/use-case/get-use
 import { UserRoutes } from "./routes/user-routes"
 
 const getMyActivityQuerySchema = z.object({
-	page: z.coerce.number().int().min(1).default(1).meta({
+	page: z.coerce.number().int().min(1).optional().meta({
 		description: "Page number",
 		example: 1,
+		default: 1,
 	}),
 })
 
@@ -55,7 +56,7 @@ export class GetMyActivityController extends BaseController {
 
 		const result = await this.getUserActivity.execute({
 			userId: req.user.sub.id,
-			page: parsedQuery.value.page,
+			page: parsedQuery.value.page ?? 1,
 		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)

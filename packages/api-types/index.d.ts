@@ -1495,9 +1495,9 @@ export interface paths {
          */
         get: {
             parameters: {
-                query: {
+                query?: {
                     /** @description Page number */
-                    page: number;
+                    page?: number;
                 };
                 header?: never;
                 path?: never;
