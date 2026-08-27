@@ -57,6 +57,7 @@ export function NumberedPagination({
 					<PaginationPrevious
 						href="#"
 						data-testid={`${testIdPrefix}-prev`}
+						className="h-8 w-8 text-sm"
 						aria-disabled={page <= 1}
 						onClick={handlePrev}
 					/>
@@ -66,6 +67,7 @@ export function NumberedPagination({
 						<PaginationLink
 							href="#"
 							data-testid={`${testIdPrefix}-page-${p}`}
+							className="h-8 w-8 text-sm"
 							isActive={p === page}
 							onClick={(event) => handleSelect(event, p)}
 						>
@@ -77,6 +79,7 @@ export function NumberedPagination({
 					<PaginationNext
 						href="#"
 						data-testid={`${testIdPrefix}-next`}
+						className="h-8 w-8 text-sm"
 						aria-disabled={page >= totalPages}
 						onClick={handleNext}
 					/>

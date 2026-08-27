@@ -8,8 +8,10 @@ import {
 } from "lucide-react"
 import type { ComponentType } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
+import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/cn"
+import type { UserActivityPagination } from "../api/use-user-activity"
 import { formatActivityGroupLabel, formatActivityTime } from "./activity-format"
 
 const ACTIVITY_SKELETON_KEYS = [0, 1, 2] as const
@@ -35,6 +37,8 @@ export interface ActivityTabProps {
 	events?: UserActivityEvent[]
 	isLoading?: boolean
 	isError?: boolean
+	pagination?: UserActivityPagination
+	onPageChange?: (page: number) => void
 }
 
 interface ActivityIconConfig {
@@ -135,7 +139,7 @@ function ActivityEventIcon({ type }: { type: UserActivityEventType }) {
 
 function ActivityGroupHeader({ label }: { label: string }) {
 	return (
-		<span className="text-[11px] font-semibold uppercase tracking-[.04em] text-subtle">
+		<span className="font-mono text-[11px] font-semibold uppercase tracking-[.04em] text-subtle">
 			{label}
 		</span>
 	)
@@ -168,14 +172,50 @@ function ActivityTabError() {
 	)
 }
 
-export function ActivityTab({
-	events = [],
-	isLoading = false,
-	isError = false,
-}: ActivityTabProps) {
-	if (isLoading) return <ActivityTabSkeleton />
-	if (isError) return <ActivityTabError />
+function ActivityPaginationFooter({
+	pagination,
+	onPageChange,
+}: {
+	pagination: UserActivityPagination
+	onPageChange?: (page: number) => void
+}) {
+	const summaryStart = (pagination.page - 1) * pagination.pageSize + 1
+	const summaryEnd = Math.min(
+		pagination.page * pagination.pageSize,
+		pagination.total,
+	)
+	const showPagination = pagination.totalPages > 1 && onPageChange
 
+	return (
+		<footer className="mt-2 flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+			<span
+				data-testid="activity-summary"
+				className="font-mono text-sm text-muted-foreground"
+			>
+				Exibindo {summaryStart}–{summaryEnd} de {pagination.total} atividades
+			</span>
+			{showPagination ? (
+				<NumberedPagination
+					page={pagination.page}
+					totalPages={pagination.totalPages}
+					onChange={onPageChange}
+					testIdPrefix="activity"
+					className="mx-0 w-auto justify-start sm:justify-end"
+				/>
+			) : null}
+		</footer>
+	)
+}
+
+function ActivityTabContent({
+	events,
+	pagination,
+	onPageChange,
+}: {
+	events: UserActivityEvent[]
+	pagination?: UserActivityPagination
+	onPageChange?: (page: number) => void
+}) {
 	if (events.length === 0) {
 		return (
 			<EmptyState
@@ -201,7 +241,7 @@ export function ActivityTab({
 									<span className="text-sm text-foreground">
 										{event.description}
 									</span>
-									<span className="text-xs text-muted-foreground">
+									<span className="font-mono text-xs text-muted-foreground">
 										{formatActivityTime(event.occurredAt)}
 									</span>
 								</div>
@@ -210,6 +250,31 @@ export function ActivityTab({
 					</ul>
 				</div>
 			))}
+			{pagination ? (
+				<ActivityPaginationFooter
+					pagination={pagination}
+					onPageChange={onPageChange}
+				/>
+			) : null}
 		</div>
+	)
+}
+
+export function ActivityTab({
+	events = [],
+	isLoading = false,
+	isError = false,
+	pagination,
+	onPageChange,
+}: ActivityTabProps) {
+	if (isLoading) return <ActivityTabSkeleton />
+	if (isError) return <ActivityTabError />
+
+	return (
+		<ActivityTabContent
+			events={events}
+			pagination={pagination}
+			onPageChange={onPageChange}
+		/>
 	)
 }
