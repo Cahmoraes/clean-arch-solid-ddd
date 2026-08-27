@@ -362,7 +362,9 @@ function ProfilePageContent() {
 	})
 	const activityPageOutOfRange =
 		activeTab === "atividade" &&
+		!isActivityPlaceholderData &&
 		activityData?.pagination !== undefined &&
+		activityData.pagination.page === page &&
 		activityData.pagination.total > 0 &&
 		activityData.pagination.totalPages > 0 &&
 		page > activityData.pagination.totalPages

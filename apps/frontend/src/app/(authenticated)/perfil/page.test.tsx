@@ -105,6 +105,29 @@ function activityResponseForPage(page: string) {
 	)
 }
 
+function activityTransitionResponseForPage(page: string) {
+	const isSecondPage = page === "2"
+	return HttpResponse.json(
+		{
+			events: [
+				{
+					id: `activity-page-${page}`,
+					type: "LOGIN",
+					description: `Login da página ${page}`,
+					occurredAt: "2025-01-10T12:00:00.000Z",
+				},
+			],
+			pagination: {
+				page: Number(page),
+				pageSize: 20,
+				total: isSecondPage ? 40 : 41,
+				totalPages: isSecondPage ? 2 : 3,
+			},
+		},
+		{ status: 200 },
+	)
+}
+
 describe("ProfilePage", () => {
 	beforeEach(() => {
 		replaceMock.mockClear()
@@ -468,5 +491,39 @@ describe("ProfilePage — aba Atividade", () => {
 			"aria-current",
 			"page",
 		)
+	})
+
+	test("não recupera página durante transição com metadata placeholder anterior", async () => {
+		const user = userEvent.setup()
+		const requestedPages: string[] = []
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, async ({ request }) => {
+				const requestedPage =
+					new URL(request.url).searchParams.get("page") ?? ""
+				requestedPages.push(requestedPage)
+				if (requestedPage === "3") {
+					await new Promise((resolve) => setTimeout(resolve, 50))
+				}
+				return activityTransitionResponseForPage(requestedPage)
+			}),
+		)
+		currentSearchParams = new URLSearchParams("page=2")
+
+		renderProfilePageWithStatefulSearchParams()
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+		expect(await screen.findByText("Login da página 2")).toBeInTheDocument()
+
+		replaceMock("?page=3")
+
+		await waitFor(() => {
+			expect(requestedPages).toEqual(["2", "3"])
+		})
+		expect(replaceMock).toHaveBeenCalledWith("?page=3")
+		expect(replaceMock).not.toHaveBeenCalledWith("?page=2")
+		expect(await screen.findByText("Login da página 3")).toBeInTheDocument()
 	})
 })
