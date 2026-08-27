@@ -143,6 +143,22 @@ describe("Buscar Meu Histórico de Atividade", () => {
 		})
 	})
 
+	test("deve rejeitar página inteira fora do intervalo seguro", async () => {
+		container
+			.rebind(USER_TYPES.DAO.UserActivity)
+			.toConstantValue(new InMemoryUserActivityDao([]))
+		const server = await bootServerAndAuthenticateMember()
+
+		const response = await request(server.server)
+			.get("/users/me/activity?page=9007199254740992")
+			.set("Authorization", `Bearer ${memberToken}`)
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+		expect(response.body).toEqual({
+			message: expect.any(String),
+		})
+	})
+
 	test("deve retornar 401 sem token", async () => {
 		container
 			.rebind(USER_TYPES.DAO.UserActivity)

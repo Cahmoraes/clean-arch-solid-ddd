@@ -1,3 +1,4 @@
+import { QueryClient } from "@tanstack/react-query"
 import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
@@ -23,8 +24,8 @@ const replaceMock = vi.fn((href: string) => {
 	if (rerender) queueMicrotask(rerender)
 })
 
-function renderProfilePageWithStatefulSearchParams() {
-	const rendered = renderWithProviders(<ProfilePage />)
+function renderProfilePageWithStatefulSearchParams(queryClient?: QueryClient) {
+	const rendered = renderWithProviders(<ProfilePage />, { queryClient })
 	rerenderProfile = () => rendered.rerender(<ProfilePage />)
 	return rendered
 }
@@ -106,7 +107,6 @@ function activityResponseForPage(page: string) {
 }
 
 function activityTransitionResponseForPage(page: string) {
-	const isSecondPage = page === "2"
 	return HttpResponse.json(
 		{
 			events: [
@@ -120,8 +120,8 @@ function activityTransitionResponseForPage(page: string) {
 			pagination: {
 				page: Number(page),
 				pageSize: 20,
-				total: isSecondPage ? 40 : 41,
-				totalPages: isSecondPage ? 2 : 3,
+				total: 41,
+				totalPages: 3,
 			},
 		},
 		{ status: 200 },
@@ -438,7 +438,7 @@ describe("ProfilePage — aba Atividade", () => {
 			"page",
 		)
 
-		await user.click(screen.getByTestId("activity-page-3"))
+		await user.click(screen.getByTestId("activity-next"))
 
 		expect(replaceMock).toHaveBeenCalledWith("?filter=all&page=3")
 		expect(await screen.findByText("Login da página 3")).toBeInTheDocument()
@@ -517,13 +517,81 @@ describe("ProfilePage — aba Atividade", () => {
 		await user.click(screen.getByRole("tab", { name: "Atividade" }))
 		expect(await screen.findByText("Login da página 2")).toBeInTheDocument()
 
-		replaceMock("?page=3")
+		await user.click(screen.getByTestId("activity-next"))
 
 		await waitFor(() => {
 			expect(requestedPages).toEqual(["2", "3"])
 		})
 		expect(replaceMock).toHaveBeenCalledWith("?page=3")
+		expect(screen.getByTestId("activity-tab")).toHaveAttribute(
+			"aria-busy",
+			"true",
+		)
+		expect(screen.getByText("Login da página 2")).toBeInTheDocument()
 		expect(replaceMock).not.toHaveBeenCalledWith("?page=2")
 		expect(await screen.findByText("Login da página 3")).toBeInTheDocument()
+	})
+
+	test("aguarda refetch antes de recuperar página fora do intervalo com cache stale", async () => {
+		const user = userEvent.setup()
+		const requestedPages: string[] = []
+		let releaseRefetch!: () => void
+		const refetchGate = new Promise<void>((resolve) => {
+			releaseRefetch = resolve
+		})
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, async ({ request }) => {
+				const requestedPage =
+					new URL(request.url).searchParams.get("page") ?? ""
+				requestedPages.push(requestedPage)
+				await refetchGate
+				return activityResponseForPage(requestedPage)
+			}),
+		)
+		currentSearchParams = new URLSearchParams("page=999")
+		const queryClient = new QueryClient({
+			defaultOptions: {
+				queries: { retry: false, staleTime: 0, gcTime: 0 },
+			},
+		})
+		queryClient.setQueryData(["user-activity", "me", 999], {
+			events: [
+				{
+					id: "cached-activity",
+					type: "LOGIN",
+					description: "Atividade em cache",
+					occurredAt: "2025-01-10T12:00:00.000Z",
+				},
+			],
+			pagination: {
+				page: 999,
+				pageSize: 20,
+				total: 47,
+				totalPages: 3,
+			},
+		})
+
+		renderProfilePageWithStatefulSearchParams(queryClient)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+		await waitFor(() => {
+			expect(requestedPages).toEqual(["999"])
+		})
+
+		expect(replaceMock).not.toHaveBeenCalled()
+		expect(screen.getByTestId("activity-tab")).toHaveAttribute(
+			"aria-busy",
+			"true",
+		)
+		expect(screen.getByText("Atividade em cache")).toBeInTheDocument()
+
+		releaseRefetch()
+
+		await waitFor(() => {
+			expect(replaceMock).toHaveBeenCalledWith("?page=3")
+		})
 	})
 })

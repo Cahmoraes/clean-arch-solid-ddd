@@ -17,6 +17,17 @@ function pageNumbers(currentPage: number, totalPages: number): number[] {
 	return Array.from({ length: max }, (_, idx) => start + idx)
 }
 
+function isControlDisabled(disabled: boolean, atBoundary: boolean): boolean {
+	return disabled || atBoundary
+}
+
+function controlTabIndex(
+	disabled: boolean,
+	atBoundary: boolean,
+): number | undefined {
+	return isControlDisabled(disabled, atBoundary) ? -1 : undefined
+}
+
 interface NumberedPaginationProps {
 	page: number
 	totalPages: number
@@ -60,8 +71,8 @@ export function NumberedPagination({
 						href="#"
 						data-testid={`${testIdPrefix}-prev`}
 						className="h-8 w-8 text-sm"
-						aria-disabled={disabled || page <= 1}
-						tabIndex={disabled ? -1 : undefined}
+						aria-disabled={isControlDisabled(disabled, page <= 1)}
+						tabIndex={controlTabIndex(disabled, page <= 1)}
 						onClick={handlePrev}
 					/>
 				</PaginationItem>
@@ -85,8 +96,8 @@ export function NumberedPagination({
 						href="#"
 						data-testid={`${testIdPrefix}-next`}
 						className="h-8 w-8 text-sm"
-						aria-disabled={disabled || page >= totalPages}
-						tabIndex={disabled ? -1 : undefined}
+						aria-disabled={isControlDisabled(disabled, page >= totalPages)}
+						tabIndex={controlTabIndex(disabled, page >= totalPages)}
 						onClick={handleNext}
 					/>
 				</PaginationItem>

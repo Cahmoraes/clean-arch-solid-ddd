@@ -213,6 +213,33 @@ describe("PrismaUserActivityDao", () => {
 		})
 	})
 
+	it("deve evitar query oversized para página extrema além do total", async () => {
+		await prismaClient.userActivityEvent.create({
+			data: {
+				userId,
+				type: "LOGIN",
+				description: "Login realizado",
+				occurredAt: new Date(),
+			},
+		})
+
+		const result = await sut.findActivityPage(
+			userId,
+			Number.MAX_SAFE_INTEGER,
+			20,
+		)
+
+		expect(result).toEqual({
+			items: [],
+			pagination: {
+				page: Number.MAX_SAFE_INTEGER,
+				pageSize: 20,
+				total: 1,
+				totalPages: 1,
+			},
+		})
+	})
+
 	it("deve aplicar offset após merge global entre UserActivityEvent e CheckIn", async () => {
 		const base = new Date("2025-06-30T12:00:00.000Z").getTime()
 		const dayInMilliseconds = 86_400_000

@@ -20,24 +20,32 @@ export class PrismaUserActivityDao implements UserActivityDao {
 		page: number,
 		pageSize: number,
 	): Promise<UserActivityPage> {
+		const [activityEventsTotal, checkInsTotal] = await Promise.all([
+			this.prisma.userActivityEvent.count({ where: { userId } }),
+			this.prisma.checkIn.count({ where: { user_id: userId } }),
+		])
+		const total = activityEventsTotal + checkInsTotal
+		const totalPages = Math.ceil(total / pageSize)
+		const pagination = { page, pageSize, total, totalPages }
+
+		// Count first: out-of-range pages keep 200 + metadata without oversized queries.
+		if (page > totalPages) return { items: [], pagination }
+
 		const skip = (page - 1) * pageSize
 		const sourceTake = skip + pageSize
-		const [activityEvents, checkIns, activityEventsTotal, checkInsTotal] =
-			await Promise.all([
-				this.prisma.userActivityEvent.findMany({
-					where: { userId },
-					orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
-					take: sourceTake,
-				}),
-				this.prisma.checkIn.findMany({
-					where: { user_id: userId },
-					orderBy: [{ created_at: "desc" }, { id: "desc" }],
-					take: sourceTake,
-					include: { gym: true },
-				}),
-				this.prisma.userActivityEvent.count({ where: { userId } }),
-				this.prisma.checkIn.count({ where: { user_id: userId } }),
-			])
+		const [activityEvents, checkIns] = await Promise.all([
+			this.prisma.userActivityEvent.findMany({
+				where: { userId },
+				orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
+				take: Math.min(sourceTake, activityEventsTotal),
+			}),
+			this.prisma.checkIn.findMany({
+				where: { user_id: userId },
+				orderBy: [{ created_at: "desc" }, { id: "desc" }],
+				take: Math.min(sourceTake, checkInsTotal),
+				include: { gym: true },
+			}),
+		])
 
 		const mappedEvents: UserActivityItem[] = activityEvents.map((event) => ({
 			id: event.id,
@@ -53,7 +61,6 @@ export class PrismaUserActivityDao implements UserActivityDao {
 			occurredAt: checkIn.created_at,
 		}))
 
-		const total = activityEventsTotal + checkInsTotal
 		const items = [...mappedEvents, ...mappedCheckIns]
 			.sort((a, b) => {
 				const occurredAtDifference =
@@ -65,12 +72,7 @@ export class PrismaUserActivityDao implements UserActivityDao {
 
 		return {
 			items,
-			pagination: {
-				page,
-				pageSize,
-				total,
-				totalPages: Math.ceil(total / pageSize),
-			},
+			pagination,
 		}
 	}
 }

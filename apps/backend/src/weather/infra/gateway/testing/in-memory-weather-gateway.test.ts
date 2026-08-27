@@ -1,13 +1,11 @@
 import { describe, expect, test } from "vitest"
-import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import { InMemoryWeatherGateway } from "./in-memory-weather-gateway.js"
 
 describe("InMemoryWeatherGateway", () => {
 	test("retorna a temperatura padrão com sucesso", async () => {
 		const gateway = new InMemoryWeatherGateway()
-		const coordinate = Coordinate.restore({ latitude: 0, longitude: 0 })
 
-		const result = await gateway.getCurrentWeather(coordinate)
+		const result = await gateway.getCurrentWeather()
 
 		expect(result.isSuccess()).toBe(true)
 		expect(result.force.success().value).toEqual({
@@ -19,10 +17,9 @@ describe("InMemoryWeatherGateway", () => {
 
 	test("falha com WeatherProviderUnavailableError após simulateProviderUnavailable", async () => {
 		const gateway = new InMemoryWeatherGateway()
-		const coordinate = Coordinate.restore({ latitude: 0, longitude: 0 })
 		gateway.simulateProviderUnavailable()
 
-		const result = await gateway.getCurrentWeather(coordinate)
+		const result = await gateway.getCurrentWeather()
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.force.failure().value.name).toBe(

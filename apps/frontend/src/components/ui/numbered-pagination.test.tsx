@@ -105,6 +105,38 @@ describe("NumberedPagination", () => {
 		expect(onChange).not.toHaveBeenCalled()
 	})
 
+	test("remove foco dos controles nos limites da paginação", () => {
+		const { rerender } = render(
+			<NumberedPagination
+				page={1}
+				totalPages={3}
+				onChange={vi.fn()}
+				testIdPrefix="test"
+			/>,
+		)
+
+		expect(screen.getByTestId("test-prev")).toHaveAttribute("tabindex", "-1")
+		expect(screen.getByTestId("test-next")).not.toHaveAttribute(
+			"tabindex",
+			"-1",
+		)
+
+		rerender(
+			<NumberedPagination
+				page={3}
+				totalPages={3}
+				onChange={vi.fn()}
+				testIdPrefix="test"
+			/>,
+		)
+
+		expect(screen.getByTestId("test-prev")).not.toHaveAttribute(
+			"tabindex",
+			"-1",
+		)
+		expect(screen.getByTestId("test-next")).toHaveAttribute("tabindex", "-1")
+	})
+
 	test("marca página correta como ativa", () => {
 		render(
 			<NumberedPagination
