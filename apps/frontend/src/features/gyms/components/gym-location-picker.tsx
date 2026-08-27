@@ -44,17 +44,20 @@ function AddressSearchInput({
 		<div className="flex flex-col gap-1">
 			<label htmlFor={addressInputId} className="text-sm font-medium">
 				Endereço completo <span className="text-red-500">*</span>
+				<span className="sr-only">(obrigatório)</span>
 			</label>
 			<div className="flex gap-2">
 				<input
 					id={addressInputId}
 					data-testid="gym-location-address"
 					type="text"
+					required
+					aria-required="true"
 					value={address}
 					onChange={(e) => onAddressChange(e.target.value)}
 					onKeyDown={handleKeyDown}
 					placeholder="Ex.: Av. Paulista, 1578, São Paulo - SP"
-					className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+					className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-ring-duplo"
 				/>
 				<Button
 					type="button"

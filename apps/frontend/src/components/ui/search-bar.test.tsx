@@ -46,4 +46,35 @@ describe("SearchBar", () => {
 		await userEvent.click(screen.getByRole("button", { name: "Buscar" }))
 		expect(onActivate).toHaveBeenCalledTimes(1)
 	})
+
+	test("expõe aria-label no botão quando onActivate é fornecido com showShortcut (bug do aria-label perdido)", () => {
+		render(
+			<SearchBar
+				showShortcut
+				placeholder="Buscar..."
+				aria-label="Buscar"
+				onActivate={vi.fn()}
+			/>,
+		)
+		expect(screen.getByRole("button", { name: "Buscar" })).toBeInTheDocument()
+	})
+
+	test("usa o placeholder como aria-label de fallback no botão quando onActivate é fornecido sem aria-label explícito", () => {
+		render(<SearchBar placeholder="Buscar academia" onActivate={vi.fn()} />)
+		expect(
+			screen.getByRole("button", { name: "Buscar academia" }),
+		).toBeInTheDocument()
+	})
+
+	test("usa o placeholder como aria-label de fallback no input cru quando não há aria-label explícito", () => {
+		render(<SearchBar placeholder="Buscar academia" />)
+		expect(
+			screen.getByRole("searchbox", { name: "Buscar academia" }),
+		).toBeInTheDocument()
+	})
+
+	test("reforça o anel de foco duplo no input cru", () => {
+		render(<SearchBar placeholder="Buscar..." />)
+		expect(screen.getByRole("searchbox")).toHaveClass("focus-ring-duplo")
+	})
 })

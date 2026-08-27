@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn"
 export interface CheckInSearchInputProps {
 	value: string
 	onChange: (value: string) => void
+	label: string
 	placeholder?: string
 	className?: string
 }
@@ -11,6 +12,7 @@ export interface CheckInSearchInputProps {
 export function CheckInSearchInput({
 	value,
 	onChange,
+	label,
 	placeholder,
 	className,
 }: CheckInSearchInputProps) {
@@ -27,14 +29,15 @@ export function CheckInSearchInput({
 				value={value}
 				onChange={(e) => onChange(e.target.value)}
 				placeholder={placeholder}
-				className="flex-1 bg-transparent text-foreground placeholder:text-subtle outline-none text-sm"
+				aria-label={label}
+				className="flex-1 bg-transparent text-foreground placeholder:text-subtle focus-ring-duplo text-sm"
 			/>
 			{value && (
 				<button
 					type="button"
 					aria-label="Limpar busca"
 					onClick={() => onChange("")}
-					className="shrink-0 text-subtle hover:text-foreground transition-colors"
+					className="inline-flex h-6 w-6 items-center justify-center shrink-0 text-subtle hover:text-foreground transition-colors"
 				>
 					<X className="h-4 w-4" aria-hidden="true" />
 				</button>

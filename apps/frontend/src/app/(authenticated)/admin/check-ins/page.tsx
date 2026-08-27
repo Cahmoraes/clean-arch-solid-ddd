@@ -162,6 +162,7 @@ function AdminCheckInsPageContent() {
 							value={gymNameInput}
 							onChange={setGymNameInput}
 							placeholder="Buscar por academia..."
+							label="Buscar check-in por academia"
 							className="flex-1"
 						/>
 						<CheckInSortToggle value={sortOrder} onValueChange={setSortOrder} />

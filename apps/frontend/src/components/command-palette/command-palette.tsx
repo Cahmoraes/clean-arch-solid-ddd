@@ -30,7 +30,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 			<Portal>
 				<Overlay className="fixed inset-0 z-40 bg-black/60" />
 				<Content
-					className="fixed left-1/2 top-[15vh] z-50 w-[calc(100vw-2rem)] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-popover shadow-pop focus:outline-none"
+					className="fixed left-1/2 top-[15vh] z-50 w-[calc(100vw-2rem)] max-w-[560px] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-popover shadow-pop focus-ring-duplo"
 					aria-describedby={undefined}
 				>
 					<Title className="sr-only">Paleta de comandos</Title>
@@ -47,7 +47,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 								value={query}
 								onValueChange={setQuery}
 								placeholder="Buscar páginas, academias, usuários..."
-								className="flex h-12 w-full bg-transparent py-3 text-sm text-foreground placeholder:text-subtle outline-none"
+								className="flex h-12 w-full bg-transparent py-3 text-sm text-foreground placeholder:text-subtle focus-ring-duplo"
 							/>
 						</div>
 						<Command.List className="max-h-[400px] overflow-y-auto py-2">

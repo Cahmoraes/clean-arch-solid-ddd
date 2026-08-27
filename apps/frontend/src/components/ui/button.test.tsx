@@ -66,4 +66,11 @@ describe("Button", () => {
 		expect(link.className).toContain("rounded-md")
 		expect(link.className).not.toContain("rounded-full")
 	})
+
+	test("deve aplicar o anel de foco duplo (focus-ring-duplo)", () => {
+		render(<Button>Foco</Button>)
+		expect(screen.getByRole("button", { name: /foco/i })).toHaveClass(
+			"focus-ring-duplo",
+		)
+	})
 })

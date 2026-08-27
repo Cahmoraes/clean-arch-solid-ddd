@@ -26,6 +26,7 @@ const RESULTS_PER_PAGE = 20
 const VIEW_TOGGLE_ITEMS = [
 	{
 		value: "cards" as GymView,
+		ariaLabel: "Ver como cards",
 		label: (
 			<LayoutGrid
 				data-testid="view-toggle-cards"
@@ -36,6 +37,7 @@ const VIEW_TOGGLE_ITEMS = [
 	},
 	{
 		value: "rows" as GymView,
+		ariaLabel: "Ver como lista",
 		label: (
 			<List
 				data-testid="view-toggle-rows"

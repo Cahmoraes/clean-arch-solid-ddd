@@ -1,6 +1,6 @@
 import { act, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it, test, vi } from "vitest"
 import { renderWithProviders } from "@/test/render"
 import { GymLocationPicker } from "./gym-location-picker"
 
@@ -160,5 +160,18 @@ describe("GymLocationPicker", () => {
 		expect(screen.getByTestId("gym-location-lng-display")).toHaveTextContent(
 			"-46.6333",
 		)
+	})
+
+	test("input de endereço é obrigatório, com aria-required e texto para leitor de tela", () => {
+		renderWithProviders(
+			<GymLocationPicker
+				value={{ address: "", latitude: 0, longitude: 0 }}
+				onChange={vi.fn()}
+			/>,
+		)
+		const input = screen.getByLabelText(/endereço completo/i)
+		expect(input).toHaveAttribute("aria-required", "true")
+		expect(screen.getByText("(obrigatório)")).toBeInTheDocument()
+		expect(input).toHaveClass("focus-ring-duplo")
 	})
 })

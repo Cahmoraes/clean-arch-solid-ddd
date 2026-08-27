@@ -16,18 +16,27 @@ export interface SearchBarProps
 	onActivate?: () => void
 }
 
+function resolveAriaLabel(
+	ariaLabel: string | undefined,
+	placeholder: string | undefined,
+): string | undefined {
+	return ariaLabel ?? placeholder
+}
+
 export function SearchBar({
 	className,
 	showShortcut = false,
 	compact,
 	onActivate,
 	placeholder,
+	"aria-label": ariaLabel,
 	...inputProps
 }: SearchBarProps) {
 	const baseClasses = cn(
 		"flex h-[52px] items-center gap-3 rounded-md border border-border bg-surface px-4 text-subtle",
 		className,
 	)
+	const resolvedAriaLabel = resolveAriaLabel(ariaLabel, placeholder)
 
 	if (onActivate && compact) {
 		return (
@@ -50,6 +59,7 @@ export function SearchBar({
 			<button
 				type="button"
 				onClick={onActivate}
+				aria-label={resolvedAriaLabel}
 				className={cn(baseClasses, "cursor-pointer")}
 			>
 				<Search className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
@@ -71,7 +81,8 @@ export function SearchBar({
 			<input
 				type="search"
 				placeholder={placeholder}
-				className="h-full flex-1 border-none bg-transparent text-[15px] text-foreground outline-none placeholder:text-subtle"
+				aria-label={resolvedAriaLabel}
+				className="h-full flex-1 border-none bg-transparent text-[15px] text-foreground focus-ring-duplo placeholder:text-subtle"
 				{...inputProps}
 			/>
 			{showShortcut && (

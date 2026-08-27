@@ -12,7 +12,7 @@ const buttonVariants = cva(
 		"font-medium leading-none",
 		"cursor-pointer transition-colors",
 		"disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
-		"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2",
+		"focus-ring-duplo",
 		"[&_svg]:size-4 [&_svg]:shrink-0",
 	].join(" "),
 	{
@@ -47,6 +47,12 @@ const buttonVariants = cva(
 	},
 )
 
+/**
+ * Quando `size="icon"` é usado sem filho textual visível, o consumidor DEVE
+ * fornecer `aria-label` ou `aria-labelledby` para que o botão tenha nome
+ * acessível (WCAG 4.1.2 / 2.5.3). Esta é uma decisão consciente: não há
+ * enforcement de tipo para essa regra — ver PRD `acessibilidade-frontend`.
+ */
 export interface ButtonProps
 	extends ButtonHTMLAttributes<HTMLButtonElement>,
 		VariantProps<typeof buttonVariants> {

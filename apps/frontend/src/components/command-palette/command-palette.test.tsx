@@ -117,4 +117,16 @@ describe("CommandPalette", () => {
 			expect(screen.queryByText("João")).not.toBeInTheDocument(),
 		)
 	})
+
+	test("reforça o anel de foco duplo no container do diálogo", () => {
+		renderWithProviders(<CommandPalette open={true} onOpenChange={vi.fn()} />)
+		expect(screen.getByRole("dialog")).toHaveClass("focus-ring-duplo")
+	})
+
+	test("reforça o anel de foco duplo no campo de busca", () => {
+		renderWithProviders(<CommandPalette open={true} onOpenChange={vi.fn()} />)
+		expect(
+			screen.getByPlaceholderText("Buscar páginas, academias, usuários..."),
+		).toHaveClass("focus-ring-duplo")
+	})
 })

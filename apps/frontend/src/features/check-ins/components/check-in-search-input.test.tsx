@@ -10,6 +10,7 @@ describe("CheckInSearchInput", () => {
 				value=""
 				onChange={vi.fn()}
 				placeholder="Buscar academia..."
+				label="Buscar check-in por academia"
 			/>,
 		)
 		expect(
@@ -23,6 +24,7 @@ describe("CheckInSearchInput", () => {
 				value="SmartFit"
 				onChange={vi.fn()}
 				placeholder="Buscar academia..."
+				label="Buscar check-in por academia"
 			/>,
 		)
 		expect(screen.getByDisplayValue("SmartFit")).toBeInTheDocument()
@@ -35,6 +37,7 @@ describe("CheckInSearchInput", () => {
 				value=""
 				onChange={onChange}
 				placeholder="Buscar academia..."
+				label="Buscar check-in por academia"
 			/>,
 		)
 		await userEvent.type(screen.getByPlaceholderText("Buscar academia..."), "a")
@@ -48,6 +51,7 @@ describe("CheckInSearchInput", () => {
 				value="SmartFit"
 				onChange={onChange}
 				placeholder="Buscar academia..."
+				label="Buscar check-in por academia"
 			/>,
 		)
 		const clearButton = screen.getByRole("button", { name: /limpar busca/i })
@@ -62,10 +66,53 @@ describe("CheckInSearchInput", () => {
 				value=""
 				onChange={vi.fn()}
 				placeholder="Buscar academia..."
+				label="Buscar check-in por academia"
 			/>,
 		)
 		expect(
 			screen.queryByRole("button", { name: /limpar busca/i }),
 		).not.toBeInTheDocument()
+	})
+
+	test("expõe rótulo acessível via prop label", () => {
+		render(
+			<CheckInSearchInput
+				value=""
+				onChange={vi.fn()}
+				placeholder="Buscar academia..."
+				label="Buscar check-in por academia"
+			/>,
+		)
+		expect(
+			screen.getByRole("textbox", { name: "Buscar check-in por academia" }),
+		).toBeInTheDocument()
+	})
+
+	test("reforça o anel de foco (contraste) no input", () => {
+		render(
+			<CheckInSearchInput
+				value=""
+				onChange={vi.fn()}
+				placeholder="Buscar academia..."
+				label="Buscar check-in por academia"
+			/>,
+		)
+		expect(
+			screen.getByRole("textbox", { name: "Buscar check-in por academia" }),
+		).toHaveClass("focus-ring-duplo")
+	})
+
+	test("botão limpar busca atinge o alvo mínimo de toque (24x24px)", () => {
+		render(
+			<CheckInSearchInput
+				value="SmartFit"
+				onChange={vi.fn()}
+				placeholder="Buscar academia..."
+				label="Buscar check-in por academia"
+			/>,
+		)
+		const clearButton = screen.getByRole("button", { name: /limpar busca/i })
+		expect(clearButton).toHaveClass("h-6")
+		expect(clearButton).toHaveClass("w-6")
 	})
 })

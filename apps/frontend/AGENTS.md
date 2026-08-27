@@ -190,6 +190,10 @@ Projeto segue design system cromático inspirado no Superhumon (doc em [`DESIGN.
 - Dark mode via `next-themes` com tokens derivados da paleta cromática
 - Componentes base em `src/components/ui/` (shadcn/ui customizado)
 
+### Acessibilidade
+
+- **Botão ícone-only:** `Button size="icon"` sem filho textual exige `aria-label`/`aria-labelledby` — não há enforcement de tipo (decisão consciente, ver PRD `acessibilidade-frontend`).
+
 ### API Client
 Cliente HTTP tipado via OpenAPI:
 ```typescript

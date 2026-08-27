@@ -279,4 +279,15 @@ describe("AcademiasPage", () => {
 		expect(await screen.findByTestId("gym-row-gym-1")).toBeInTheDocument()
 		expect(screen.queryByTestId("gym-card-gym-1")).not.toBeInTheDocument()
 	})
+
+	test("toggle de visualização expõe aria-label acessível por item [FR-006]", () => {
+		renderWithProviders(<AcademiasPage />)
+
+		expect(
+			screen.getByRole("button", { name: "Ver como cards" }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: "Ver como lista" }),
+		).toBeInTheDocument()
+	})
 })
