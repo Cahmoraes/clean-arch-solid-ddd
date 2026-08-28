@@ -6,15 +6,10 @@ import React from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Eyebrow } from "@/components/ui/eyebrow"
+import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/ui/status-badge"
@@ -372,6 +367,56 @@ function getCanonicalActivityPageUrl(
 	return `?${params.toString()}`
 }
 
+function getTopActivityPage(
+	pagination: UserActivityPagination | undefined,
+): number {
+	if (!pagination) return 1
+	return Math.min(
+		Math.max(pagination.page, 1),
+		Math.max(pagination.totalPages, 1),
+	)
+}
+
+function shouldShowTopPagination(
+	pagination: UserActivityPagination | undefined,
+): boolean {
+	return !!pagination && pagination.totalPages > 1
+}
+
+function ActivityHistoryCardHeader({
+	pagination,
+	isTransitioning,
+	onPageChange,
+}: {
+	pagination: UserActivityPagination | undefined
+	isTransitioning: boolean
+	onPageChange: (page: number) => void
+}) {
+	const showTopPagination = shouldShowTopPagination(pagination)
+	const topPage = getTopActivityPage(pagination)
+
+	return (
+		<CardHeader className="flex flex-row flex-wrap items-center justify-between gap-4 border-b border-border">
+			<CardTitle as="h2">Histórico de atividades</CardTitle>
+			<div className="flex flex-wrap items-center gap-3">
+				<span className="inline-flex items-center rounded-full border bg-muted/40 px-2.5 py-1 font-mono text-[11px] font-medium tracking-wide text-muted-foreground">
+					20 por página
+				</span>
+				{showTopPagination ? (
+					<NumberedPagination
+						page={topPage}
+						totalPages={pagination ? pagination.totalPages : 1}
+						onChange={onPageChange}
+						testIdPrefix="activity-top"
+						disabled={isTransitioning}
+						className="mx-0 w-auto justify-end"
+					/>
+				) : null}
+			</div>
+		</CardHeader>
+	)
+}
+
 function ProfilePageContent() {
 	const [editOpen, setEditOpen] = React.useState(false)
 	const [activeTab, setActiveTab] = React.useState("overview")
@@ -479,13 +524,12 @@ function ProfilePageContent() {
 				</TabsContent>
 				<TabsContent value="atividade">
 					<Card className="w-full gap-0 rounded-[22px]">
-						<CardHeader className="flex flex-row items-center justify-between gap-4 border-b border-border">
-							<CardTitle as="h2">Histórico de atividades</CardTitle>
-							<CardDescription className="font-mono text-xs">
-								20 / página
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
+						<ActivityHistoryCardHeader
+							pagination={activityData?.pagination}
+							isTransitioning={isActivityFetching || isActivityPlaceholderData}
+							onPageChange={handleActivityPageChange}
+						/>
+						<CardContent className="pt-6">
 							<ActivityTab
 								events={activityData?.events}
 								pagination={activityData?.pagination}
