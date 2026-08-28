@@ -1,6 +1,6 @@
 # Task 3: Navegar páginas no perfil e renderizar os estados da lista [FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-paginacao-historico-atividade-perfil.md`
 **Spec:** `../specs/paginacao-historico-atividade-perfil-design.md`
 **Tier:** standard

@@ -15,7 +15,7 @@
 
 - [x] 1. Paginar o caso de uso e as fontes de atividades [FR-002, FR-004] → `task-01.md`
 - [x] 2. Publicar e gerar o contrato HTTP paginado [FR-001, FR-003, FR-007] → `task-02.md`
-- [ ] 3. Navegar páginas no perfil e renderizar os estados da lista [FR-005, FR-006] → `task-03.md`
+- [x] 3. Navegar páginas no perfil e renderizar os estados da lista [FR-005, FR-006] → `task-03.md`
 
 ## Ondas de Execução
 
