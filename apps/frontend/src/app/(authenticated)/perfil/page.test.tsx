@@ -548,6 +548,42 @@ describe("ProfilePage — aba Atividade", () => {
 		)
 	})
 
+	test("normaliza página fora do intervalo quando o histórico está vazio", async () => {
+		const user = userEvent.setup()
+		const requestedPages: string[] = []
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, ({ request }) => {
+				requestedPages.push(new URL(request.url).searchParams.get("page") ?? "")
+				return HttpResponse.json(
+					{
+						events: [],
+						pagination: {
+							page: 999,
+							pageSize: 20,
+							total: 0,
+							totalPages: 0,
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+		currentSearchParams = new URLSearchParams("page=999")
+
+		renderProfilePageWithStatefulSearchParams()
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		await waitFor(() => {
+			expect(replaceMock).toHaveBeenCalledWith("?")
+		})
+		expect(currentSearchParams.has("page")).toBe(false)
+		expect(requestedPages).toEqual(["999", "1"])
+	})
+
 	test("não recupera página durante transição com metadata placeholder anterior", async () => {
 		const user = userEvent.setup()
 		const requestedPages: string[] = []

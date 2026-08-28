@@ -26,6 +26,17 @@ export class InMemoryUserActivityDao implements UserActivityDao {
 		})
 		const total = sortedItems.length
 		const skip = (page - 1) * pageSize
+		if (!Number.isSafeInteger(skip)) {
+			return {
+				items: [],
+				pagination: {
+					page,
+					pageSize,
+					total,
+					totalPages: Math.ceil(total / pageSize),
+				},
+			}
+		}
 
 		return {
 			items: sortedItems.slice(skip, skip + pageSize),

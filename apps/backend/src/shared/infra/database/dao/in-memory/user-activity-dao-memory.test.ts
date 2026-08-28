@@ -109,6 +109,24 @@ describe("InMemoryUserActivityDao", () => {
 		})
 	})
 
+	test("findActivityPage não calcula offset inseguro", async () => {
+		const dao = new InMemoryUserActivityDao([])
+
+		const result = await dao.findActivityPage(
+			"user-1",
+			Number.MAX_SAFE_INTEGER,
+			20,
+		)
+
+		expect(result.items).toEqual([])
+		expect(result.pagination).toEqual({
+			page: Number.MAX_SAFE_INTEGER,
+			pageSize: 20,
+			total: 0,
+			totalPages: 0,
+		})
+	})
+
 	test("findActivityPage cobre páginas inicial, intermediária e final", async () => {
 		const base = new Date("2025-02-14T00:00:00.000Z").getTime()
 		const dao = new InMemoryUserActivityDao(

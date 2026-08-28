@@ -32,6 +32,7 @@ export class PrismaUserActivityDao implements UserActivityDao {
 		if (page > totalPages) return { items: [], pagination }
 
 		const skip = (page - 1) * pageSize
+		if (!Number.isSafeInteger(skip)) return { items: [], pagination }
 		const sourceTake = skip + pageSize
 		const [activityEvents, checkIns] = await Promise.all([
 			this.prisma.userActivityEvent.findMany({

@@ -19,7 +19,10 @@ import { RoleBadge } from "@/components/ui/role-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useUserActivity } from "@/features/activity/api/use-user-activity"
+import {
+	type UserActivityPagination,
+	useUserActivity,
+} from "@/features/activity/api/use-user-activity"
 import { ActivityTab } from "@/features/activity/components/activity-tab"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"
 import { EditProfileModal } from "@/features/profile/components/EditProfileModal"
@@ -330,15 +333,53 @@ function ProfileCard({
 	)
 }
 
+function isValidProfilePageParam(pageParam: string | null): boolean {
+	const parsedPage = Number(pageParam)
+	return Number.isSafeInteger(parsedPage) && parsedPage > 0
+}
+
+function getProfilePage(pageParam: string | null): number {
+	return isValidProfilePageParam(pageParam) ? Number(pageParam) : 1
+}
+
+function isActivityPageOutOfRange({
+	enabled,
+	isPlaceholderData,
+	isFetching,
+	page,
+	pagination,
+}: {
+	enabled: boolean
+	isPlaceholderData: boolean
+	isFetching: boolean
+	page: number
+	pagination: UserActivityPagination | undefined
+}): boolean {
+	if (!enabled || isPlaceholderData || isFetching || !pagination) return false
+	return pagination.totalPages <= 0 || page > pagination.totalPages
+}
+
+function getCanonicalActivityPageUrl(
+	searchParams: URLSearchParams,
+	totalPages: number,
+): string {
+	const params = new URLSearchParams(searchParams.toString())
+	if (totalPages <= 0) {
+		params.delete("page")
+	} else {
+		params.set("page", String(totalPages))
+	}
+	return `?${params.toString()}`
+}
+
 function ProfilePageContent() {
 	const [editOpen, setEditOpen] = React.useState(false)
 	const [activeTab, setActiveTab] = React.useState("overview")
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const pageParam = searchParams.get("page")
-	const parsedPage = Number(pageParam)
-	const hasValidPage = Number.isSafeInteger(parsedPage) && parsedPage > 0
-	const page = hasValidPage ? parsedPage : 1
+	const hasValidPage = isValidProfilePageParam(pageParam)
+	const page = getProfilePage(pageParam)
 	const {
 		data: me,
 		isLoading: meLoading,
@@ -362,15 +403,14 @@ function ProfilePageContent() {
 		enabled: activeTab === "atividade",
 		page,
 	})
-	const activityPageOutOfRange =
-		activeTab === "atividade" &&
-		!isActivityPlaceholderData &&
-		!isActivityFetching &&
-		activityData?.pagination !== undefined &&
-		activityData.pagination.page === page &&
-		activityData.pagination.total > 0 &&
-		activityData.pagination.totalPages > 0 &&
-		page > activityData.pagination.totalPages
+	const activityPageOutOfRange = isActivityPageOutOfRange({
+		enabled:
+			activeTab === "atividade" && activityData?.pagination?.page === page,
+		isPlaceholderData: isActivityPlaceholderData,
+		isFetching: isActivityFetching,
+		page,
+		pagination: activityData?.pagination,
+	})
 
 	React.useEffect(() => {
 		if (pageParam === null || hasValidPage) return
@@ -384,9 +424,12 @@ function ProfilePageContent() {
 	React.useEffect(() => {
 		if (!activityPageOutOfRange || !activityData?.pagination) return
 
-		const params = new URLSearchParams(searchParams.toString())
-		params.set("page", String(activityData.pagination.totalPages))
-		router.replace(`?${params.toString()}`)
+		router.replace(
+			getCanonicalActivityPageUrl(
+				searchParams,
+				activityData.pagination.totalPages,
+			),
+		)
 	}, [activityData, activityPageOutOfRange, router, searchParams])
 
 	function handleActivityPageChange(nextPage: number) {

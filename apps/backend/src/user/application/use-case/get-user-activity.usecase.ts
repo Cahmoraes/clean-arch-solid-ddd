@@ -13,6 +13,8 @@ import type {
 import { UserNotFoundError } from "../error/user-not-found-error"
 import type { UserRepository } from "../persistence/repository/user-repository"
 
+export const USER_ACTIVITY_PAGE_SIZE = 20
+
 export interface GetUserActivityUseCaseInput {
 	userId: string
 	page?: number
@@ -50,11 +52,10 @@ export class GetUserActivityUseCase {
 		const user = await this.userRepository.userOfId(input.userId)
 		if (!user) return failure(new UserNotFoundError())
 		const page = input.page ?? 1
-		const pageSize = 20
 		const activityPage = await this.userActivityDao.findActivityPage(
 			input.userId,
 			page,
-			pageSize,
+			USER_ACTIVITY_PAGE_SIZE,
 		)
 		return success({
 			events: activityPage.items.map((item) => ({

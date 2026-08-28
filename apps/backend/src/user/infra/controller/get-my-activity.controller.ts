@@ -7,11 +7,18 @@ import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
-import type { GetUserActivityUseCase } from "@/user/application/use-case/get-user-activity.usecase"
+import {
+	type GetUserActivityUseCase,
+	USER_ACTIVITY_PAGE_SIZE,
+} from "@/user/application/use-case/get-user-activity.usecase"
 import { UserRoutes } from "./routes/user-routes"
 
+const MAX_ACTIVITY_PAGE = Math.floor(
+	Number.MAX_SAFE_INTEGER / USER_ACTIVITY_PAGE_SIZE,
+)
+
 const getMyActivityQuerySchema = z.object({
-	page: z.coerce.number().int().min(1).optional().meta({
+	page: z.coerce.number().int().min(1).max(MAX_ACTIVITY_PAGE).optional().meta({
 		description: "Page number",
 		example: 1,
 		default: 1,

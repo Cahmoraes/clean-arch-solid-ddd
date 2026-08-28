@@ -62,3 +62,11 @@ pnpm --filter frontend test -- --run
 pnpm --filter frontend build
 pnpm build
 ```
+
+## Ajustes pós-revisão
+
+- Validar `page` no controller como inteiro positivo dentro do limite seguro do JavaScript.
+- Limitar `page` ao maior valor compatível com o cálculo seguro do offset de 20 itens.
+- Proteger os DAOs contra offsets não seguros quando chamados fora do controller HTTP.
+- Canonicalizar páginas fora do intervalo também quando o histórico estiver vazio, removendo o parâmetro inválido da URL e refazendo a consulta na página padrão.
+- Cobrir ambos os cenários com testes de regressão no backend e no frontend.
