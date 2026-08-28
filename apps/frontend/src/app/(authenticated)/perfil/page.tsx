@@ -72,9 +72,9 @@ interface ProfileCardProps {
 
 function ProfileCardLoading() {
 	return (
-		<div className="grid grid-cols-[1.5fr_1fr] items-start gap-[18px] max-[1100px]:grid-cols-1">
+		<div className="grid grid-cols-[1.5fr_1fr] items-start gap-4.5 max-[1100px]:grid-cols-1">
 			<div className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-				<Skeleton className="h-[92px] rounded-none" />
+				<Skeleton className="h-23 rounded-none" />
 				<div className="flex flex-col gap-3 p-7">
 					<Skeleton className="h-12 w-12 rounded-full" />
 					<Skeleton className="h-6 w-48" />
@@ -233,7 +233,7 @@ function MetricCard({
 					check-ins realizados
 				</span>
 			</div>
-			<div className="pt-[22px]">
+			<div className="pt-5.5">
 				<p className="mb-3.5 text-sm font-semibold text-foreground">
 					Esta semana
 				</p>
@@ -271,15 +271,15 @@ function ProfileCard({
 	}
 
 	return (
-		<div className="grid grid-cols-[1.5fr_1fr] items-start gap-[18px] max-[1100px]:grid-cols-1">
+		<div className="grid grid-cols-[1.5fr_1fr] items-start gap-4.5 max-[1100px]:grid-cols-1">
 			<div
 				data-testid="profile-card"
 				className="overflow-hidden rounded-lg border border-border bg-card shadow-sm"
 			>
-				<div className="h-[92px] bg-gradient-to-r from-accent to-accent/40" />
-				<div className="-mt-10 flex items-start justify-between gap-[18px] px-7">
+				<div className="h-23 bg-linear-to-r from-accent to-accent/40" />
+				<div className="-mt-10 flex items-start justify-between gap-4.5 px-7">
 					<Avatar name={me.name} size="lg" className="border-4 border-card" />
-					<div className="mt-[46px] flex items-center gap-2">
+					<div className="mt-11.5 flex items-center gap-2">
 						<RoleBadge role={toRole(me.role)} />
 						<ProfileStatusBadge status={me.status} />
 					</div>
