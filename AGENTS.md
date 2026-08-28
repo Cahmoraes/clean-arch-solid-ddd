@@ -8,14 +8,6 @@
 - **SEMPRE use skills** `no-workarounds` e `super.systematic-debugging` ao corrigir bugs/problemas complexos
 - **NUNCA use ferramentas** web para código local — use `sg` (busca estrutural TS/JS), Grep ou Glob. Prefira `sg` a `grep` para padrões de AST (decorators, chamadas com generics, shapes de objeto)
 
-<MOST_CRITICAL>
-
-- ABSOLUTAMENTE OBRIGATÓRIO: modo Plan, após usuário aceitar plano, SEMPRE escreva plano aceito em Markdown dentro de `docs/plans/`.
-- OBRIGATÓRIO: plano aceito atualizado depois → atualize/acrescente no Markdown correspondente em `docs/plans/`.
-- VIOLAÇÃO: não persistir planos aceitos = não conformidade com política do workspace.
-
-</MOST_CRITICAL>
-
 ## Restrições de Comunicação
 
 - Responder sempre em PT-BR, preservar termos técnicos
