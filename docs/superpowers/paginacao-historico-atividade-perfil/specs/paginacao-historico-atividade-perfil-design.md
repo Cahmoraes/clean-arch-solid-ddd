@@ -16,7 +16,7 @@ A aba **Atividade** do perfil hoje combina eventos de conta e check-ins, ordena-
 | Característica | Por quê | Critério mensurável |
 |---|---|---|
 | Escalabilidade | O histórico cresce continuamente e não deve gerar payload completo. | Cada resposta contém no máximo 20 eventos e o DAO usa `take=20`. |
-| Performance | A tela precisa carregar somente a página solicitada. | A página e o `count` são iniciados em paralelo e não há consulta para materializar o histórico completo. |
+| Performance | A tela precisa carregar somente a página solicitada. | O `count` roda primeiro (as duas fontes em paralelo entre si); a busca da fatia só é disparada quando `page <= totalPages`, evitando `findMany` para páginas fora do intervalo. Não há consulta para materializar o histórico completo. |
 | Usabilidade/consistência | A navegação deve seguir as demais listagens do produto. | `page` é preservado na URL; a paginação aparece somente quando `totalPages > 1`. |
 
 **Consideradas, não priorizadas:** disponibilidade, pois a operação mantém as garantias atuais; cursor pagination, pois não atende à navegação numerada aprovada; filtros, exportação e retenção, pois continuam fora do escopo.
@@ -49,7 +49,7 @@ Inclui `page` na query key, sincroniza a URL, renderiza estados e usa `NumberedP
 
 ## Fluxo de Dados
 
-`/perfil?tab=activity&page=N` é lido pelo frontend, que chama `GET /users/me/activity?page=N`. O controller encaminha `page` ao caso de uso. O DAO recebe `page` e `pageSize=20`, calcula `skip=(page-1)*20`, executa em paralelo a consulta da fatia e `count`, mescla as fontes já existentes e ordena por data mais um desempate estável. O retorno contém os eventos e `page`, `pageSize`, `total` e `totalPages`. O frontend atualiza a lista sem remover a página anterior durante a troca.
+`/perfil?tab=activity&page=N` é lido pelo frontend, que chama `GET /users/me/activity?page=N`. O controller encaminha `page` ao caso de uso. O DAO recebe `page` e `pageSize=20`, calcula `skip=(page-1)*20` e executa primeiro o `count` das duas fontes (em paralelo entre si). Se `page > totalPages`, retorna `200` com `events: []` e os metadados sem consultar a fatia. Caso contrário, busca a fatia das duas fontes, mescla-as e ordena por data mais um desempate estável. O retorno contém os eventos e `page`, `pageSize`, `total` e `totalPages`. O frontend atualiza a lista sem remover a página anterior durante a troca.
 
 ```mermaid
 sequenceDiagram
@@ -64,13 +64,19 @@ sequenceDiagram
     UI->>API: GET page=N
     API->>UC: page=N
     UC->>DAO: page=N, pageSize=20
-    par Consultar página
-        DAO->>DB: findMany(skip, take, orderBy)
-    and Calcular total
-        DAO->>DB: count(where)
+    par Calcular total
+        DAO->>DB: count(where) — eventos
+    and
+        DAO->>DB: count(where) — check-ins
     end
-    DB-->>DAO: Eventos e total
-    DAO-->>UC: events + pagination
+    DB-->>DAO: total e totalPages
+    alt page > totalPages
+        DAO-->>UC: events: [] + pagination
+    else page <= totalPages
+        DAO->>DB: findMany(skip, take, orderBy) — duas fontes
+        DB-->>DAO: Eventos da fatia
+        DAO-->>UC: events + pagination
+    end
     UC-->>API: Resultado validado
     API-->>UI: 200 { events, pagination }
     UI-->>User: Lista e paginação numerada
@@ -113,6 +119,14 @@ Diagrama fonte: `specs/diagrams/paginacao-historico-atividade-perfil-design_01_s
 - **Justificativa técnica:** evita respostas arbitrariamente grandes e reduz estados de contrato.
 - **Justificativa de negócio:** comportamento previsível para o usuário.
 - **Trade-offs aceitos:** não há customização por usuário; isso só será reaberto se surgir requisito explícito.
+
+### D3. Count antes da busca da fatia (sem paralelismo pleno)
+
+- **Contexto:** a versão inicial deste desenho previa `findMany` e `count` sempre em paralelo. A verificação independente da implementação identificou que o código roda `count` primeiro e só dispara o `findMany` quando `page <= totalPages`.
+- **Decisão:** manter o `count` como etapa prévia; as duas fontes de `count` continuam em paralelo entre si, mas a busca da fatia (`findMany`) só ocorre quando a página está dentro do intervalo.
+- **Justificativa técnica:** evita disparar `findMany` com `take` proporcional a um `skip` potencialmente grande quando a página solicitada já está fora do intervalo — o retorno `200` com lista vazia não precisa buscar nada além dos totais.
+- **Justificativa de negócio:** reduz custo de banco para navegação além do fim do histórico (ex.: manipulação de `page` na URL), sem alterar o contrato observável.
+- **Trade-offs aceitos:** abre mão do paralelismo pleno entre `count` e `findMany` em favor de evitar consultas desnecessárias; a latência de uma página válida soma o tempo do `count` ao tempo do `findMany` em vez de rodar ambos ao mesmo tempo. Reavaliar apenas se a latência combinada se tornar um problema medido.
 
 ## Erros e Estados
 

@@ -10,13 +10,19 @@ sequenceDiagram
     UI->>API: GET page=N
     API->>UC: page=N
     UC->>DAO: page=N, pageSize=20
-    par Consultar página
-        DAO->>DB: findMany(skip, take, orderBy)
-    and Calcular total
-        DAO->>DB: count(where)
+    par Calcular total
+        DAO->>DB: count(where) — eventos
+    and
+        DAO->>DB: count(where) — check-ins
     end
-    DB-->>DAO: Eventos e total
-    DAO-->>UC: events + pagination
+    DB-->>DAO: total e totalPages
+    alt page > totalPages
+        DAO-->>UC: events: [] + pagination
+    else page <= totalPages
+        DAO->>DB: findMany(skip, take, orderBy) — duas fontes
+        DB-->>DAO: Eventos da fatia
+        DAO-->>UC: events + pagination
+    end
     UC-->>API: Resultado validado
     API-->>UI: 200 { events, pagination }
     UI-->>User: Lista e paginação numerada
