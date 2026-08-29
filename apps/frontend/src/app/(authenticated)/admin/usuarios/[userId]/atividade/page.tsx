@@ -4,79 +4,18 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { PageContainer } from "@/components/layout/page-container"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Eyebrow } from "@/components/ui/eyebrow"
-import { NumberedPagination } from "@/components/ui/numbered-pagination"
-import {
-	type UserActivityPagination,
-	useUserActivity,
-} from "@/features/activity/api/use-user-activity"
+import { useUserActivity } from "@/features/activity/api/use-user-activity"
+import { ActivityPaginationCardHeader } from "@/features/activity/components/activity-pagination-card-header"
 import { ActivityTab } from "@/features/activity/components/activity-tab"
+import { getActivityPageFromParam } from "@/features/activity/lib/activity-pagination"
 import { useUserById } from "@/features/profile/api"
-
-function isValidActivityPageParam(pageParam: string | null): boolean {
-	const parsedPage = Number(pageParam)
-	return Number.isSafeInteger(parsedPage) && parsedPage > 0
-}
-
-function getActivityPage(pageParam: string | null): number {
-	return isValidActivityPageParam(pageParam) ? Number(pageParam) : 1
-}
-
-function shouldShowTopPagination(
-	pagination: UserActivityPagination | undefined,
-): boolean {
-	return !!pagination && pagination.totalPages > 1
-}
-
-function getTopActivityPage(
-	pagination: UserActivityPagination | undefined,
-): number {
-	if (!pagination) return 1
-	return Math.min(
-		Math.max(pagination.page, 1),
-		Math.max(pagination.totalPages, 1),
-	)
-}
-
-function AdminActivityCardHeader({
-	pagination,
-	isTransitioning,
-	onPageChange,
-}: {
-	pagination: UserActivityPagination | undefined
-	isTransitioning: boolean
-	onPageChange: (page: number) => void
-}) {
-	const showTopPagination = shouldShowTopPagination(pagination)
-	const topPage = getTopActivityPage(pagination)
-
-	return (
-		<CardHeader className="flex flex-row flex-wrap items-center justify-between gap-4 border-b border-border">
-			<CardTitle as="h2">Histórico de atividades</CardTitle>
-			<div className="flex flex-wrap items-center gap-3">
-				<span className="inline-flex items-center rounded-full border bg-muted/40 px-2.5 py-1 font-mono text-[11px] font-medium tracking-wide text-muted-foreground">
-					20 por página
-				</span>
-				{showTopPagination ? (
-					<NumberedPagination
-						page={topPage}
-						totalPages={pagination ? pagination.totalPages : 1}
-						onChange={onPageChange}
-						testIdPrefix="admin-activity-top"
-						disabled={isTransitioning}
-						className="mx-0 w-auto justify-end"
-					/>
-				) : null}
-			</div>
-		</CardHeader>
-	)
-}
 
 export function AdminUserActivityView({ userId }: { userId: string }) {
 	const router = useRouter()
 	const searchParams = useSearchParams()
-	const page = getActivityPage(searchParams.get("page"))
+	const page = getActivityPageFromParam(searchParams.get("page"))
 
 	const { data: targetUser } = useUserById(userId)
 	const {
@@ -114,10 +53,11 @@ export function AdminUserActivityView({ userId }: { userId: string }) {
 			</header>
 
 			<Card className="w-full gap-0 rounded-[22px]">
-				<AdminActivityCardHeader
+				<ActivityPaginationCardHeader
 					pagination={activityData?.pagination}
 					isTransitioning={isActivityFetching || isActivityPlaceholderData}
 					onPageChange={handlePageChange}
+					testIdPrefix="admin-activity-top"
 				/>
 				<CardContent className="pt-6">
 					<ActivityTab

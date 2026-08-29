@@ -6,10 +6,9 @@ import React from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Eyebrow } from "@/components/ui/eyebrow"
-import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatusBadge } from "@/components/ui/status-badge"
@@ -18,7 +17,12 @@ import {
 	type UserActivityPagination,
 	useUserActivity,
 } from "@/features/activity/api/use-user-activity"
+import { ActivityPaginationCardHeader } from "@/features/activity/components/activity-pagination-card-header"
 import { ActivityTab } from "@/features/activity/components/activity-tab"
+import {
+	getActivityPageFromParam,
+	isValidActivityPageParam,
+} from "@/features/activity/lib/activity-pagination"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"
 import { EditProfileModal } from "@/features/profile/components/EditProfileModal"
 
@@ -328,15 +332,6 @@ function ProfileCard({
 	)
 }
 
-function isValidProfilePageParam(pageParam: string | null): boolean {
-	const parsedPage = Number(pageParam)
-	return Number.isSafeInteger(parsedPage) && parsedPage > 0
-}
-
-function getProfilePage(pageParam: string | null): number {
-	return isValidProfilePageParam(pageParam) ? Number(pageParam) : 1
-}
-
 function isActivityPageOutOfRange({
 	enabled,
 	isPlaceholderData,
@@ -367,64 +362,14 @@ function getCanonicalActivityPageUrl(
 	return `?${params.toString()}`
 }
 
-function getTopActivityPage(
-	pagination: UserActivityPagination | undefined,
-): number {
-	if (!pagination) return 1
-	return Math.min(
-		Math.max(pagination.page, 1),
-		Math.max(pagination.totalPages, 1),
-	)
-}
-
-function shouldShowTopPagination(
-	pagination: UserActivityPagination | undefined,
-): boolean {
-	return !!pagination && pagination.totalPages > 1
-}
-
-function ActivityHistoryCardHeader({
-	pagination,
-	isTransitioning,
-	onPageChange,
-}: {
-	pagination: UserActivityPagination | undefined
-	isTransitioning: boolean
-	onPageChange: (page: number) => void
-}) {
-	const showTopPagination = shouldShowTopPagination(pagination)
-	const topPage = getTopActivityPage(pagination)
-
-	return (
-		<CardHeader className="flex flex-row flex-wrap items-center justify-between gap-4 border-b border-border">
-			<CardTitle as="h2">Histórico de atividades</CardTitle>
-			<div className="flex flex-wrap items-center gap-3">
-				<span className="inline-flex items-center rounded-full border bg-muted/40 px-2.5 py-1 font-mono text-[11px] font-medium tracking-wide text-muted-foreground">
-					20 por página
-				</span>
-				{showTopPagination ? (
-					<NumberedPagination
-						page={topPage}
-						totalPages={pagination ? pagination.totalPages : 1}
-						onChange={onPageChange}
-						testIdPrefix="activity-top"
-						disabled={isTransitioning}
-						className="mx-0 w-auto justify-end"
-					/>
-				) : null}
-			</div>
-		</CardHeader>
-	)
-}
-
 function ProfilePageContent() {
 	const [editOpen, setEditOpen] = React.useState(false)
 	const [activeTab, setActiveTab] = React.useState("overview")
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const pageParam = searchParams.get("page")
-	const hasValidPage = isValidProfilePageParam(pageParam)
-	const page = getProfilePage(pageParam)
+	const hasValidPage = isValidActivityPageParam(pageParam)
+	const page = getActivityPageFromParam(pageParam)
 	const {
 		data: me,
 		isLoading: meLoading,
@@ -524,10 +469,11 @@ function ProfilePageContent() {
 				</TabsContent>
 				<TabsContent value="atividade">
 					<Card className="w-full gap-0 rounded-[22px]">
-						<ActivityHistoryCardHeader
+						<ActivityPaginationCardHeader
 							pagination={activityData?.pagination}
 							isTransitioning={isActivityFetching || isActivityPlaceholderData}
 							onPageChange={handleActivityPageChange}
+							testIdPrefix="activity-top"
 						/>
 						<CardContent className="pt-6">
 							<ActivityTab
