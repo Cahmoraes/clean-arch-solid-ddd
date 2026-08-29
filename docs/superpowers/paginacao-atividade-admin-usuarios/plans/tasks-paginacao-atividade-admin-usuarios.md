@@ -14,7 +14,7 @@
 ## Tarefas
 
 - [x] 1. Backend: endpoint admin aceita `page` e retorna `pagination` → `task-01.md`
-- [ ] 2. Frontend: hook `useUserActivity` encaminha `page` na variante admin → `task-02.md`
+- [x] 2. Frontend: hook `useUserActivity` encaminha `page` na variante admin → `task-02.md`
 - [ ] 3. Frontend: card resumido no drawer de `/admin/usuarios` → `task-03.md`
 - [ ] 4. Frontend: nova rota `/admin/usuarios/[userId]/atividade` → `task-04.md`
 

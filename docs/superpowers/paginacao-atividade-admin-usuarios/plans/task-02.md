@@ -1,6 +1,6 @@
 # Task 2: Frontend: hook `useUserActivity` encaminha `page` na variante admin
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/paginacao-atividade-admin-usuarios-design.md`
 **Tier:** standard
