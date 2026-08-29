@@ -21,7 +21,7 @@ export const USER_ACTIVITY_QUERY_KEY = "user-activity" as const
 
 export function userActivityQueryKey(userId: string | undefined, page = 1) {
 	return userId
-		? ([USER_ACTIVITY_QUERY_KEY, "admin", userId] as const)
+		? ([USER_ACTIVITY_QUERY_KEY, "admin", userId, page] as const)
 		: ([USER_ACTIVITY_QUERY_KEY, "me", page] as const)
 }
 
@@ -34,12 +34,13 @@ function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 
 async function fetchAdminActivity(
 	userId: string,
+	page: number,
 ): Promise<UserActivityQueryData> {
 	const { data, error } = await api.GET("/users/{userId}/activity", {
-		params: { path: { userId } },
+		params: { path: { userId }, query: { page } },
 	})
 	if (error || !data) throw toApiError(error)
-	return { events: data.events }
+	return data
 }
 
 async function fetchMyActivity(page: number): Promise<UserActivityQueryData> {
@@ -54,7 +55,7 @@ function fetchUserActivity(
 	userId: string | undefined,
 	page: number,
 ): Promise<UserActivityQueryData> {
-	return userId ? fetchAdminActivity(userId) : fetchMyActivity(page)
+	return userId ? fetchAdminActivity(userId, page) : fetchMyActivity(page)
 }
 
 function isOutOfRangePagination(

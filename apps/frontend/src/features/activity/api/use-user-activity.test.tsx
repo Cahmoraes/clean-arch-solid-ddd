@@ -164,20 +164,58 @@ describe("useUserActivity", () => {
 		])
 	})
 
-	test("mantém chave administrativa estável e sem colisão com perfil", () => {
+	test("inclui a página na chave administrativa e mantém isolamento do perfil", () => {
 		expect(userActivityQueryKey("user-1", 1)).toEqual([
 			"user-activity",
 			"admin",
 			"user-1",
+			1,
 		])
 		expect(userActivityQueryKey("user-1", 2)).toEqual([
 			"user-activity",
 			"admin",
 			"user-1",
+			2,
 		])
+		expect(userActivityQueryKey("user-1", 1)).not.toEqual(
+			userActivityQueryKey("user-1", 2),
+		)
 		expect(userActivityQueryKey("me", 1)).not.toEqual(
 			userActivityQueryKey(undefined, 1),
 		)
+	})
+
+	test("repassa page para o endpoint administrativo e retorna paginação", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users/:userId/activity`, ({ request }) => {
+				expect(new URL(request.url).searchParams.get("page")).toBe("2")
+				return HttpResponse.json(
+					{
+						events: [],
+						pagination: {
+							page: 2,
+							pageSize: 20,
+							total: 21,
+							totalPages: 2,
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+
+		const { result } = renderHook(
+			() => useUserActivity("user-1", { page: 2 }),
+			{ wrapper: wrapper() },
+		)
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data?.pagination).toEqual({
+			page: 2,
+			pageSize: 20,
+			total: 21,
+			totalPages: 2,
+		})
 	})
 
 	test("usa página 1 por padrão na query key", async () => {
