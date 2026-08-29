@@ -227,6 +227,35 @@ describe("UserDetailPanel", () => {
 		).not.toBeInTheDocument()
 	})
 
+	test("não exibe o link para o histórico completo quando o total é exatamente 5", async () => {
+		const user = userEvent.setup()
+		const events = Array.from({ length: 5 }, (_, index) => ({
+			id: `activity-${index + 1}`,
+			type: "LOGIN" as const,
+			description: `Evento ${index + 1}`,
+			occurredAt: new Date().toISOString(),
+		}))
+		server.use(
+			http.get(`${apiBaseUrl}/users/:userId/activity`, () =>
+				HttpResponse.json(
+					{
+						events,
+						pagination: { page: 1, pageSize: 20, total: 5, totalPages: 1 },
+					},
+					{ status: 200 },
+				),
+			),
+		)
+
+		renderPanel(buildUser({ id: "u1" }))
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(await screen.findByText("Evento 5")).toBeInTheDocument()
+		expect(
+			screen.queryByRole("link", { name: "Ver histórico completo" }),
+		).not.toBeInTheDocument()
+	})
+
 	test("exibe mensagem de erro (não o estado vazio) quando a busca de atividade falha", async () => {
 		const user = userEvent.setup()
 		server.use(

@@ -49,6 +49,9 @@ describe("AdminUserActivityView", () => {
 
 		expect(await screen.findByText(/maria souza/i)).toBeInTheDocument()
 		expect(await screen.findByText("Login realizado")).toBeInTheDocument()
+		expect(
+			screen.queryByTestId("admin-activity-top-pagination"),
+		).not.toBeInTheDocument()
 	})
 
 	test("navega para a página seguinte ao clicar na paginação do topo", async () => {
@@ -83,6 +86,11 @@ describe("AdminUserActivityView", () => {
 
 		renderWithProviders(<AdminUserActivityView userId="user-1" />)
 		await screen.findByText("Login realizado")
+
+		expect(screen.getByTestId("admin-activity-top-page-1")).toHaveAttribute(
+			"aria-current",
+			"page",
+		)
 
 		await user.click(screen.getByTestId("admin-activity-top-page-2"))
 
