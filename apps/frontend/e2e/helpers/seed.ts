@@ -95,6 +95,36 @@ export async function createCheckInViaApi(
 	return (await response.json()) as { id: string }
 }
 
+export interface SeededActivityEvent {
+	id: string
+	description: string
+}
+
+/**
+ * Seed `count` activity events directly via SQL for the given user, most
+ * recent event last (index `count` = newest, index `1` = oldest). Used to
+ * deterministically exercise the drawer's 5-item summary vs. the full
+ * paginated history page, since both read from the same backend table.
+ */
+export function seedActivityEvents(
+	userId: string,
+	count: number,
+	options: { type?: string } = {},
+): SeededActivityEvent[] {
+	const type = options.type ?? "LOGIN"
+	const events: SeededActivityEvent[] = []
+	for (let i = 1; i <= count; i++) {
+		const id = randomUUID()
+		const description = `E2E Activity Event ${i}`
+		const minutesAgo = count - i
+		psql(
+			`INSERT INTO user_activity_events (id, user_id, type, description, occurred_at) VALUES ('${id}', '${userId}', '${escapeSql(type)}', '${escapeSql(description)}', NOW() - INTERVAL '${minutesAgo} minutes');`,
+		)
+		events.push({ id, description })
+	}
+	return events
+}
+
 function psql(sql: string): string {
 	const host = process.env.POSTGRES_HOST ?? "localhost"
 	const port = process.env.POSTGRES_PORT ?? "5432"
