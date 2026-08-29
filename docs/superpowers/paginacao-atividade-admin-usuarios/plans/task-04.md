@@ -1,6 +1,6 @@
 # Task 4: Frontend: nova rota `/admin/usuarios/[userId]/atividade`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/paginacao-atividade-admin-usuarios-design.md`
 **Tier:** standard

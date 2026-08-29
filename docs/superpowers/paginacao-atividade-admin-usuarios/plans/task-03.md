@@ -1,6 +1,6 @@
 # Task 3: Frontend: card resumido no drawer de `/admin/usuarios`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/paginacao-atividade-admin-usuarios-design.md`
 **Tier:** standard
