@@ -1406,11 +1406,14 @@ export interface paths {
         };
         /**
          * Get user activity history
-         * @description Retrieve the last 20 activity events for a specific user.
+         * @description Retrieve a paginated activity history for a specific user.
          */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Page number */
+                    page?: number;
+                };
                 header?: never;
                 path: {
                     /** @description User ID */
@@ -1434,6 +1437,28 @@ export interface paths {
                                 description: string;
                                 occurredAt: string;
                             }[];
+                            pagination: {
+                                /** @description Current page */
+                                page: number;
+                                /** @description Events per page */
+                                pageSize: number;
+                                /** @description Total events */
+                                total: number;
+                                /** @description Total pages */
+                                totalPages: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Invalid query params */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
                         };
                     };
                 };

@@ -57,7 +57,7 @@ describe("Buscar Histórico de Atividade do Usuário", () => {
 		return server
 	}
 
-	test("deve retornar 200 com a lista de eventos de atividade", async () => {
+	test("deve retornar 200 com paginação calculada quando nenhuma página é informada", async () => {
 		const targetId = randomUUID()
 		const occurredAt = new Date("2025-01-10T12:00:00.000Z")
 		container.rebind(USER_TYPES.DAO.UserActivity).toConstantValue(
@@ -90,7 +90,61 @@ describe("Buscar Histórico de Atividade do Usuário", () => {
 				occurredAt: occurredAt.toISOString(),
 			},
 		])
-		expect(response.body.pagination).toBeUndefined()
+		expect(response.body.pagination).toEqual({
+			page: 1,
+			pageSize: 20,
+			total: 1,
+			totalPages: 1,
+		})
+	})
+
+	test("deve repassar o parâmetro page para o use case e refletir na paginação retornada", async () => {
+		const targetId = randomUUID()
+		container.rebind(USER_TYPES.DAO.UserActivity).toConstantValue(
+			new InMemoryUserActivityDao([
+				{
+					id: "activity-1",
+					type: "LOGIN",
+					description: "Login realizado",
+					occurredAt: new Date("2025-01-10T12:00:00.000Z"),
+				},
+			]),
+		)
+		const server = await bootServerAndAuthenticateAdmin()
+		await createAndSaveUser({
+			userRepository,
+			id: targetId,
+			email: "target-page2@activity.test",
+		})
+
+		const response = await request(server.server)
+			.get(`/users/${targetId}/activity?page=2`)
+			.set("Authorization", `Bearer ${adminToken}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.events).toEqual([])
+		expect(response.body.pagination).toEqual({
+			page: 2,
+			pageSize: 20,
+			total: 1,
+			totalPages: 1,
+		})
+	})
+
+	test("deve retornar 400 quando page é inválido", async () => {
+		const server = await bootServerAndAuthenticateAdmin()
+		const targetId = randomUUID()
+		await createAndSaveUser({
+			userRepository,
+			id: targetId,
+			email: "target-invalid-page@activity.test",
+		})
+
+		const response = await request(server.server)
+			.get(`/users/${targetId}/activity?page=0`)
+			.set("Authorization", `Bearer ${adminToken}`)
+
+		expect(response.status).toBe(400)
 	})
 
 	test("deve retornar 403 quando o solicitante não é admin", async () => {

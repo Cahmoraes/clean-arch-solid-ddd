@@ -7,11 +7,26 @@ import { Logger } from "@/shared/infra/decorator/logger"
 import { SHARED_TYPES, USER_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
-import type { GetUserActivityUseCase } from "@/user/application/use-case/get-user-activity.usecase"
+import {
+	type GetUserActivityUseCase,
+	USER_ACTIVITY_PAGE_SIZE,
+} from "@/user/application/use-case/get-user-activity.usecase"
 import { UserRoutes } from "./routes/user-routes"
 
 const getUserActivityRequestSchema = z.object({
 	userId: z.string().meta({ description: "User ID", example: "uuid-1234" }),
+})
+
+const MAX_ACTIVITY_PAGE = Math.floor(
+	Number.MAX_SAFE_INTEGER / USER_ACTIVITY_PAGE_SIZE,
+)
+
+const getUserActivityQuerySchema = z.object({
+	page: z.coerce.number().int().min(1).max(MAX_ACTIVITY_PAGE).optional().meta({
+		description: "Page number",
+		example: 1,
+		default: 1,
+	}),
 })
 
 export type GetUserActivityPayload = z.infer<
@@ -58,9 +73,17 @@ export class GetUserActivityController extends BaseController {
 			return this.createResponseError(parseParamsResult)
 		}
 
+		const parseQueryResult = this.parseRequest(
+			getUserActivityQuerySchema,
+			req.query,
+		)
+		if (parseQueryResult.isFailure()) {
+			return this.createResponseError(parseQueryResult)
+		}
+
 		const result = await this.getUserActivity.execute({
 			userId: parseParamsResult.value.userId,
-			page: 1,
+			page: parseQueryResult.value.page ?? 1,
 		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)
@@ -68,7 +91,7 @@ export class GetUserActivityController extends BaseController {
 
 		return ResponseFactory.create({
 			status: 200,
-			body: { events: result.value.events },
+			body: result.value,
 		})
 	}
 }
@@ -93,6 +116,12 @@ const activityEventResponseSchema = z.object({
 
 const getUserActivityResponseSchema = z.object({
 	events: z.array(activityEventResponseSchema),
+	pagination: z.object({
+		page: z.number().int().meta({ description: "Current page" }),
+		pageSize: z.number().int().meta({ description: "Events per page" }),
+		total: z.number().int().meta({ description: "Total events" }),
+		totalPages: z.number().int().meta({ description: "Total pages" }),
+	}),
 })
 
 const errorResponseSchema = z.object({
@@ -103,13 +132,18 @@ function makeGetUserActivitySwaggerSchema(): Schema {
 	return OpenApiSchemaBuilder.build({
 		tags: ["users"],
 		summary: "Get user activity history",
-		description: "Retrieve the last 20 activity events for a specific user.",
+		description: "Retrieve a paginated activity history for a specific user.",
 		security: true,
 		params: getUserActivityRequestSchema,
+		querystring: getUserActivityQuerySchema,
 		responses: {
 			200: {
 				description: "User activity retrieved successfully",
 				schema: getUserActivityResponseSchema,
+			},
+			400: {
+				description: "Invalid query params",
+				schema: errorResponseSchema,
 			},
 			401: { description: "Unauthorized" },
 			403: { description: "Forbidden", schema: errorResponseSchema },
