@@ -1,6 +1,6 @@
 # Task 1: Backend: endpoint admin aceita `page` e retorna `pagination`
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/paginacao-atividade-admin-usuarios-design.md`
 **Tier:** standard
