@@ -1,7 +1,9 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { Avatar } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { RoleBadge } from "@/components/ui/role-badge"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -22,6 +24,8 @@ import {
 } from "./use-user-detail-actions"
 import { UserActionsFooter } from "./user-actions-footer"
 import { statusLabel, statusTone } from "./user-detail-format"
+
+const ACTIVITY_SUMMARY_LIMIT = 5
 
 export interface UserDetailPanelProps {
 	user: AdminUser
@@ -79,12 +83,20 @@ function UserDetailTabs({
 	onStopEdit: () => void
 }) {
 	const {
-		data: activityEvents,
+		data: activityData,
 		isLoading: isActivityLoading,
 		isError: isActivityError,
 	} = useUserActivity(user.id, {
 		enabled: activeTab === "atividade",
+		page: 1,
 	})
+
+	const activitySummaryEvents = activityData?.events.slice(
+		0,
+		ACTIVITY_SUMMARY_LIMIT,
+	)
+	const hasMoreActivity =
+		(activityData?.pagination?.total ?? 0) > ACTIVITY_SUMMARY_LIMIT
 
 	return (
 		<Tabs
@@ -104,12 +116,19 @@ function UserDetailTabs({
 					onStopEdit={onStopEdit}
 				/>
 			</TabsContent>
-			<TabsContent value="atividade">
+			<TabsContent value="atividade" className="flex flex-col gap-3">
 				<ActivityTab
-					events={activityEvents?.events}
+					events={activitySummaryEvents}
 					isLoading={isActivityLoading}
 					isError={isActivityError}
 				/>
+				{hasMoreActivity ? (
+					<Button asChild variant="outline" className="w-full">
+						<Link href={`/admin/usuarios/${user.id}/atividade`}>
+							Ver histórico completo
+						</Link>
+					</Button>
+				) : null}
 			</TabsContent>
 		</Tabs>
 	)

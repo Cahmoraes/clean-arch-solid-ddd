@@ -165,6 +165,68 @@ describe("UserDetailPanel", () => {
 		expect(await screen.findByText("Login realizado")).toBeInTheDocument()
 	})
 
+	test("exibe no máximo 5 eventos e o link para o histórico completo quando há mais de 5", async () => {
+		const user = userEvent.setup()
+		const events = Array.from({ length: 7 }, (_, index) => ({
+			id: `activity-${index + 1}`,
+			type: "LOGIN" as const,
+			description: `Evento ${index + 1}`,
+			occurredAt: new Date().toISOString(),
+		}))
+		server.use(
+			http.get(`${apiBaseUrl}/users/:userId/activity`, () =>
+				HttpResponse.json(
+					{
+						events,
+						pagination: { page: 1, pageSize: 20, total: 7, totalPages: 1 },
+					},
+					{ status: 200 },
+				),
+			),
+		)
+
+		renderPanel(buildUser({ id: "u1" }))
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(await screen.findByText("Evento 1")).toBeInTheDocument()
+		expect(screen.getByText("Evento 5")).toBeInTheDocument()
+		expect(screen.queryByText("Evento 6")).not.toBeInTheDocument()
+		expect(screen.queryByText("Evento 7")).not.toBeInTheDocument()
+
+		const link = screen.getByRole("link", { name: "Ver histórico completo" })
+		expect(link).toHaveAttribute("href", "/admin/usuarios/u1/atividade")
+	})
+
+	test("não exibe o link para o histórico completo quando há 5 eventos ou menos", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users/:userId/activity`, () =>
+				HttpResponse.json(
+					{
+						events: [
+							{
+								id: "activity-1",
+								type: "LOGIN",
+								description: "Login realizado",
+								occurredAt: new Date().toISOString(),
+							},
+						],
+						pagination: { page: 1, pageSize: 20, total: 1, totalPages: 1 },
+					},
+					{ status: 200 },
+				),
+			),
+		)
+
+		renderPanel(buildUser({ id: "u1" }))
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(await screen.findByText("Login realizado")).toBeInTheDocument()
+		expect(
+			screen.queryByRole("link", { name: "Ver histórico completo" }),
+		).not.toBeInTheDocument()
+	})
+
 	test("exibe mensagem de erro (não o estado vazio) quando a busca de atividade falha", async () => {
 		const user = userEvent.setup()
 		server.use(
