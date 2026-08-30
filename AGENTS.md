@@ -67,6 +67,18 @@ pnpm --filter frontend e2e                   # Playwright E2E tests
 > Detalhes do frontend em [`apps/frontend/AGENTS.md`](apps/frontend/AGENTS.md) (symlink: `CLAUDE.md`).
 > Cada bounded context do backend tem `AGENTS.md` próprio — leia antes de modificar.
 
+## Indexação de Specs do Superpowers (context-mode)
+
+Specs em `docs/superpowers/<feature>/` (prd, plans, specs, qa) têm índice full-text persistente via `context-mode`, `source: "superpowers-specs"`.
+
+- Explorar spec existente → `ctx_search` (não vasculhar `docs/superpowers/` manualmente)
+- Criar/editar spec relevante → `ctx_index` em `docs/superpowers/` para atualizar (reindexar sobrescreve, não duplica)
+
+```
+ctx_search(queries: ["paginação de atividade admin"], source: "superpowers-specs")
+ctx_search(queries: ["filtros da lista de usuários"], source: "superpowers-specs")
+```
+
 ## Shared API Types
 
 Types gerados do backend OpenAPI spec:
