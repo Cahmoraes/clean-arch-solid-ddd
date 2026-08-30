@@ -69,8 +69,9 @@ function PaginationLink({
 
 function PaginationPrevious({
 	className,
+	iconClassName,
 	...props
-}: ComponentProps<typeof PaginationLink>) {
+}: ComponentProps<typeof PaginationLink> & { iconClassName?: string }) {
 	return (
 		<PaginationLink
 			aria-label="Go to previous page"
@@ -78,15 +79,19 @@ function PaginationPrevious({
 			className={cn("", className)}
 			{...props}
 		>
-			<ChevronLeft className="h-4 w-4" aria-hidden="true" />
+			<ChevronLeft
+				className={cn("h-4 w-4", iconClassName)}
+				aria-hidden="true"
+			/>
 		</PaginationLink>
 	)
 }
 
 function PaginationNext({
 	className,
+	iconClassName,
 	...props
-}: ComponentProps<typeof PaginationLink>) {
+}: ComponentProps<typeof PaginationLink> & { iconClassName?: string }) {
 	return (
 		<PaginationLink
 			aria-label="Go to next page"
@@ -94,7 +99,10 @@ function PaginationNext({
 			className={cn("", className)}
 			{...props}
 		>
-			<ChevronRight className="h-4 w-4" aria-hidden="true" />
+			<ChevronRight
+				className={cn("h-4 w-4", iconClassName)}
+				aria-hidden="true"
+			/>
 		</PaginationLink>
 	)
 }

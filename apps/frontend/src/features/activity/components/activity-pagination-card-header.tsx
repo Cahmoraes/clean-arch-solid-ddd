@@ -1,6 +1,6 @@
 import { CardHeader, CardTitle } from "@/components/ui/card"
-import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import type { UserActivityPagination } from "@/features/activity/api/use-user-activity"
+import { ActivityPagination } from "@/features/activity/components/activity-pagination"
 import {
 	getTopActivityPage,
 	shouldShowTopPagination,
@@ -28,13 +28,12 @@ export function ActivityPaginationCardHeader({
 					20 por página
 				</span>
 				{showTopPagination ? (
-					<NumberedPagination
+					<ActivityPagination
 						page={topPage}
 						totalPages={pagination ? pagination.totalPages : 1}
 						onChange={onPageChange}
 						testIdPrefix={testIdPrefix}
 						disabled={isTransitioning}
-						className="mx-0 w-auto justify-end"
 					/>
 				) : null}
 			</div>

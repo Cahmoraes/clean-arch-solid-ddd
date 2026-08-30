@@ -28,6 +28,8 @@ function controlTabIndex(
 	return isControlDisabled(disabled, atBoundary) ? -1 : undefined
 }
 
+type NumberedPaginationVariant = "default" | "accent"
+
 interface NumberedPaginationProps {
 	page: number
 	totalPages: number
@@ -35,6 +37,23 @@ interface NumberedPaginationProps {
 	testIdPrefix: string
 	disabled?: boolean
 	className?: string
+	variant?: NumberedPaginationVariant
+}
+
+function pageLinkClassName(
+	variant: NumberedPaginationVariant,
+	isActive: boolean,
+): string {
+	if (variant !== "accent") return "h-8 w-8 text-sm"
+	if (isActive) {
+		return "h-8 w-8 rounded-sm border-transparent bg-accent text-sm font-semibold text-accent-foreground hover:bg-accent"
+	}
+	return "h-8 w-8 rounded-sm text-sm text-muted-foreground hover:text-foreground"
+}
+
+function navClassName(variant: NumberedPaginationVariant): string {
+	if (variant !== "accent") return "h-8 w-8 text-sm"
+	return "h-7 w-7 rounded-sm text-muted-foreground hover:text-foreground"
 }
 
 export function NumberedPagination({
@@ -44,6 +63,7 @@ export function NumberedPagination({
 	testIdPrefix,
 	disabled = false,
 	className,
+	variant = "default",
 }: NumberedPaginationProps) {
 	function handlePrev(event: MouseEvent) {
 		event.preventDefault()
@@ -70,7 +90,8 @@ export function NumberedPagination({
 					<PaginationPrevious
 						href="#"
 						data-testid={`${testIdPrefix}-prev`}
-						className="h-8 w-8 text-sm"
+						className={navClassName(variant)}
+						iconClassName={variant === "accent" ? "h-3.5 w-3.5" : undefined}
 						aria-disabled={isControlDisabled(disabled, page <= 1)}
 						tabIndex={controlTabIndex(disabled, page <= 1)}
 						onClick={handlePrev}
@@ -81,7 +102,7 @@ export function NumberedPagination({
 						<PaginationLink
 							href="#"
 							data-testid={`${testIdPrefix}-page-${p}`}
-							className="h-8 w-8 text-sm"
+							className={pageLinkClassName(variant, p === page)}
 							isActive={p === page}
 							aria-disabled={disabled}
 							tabIndex={disabled ? -1 : undefined}
@@ -95,7 +116,8 @@ export function NumberedPagination({
 					<PaginationNext
 						href="#"
 						data-testid={`${testIdPrefix}-next`}
-						className="h-8 w-8 text-sm"
+						className={navClassName(variant)}
+						iconClassName={variant === "accent" ? "h-3.5 w-3.5" : undefined}
 						aria-disabled={isControlDisabled(disabled, page >= totalPages)}
 						tabIndex={controlTabIndex(disabled, page >= totalPages)}
 						onClick={handleNext}

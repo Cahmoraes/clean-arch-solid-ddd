@@ -8,7 +8,6 @@ import {
 } from "lucide-react"
 import type { ComponentType } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
-import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/cn"
 import type {
@@ -17,6 +16,7 @@ import type {
 	UserActivityPagination,
 } from "../api/use-user-activity"
 import { formatActivityGroupLabel, formatActivityTime } from "./activity-format"
+import { ActivityPagination } from "./activity-pagination"
 
 const ACTIVITY_SKELETON_KEYS = [0, 1, 2] as const
 
@@ -196,13 +196,13 @@ function ActivityPaginationFooter({
 				Exibindo {summaryStart}–{summaryEnd} de {pagination.total} atividades
 			</span>
 			{showPagination ? (
-				<NumberedPagination
+				<ActivityPagination
 					page={currentPage}
 					totalPages={pagination.totalPages}
 					onChange={onPageChange}
 					testIdPrefix="activity"
 					disabled={isTransitioning}
-					className="mx-0 w-auto justify-start sm:justify-end"
+					className="justify-start sm:justify-end"
 				/>
 			) : null}
 		</footer>
