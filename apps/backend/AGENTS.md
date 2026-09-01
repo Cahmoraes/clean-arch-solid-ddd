@@ -18,7 +18,6 @@ Pular verificação = REJEIÇÃO IMEDIATA DA TAREFA.
 ## Restrições de Comunicação
 - Responder PT-BR preservando termos técnicos
 - Nunca emojis
-- Indentação 2 espaços, linha em branco ao final de arquivos
 
 ## Build, Test & Lint
 

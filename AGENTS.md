@@ -13,14 +13,6 @@
 - Responder sempre em PT-BR, preservar termos técnicos
 - Nunca usar emojis em respostas, apenas quando for necessário como em diagramas
 
-## Monorepo Structure
-
-pnpm workspace monorepo via Turborepo:
-
-- **`apps/backend`** — Fastify API (Clean Architecture + DDD, TypeScript, Inversify IoC, Prisma ORM)
-- **`apps/frontend`** — Next.js 16 app (React 19, TanStack Query, Zustand, Tailwind, shadcn/ui)
-- **`packages/api-types`** — Shared OpenAPI-generated types entre frontend e backend
-
 ## Build, Test & Lint
 
 ### Root (Turborepo)

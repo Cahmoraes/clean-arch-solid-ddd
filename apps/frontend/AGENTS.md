@@ -19,7 +19,6 @@ Pular verificação = REJEIÇÃO IMEDIATA DA TAREFA.
 ## Restrições de Comunicação
 - Responder português PT-BR, preservar termos técnicos
 - Nunca emojis
-- Indentação tab (Biome), linha em branco ao fim dos arquivos
 
 ## Build, Test & Lint
 
@@ -50,23 +49,15 @@ pnpm e2e:ui             # Testes E2E com UI interativa
 
 | Tarefa | Skills Obrigatórias |
 |--------|-------------------|
-| Correção de bug / debug | `systematic-debugging` + `no-workarounds` |
-| Escrita/alteração de testes | `test-antipatterns` + `vitest` |
-| Componentes UI / styling | `ui-ux-pro-max` + `web-design-guidelines` |
-| Componentes React (hooks, state, TypeScript) | `react` |
+| Correção de bug / debug | `no-workarounds` |
+| Escrita/alteração de testes | `test-antipatterns` |
 | Componentes shadcn/ui | `shadcn` |
 | Estilização com Tailwind CSS v4 | `tailwindcss` |
 | Data fetching / server state | `tanstack-query-best-practices` |
-| Gerenciamento de estado global | `zustand` |
-| Gerenciamento de estados complexos (máquinas de estado) | `xstate` |
-| Validação de schemas | `zod` |
 | Tipos avançados TypeScript | `typescript-advanced` |
 | Testes E2E com Playwright | `playwright-cli` |
 | Composição de componentes React | `vercel-composition-patterns` + `vercel-react-best-practices` |
 | Consulta de docs de libs | `context7` |
-| Criação de feature nova | `brainstorming` (antes de implementar) |
-| QA e validação | `qa-execution` ou `qa-report` |
-| Decisões arquiteturais de alto impacto / trade-offs | `council` |
 | Rebase e resolução de conflitos de merge | `git-rebase` |
 
 ## Arquitetura
