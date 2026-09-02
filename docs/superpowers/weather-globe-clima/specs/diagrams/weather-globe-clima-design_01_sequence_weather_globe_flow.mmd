@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    actor User as User
+    participant ClimaPage as Clima page
+    participant WeatherApi as GET /weather
+    participant WeatherBackend as Weather backend
+    participant Globe as Weather globe
+
+    User->>ClimaPage: Submit city or local name
+    ClimaPage->>WeatherApi: Request weather by city
+    WeatherApi->>WeatherBackend: Resolve city and coordinates
+    WeatherBackend-->>WeatherApi: Weather with city, temperature, min, max, latitude, longitude
+    WeatherApi-->>ClimaPage: Typed weather response
+    ClimaPage->>Globe: Pass city, latitude, longitude, motion preference
+    Globe-->>User: Rotate camera to marker and show view-only controls
+    alt Reduced motion or WebGL unavailable
+        Globe-->>User: Static globe fallback with marker text
+    end
