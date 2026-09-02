@@ -1,64 +1,70 @@
 ---
-created_at: "2026-09-01T21:07:54-03:00"
-updated_at: "2026-09-02T09:37:38-03:00"
+created_at: "2026-09-02T16:52:10-03:00"
+updated_at: "2026-09-02T16:52:10-03:00"
 ---
 
-# Mockup visual — Globo 3D panorâmico em `/clima`
+# Weather Globe Clima — Especificação Visual
 
-## Intenção visual
+## Decisão
 
-O layout aprovado é o **B: globo panorâmico**. A página abre com copy e busca no topo, seguida por um globo escuro e largo que centraliza o marcador da cidade consultada. O card de clima fica abaixo, preservando a leitura numérica e evitando que o globo vire a interface principal.
+Layout **"Opção A — globo hero, no topo"**: o globo 3D ocupa uma seção panorâmica entre o
+título da página e o formulário de busca, antes de qualquer resultado. Rejeitada a opção
+alternativa (globo compacto embutido dentro do card de resultado), por dar ao globo o
+protagonismo visual desde a primeira renderização da página, mesmo sem busca ainda feita.
 
-## Core HTML de referência
+## Layout e hierarquia
 
-```html
-<section class="clima-hero">
-  <div class="copy">
-    <span>Consulta de clima</span>
-    <h1>O clima no mapa antes dos números.</h1>
-    <p>A cidade pesquisada centraliza o globo, e os dados aparecem abaixo.</p>
-    <form class="search-row">
-      <input value="Lisboa" aria-label="Cidade" />
-      <button>Consultar</button>
-    </form>
-  </div>
+Ordem, de cima para baixo, dentro da coluna central (`max-w-md`, a mesma da página `/clima`
+hoje):
 
-  <div class="globe-panel" aria-label="Mapa 3D centrado em Lisboa">
-    <div class="globe"></div>
-    <div class="marker"></div>
-    <p>Destino selecionado: Lisboa</p>
-  </div>
-
-  <article class="weather-result">
-    <span>Agora em Lisboa</span>
-    <strong>18°C</strong>
-    <dl>
-      <div><dt>Mínima</dt><dd>15°C</dd></div>
-      <div><dt>Máxima</dt><dd>21°C</dd></div>
-    </dl>
-  </article>
-</section>
-```
+1. `<header>` — título "Consulta de clima" (`font-display`) + subtítulo.
+2. **Seção do globo** (nova) — painel de altura fixa (~200px no mockup, ajustar para o
+   componente real), cantos arredondados (`rounded-xl`), fundo escuro tipo "espaço" com um
+   glow radial na cor primária centrado no ponto do marcador.
+3. `WeatherSearchForm` (existente, inalterado) — input + botão "Consultar".
+4. Resultado (`CurrentWeatherDisplay` / `EmptyState` / erro, existentes, inalterados).
 
 ## Tokens aplicados
 
-- Fundo: `#080808`; card: `#161616`; superfície secundária: `#1d1d1d`.
-- Borda: `#2a2a2a`; texto principal: `#f6f6f4`; texto muted: `#a3a39c`.
-- Acento: `#39e58c`; marcador/atenção: `#ffb443`.
-- Radius: cards grandes em torno de `22px`; controles em torno de `14px`.
-- Tipografia: `Space Grotesk` para títulos, `Inter` para texto, `JetBrains Mono` para temperatura.
+- Cor primária / marcador / glow: `--color-primary` `#39e58c` (mesma cor de destaque usada
+  em botões e outros componentes do app).
+- Fundo do painel do globo: gradiente radial escuro (`#080808` → `#0c1410` → `#1c2b22`),
+  consistente com o tema escuro do projeto (`--color-background` dark).
+- Raio do painel: `rounded-xl` (mesmo raio de card usado em `CurrentWeatherDisplay`).
+- Tipografia: sem texto próprio no painel do globo além de uma legenda opcional discreta
+  (`font-sans`, `text-muted-foreground`) — a leitura da cidade/temperatura continua sendo
+  responsabilidade do card de resultado existente, nunca do globo.
 
-## Decisões para implementação
+## Core HTML de referência (estrutura do painel, simplificado)
 
-- O globo deve ser largo no desktop e continuar acima do resultado em mobile.
-- A busca permanece visível antes do resultado e não deve depender do globo.
-- O marcador representa apenas a cidade consultada mais recente.
-- O fallback estático deve manter o mesmo painel visual e trocar apenas a renderização WebGL por uma representação não animada.
+```html
+<div class="p-globe-hero">
+  <!-- canvas do react-globe.gl é montado aqui via ref, client-only -->
+  <span class="pin"></span> <!-- marcador na coordenada atual -->
+</div>
+```
 
-## Fonte original
+```css
+.p-globe-hero {
+  height: 200px;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 62% 38%, rgba(57,229,140,0.55), rgba(57,229,140,0) 45%),
+    radial-gradient(circle at 50% 50%, #1c2b22 0%, #0c1410 60%, #080808 100%);
+}
+```
 
-Nenhuma fonte externa. O mockup foi criado no Visual Companion em `.superpowers/brainstorm/3321760-1788351683/content/clima-globe-layout.html`.
+A altura, a proporção e o preenchimento exatos do canvas 3D real (`react-globe.gl`) devem
+ser ajustados na implementação — este bloco é a direção visual (cor, raio, posição na
+página), não o pixel final.
 
-## Nota de fidelidade
+## Fonte de design original
 
-Este artefato é um norte visual. A implementação final deve usar componentes reais da aplicação e ajustar responsividade, estados de loading/erro e controles conforme o código existente.
+Nenhuma — layout definido apenas via mockup do companion (comparação lado a lado das duas
+opções, aprovada nesta sessão de brainstorming).
+
+## Fidelidade
+
+Este artefato é um *norte*, não a tela pixel-final. A fidelidade definitiva do globo 3D
+(iluminação, textura do mapa-múndi, animação de rotação) é construída na task de
+implementação, usando a API real de `react-globe.gl`.

@@ -1,18 +1,32 @@
 sequenceDiagram
-    autonumber
-    actor User as User
-    participant ClimaPage as Clima page
-    participant WeatherApi as GET /weather
-    participant WeatherBackend as Weather backend
-    participant Globe as Weather globe
+    participant U as User
+    participant F as WeatherSearchForm
+    participant Q as useWeatherQuery
+    participant B as GetWeather backend
+    participant S as WeatherGlobeSection
+    participant A as AnimateGlobeToSearchedCity
+    participant G as StaticGlobeFallback
 
-    User->>ClimaPage: Submit city or local name
-    ClimaPage->>WeatherApi: Request weather by city
-    WeatherApi->>WeatherBackend: Resolve city and coordinates
-    WeatherBackend-->>WeatherApi: Weather with city, temperature, min, max, latitude, longitude
-    WeatherApi-->>ClimaPage: Typed weather response
-    ClimaPage->>Globe: Pass city, latitude, longitude, motion preference
-    Globe-->>User: Rotate camera to marker and show view-only controls
-    alt Reduced motion or WebGL unavailable
-        Globe-->>User: Static globe fallback with marker text
+    Note over S,G: Estado inicial - sem coords, globo ocioso
+
+    U->>F: digita cidade e envia busca
+    F->>Q: refetch(city)
+    activate Q
+    Q->>B: GET /weather?city=...
+    activate B
+    B-->>Q: 200 city, temperature, latitude, longitude
+    deactivate B
+    Q-->>F: data atualizado isSuccess
+    deactivate Q
+    F-->>S: resultado da query data
+
+    S->>S: checa prefers-reduced-motion e suporte WebGL
+
+    alt motion permitido e WebGL disponivel
+        S->>A: props latitude longitude
+        A->>A: anima pointOfView ate coords
+        A-->>U: globo interativo gira ate a cidade
+    else reduced-motion OU sem WebGL
+        S->>G: props latitude longitude
+        G-->>U: globo estatico com marcador na cidade
     end
