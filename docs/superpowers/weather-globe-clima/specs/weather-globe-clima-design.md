@@ -56,7 +56,7 @@ mapa-múndi, curva de animação) é construída na task de implementação cont
 
 | Componente | Responsabilidade | Depende de | Depende dele |
 |---|---|---|---|
-| **Incluir Coordenadas na Resposta do Clima** (backend, estende o use case `GetWeather` existente) | Retornar `latitude`/`longitude` já resolvidos internamente pelo geocoding existente, junto do restante da resposta de `GET /weather` | Geocoding já existente no use case | `@repo/api-types` regenerado, `useWeatherQuery` |
+| **Incluir Coordenadas na Resposta do Clima** (backend, estende `GetCurrentWeatherByCityUseCase` + VO `CurrentWeather`) | Reter a `Coordinate` que `GeocodingGateway.geocode()` já retorna (hoje descartada pelo use case após a chamada ao `WeatherGateway`) e incluí-la na `CurrentWeather` retornada, e daí na resposta de `GET /weather` | `Coordinate` (VO compartilhado em `shared/domain/value-object/coordinate.ts`, já usado por `geocodingGateway.geocode()`) | `@repo/api-types` regenerado, `useWeatherQuery` |
 | **AnimateGlobeToSearchedCity** (frontend, client-only, novo) | Renderizar o globo interativo: auto-rotate quando não há coordenada, anima `pointOfView` até a coordenada recebida, repassa drag/zoom ao usuário | Coordenada atual (prop) | `WeatherGlobeSection` |
 | **StaticGlobeFallback** (frontend, novo) | Mostrar representação estática (sem animação contínua) quando `prefers-reduced-motion: reduce` ou WebGL indisponível | Coordenada atual (prop, opcional) | `WeatherGlobeSection` |
 | **WeatherGlobeSection** (frontend, container novo, integrado na página `/clima`) | Ler o resultado de `useWeatherQuery`, detectar `prefers-reduced-motion`/suporte a WebGL, escolher entre `AnimateGlobeToSearchedCity` e `StaticGlobeFallback`, repassar a coordenada | `useWeatherQuery` (existente), os dois componentes acima | Página `/clima` |
@@ -68,18 +68,18 @@ acoplamento aferente de propósito, como único ponto de integração.
 ## Fluxo de Dados
 
 Usuário digita cidade → `WeatherSearchForm` (existente, inalterado) → `useWeatherQuery`
-chama `GET /weather?city=` (mesma query já usada hoje, sem chamada extra) → backend retorna
-`{city, temperature, latitude, longitude}` → `CurrentWeatherDisplay` renderiza como já faz
-hoje → `WeatherGlobeSection` consome o mesmo resultado da mesma query e repassa
-`latitude`/`longitude` para `AnimateGlobeToSearchedCity` (ou `StaticGlobeFallback`, conforme
-a detecção de motion/WebGL).
+chama `GET /weather?city=` (mesma query já usada hoje, sem chamada extra) →
+`GetCurrentWeatherByCityUseCase` retorna `{city, temperature, latitude, longitude}` →
+`CurrentWeatherDisplay` renderiza como já faz hoje → `WeatherGlobeSection` consome o mesmo
+resultado da mesma query e repassa `latitude`/`longitude` para `AnimateGlobeToSearchedCity`
+(ou `StaticGlobeFallback`, conforme a detecção de motion/WebGL).
 
 ```mermaid
 sequenceDiagram
     participant U as User
     participant F as WeatherSearchForm
     participant Q as useWeatherQuery
-    participant B as GetWeather backend
+    participant B as GetCurrentWeatherByCityUseCase
     participant S as WeatherGlobeSection
     participant A as AnimateGlobeToSearchedCity
     participant G as StaticGlobeFallback
@@ -113,8 +113,17 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_sequence_weather_g
 
 ## Contrato de API
 
-- `GET /weather` ganha `latitude: number` e `longitude: number` na resposta, usando o
-  geocoding que o backend já faz internamente (sem chamada externa nova).
+- `GetCurrentWeatherByCityUseCase.execute()` (`apps/backend/src/weather/application/use-case/get-current-weather-by-city.usecase.ts`)
+  já recebe uma `Coordinate` de `geocodingGateway.geocode()`, mas hoje só a usa para chamar
+  `weatherGateway.getCurrentWeather(coordinate)` e a descarta — o `success({...})` final só
+  combina `city` + `temperature`. A mudança passa a incluir essa mesma `coordinate` no
+  retorno.
+- VO `CurrentWeather` (`apps/backend/src/weather/domain/value-object/current-weather.ts`)
+  ganha o campo `coordinate: Coordinate` (reaproveitando o VO compartilhado
+  `shared/domain/value-object/coordinate.ts`, que já expõe `latitude`/`longitude`).
+- `WeatherController` (`apps/backend/src/weather/infra/controller/weather-controller.ts`)
+  ajusta `weatherResponseSchema` (Zod) para incluir `latitude`/`longitude` na resposta,
+  lidos de `coordinate.latitude`/`coordinate.longitude`.
 - Regenerar OpenAPI + `@repo/api-types` (`pnpm generate:types`).
 - Ajustar `WeatherResponse`/`citySchema` em `apps/frontend/src/features/weather/`.
 
@@ -165,8 +174,13 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_sequence_weather_g
 
 ## Estrutura de Componentes (arquivos)
 
-- `apps/backend/src/weather/...` — ajustar use case `GetWeather`, VO `CurrentWeather`,
-  controller e schema OpenAPI para incluir `latitude`/`longitude`.
+- `apps/backend/src/weather/domain/value-object/current-weather.ts` — `CurrentWeather` ganha
+  `coordinate: Coordinate`.
+- `apps/backend/src/weather/application/use-case/get-current-weather-by-city.usecase.ts` —
+  passa a incluir a `coordinate` (já obtida de `geocodingGateway.geocode()`) no `success({...})`
+  final, em vez de descartá-la.
+- `apps/backend/src/weather/infra/controller/weather-controller.ts` —
+  `weatherResponseSchema` (Zod) ganha `latitude`/`longitude`.
 - `packages/api-types/` — regenerado via `pnpm generate:types` (não editado manualmente).
 - `apps/frontend/src/features/weather/schemas/index.ts` — `citySchema`/tipos ajustados.
 - `apps/frontend/src/features/weather/components/weather-globe-section.tsx` (novo).
