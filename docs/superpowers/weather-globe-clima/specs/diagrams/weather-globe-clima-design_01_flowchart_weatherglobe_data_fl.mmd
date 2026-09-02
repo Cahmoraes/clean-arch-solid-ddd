@@ -1,0 +1,30 @@
+flowchart TD
+    Start([User digita cidade]) --> Form[WeatherSearchForm]
+    Form -->|submit| Hook[useWeatherQuery TanStack]
+    Hook -->|"GET /weather?city="| API[Backend weather endpoint]
+    API --> Domain[Weather bounded context resolve city]
+    Domain --> Response[Response: temperatura + lat/lng]
+    Response --> Hook
+
+    Hook --> Page[/clima page/]
+    Page --> Card[CurrentWeatherDisplay renderiza temperatura]
+    Page --> Globe[WeatherGlobe mount client-only]
+
+    Globe --> Check{WebGL suportado E nao prefers-reduced-motion?}
+    Check -->|Nao| Fallback[Static fallback]
+    Check -->|Sim| Interactive[Globo interativo auto-rotate default]
+
+    Interactive --> NewCoords{Novas coordenadas da query?}
+    NewCoords -->|Sim| Animate[pointOfView lat lng altitude anima camera]
+    NewCoords -->|Nao| Idle[Mantem rotacao padrao]
+    Animate --> Idle
+
+    classDef frontend fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
+    classDef backend fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef decision fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    classDef fallback fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:black
+
+    class Form,Hook,Page,Card,Globe,Interactive,Animate,Idle frontend
+    class API,Domain,Response backend
+    class Check,NewCoords decision
+    class Fallback fallback
