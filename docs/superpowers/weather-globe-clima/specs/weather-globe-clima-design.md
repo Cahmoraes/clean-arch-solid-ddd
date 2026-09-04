@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-01T21:07:54-03:00"
-updated_at: "2026-09-04T20:12:50-03:00"
+updated_at: "2026-09-04T20:27:10-03:00"
 ---
 
 # Design — Globo 3D na rota `/clima`
@@ -70,6 +70,9 @@ não o círculo estático do mockup.
   busca" na montagem do globo, só na câmera.
 - **Justificativa de negócio:** maior impacto visual imediato, aprovado pelo usuário.
 - **Trade-offs aceitos:** o globo ocupa espaço vertical mesmo antes de qualquer busca.
+- **Fechamento adicional:** uma nova busca disparada antes da animação da busca anterior
+  terminar substitui o alvo da câmera pela coordenada mais recente (a chamada mais nova de
+  `pointOfView` sempre prevalece); não há fila de animações pendentes.
 
 ### D3. Contrato HTTP estendido de forma aditiva
 
@@ -81,6 +84,12 @@ não o círculo estático do mockup.
 - **Justificativa técnica:** menor superfície de mudança; nenhum consumidor existente
   quebra (campos novos, não removidos/renomeados); forma plana evita acoplar o contrato
   HTTP à representação interna do VO `Coordinate`.
+- **Atenção de implementação:** o Fastify serializa a resposta estritamente conforme o
+  `weatherResponseSchema` do `WeatherController` (`fast-json-stringify`, sem
+  `setSerializerCompiler` customizado) — um campo ausente desse schema é descartado
+  silenciosamente na serialização, mesmo presente no objeto de domínio. A mudança precisa
+  tocar **tanto** o VO de domínio (`CurrentWeather`) **quanto** o `weatherResponseSchema`,
+  sob pena de `latitude`/`longitude` desaparecerem na resposta HTTP real sem erro visível.
 - **Justificativa de negócio:** reaproveita geocoding já pago (custo zero adicional de
   chamada externa).
 - **Trade-offs aceitos:** nenhum — extensão puramente aditiva.
@@ -201,16 +210,20 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_flowchart_weatherg
 
 ## Testes
 
-- **Backend:** teste unitário/integração garantindo que a resposta de `GET /weather?city=`
-  passa a incluir `latitude`/`longitude` corretos para uma cidade conhecida, sem quebrar o
-  formato existente (`city`, `temperature`).
+- **Backend:** teste de integração HTTP (não só do caso de uso) garantindo que a resposta
+  serializada de `GET /weather?city=` passa a incluir `latitude`/`longitude` corretos para
+  uma cidade conhecida, sem quebrar o formato existente (`city`, `temperature`) — cobrindo
+  também o `weatherResponseSchema` do controller, não só o VO de domínio (ver D3, "Atenção
+  de implementação").
 - **Frontend:**
   - `WeatherGlobe` renderiza o fallback estático quando WebGL é reportado como
     indisponível (mock) OU `prefers-reduced-motion: reduce` está ativo (mock de
     `matchMedia`).
   - `WeatherGlobe` chama `pointOfView({ lat, lng, altitude }, ms)` com `latitude`/
     `longitude` corretos quando a query de clima retorna um resultado novo (mock do
-    ref/instância do globo — sem WebGL real).
+    ref/instância do globo — sem WebGL real). Critério de "concluído" para este teste: a
+    chamada mockada ocorreu com os valores de `lat`/`lng` esperados — duração e easing da
+    transição são detalhe de implementação, não fazem parte do critério de aceite.
   - `/clima` continua renderizando `CurrentWeatherDisplay` normalmente com o globo
     presente (nenhuma regressão no fluxo de busca existente).
   - `WeatherGlobe` cancela o loop de auto-rotação e libera o contexto WebGL (`renderer`
