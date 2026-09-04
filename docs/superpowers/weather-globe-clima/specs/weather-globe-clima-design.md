@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-01T21:07:54-03:00"
-updated_at: "2026-09-01T21:07:54-03:00"
+updated_at: "2026-09-04T20:12:50-03:00"
 ---
 
 # Design — Globo 3D na rota `/clima`
@@ -12,7 +12,8 @@ automaticamente e anima até a localização da cidade consultada pelo usuário.
 tornar a consulta de clima mais visual, sem alterar o comportamento funcional já existente
 (busca por cidade, exibição de temperatura atual/mínima/máxima).
 
-A página `/clima` já existe (feature `weather-service`), assim como o endpoint
+A página `/clima` já existe (bounded context `weather`, feature de planejamento
+`weather-service`), assim como o endpoint
 `GET /weather?city=`. Este design estende ambos de forma aditiva: o backend passa a expor
 `latitude`/`longitude` na resposta, e o frontend ganha um novo componente `WeatherGlobe`.
 
@@ -24,7 +25,7 @@ A página `/clima` já existe (feature `weather-service`), assim como o endpoint
 |---|---|---|
 | Performance (bundle) | `react-globe.gl` pesa ~340KB gzip; não pode inflar o bundle inicial de uma rota pública simples | Chunk do `WeatherGlobe` carregado via `next/dynamic({ ssr:false })` fica fora do bundle inicial da rota (verificável no output do `next build`) |
 | Compatibilidade / acessibilidade | WebGL e `prefers-reduced-motion` não são garantidos em todo navegador/usuário | Fallback estático é renderizado sempre que `WebGL` está indisponível OU `prefers-reduced-motion: reduce` está ativo, coberto por teste unitário mockando as duas condições |
-| Testabilidade | WebGL não roda em jsdom/CI headless | Testes unitários verificam a chamada de `pointOfView(lat, lng, altitude)` via mock de `ref`, sem depender de render WebGL real |
+| Testabilidade | WebGL não roda em jsdom/CI headless | Testes unitários verificam a chamada de `pointOfView({ lat, lng, altitude }, ms)` via mock de `ref`, sem depender de render WebGL real |
 
 **Consideradas, não priorizadas:** scalability (rota pública de baixo tráfego, sem mudança de perfil de acesso), availability (globo é decorativo — sua falha não pode derrubar a página, ver D5/Riscos).
 
@@ -48,11 +49,11 @@ não o círculo estático do mockup.
 
 - **Contexto:** duas bibliotecas leves cobrem o caso de uso — `cobe` (~5KB, sem binding
   React, animação de câmera manual) e `react-globe.gl` (~340KB gzip, wrapper React sobre
-  Three.js, `pointOfView(lat, lng, altitude, ms)` pronto).
+  Three.js, `pointOfView({ lat, lng, altitude }, ms)` pronto).
 - **Decisão:** `react-globe.gl`.
-- **Justificativa técnica:** API de animação de câmera já pronta, reduz código customizado
-  de easing; superfície de extensão maior (marcadores, arcos, atmosfera) caso a feature
-  evolua.
+- **Justificativa técnica:** API de animação de câmera já pronta (`pointOfView({ lat, lng,
+  altitude }, ms)`), reduz código customizado de easing; superfície de extensão maior
+  (marcadores, arcos, atmosfera) caso a feature evolua.
 - **Justificativa de negócio:** decisão explícita do usuário, priorizando espaço para
   evoluir o recurso no futuro sobre o menor bundle possível agora.
 - **Trade-offs aceitos:** ~335KB a mais de bundle (mitigado por code-splitting client-only,
@@ -74,9 +75,12 @@ não o círculo estático do mockup.
 
 - **Contexto:** `GET /weather?city=` hoje retorna `{ city, temperature }`; o geocoding
   interno já resolve coordenadas, apenas não as expõe.
-- **Decisão:** adicionar `latitude` e `longitude` à resposta existente, sem novo endpoint.
+- **Decisão:** adicionar `latitude` e `longitude` à resposta existente, sem novo endpoint,
+  como campos soltos no nível raiz (não aninhados no VO `Coordinate`):
+  `{ city, temperature: {...}, latitude: number, longitude: number }`.
 - **Justificativa técnica:** menor superfície de mudança; nenhum consumidor existente
-  quebra (campos novos, não removidos/renomeados).
+  quebra (campos novos, não removidos/renomeados); forma plana evita acoplar o contrato
+  HTTP à representação interna do VO `Coordinate`.
 - **Justificativa de negócio:** reaproveita geocoding já pago (custo zero adicional de
   chamada externa).
 - **Trade-offs aceitos:** nenhum — extensão puramente aditiva.
@@ -106,6 +110,21 @@ não o círculo estático do mockup.
   por causa de um elemento decorativo.
 - **Trade-offs aceitos:** parte dos usuários nunca vê o globo animado; aceito porque a
   informação de clima (o dado essencial) nunca depende do globo.
+- **Fechamentos adicionais (escopo de robustez e acessibilidade):**
+  - Uma exceção de runtime do Three.js/`react-globe.gl` (após a montagem bem-sucedida)
+    também não pode derrubar a página: `WeatherGlobe` é envolvido por um `ErrorBoundary`
+    local que renderiza o fallback estático em caso de erro, estendendo a garantia de D5
+    de "montagem" para "runtime".
+  - No desmonte (unmount), `WeatherGlobe` cancela o loop de auto-rotação e libera o
+    contexto WebGL (`globeEl.current.renderer()`), evitando vazamento de contexto WebGL
+    ao navegar repetidamente para dentro e fora de `/clima`.
+  - Por ser puramente decorativo (ver Fora de Escopo), `WeatherGlobe` e seu fallback
+    recebem `aria-hidden="true"` e os controles de órbita/zoom padrão do `react-globe.gl`
+    são desabilitados (`enablePointerInteraction={false}`), garantindo que o elemento não
+    captura foco de teclado nem interação de mouse.
+  - Quando a query de clima falha (busca subsequente sem sucesso), o globo mantém a
+    última posição/rotação válida sem indicar erro — o estado de erro é comunicado só
+    pela mensagem já existente da página, não pelo globo.
 
 ## Componentes e Fluxo de Dados
 
@@ -114,7 +133,9 @@ não o círculo estático do mockup.
   anima até a localização da última busca de clima, com fallback estático quando
   WebGL/`prefers-reduced-motion` não são suportados. Depende de `react-globe.gl` e de
   `latitude`/`longitude` vindos do resultado da query de clima; é consumido apenas pela
-  página `/clima` (fan-in = 1).
+  página `/clima` (fan-in = 1). Enquanto o chunk client-only (`next/dynamic`) carrega, a
+  página reserva um placeholder de altura fixa equivalente ao globo, evitando layout
+  shift no card acima.
 - **Extensão do fluxo de clima existente** (backend, `apps/backend/src/weather/`) — o caso
   de uso que já resolve geocoding + clima atual passa a incluir `latitude`/`longitude` na
   resposta; após a mudança, regenerar `@repo/api-types` (`pnpm generate:types`).
@@ -128,27 +149,33 @@ flowchart TD
     Domain --> Response[Resposta: temperatura + lat/lng]
     Response --> Hook
 
+    Hook -->|erro| Error[Mensagem de erro role=alert]
     Hook --> Page[/clima page/]
     Page --> Card[CurrentWeatherDisplay renderiza temperatura]
     Page --> Globe[WeatherGlobe monta client-only]
 
-    Globe --> Check{WebGL suportado E não prefers-reduced-motion?}
-    Check -->|Não| Fallback[Fallback estático]
+    Globe --> Boundary[ErrorBoundary local]
+    Boundary --> Check{WebGL suportado E não prefers-reduced-motion?}
+    Check -->|Não| Fallback[Fallback estático aria-hidden]
     Check -->|Sim| Interactive[Globo interativo, auto-rotate por padrão]
+    Boundary -->|exceção runtime| Fallback
 
     Interactive --> NewCoords{Novas coordenadas na query?}
-    NewCoords -->|Sim| Animate[pointOfView lat lng altitude anima câmera]
-    NewCoords -->|Não| Idle[Mantém rotação padrão]
+    NewCoords -->|Sim| Animate["pointOfView({lat, lng, altitude}, ms) anima câmera"]
+    NewCoords -->|Não/erro| Idle[Mantém última posição válida]
     Animate --> Idle
+
+    Page --> Unmount{Componente desmontado?}
+    Unmount -->|Sim| Cleanup[Cancela auto-rotate e libera contexto WebGL]
 
     classDef frontend fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
     classDef backend fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
     classDef decision fill:#FFD700,stroke:#333,stroke-width:2px,color:black
     classDef fallback fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:black
 
-    class Form,Hook,Page,Card,Globe,Interactive,Animate,Idle frontend
+    class Form,Hook,Page,Card,Globe,Boundary,Interactive,Animate,Idle,Cleanup,Error frontend
     class API,Domain,Response backend
-    class Check,NewCoords decision
+    class Check,NewCoords,Unmount decision
     class Fallback fallback
 ```
 
@@ -158,7 +185,7 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_flowchart_weatherg
 
 | Risco | Impacto (1-3) | Probabilidade (1-3) | Score | Mitigação |
 |---|---|---|---|---|
-| Peso de bundle (~340KB) degrada performance da rota | 2 | 2 | 4 🟡 | `next/dynamic({ ssr:false })` isola o chunk do bundle inicial (D4) |
+| Peso de bundle (~340KB) degrada performance da rota | 2 | 2 | 4 🟡 | `next/dynamic({ ssr:false })` isola o chunk do bundle inicial (D4), reforçado por um teste estrutural que falha se `react-globe.gl` for importado fora do `next/dynamic` |
 | WebGL indisponível ou fraco em dispositivo do usuário | 2 | 2 | 4 🟡 | Fallback estático (D5); dado essencial (temperatura) nunca depende do globo |
 | Inconsistência com precedente do `volt-redesign` (evitar novas deps de visualização) | 1 | 3 | 3 🟡 | Decisão explícita e documentada (D1), escopada só a esta página |
 | Esquecer de regenerar `@repo/api-types` após estender o contrato | 2 | 2 | 4 🟡 | Task de plano inclui `pnpm generate:types` como passo explícito após a mudança de backend |
@@ -181,7 +208,15 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_flowchart_weatherg
   - `WeatherGlobe` renderiza o fallback estático quando WebGL é reportado como
     indisponível (mock) OU `prefers-reduced-motion: reduce` está ativo (mock de
     `matchMedia`).
-  - `WeatherGlobe` chama `pointOfView` com `latitude`/`longitude` corretos quando a query
-    de clima retorna um resultado novo (mock do ref/instância do globo — sem WebGL real).
+  - `WeatherGlobe` chama `pointOfView({ lat, lng, altitude }, ms)` com `latitude`/
+    `longitude` corretos quando a query de clima retorna um resultado novo (mock do
+    ref/instância do globo — sem WebGL real).
   - `/clima` continua renderizando `CurrentWeatherDisplay` normalmente com o globo
     presente (nenhuma regressão no fluxo de busca existente).
+  - `WeatherGlobe` cancela o loop de auto-rotação e libera o contexto WebGL (`renderer`
+    interno) no cleanup do `useEffect` ao desmontar.
+  - `WeatherGlobe` envolvido por um `ErrorBoundary` local: uma exceção de runtime do
+    Three.js/`react-globe.gl` renderiza o fallback estático de D5 em vez de derrubar a
+    página; `CurrentWeatherDisplay` continua renderizando (mock de throw simulado).
+  - Nenhuma importação estática de `react-globe.gl` fora do `next/dynamic({ ssr: false })`
+    (fitness function/regra estrutural que impede regressão do isolamento de bundle de D4).
