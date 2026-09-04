@@ -1,32 +1,21 @@
 sequenceDiagram
-    participant U as User
-    participant F as WeatherSearchForm
-    participant Q as useWeatherQuery
-    participant B as GetCurrentWeatherByCityUseCase
-    participant S as WeatherGlobeSection
-    participant A as AnimateGlobeToSearchedCity
-    participant G as StaticGlobeFallback
+    autonumber
+    actor U as 👤 User
+    participant G as 🌐 WeatherGlobe
+    participant R as 🗺️ CountryCapitalResolver
+    participant Q as 🔄 useWeatherQuery
+    participant B as ⚙️ get-current-weather-by-city
+    participant D as 📊 CurrentWeatherDisplay
 
-    Note over S,G: Estado inicial - sem coords, globo ocioso
-
-    U->>F: digita cidade e envia busca
-    F->>Q: refetch(city)
-    activate Q
-    Q->>B: GET /weather?city=...
-    activate B
-    B-->>Q: 200 city, temperature, latitude, longitude
-    deactivate B
-    Q-->>F: data atualizado isSuccess
-    deactivate Q
-    F-->>S: resultado da query data
-
-    S->>S: checa prefers-reduced-motion e suporte WebGL
-
-    alt motion permitido e WebGL disponivel
-        S->>A: props latitude longitude
-        A->>A: anima pointOfView ate coords
-        A-->>U: globo interativo gira ate a cidade
-    else reduced-motion OU sem WebGL
-        S->>G: props latitude longitude
-        G-->>U: globo estatico com marcador na cidade
+    U->>G: Click country polygon
+    G->>R: resolve(countryIsoCode)
+    R-->>G: capital name
+    alt capital found
+        G->>Q: trigger(capital)
+        Q->>B: GET weather by city
+        B-->>Q: weather data
+        Q-->>D: query result (data)
+        D-->>U: Render updated weather
+    else capital not found
+        G-->>U: Show "no data" state
     end

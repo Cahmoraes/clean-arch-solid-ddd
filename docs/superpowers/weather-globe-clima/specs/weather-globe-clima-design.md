@@ -1,23 +1,16 @@
 ---
-created_at: "2026-09-02T16:52:10-03:00"
-updated_at: "2026-09-02T16:52:10-03:00"
+created_at: "2026-09-04T08:24:36-03:00"
+updated_at: "2026-09-04T08:24:36-03:00"
 ---
 
-# Weather Globe Clima — Design
-
-> Nota de proveniência: uma tentativa anterior de design para este mesmo recurso existe
-> commitada em `HEAD` sob este mesmo diretório (decisões distintas: layout diferente,
-> `@react-three/fiber`/Three.js em vez de `react-globe.gl`). Por instrução explícita do
-> usuário, este documento **substitui** integralmente aquele conteúdo — nenhuma decisão do
-> design anterior foi assumida como vinculante nesta sessão.
+# Mapa Mundi (Globo 3D) na tela /clima
 
 ## Visão Geral
 
-Na rota `/clima`, um globo 3D interativo (`react-globe.gl`) aparece como seção hero entre o
-header e o formulário de busca. Sem cidade pesquisada, gira sozinho lentamente (idle). Ao
-buscar uma cidade, o globo anima a câmera até a coordenada retornada pelo backend e passa a
-aceitar drag/zoom livres do usuário. A consulta de clima permanece funcional mesmo quando o
-globo não pode ser exibido (WebGL indisponível, `prefers-reduced-motion`).
+Adiciona um globo 3D interativo à tela `/clima`, complementando a busca por cidade já
+existente. Ao clicar em um país no globo, a tela consulta automaticamente o clima da
+capital daquele país, reaproveitando o fluxo de busca por cidade já existente no
+frontend — sem nenhuma mudança no backend.
 
 ## Características Arquiteturais
 
@@ -25,182 +18,146 @@ globo não pode ser exibido (WebGL indisponível, `prefers-reduced-motion`).
 
 | Característica | Por quê (preocupação de domínio) | Critério mensurável |
 |---|---|---|
-| Performance | Lib 3D (three.js) é pesada e não pode degradar o carregamento da página pública `/clima` | Chunk do globo carrega via `next/dynamic({ssr:false})`, isolado do bundle inicial da rota |
-| Acessibilidade | Rotação contínua é gatilho de enjoo/vestibular; a informação de clima não pode depender do canvas 3D | Com `prefers-reduced-motion: reduce`, nenhuma animação contínua roda e cidade/temperatura seguem sempre em texto plano |
-| Robustez/portabilidade | Nem todo navegador/dispositivo tem WebGL disponível | Ausência de WebGL não quebra a página; `StaticGlobeFallback` assume o lugar do globo |
+| Manutenibilidade | Decisão explícita de isolar a feature no frontend, sem tocar o backend | Zero alteração em `apps/backend/src/weather/` |
+| Imersão/qualidade visual | Motivo declarado da escolha do globo 3D sobre o mapa plano (Leaflet) | Globo com países clicáveis e destaque ao hover, validado no mockup |
+| Performance de carregamento | Nova dependência WebGL não pode travar o carregamento inicial da tela pública | Globo carregado via `dynamic import` client-only; formulário de busca renderiza sem esperar o bundle do globo |
 
-**Consideradas, não priorizadas:** escalabilidade (tráfego atual não justifica), segurança/LGPD
-(dado público, sem PII), i18n (não muda com a feature).
+**Consideradas, não priorizadas:** escalabilidade (tela pública sem tráfego elevado
+esperado), internacionalização (fora de escopo).
+
+## Estrutura de Componentes
+
+| Componente | Responsabilidade | Depende de | Do que depende |
+|---|---|---|---|
+| `WeatherGlobe` | Renderizar o globo 3D (client-only) com polígonos de país clicáveis e emitir o país selecionado | `react-globe.gl`, dataset de polígonos (`world-atlas`/topojson via `topojson-client`) | Página `/clima` |
+| `CountryCapitalResolver` | Resolver o código ISO do país selecionado para o nome da capital, usando uma tabela estática país→capital | Dataset país→capital (estático, em repo) | Página `/clima` |
+
+Reaproveitados sem alteração: `useWeatherQuery` (hook existente), `WeatherSearchForm` e
+`CurrentWeatherDisplay`. O clique no globo apenas alimenta e dispara a mesma busca por
+nome de cidade que o formulário já usa — não é criado nenhum caminho de dados novo no
+backend.
+
+Acoplamento temporal: clique → `CountryCapitalResolver` resolve a capital → dispara
+`useWeatherQuery` com esse nome, na mesma ordem que a submissão manual do formulário.
 
 ## Especificação Visual
 
 **Artefato curado:** `mockups/weather-globe-clima-visual.md`
 
-**Fonte de design original:** nenhuma; layout definido apenas via mockup do companion
-(comparação lado a lado de duas opções, aprovada nesta sessão de brainstorming).
+**Fonte de design original:** nenhuma — layout definido apenas via mockup do companion.
 
 **Decisões visuais (norte, não pixel-final):**
-- Layout: globo em seção hero panorâmica, entre o `<header>` e o `WeatherSearchForm`, na
-  mesma coluna `max-w-md` da página `/clima`.
-- Fundo do painel: gradiente radial escuro, consistente com o tema escuro do projeto.
-- Cor de destaque/marcador: `--color-primary` (`#39e58c`).
-- Raio: `rounded-xl`, igual ao card de `CurrentWeatherDisplay`.
-- Sem texto próprio relevante no painel — cidade/temperatura continuam só no card de
-  resultado existente.
+- Globo abaixo do formulário de busca, mesma largura de card das demais seções da tela.
+- Estilo escuro (tema padrão do projeto), esfera com brilho verde (`--primary`) sutil,
+  sem texturas fotorrealistas — combina com o visual flat/dark existente.
+- Painel de clima (temperatura atual + min/máx) permanece o componente
+  `CurrentWeatherDisplay` já existente, apenas re-disparado pelo clique no globo.
 
-**Fidelidade:** o mockup é um *norte*. A fidelidade final (iluminação, textura do
-mapa-múndi, curva de animação) é construída na task de implementação contra a API real de
-`react-globe.gl`.
-
-## Componentes Lógicos
-
-| Componente | Responsabilidade | Depende de | Depende dele |
-|---|---|---|---|
-| **Incluir Coordenadas na Resposta do Clima** (backend, estende `GetCurrentWeatherByCityUseCase` + VO `CurrentWeather`) | Reter a `Coordinate` que `GeocodingGateway.geocode()` já retorna (hoje descartada pelo use case após a chamada ao `WeatherGateway`) e incluí-la na `CurrentWeather` retornada, e daí na resposta de `GET /weather` | `Coordinate` (VO compartilhado em `shared/domain/value-object/coordinate.ts`, já usado por `geocodingGateway.geocode()`) | `@repo/api-types` regenerado, `useWeatherQuery` |
-| **AnimateGlobeToSearchedCity** (frontend, client-only, novo) | Renderizar o globo interativo: auto-rotate quando não há coordenada, anima `pointOfView` até a coordenada recebida, repassa drag/zoom ao usuário | Coordenada atual (prop) | `WeatherGlobeSection` |
-| **StaticGlobeFallback** (frontend, novo) | Mostrar representação estática (sem animação contínua) quando `prefers-reduced-motion: reduce` ou WebGL indisponível | Coordenada atual (prop, opcional) | `WeatherGlobeSection` |
-| **WeatherGlobeSection** (frontend, container novo, integrado na página `/clima`) | Ler o resultado de `useWeatherQuery`, detectar `prefers-reduced-motion`/suporte a WebGL, escolher entre `AnimateGlobeToSearchedCity` e `StaticGlobeFallback`, repassar a coordenada | `useWeatherQuery` (existente), os dois componentes acima | Página `/clima` |
-
-**Acoplamento:** `AnimateGlobeToSearchedCity` e `StaticGlobeFallback` são folhas — só
-recebem props, não conhecem a query nem o backend. `WeatherGlobeSection` concentra o
-acoplamento aferente de propósito, como único ponto de integração.
+**Fidelidade:** o mockup é um norte; cores exatas do globo/luz são ajustadas na
+implementação.
 
 ## Fluxo de Dados
 
-Usuário digita cidade → `WeatherSearchForm` (existente, inalterado) → `useWeatherQuery`
-chama `GET /weather?city=` (mesma query já usada hoje, sem chamada extra) →
-`GetCurrentWeatherByCityUseCase` retorna `{city, temperature, latitude, longitude}` →
-`CurrentWeatherDisplay` renderiza como já faz hoje → `WeatherGlobeSection` consome o mesmo
-resultado da mesma query e repassa `latitude`/`longitude` para `AnimateGlobeToSearchedCity`
-(ou `StaticGlobeFallback`, conforme a detecção de motion/WebGL).
-
 ```mermaid
 sequenceDiagram
-    participant U as User
-    participant F as WeatherSearchForm
-    participant Q as useWeatherQuery
-    participant B as GetCurrentWeatherByCityUseCase
-    participant S as WeatherGlobeSection
-    participant A as AnimateGlobeToSearchedCity
-    participant G as StaticGlobeFallback
+    autonumber
+    actor U as 👤 User
+    participant G as 🌐 WeatherGlobe
+    participant R as 🗺️ CountryCapitalResolver
+    participant Q as 🔄 useWeatherQuery
+    participant B as ⚙️ get-current-weather-by-city
+    participant D as 📊 CurrentWeatherDisplay
 
-    Note over S,G: Estado inicial - sem coords, globo ocioso
-
-    U->>F: digita cidade e envia busca
-    F->>Q: refetch(city)
-    activate Q
-    Q->>B: GET /weather?city=...
-    activate B
-    B-->>Q: 200 city, temperature, latitude, longitude
-    deactivate B
-    Q-->>F: data atualizado isSuccess
-    deactivate Q
-    F-->>S: resultado da query data
-
-    S->>S: checa prefers-reduced-motion e suporte WebGL
-
-    alt motion permitido e WebGL disponivel
-        S->>A: props latitude longitude
-        A->>A: anima pointOfView ate coords
-        A-->>U: globo interativo gira ate a cidade
-    else reduced-motion OU sem WebGL
-        S->>G: props latitude longitude
-        G-->>U: globo estatico com marcador na cidade
+    U->>G: Click country polygon
+    G->>R: resolve(countryIsoCode)
+    R-->>G: capital name
+    alt capital found
+        G->>Q: trigger(capital)
+        Q->>B: GET weather by city
+        B-->>Q: weather data
+        Q-->>D: query result (data)
+        D-->>U: Render updated weather
+    else capital not found
+        G-->>U: Show "no data" state
     end
 ```
 
 Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_sequence_weather_globe_flow.mmd`
 
-## Contrato de API
-
-- `GetCurrentWeatherByCityUseCase.execute()` (`apps/backend/src/weather/application/use-case/get-current-weather-by-city.usecase.ts`)
-  já recebe uma `Coordinate` de `geocodingGateway.geocode()`, mas hoje só a usa para chamar
-  `weatherGateway.getCurrentWeather(coordinate)` e a descarta — o `success({...})` final só
-  combina `city` + `temperature`. A mudança passa a incluir essa mesma `coordinate` no
-  retorno.
-- VO `CurrentWeather` (`apps/backend/src/weather/domain/value-object/current-weather.ts`)
-  ganha o campo `coordinate: Coordinate` (reaproveitando o VO compartilhado
-  `shared/domain/value-object/coordinate.ts`, que já expõe `latitude`/`longitude`).
-- `WeatherController` (`apps/backend/src/weather/infra/controller/weather-controller.ts`)
-  ajusta `weatherResponseSchema` (Zod) para incluir `latitude`/`longitude` na resposta,
-  lidos de `coordinate.latitude`/`coordinate.longitude`.
-- Regenerar OpenAPI + `@repo/api-types` (`pnpm generate:types`).
-- Ajustar `WeatherResponse`/`citySchema` em `apps/frontend/src/features/weather/`.
+Usuário clica em um país no globo (`WeatherGlobe`) → `CountryCapitalResolver` resolve o
+código ISO do país para o nome da capital → `useWeatherQuery` é disparado com esse nome
+(mesmo caminho do submit manual do formulário) → o backend (`get-current-weather-by-city`,
+inalterado) faz seu próprio geocoding e retorna o clima → `CurrentWeatherDisplay`
+re-renderiza com o resultado. Se a capital não é encontrada no dataset (país sem entrada),
+o globo mostra um estado "sem dados" sem disparar a consulta.
 
 ## Decisões Arquiteturais
 
-### D1. `react-globe.gl` em vez de `cobe` ou `@react-three/fiber` puro
+### D1. Globo 3D (`react-globe.gl`) em vez de mapa plano (Leaflet)
 
-- **Contexto:** precisa de rotação animada até coordenada + drag/zoom livres do usuário.
-- **Decisão:** `react-globe.gl` (built sobre `three-globe`/three.js).
-- **Justificativa técnica:** `pointOfView({lat, lng, altitude}, ms)` e `OrbitControls`
-  (drag + zoom + `autoRotate`) já prontos, sem gestos customizados.
-- **Justificativa de negócio:** menos código para manter um requisito de interação (drag +
-  zoom) que o usuário pediu explicitamente.
-- **Trade-offs aceitos:** bundle maior que `cobe` (~5kB); mitigado por ser um chunk
-  client-only isolado via `next/dynamic({ssr:false})`.
+- **Contexto:** o projeto já tem Leaflet 1.9.4 + react-leaflet 5.0.0 instalados; um globo
+  3D exige uma nova dependência WebGL (`react-globe.gl`).
+- **Decisão:** globo 3D via `react-globe.gl`, renderizado apenas no client
+  (`next/dynamic`, `ssr:false`).
+- **Justificativa técnica:** melhor destaque nativo por país (`polygonsData`) que a
+  interação pretendida exige.
+- **Justificativa de negócio:** experiência visual mais marcante para a tela de clima
+  pública — validado diretamente pelo usuário comparando as duas opções no mockup.
+- **Trade-offs aceitos:** ~150-250KB adicionais no bundle do cliente; exige guarda
+  client-only por causa de SSR do Next.js.
 
-### D2. Backend estende `GET /weather` com lat/lng em vez de geocoding no client
+### D2. Resolução país→clima 100% no frontend, sem novo endpoint
 
-- **Contexto:** a coordenada não é exposta hoje, mas já é resolvida internamente pelo
-  backend ao processar a busca por cidade.
-- **Decisão:** adicionar `latitude`/`longitude` na resposta existente de `GET /weather`.
-- **Justificativa técnica:** reaproveita a resolução já feita; fonte única de verdade.
-- **Justificativa de negócio:** evita depender de um serviço externo de geocoding no
-  cliente (custo, rate-limit, confiabilidade adicionais).
-- **Trade-offs aceitos:** muda o contrato público da API — exige regenerar
-  `@repo/api-types` e coordenar backend + frontend na mesma entrega.
+- **Contexto:** o clique no globo precisa virar uma consulta de clima.
+- **Decisão:** tabela estática país→capital no frontend; o nome da capital alimenta o
+  fluxo de busca por cidade já existente (`useWeatherQuery`).
+- **Justificativa técnica:** reaproveita 100% do use-case de backend existente
+  (`get-current-weather-by-city`), sem duplicar lógica de geocoding.
+- **Justificativa de negócio:** menor esforço de implementação, sem mudança de contrato
+  de API.
+- **Trade-offs aceitos:** o clima mostrado é sempre o da capital do país (não do ponto
+  exato clicado), aceitável dado que o backend já geocodifica por nome de cidade.
 
-### D3. Fallback estático dirigido por `prefers-reduced-motion`/suporte a WebGL
+### D3. Clique dispara a consulta automaticamente
 
-- **Contexto:** acessibilidade e robustez exigem que a feature nunca seja bloqueante.
-- **Decisão:** `WeatherGlobeSection` detecta a condição e escolhe `StaticGlobeFallback` no
-  lugar do globo animado.
-- **Justificativa técnica:** uma única chave de decisão (motion + WebGL) evita estados
-  intermediários.
-- **Justificativa de negócio:** clima é a informação essencial; o globo é decorativo/
-  contextual, nunca pode ser um bloqueio para ver o resultado.
-- **Trade-offs aceitos:** usuários em fallback não veem a animação — aceito, é o objetivo
-  do fallback.
+- **Contexto:** clicar no país poderia só preencher o campo de busca ou já disparar a
+  consulta.
+- **Decisão:** dispara automaticamente, sem exigir um clique adicional em "Consultar".
+- **Justificativa de negócio:** decisão explícita do usuário — interação mais direta no
+  globo.
+- **Trade-offs aceitos:** nenhum debounce/guarda extra é necessário, pois cada clique já
+  é uma intenção explícita (diferente de digitação incremental no campo de texto).
+
+### D4. Fonte dos dados geográficos: polígonos via `world-atlas`/`topojson-client`
+
+- **Contexto:** o clique precisa de uma forma clicável por país (não apenas um ponto), e
+  de uma coordenada de referência (capital) por país.
+- **Decisão:** usar `world-atlas` (TopoJSON) + `topojson-client` para os polígonos, e uma
+  tabela própria, curada no repo, país→capital para a resolução de clima.
+- **Justificativa técnica:** segue o padrão dos próprios exemplos oficiais do
+  `react-globe.gl`/`globe.gl` (uso de `polygonsData`), evitando reinventar a integração.
+- **Justificativa de negócio:** menor esforço de manutenção — não assumimos curadoria de
+  geometria de países, só da tabela pequena de capitais.
+- **Trade-offs aceitos:** duas dependências de dados (polígonos + tabela de capitais)
+  precisam ser casadas por código ISO; ver risco correspondente abaixo.
 
 ## Riscos
 
 | Risco | Impacto (1-3) | Probabilidade (1-3) | Score | Mitigação |
 |---|---|---|---|---|
-| `react-globe.gl` nunca usada no repo | 2 | 3 | 6 🟡 | Spike curto (0,5 dia) validando `pointOfView` + `OrbitControls` antes da task principal de integração |
-| WebGL indisponível quebra a página | 3 | 1 | 3 🟡 | `StaticGlobeFallback` com detecção via `canvas.getContext('webgl')` |
-| Bundle 3D aumenta o TTI de `/clima` | 2 | 2 | 4 🟡 | `next/dynamic({ssr:false})` isolando o chunk; medir Lighthouse antes/depois |
-| Coordenada nula (cidade não geocodificada) | 2 | 1 | 2 🟢 | Globo permanece em auto-rotate idle; sem erro visual |
-
-## Estrutura de Componentes (arquivos)
-
-- `apps/backend/src/weather/domain/value-object/current-weather.ts` — `CurrentWeather` ganha
-  `coordinate: Coordinate`.
-- `apps/backend/src/weather/application/use-case/get-current-weather-by-city.usecase.ts` —
-  passa a incluir a `coordinate` (já obtida de `geocodingGateway.geocode()`) no `success({...})`
-  final, em vez de descartá-la.
-- `apps/backend/src/weather/infra/controller/weather-controller.ts` —
-  `weatherResponseSchema` (Zod) ganha `latitude`/`longitude`.
-- `packages/api-types/` — regenerado via `pnpm generate:types` (não editado manualmente).
-- `apps/frontend/src/features/weather/schemas/index.ts` — `citySchema`/tipos ajustados.
-- `apps/frontend/src/features/weather/components/weather-globe-section.tsx` (novo).
-- `apps/frontend/src/features/weather/components/animate-globe-to-searched-city.tsx` (novo,
-  client-only, montado via `next/dynamic({ssr:false})` seguindo o padrão de
-  `gym-location-picker.tsx`).
-- `apps/frontend/src/features/weather/components/static-globe-fallback.tsx` (novo).
-- `apps/frontend/src/app/(public)/clima/page.tsx` — integra `WeatherGlobeSection` entre o
-  header e `WeatherSearchForm`.
+| Equipe sem experiência prévia com `react-globe.gl`/WebGL neste projeto | 3 | 3 | 9 🔴 | Spike de meio dia validando o wrapper client-only (guard de SSR) antes das tasks de integração |
+| Peso do bundle WebGL degrada carregamento da tela pública `/clima` | 2 | 2 | 4 🟡 | `dynamic import` client-only; globo carrega após o formulário de busca renderizar |
+| Descompasso entre códigos ISO do dataset de polígonos (`world-atlas`) e da tabela país→capital | 2 | 2 | 4 🟡 | Teste garantindo que todo país do dataset de polígonos tem entrada correspondente na tabela de capitais |
+| Países pequenos/arquipélagos difíceis de clicar no globo | 1 | 2 | 2 🟢 | Aceito como trade-off de UX; sem mitigação adicional |
 
 ## Testes
 
-- Backend: teste do use case `GetWeather` cobrindo `latitude`/`longitude` na resposta;
-  teste de contrato/schema OpenAPI atualizado.
-- Frontend: `WeatherGlobeSection` testado com Vitest/Testing Library + MSW (mock de
-  `GET /weather` com/sem coordenada), cobrindo a escolha entre `AnimateGlobeToSearchedCity`
-  e `StaticGlobeFallback` conforme `prefers-reduced-motion`/mock de WebGL (jsdom não tem
-  WebGL real — mockar `canvas.getContext`).
-- `AnimateGlobeToSearchedCity`/`StaticGlobeFallback`: testes de unidade focados em props e
-  no critério de decisão (idle vs. animando vs. fallback), sem depender do render real do
-  WebGL.
-- Playwright (`e2e/`): cenário real de busca de cidade confirmando que a seção do globo
-  aparece na página sem quebrar o fluxo de busca existente.
+- **Unit** — `CountryCapitalResolver`: mapeamento país→capital; caso de país ausente no
+  dataset (retorna estado "sem dados", não dispara consulta).
+- **Component** — `WeatherGlobe`: o handler de clique emite o país correto, testado de
+  forma isolada (sem depender do render 3D real do globo).
+- **Integração** — clique no globo dispara `useWeatherQuery` com o nome da capital
+  correta e `CurrentWeatherDisplay` renderiza o resultado.
+- **Dataset coverage** — teste garantindo que todo país presente no dataset de polígonos
+  tem entrada na tabela de capitais (mitigação do risco de descompasso ISO).
+- **Runner:** Vitest — `pnpm --filter frontend test -- --run`.
