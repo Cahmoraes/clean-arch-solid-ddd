@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-01T21:07:54-03:00"
-updated_at: "2026-09-04T20:27:10-03:00"
+updated_at: "2026-09-04T21:50:03-03:00"
 ---
 
 # Design — Globo 3D na rota `/clima`
@@ -23,7 +23,7 @@ A página `/clima` já existe (bounded context `weather`, feature de planejament
 
 | Característica | Por quê (preocupação de domínio) | Critério mensurável |
 |---|---|---|
-| Performance (bundle) | `react-globe.gl` pesa ~340KB gzip; não pode inflar o bundle inicial de uma rota pública simples | Chunk do `WeatherGlobe` carregado via `next/dynamic({ ssr:false })` fica fora do bundle inicial da rota (verificável no output do `next build`) |
+| Performance (bundle) | `react-globe.gl` pesa ~340KB gzip; não pode inflar o bundle inicial de uma rota pública simples | Chunk do `WeatherGlobe` carregado via `next/dynamic({ ssr:false })` fica fora do bundle inicial da rota (verificável no output do `next build`). Como a decisão de D1 ("Fechamento adicional — textura do globo") elimina qualquer asset de textura, o peso total da rota é integralmente o peso do chunk JS — não há imagem/textura adicional a medir nem requisição de rede extra em runtime |
 | Compatibilidade / acessibilidade | WebGL e `prefers-reduced-motion` não são garantidos em todo navegador/usuário | Fallback estático é renderizado sempre que `WebGL` está indisponível OU `prefers-reduced-motion: reduce` está ativo, coberto por teste unitário mockando as duas condições |
 | Testabilidade | WebGL não roda em jsdom/CI headless | Testes unitários verificam a chamada de `pointOfView({ lat, lng, altitude }, ms)` via mock de `ref`, sem depender de render WebGL real |
 
@@ -39,6 +39,9 @@ A página `/clima` já existe (bounded context `weather`, feature de planejament
 - Globo como hero, sempre visível, acima da busca (coluna centralizada ~448px mantida).
 - Auto-rotação por padrão; anima até a cidade buscada quando o resultado chega.
 - Marcador simples na cor primária do tema (`#39e58c`) indicando a localização.
+- Superfície do globo sem textura fotográfica (sem mapa-múndi): material sólido escuro
+  combinando com o gradiente radial do mockup (ver D1, "Fechamento adicional — textura do
+  globo").
 
 **Fidelidade:** o mockup é um *norte* — a renderização real usa `react-globe.gl` (WebGL),
 não o círculo estático do mockup.
@@ -59,6 +62,17 @@ não o círculo estático do mockup.
 - **Trade-offs aceitos:** ~335KB a mais de bundle (mitigado por code-splitting client-only,
   ver D4); tensiona o precedente do `volt-redesign` de evitar novas dependências de
   visualização — aceito conscientemente e escopado só a esta página.
+- **Fechamento adicional — textura do globo:** o globo **não** usa `globeImageUrl` nem
+  qualquer textura fotográfica (mapa-múndi). A superfície é definida via `globeMaterial`
+  com um material Three.js sólido (`MeshPhongMaterial` na cor escura do mockup, `#061410`),
+  e o entorno recebe o gradiente radial do mockup (`#123a2c` → `#061410` → `#020403`) via
+  `backgroundColor`/estilo do container. Justificativa: (a) evita depender de um CDN externo
+  em runtime numa rota pública; (b) elimina o modo de falha silencioso de `waitForGlobeReady`
+  (default `true` no `globe.gl`), em que uma URL de textura que não carrega trava o render do
+  globo indefinidamente; (c) mantém o peso da rota fechado no chunk JS, sem asset de imagem
+  fora do critério de performance medido. Trade-off aceito: o globo não mostra continentes —
+  aceitável porque o elemento é decorativo e o marcador da cidade é a única informação
+  espacial relevante.
 
 ### D2. Layout — globo hero sempre visível no topo
 
@@ -73,6 +87,11 @@ não o círculo estático do mockup.
 - **Fechamento adicional:** uma nova busca disparada antes da animação da busca anterior
   terminar substitui o alvo da câmera pela coordenada mais recente (a chamada mais nova de
   `pointOfView` sempre prevalece); não há fila de animações pendentes.
+  Estado pré-busca (FR-012): enquanto não houver `latitude`/`longitude` (nenhuma busca feita
+  ainda), o array de marcadores do globo é vazio (`pointsData: []`) e **nenhuma** chamada
+  inicial de `pointOfView` é feita — a câmera permanece na posição/altitude default do
+  `react-globe.gl`, girando. O marcador só aparece junto da primeira animação de câmera bem
+  sucedida.
 
 ### D3. Contrato HTTP estendido de forma aditiva
 
@@ -124,13 +143,24 @@ não o círculo estático do mockup.
     também não pode derrubar a página: `WeatherGlobe` é envolvido por um `ErrorBoundary`
     local que renderiza o fallback estático em caso de erro, estendendo a garantia de D5
     de "montagem" para "runtime".
+  - O `ErrorBoundary` cobre apenas erros lançados durante o ciclo de render do React, e não
+    alcança o modo de falha dominante do WebGL: a perda de contexto GPU (aba em background
+    por muito tempo, driver reiniciado, limite de contextos WebGL do navegador atingido), que
+    acontece fora do render e apenas congela o canvas, sem exceção. Por isso o componente do
+    globo interativo também escuta o evento nativo `webglcontextlost` no canvas
+    (`renderer().domElement`) e, ao recebê-lo, troca para o mesmo fallback estático de D5 —
+    sem depender de um erro de render.
   - No desmonte (unmount), `WeatherGlobe` cancela o loop de auto-rotação e libera o
     contexto WebGL (`globeEl.current.renderer()`), evitando vazamento de contexto WebGL
     ao navegar repetidamente para dentro e fora de `/clima`.
   - Por ser puramente decorativo (ver Fora de Escopo), `WeatherGlobe` e seu fallback
-    recebem `aria-hidden="true"` e os controles de órbita/zoom padrão do `react-globe.gl`
-    são desabilitados (`enablePointerInteraction={false}`), garantindo que o elemento não
-    captura foco de teclado nem interação de mouse.
+    recebem `aria-hidden="true"` e a interação por ponteiro é desabilitada. Duas coisas
+    distintas são necessárias: `enablePointerInteraction={false}` desabilita **apenas** o
+    rastreamento de ponteiro para hover/click/tooltip — ele não desliga arrastar/zoom. Para
+    desabilitar os `OrbitControls` de verdade é preciso agir sobre a instância de controles:
+    `controls().enabled = false`. A auto-rotação continua funcionando com
+    `enabled = false`, porque é aplicada no `update()` do loop de animação,
+    independentemente do estado de `enabled`.
   - Quando a query de clima falha (busca subsequente sem sucesso), o globo mantém a
     última posição/rotação válida sem indicar erro — o estado de erro é comunicado só
     pela mensagem já existente da página, não pelo globo.
@@ -216,9 +246,12 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_flowchart_weatherg
   também o `weatherResponseSchema` do controller, não só o VO de domínio (ver D3, "Atenção
   de implementação").
 - **Frontend:**
-  - `WeatherGlobe` renderiza o fallback estático quando WebGL é reportado como
-    indisponível (mock) OU `prefers-reduced-motion: reduce` está ativo (mock de
-    `matchMedia`).
+  - A detecção de capacidade vive num hook nomeado (`useGlobeCapability`), testado
+    diretamente: retorna `"fallback"` quando WebGL é reportado como indisponível (mock) OU
+    `prefers-reduced-motion: reduce` está ativo (mock de `matchMedia`, incluindo mudança
+    posterior via evento `change`). `WeatherGlobe` renderiza o fallback estático sempre que
+    o hook retorna `"fallback"` — o hook é também o seam que permite exercitar o caminho
+    interativo nos testes, já que o ambiente headless sempre reporta WebGL indisponível.
   - `WeatherGlobe` chama `pointOfView({ lat, lng, altitude }, ms)` com `latitude`/
     `longitude` corretos quando a query de clima retorna um resultado novo (mock do
     ref/instância do globo — sem WebGL real). Critério de "concluído" para este teste: a
@@ -231,5 +264,10 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_flowchart_weatherg
   - `WeatherGlobe` envolvido por um `ErrorBoundary` local: uma exceção de runtime do
     Three.js/`react-globe.gl` renderiza o fallback estático de D5 em vez de derrubar a
     página; `CurrentWeatherDisplay` continua renderizando (mock de throw simulado).
-  - Nenhuma importação estática de `react-globe.gl` fora do `next/dynamic({ ssr: false })`
-    (fitness function/regra estrutural que impede regressão do isolamento de bundle de D4).
+  - `WeatherGlobe` troca para o fallback estático quando o canvas emite `webglcontextlost`
+    (evento simulado no teste), sem depender do `ErrorBoundary`.
+  - Nenhuma importação estática de `react-globe.gl` **nem** dos módulos do próprio
+    `WeatherGlobe`/`WeatherGlobeErrorBoundary` fora do `next/dynamic({ ssr: false })`
+    (fitness function/regra estrutural que impede regressão do isolamento de bundle de D4 —
+    um import estático do componente arrasta o mesmo chunk para o bundle inicial, mesmo sem
+    citar `react-globe.gl`).
