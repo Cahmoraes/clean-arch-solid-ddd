@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import Globe, { type GlobeMethods } from "react-globe.gl"
 import { MeshPhongMaterial } from "three"
 import { useGlobeCapability } from "./use-globe-capability"
@@ -47,6 +47,7 @@ export function WeatherGlobeFallback() {
 export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 	const capability = useGlobeCapability()
 	const globeRef = useRef<GlobeMethods | undefined>(undefined)
+	const [hasLostContext, setHasLostContext] = useState(false)
 	const globeMaterial = useMemo(
 		() => new MeshPhongMaterial({ color: GLOBE_SURFACE_COLOR }),
 		[],
@@ -60,6 +61,21 @@ export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 		controls.autoRotate = true
 		controls.autoRotateSpeed = AUTO_ROTATE_SPEED
 		controls.enabled = false
+		return () => {
+			controls.autoRotate = false
+			globe.renderer().forceContextLoss()
+		}
+	}, [capability])
+
+	useEffect(() => {
+		if (capability !== "webgl") return
+		const globe = globeRef.current
+		if (!globe) return
+		const canvas = globe.renderer().domElement
+		const handleContextLost = () => setHasLostContext(true)
+		canvas.addEventListener("webglcontextlost", handleContextLost)
+		return () =>
+			canvas.removeEventListener("webglcontextlost", handleContextLost)
 	}, [capability])
 
 	useEffect(() => {
@@ -73,7 +89,7 @@ export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 		)
 	}, [capability, latitude, longitude])
 
-	if (capability !== "webgl") {
+	if (capability !== "webgl" || hasLostContext) {
 		return <WeatherGlobeFallback />
 	}
 

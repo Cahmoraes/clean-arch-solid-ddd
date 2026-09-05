@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { act, cleanup, render, screen } from "@testing-library/react"
 import { forwardRef, useImperativeHandle } from "react"
 import { afterEach, describe, expect, test, vi } from "vitest"
 import { WeatherGlobe } from "./weather-globe"
@@ -8,14 +8,25 @@ const {
 	useGlobeCapabilityMock,
 	pointOfViewMock,
 	controlsState,
+	forceContextLossMock,
+	globeCanvas,
 	rendererMock,
-} = vi.hoisted(() => ({
-	globePropsSpy: vi.fn(),
-	useGlobeCapabilityMock: vi.fn(),
-	pointOfViewMock: vi.fn(),
-	controlsState: { autoRotate: false, autoRotateSpeed: 0, enabled: true },
-	rendererMock: vi.fn(() => ({ forceContextLoss: vi.fn(), dispose: vi.fn() })),
-}))
+} = vi.hoisted(() => {
+	const forceContextLossMock = vi.fn()
+	const globeCanvas = document.createElement("canvas")
+	return {
+		globePropsSpy: vi.fn(),
+		useGlobeCapabilityMock: vi.fn(),
+		pointOfViewMock: vi.fn(),
+		controlsState: { autoRotate: false, autoRotateSpeed: 0, enabled: true },
+		forceContextLossMock,
+		globeCanvas,
+		rendererMock: vi.fn(() => ({
+			forceContextLoss: forceContextLossMock,
+			domElement: globeCanvas,
+		})),
+	}
+})
 
 vi.mock("./use-globe-capability", () => ({
 	useGlobeCapability: useGlobeCapabilityMock,
@@ -42,12 +53,14 @@ function mockWebglSupported() {
 
 describe("WeatherGlobe", () => {
 	afterEach(() => {
+		cleanup()
 		vi.restoreAllMocks()
 		vi.unstubAllGlobals()
 		globePropsSpy.mockClear()
 		useGlobeCapabilityMock.mockReset()
 		pointOfViewMock.mockClear()
 		rendererMock.mockClear()
+		forceContextLossMock.mockClear()
 		controlsState.autoRotate = false
 		controlsState.autoRotateSpeed = 0
 		controlsState.enabled = true
@@ -144,5 +157,27 @@ describe("WeatherGlobe", () => {
 		rerender(<WeatherGlobe latitude={-23.5505} longitude={-46.6333} />)
 
 		expect(pointOfViewMock).not.toHaveBeenCalled()
+	})
+
+	test("libera o contexto WebGL e desativa a auto-rotação ao desmontar", () => {
+		mockWebglSupported()
+
+		const { unmount } = render(<WeatherGlobe />)
+		unmount()
+
+		expect(forceContextLossMock).toHaveBeenCalledTimes(1)
+		expect(controlsState.autoRotate).toBe(false)
+	})
+
+	test("troca para o fallback estático quando o contexto WebGL é perdido", () => {
+		mockWebglSupported()
+
+		render(<WeatherGlobe />)
+		act(() => {
+			globeCanvas.dispatchEvent(new Event("webglcontextlost"))
+		})
+
+		expect(screen.getByTestId("weather-globe-fallback")).toBeInTheDocument()
+		expect(screen.queryByTestId("weather-globe-canvas")).not.toBeInTheDocument()
 	})
 })
