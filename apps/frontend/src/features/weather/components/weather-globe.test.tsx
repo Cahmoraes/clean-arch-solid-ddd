@@ -172,6 +172,28 @@ describe("WeatherGlobe", () => {
 		vi.useRealTimers()
 	})
 
+	test("retoma a auto-rotação quando uma busca sem coordenadas chega durante a transição de câmera", () => {
+		vi.useFakeTimers()
+		mockWebglSupported()
+
+		const { rerender } = render(
+			<WeatherGlobe latitude={-23.5505} longitude={-46.6333} />,
+		)
+		act(() => {
+			vi.advanceTimersByTime(400)
+		})
+		rerender(<WeatherGlobe latitude={undefined} longitude={undefined} />)
+
+		expect(controlsState.autoRotate).toBe(true)
+
+		act(() => {
+			vi.advanceTimersByTime(5000)
+		})
+
+		expect(controlsState.autoRotate).toBe(true)
+		vi.useRealTimers()
+	})
+
 	test("anima a câmera até a coordenada buscada quando latitude/longitude são informadas", () => {
 		mockWebglSupported()
 
@@ -240,5 +262,22 @@ describe("WeatherGlobe", () => {
 
 		expect(screen.getByTestId("weather-globe-fallback")).toBeInTheDocument()
 		expect(screen.queryByTestId("weather-globe-canvas")).not.toBeInTheDocument()
+	})
+
+	test("para de reagir a webglcontextlost depois de desmontar", () => {
+		mockWebglSupported()
+
+		const { unmount } = render(<WeatherGlobe />)
+		unmount()
+
+		// O handler ativo chama `event.preventDefault()`; se o listener tivesse
+		// sobrevivido ao unmount, o evento sairia com `defaultPrevented === true`.
+		const event = new Event("webglcontextlost", { cancelable: true })
+		globeCanvas.dispatchEvent(event)
+
+		expect(event.defaultPrevented).toBe(false)
+		expect(
+			screen.queryByTestId("weather-globe-fallback"),
+		).not.toBeInTheDocument()
 	})
 })

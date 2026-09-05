@@ -172,7 +172,10 @@ não o círculo estático do mockup.
     enquadramento. Por isso o efeito que reage a `latitude`/`longitude` pausa
     `controls.autoRotate` antes de chamar `pointOfView` e o reativa após
     `CAMERA_TRANSITION_MS`, via `setTimeout` limpo no cleanup do efeito (desmonte ou nova
-    busca antes do fim da transição).
+    busca antes do fim da transição). Como o cleanup cancela esse `setTimeout`, o mesmo efeito
+    retoma `autoRotate = true` sempre que executa **sem** alvo (busca pendente ou com erro leva
+    `latitude`/`longitude` a `undefined`): sem isso, uma busca que falhasse dentro da janela de
+    transição deixaria a auto-rotação desligada para sempre.
   - Quando a query de clima falha (busca subsequente sem sucesso), o globo mantém a
     última posição/rotação válida sem indicar erro — o estado de erro é comunicado só
     pela mensagem já existente da página, não pelo globo.
@@ -278,8 +281,12 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_flowchart_weatherg
     página; `CurrentWeatherDisplay` continua renderizando (mock de throw simulado).
   - `WeatherGlobe` troca para o fallback estático quando o canvas emite `webglcontextlost`
     (evento simulado no teste), sem depender do `ErrorBoundary`.
-  - Nenhuma importação estática de `react-globe.gl` **nem** dos módulos do próprio
-    `WeatherGlobe`/`WeatherGlobeErrorBoundary` fora do `next/dynamic({ ssr: false })`
-    (fitness function/regra estrutural que impede regressão do isolamento de bundle de D4 —
-    um import estático do componente arrasta o mesmo chunk para o bundle inicial, mesmo sem
-    citar `react-globe.gl`).
+  - Nenhuma importação estática de `react-globe.gl`/`three`/`three-globe`/`globe.gl` **nem** do
+    módulo `weather-globe` fora do `next/dynamic({ ssr: false })` (fitness function/regra
+    estrutural que impede regressão do isolamento de bundle de D4 — um import estático do
+    componente arrasta o mesmo chunk para o bundle inicial, mesmo sem citar `react-globe.gl`).
+    O único arquivo allowlistado é `weather-globe.tsx`, que importa `react-globe.gl` de fato.
+    O `weather-globe-error-boundary.tsx` **não** é vigiado nem allowlistado: por D5, é ele que
+    hospeda o `dynamic(() => import("./weather-globe"))`, então não puxa o chunk pesado e pode —
+    e deve — ser importado estaticamente pela página `/clima`. Um import estático do boundary
+    por `page.tsx` é, portanto, o comportamento esperado, não uma violação.

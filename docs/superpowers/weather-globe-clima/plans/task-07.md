@@ -15,20 +15,22 @@ globo no bundle inicial da rota `/clima` (regressão do que a Task 6 garante via
 O guard cobre **duas** formas da mesma regressão, e as duas juntas (não uma no lugar da outra):
 
 1. import estático de `react-globe.gl` — a forma óbvia;
-2. import estático dos próprios módulos do globo
-   (`@/features/weather/components/weather-globe` e
-   `@/features/weather/components/weather-globe-error-boundary`, ou as formas relativas
-   equivalentes) — a regressão **real** que o FR-011 quer impedir: basta um `import { WeatherGlobe }
-   from "@/features/weather/components/weather-globe-error-boundary"` em `page.tsx` para arrastar
+2. import estático do próprio módulo do globo
+   (`@/features/weather/components/weather-globe`, ou a forma relativa equivalente) — a regressão
+   **real** que o FR-011 quer impedir: basta um `import { WeatherGlobe } from
+   "@/features/weather/components/weather-globe"` em qualquer arquivo para arrastar
    `react-globe.gl`/Three.js de volta ao bundle inicial, sem que a string `react-globe.gl` apareça
    em lugar nenhum fora dos módulos permitidos.
 
-A allowlist tem exatamente dois arquivos: `weather-globe.tsx` (importa `react-globe.gl` de fato) e
-`weather-globe-error-boundary.tsx` (importa `./weather-globe`). A página **não** entra na
-allowlist — se entrasse, o guard deixaria passar justamente a regressão que existe para pegar. Ela
-passa naturalmente porque o carregamento é dinâmico: a varredura só considera especificadores de
-import **estático** (`from "..."` / `require("...")`), e `dynamic(() => import("..."))` não é
-nenhum dos dois.
+A allowlist tem exatamente um arquivo: `weather-globe.tsx`, que importa `react-globe.gl` de fato.
+O `weather-globe-error-boundary.tsx` **não** é vigiado nem allowlistado: por D5 do spec, é ele que
+hospeda o `dynamic(() => import("./weather-globe"))`, logo não puxa o chunk pesado e **deve** ser
+importado estaticamente pela página (é assim que o boundary também captura a falha de fetch do
+chunk). O padrão de especificadores proibidos exige `/` ou fim de string depois da raiz, então
+`weather-globe-error-boundary` (assim como `weather-globe-constants` e `weather-globe-fallback`)
+não casa. E o carregamento dinâmico continua passando naturalmente: a varredura só considera
+especificadores de import **estático** (`from "..."`, `require("...")`, `import "..."`), e
+`dynamic(() => import("..."))` não é nenhum deles.
 
 Não há `fast-glob`/`glob` como dependência no `apps/frontend/package.json` — a varredura de
 arquivos usa apenas `node:fs`/`node:path`/`node:url`, sem adicionar nenhuma dependência nova.
@@ -41,7 +43,7 @@ arquivos usa apenas `node:fs`/`node:path`/`node:url`, sem adicionar nenhuma depe
 ### Conformidade com as Skills Padrão
 
 - `typescript-advanced`: a função de varredura (`findForbiddenStaticGlobeImports`) e o predicado exportado (`hasForbiddenStaticGlobeImport(content: string): boolean`) são tipados sem `any`, e a varredura usa `path.relative` para retornar caminhos legíveis nas falhas.
-- `no-workarounds`: a lista de arquivos permitidos (`ALLOWED_FILES`) é uma allowlist explícita e curta (os dois módulos client-only reais) — não um padrão genérico como "qualquer arquivo dentro de `components/weather`" que esconderia uma futura importação indevida de um arquivo vizinho; e a página não é allowlistada só para "fazer o teste passar", já que é exatamente o arquivo que o guard precisa vigiar.
+- `no-workarounds`: a lista de arquivos permitidos (`ALLOWED_FILES`) é uma allowlist explícita e mínima (apenas `weather-globe.tsx`, o único módulo que importa `react-globe.gl` de fato) — não um padrão genérico como "qualquer arquivo dentro de `components/weather`" que esconderia uma futura importação indevida de um arquivo vizinho. O boundary fica fora da allowlist porque não precisa dela: ele não importa nada vigiado estaticamente.
 - `test-antipatterns`: o teste roda a varredura real do `apps/frontend/src` (sem mockar `fs`) — é um teste estrutural, seu valor está em ler o código-fonte de verdade, não uma versão simulada dele. Os casos de violação são exercitados pelo predicado puro `hasForbiddenStaticGlobeImport` com trechos de código literais, sem criar arquivos-fixture nem mockar o sistema de arquivos.
 
 ## Passos
@@ -168,15 +170,16 @@ export function findForbiddenStaticGlobeImports(): string[] {
 Detalhes que fazem a varredura passar hoje: o próprio arquivo do guard cita os nomes proibidos só
 dentro de expressões regulares (nunca em `from "..."`), os arquivos `*.test.ts(x)` são pulados
 (eles importam os módulos do globo legitimamente), `use-globe-capability.ts` não importa nenhum
-dos módulos vigiados, e `page.tsx` só referencia o módulo dentro de `dynamic(() => import(...))`.
+dos módulos vigiados, e `page.tsx` importa apenas `weather-globe-error-boundary`, que não casa com o
+padrão proibido (o `dynamic(() => import("./weather-globe"))` mora dentro do boundary, por D5).
 
 - **Step 4: Run test to verify it passes**
 
 Run: `cd apps/frontend && npx vitest run src/features/weather/components/weather-globe-import.test.ts`
 Expected: PASS (os 4 testes) — `findForbiddenStaticGlobeImports()` retorna `[]`, porque só
-`weather-globe.tsx` importa `react-globe.gl` estaticamente e só
-`weather-globe-error-boundary.tsx` importa `./weather-globe` (ambos na allowlist), enquanto
-`page.tsx` carrega o módulo via `dynamic(() => import(...))`.
+`weather-globe.tsx` importa `react-globe.gl` estaticamente (único arquivo da allowlist), o
+`weather-globe-error-boundary.tsx` carrega o globo via `dynamic(() => import(...))` e `page.tsx`
+importa apenas o boundary, que não é um especificador vigiado.
 
 - **Step 5: Commit**
 
@@ -189,15 +192,19 @@ git commit -m "test(weather): adiciona fitness function contra import estático 
 
 - `findForbiddenStaticGlobeImports()` varre todo `apps/frontend/src` e retorna, hoje, uma lista
   vazia [FR-011].
-- Se um arquivo fora da allowlist (`weather-globe.tsx`, `weather-globe-error-boundary.tsx`) passar
-  a importar `react-globe.gl` estaticamente (`from "react-globe.gl"` ou
-  `require("react-globe.gl")`), o teste falha apontando o caminho relativo do arquivo violador.
+- Se um arquivo fora da allowlist (`weather-globe.tsx`) passar a importar `react-globe.gl`,
+  `three`, `three-globe` ou `globe.gl` estaticamente (`from "..."` ou `require("...")`), o teste
+  falha apontando o caminho relativo do arquivo violador.
 - Se qualquer arquivo fora da allowlist passar a importar estaticamente
-  `@/features/weather/components/weather-globe` ou
-  `@/features/weather/components/weather-globe-error-boundary` (ou a forma relativa equivalente) —
-  inclusive `page.tsx`, que **não** é allowlistada —, o teste também falha [FR-011].
-- Um carregamento via `dynamic(() => import("@/features/weather/components/weather-globe-error-boundary"))`
-  continua passando: o predicado só considera `from "..."`/`require("...")`.
+  `@/features/weather/components/weather-globe` (ou a forma relativa equivalente), o teste também
+  falha [FR-011].
+- O import estático de `@/features/weather/components/weather-globe-error-boundary` por `page.tsx`
+  **passa e deve passar**: por D5 o boundary hospeda o `dynamic(() => import("./weather-globe"))`,
+  não arrasta o chunk pesado, e é justamente esse import estático que permite ao boundary capturar
+  a falha de fetch do chunk. O boundary não é allowlistado porque não precisa: seu especificador
+  não casa com o padrão proibido.
+- Um carregamento via `dynamic(() => import("@/features/weather/components/weather-globe"))`
+  continua passando: o predicado só considera `from "..."`/`require("...")`/`import "..."`.
 - O teste cobre explicitamente os três casos acima (dois de violação, um de permissão) via o
   predicado puro `hasForbiddenStaticGlobeImport`, além da varredura real do `src`.
 - O teste não depende de nenhuma dependência nova — usa apenas `node:fs`, `node:path` e

@@ -20,11 +20,14 @@ function stubMatchMedia(initialMatches: boolean) {
 		},
 	}
 	vi.stubGlobal("matchMedia", vi.fn().mockReturnValue(mediaQueryList))
-	return function emitChange(matches: boolean) {
-		mediaQueryList.matches = matches
-		for (const listener of listeners) {
-			listener({ matches } as MediaQueryListEvent)
-		}
+	return {
+		emitChange(matches: boolean) {
+			mediaQueryList.matches = matches
+			for (const listener of listeners) {
+				listener({ matches } as MediaQueryListEvent)
+			}
+		},
+		listenerCount: () => listeners.size,
 	}
 }
 
@@ -69,7 +72,7 @@ describe("useGlobeCapability", () => {
 
 	test("passa para 'fallback' quando o usuário ativa prefers-reduced-motion depois da montagem", () => {
 		stubWebgl(true)
-		const emitChange = stubMatchMedia(false)
+		const { emitChange } = stubMatchMedia(false)
 
 		const { result } = renderHook(() => useGlobeCapability())
 		act(() => {
@@ -77,5 +80,21 @@ describe("useGlobeCapability", () => {
 		})
 
 		expect(result.current).toBe("fallback")
+	})
+
+	test("remove o listener de matchMedia ao desmontar e ignora mudanças posteriores", () => {
+		stubWebgl(true)
+		const { emitChange, listenerCount } = stubMatchMedia(false)
+
+		const { result, unmount } = renderHook(() => useGlobeCapability())
+		expect(listenerCount()).toBe(1)
+
+		unmount()
+
+		expect(listenerCount()).toBe(0)
+		act(() => {
+			emitChange(true)
+		})
+		expect(result.current).toBe("webgl")
 	})
 })

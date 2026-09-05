@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import Globe, { type GlobeMethods } from "react-globe.gl"
 import { MeshPhongMaterial } from "three"
-import type { GlobeCapability } from "./use-globe-capability"
-import { useGlobeCapability } from "./use-globe-capability"
+import {
+	type GlobeCapability,
+	useGlobeCapability,
+} from "./use-globe-capability"
 import {
 	GLOBE_BACKGROUND_STYLE,
 	GLOBE_SIZE_PX,
@@ -19,13 +21,36 @@ const AUTO_ROTATE_SPEED = 0.4
 const MARKER_COLOR = "#39e58c"
 
 function getCameraTarget(
-	capability: GlobeCapability,
 	latitude: number | undefined,
 	longitude: number | undefined,
 ) {
-	if (capability !== "webgl") return undefined
 	if (latitude === undefined || longitude === undefined) return undefined
 	return { lat: latitude, lng: longitude }
+}
+
+function getInteractiveGlobe(
+	capability: GlobeCapability,
+	globe: GlobeMethods | undefined,
+) {
+	return capability === "webgl" ? globe : undefined
+}
+
+function animateCameraTo(
+	globe: GlobeMethods,
+	target: { lat: number; lng: number },
+) {
+	// A auto-rotação é pausada durante a transição de câmera, senão o globo
+	// continuaria girando e a cidade buscada passaria direto pelo enquadramento.
+	const controls = globe.controls()
+	controls.autoRotate = false
+	globe.pointOfView(
+		{ lat: target.lat, lng: target.lng, altitude: CAMERA_ALTITUDE },
+		CAMERA_TRANSITION_MS,
+	)
+	const resumeTimeout = setTimeout(() => {
+		controls.autoRotate = true
+	}, CAMERA_TRANSITION_MS)
+	return () => clearTimeout(resumeTimeout)
 }
 
 export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
@@ -72,32 +97,25 @@ export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 	}, [capability])
 
 	useEffect(() => {
-		const target = getCameraTarget(capability, latitude, longitude)
-		if (!target) return
-		const globe = globeRef.current
+		const globe = getInteractiveGlobe(capability, globeRef.current)
 		if (!globe) return
-		// A auto-rotação é pausada durante a transição de câmera, senão o globo
-		// continuaria girando e a cidade buscada passaria direto pelo enquadramento.
-		const controls = globe.controls()
-		controls.autoRotate = false
-		globe.pointOfView(
-			{ lat: target.lat, lng: target.lng, altitude: CAMERA_ALTITUDE },
-			CAMERA_TRANSITION_MS,
-		)
-		const resumeTimeout = setTimeout(() => {
-			controls.autoRotate = true
-		}, CAMERA_TRANSITION_MS)
-		return () => clearTimeout(resumeTimeout)
+		const target = getCameraTarget(latitude, longitude)
+		if (!target) {
+			// Sem alvo (busca pendente ou com erro): o cleanup da execução anterior já
+			// cancelou o `setTimeout` que retomaria o giro, então a retomada precisa
+			// acontecer aqui — senão a auto-rotação ficaria desligada para sempre.
+			globe.controls().autoRotate = true
+			return
+		}
+		return animateCameraTo(globe, target)
 	}, [capability, latitude, longitude])
 
 	if (capability !== "webgl" || hasLostContext) {
 		return <WeatherGlobeFallback />
 	}
 
-	const markerData =
-		latitude === undefined || longitude === undefined
-			? []
-			: [{ lat: latitude, lng: longitude }]
+	const markerTarget = getCameraTarget(latitude, longitude)
+	const markerData = markerTarget ? [markerTarget] : []
 
 	return (
 		<div

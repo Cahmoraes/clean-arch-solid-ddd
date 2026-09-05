@@ -9,7 +9,8 @@
 ## Visão Geral
 
 Estende `weather-globe.tsx` (criado na Task 3) para: (1) ativar auto-rotação do globo e
-desabilitar os controles de órbita/zoom (`controls().enabled = false`) sempre que o ramo
+desabilitar arrastar/zoom/pan (`controls().enableZoom/enablePan/enableRotate = false`, mantendo
+`controls().enabled = true`) sempre que o ramo
 interativo está montado (FR-001); (2) animar a câmera até `latitude`/`longitude` via
 `globeRef.current.pointOfView({ lat, lng, altitude }, ms)` sempre que essas props mudam (FR-003);
 (3) renderizar um marcador simples na cor primária (`#39e58c`) na coordenada buscada; (4) sem
@@ -37,14 +38,17 @@ export type { GlobeMethods, GlobeProps }
 Portanto **não** se define nenhum tipo local para o ref: importe `type GlobeMethods` do próprio
 pacote e use `useRef<GlobeMethods | undefined>(undefined)` — `MutableRefObject<GlobeMethods | null>`
 não é atribuível ao `ref` do componente (`null` ≠ `undefined`). `controls()` é tipado como
-`OrbitControls` do Three.js, então `autoRotate`, `autoRotateSpeed` e `enabled` são propriedades
-tipadas, sem cast.
+`OrbitControls` do Three.js, então `autoRotate`, `autoRotateSpeed`, `enabled`, `enableZoom`,
+`enablePan` e `enableRotate` são propriedades tipadas, sem cast.
 
-Além da auto-rotação, o mesmo efeito desabilita os controles de órbita/zoom com
-`controls().enabled = false`: `enablePointerInteraction={false}` (Task 3) cobre apenas o
-rastreamento de ponteiro para hover/click/tooltip, não o arrastar/zoom dos `OrbitControls`. A
-auto-rotação continua funcionando com `enabled = false`, porque é aplicada no `update()` do loop
-de animação, independentemente do estado de `enabled` (ver D5 do spec).
+Além da auto-rotação, o mesmo efeito desabilita arrastar/zoom/pan com
+`enableZoom = false`, `enablePan = false` e `enableRotate = false`:
+`enablePointerInteraction={false}` (Task 3) cobre apenas o rastreamento de ponteiro para
+hover/click/tooltip, não o arrastar/zoom dos `OrbitControls`. `controls().enabled` **precisa
+continuar `true`**: o `three-render-objects` só chama `controls.update()` enquanto `enabled` é
+`true`, e a auto-rotação do `OrbitControls` só é aplicada dentro de `update()` — desligar `enabled`
+mataria o giro automático (ver D5 do spec). Os três flags acima gateiam apenas os event handlers de
+mouse/touch, então desligá-los mata a interação sem matar a rotação.
 
 ## Arquivos
 
@@ -90,7 +94,14 @@ const {
 	globePropsSpy: vi.fn(),
 	useGlobeCapabilityMock: vi.fn(),
 	pointOfViewMock: vi.fn(),
-	controlsState: { autoRotate: false, autoRotateSpeed: 0, enabled: true },
+	controlsState: {
+		autoRotate: false,
+		autoRotateSpeed: 0,
+		enabled: true,
+		enableZoom: true,
+		enablePan: true,
+		enableRotate: true,
+	},
 	rendererMock: vi.fn(() => ({ forceContextLoss: vi.fn(), dispose: vi.fn() })),
 }))
 
@@ -128,20 +139,27 @@ describe("WeatherGlobe", () => {
 		controlsState.autoRotate = false
 		controlsState.autoRotateSpeed = 0
 		controlsState.enabled = true
+		controlsState.enableZoom = true
+		controlsState.enablePan = true
+		controlsState.enableRotate = true
 	})
 
 	// ... os 3 testes da Task 3 (fallback quando a capacidade é "fallback", globo interativo
 	// com enablePointerInteraction, globo sem textura externa) continuam aqui, inalterados —
 	// eles já usam `useGlobeCapabilityMock`.
 
-	test("ativa auto-rotação e desabilita os controles de órbita/zoom ao montar o ramo interativo", () => {
+	test("ativa auto-rotação e desabilita arrastar/zoom/pan ao montar o ramo interativo", () => {
 		mockWebglSupported()
 
 		render(<WeatherGlobe />)
 
 		expect(controlsState.autoRotate).toBe(true)
 		expect(controlsState.autoRotateSpeed).toBe(0.4)
-		expect(controlsState.enabled).toBe(false)
+		expect(controlsState.enableZoom).toBe(false)
+		expect(controlsState.enablePan).toBe(false)
+		expect(controlsState.enableRotate).toBe(false)
+		// `enabled` precisa continuar `true`, senão o loop de update nunca aplica a rotação.
+		expect(controlsState.enabled).toBe(true)
 	})
 
 	test("anima a câmera até a coordenada buscada quando latitude/longitude são informadas", () => {
@@ -198,7 +216,8 @@ describe("WeatherGlobe", () => {
 
 Run: `cd apps/frontend && npx vitest run src/features/weather/components/weather-globe.test.tsx`
 Expected: FAIL nos 5 novos testes — `controlsState.autoRotate` continua `false`,
-`controlsState.enabled` continua `true` e `pointOfViewMock` nunca é chamado, porque
+`controlsState.enableZoom/enablePan/enableRotate` continuam `true` e `pointOfViewMock` nunca é
+chamado, porque
 `WeatherGlobe` ainda não usa `ref`/`useEffect` para isso.
 
 - **Step 3: Write minimal implementation**
@@ -255,7 +274,12 @@ export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 		const controls = globe.controls()
 		controls.autoRotate = true
 		controls.autoRotateSpeed = AUTO_ROTATE_SPEED
-		controls.enabled = false
+		// `controls.enabled` continua `true`: o loop de render só chama
+		// `controls.update()` com os controles habilitados, e é dentro de `update()`
+		// que a auto-rotação é aplicada. Só os handlers de mouse/touch são desligados.
+		controls.enableZoom = false
+		controls.enablePan = false
+		controls.enableRotate = false
 	}, [capability])
 
 	useEffect(() => {
@@ -306,7 +330,8 @@ Notas de tipo (verificadas contra `react-globe.gl@2.38.0`): o ref é
 `useRef<GlobeMethods | undefined>(undefined)` — o componente é declarado como
 `FCwithRef<GlobeProps, GlobeMethods>` com `ref?: MutableRefObject<GlobeMethods | undefined>`, e
 um `useRef<... | null>(null)` **não** é atribuível a isso. `controls()` retorna `OrbitControls`
-(type real do Three.js), então `autoRotate`/`autoRotateSpeed`/`enabled` existem tipados. A
+(type real do Three.js), então `autoRotate`/`autoRotateSpeed`/`enableZoom`/`enablePan`/
+`enableRotate` existem tipados. A
 checagem `if (!globe) return` continua idêntica — só a fonte do valor mudou de `null` para
 `undefined`.
 
@@ -327,9 +352,10 @@ git commit -m "feat(weather): adiciona auto-rotação e animação de câmera ao
 
 - O ramo interativo do `WeatherGlobe` ativa `controls().autoRotate = true` ao montar, sem
   depender de `latitude`/`longitude` [FR-001].
-- O mesmo efeito seta `controls().enabled = false`, desabilitando arrastar/zoom de verdade
-  (`enablePointerInteraction={false}` sozinho só desliga hover/click/tooltip) — a auto-rotação
-  continua ativa, porque é aplicada no `update()` do loop [FR-001, D5 do spec].
+- O mesmo efeito seta `controls().enableZoom = false`, `enablePan = false` e `enableRotate = false`,
+  desabilitando arrastar/zoom de verdade (`enablePointerInteraction={false}` sozinho só desliga
+  hover/click/tooltip), e **mantém `controls().enabled = true`** — desligar `enabled` impediria o
+  `controls.update()` do loop e mataria junto a auto-rotação [FR-001, FR-007, D5 do spec].
 - O ref imperativo usa o type oficial `GlobeMethods` (`useRef<GlobeMethods | undefined>(undefined)`),
   sem nenhum tipo local redefinido para a instância do globo.
 - Quando `latitude`/`longitude` mudam (nova busca com sucesso), `pointOfView({ lat, lng, altitude:
@@ -341,3 +367,6 @@ git commit -m "feat(weather): adiciona auto-rotação e animação de câmera ao
 - Quando as props não mudam entre re-renderizações (equivalente a uma busca que falhou e não
   atualizou o resultado), `pointOfView` não é chamado novamente — a última posição válida é
   preservada [FR-009].
+- Quando as props voltam a `undefined` (busca pendente ou com erro) **durante** a transição de
+  câmera, o efeito retoma `controls().autoRotate = true` no caminho sem alvo — a auto-rotação
+  nunca fica desligada permanentemente [FR-001, FR-009].
