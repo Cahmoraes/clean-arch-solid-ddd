@@ -6,7 +6,7 @@
  * sem puxar o chunk pesado do globo 3D.
  */
 
-export const GLOBE_SIZE_PX = 128
+export const GLOBE_SIZE_PX = 240
 
 export const GLOBE_BACKGROUND_STYLE = {
 	background:

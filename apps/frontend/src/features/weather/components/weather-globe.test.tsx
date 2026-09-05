@@ -126,6 +126,16 @@ describe("WeatherGlobe", () => {
 		expect(controlsState.enableRotate).toBe(true)
 	})
 
+	test("não registra handler de clique/toque sobre o globo", () => {
+		mockWebglSupported()
+
+		render(<WeatherGlobe />)
+
+		const globeProps = globePropsSpy.mock.calls[0][0]
+		expect(globeProps.onGlobeClick).toBeUndefined()
+		expect(globeProps.onPointClick).toBeUndefined()
+	})
+
 	test("mantém controls.enabled true, senão o loop de update nunca aplica a auto-rotação", () => {
 		mockWebglSupported()
 
