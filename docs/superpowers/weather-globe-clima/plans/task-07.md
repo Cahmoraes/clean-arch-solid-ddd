@@ -1,6 +1,9 @@
 # Task 7: Fitness function — nenhum import estático dos módulos do globo fora do `next/dynamic` [FR-011]
 
-**Status:** DONE
+**Status:** REMOVIDO (decisão do usuário em 2026-09-05 — fitness function não necessária para esta
+feature). Os arquivos `weather-globe-static-import-guard.ts` e `weather-globe-import.test.ts` foram
+deletados de `apps/frontend/src/test/fitness/`. Este plano fica só como registro histórico do que
+existiu; não reimplementar sem novo pedido explícito.
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** cheap
@@ -37,8 +40,8 @@ arquivos usa apenas `node:fs`/`node:path`/`node:url`, sem adicionar nenhuma depe
 
 ## Arquivos
 
-- Create: `apps/frontend/src/features/weather/components/weather-globe-static-import-guard.ts`
-- Test: `apps/frontend/src/features/weather/components/weather-globe-import.test.ts`
+- Create: `apps/frontend/src/test/fitness/weather-globe-static-import-guard.ts`
+- Test: `apps/frontend/src/test/fitness/weather-globe-import.test.ts`
 
 ### Conformidade com as Skills Padrão
 
@@ -50,7 +53,7 @@ arquivos usa apenas `node:fs`/`node:path`/`node:url`, sem adicionar nenhuma depe
 
 - **Step 1: Write the failing test**
 
-Crie `apps/frontend/src/features/weather/components/weather-globe-import.test.ts`:
+Crie `apps/frontend/src/test/fitness/weather-globe-import.test.ts`:
 
 ```typescript
 import { describe, expect, test } from "vitest"
@@ -60,7 +63,7 @@ import {
 } from "./weather-globe-static-import-guard"
 
 describe("Fitness: módulos do globo não são importados estaticamente fora do next/dynamic", () => {
-	test("nenhum arquivo além de weather-globe.tsx e weather-globe-error-boundary.tsx importa os módulos do globo estaticamente", () => {
+	test("nenhum arquivo além de weather-globe.tsx importa os módulos do globo estaticamente", () => {
 		const violations = findForbiddenStaticGlobeImports()
 
 		expect(violations).toEqual([])
@@ -72,20 +75,63 @@ describe("Fitness: módulos do globo não são importados estaticamente fora do 
 		expect(hasForbiddenStaticGlobeImport(content)).toBe(true)
 	})
 
-	test("detecta import estático do próprio WeatherGlobe fora do next/dynamic", () => {
-		const content = `import { WeatherGlobe } from "@/features/weather/components/weather-globe-error-boundary"`
+	test("detecta import estático do módulo real do globo fora do next/dynamic", () => {
+		const content = `import { WeatherGlobe } from "@/features/weather/components/weather-globe"`
 
 		expect(hasForbiddenStaticGlobeImport(content)).toBe(true)
 	})
 
 	test("permite o carregamento via dynamic(() => import(...))", () => {
-		const content = `const WeatherGlobe = dynamic(
-	() =>
-		import("@/features/weather/components/weather-globe-error-boundary").then(
-			(mod) => ({ default: mod.WeatherGlobe }),
-		),
+		const content = `const WeatherGlobeImpl = dynamic(
+	() => import("./weather-globe").then((mod) => ({ default: mod.WeatherGlobe })),
 	{ ssr: false },
 )`
+
+		expect(hasForbiddenStaticGlobeImport(content)).toBe(false)
+	})
+
+	test("detecta import estático com subpath: react-globe.gl/dist", () => {
+		const content = `import Globe from "react-globe.gl/dist/react-globe.gl.min"`
+
+		expect(hasForbiddenStaticGlobeImport(content)).toBe(true)
+	})
+
+	test("detecta import estático de three", () => {
+		const content = `import { MeshPhongMaterial } from "three"`
+
+		expect(hasForbiddenStaticGlobeImport(content)).toBe(true)
+	})
+
+	test("detecta import estático de subpath de three", () => {
+		const content = `import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"`
+
+		expect(hasForbiddenStaticGlobeImport(content)).toBe(true)
+	})
+
+	test("detecta import estático de three-globe e globe.gl", () => {
+		expect(
+			hasForbiddenStaticGlobeImport(`import ThreeGlobe from "three-globe"`),
+		).toBe(true)
+		expect(hasForbiddenStaticGlobeImport(`import Globe from "globe.gl"`)).toBe(
+			true,
+		)
+	})
+
+	test("detecta import estático sem `from` (side-effect only)", () => {
+		expect(hasForbiddenStaticGlobeImport(`import "react-globe.gl"`)).toBe(true)
+		expect(hasForbiddenStaticGlobeImport(`import 'three'`)).toBe(true)
+	})
+
+	test("detecta require do módulo do globo", () => {
+		const content = `const Globe = require("react-globe.gl")`
+
+		expect(hasForbiddenStaticGlobeImport(content)).toBe(true)
+	})
+
+	test("permite import estático dos módulos leves do globo", () => {
+		const content = `import { GLOBE_SIZE_PX } from "@/features/weather/components/weather-globe-constants"
+import { WeatherGlobeFallback } from "./weather-globe-fallback"
+import { WeatherGlobe } from "@/features/weather/components/weather-globe-error-boundary"`
 
 		expect(hasForbiddenStaticGlobeImport(content)).toBe(false)
 	})
@@ -94,70 +140,84 @@ describe("Fitness: módulos do globo não são importados estaticamente fora do 
 
 - **Step 2: Run test to verify it fails**
 
-Run: `cd apps/frontend && npx vitest run src/features/weather/components/weather-globe-import.test.ts`
+Run: `cd apps/frontend && npx vitest run src/test/fitness/weather-globe-import.test.ts`
 Expected: FAIL — `Failed to resolve import "./weather-globe-static-import-guard"` (o módulo ainda
 não existe).
 
 - **Step 3: Write minimal implementation**
 
 ```typescript
-// apps/frontend/src/features/weather/components/weather-globe-static-import-guard.ts
+// apps/frontend/src/test/fitness/weather-globe-static-import-guard.ts
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
-const SRC_ROOT = path.resolve(currentDir, "../../../")
+const SRC_ROOT = path.resolve(currentDir, "../../")
 
+// Único módulo autorizado a importar o globo 3D estaticamente. O
+// `weather-globe-error-boundary.tsx` NÃO entra aqui: ele carrega o globo por
+// `dynamic(() => import(...))`, e por isso pode ser importado estaticamente pela
+// página sem puxar o chunk pesado.
 const ALLOWED_FILES = new Set([
 	path.join(SRC_ROOT, "features/weather/components/weather-globe.tsx"),
-	path.join(
-		SRC_ROOT,
-		"features/weather/components/weather-globe-error-boundary.tsx",
-	),
 ])
 
 const TEST_FILE_PATTERN = /\.(test|fitness-test)\.tsx?$/
 const SOURCE_FILE_PATTERN = /\.(ts|tsx)$/
 
-// Só especificadores de import ESTÁTICO: `from "..."` e `require("...")`.
-// `dynamic(() => import("..."))` não casa com nenhum dos dois — é justamente o que se permite.
-const STATIC_SPECIFIER_PATTERN = /(?:from\s*|require\(\s*)["']([^"']+)["']/g
+// Só especificadores de import ESTÁTICO: `from "..."`, `require("...")` e
+// `import "..."` (side-effect, sem `from`).
+// `dynamic(() => import("..."))` não casa com nenhum dos três — é justamente o que se permite.
+const STATIC_SPECIFIER_PATTERN =
+	/(?:from\s*|require\(\s*|import\s+)["']([^"']+)["']/g
 
-// Cobre `react-globe.gl` e os módulos do globo, tanto na forma com alias
-// (`@/features/weather/components/weather-globe`) quanto na relativa (`./weather-globe`).
+// Cobre `react-globe.gl`, o módulo do globo (tanto com alias
+// `@/features/weather/components/weather-globe` quanto relativo `./weather-globe`)
+// e as libs 3D subjacentes (`three`, `three-globe`, `globe.gl`).
+// Casa na raiz do especificador, cobrindo subpaths (ex: `three/examples/jsm/...`).
+// Módulos leves (`weather-globe-constants`, `weather-globe-fallback`,
+// `weather-globe-error-boundary`) não casam: exigem `/` ou fim após a raiz.
 const FORBIDDEN_SPECIFIER_PATTERN =
-	/(?:react-globe\.gl|weather-globe(?:-error-boundary)?)$/
+	/(?:^|\/)(?:react-globe\.gl|three-globe|globe\.gl|weather-globe|three)(?:\/|$)/
 
 export function hasForbiddenStaticGlobeImport(content: string): boolean {
 	const specifiers = [...content.matchAll(STATIC_SPECIFIER_PATTERN)]
-	return specifiers.some((match) =>
-		FORBIDDEN_SPECIFIER_PATTERN.test(match[1]),
-	)
+	return specifiers.some((match) => FORBIDDEN_SPECIFIER_PATTERN.test(match[1]))
+}
+
+function processEntry(
+	entry: fs.Dirent,
+	dirPath: string,
+	files: string[],
+): void {
+	const fullPath = path.join(dirPath, entry.name)
+	if (entry.isDirectory() && entry.name !== "node_modules") {
+		files.push(...listSourceFiles(fullPath))
+		return
+	}
+	if (entry.isFile() && SOURCE_FILE_PATTERN.test(entry.name)) {
+		files.push(fullPath)
+	}
 }
 
 function listSourceFiles(dir: string): string[] {
 	const entries = fs.readdirSync(dir, { withFileTypes: true })
 	const files: string[] = []
 	for (const entry of entries) {
-		const fullPath = path.join(dir, entry.name)
-		if (entry.isDirectory()) {
-			if (entry.name === "node_modules") continue
-			files.push(...listSourceFiles(fullPath))
-			continue
-		}
-		if (SOURCE_FILE_PATTERN.test(entry.name)) {
-			files.push(fullPath)
-		}
+		processEntry(entry, dir, files)
 	}
 	return files
+}
+
+function shouldCheckFile(filePath: string): boolean {
+	return !ALLOWED_FILES.has(filePath) && !TEST_FILE_PATTERN.test(filePath)
 }
 
 export function findForbiddenStaticGlobeImports(): string[] {
 	const violations: string[] = []
 	for (const filePath of listSourceFiles(SRC_ROOT)) {
-		if (ALLOWED_FILES.has(filePath)) continue
-		if (TEST_FILE_PATTERN.test(filePath)) continue
+		if (!shouldCheckFile(filePath)) continue
 		const content = fs.readFileSync(filePath, "utf-8")
 		if (hasForbiddenStaticGlobeImport(content)) {
 			violations.push(path.relative(SRC_ROOT, filePath))
@@ -175,16 +235,16 @@ padrão proibido (o `dynamic(() => import("./weather-globe"))` mora dentro do bo
 
 - **Step 4: Run test to verify it passes**
 
-Run: `cd apps/frontend && npx vitest run src/features/weather/components/weather-globe-import.test.ts`
-Expected: PASS (os 4 testes) — `findForbiddenStaticGlobeImports()` retorna `[]`, porque só
-`weather-globe.tsx` importa `react-globe.gl` estaticamente (único arquivo da allowlist), o
+Run: `cd apps/frontend && npx vitest run src/test/fitness/weather-globe-import.test.ts`
+Expected: PASS (todos os testes) — `findForbiddenStaticGlobeImports()` retorna `[]`, porque só
+`weather-globe.tsx` importa `react-globe.gl`/`three` estaticamente (único arquivo da allowlist), o
 `weather-globe-error-boundary.tsx` carrega o globo via `dynamic(() => import(...))` e `page.tsx`
 importa apenas o boundary, que não é um especificador vigiado.
 
 - **Step 5: Commit**
 
 ```bash
-git add apps/frontend/src/features/weather/components/weather-globe-static-import-guard.ts apps/frontend/src/features/weather/components/weather-globe-import.test.ts
+git add apps/frontend/src/test/fitness/weather-globe-static-import-guard.ts apps/frontend/src/test/fitness/weather-globe-import.test.ts
 git commit -m "test(weather): adiciona fitness function contra import estático de react-globe.gl"
 ```
 

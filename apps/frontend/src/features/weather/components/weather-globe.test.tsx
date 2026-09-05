@@ -205,6 +205,18 @@ describe("WeatherGlobe", () => {
 		)
 	})
 
+	test("renderiza marcador na coordenada buscada quando latitude/longitude são informadas", () => {
+		mockWebglSupported()
+
+		render(<WeatherGlobe latitude={-23.5505} longitude={-46.6333} />)
+
+		expect(globePropsSpy).toHaveBeenCalledWith(
+			expect.objectContaining({
+				pointsData: [{ lat: -23.5505, lng: -46.6333 }],
+			}),
+		)
+	})
+
 	test("não anima a câmera e não renderiza marcador quando latitude/longitude não são informadas", () => {
 		mockWebglSupported()
 
