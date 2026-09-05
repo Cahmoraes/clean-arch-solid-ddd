@@ -4633,6 +4633,10 @@ export interface paths {
                                 /** @description Maximum temperature */
                                 max: number;
                             };
+                            /** @description Latitude of the resolved city */
+                            latitude: number;
+                            /** @description Longitude of the resolved city */
+                            longitude: number;
                         };
                     };
                 };
