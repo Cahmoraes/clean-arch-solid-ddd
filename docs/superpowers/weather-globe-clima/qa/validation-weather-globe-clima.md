@@ -3,11 +3,13 @@
 **Date**: 2026-09-05
 **Spec**: docs/superpowers/weather-globe-clima/specs/weather-globe-clima-design.md
 **PRD**: docs/superpowers/weather-globe-clima/prd/prd-weather-globe-clima.md
-**Diff range**: babb6a8d..a5ee3455
+**Diff range**: babb6a8d..ba7ca9a6 (rodada 5) · babb6a8d..a5ee3455 (rodada 4)
 **Verifier**: INDEPENDENT
-**Sensor depth**: 7 mutations across 2 logic files — weather-globe.tsx: 6/12 branches, weather-globe-constants.ts: 1/0 branches (rodada 4, sobre o delta da revisão de 2026-09-05; acumulado com as rodadas 2 e 3: 24 mutações em 5 arquivos de lógica)
+**Sensor depth**: 8 mutations across 2 logic files — weather-globe.tsx: 6/12 branches, weather-globe-constants.ts: 2/0 branches (7 da rodada 4 mais 1 re-execução dirigida na rodada 5, a confirmação de FIX-03; acumulado com as rodadas 2 e 3: 24 mutações em 5 arquivos de lógica)
 
-> **Histórico de rodadas.** Este arquivo acumula quatro rodadas de verificação independente.
+> **Histórico de rodadas.** Este arquivo acumula cinco rodadas de verificação independente.
+> A rodada 5 (range `babb6a8d..ba7ca9a6`) é uma **re-verificação estreita** do único gap da
+> rodada 4 (FIX-03 / D6) e não re-deriva os demais critérios.
 > As rodadas 1–3 cobriram a feature original (range `682a087c..e1ad3ed1`, 40 critérios,
 > veredito PASS) e estão preservadas abaixo em seções marcadas como histórico. A rodada 4
 > (range `babb6a8d..a5ee3455`) verifica **apenas o delta** da revisão de spec de 2026-09-05:
@@ -21,6 +23,7 @@
 - **Command**: `pnpm --filter frontend test -- --run` (suíte completa do frontend) · `pnpm --filter frontend exec vitest run src/features/weather/components/weather-globe.test.tsx` (escopado)
 - **Result**: 955 passed em 156 arquivos, 0 failed, 0 skipped - exit 0
 - **Baseline**: ran — executei a suíte completa do frontend por conta própria em a5ee3455 com árvore limpa (`git status --porcelain` vazio antes e depois). O baseline recebido do controller (955 testes @ 0b791766) confere: `git diff --stat 0b791766..a5ee3455 -- apps/frontend/src` retorna vazio, ou seja, o commit de HEAD é somente documental. O número saiu de 954 (rodada 3) para 955, exatamente o teste novo de FR-016 acrescentado nesta rodada.
+- **Rodada 5 (`ba7ca9a6`)**: **Baseline**: ran — executei por conta própria `pnpm --filter frontend exec vitest run src/features/weather/components/weather-globe.test.tsx` em `ba7ca9a6` com árvore limpa: **1 arquivo, 18 testes passed, 0 failed, exit 0** (era 17 na rodada 4; +1 é exatamente o teste de D6 do FIX-03). Baseline anterior não reutilizado — SHA mudou.
 - **Typecheck/build**: `pnpm --filter frontend tsc:check` (`tsc --noEmit`) **passou** com exit 0. O delta desta rodada toca somente `apps/frontend/src` (`git diff --stat babb6a8d..a5ee3455` não lista nenhum arquivo sob `apps/backend`), então os 2 erros TS2554 pré-existentes do backend registrados na rodada 3 seguem inalterados e nenhum erro de tipo novo foi introduzido.
 
 ---
@@ -51,7 +54,7 @@ HEAD (`a5ee3455`).
 | FR-016 / D5.1 QUANDO o usuário clica ou toca o globo ENTÃO nada é disparado (busca/seleção), por omissão de handler | nenhum `onGlobeClick` nem `onPointClick` passado ao `<Globe>` | `weather-globe.test.tsx:135` - `expect(globeProps.onGlobeClick).toBeUndefined()`; `:136` - `expect(globeProps.onPointClick).toBeUndefined()`; ausência confirmada na produção (`grep -n "onGlobeClick\|onPointClick\|onClick" weather-globe.tsx` sem resultado) | ✅ PASS |
 | D5.1 QUANDO `enablePointerInteraction={false}` coexiste com `enableRotate = true` ENTÃO o raycaster de hover/click segue desligado sem impedir o arrasto | `enablePointerInteraction: false` continua asserido junto com `enableRotate: true` | `weather-globe.test.tsx:99-101` - `expect(globePropsSpy).toHaveBeenCalledWith(expect.objectContaining({ enablePointerInteraction: false }))`, coexistindo com `:126` | ✅ PASS |
 | D7 QUANDO a rotação manual é habilitada ENTÃO o globo continua decorativo, sem foco nem handlers de teclado | `aria-hidden="true"` mantido nos dois ramos; sem `tabIndex`/`onKeyDown` | `weather-globe.test.tsx:95-98` - `expect(screen.getByTestId("weather-globe-canvas")).toHaveAttribute("aria-hidden", "true")`; `:84-87` (fallback); ausência de foco confirmada por `grep -n "tabIndex\|onKeyDown" weather-globe.tsx weather-globe-fallback.tsx` sem resultado | ✅ PASS |
-| D6 QUANDO o globo e o slot da página são dimensionados ENTÃO usam 240px (era 128px) | `GLOBE_SIZE_PX = 240` | **nenhuma asserção localizada**: `grep -rn "GLOBE_SIZE_PX\|240" apps/frontend/src --include=*.test.ts --include=*.test.tsx` retorna vazio; o valor existe só na produção (`weather-globe-constants.ts:9`) e nenhum teste o lê. Confirmado empiricamente pela mutação #7 (240 → 128), que **sobrevive à suíte completa** | ❌ Gap (uncovered) |
+| D6 QUANDO o globo e o slot da página são dimensionados ENTÃO usam 240px (era 128px) | `GLOBE_SIZE_PX = 240` | ✅ **Fechado na rodada 5 (FIX-03)**: `apps/frontend/src/features/weather/components/weather-globe.test.tsx:130-139` — teste "renderiza o globo com o tamanho configurado em GLOBE_SIZE_PX" assere `expect(globeProps.width).toBe(GLOBE_SIZE_PX)`, `expect(globeProps.height).toBe(GLOBE_SIZE_PX)` e **`expect(GLOBE_SIZE_PX).toBe(240)`** (`:138`), com a constante **importada** de `./weather-globe-constants` (`:4`), não duplicada — single-sourcing preservado; `weather-globe-constants.ts:9` segue `export const GLOBE_SIZE_PX = 240`. Mutação 240 → 128 agora **killed** (sensor rodada 5). *Registro histórico da rodada 4: constava como Gap (uncovered) — nenhuma asserção lia o valor e a mutação não era morta.* | ✅ PASS |
 
 **Coverage (rodada 4)**: 8/9 criteria PASS · 1 gap · 0 spec-precision gaps
 
@@ -137,6 +140,24 @@ Nenhum item abaixo é exigido pelo spec; nenhum bloqueia o veredito. Todos foram
 
 ## Discrimination Sensor
 
+### Rodada 5 — re-verificação de FIX-03 (range `babb6a8d..ba7ca9a6`)
+
+Re-execução dirigida **apenas** da mutação que sobreviveu na rodada 4. As demais mutações da
+rodada 4 não foram reexecutadas (já registradas abaixo, e o commit `ba7ca9a6` toca somente
+`weather-globe.test.tsx` e este arquivo de QA, conforme `git show ba7ca9a6 --stat`).
+
+| # | File:line | Mutation | Killed? |
+| --- | --- | --- | --- |
+| 7-bis | `apps/frontend/src/features/weather/components/weather-globe-constants.ts:9` | `export const GLOBE_SIZE_PX = 240` → `= 128` (reverte D6) — **confirmação de FIX-03**, supersede o resultado não-morto registrado na rodada 4 | ✅ Killed |
+
+Saída literal de `run-mutation.cjs`:
+`{"killed":true,"survived":false,"testExitCode":1,"file":"apps/frontend/src/features/weather/components/weather-globe-constants.ts","line":9,"applied":true,"restored":true}`.
+Árvore real restaurada depois: `git status --porcelain` vazio e `git rev-parse HEAD` =
+`ba7ca9a6ef7ce0f954e2278ff506491b2d0b261d`.
+
+**Depth (rodada 5)**: re-verificação estreita — 1 mutação, escopo declarado pelo controller.
+**Result (rodada 5)**: 1 killed, 0 survived - PASS ✅
+
 ### Rodada 4 — delta da revisão de 2026-09-05
 
 Arquivos de lógica no diff desta rodada e plano declarado antes da execução:
@@ -159,7 +180,7 @@ saída observados**, nunca previstos.
 | 4 | `apps/frontend/src/features/weather/components/weather-globe.tsx:81` | `controls.enableRotate = true` → `= false` (desfaz D5.1/FR-014) | ✅ Killed |
 | 5 | `apps/frontend/src/features/weather/components/weather-globe.tsx:142` | injeta `onGlobeClick={() => {}}` no `<Globe>` (clique deixa de ser inerte — viola FR-016) | ✅ Killed |
 | 6 | `apps/frontend/src/features/weather/components/weather-globe.tsx:79` | `controls.enableZoom = false` → `= true` (checa se o delta enfraqueceu a asserção antiga de FR-015) | ✅ Killed |
-| 7 | `apps/frontend/src/features/weather/components/weather-globe-constants.ts:9` | `export const GLOBE_SIZE_PX = 240` → `= 128` (reverte D6) | ❌ Survived |
+| 7 | `apps/frontend/src/features/weather/components/weather-globe-constants.ts:9` | `export const GLOBE_SIZE_PX = 240` → `= 128` (reverte D6) | ❌ na rodada 4 (mutante não morto) → **superado pela rodada 5**: ✅ Killed (ver tabela da rodada 5 acima) |
 
 **Depth (rodada 4)**: P0-full (7 mutações executadas com a ferramenta dedicada, acima do piso de 3 e do mínimo proporcional de 4+1)
 **Result (rodada 4)**: 6 killed, 1 survived - FAIL ❌ (sobrevivente nu → fix task FIX-03)
@@ -214,7 +235,11 @@ Post-sensor tree state: `git status --porcelain` empty, `git diff --stat` empty.
 
 ## Gaps → Fix Tasks
 
-### FIX-03 - D6 (`GLOBE_SIZE_PX = 240`) não tem nenhuma asserção automatizada
+### FIX-03 - D6 (`GLOBE_SIZE_PX = 240`) não tem nenhuma asserção automatizada — ✅ RESOLVIDO na rodada 5 (`ba7ca9a6`)
+
+> Fechado: `weather-globe.test.tsx:130-139` assere as props do `<Globe>` contra a constante
+> importada **e** pina `expect(GLOBE_SIZE_PX).toBe(240)` (`:138`), evitando a tautologia
+> alertada abaixo. Mutação 240 → 128 verificada como `killed`. Texto original preservado:
 
 - **What**: acrescentar uma asserção que ancore o tamanho do globo no valor que o spec pina
   em D6 (240). A forma mais direta e alinhada ao padrão já usado no arquivo é asserir as
@@ -236,6 +261,27 @@ Post-sensor tree state: `git status --porcelain` empty, `git diff --stat` empty.
 ---
 
 ## Verdict
+
+**PASS ✅** (rodada 5, range `babb6a8d..ba7ca9a6`) — Re-verificação estreita do único gap da
+rodada 4. **D6 está fechado**: o teste novo em
+`apps/frontend/src/features/weather/components/weather-globe.test.tsx:130-139` lê a constante
+**importada** (`:4`, `import { GLOBE_SIZE_PX } from "./weather-globe-constants"`), assere
+`globeProps.width`/`globeProps.height` contra ela e — decisivo — pina o número do spec com
+`expect(GLOBE_SIZE_PX).toBe(240)` (`:138`). Não há duplicação de `240` que quebre o
+single-sourcing: `weather-globe-constants.ts:9` continua sendo a única definição de produção.
+A verificação não é por relato: reexecutei a mutação `240 → 128` com `run-mutation.cjs` e
+observei `{"killed":true,"survived":false,"testExitCode":1,...,"restored":true}` — ou seja, o
+sensor que sobrevivia na rodada 4 agora morre, e a linha #7 daquela tabela fica explicitamente
+**superada** pela linha 7-bis, não apagada. Gate verde por execução própria em `ba7ca9a6`
+(escopado: 1 arquivo, 18 testes, exit 0; +1 teste em relação aos 17 da rodada 4, exatamente o
+do FIX-03), com árvore limpa antes e depois (`git status --porcelain` vazio, HEAD =
+`ba7ca9a6`). O commit `ba7ca9a6` toca somente `weather-globe.test.tsx` e este arquivo de QA
+(`git show ba7ca9a6 --stat`), sem nenhuma alteração de produção — então FR-014 a FR-018, D5.1
+e D7, já provados na rodada 4, não podem ter regredido; spot-check das asserções vizinhas de
+`enableZoom`/`enablePan`/`enableRotate` (`:125-127`) confirma que continuam intactas. Sem gaps
+remanescentes.
+
+### Veredito da rodada 4 (preservado)
 
 **FAIL ❌** (rodada 4, range `babb6a8d..a5ee3455`) - O núcleo do delta está provado: as três
 mudanças que a revisão de spec de 2026-09-05 introduziu na renderização — textura de
