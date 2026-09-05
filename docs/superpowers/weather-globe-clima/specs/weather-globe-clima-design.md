@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-01T21:07:54-03:00"
-updated_at: "2026-09-05T09:51:43-03:00"
+updated_at: "2026-09-05T10:24:31-03:00"
 ---
 
 # Design — Globo 3D na rota `/clima`
@@ -44,9 +44,10 @@ A página `/clima` já existe (bounded context `weather`, feature de planejament
 - Globo como hero, sempre visível, acima da busca (coluna centralizada ~448px mantida).
 - Auto-rotação por padrão; anima até a cidade buscada quando o resultado chega.
 - Marcador simples na cor primária do tema (`#39e58c`) indicando a localização.
-- Superfície do globo sem textura fotográfica (sem mapa-múndi): material sólido escuro
-  combinando com o gradiente radial do mockup (ver D1, "Fechamento adicional — textura do
-  globo").
+- Superfície do globo com textura de mapa-múndi (`earth-dark.jpg`) sobre o `globeMaterial`
+  sólido escuro (`#061410`) como base imediata — a base garante que o globo nunca apareça
+  vazio enquanto a textura carrega ou caso ela falhe (ver D1, "Fechamento adicional —
+  textura do globo").
 
 **Fidelidade:** o mockup é um *norte* — a renderização real usa `react-globe.gl` (WebGL),
 não o círculo estático do mockup.
@@ -74,8 +75,9 @@ realista (`earth-dark.jpg`) em vez de superfície sólida, e tamanho aumentado p
   visualização — aceito conscientemente e escopado só a esta página.
 - **Fechamento adicional — textura do globo (revisado 2026-09-05):** decisão original
   invertida por pedido explícito do usuário. O globo agora usa
-  `globeImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg"` — URL
-  oficial de exemplo do pacote `three-globe` (confirmada no repositório
+  `globeImageUrl="https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg"`
+  (esquema explícito, não protocol-relative — remove a dependência do esquema da página
+  servidora) — URL oficial de exemplo do pacote `three-globe` (confirmada no repositório
   `vasturiano/three-globe`, 94KB, tons escuros/acinzentados compatíveis com o tema dark
   do app) — combinada com `waitForGlobeReady={false}`. `globeMaterial` (`MeshPhongMaterial`,
   `#061410`) continua definido como base visual: com `waitForGlobeReady={false}` o globo
@@ -88,6 +90,27 @@ realista (`earth-dark.jpg`) em vez de superfície sólida, e tamanho aumentado p
   D1 original (chunk JS via `next/dynamic`). Trade-off aceito: dependência de disponibilidade
   do CDN `jsdelivr` (fora do controle do time) — mitigada, não eliminada, por
   `waitForGlobeReady={false}`.
+- **Risco residual aceito — ordem de aplicação `globeMaterial` × `globeImageUrl`:** o
+  `three-globe` aplica o material customizado (`globeMaterial`, um *method* do Kapsule) e a
+  textura (`globeImageUrl`, uma *prop*) por dois caminhos internos distintos; a leitura do
+  código-fonte não garante qual dos dois roda primeiro no digest interno. Se o digest da
+  textura rodar antes da troca do material customizado, a textura pode nunca aparecer —
+  sem erro observável, o globo permaneceria sólido `#061410` indefinidamente. Nenhum teste
+  com mock consegue falsificar esse cenário (ver Testes). Aceito sem mecanismo adicional
+  (gold-plating para um elemento decorativo): a verificação é uma checagem visual manual —
+  screenshot no QA da feature, mesma prática já usada em `qa/evidence/` — não um teste
+  automatizado.
+- **Observabilidade — falha de carregamento da textura não é instrumentada:** o
+  `TextureLoader` interno do `three-globe` não expõe callback `onError`, e `onGlobeReady`
+  não dispara nesse caminho — uma falha de rede na textura é 100% silenciosa, sem log nem
+  telemetria. Aceito para um elemento decorativo (o sintoma visível é o globo permanecer
+  sólido `#061410`, sem quebrar a página); nenhuma instrumentação nova é adicionada.
+- **Sem feature flag / rollout gradual:** a revisão introduz uma dependência de terceiro em
+  runtime (`cdn.jsdelivr.net`) numa rota pública, sem feature flag nem rollout progressivo —
+  decisão consciente, não omissão: o elemento é puramente decorativo, o rollback é reverter
+  três valores (`GLOBE_SIZE_PX`, `controls.enableRotate`, `globeImageUrl`), e a aplicação não
+  define `Content-Security-Policy` (só `Cross-Origin-Opener-Policy`), então nenhum ajuste de
+  CSP é necessário para liberar a CDN.
 
 ### D2. Layout — globo hero sempre visível no topo
 
@@ -110,8 +133,10 @@ realista (`earth-dark.jpg`) em vez de superfície sólida, e tamanho aumentado p
 
 ### D3. Contrato HTTP estendido de forma aditiva
 
-- **Contexto:** `GET /weather?city=` hoje retorna `{ city, temperature }`; o geocoding
-  interno já resolve coordenadas, apenas não as expõe.
+- **Contexto:** antes desta feature, `GET /weather?city=` retornava só `{ city,
+  temperature }`; o geocoding interno já resolvia coordenadas, apenas não as expunha.
+  (Decisão já implementada e commitada nas tasks 1-2 — a API já retorna `latitude`/
+  `longitude`; esta seção descreve o estado anterior à mudança, não o estado atual.)
 - **Decisão:** adicionar `latitude` e `longitude` à resposta existente, sem novo endpoint,
   como campos soltos no nível raiz (não aninhados no VO `Coordinate`):
   `{ city, temperature: {...}, latitude: number, longitude: number }`.
@@ -169,7 +194,7 @@ realista (`earth-dark.jpg`) em vez de superfície sólida, e tamanho aumentado p
     (`renderer().domElement`) e, ao recebê-lo, troca para o mesmo fallback estático de D5 —
     sem depender de um erro de render.
   - No desmonte (unmount), `WeatherGlobe` cancela o loop de auto-rotação e libera o
-    contexto WebGL (`globeEl.current.renderer()`), evitando vazamento de contexto WebGL
+    contexto WebGL (`globeRef.current.renderer()`), evitando vazamento de contexto WebGL
     ao navegar repetidamente para dentro e fora de `/clima`.
   - Por ser majoritariamente decorativo (ver Fora de Escopo), `WeatherGlobe` e seu fallback
     recebem `aria-hidden="true"` (D7) — a rotação manual (D5 revisado) não expõe nenhuma
@@ -206,18 +231,42 @@ realista (`earth-dark.jpg`) em vez de superfície sólida, e tamanho aumentado p
   - Quando a query de clima falha (busca subsequente sem sucesso), o globo mantém a
     última posição/rotação válida sem indicar erro — o estado de erro é comunicado só
     pela mensagem já existente da página, não pelo globo.
+  - Sob `prefers-reduced-motion: reduce`, o fallback estático (D5) substitui o globo por
+    inteiro — FR-014 (rotação manual) não se aplica nesse caminho, só no ramo interativo.
+    Aceito: a rotação manual é um extra visual sobre um elemento decorativo, e a alternativa
+    (globo estático porém arrastável) dobraria os modos de renderização sem necessidade
+    funcional identificada.
+  - Se o usuário arrastar o globo manualmente durante a janela de transição de
+    `pointOfView` (`CAMERA_TRANSITION_MS`), o delta do arrasto compõe com a interpolação de
+    câmera em andamento (ambos escrevem `camera.position` no mesmo ciclo de
+    `controls.update()`), sem nenhum lock entre os dois. A câmera pode terminar levemente
+    deslocada do centro exato da cidade buscada. Aceito sem mecanismo de bloqueio — travar
+    o arrasto durante a transição adicionaria estado extra e um novo modo de falha (ficar
+    travado se a busca seguinte falhar); o elemento é decorativo e o desvio é pequeno.
 
 ### D6. Tamanho do globo: 240px (era 128px)
 
 - **Contexto:** com o globo agora aceitando rotação manual, 128px oferece pouca área de
   arrasto para uma interação real.
-- **Decisão:** `GLOBE_SIZE_PX = 240`, validado via mockup dentro da coluna `max-w-md`
-  (448px) da página `/clima` — cabe sem alterar a largura do layout.
+- **Decisão:** `GLOBE_SIZE_PX = 240`, definida em `weather-globe-constants.ts` (única fonte
+  — propaga automaticamente para `weather-globe.tsx`, `weather-globe-fallback.tsx` e o slot
+  reservado em `app/(public)/clima/page.tsx`), validado via mockup dentro da coluna
+  `max-w-md` (448px) da página `/clima` — cabe sem alterar a largura do layout.
 - **Justificativa técnica:** maior área de toque/arrasto sem exigir reestruturação da
-  página; só a altura reservada ao globo cresce.
+  página; só a altura reservada ao globo cresce; a constante centralizada evita
+  reestruturação de código também.
 - **Justificativa de negócio:** decisão do usuário, validada visualmente (companion).
 - **Trade-offs aceitos:** a página ocupa mais espaço vertical antes de qualquer busca
-  (extensão do trade-off já aceito em D2).
+  (extensão do trade-off já aceito em D2). Adicionalmente: `OrbitControls` aplica
+  `touch-action: none` incondicionalmente no canvas do globo (necessário para o gesto de
+  arrasto funcionar em touch); com a área passando de 128px para 240px (~3,5x), um swipe
+  vertical iniciado sobre o globo — posicionado logo abaixo do título, no topo da página —
+  não rola a página em mobile. Esse custo já existia em 128px (é inerente ao
+  `OrbitControls`, não à revisão), mas a revisão o amplia e a spec original nunca o
+  registrava. Aceito nesta rodada sem mitigação (ex.: `touch-action: pan-y` restrito ao eixo
+  vertical entraria em conflito com o próprio gesto de rotação horizontal) — a validação em
+  viewports pequenos (documentada em Testes) fica como verificação manual/QA, não teste
+  automatizado.
 
 ### D7. Acessibilidade: mantém `aria-hidden="true"`, sem suporte a teclado
 
@@ -227,7 +276,14 @@ realista (`earth-dark.jpg`) em vez de superfície sólida, e tamanho aumentado p
   de teclado.
 - **Justificativa técnica/de negócio:** nenhuma informação funcional depende da rotação
   manual — é um extra visual sobre um elemento decorativo; adicionar suporte a teclado
-  ampliaria o escopo sem necessidade funcional identificada.
+  ampliaria o escopo sem necessidade funcional identificada. Critério aplicável: WCAG 2.2
+  SC 2.5.7 (Dragging Movements, nível AA) exige uma alternativa de ponteiro único para
+  funcionalidade acionada por arrasto, salvo quando o arrasto é essencial ao resultado — a
+  auto-rotação já exibe todas as faces do globo sem exigir nenhum arrasto, então o arrasto
+  nunca é a única via para ver qualquer parte da superfície, e a exceção se aplica.
+  `aria-hidden="true"` continua válido porque o `<canvas>` do Three.js não é focável por
+  padrão e o elemento não tem `tabIndex` nem descendente focável — a regra ARIA que
+  `aria-hidden` viola é sobre conteúdo focável dentro da subárvore, que não existe aqui.
 - **Trade-offs aceitos:** usuários de teclado/leitor de tela não têm acesso à interação
   de rotação manual — aceitável pois nenhuma informação exclusiva está ali.
 
@@ -257,13 +313,14 @@ flowchart TD
     Hook -->|erro| Error[Mensagem de erro role=alert]
     Hook --> Page[/clima page/]
     Page --> Card[CurrentWeatherDisplay renderiza temperatura]
-    Page --> Globe[WeatherGlobe monta client-only]
+    Page --> Boundary[ErrorBoundary local, importado estaticamente]
 
-    Globe --> Boundary[ErrorBoundary local]
-    Boundary --> Check{WebGL suportado E não prefers-reduced-motion?}
+    Boundary --> Globe[WeatherGlobe monta client-only via next/dynamic]
+    Globe --> Check{WebGL suportado E não prefers-reduced-motion?}
     Check -->|Não| Fallback[Fallback estático aria-hidden]
     Check -->|Sim| Interactive[Globo interativo, auto-rotate por padrão]
-    Boundary -->|exceção runtime| Fallback
+    Boundary -->|exceção runtime ou falha no fetch do chunk| Fallback
+    Interactive -->|evento webglcontextlost| Fallback
 
     Interactive --> NewCoords{Novas coordenadas na query?}
     NewCoords -->|Sim| Animate["pointOfView({lat, lng, altitude}, ms) anima câmera"]
@@ -294,9 +351,10 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_flowchart_weatherg
 | WebGL indisponível ou fraco em dispositivo do usuário | 2 | 2 | 4 🟡 | Fallback estático (D5); dado essencial (temperatura) nunca depende do globo |
 | Inconsistência com precedente do `volt-redesign` (evitar novas deps de visualização) | 1 | 3 | 3 🟡 | Decisão explícita e documentada (D1), escopada só a esta página |
 | Esquecer de regenerar `@repo/api-types` após estender o contrato | 2 | 2 | 4 🟡 | Task de plano inclui `pnpm generate:types` como passo explícito após a mudança de backend |
-| CDN da textura (`jsdelivr`) fica indisponível ou lento | 1 | 2 | 2 🟢 | `waitForGlobeReady={false}` (D1 revisado) — globo renderiza com `globeMaterial` sólido mesmo sem a textura carregar |
-| Teste de mutação de D5 (linha que afirma `enableRotate`) fica dessincronizado ao inverter só a asserção da linha 123 | 2 | 1 | 2 🟢 | Revisar o arquivo de teste completo, não só a linha alterada, ao implementar D5.1 |
-| Usuário confunde "arrastar gira" com "clicar busca" (sem affordance visual) | 1 | 2 | 2 🟢 | Fora de escopo tratar via UI nesta rodada (aceito); globo continua `aria-hidden`, decorativo (D7) |
+| CDN da textura (`jsdelivr`) fica indisponível, lento, ou a textura nunca aparece por ordem de aplicação ambígua com `globeMaterial` | 1 | 2 | 2 🟢 | `waitForGlobeReady={false}` (D1 revisado) garante que o globo nunca fica travado; a ordem `globeMaterial`×`globeImageUrl` não é verificável por teste com mock (ver D1, "Risco residual aceito") — mitigado por verificação visual manual no QA da feature, não eliminado |
+| Teste de mutação de D5.1 (`enableRotate`) fica vazio se só a asserção da linha 123 inverter, sem inverter também o baseline do mock | 2 | 2 | 4 🟡 | Inverter o valor inicial de `controlsState.enableRotate` no `vi.hoisted` e no `afterEach` de `true` para `false`, espelhando o padrão já usado por `enableZoom`/`enablePan` (mock nasce no oposto do valor esperado) — só assim a asserção `toBe(true)` prova uma escrita real do componente |
+| Usuário confunde "arrastar gira" com "clicar busca" (sem affordance visual) | 1 | 2 | 2 🟢 | Aceito nesta rodada: nenhuma affordance visual de arrasto será adicionada; o clique é inerte por omissão de handler (D5.1), então a confusão custa no máximo um clique sem efeito — `aria-hidden` (D7) é irrelevante aqui (só afeta tecnologia assistiva, não o usuário vidente do cenário) |
+| `OrbitControls` aplica `touch-action: none` no canvas; swipe vertical sobre o globo não rola a página em mobile, amplificado pelos 240px de D6 | 2 | 2 | 4 🟡 | Aceito sem mitigação nesta rodada (ver D6, trade-offs) — validação em viewport pequeno é manual/QA |
 
 ## Fora de Escopo
 
@@ -351,13 +409,22 @@ Diagrama fonte: `specs/diagrams/weather-globe-clima-design_01_flowchart_weatherg
 
 **Testes atualizados (revisão 2026-09-05 — textura + rotação manual):**
 
-- `weather-globe.test.tsx` — a asserção de mutação que hoje exige `enableRotate === false`
-  passa a exigir `enableRotate === true` (D5.1); `enableZoom === false` e
-  `enablePan === false` continuam cobertos sem mudança. Revisar o arquivo completo, não só
-  a linha alterada (ver Riscos).
-- Novo teste: o `<Globe>` recebe `globeImageUrl` com a URL de textura configurada e
-  `waitForGlobeReady={false}` (verificação de props via mock, sem WebGL real) — D1
-  revisado.
+- `weather-globe.test.tsx` — o teste "ativa auto-rotação e desabilita arrastar/zoom/pan ao
+  montar o ramo interativo" é **editado, não substituído**: a asserção de `enableRotate`
+  passa de `false` para `true` (D5.1), mantendo as demais quatro asserções (`autoRotate`,
+  `autoRotateSpeed`, `enableZoom`, `enablePan`) como estão. Para a mudança continuar
+  provando uma escrita real do componente — não o valor inicial do mock —, o baseline de
+  `controlsState.enableRotate` no `vi.hoisted` e no `afterEach` também inverte, de `true`
+  para `false`, espelhando o padrão já usado por `enableZoom`/`enablePan` (mock nasce no
+  oposto do valor esperado). Ver Riscos para o porquê disso ser obrigatório, não estético.
+- O teste "renderiza o globo sem textura externa, usando globeMaterial sólido" é
+  **substituído** (sua asserção atual, `globeImageUrl` `toBeUndefined()`, contradiz D1
+  revisado) por um teste que verifica que `<Globe>` recebe `globeImageUrl` com a URL de
+  textura configurada e `waitForGlobeReady={false}`, mantendo `globeMaterial` definido.
+  Escopo explícito do teste: verificação de contrato de props via mock, sem WebGL real —
+  não prova que a textura efetivamente aparece na tela nem resolve a ordem de aplicação
+  entre `globeMaterial` e `globeImageUrl` (ver D1, "Risco residual aceito"); essa
+  confirmação é verificação visual manual/QA, fora do automatizado.
 - Novo teste estrutural: nenhum handler `onGlobeClick`/`onPointClick` é passado ao
   `<Globe>` — garante por asserção, não só por ausência de código, que um clique não pode
   disparar busca/seleção (D5.1).

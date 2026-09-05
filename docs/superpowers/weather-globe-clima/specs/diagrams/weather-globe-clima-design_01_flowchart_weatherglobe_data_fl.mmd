@@ -9,13 +9,14 @@ flowchart TD
     Hook -->|erro| Error[Mensagem de erro role=alert]
     Hook --> Page[/clima page/]
     Page --> Card[CurrentWeatherDisplay renderiza temperatura]
-    Page --> Globe[WeatherGlobe mount client-only]
+    Page --> Boundary[ErrorBoundary local, import estatico]
 
-    Globe --> Boundary[ErrorBoundary local]
-    Boundary --> Check{WebGL suportado E nao prefers-reduced-motion?}
+    Boundary --> Globe[WeatherGlobe mount client-only via next/dynamic]
+    Globe --> Check{WebGL suportado E nao prefers-reduced-motion?}
     Check -->|Nao| Fallback[Static fallback aria-hidden]
     Check -->|Sim| Interactive[Globo interativo auto-rotate default]
-    Boundary -->|excecao runtime| Fallback
+    Boundary -->|excecao runtime ou falha no fetch do chunk| Fallback
+    Interactive -->|evento webglcontextlost| Fallback
 
     Interactive --> NewCoords{Novas coordenadas da query?}
     NewCoords -->|Sim| Animate["pointOfView({lat, lng, altitude}, ms) anima camera"]

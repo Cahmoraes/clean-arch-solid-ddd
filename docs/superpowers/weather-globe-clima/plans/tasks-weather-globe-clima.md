@@ -20,6 +20,7 @@
 - [x] 5. `WeatherGlobe` — `ErrorBoundary` local e cleanup no unmount [FR-008, FR-010] → `task-05.md`
 - [x] 6. Integrar `WeatherGlobe` na página `/clima` via `next/dynamic({ ssr: false })` [FR-002] → `task-06.md`
 - [x] 7. Fitness function — nenhuma importação estática de `react-globe.gl` fora do `next/dynamic` [FR-011] → `task-07.md`
+- [x] 8. `WeatherGlobe` — textura de mapa-múndi, rotação manual e tamanho 240px [FR-014, FR-015, FR-016, FR-017, FR-018] → `task-08.md`
 
 ## Ondas de Execução
 
@@ -28,3 +29,4 @@
 - **Wave 3** (sequential): 5
 - **Wave 4** (sequential): 6
 - **Wave 5** (sequential): 7
+- **Wave 6** (sequential): 8

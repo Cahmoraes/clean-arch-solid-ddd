@@ -8,6 +8,11 @@
 
 ## Visão Geral
 
+> **Nota (2026-09-05, task-08):** `enableRotate = false` descrito nesta task foi revertido
+> por D5.1 da spec — a revisão de textura/rotação manual liga `enableRotate = true`,
+> mantendo `enableZoom`/`enablePan` em `false`. Esta task registra o estado histórico em
+> que foi implementada; o estado atual do código está em `task-08.md`.
+
 Estende `weather-globe.tsx` (criado na Task 3) para: (1) ativar auto-rotação do globo e
 desabilitar arrastar/zoom/pan (`controls().enableZoom/enablePan/enableRotate = false`, mantendo
 `controls().enabled = true`) sempre que o ramo
