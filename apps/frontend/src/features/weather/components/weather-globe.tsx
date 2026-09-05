@@ -73,11 +73,12 @@ export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 		controls.autoRotateSpeed = AUTO_ROTATE_SPEED
 		// `controls.enabled` precisa continuar `true`: o loop de render só chama
 		// `controls.update()` quando os controles estão habilitados, e é dentro de
-		// `update()` que a auto-rotação é aplicada. A interação por mouse/touch é
-		// desligada pelos flags abaixo, que gateiam apenas os event handlers.
+		// `update()` que a auto-rotação é aplicada. Zoom e pan por mouse/touch
+		// continuam desligados pelos flags abaixo; `enableRotate` fica ligado de
+		// propósito (D5.1) para permitir arrastar/tocar o globo manualmente.
 		controls.enableZoom = false
 		controls.enablePan = false
-		controls.enableRotate = false
+		controls.enableRotate = true
 		return () => {
 			controls.autoRotate = false
 			globe.renderer().forceContextLoss()

@@ -24,7 +24,7 @@ const {
 			enabled: true,
 			enableZoom: true,
 			enablePan: true,
-			enableRotate: true,
+			enableRotate: false,
 		},
 		forceContextLossMock,
 		globeCanvas,
@@ -73,7 +73,7 @@ describe("WeatherGlobe", () => {
 		controlsState.enabled = true
 		controlsState.enableZoom = true
 		controlsState.enablePan = true
-		controlsState.enableRotate = true
+		controlsState.enableRotate = false
 	})
 
 	test("renderiza fallback estático com aria-hidden quando a capacidade é 'fallback'", () => {
@@ -114,7 +114,7 @@ describe("WeatherGlobe", () => {
 		expect(globeProps.globeMaterial).toBeDefined()
 	})
 
-	test("ativa auto-rotação e desabilita arrastar/zoom/pan ao montar o ramo interativo", () => {
+	test("ativa auto-rotação, habilita arrastar e mantém zoom/pan desabilitados ao montar o ramo interativo", () => {
 		mockWebglSupported()
 
 		render(<WeatherGlobe />)
@@ -123,7 +123,7 @@ describe("WeatherGlobe", () => {
 		expect(controlsState.autoRotateSpeed).toBe(0.4)
 		expect(controlsState.enableZoom).toBe(false)
 		expect(controlsState.enablePan).toBe(false)
-		expect(controlsState.enableRotate).toBe(false)
+		expect(controlsState.enableRotate).toBe(true)
 	})
 
 	test("mantém controls.enabled true, senão o loop de update nunca aplica a auto-rotação", () => {
