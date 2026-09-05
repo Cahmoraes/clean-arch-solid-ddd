@@ -1,6 +1,7 @@
 import type { FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
 import { ZodError, z } from "zod"
+import { success } from "@/shared/domain/value-object/either.js"
 import { BaseController } from "@/shared/infra/controller/base-controller.js"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory.js"
 import { Logger } from "@/shared/infra/decorator/logger.js"
@@ -32,6 +33,8 @@ const weatherResponseSchema = z.object({
 			max: z.number().meta({ description: "Maximum temperature" }),
 		})
 		.meta({ description: "Temperature readings" }),
+	latitude: z.number().meta({ description: "Latitude of the resolved city" }),
+	longitude: z.number().meta({ description: "Longitude of the resolved city" }),
 })
 
 const errorResponseSchema = z.object({
@@ -99,7 +102,19 @@ export class WeatherController extends BaseController {
 		const result = await this.getCurrentWeatherByCity.execute({
 			city: parsedQueryOrError.value.city,
 		})
-		return this.createResponseError(result)
+		if (result.isFailure()) {
+			return this.createResponseError(result)
+		}
+
+		const currentWeather = result.value
+		return this.createResponseError(
+			success({
+				city: currentWeather.city,
+				temperature: currentWeather.temperature,
+				latitude: currentWeather.coordinate.latitude,
+				longitude: currentWeather.coordinate.longitude,
+			}),
+		)
 	}
 }
 
