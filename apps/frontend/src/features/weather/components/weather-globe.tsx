@@ -1,12 +1,16 @@
 "use client"
 
-import { useMemo } from "react"
-import Globe from "react-globe.gl"
+import { useEffect, useMemo, useRef } from "react"
+import Globe, { type GlobeMethods } from "react-globe.gl"
 import { MeshPhongMaterial } from "three"
 import { useGlobeCapability } from "./use-globe-capability"
 
 const GLOBE_SIZE_PX = 128
 const GLOBE_SURFACE_COLOR = "#061410"
+const CAMERA_ALTITUDE = 1.5
+const CAMERA_TRANSITION_MS = 1000
+const AUTO_ROTATE_SPEED = 0.4
+const MARKER_COLOR = "#39e58c"
 
 const GLOBE_BACKGROUND_STYLE = {
 	background:
@@ -17,6 +21,16 @@ const GLOBE_BACKGROUND_STYLE = {
 export interface WeatherGlobeProps {
 	latitude?: number
 	longitude?: number
+}
+
+function getCameraTarget(
+	capability: ReturnType<typeof useGlobeCapability>,
+	latitude: number | undefined,
+	longitude: number | undefined,
+) {
+	if (capability !== "webgl") return undefined
+	if (latitude === undefined || longitude === undefined) return undefined
+	return { lat: latitude, lng: longitude }
 }
 
 export function WeatherGlobeFallback() {
@@ -30,16 +44,43 @@ export function WeatherGlobeFallback() {
 	)
 }
 
-export function WeatherGlobe(_props: WeatherGlobeProps) {
+export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 	const capability = useGlobeCapability()
+	const globeRef = useRef<GlobeMethods | undefined>(undefined)
 	const globeMaterial = useMemo(
 		() => new MeshPhongMaterial({ color: GLOBE_SURFACE_COLOR }),
 		[],
 	)
 
+	useEffect(() => {
+		if (capability !== "webgl") return
+		const globe = globeRef.current
+		if (!globe) return
+		const controls = globe.controls()
+		controls.autoRotate = true
+		controls.autoRotateSpeed = AUTO_ROTATE_SPEED
+		controls.enabled = false
+	}, [capability])
+
+	useEffect(() => {
+		const target = getCameraTarget(capability, latitude, longitude)
+		if (!target) return
+		const globe = globeRef.current
+		if (!globe) return
+		globe.pointOfView(
+			{ lat: target.lat, lng: target.lng, altitude: CAMERA_ALTITUDE },
+			CAMERA_TRANSITION_MS,
+		)
+	}, [capability, latitude, longitude])
+
 	if (capability !== "webgl") {
 		return <WeatherGlobeFallback />
 	}
+
+	const markerData =
+		latitude === undefined || longitude === undefined
+			? []
+			: [{ lat: latitude, lng: longitude }]
 
 	return (
 		<div
@@ -49,11 +90,16 @@ export function WeatherGlobe(_props: WeatherGlobeProps) {
 			style={GLOBE_BACKGROUND_STYLE}
 		>
 			<Globe
+				ref={globeRef}
 				width={GLOBE_SIZE_PX}
 				height={GLOBE_SIZE_PX}
 				backgroundColor="rgba(0,0,0,0)"
 				globeMaterial={globeMaterial}
 				enablePointerInteraction={false}
+				pointsData={markerData}
+				pointColor={() => MARKER_COLOR}
+				pointRadius={0.4}
+				pointAltitude={0.01}
 			/>
 		</div>
 	)
