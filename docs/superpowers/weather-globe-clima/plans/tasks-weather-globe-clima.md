@@ -1,42 +1,32 @@
-# Tarefas: Weather Globe Clima
+# Tarefas: Globo 3D na rota `/clima`
 
 **Spec:** `../specs/weather-globe-clima-design.md`
 **PRD:** `../prd/prd-weather-globe-clima.md`
 
-**Goal:** Implementar o globo 3D panorâmico em `/clima`, com coordenadas vindas do contrato de clima, fallback acessível e interação view-only.
+**Goal:** Adicionar um globo 3D decorativo (`react-globe.gl`) à rota pública `/clima`, que gira automaticamente e anima até a coordenada da cidade buscada, sem afetar o fluxo funcional existente de consulta de clima.
 
-**Architecture:** O backend estende `GET /weather` com `latitude` e `longitude`; os tipos OpenAPI regenerados alimentam o frontend. O frontend adiciona um componente isolado de globo client-only, usando `@react-three/fiber`/Three.js, e compõe o layout panorâmico sem tornar o globo fonte de consulta.
+**Architecture:** O backend estende de forma aditiva `GET /weather?city=` para incluir `latitude`/`longitude` (VO `CurrentWeather` + `weatherResponseSchema`), regenerando `@repo/api-types`. O frontend ganha um componente `WeatherGlobe` isolado (fallback estático para no-WebGL/`prefers-reduced-motion`, `ErrorBoundary` local, cleanup de contexto WebGL no unmount), carregado via `next/dynamic({ ssr: false })` na página `/clima` para manter o chunk fora do bundle inicial, reforçado por uma fitness function estrutural.
 
-**Tech Stack:** Next.js 16, React 19, TanStack Query, Tailwind CSS v4, shadcn-style UI primitives, Fastify/Nest-like backend modular, Zod/OpenAPI, `@react-three/fiber`, Three.js, Vitest.
+**Tech Stack:** Monorepo pnpm workspaces + Turborepo · Backend: Node.js/TypeScript, Fastify, Zod, InversifyJS (DI), Vitest (`test:run` para unit, `test:business-flow` para HTTP) · Frontend: Next.js App Router, React, TypeScript, TanStack Query, Vitest (ambiente `happy-dom`, `pnpm --filter frontend test -- --run`), Testing Library, MSW.
 
 ---
 
 ## Tarefas
 
-- [ ] 1. Estender contrato backend de clima com coordenadas [FR-012] → `task-01.md`
-- [ ] 2. Adicionar dependências 3D e utilitários de coordenadas do globo [FR-003, FR-013] → `task-02.md`
-- [ ] 3. Regenerar tipos compartilhados da API de clima [FR-012] → `task-03.md`
-- [ ] 4. Criar fallback estático acessível do globo [FR-006, FR-009, FR-010, FR-011] → `task-04.md`
-- [ ] 5. Criar globo 3D interativo view-only [FR-001, FR-002, FR-003, FR-007, FR-008, FR-013] → `task-05.md`
-- [ ] 6. Integrar layout panorâmico na rota `/clima` [FR-001, FR-002, FR-004, FR-005, FR-006, FR-011, FR-013] → `task-06.md`
+- [x] 1. `CurrentWeather` VO passa a incluir `Coordinate` [FR-004] → `task-01.md`
+- [x] 2. `weatherResponseSchema` expõe `latitude`/`longitude` e regenera `@repo/api-types` [FR-004] → `task-02.md`
+- [x] 3. `WeatherGlobe` — esqueleto, detecção de suporte e fallback estático acessível [FR-005, FR-006, FR-007] → `task-03.md`
+- [x] 4. `WeatherGlobe` — rotação automática e animação de câmera até a busca [FR-001, FR-003, FR-009, FR-012, FR-013] → `task-04.md`
+- [x] 5. `WeatherGlobe` — `ErrorBoundary` local e cleanup no unmount [FR-008, FR-010] → `task-05.md`
+- [x] 6. Integrar `WeatherGlobe` na página `/clima` via `next/dynamic({ ssr: false })` [FR-002] → `task-06.md`
+- [x] 7. Fitness function — nenhuma importação estática de `react-globe.gl` fora do `next/dynamic` [FR-011] → `task-07.md`
+- [x] 8. `WeatherGlobe` — textura de mapa-múndi, rotação manual e tamanho 240px [FR-014, FR-015, FR-016, FR-017, FR-018] → `task-08.md`
 
 ## Ondas de Execução
 
-- **Wave 1** (parallel): 1, 2
-- **Wave 2** (parallel): 3, 4
+- **Wave 1** (parallel): 1, 3
+- **Wave 2** (parallel): 2, 4
 - **Wave 3** (sequential): 5
 - **Wave 4** (sequential): 6
-
-## Verificação de Barreira
-
-A barreira de execução deve rodar a validação completa exigida pelo repo, resolvendo os scripts concretos por workspace quando o root não expõe o alias diretamente:
-
-- `pnpm --filter backend biome:fix`
-- `pnpm --filter frontend lint:fix`
-- `pnpm --filter backend tsc:check`
-- `pnpm --filter frontend tsc:check`
-- `pnpm --filter backend test:run`
-- `pnpm --filter backend test:business-flow`
-- `pnpm --filter frontend test -- --run`
-- `pnpm build`
-- `pnpm generate:types` deve ter sido executado na Task 3 antes das tasks de integração frontend.
+- **Wave 5** (sequential): 7
+- **Wave 6** (sequential): 8

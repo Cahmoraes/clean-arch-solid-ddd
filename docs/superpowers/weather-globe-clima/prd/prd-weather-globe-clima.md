@@ -1,80 +1,164 @@
 ---
-created_at: "2026-09-02T09:43:00-03:00"
-updated_at: "2026-09-02T09:43:00-03:00"
+created_at: "2026-09-04T20:17:11-03:00"
+updated_at: "2026-09-05T09:55:38-03:00"
 ---
 
-# PRD: Globo 3D panorâmico em `/clima`
+# PRD: Globo 3D na rota `/clima`
 
 ## Visão Geral
 
-Usuários da rota pública `/clima` hoje conseguem consultar a previsão de uma cidade, mas a experiência é puramente textual. Este recurso adiciona um mapa 3D mundi simples para dar contexto geográfico ao local consultado, tornando a consulta mais visual sem transformar o mapa no mecanismo principal de busca.
-
-O recurso deve preservar o fluxo atual: o usuário informa uma cidade/local, recebe os dados de clima e vê o globo rotacionar para o local resolvido. O mapa é complementar, acessível e seguro para dispositivos com limitações de GPU ou preferência por movimento reduzido.
+A rota pública `/clima` já permite ao usuário buscar o clima atual de uma cidade
+(temperatura atual, mínima e máxima). Essa experiência é hoje puramente textual. Este PRD
+formaliza a adição de um globo 3D decorativo à página, que gira automaticamente e anima
+até a localização geográfica da cidade consultada, tornando a busca de clima mais visual
+e envolvente sem alterar o comportamento funcional já existente.
 
 ## Objetivos
 
-- Aumentar clareza geográfica da consulta exibindo a localização da cidade no globo após uma busca bem-sucedida.
-- Preservar o fluxo atual de consulta por cidade, sem exigir interação com o mapa para obter clima.
-- Manter a experiência utilizável em mobile e em ambientes sem animação/WebGL.
-- Garantir rastreabilidade entre resposta de clima, coordenadas exibidas e resultado visual.
+- Aumentar o apelo visual da página `/clima` sem degradar sua performance de carregamento
+  nem sua acessibilidade.
+- Garantir que a informação essencial (temperatura) nunca dependa do globo: uma falha no
+  globo não pode impedir a exibição do clima.
+- Manter a página utilizável e sem elementos gráficos indevidos para usuários sem suporte
+  a WebGL ou com preferência por movimento reduzido.
+
+**Critérios mensuráveis:**
+- O globo 3D está presente e em rotação visível na renderização padrão da página `/clima`
+  (FR-001).
+- O chunk do globo fica fora do bundle inicial da rota (verificável no output do `next build`).
+- Fallback estático cobre 100% dos casos de WebGL indisponível OU `prefers-reduced-motion: reduce`.
+- A animação de câmera do globo é testável sem depender de renderização WebGL real.
 
 ## Histórias de Usuário
 
-- **US-01** — Como visitante da página de clima, eu quero ver a cidade consultada destacada em um mapa mundi para que eu entenda visualmente onde o clima está sendo exibido · **UI:** sim
-- **US-02** — Como visitante da página de clima, eu quero que a busca por cidade continue simples para que eu consulte o clima sem aprender uma interação nova · **UI:** sim
-- **US-03** — Como usuário em dispositivo móvel ou com preferência por movimento reduzido, eu quero uma versão estável do recurso para que a página continue confortável e funcional · **UI:** sim
-- **US-04** — Como usuário curioso, eu quero poder girar, aproximar e resetar o globo sem mudar a cidade consultada para que eu explore o contexto visual sem perder o resultado atual · **UI:** sim
+- **US-01** — Como usuário da página `/clima`, eu quero ver um globo 3D decorativo girando
+  automaticamente para que a consulta de clima seja mais visual e envolvente · **UI:** sim
+- **US-02** — Como usuário que busca uma cidade, eu quero que o globo anime até a
+  localização geográfica do resultado para que eu associe visualmente o clima ao lugar
+  buscado · **UI:** sim
+- **US-03** — Como usuário sem suporte a WebGL ou com `prefers-reduced-motion` ativo, eu
+  quero ver uma alternativa estática no lugar do globo para que a página continue
+  acessível e sem animação indesejada · **UI:** sim
+- **US-04** — Como usuário da página `/clima`, eu quero que a consulta de clima continue
+  funcionando normalmente mesmo se o globo falhar ou a busca não encontrar resultado, para
+  que a informação essencial nunca seja bloqueada por um elemento decorativo · **UI:** sim
+  — **nota de QA:** verificação exige um cenário com falha induzida do globo ou busca sem
+  resultado; um screenshot do estado normal não comprova esta história.
+- **US-05** (revisão 2026-09-05) — Como usuário da página `/clima`, eu quero arrastar ou
+  tocar o globo para girá-lo manualmente, para explorar o mapa-múndi por conta própria ·
+  **UI:** sim
 
 ## Funcionalidades Principais
 
-### Globo contextual na página de clima
+**Globo decorativo com rotação automática**
+Um globo 3D é exibido como elemento hero, sempre visível no topo da página, girando
+automaticamente mesmo antes de qualquer busca.
+- **FR-001** (US-01) — O sistema deve renderizar um globo 3D decorativo com rotação
+  automática por padrão na página `/clima`.
+- **FR-002** (US-01) — O código do globo deve ser carregado separadamente do bundle
+  inicial da rota (code-splitting client-only), de forma que seu carregamento não atrase
+  a exibição do restante da página.
+- **FR-010** (US-01) — Os recursos alocados pelo globo (loop de animação, contexto
+  gráfico) devem ser liberados quando o componente é desmontado, sem deixar recursos
+  presos.
+- **FR-011** (US-01) — Deve existir uma verificação automatizada que impeça o código do
+  globo de ser incluído no bundle inicial por engano em mudanças futuras.
+- **FR-012** (US-01) — Antes de qualquer busca de clima, o globo deve girar sem exibir
+  marcador de localização.
+- **FR-017** (US-01, revisão 2026-09-05) — O globo deve exibir uma textura de mapa-múndi
+  em sua superfície (continentes visíveis), não apenas uma esfera sólida sem detalhes.
 
-- **FR-001** (US-01, US-02) — A rota `/clima` deve exibir um mapa 3D mundi panorâmico como parte da experiência principal de consulta.
-- **FR-002** (US-01) — Após uma consulta bem-sucedida, o mapa deve destacar exatamente uma cidade/local: o local resolvido para a consulta atual.
-- **FR-003** (US-01) — O mapa deve rotacionar ou reposicionar a visualização para o local consultado quando a resposta de clima trouxer coordenadas válidas.
-- **FR-004** (US-02) — A busca textual por cidade/local deve continuar sendo a única forma de alterar a cidade consultada nesta versão.
+_Nota de QA:_ FR-002, FR-010 e FR-011 são requisitos não-visuais, verificados por teste
+automatizado (build/estrutura/cleanup) — não pela captura de tela associada a US-01.
 
-### Resultado climático preservado
+**Animação até a cidade buscada**
+Quando uma busca de clima retorna um resultado, a câmera do globo anima até a coordenada
+geográfica correspondente.
+- **FR-003** (US-02) — O sistema deve animar a câmera do globo até a latitude/longitude da
+  cidade buscada sempre que uma nova busca de clima retornar um resultado.
+- **FR-004** (US-02) — A resposta da consulta de clima deve passar a incluir a
+  latitude/longitude da cidade encontrada, de forma aditiva (sem remover ou alterar campos
+  existentes).
+- **FR-013** (US-02) — Quando o usuário faz uma nova busca antes da animação da busca
+  anterior terminar, a câmera deve animar para a coordenada da busca mais recente
+  (a mais nova sempre prevalece).
 
-- **FR-005** (US-02) — A página deve continuar exibindo cidade, temperatura atual, mínima e máxima para a consulta atual.
-- **FR-006** (US-02) — A ausência, falha ou indisponibilidade do mapa não deve impedir o usuário de consultar ou ler o clima.
+**Fallback para ambientes sem suporte**
+Nem todo navegador/usuário suporta WebGL ou deseja animação contínua.
+- **FR-005** (US-03) — O sistema deve renderizar uma alternativa estática (sem WebGL) no
+  lugar do globo quando WebGL não estiver disponível no navegador do usuário.
+- **FR-006** (US-03) — O sistema deve renderizar a mesma alternativa estática quando a
+  preferência do sistema `prefers-reduced-motion: reduce` estiver ativa.
+- **FR-007** (US-03, US-04) — O globo (e seu fallback) deve ser marcado como decorativo
+  para tecnologia assistiva e não deve capturar foco de teclado. *(revisado 2026-09-05: a
+  ressalva original de "nem interação de mouse/toque" foi restrita à rotação manual — ver
+  US-05/FR-014–FR-016.)*
 
-### Interação híbrida view-only
+**Rotação manual do globo** *(nova, revisão 2026-09-05)*
+O usuário pode girar o globo manualmente, sem que isso afete a busca de clima.
+- **FR-014** (US-05) — O sistema deve permitir que o usuário gire o globo manualmente
+  arrastando com o mouse ou tocando a tela (touch).
+- **FR-015** (US-05) — O sistema não deve permitir zoom nem movimentação lateral (pan) do
+  globo por gesto do usuário.
+- **FR-016** (US-05) — Um clique ou toque sobre o globo não deve disparar busca de cidade
+  nem selecionar uma localidade.
 
-- **FR-007** (US-04) — O usuário deve poder girar, aproximar e resetar a visualização do globo quando a versão interativa estiver disponível.
-- **FR-008** (US-04) — Interações manuais no globo não devem alterar a cidade consultada, a URL, a query ativa ou disparar nova consulta de clima.
-
-### Fallback e conforto
-
-- **FR-009** (US-03) — Quando movimento reduzido estiver ativo, a experiência deve apresentar uma versão estática do local consultado, sem rotação contínua.
-- **FR-010** (US-03) — Quando a renderização 3D não estiver disponível, a página deve apresentar uma alternativa visual estática com texto indicando o local consultado.
-- **FR-011** (US-03) — As informações essenciais do clima e da cidade devem estar disponíveis em texto, independentemente do estado visual do mapa.
-
-### Coordenadas do local consultado
-
-- **FR-012** (US-01, US-02) — A resposta de clima consumida pelo frontend deve conter latitude e longitude do local resolvido para permitir posicionamento do mapa.
-- **FR-013** (US-01) — O marcador visual deve corresponder às coordenadas retornadas para a consulta atual.
+**Robustez frente a falhas**
+A informação de clima é o dado essencial; o globo nunca pode comprometê-la.
+- **FR-008** (US-04) — Um erro em tempo de execução do globo não deve impedir a
+  renderização do restante da página, incluindo a exibição da temperatura.
+- **FR-009** (US-04) — Quando uma busca de clima falhar, o globo deve manter sua última
+  posição/rotação válida, sem exibir indicação própria de erro (o erro é comunicado pela
+  mensagem já existente da página).
+- **FR-018** (US-04, revisão 2026-09-05) — Se a textura de mapa-múndi do globo (FR-017)
+  não carregar, o globo deve continuar funcional (visível e rotacionável), sem travar a
+  renderização da página.
 
 ## Experiência do Usuário
 
-A jornada começa como hoje: o usuário acessa `/clima`, lê a proposta da tela e informa uma cidade/local no campo de busca. Após enviar, a página mantém os dados climáticos em destaque e adiciona contexto geográfico com um globo panorâmico.
-
-O globo deve parecer parte do layout, não um painel técnico separado. O visual aprovado usa fundo escuro, um único marcador e hierarquia simples: copy e busca no topo, globo amplo no centro visual e resultado climático abaixo. O artefato visual de referência está em `docs/superpowers/weather-globe-clima/specs/mockups/weather-globe-clima-visual.md`.
-
-Usuários que não podem ou não querem animação recebem uma versão estática. Usuários que interagem com o globo podem explorar a visualização, mas a consulta continua vinculada ao texto pesquisado.
+O globo aparece como elemento hero, sempre visível acima da área de busca (mantendo a
+coluna centralizada atual da página), com rotação automática contínua e superfície com
+textura de mapa-múndi (revisão 2026-09-05 — antes era uma esfera sólida sem continentes).
+Um marcador simples na cor primária do tema indica a localização da última cidade buscada.
+O usuário também pode arrastar ou tocar o globo para girá-lo manualmente (US-05); zoom,
+pan e clique-para-buscar não são permitidos — nenhuma ação do usuário sobre o globo altera
+o resultado da busca de clima. Ao carregar o código do globo, um espaço reservado evita
+deslocamento de layout no card de resultado. Os mockups curados que orientaram essas
+decisões visuais estão em `../specs/mockups/weather-globe-clima-visual.md` (layout
+original) e `../specs/mockups/weather-globe-clima-visual-textura.md` (textura e tamanho,
+revisão 2026-09-05) — a renderização final usa WebGL real, não os círculos estáticos dos
+mockups. Usuários sem WebGL ou com `prefers-reduced-motion` veem uma alternativa estática
+equivalente, sem perda de acesso à informação de clima.
 
 ## Restrições Técnicas de Alto Nível
 
-- A experiência deve priorizar performance mobile: a renderização do globo não pode bloquear a busca nem o resultado climático.
-- A experiência deve respeitar `prefers-reduced-motion` e oferecer alternativa estática quando necessário.
-- A funcionalidade depende de latitude e longitude na resposta de clima consumida pelo frontend.
-- O recurso deve manter simplicidade de manutenção: um mapa contextual, sem camadas meteorológicas, múltiplos marcadores ou seleção pelo globo.
-- O contrato entre backend e frontend deve permanecer rastreável por tipos compartilhados.
+- **Performance (bundle):** o código do globo não pode inflar o bundle inicial de uma rota
+  pública simples — deve ser carregado separadamente do carregamento inicial da página.
+- **Compatibilidade / acessibilidade:** WebGL e `prefers-reduced-motion` não são garantidos
+  em todo navegador/usuário; a página deve permanecer funcional e acessível em ambos os
+  casos.
+- **Testabilidade:** o comportamento de animação de câmera do globo deve ser verificável
+  por teste automatizado sem depender de renderização WebGL real (ambientes de CI não
+  suportam WebGL).
+- **Contrato de API:** a extensão do endpoint de clima existente deve ser aditiva — nenhum
+  consumidor atual pode quebrar.
+- **Escala/disponibilidade:** fora de escopo como preocupação priorizada — rota pública de
+  baixo tráfego; o globo é decorativo e sua falha não pode afetar a disponibilidade da
+  informação de clima (ver FR-008).
+- **Disponibilidade de recurso externo (revisão 2026-09-05):** a textura visual do globo
+  (FR-017) é carregada de um recurso externo em tempo de execução; sua indisponibilidade
+  não pode impedir o carregamento nem travar a renderização do globo (ver FR-018).
 
 ## Fora de Escopo
 
-- Selecionar nova cidade/local clicando ou tocando no globo.
-- Exibir múltiplos marcadores, histórico de buscas, rotas, arcos ou camadas meteorológicas.
-- Substituir a busca textual atual por busca via mapa.
-- Alterar regras de desambiguação de cidades homônimas.
-- Tornar o mapa requisito para exibir o clima.
+- Marcadores múltiplos, arcos, atmosfera ou qualquer recurso visual adicional além do
+  globo com animação de câmera e rotação manual.
+- Zoom e movimentação lateral (pan) manuais do globo (revisão 2026-09-05 — só a rotação é
+  permitida, ver US-05/FR-015).
+- Clique/toque sobre o globo disparar busca de cidade ou selecionar localidade (revisão
+  2026-09-05 — ver FR-016).
+- Label/tooltip com o nome da cidade no marcador (continua um ponto sem texto).
+- Suporte a navegação por teclado para rotacionar o globo.
+- Exibição de histórico de cidades buscadas no globo.
+- Mudanças na lógica de desambiguação de cidade homônima (comportamento já definido na
+  feature de clima existente).

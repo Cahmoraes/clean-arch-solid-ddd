@@ -42,6 +42,7 @@
 		"react": "19.2.4",
 		"react-dom": "19.2.4",
 		"react-easy-crop": "^5.5.7",
+		"react-globe.gl": "^2.38.0",
 		"react-hook-form": "7.75.0",
 		"react-imask": "^7.6.1",
 		"react-leaflet": "5.0.0",
@@ -49,6 +50,7 @@
 		"sonner": "2.0.7",
 		"tailwind-merge": "3.5.0",
 		"tailwindcss": "^4.3.0",
+		"three": "^0.185.1",
 		"zod": "4.4.3",
 		"zustand": "5.0.12"
 	},
@@ -63,6 +65,7 @@
 		"@types/node": "^25.9.1",
 		"@types/react": "^19.2.16",
 		"@types/react-dom": "^19.2.3",
+		"@types/three": "^0.185.4",
 		"@vitejs/plugin-react": "6.0.1",
 		"@vitest/coverage-v8": "4.1.5",
 		"happy-dom": "20.9.0",

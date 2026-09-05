@@ -6,6 +6,11 @@ import { Suspense } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useWeatherQuery } from "@/features/weather/api/use-weather-query"
 import { CurrentWeatherDisplay } from "@/features/weather/components/current-weather-display"
+import { GLOBE_SIZE_PX } from "@/features/weather/components/weather-globe-constants"
+// Import estático de propósito: o boundary não carrega `react-globe.gl`/`three`
+// (faz isso via `next/dynamic` interno), então ele também protege contra falha
+// no carregamento do chunk do globo.
+import { WeatherGlobe } from "@/features/weather/components/weather-globe-error-boundary"
 import { WeatherSearchForm } from "@/features/weather/components/weather-search-form"
 
 function weatherErrorMessage(code: string): string {
@@ -47,6 +52,15 @@ function WeatherPageContent() {
 					Digite o nome de uma cidade para ver a temperatura atual.
 				</p>
 			</header>
+
+			<div
+				aria-hidden="true"
+				data-testid="weather-globe-slot"
+				className="mx-auto"
+				style={{ height: GLOBE_SIZE_PX, width: GLOBE_SIZE_PX }}
+			>
+				<WeatherGlobe latitude={data?.latitude} longitude={data?.longitude} />
+			</div>
 
 			<WeatherSearchForm
 				onSearch={handleSearch}

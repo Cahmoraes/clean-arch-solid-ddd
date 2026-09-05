@@ -14,6 +14,23 @@ vi.mock("next/navigation", () => ({
 	useSearchParams: vi.fn(),
 }))
 
+vi.mock("@/features/weather/components/weather-globe-error-boundary", () => ({
+	WeatherGlobe: ({
+		latitude,
+		longitude,
+	}: {
+		latitude?: number
+		longitude?: number
+	}) => (
+		<div
+			aria-hidden="true"
+			data-testid="weather-globe"
+			data-latitude={latitude ?? ""}
+			data-longitude={longitude ?? ""}
+		/>
+	),
+}))
+
 describe("WeatherPage", () => {
 	beforeEach(() => {
 		vi.mocked(useRouter).mockReturnValue({
@@ -163,5 +180,82 @@ describe("WeatherPage", () => {
 		expect(replaceMock).not.toHaveBeenCalled()
 
 		resolveRequest?.()
+	})
+
+	test("renderiza o WeatherGlobe acima do formulário de busca sem regressão no fluxo existente", async () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("city=São Paulo") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		server.use(
+			http.get(`${apiBaseUrl}/weather`, () =>
+				HttpResponse.json(
+					{
+						city: "São Paulo",
+						temperature: { current: 24, min: 18, max: 27 },
+						latitude: -23.5505,
+						longitude: -46.6333,
+					},
+					{ status: 200 },
+				),
+			),
+		)
+
+		renderWithProviders(<WeatherPage />)
+
+		const globe = await screen.findByTestId("weather-globe")
+		expect(globe).toBeInTheDocument()
+		expect(screen.getByTestId("weather-globe-slot")).toBeInTheDocument()
+		expect(await screen.findByText("24°C")).toBeInTheDocument()
+		expect(screen.getByText("São Paulo")).toBeInTheDocument()
+		expect(globe).toHaveAttribute("data-latitude", "-23.5505")
+		expect(globe).toHaveAttribute("data-longitude", "-46.6333")
+	})
+
+	test("renderiza o globo sem coordenadas quando ainda não houve busca", () => {
+		renderWithProviders(<WeatherPage />)
+
+		const globe = screen.getByTestId("weather-globe")
+		expect(globe).toHaveAttribute("data-latitude", "")
+		expect(globe).toHaveAttribute("data-longitude", "")
+	})
+
+	test("renderiza o globo sem coordenadas quando a busca falha", async () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("city=Atlantis") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		server.use(
+			http.get(`${apiBaseUrl}/weather`, () =>
+				HttpResponse.json(
+					{ code: "city_not_found", message: "City not found" },
+					{ status: 404 },
+				),
+			),
+		)
+
+		renderWithProviders(<WeatherPage />)
+
+		await screen.findByRole("alert")
+		const globe = screen.getByTestId("weather-globe")
+		expect(globe).toHaveAttribute("data-latitude", "")
+		expect(globe).toHaveAttribute("data-longitude", "")
+	})
+
+	test("renderiza o globo antes do formulário de busca na ordem do DOM", () => {
+		renderWithProviders(<WeatherPage />)
+
+		const slot = screen.getByTestId("weather-globe-slot")
+		const form = screen.getByLabelText("Cidade (obrigatório)").closest("form")
+
+		// `querySelectorAll` devolve os nós em ordem de documento: o slot do globo
+		// precisa vir antes do formulário de busca.
+		expect(
+			Array.from(
+				document.querySelectorAll('[data-testid="weather-globe-slot"], form'),
+			),
+		).toEqual([slot, form])
 	})
 })

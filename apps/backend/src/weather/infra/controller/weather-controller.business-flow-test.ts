@@ -41,6 +41,8 @@ describe("Consultar clima atual por cidade", () => {
 		expect(response.body).toEqual({
 			city: "São Paulo",
 			temperature: { current: 24, min: 18, max: 27 },
+			latitude: -23.5505,
+			longitude: -46.6333,
 		})
 	})
 

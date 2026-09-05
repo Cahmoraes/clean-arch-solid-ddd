@@ -1,160 +1,154 @@
-# Task 2: Adicionar dependências 3D e utilitários de coordenadas do globo [FR-003, FR-013]
+# Task 2: `weatherResponseSchema` expõe `latitude`/`longitude` e regenera `@repo/api-types` [FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** standard
-**Depends on:** N/A
+**Depends on:** task-01
 
 ## Visão Geral
 
-O globo 3D precisa converter `latitude`/`longitude` (graus) em um ponto no espaço 3D para posicionar o marcador sobre uma esfera, e em ângulos de rotação para que o globo "olhe" para esse ponto. Esta task adiciona as dependências `@react-three/fiber` e `three` ao frontend (sem `@react-three/drei`, conforme D1 da spec) e cria um utilitário puro e testável (`globe-coordinates.ts`) com essas duas conversões, sem depender de WebGL/Canvas — testável em Node/happy-dom.
+Depois da Task 1, `CurrentWeather` já carrega o `Coordinate` resolvido, mas o endpoint HTTP
+`GET /weather` ainda não expõe latitude/longitude: `WeatherController.callback()` repassa
+`result` (um `Either<Error, CurrentWeather>`) direto para `createResponseError`, que serializa o
+corpo via `ResponseFactory.OK({ body: result.value })`. O Fastify então serializa a resposta
+estritamente conforme `weatherResponseSchema` (fast-json-stringify) — qualquer campo fora do
+schema é descartado silenciosamente, e o `Coordinate` (`{ latitude, longitude }` aninhado) não
+corresponde ao contrato aditivo definido no spec (D3: campos soltos no nível raiz, sem VO
+aninhado no HTTP). Esta task: (1) adiciona `latitude`/`longitude` ao `weatherResponseSchema`, (2)
+altera `callback()` para montar explicitamente o corpo de resposta achatando
+`currentWeather.coordinate.latitude`/`.longitude` para o nível raiz, e (3) regenera
+`@repo/api-types` para que o frontend tenha esses campos tipados. Mudança aditiva:
+`weather-gateway.ts`, `open-meteo-weather-gateway.ts`, `in-memory-weather-gateway.ts` e
+`weather-module.ts` não constroem `CurrentWeather` nem dependem da assinatura alterada — não
+precisam de alteração.
 
 ## Arquivos
 
-- Modify: `apps/frontend/package.json`
-- Modify: `pnpm-lock.yaml`
-- Create: `apps/frontend/src/features/weather/lib/globe-coordinates.ts`
-- Test: `apps/frontend/src/features/weather/lib/globe-coordinates.test.ts`
+- Modify: `apps/backend/src/weather/infra/controller/weather-controller.ts`
+- Test: `apps/backend/src/weather/infra/controller/weather-controller.business-flow-test.ts`
+- Modify (gerado): `packages/api-types/index.d.ts`
 
 ### Conformidade com as Skills Padrão
 
-- `no-workarounds`: as fórmulas de conversão devem ser reais (projeção esférica padrão), não valores fixos/mockados para passar nos testes.
-- `test-antipatterns`: testar o comportamento observável das funções puras (valores retornados), não mockar `Math.sin`/`Math.cos` ou reimplementar a fórmula dentro do teste.
-- `typescript-advanced`: tipos explícitos para os retornos (`Vector3Like`, `{ x: number; y: number }`), sem `any`.
-- `vercel-react-best-practices`: manter o utilitário livre de imports de `react`/`three` em runtime — apenas `number`/objetos simples — para não acoplar o bundle 3D a um módulo que pode ser importado fora do componente client-only.
-- `vitest`: testes unitários das funções puras com `toBeCloseTo` para tolerância de ponto flutuante.
+- `typescript-advanced`: o novo corpo de resposta é montado como um objeto literal tipado (city, temperature, latitude, longitude) — garantir que a inferência de tipos do `zod` (`weatherResponseSchema`) e o objeto passado para `success()` continuam compatíveis sem `any`.
+- `no-workarounds`: a correção correta é achatar `coordinate.latitude`/`coordinate.longitude` explicitamente no `callback()` — não expandir o schema para aceitar um objeto `coordinate` aninhado nem usar `as any` para forçar o Fastify a serializar campos fora do schema.
+- `test-antipatterns`: o teste de integração HTTP deve usar os valores reais da fixture `InMemoryGeocodingGateway` (não valores inventados) e verificar o corpo de resposta completo via `toEqual`, não apenas a presença das chaves.
 
 ## Passos
 
-- **Step 1: Add the 3D dependencies**
+- **Step 1: Write the failing test**
 
-Run: `pnpm --filter frontend add @react-three/fiber three`
-Expected: `apps/frontend/package.json` ganha `@react-three/fiber` e `three` em `dependencies`; `pnpm-lock.yaml` é atualizado. Não adicione `@react-three/drei` — os controles de câmera desta feature são implementados manualmente na Task 5.
+Modifique o teste `"Deve retornar o clima atual para uma cidade conhecida"` em
+`apps/backend/src/weather/infra/controller/weather-controller.business-flow-test.ts`:
 
-- **Step 2: Write the failing test**
+```typescript
+test("Deve retornar o clima atual para uma cidade conhecida", async () => {
+	const response = await request(fastifyServer.server).get(
+		"/weather?city=S%C3%A3o%20Paulo",
+	)
 
-```ts
-// apps/frontend/src/features/weather/lib/globe-coordinates.test.ts
-import { describe, expect, test } from "vitest"
-import { latLonToVector3, rotationForCoordinate } from "./globe-coordinates"
-
-describe("latLonToVector3", () => {
-	test("converte lat/lon 0,0 para o ponto de referência do meridiano de Greenwich no equador", () => {
-		const point = latLonToVector3(0, 0, 1)
-
-		expect(point.x).toBeCloseTo(1, 5)
-		expect(point.y).toBeCloseTo(0, 5)
-		expect(point.z).toBeCloseTo(0, 5)
-	})
-
-	test("converte lat/lon do polo norte (90, 0) para o topo da esfera", () => {
-		const point = latLonToVector3(90, 0, 1)
-
-		expect(point.x).toBeCloseTo(0, 5)
-		expect(point.y).toBeCloseTo(1, 5)
-		expect(point.z).toBeCloseTo(0, 5)
-	})
-
-	test("converte lat/lon de São Paulo respeitando o raio informado", () => {
-		const point = latLonToVector3(-23.5505, -46.6333, 1)
-
-		expect(point.x).toBeCloseTo(0.6294715843131387, 5)
-		expect(point.y).toBeCloseTo(-0.3995572026820798, 5)
-		expect(point.z).toBeCloseTo(0.6664229635353052, 5)
-	})
-})
-
-describe("rotationForCoordinate", () => {
-	test("retorna rotação nula em x e 180 graus em y para lat/lon 0,0", () => {
-		const rotation = rotationForCoordinate(0, 0)
-
-		expect(rotation.x).toBeCloseTo(0, 5)
-		expect(rotation.y).toBeCloseTo(-Math.PI, 5)
-	})
-
-	test("retorna rotação proporcional às coordenadas de São Paulo", () => {
-		const rotation = rotationForCoordinate(-23.5505, -46.6333)
-
-		expect(rotation.x).toBeCloseTo(-0.4110337654909245, 5)
-		expect(rotation.y).toBeCloseTo(-2.3276880275195215, 5)
+	expect(response.status).toBe(HTTP_STATUS.OK)
+	expect(response.body).toEqual({
+		city: "São Paulo",
+		temperature: { current: 24, min: 18, max: 27 },
+		latitude: -23.5505,
+		longitude: -46.6333,
 	})
 })
 ```
 
-- **Step 3: Run test to verify it fails**
+- **Step 2: Run test to verify it fails**
 
-Run: `cd apps/frontend && npx vitest run src/features/weather/lib/globe-coordinates.test.ts`
-Expected: FAIL with "Failed to resolve import \"./globe-coordinates\"" (o módulo ainda não existe)
+Run: `cd apps/backend && npx vitest run --config ./test/vite.config.business-flow.ts src/weather/infra/controller/weather-controller.business-flow-test.ts`
+Expected: FAIL — `response.body` ainda é `{ city: "São Paulo", temperature: {...} }`, sem
+`latitude`/`longitude` (o assert `toEqual` falha por objetos com chaves diferentes).
 
-- **Step 4: Write minimal implementation**
+- **Step 3: Write minimal implementation**
 
-```ts
-// apps/frontend/src/features/weather/lib/globe-coordinates.ts
-export interface Vector3Like {
-	x: number
-	y: number
-	z: number
-}
+```typescript
+// apps/backend/src/weather/infra/controller/weather-controller.ts
+// adicionar ao topo, junto dos demais imports:
+import {
+	success,
+} from "@/shared/domain/value-object/either.js"
 
-export interface GlobeRotation {
-	x: number
-	y: number
-}
-
-/**
- * Converte latitude/longitude (graus) em um ponto cartesiano sobre uma
- * esfera de raio `radius`, usando a projeção esférica padrão (mesma
- * convenção usada por globos 3D: longitude 0 aponta para +x no equador).
- */
-export function latLonToVector3(
-	latitude: number,
-	longitude: number,
-	radius: number,
-): Vector3Like {
-	const phi = ((90 - latitude) * Math.PI) / 180
-	const theta = ((longitude + 180) * Math.PI) / 180
-
-	return {
-		x: -radius * Math.sin(phi) * Math.cos(theta),
-		y: radius * Math.cos(phi),
-		z: radius * Math.sin(phi) * Math.sin(theta),
-	}
-}
-
-/**
- * Calcula a rotação (em radianos, eixos x/y) que um grupo Three.js precisa
- * aplicar para que o ponto lat/lon informado fique voltado para a câmera,
- * assumindo a câmera posicionada no eixo +z olhando para a origem.
- */
-export function rotationForCoordinate(
-	latitude: number,
-	longitude: number,
-): GlobeRotation {
-	return {
-		x: (latitude * Math.PI) / 180,
-		y: -((longitude + 180) * Math.PI) / 180,
-	}
-}
+const weatherResponseSchema = z.object({
+	city: z.string().meta({ description: "City name" }),
+	temperature: z
+		.object({
+			current: z.number().meta({ description: "Current temperature" }),
+			min: z.number().meta({ description: "Minimum temperature" }),
+			max: z.number().meta({ description: "Maximum temperature" }),
+		})
+		.meta({ description: "Temperature readings" }),
+	latitude: z.number().meta({ description: "Latitude of the resolved city" }),
+	longitude: z.number().meta({ description: "Longitude of the resolved city" }),
+})
 ```
 
-- **Step 5: Run test to verify it passes**
+```typescript
+	private async callback(req: FastifyRequest) {
+		const parsedQueryOrError = this.parseRequest(weatherQuerySchema, req.query)
+		if (parsedQueryOrError.isFailure()) {
+			return this.createResponseError(parsedQueryOrError)
+		}
 
-Run: `cd apps/frontend && npx vitest run src/features/weather/lib/globe-coordinates.test.ts`
-Expected: PASS (5 tests)
+		const result = await this.getCurrentWeatherByCity.execute({
+			city: parsedQueryOrError.value.city,
+		})
+		if (result.isFailure()) {
+			return this.createResponseError(result)
+		}
 
-- **Step 6: Commit** *(sequential execution only — em wave paralela, pule este passo e reporte os arquivos alterados ao orquestrador.)*
+		const currentWeather = result.value
+		return this.createResponseError(
+			success({
+				city: currentWeather.city,
+				temperature: currentWeather.temperature,
+				latitude: currentWeather.coordinate.latitude,
+				longitude: currentWeather.coordinate.longitude,
+			}),
+		)
+	}
+```
+
+- **Step 4: Run test to verify it passes**
+
+Run: `cd apps/backend && npx vitest run --config ./test/vite.config.business-flow.ts src/weather/infra/controller/weather-controller.business-flow-test.ts`
+Expected: PASS (todos os 5 testes do describe `Consultar clima atual por cidade`).
+
+- **Step 5: Commit**
 
 ```bash
-git add apps/frontend/package.json pnpm-lock.yaml \
-  apps/frontend/src/features/weather/lib/globe-coordinates.ts \
-  apps/frontend/src/features/weather/lib/globe-coordinates.test.ts
-git commit -m "feat(weather): add three/r3f deps and globe coordinate utilities"
+git add apps/backend/src/weather/infra/controller/weather-controller.ts apps/backend/src/weather/infra/controller/weather-controller.business-flow-test.ts
+git commit -m "feat(weather): expõe latitude/longitude em GET /weather"
+```
+
+- **Step 6: Regenerar `@repo/api-types`**
+
+Run (a partir da raiz do monorepo): `pnpm generate:types`
+Expected: `packages/api-types/index.d.ts` é reescrito; o bloco de
+`paths["/weather"]["get"]["responses"][200]["content"]["application/json"]` passa a incluir
+`latitude: number` e `longitude: number` além de `city` e `temperature`. (O script raiz
+`generate:types` já executa `pnpm --filter backend openapi:export` — que roda
+`tsx scripts/export-openapi-spec.ts` diretamente sobre o TypeScript fonte, sem exigir uma
+compilação prévia do backend — seguido de `pnpm --filter @repo/api-types openapi:generate-client`.)
+
+- **Step 7: Commit dos tipos gerados**
+
+```bash
+git add packages/api-types/index.d.ts
+git commit -m "chore(api-types): regenera tipos com latitude/longitude de /weather"
 ```
 
 ## Critérios de Sucesso
 
-- `@react-three/fiber` e `three` estão em `apps/frontend/package.json`; `@react-three/drei` não foi adicionado.
-- `latLonToVector3` converte lat/lon/raio em `{x,y,z}` cartesiano correto para os pontos de referência testados.
-- `rotationForCoordinate` converte lat/lon em radianos `{x,y}` sem depender de `three`/`react` em runtime.
-- Os testes passam isoladamente com `npx vitest run src/features/weather/lib/globe-coordinates.test.ts`.
+- `GET /weather?city=<cidade conhecida>` retorna `{ city, temperature, latitude, longitude }` no
+  nível raiz do corpo, sem VO aninhado [FR-004].
+- O contrato é aditivo: nenhum campo existente (`city`, `temperature`) foi removido ou renomeado
+  [FR-004].
+- `packages/api-types/index.d.ts` reflete `latitude`/`longitude` no tipo de resposta 200 de
+  `/weather`, permitindo que o frontend consuma esses campos tipados a partir da Task 6.
+- O teste de integração HTTP (`test:business-flow`) cobre o novo formato de resposta com os
+  valores reais da fixture in-memory.

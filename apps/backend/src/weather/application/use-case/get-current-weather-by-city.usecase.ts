@@ -45,6 +45,7 @@ export class GetCurrentWeatherByCityUseCase {
 		return success({
 			city: input.city,
 			temperature: temperatureOrError.value,
+			coordinate: coordinateOrError.value,
 		})
 	}
 }

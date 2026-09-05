@@ -19,10 +19,15 @@ describe("GetCurrentWeatherByCityUseCase", () => {
 		const result = await sut.execute({ city: "São Paulo" })
 
 		expect(result.isSuccess()).toBe(true)
-		expect(result.force.success().value).toEqual({
-			city: "São Paulo",
-			temperature: { current: 24, min: 18, max: 27 },
+		const currentWeather = result.force.success().value
+		expect(currentWeather.city).toBe("São Paulo")
+		expect(currentWeather.temperature).toEqual({
+			current: 24,
+			min: 18,
+			max: 27,
 		})
+		expect(currentWeather.coordinate.latitude).toBe(-23.5505)
+		expect(currentWeather.coordinate.longitude).toBe(-46.6333)
 	})
 
 	test("cidade desconhecida falha com CityNotFoundError sem chamar weatherGateway", async () => {

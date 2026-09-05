@@ -32,6 +32,8 @@ const weatherResponseSchema = z.object({
 			max: z.number().meta({ description: "Maximum temperature" }),
 		})
 		.meta({ description: "Temperature readings" }),
+	latitude: z.number().meta({ description: "Latitude of the resolved city" }),
+	longitude: z.number().meta({ description: "Longitude of the resolved city" }),
 })
 
 const errorResponseSchema = z.object({
@@ -99,7 +101,19 @@ export class WeatherController extends BaseController {
 		const result = await this.getCurrentWeatherByCity.execute({
 			city: parsedQueryOrError.value.city,
 		})
-		return this.createResponseError(result)
+		if (result.isFailure()) {
+			return this.createResponseError(result)
+		}
+
+		const currentWeather = result.value
+		return ResponseFactory.OK({
+			body: {
+				city: currentWeather.city,
+				temperature: currentWeather.temperature,
+				latitude: currentWeather.coordinate.latitude,
+				longitude: currentWeather.coordinate.longitude,
+			},
+		})
 	}
 }
 

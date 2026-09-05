@@ -1,0 +1,16 @@
+{
+  "us_id": "us-01",
+  "user_story": "Como usuário da página /clima, eu quero ver um globo 3D decorativo girando automaticamente para que a consulta de clima seja mais visual e envolvente",
+  "requirements": ["FR-001", "FR-002", "FR-010", "FR-011", "FR-012", "FR-017"],
+  "status": "PASSED",
+  "existing_tests_found": [
+    "apps/frontend/src/features/weather/components/weather-globe.test.tsx",
+    "apps/frontend/src/features/weather/components/use-globe-capability.test.ts",
+    "apps/frontend/src/test/fitness/weather-globe-import.test.ts"
+  ],
+  "acceptance_tests_created": [],
+  "test_output_summary": "pnpm --filter frontend exec vitest run nos dois arquivos-alvo (weather-globe.test.tsx + use-globe-capability.test.ts): 2 arquivos, 23 testes, 23 passaram, 0 falharam, exit 0 (executado nesta rodada em árvore local). Cobre FR-001 (autoRotate=true, autoRotateSpeed=0.4, enabled=true), FR-010 (forceContextLoss + autoRotate=false no unmount), FR-012 (pointsData=[] e pointOfView nunca chamado antes da primeira busca) e FR-017 (globeImageUrl=\"https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg\" e waitForGlobeReady=false em weather-globe.test.tsx:110-114). FR-002 e FR-011 são cobertos pelo relatório de Independent Verification (docs/superpowers/weather-globe-clima/qa/validation-weather-globe-clima.md, rodada 5, PASS) via next build real (chunk de 1854KB com three-globe fora dos 17 scripts iniciais de /clima) e pela fitness function dedicada (weather-globe-import.test.ts, lista de violações vazia) - não reexecutados aqui por já estarem no relatório de IV com evidência file:line e mutation testing (240->128 killed na rodada 5).",
+  "screenshot_path": "docs/superpowers/weather-globe-clima/qa/evidence/us-01-usuario-da-pagina-clima-ver/screenshot.png",
+  "failure_details": null,
+  "notes": "Rodada anterior (dev-server + Turbopack HMR sob automação headless) tinha travado o import dinâmico do globo, gerando PARTIAL apenas no aspecto visual. Nesta rodada, contra build de produção (next build + next start em http://localhost:3100), o screenshot capturado com playwright-cli em /clima mostra o globo renderizado (ramo interativo, canvas WebGL) com silhueta de continente visível sobre a esfera escura - confirma a textura de mapa-múndi do FR-017, não apenas círculo sólido. Console teve 0 erros e 4 warnings, todos GL Driver Message de performance (GPU stall due to ReadPixels), benignos e esperados em renderização WebGL sob automação, sem relação com a feature. Todos os FRs (FR-001, FR-002, FR-010, FR-011, FR-012, FR-017) fecham PASS: os funcionais reconfirmados pela suíte unitária + relatório de IV (rodada 5, mutation testing sem sobreviventes nus), o visual (FR-017) confirmado tanto pelo teste unitário de props quanto pela evidência visual desta rodada."
+}

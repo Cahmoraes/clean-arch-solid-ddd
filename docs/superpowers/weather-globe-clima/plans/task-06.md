@@ -1,14 +1,47 @@
-# Task 6: Integrar layout panorâmico na rota `/clima` [FR-001, FR-002, FR-004, FR-005, FR-006, FR-011]
+# Task 6: Integrar `WeatherGlobe` na página `/clima` via `next/dynamic({ ssr: false })` [FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** standard
-**Depends on:** task-03, task-05
+**Depends on:** task-02, task-03, task-04, task-05
 
 ## Visão Geral
 
-Integra o `WeatherGlobe` (Task 5) na página `/clima` (`apps/frontend/src/app/(public)/clima/page.tsx`), seguindo o layout B do mockup: copy + busca no topo, globo panorâmico logo abaixo da busca, resultado climático (`CurrentWeatherDisplay`) por último. A busca textual continua sendo a única origem da cidade consultada — o globo só recebe `city`/`latitude`/`longitude` da resposta já carregada por `useWeatherQuery` e nunca altera `router`/`searchParams`. Quando a resposta não tem coordenadas válidas (ausência do dado, ou globo indisponível), a página continua funcional só com busca e resultado (FR-006).
+Integra o `WeatherGlobe` (já com fallback, rotação, animação de câmera, `ErrorBoundary` e cleanup
+das tasks anteriores) na página pública `/clima`, carregado via `next/dynamic({ ssr: false })`
+para manter o chunk de `react-globe.gl`/Three.js fora do bundle inicial da rota (D4 do spec). O
+globo é renderizado acima do `WeatherSearchForm`, sempre visível, recebendo `latitude`/`longitude`
+do resultado de `useWeatherQuery` (tipado via `@repo/api-types` desde a Task 2) quando há uma
+busca com sucesso, e `undefined` quando ainda não houve busca ou a busca falhou — preservando o
+comportamento de FR-009/FR-012 sem nenhuma lógica adicional na página.
+
+O mock de `next/dynamic` usado nos testes do frontend
+(`apps/frontend/src/test/mocks/next-dynamic.tsx`, aliasado em `vitest.config.ts`) só reconhece o
+formato `{ default: Component }` — por isso o `import(...).then(...)` abaixo precisa envelopar o
+export nomeado `WeatherGlobe` nesse formato, o que também é o padrão documentado do
+`next/dynamic` real para módulos sem `export default`.
+
+Duas consequências desse mock, que ditam o formato desta task:
+
+1. **Ele executa o `import()` de verdade.** Sem interceptar o módulo do globo, o teste da página
+   avaliaria `react-globe.gl`/Three.js dentro do `happy-dom`. Por isso o teste desta task faz
+   `vi.mock(...)` do módulo carregado dinamicamente
+   (`@/features/weather/components/weather-globe-error-boundary`), seguindo o precedente já
+   existente no repo em
+   `apps/frontend/src/features/gyms/components/gym-location-picker.test.tsx`, que faz
+   `vi.mock("./leaflet-map", ...)` exatamente pelo mesmo motivo.
+2. **Ele ignora a opção `loading`.** Reservar altura via `loading` seria invisível para o teste e
+   não garantiria nada. A reserva de espaço é feita por um `div` wrapper de altura fixa em volta
+   do componente dinâmico — presente no DOM independentemente do carregamento do chunk, e por
+   isso verificável.
+
+A altura reservada é **exatamente** a mesma da Task 3 (`GLOBE_SIZE_PX = 128`, `h-32 w-32`);
+mudar o tamanho do globo exige mudar os dois lugares juntos.
+
+O `WeatherGlobe` também **não** recebe `key` derivada de cidade/coordenada (ver Task 5): remontar
+o componente a cada busca criaria um novo contexto WebGL por busca e esgotaria o limite de
+contextos do navegador. As coordenadas mudam por prop.
 
 ## Arquivos
 
@@ -17,107 +50,124 @@ Integra o `WeatherGlobe` (Task 5) na página `/clima` (`apps/frontend/src/app/(p
 
 ### Conformidade com as Skills Padrão
 
-- `no-workarounds`: a renderização condicional do globo deve checar os dados reais (`Number.isFinite(data.latitude)`), não uma flag fixa; nenhum handler do globo deve chamar `router.replace`/`useSearchParams`.
-- `test-antipatterns`: os testes validam o comportamento observável da página (o que aparece na tela conforme a resposta mockada via MSW), não a implementação interna do `WeatherGlobe`.
-- `typescript-advanced`: usar diretamente os campos tipados de `WeatherResponse` (`data.latitude`, `data.longitude`, ambos `number` após a Task 3), sem cast.
-- `vercel-react-best-practices`: o globo já é client-only e carregado via `next/dynamic` dentro do próprio `WeatherGlobe` (Task 5); a página não precisa (e não deve) adicionar um segundo `dynamic()`/`Suspense` para o mesmo componente.
-- `tailwindcss`: ajustar a largura do container principal (`max-w-3xl` em vez de `max-w-md`) para acomodar o globo panorâmico, mantendo mobile-first (o globo continua acima do resultado em qualquer largura, sem `grid`/`flex-row` que exigiriam breakpoints adicionais).
-- `vitest`: testes cobrindo presença/ausência do globo conforme os dados da resposta.
-- `tanstack-query-best-practices`: nenhuma mudança na key/config de `useWeatherQuery` — o globo consome apenas o `data` já resolvido pelo hook existente, sem nova query.
-- `impeccable`: preservar a intenção visual do mockup (hero panorâmico) sem quebrar os estados de loading/erro já existentes na página.
+- `vercel-react-best-practices`: `next/dynamic({ ssr: false })` é o mecanismo correto do Next.js para isolar um componente client-only pesado (WebGL) do SSR e do bundle inicial; o espaço é reservado por um wrapper de altura fixa em volta do componente dinâmico (não pela opção `loading`, ignorada pelo mock de teste do repo), evitando layout shift enquanto o chunk carrega.
+- `tanstack-query-best-practices`: `latitude`/`longitude` são derivados diretamente do `data` já retornado por `useWeatherQuery` (sem novo estado local nem nova query) — a página continua sendo a única responsável por orquestrar o resultado da busca.
+- `tailwindcss`: o wrapper reservado usa a mesma classe utilitária de tamanho (`h-32 w-32`, equivalente ao `GLOBE_SIZE_PX = 128` da Task 3) do `WeatherGlobe` real, evitando reflow quando o chunk termina de carregar.
+- `wcag-audit-patterns`: o wrapper reservado também precisa de `aria-hidden="true"` (é o mesmo elemento decorativo, só que antes do chunk carregar) — não introduzir um elemento focável/anunciado por leitor de tela nesse meio-tempo.
+- `no-workarounds`: o `import(...).then((mod) => ({ default: mod.WeatherGlobe }))` é a forma correta de adaptar um export nomeado para `next/dynamic` — não trocar `WeatherGlobe` para `export default` só para simplificar essa linha (quebraria a convenção de exports nomeados do restante do repo).
+- `test-antipatterns`: o teste novo usa MSW (via `server.use`) para simular a resposta real de `/weather` com `latitude`/`longitude`, sem mockar `useWeatherQuery` — o que se verifica aqui é o fluxo integrado da página. O único módulo mockado é o do globo, e por um motivo de ambiente, não de conveniência: o mock de `next/dynamic` do repo executa o `import()` real, e `react-globe.gl`/Three.js não roda em `happy-dom`. É a mesma fronteira que `gym-location-picker.test.tsx` já mocka para o mapa Leaflet. O comportamento interno do globo continua coberto pelos testes das Tasks 3-5.
 
 ### Fidelidade Visual
 
-- **Mockup de referência:** `../specs/mockups/weather-globe-clima-visual.md` (bloco `.clima-hero` completo: `.copy` + `.search-row`, `.globe-panel`, `.weather-result`).
-- **Fonte de design original:** nenhuma; mockup criado no Visual Companion (ver nota de fonte no próprio arquivo do mockup).
-- **Confirmar com o usuário:** existe uma fonte de design original (ex.: URL) para esta tela? Caso a resposta seja não, seguir o mockup curado como norte.
-- **Ferramentas de fidelidade visual (descobrir no ambiente):** skill `impeccable` disponível para revisão de fidelidade visual; browser/Playwright disponíveis via skill `playwright-cli` para validar visualmente o layout completo, caso necessário.
-- **Decisões visuais já tomadas (não refazer):** ordem vertical copy → busca → globo → resultado; globo largo acima do resultado tanto em desktop quanto mobile; busca sempre visível antes do resultado, independente do estado do globo.
+- **Mockup de referência:** `../specs/mockups/weather-globe-clima-visual.md` (baseline de layout/spacing/hierarquia/tokens).
+- **Fonte de design original:** nenhuma; layout definido apenas via mockup do companion.
+- **Confirmar com o usuário:** existe uma fonte de design original (ex.: URL) para esta tela?
+- **Ferramentas de fidelidade visual (descobrir no ambiente):** nenhuma; construir manualmente a partir do mockup.
+- **Decisões visuais já tomadas (não refazer):** globo como hero, sempre visível, acima do formulário de busca, na coluna centralizada (~448px) já existente da página `/clima`; nenhuma alteração na ordem título → descrição → globo → busca → card de resultado.
 
 ## Passos
 
-- **Step 0: Confirm design source & fidelity tools**
+- **Step 0: Confirmar fonte de design e ferramentas de fidelidade**
 
-Leia a subseção `### Fidelidade Visual` acima. Não há fonte de design original além do mockup curado — confirme isso com o usuário antes de prosseguir. Sem ferramenta de design-to-code configurada neste ambiente para esta tela, monte o layout manualmente a partir do HTML/tokens do mockup, reaproveitando a ordem copy → busca → globo → resultado já decidida.
+Sem fonte de design original nem ferramenta configurada neste repo (mesma situação das Tasks 3 e
+4). O único ajuste de layout desta task é inserir o globo, já pronto, entre o cabeçalho e o
+`WeatherSearchForm` — reaproveitar a ordem e o espaçamento (`gap-8`) já definidos em `page.tsx`.
 
 - **Step 1: Write the failing test**
 
+Adicione em `apps/frontend/src/app/(public)/clima/page.test.tsx`, ao lado do
+`vi.mock("next/navigation", ...)` que já existe no topo do arquivo, o mock do módulo do globo — o
+mesmo módulo que a página carrega via `next/dynamic` (o mock de `next/dynamic` do repo executa o
+`import()` de verdade, então sem isto o teste avaliaria `react-globe.gl` no `happy-dom`):
+
 ```tsx
-// apps/frontend/src/app/(public)/clima/page.test.tsx
-// Adicionar dentro do describe("WeatherPage", ...) já existente, após os testes atuais.
-
-	test("mostra o globo quando a consulta retorna latitude e longitude", async () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("city=São Paulo") as unknown as ReturnType<
-				typeof useSearchParams
-			>,
-		)
-		server.use(
-			http.get(`${apiBaseUrl}/weather`, () =>
-				HttpResponse.json(
-					{
-						city: "São Paulo",
-						temperature: { current: 24, min: 18, max: 27 },
-						latitude: -23.5505,
-						longitude: -46.6333,
-					},
-					{ status: 200 },
-				),
-			),
-		)
-
-		renderWithProviders(<WeatherPage />)
-
-		expect(
-			await screen.findByLabelText("Mapa estático centrado em São Paulo"),
-		).toBeInTheDocument()
-	})
-
-	test("não mostra o globo quando a resposta não traz coordenadas válidas", async () => {
-		vi.mocked(useSearchParams).mockReturnValue(
-			new URLSearchParams("city=São Paulo") as unknown as ReturnType<
-				typeof useSearchParams
-			>,
-		)
-		server.use(
-			http.get(`${apiBaseUrl}/weather`, () =>
-				HttpResponse.json(
-					{ city: "São Paulo", temperature: { current: 24, min: 18, max: 27 } },
-					{ status: 200 },
-				),
-			),
-		)
-
-		renderWithProviders(<WeatherPage />)
-
-		await waitFor(() => expect(screen.getByText("24°C")).toBeInTheDocument())
-		expect(
-			screen.queryByLabelText(/Mapa (3D|estático) centrado em/),
-		).not.toBeInTheDocument()
-	})
+vi.mock("@/features/weather/components/weather-globe-error-boundary", () => ({
+	WeatherGlobe: ({
+		latitude,
+		longitude,
+	}: {
+		latitude?: number
+		longitude?: number
+	}) => (
+		<div
+			aria-hidden="true"
+			data-testid="weather-globe"
+			data-latitude={latitude ?? ""}
+			data-longitude={longitude ?? ""}
+		/>
+	),
+}))
 ```
 
-O teste "não mostra o globo..." usa uma resposta sem `latitude`/`longitude` para validar a guarda defensiva de FR-006 (independentemente de o contrato real, pós Task 1/3, sempre enviar esses campos).
+Adicione então ao describe `WeatherPage` existente:
+
+```tsx
+test("renderiza o WeatherGlobe acima do formulário de busca sem regressão no fluxo existente", async () => {
+	vi.mocked(useSearchParams).mockReturnValue(
+		new URLSearchParams("city=São Paulo") as unknown as ReturnType<
+			typeof useSearchParams
+		>,
+	)
+	server.use(
+		http.get(`${apiBaseUrl}/weather`, () =>
+			HttpResponse.json(
+				{
+					city: "São Paulo",
+					temperature: { current: 24, min: 18, max: 27 },
+					latitude: -23.5505,
+					longitude: -46.6333,
+				},
+				{ status: 200 },
+			),
+		),
+	)
+
+	renderWithProviders(<WeatherPage />)
+
+	const globe = await screen.findByTestId("weather-globe")
+	expect(globe).toBeInTheDocument()
+	expect(screen.getByTestId("weather-globe-slot")).toBeInTheDocument()
+	expect(await screen.findByText("24°C")).toBeInTheDocument()
+	expect(screen.getByText("São Paulo")).toBeInTheDocument()
+	expect(globe).toHaveAttribute("data-latitude", "-23.5505")
+	expect(globe).toHaveAttribute("data-longitude", "-46.6333")
+})
+```
+
+(O que esta task valida é que o globo é montado no lugar certo, recebe as coordenadas do
+resultado da query e que o fluxo de busca/exibição de temperatura continua funcionando ao lado
+dele — o comportamento interno do globo, incluindo o fallback, é coberto pelas Tasks 3-5.)
 
 - **Step 2: Run test to verify it fails**
 
-Run: `cd apps/frontend && npx vitest run "src/app/(public)/clima/page.test.tsx"`
-Expected: FAIL — o primeiro teste novo falha com "Unable to find a label with the text: Mapa estático centrado em São Paulo" porque a página ainda não renderiza `WeatherGlobe` (os demais testes do arquivo continuam passando).
+Run: `cd apps/frontend && npx vitest run src/app/\(public\)/clima/page.test.tsx`
+Expected: FAIL — `screen.findByTestId("weather-globe")` nunca resolve (timeout), porque
+`WeatherPage` ainda não renderiza nenhum `WeatherGlobe`.
 
 - **Step 3: Write minimal implementation**
 
 ```tsx
-// apps/frontend/src/app/(public)/clima/page.tsx
 "use client"
 
 import { useIsFetching } from "@tanstack/react-query"
+import dynamic from "next/dynamic"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useWeatherQuery } from "@/features/weather/api/use-weather-query"
 import { CurrentWeatherDisplay } from "@/features/weather/components/current-weather-display"
-import { WeatherGlobe } from "@/features/weather/components/weather-globe"
 import { WeatherSearchForm } from "@/features/weather/components/weather-search-form"
+
+// Mesma altura de GLOBE_SIZE_PX (128) em weather-globe.tsx — mudar os dois juntos.
+const GLOBE_SLOT_CLASS = "mx-auto h-32 w-32"
+
+const WeatherGlobe = dynamic(
+	() =>
+		import("@/features/weather/components/weather-globe-error-boundary").then(
+			(mod) => ({ default: mod.WeatherGlobe }),
+		),
+	{ ssr: false },
+)
 
 function weatherErrorMessage(code: string): string {
 	if (code === "city_not_found") {
@@ -141,10 +191,6 @@ function WeatherPageContent() {
 
 	const { data, error } = useWeatherQuery(city)
 	const isPending = useIsFetching({ queryKey: ["weather"] }) > 0
-	const hasValidCoordinates =
-		Boolean(data) &&
-		Number.isFinite(data?.latitude) &&
-		Number.isFinite(data?.longitude)
 
 	function handleSearch(nextCity: string) {
 		const params = new URLSearchParams(searchParams.toString())
@@ -153,7 +199,7 @@ function WeatherPageContent() {
 	}
 
 	return (
-		<section className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-16 sm:px-6">
+		<section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6">
 			<header className="flex flex-col gap-2">
 				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Consulta de clima
@@ -163,19 +209,19 @@ function WeatherPageContent() {
 				</p>
 			</header>
 
+			<div
+				aria-hidden="true"
+				data-testid="weather-globe-slot"
+				className={GLOBE_SLOT_CLASS}
+			>
+				<WeatherGlobe latitude={data?.latitude} longitude={data?.longitude} />
+			</div>
+
 			<WeatherSearchForm
 				onSearch={handleSearch}
 				isPending={isPending}
 				defaultCity={city ?? undefined}
 			/>
-
-			{city && data && hasValidCoordinates && (
-				<WeatherGlobe
-					city={data.city}
-					latitude={data.latitude}
-					longitude={data.longitude}
-				/>
-			)}
 
 			{!city && <EmptyState title="Digite uma cidade para começar" />}
 			{city && error && (
@@ -207,24 +253,40 @@ export default function WeatherPage() {
 }
 ```
 
-`hasValidCoordinates` é a única mudança de decisão nova: garante que a ausência de `latitude`/`longitude` (FR-006) não impede a renderização de busca/resultado, e que o globo só aparece com coordenadas numéricas válidas, atendendo FR-002/FR-013 (marcador corresponde à consulta atual).
-
 - **Step 4: Run test to verify it passes**
 
-Run: `cd apps/frontend && npx vitest run "src/app/(public)/clima/page.test.tsx"`
-Expected: PASS (8 tests)
+Run: `cd apps/frontend && npx vitest run src/app/\(public\)/clima/page.test.tsx`
+Expected: PASS (todos os testes existentes do describe `WeatherPage` + o novo teste, sem
+regressão nos 5 testes já existentes).
 
-- **Step 5: Commit** *(sequential execution only — em wave paralela, pule este passo e reporte os arquivos alterados ao orquestrador.)*
+- **Step 5: Commit**
 
 ```bash
-git add apps/frontend/src/app/\(public\)/clima/page.tsx \
-  apps/frontend/src/app/\(public\)/clima/page.test.tsx
-git commit -m "feat(weather): integrate panoramic globe layout into /clima"
+git add apps/frontend/src/app/\(public\)/clima/page.tsx apps/frontend/src/app/\(public\)/clima/page.test.tsx
+git commit -m "feat(weather): integra WeatherGlobe na página /clima via next/dynamic"
 ```
 
 ## Critérios de Sucesso
 
-- `/clima` mantém busca textual como única origem da cidade consultada; nenhum handler do globo chama `router.replace`.
-- O globo aparece somente quando a resposta atual tem `latitude`/`longitude` numéricos, logo abaixo da busca e acima do resultado climático (ordem do mockup).
-- `CurrentWeatherDisplay`, mensagens de erro (`city_not_found`/`weather_provider_unavailable`) e o `EmptyState` continuam funcionando exatamente como antes desta task.
-- Os testes passam isoladamente com `npx vitest run "src/app/(public)/clima/page.test.tsx"`.
+- `WeatherGlobe` é carregado via `next/dynamic({ ssr: false })` a partir de
+  `@/features/weather/components/weather-globe-error-boundary`, nunca importado estaticamente em
+  `page.tsx` [FR-002].
+- O espaço do globo é reservado por um wrapper `div` de altura fixa (`h-32 w-32`, o mesmo
+  `GLOBE_SIZE_PX = 128` da Task 3) com `aria-hidden="true"`, presente no DOM independentemente do
+  carregamento do chunk — não pela opção `loading` do `next/dynamic`, que o mock de teste do repo
+  ignora.
+- `WeatherGlobe` não recebe `key` derivada de cidade/coordenada: uma nova busca atualiza props,
+  nunca remonta o componente (preserva um único contexto WebGL, ver Task 5).
+- O teste da página mocka o módulo carregado dinamicamente
+  (`vi.mock("@/features/weather/components/weather-globe-error-boundary", ...)`), porque o mock de
+  `next/dynamic` do repo executa o `import()` real e `react-globe.gl` não roda em `happy-dom` —
+  mesmo precedente de `gym-location-picker.test.tsx`.
+- O globo é renderizado sempre, acima do `WeatherSearchForm`, independentemente de já ter havido
+  uma busca, sem exibir marcador antes de qualquer busca (regressão do comportamento já
+  implementado nas tasks 3-4, não uma nova cobertura de FR).
+- Quando `useWeatherQuery` retorna dado com sucesso, `WeatherGlobe` recebe `latitude`/`longitude`
+  desse resultado; quando não há busca ou a busca falha, recebe `undefined` em ambas as props,
+  mantendo a última posição válida sem regressão na animação de câmera nem no fallback ao erro
+  (regressão do comportamento já implementado nas tasks 3-4, não uma nova cobertura de FR).
+- O fluxo de busca existente (mensagens de erro, exibição de `CurrentWeatherDisplay`, anúncio de
+  status) continua funcionando sem regressão com o globo presente.
