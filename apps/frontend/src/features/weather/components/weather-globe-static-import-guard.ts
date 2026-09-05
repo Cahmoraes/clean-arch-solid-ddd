@@ -22,8 +22,9 @@ const STATIC_SPECIFIER_PATTERN = /(?:from\s*|require\(\s*)["']([^"']+)["']/g
 
 // Cobre `react-globe.gl` e os módulos do globo, tanto na forma com alias
 // (`@/features/weather/components/weather-globe`) quanto na relativa (`./weather-globe`).
+// Casamenta raiz do especificador (ex: `react-globe.gl` ou `react-globe.gl/dist/...`).
 const FORBIDDEN_SPECIFIER_PATTERN =
-	/(?:react-globe\.gl|weather-globe(?:-error-boundary)?)$/
+	/(?:^|\/)(?:react-globe\.gl|weather-globe(?:-error-boundary)?)(?:\/|$)/
 
 export function hasForbiddenStaticGlobeImport(content: string): boolean {
 	const specifiers = [...content.matchAll(STATIC_SPECIFIER_PATTERN)]

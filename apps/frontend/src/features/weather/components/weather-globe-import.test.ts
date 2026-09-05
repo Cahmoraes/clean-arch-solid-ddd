@@ -34,4 +34,10 @@ describe("Fitness: módulos do globo não são importados estaticamente fora do 
 
 		expect(hasForbiddenStaticGlobeImport(content)).toBe(false)
 	})
+
+	test("detecta import estático com subpath: react-globe.gl/dist", () => {
+		const content = `import Globe from "react-globe.gl/dist/react-globe.gl.min"`
+
+		expect(hasForbiddenStaticGlobeImport(content)).toBe(true)
+	})
 })
