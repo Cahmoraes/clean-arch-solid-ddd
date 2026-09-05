@@ -101,13 +101,16 @@ describe("WeatherGlobe", () => {
 		)
 	})
 
-	test("renderiza o globo sem textura externa, usando globeMaterial sólido", () => {
+	test("configura a textura de mapa-múndi sem bloquear o render enquanto ela carrega", () => {
 		useGlobeCapabilityMock.mockReturnValue("webgl")
 
 		render(<WeatherGlobe />)
 
 		const globeProps = globePropsSpy.mock.calls[0][0]
-		expect(globeProps.globeImageUrl).toBeUndefined()
+		expect(globeProps.globeImageUrl).toBe(
+			"https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg",
+		)
+		expect(globeProps.waitForGlobeReady).toBe(false)
 		expect(globeProps.globeMaterial).toBeDefined()
 	})
 

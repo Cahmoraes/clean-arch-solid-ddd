@@ -19,6 +19,8 @@ const CAMERA_ALTITUDE = 1.5
 const CAMERA_TRANSITION_MS = 1000
 const AUTO_ROTATE_SPEED = 0.4
 const MARKER_COLOR = "#39e58c"
+const GLOBE_TEXTURE_URL =
+	"https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg"
 
 function getCameraTarget(
 	latitude: number | undefined,
@@ -134,6 +136,8 @@ export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 				height={GLOBE_SIZE_PX}
 				backgroundColor="rgba(0,0,0,0)"
 				globeMaterial={globeMaterial}
+				globeImageUrl={GLOBE_TEXTURE_URL}
+				waitForGlobeReady={false}
 				enablePointerInteraction={false}
 				pointsData={markerData}
 				pointColor={() => MARKER_COLOR}
