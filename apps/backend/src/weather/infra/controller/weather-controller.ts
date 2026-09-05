@@ -1,7 +1,6 @@
 import type { FastifyRequest } from "fastify"
 import { inject, injectable } from "inversify"
 import { ZodError, z } from "zod"
-import { success } from "@/shared/domain/value-object/either.js"
 import { BaseController } from "@/shared/infra/controller/base-controller.js"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory.js"
 import { Logger } from "@/shared/infra/decorator/logger.js"
@@ -107,14 +106,14 @@ export class WeatherController extends BaseController {
 		}
 
 		const currentWeather = result.value
-		return this.createResponseError(
-			success({
+		return ResponseFactory.OK({
+			body: {
 				city: currentWeather.city,
 				temperature: currentWeather.temperature,
 				latitude: currentWeather.coordinate.latitude,
 				longitude: currentWeather.coordinate.longitude,
-			}),
-		)
+			},
+		})
 	}
 }
 

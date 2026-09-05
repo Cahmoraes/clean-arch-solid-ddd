@@ -1,24 +1,17 @@
 "use client"
 
 import { useIsFetching } from "@tanstack/react-query"
-import dynamic from "next/dynamic"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useWeatherQuery } from "@/features/weather/api/use-weather-query"
 import { CurrentWeatherDisplay } from "@/features/weather/components/current-weather-display"
+import { GLOBE_SIZE_PX } from "@/features/weather/components/weather-globe-constants"
+// Import estático de propósito: o boundary não carrega `react-globe.gl`/`three`
+// (faz isso via `next/dynamic` interno), então ele também protege contra falha
+// no carregamento do chunk do globo.
+import { WeatherGlobe } from "@/features/weather/components/weather-globe-error-boundary"
 import { WeatherSearchForm } from "@/features/weather/components/weather-search-form"
-
-// Mesma altura de GLOBE_SIZE_PX (128) em weather-globe.tsx — mudar os dois juntos.
-const GLOBE_SLOT_CLASS = "mx-auto h-32 w-32"
-
-const WeatherGlobe = dynamic(
-	() =>
-		import("@/features/weather/components/weather-globe-error-boundary").then(
-			(mod) => ({ default: mod.WeatherGlobe }),
-		),
-	{ ssr: false },
-)
 
 function weatherErrorMessage(code: string): string {
 	if (code === "city_not_found") {
@@ -63,7 +56,8 @@ function WeatherPageContent() {
 			<div
 				aria-hidden="true"
 				data-testid="weather-globe-slot"
-				className={GLOBE_SLOT_CLASS}
+				className="mx-auto"
+				style={{ height: GLOBE_SIZE_PX, width: GLOBE_SIZE_PX }}
 			>
 				<WeatherGlobe latitude={data?.latitude} longitude={data?.longitude} />
 			</div>

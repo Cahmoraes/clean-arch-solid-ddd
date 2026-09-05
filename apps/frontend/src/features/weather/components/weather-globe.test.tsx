@@ -18,7 +18,14 @@ const {
 		globePropsSpy: vi.fn(),
 		useGlobeCapabilityMock: vi.fn(),
 		pointOfViewMock: vi.fn(),
-		controlsState: { autoRotate: false, autoRotateSpeed: 0, enabled: true },
+		controlsState: {
+			autoRotate: false,
+			autoRotateSpeed: 0,
+			enabled: true,
+			enableZoom: true,
+			enablePan: true,
+			enableRotate: true,
+		},
 		forceContextLossMock,
 		globeCanvas,
 		rendererMock: vi.fn(() => ({
@@ -64,6 +71,9 @@ describe("WeatherGlobe", () => {
 		controlsState.autoRotate = false
 		controlsState.autoRotateSpeed = 0
 		controlsState.enabled = true
+		controlsState.enableZoom = true
+		controlsState.enablePan = true
+		controlsState.enableRotate = true
 	})
 
 	test("renderiza fallback estático com aria-hidden quando a capacidade é 'fallback'", () => {
@@ -101,14 +111,65 @@ describe("WeatherGlobe", () => {
 		expect(globeProps.globeMaterial).toBeDefined()
 	})
 
-	test("ativa auto-rotação e desabilita os controles de órbita/zoom ao montar o ramo interativo", () => {
+	test("ativa auto-rotação e desabilita arrastar/zoom/pan ao montar o ramo interativo", () => {
 		mockWebglSupported()
 
 		render(<WeatherGlobe />)
 
 		expect(controlsState.autoRotate).toBe(true)
 		expect(controlsState.autoRotateSpeed).toBe(0.4)
-		expect(controlsState.enabled).toBe(false)
+		expect(controlsState.enableZoom).toBe(false)
+		expect(controlsState.enablePan).toBe(false)
+		expect(controlsState.enableRotate).toBe(false)
+	})
+
+	test("mantém controls.enabled true, senão o loop de update nunca aplica a auto-rotação", () => {
+		mockWebglSupported()
+
+		render(<WeatherGlobe />)
+
+		expect(controlsState.enabled).toBe(true)
+	})
+
+	test("pausa a auto-rotação durante a transição de câmera e retoma ao fim dela", () => {
+		vi.useFakeTimers()
+		mockWebglSupported()
+
+		render(<WeatherGlobe latitude={-23.5505} longitude={-46.6333} />)
+
+		expect(controlsState.autoRotate).toBe(false)
+
+		act(() => {
+			vi.advanceTimersByTime(1000)
+		})
+
+		expect(controlsState.autoRotate).toBe(true)
+		vi.useRealTimers()
+	})
+
+	test("uma nova busca antes do fim da transição reinicia a pausa da auto-rotação", () => {
+		vi.useFakeTimers()
+		mockWebglSupported()
+
+		const { rerender } = render(
+			<WeatherGlobe latitude={-23.5505} longitude={-46.6333} />,
+		)
+		act(() => {
+			vi.advanceTimersByTime(600)
+		})
+		rerender(<WeatherGlobe latitude={-22.9068} longitude={-43.1729} />)
+		act(() => {
+			vi.advanceTimersByTime(600)
+		})
+
+		expect(controlsState.autoRotate).toBe(false)
+
+		act(() => {
+			vi.advanceTimersByTime(400)
+		})
+
+		expect(controlsState.autoRotate).toBe(true)
+		vi.useRealTimers()
 	})
 
 	test("anima a câmera até a coordenada buscada quando latitude/longitude são informadas", () => {

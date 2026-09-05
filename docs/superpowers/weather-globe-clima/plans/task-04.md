@@ -1,6 +1,6 @@
 # Task 4: `WeatherGlobe` — rotação automática e animação de câmera até a busca [FR-001, FR-003, FR-009, FR-012, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** standard

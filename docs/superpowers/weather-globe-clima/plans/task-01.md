@@ -1,6 +1,6 @@
 # Task 1: `CurrentWeather` VO passa a incluir `Coordinate` [FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** standard

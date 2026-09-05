@@ -142,7 +142,10 @@ não o círculo estático do mockup.
   - Uma exceção de runtime do Three.js/`react-globe.gl` (após a montagem bem-sucedida)
     também não pode derrubar a página: `WeatherGlobe` é envolvido por um `ErrorBoundary`
     local que renderiza o fallback estático em caso de erro, estendendo a garantia de D5
-    de "montagem" para "runtime".
+    de "montagem" para "runtime". O `dynamic(() => import(...))` do globo vive **dentro**
+    do próprio `ErrorBoundary` (que por sua vez é importado estaticamente pela página):
+    assim, uma falha no fetch do chunk também vira um erro de render capturado pelo
+    boundary, em vez de subir para a página e derrubar a exibição do clima.
   - O `ErrorBoundary` cobre apenas erros lançados durante o ciclo de render do React, e não
     alcança o modo de falha dominante do WebGL: a perda de contexto GPU (aba em background
     por muito tempo, driver reiniciado, limite de contextos WebGL do navegador atingido), que
@@ -157,10 +160,19 @@ não o círculo estático do mockup.
     recebem `aria-hidden="true"` e a interação por ponteiro é desabilitada. Duas coisas
     distintas são necessárias: `enablePointerInteraction={false}` desabilita **apenas** o
     rastreamento de ponteiro para hover/click/tooltip — ele não desliga arrastar/zoom. Para
-    desabilitar os `OrbitControls` de verdade é preciso agir sobre a instância de controles:
-    `controls().enabled = false`. A auto-rotação continua funcionando com
-    `enabled = false`, porque é aplicada no `update()` do loop de animação,
-    independentemente do estado de `enabled`.
+    desabilitar arrastar/zoom/pan é preciso agir sobre a instância de controles, mas
+    **não** via `controls().enabled = false`: o `three-render-objects` só chama
+    `controls.update()` enquanto `controls.enabled` é `true`, e a auto-rotação do
+    `OrbitControls` só é aplicada dentro de `update()` — desligar `enabled` mataria também
+    o giro automático. A forma correta é manter `enabled = true` e desligar apenas os flags
+    que gateiam os event handlers de mouse/touch:
+    `enableZoom = false`, `enablePan = false`, `enableRotate = false`.
+  - Como o loop de `update()` continua rodando, a auto-rotação também gira durante a
+    transição de câmera do `pointOfView` e faria a cidade buscada passar direto pelo
+    enquadramento. Por isso o efeito que reage a `latitude`/`longitude` pausa
+    `controls.autoRotate` antes de chamar `pointOfView` e o reativa após
+    `CAMERA_TRANSITION_MS`, via `setTimeout` limpo no cleanup do efeito (desmonte ou nova
+    busca antes do fim da transição).
   - Quando a query de clima falha (busca subsequente sem sucesso), o globo mantém a
     última posição/rotação válida sem indicar erro — o estado de erro é comunicado só
     pela mensagem já existente da página, não pelo globo.

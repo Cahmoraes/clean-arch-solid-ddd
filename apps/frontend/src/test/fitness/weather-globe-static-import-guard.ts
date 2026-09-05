@@ -3,28 +3,33 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
-const SRC_ROOT = path.resolve(currentDir, "../../../")
+const SRC_ROOT = path.resolve(currentDir, "../../")
 
+// Único módulo autorizado a importar o globo 3D estaticamente. O
+// `weather-globe-error-boundary.tsx` NÃO entra aqui: ele carrega o globo por
+// `dynamic(() => import(...))`, e por isso pode ser importado estaticamente pela
+// página sem puxar o chunk pesado.
 const ALLOWED_FILES = new Set([
 	path.join(SRC_ROOT, "features/weather/components/weather-globe.tsx"),
-	path.join(
-		SRC_ROOT,
-		"features/weather/components/weather-globe-error-boundary.tsx",
-	),
 ])
 
 const TEST_FILE_PATTERN = /\.(test|fitness-test)\.tsx?$/
 const SOURCE_FILE_PATTERN = /\.(ts|tsx)$/
 
-// Só especificadores de import ESTÁTICO: `from "..."` e `require("...")`.
-// `dynamic(() => import("..."))` não casa com nenhum dos dois — é justamente o que se permite.
-const STATIC_SPECIFIER_PATTERN = /(?:from\s*|require\(\s*)["']([^"']+)["']/g
+// Só especificadores de import ESTÁTICO: `from "..."`, `require("...")` e
+// `import "..."` (side-effect, sem `from`).
+// `dynamic(() => import("..."))` não casa com nenhum dos três — é justamente o que se permite.
+const STATIC_SPECIFIER_PATTERN =
+	/(?:from\s*|require\(\s*|import\s+)["']([^"']+)["']/g
 
-// Cobre `react-globe.gl` e os módulos do globo, tanto na forma com alias
-// (`@/features/weather/components/weather-globe`) quanto na relativa (`./weather-globe`).
-// Casamenta raiz do especificador (ex: `react-globe.gl` ou `react-globe.gl/dist/...`).
+// Cobre `react-globe.gl`, o módulo do globo (tanto com alias
+// `@/features/weather/components/weather-globe` quanto relativo `./weather-globe`)
+// e as libs 3D subjacentes (`three`, `three-globe`, `globe.gl`).
+// Casa na raiz do especificador, cobrindo subpaths (ex: `three/examples/jsm/...`).
+// Módulos leves (`weather-globe-constants`, `weather-globe-fallback`,
+// `weather-globe-error-boundary`) não casam: exigem `/` ou fim após a raiz.
 const FORBIDDEN_SPECIFIER_PATTERN =
-	/(?:^|\/)(?:react-globe\.gl|weather-globe(?:-error-boundary)?)(?:\/|$)/
+	/(?:^|\/)(?:react-globe\.gl|three-globe|globe\.gl|weather-globe|three)(?:\/|$)/
 
 export function hasForbiddenStaticGlobeImport(content: string): boolean {
 	const specifiers = [...content.matchAll(STATIC_SPECIFIER_PATTERN)]

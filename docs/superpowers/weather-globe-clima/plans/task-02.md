@@ -1,6 +1,6 @@
 # Task 2: `weatherResponseSchema` expõe `latitude`/`longitude` e regenera `@repo/api-types` [FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** standard

@@ -1,6 +1,6 @@
 # Task 6: Integrar `WeatherGlobe` na página `/clima` via `next/dynamic({ ssr: false })` [FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** standard

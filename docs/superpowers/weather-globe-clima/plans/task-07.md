@@ -1,6 +1,6 @@
 # Task 7: Fitness function — nenhum import estático dos módulos do globo fora do `next/dynamic` [FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** cheap

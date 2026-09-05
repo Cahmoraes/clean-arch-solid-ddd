@@ -13,13 +13,13 @@
 
 ## Tarefas
 
-- [ ] 1. `CurrentWeather` VO passa a incluir `Coordinate` [FR-004] → `task-01.md`
-- [ ] 2. `weatherResponseSchema` expõe `latitude`/`longitude` e regenera `@repo/api-types` [FR-004] → `task-02.md`
-- [ ] 3. `WeatherGlobe` — esqueleto, detecção de suporte e fallback estático acessível [FR-005, FR-006, FR-007] → `task-03.md`
-- [ ] 4. `WeatherGlobe` — rotação automática e animação de câmera até a busca [FR-001, FR-003, FR-009, FR-012, FR-013] → `task-04.md`
-- [ ] 5. `WeatherGlobe` — `ErrorBoundary` local e cleanup no unmount [FR-008, FR-010] → `task-05.md`
-- [ ] 6. Integrar `WeatherGlobe` na página `/clima` via `next/dynamic({ ssr: false })` [FR-002] → `task-06.md`
-- [ ] 7. Fitness function — nenhuma importação estática de `react-globe.gl` fora do `next/dynamic` [FR-011] → `task-07.md`
+- [x] 1. `CurrentWeather` VO passa a incluir `Coordinate` [FR-004] → `task-01.md`
+- [x] 2. `weatherResponseSchema` expõe `latitude`/`longitude` e regenera `@repo/api-types` [FR-004] → `task-02.md`
+- [x] 3. `WeatherGlobe` — esqueleto, detecção de suporte e fallback estático acessível [FR-005, FR-006, FR-007] → `task-03.md`
+- [x] 4. `WeatherGlobe` — rotação automática e animação de câmera até a busca [FR-001, FR-003, FR-009, FR-012, FR-013] → `task-04.md`
+- [x] 5. `WeatherGlobe` — `ErrorBoundary` local e cleanup no unmount [FR-008, FR-010] → `task-05.md`
+- [x] 6. Integrar `WeatherGlobe` na página `/clima` via `next/dynamic({ ssr: false })` [FR-002] → `task-06.md`
+- [x] 7. Fitness function — nenhuma importação estática de `react-globe.gl` fora do `next/dynamic` [FR-011] → `task-07.md`
 
 ## Ondas de Execução
 

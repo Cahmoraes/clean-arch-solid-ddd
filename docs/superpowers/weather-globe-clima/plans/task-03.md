@@ -1,6 +1,6 @@
 # Task 3: `WeatherGlobe` — esqueleto, hook de capacidade e fallback estático acessível [FR-005, FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** standard

@@ -1,6 +1,6 @@
 # Task 5: `WeatherGlobe` — `ErrorBoundary` local, perda de contexto WebGL e cleanup no unmount [FR-008, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** standard
