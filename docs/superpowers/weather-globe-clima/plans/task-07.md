@@ -1,9 +1,6 @@
 # Task 7: Fitness function — nenhum import estático dos módulos do globo fora do `next/dynamic` [FR-011]
 
-**Status:** REMOVIDO (decisão do usuário em 2026-09-05 — fitness function não necessária para esta
-feature). Os arquivos `weather-globe-static-import-guard.ts` e `weather-globe-import.test.ts` foram
-deletados de `apps/frontend/src/test/fitness/`. Este plano fica só como registro histórico do que
-existiu; não reimplementar sem novo pedido explícito.
+**Status:** DONE
 **PRD:** `../prd/prd-weather-globe-clima.md`
 **Spec:** `../specs/weather-globe-clima-design.md`
 **Tier:** cheap
