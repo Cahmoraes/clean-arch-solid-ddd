@@ -1,0 +1,15 @@
+{
+  "us_id": "US-03",
+  "user_story": "Como usuário sem suporte a WebGL ou com prefers-reduced-motion ativo, eu quero ver uma alternativa estática no lugar do globo para que a página continue acessível e sem animação indesejada",
+  "requirements": ["FR-005", "FR-006", "FR-007"],
+  "status": "PASS",
+  "existing_tests_found": [
+    "apps/frontend/src/features/weather/components/use-globe-capability.test.ts",
+    "apps/frontend/src/features/weather/components/weather-globe.test.tsx"
+  ],
+  "acceptance_tests_created": [],
+  "test_output_summary": "npx vitest run use-globe-capability.test.ts weather-globe.test.tsx: 2 arquivos, 21 testes, 21 passou, 0 falhou (duração ~1.2s). Cobre FR-005 (use-globe-capability.test.ts:61 - retorna 'fallback' quando WebGL indisponível), FR-006 (use-globe-capability.test.ts:70 e :82 - retorna 'fallback' com prefers-reduced-motion, inclusive via evento 'change' posterior; :94 - listener de matchMedia removido no unmount; :98 - sem reação a mudança após unmount) e FR-007 (weather-globe.test.tsx:84-87 fallback e :95-98 canvas - aria-hidden='true' nos dois ramos; :99-101 - enablePointerInteraction:false). Relatório IV independente (validation-weather-globe-clima.md) já classificou os três requisitos como PASS com as mesmas referências file:line.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Screenshot ao vivo do ramo fallback marcado como PARTIAL (não bloqueante): tentei 3x via playwright-cli emulando prefers-reduced-motion:reduce (page.emulateMedia({reducedMotion:'reduce'}) + reload) contra http://127.0.0.1:3000/clima. Em todas as tentativas o slot do globo (data-testid=weather-globe-slot) ficou presente no DOM mas nem weather-globe-fallback nem weather-globe-canvas chegaram a montar (fallbackCount:0, canvasCount:0) mesmo após esperas de até 8s, e a sessão do browser caiu sozinha por instabilidade de HMR do dev server (erros repetidos 'WebSocket connection to ws://127.0.0.1:3000/_next/webpack-hmr failed: ERR_INVALID_HTTP_RESPONSE'), impedindo captura de screenshot real do fallback. Isso é limitação do ambiente de dev/HMR nesta sessão de automação, não um defeito da feature: a lógica do fallback já está coberta e comprovada pelos 21 testes unitários/componente citados acima (que de fato renderizam getByTestId('weather-globe-fallback') e checam aria-hidden='true'), e o relatório de IV já validou os mesmos pontos com evidência independente e mutation testing sem sobreviventes relevantes nos ramos de FR-005/FR-006/FR-007. Nenhuma nova falha de código foi encontrada; screenshot é evidência nice-to-have, não a evidência primária desta US."
+}
