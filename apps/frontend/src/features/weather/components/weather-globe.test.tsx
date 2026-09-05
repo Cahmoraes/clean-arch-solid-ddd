@@ -1,6 +1,7 @@
 import { act, cleanup, render, screen } from "@testing-library/react"
 import { forwardRef, useImperativeHandle } from "react"
 import { afterEach, describe, expect, test, vi } from "vitest"
+import { GLOBE_SIZE_PX } from "./weather-globe-constants"
 import { WeatherGlobe } from "./weather-globe"
 
 const {
@@ -124,6 +125,17 @@ describe("WeatherGlobe", () => {
 		expect(controlsState.enableZoom).toBe(false)
 		expect(controlsState.enablePan).toBe(false)
 		expect(controlsState.enableRotate).toBe(true)
+	})
+
+	test("renderiza o globo com o tamanho configurado em GLOBE_SIZE_PX", () => {
+		useGlobeCapabilityMock.mockReturnValue("webgl")
+
+		render(<WeatherGlobe />)
+
+		const globeProps = globePropsSpy.mock.calls[0][0]
+		expect(globeProps.width).toBe(GLOBE_SIZE_PX)
+		expect(globeProps.height).toBe(GLOBE_SIZE_PX)
+		expect(GLOBE_SIZE_PX).toBe(240)
 	})
 
 	test("não registra handler de clique/toque sobre o globo", () => {
