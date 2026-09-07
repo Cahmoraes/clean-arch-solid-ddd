@@ -22,8 +22,16 @@ function isOutsideContainer(
 export function NotificationBell() {
 	const [isOpen, setIsOpen] = useState<boolean>(false)
 	const containerRef = useRef<HTMLDivElement>(null)
-	const { notifications, unreadCount, isLoading, markAsRead, markAllAsRead } =
-		useNotifications()
+	const {
+		notifications,
+		unreadCount,
+		isLoading,
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+		markAsRead,
+		markAllAsRead,
+	} = useNotifications()
 
 	useEffect(() => {
 		if (!isOpen) return
@@ -72,6 +80,9 @@ export function NotificationBell() {
 				<NotificationDropdown
 					notifications={notifications}
 					isLoading={isLoading}
+					hasNextPage={hasNextPage}
+					isFetchingNextPage={isFetchingNextPage}
+					fetchNextPage={fetchNextPage}
 					onMarkAsRead={(notificationId) => {
 						void markAsRead(notificationId)
 					}}

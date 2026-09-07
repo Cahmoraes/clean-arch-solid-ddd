@@ -1,24 +1,71 @@
 "use client"
 
 import { BellOff } from "lucide-react"
+import { type RefObject, useEffect, useRef } from "react"
 import type { NotificationItem as NotificationItemData } from "@/lib/notifications/use-notifications"
 import { NotificationItem } from "./notification-item"
 
 interface NotificationDropdownProps {
 	notifications: NotificationItemData[]
 	isLoading: boolean
+	hasNextPage: boolean
+	isFetchingNextPage: boolean
+	fetchNextPage: () => void
 	onMarkAsRead: (id: string) => void
 	onMarkAllAsRead: () => void
+}
+
+function shouldLoadMore(
+	entries: IntersectionObserverEntry[],
+	hasNextPage: boolean,
+	isFetchingNextPage: boolean,
+): boolean {
+	const entry = entries[0]
+	if (!entry?.isIntersecting) return false
+	return hasNextPage && !isFetchingNextPage
+}
+
+function useLoadMoreOnIntersect(
+	hasNextPage: boolean,
+	isFetchingNextPage: boolean,
+	fetchNextPage: () => void,
+): RefObject<HTMLDivElement | null> {
+	const sentinelRef = useRef<HTMLDivElement | null>(null)
+	useEffect(() => {
+		const sentinel = sentinelRef.current
+		if (!sentinel) return
+		const observer = new IntersectionObserver((entries) => {
+			if (!shouldLoadMore(entries, hasNextPage, isFetchingNextPage)) return
+			fetchNextPage()
+		})
+		observer.observe(sentinel)
+		return () => observer.disconnect()
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage])
+	return sentinelRef
 }
 
 function NotificationDropdownContent({
 	notifications,
 	isLoading,
+	hasNextPage,
+	isFetchingNextPage,
+	fetchNextPage,
 	onMarkAsRead,
 }: Pick<
 	NotificationDropdownProps,
-	"notifications" | "isLoading" | "onMarkAsRead"
+	| "notifications"
+	| "isLoading"
+	| "hasNextPage"
+	| "isFetchingNextPage"
+	| "fetchNextPage"
+	| "onMarkAsRead"
 >) {
+	const sentinelRef = useLoadMoreOnIntersect(
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+	)
+
 	if (isLoading) {
 		return (
 			<p className="px-4 py-8 text-center text-sm text-muted-foreground">
@@ -41,21 +88,38 @@ function NotificationDropdownContent({
 	}
 
 	return (
-		<ul>
-			{notifications.map((notification) => (
-				<NotificationItem
-					key={notification.id}
-					notification={notification}
-					onMarkAsRead={onMarkAsRead}
-				/>
-			))}
-		</ul>
+		<>
+			<ul>
+				{notifications.map((notification) => (
+					<NotificationItem
+						key={notification.id}
+						notification={notification}
+						onMarkAsRead={onMarkAsRead}
+					/>
+				))}
+			</ul>
+			{isFetchingNextPage ? (
+				<p
+					role="status"
+					aria-live="polite"
+					className="px-4 py-3 text-center text-xs text-muted-foreground"
+				>
+					Carregando mais...
+				</p>
+			) : null}
+			{hasNextPage ? (
+				<div ref={sentinelRef} aria-hidden="true" className="h-1" />
+			) : null}
+		</>
 	)
 }
 
 export function NotificationDropdown({
 	notifications,
 	isLoading,
+	hasNextPage,
+	isFetchingNextPage,
+	fetchNextPage,
 	onMarkAsRead,
 	onMarkAllAsRead,
 }: NotificationDropdownProps) {
@@ -86,6 +150,9 @@ export function NotificationDropdown({
 				<NotificationDropdownContent
 					notifications={notifications}
 					isLoading={isLoading}
+					hasNextPage={hasNextPage}
+					isFetchingNextPage={isFetchingNextPage}
+					fetchNextPage={fetchNextPage}
 					onMarkAsRead={onMarkAsRead}
 				/>
 			</div>
