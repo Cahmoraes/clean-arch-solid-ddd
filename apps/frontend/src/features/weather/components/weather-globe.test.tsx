@@ -1,8 +1,8 @@
 import { act, cleanup, render, screen } from "@testing-library/react"
 import { forwardRef, useImperativeHandle } from "react"
 import { afterEach, describe, expect, test, vi } from "vitest"
-import { GLOBE_SIZE_PX } from "./weather-globe-constants"
 import { WeatherGlobe } from "./weather-globe"
+import { GLOBE_SIZE_PX } from "./weather-globe-constants"
 
 const {
 	globePropsSpy,
