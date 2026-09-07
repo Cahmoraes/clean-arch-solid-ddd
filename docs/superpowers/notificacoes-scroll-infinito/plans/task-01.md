@@ -197,9 +197,9 @@ const getNotificationsQuerySchema = z.object({
 			"Number of items to skip. When combined with limit, overrides page-based pagination",
 		example: 0,
 	}),
-	limit: z.coerce.number().int().min(1).optional().meta({
+	limit: z.coerce.number().int().min(1).max(50).optional().meta({
 		description:
-			"Number of items to return. When combined with offset, overrides ITEMS_PER_PAGE",
+			"Number of items to return (max 50). When combined with offset, overrides ITEMS_PER_PAGE",
 		example: 10,
 	}),
 })
@@ -243,3 +243,4 @@ git commit -m "feat(notification): suportar offset/limit em GET /api/v1/notifica
 - `GET /api/v1/notifications?offset=10&limit=5` retorna `skip=10, take=5`, ignorando `page` quando ambos os parâmetros estão presentes (FR-012).
 - `GET /api/v1/notifications?page=2` (sem `offset`/`limit`) continua retornando exatamente o mesmo resultado de antes da mudança — `skip=(page-1)*ITEMS_PER_PAGE, take=ITEMS_PER_PAGE` (FR-013).
 - `@repo/api-types` regenerado expõe `offset`/`limit` como parâmetros de query opcionais em `paths["/api/v1/notifications"]["get"]`.
+- `GET /api/v1/notifications?offset=0&limit=51` retorna 400 (validação Zod) — `limit` tem teto de 50.

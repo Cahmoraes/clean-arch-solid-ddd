@@ -10,9 +10,11 @@
 
 Migrar `useNotifications` (`apps/frontend/src/lib/notifications/use-notifications.ts`) de `useQuery` para `useInfiniteQuery` (TanStack Query v5), usando os parâmetros `offset`/`limit` que a task-01 adicionou a `GET /api/v1/notifications` (regenerados em `@repo/api-types`). Carga inicial: `offset=0, limit=10`. Lotes seguintes: `limit=5`, com `offset` acumulado a partir do total já carregado. `getNextPageParam` retorna `undefined` (não há próxima página) assim que a soma de itens carregados atingir `total` — cobrindo tanto o caso de esgotamento do scroll (FR-004) quanto o caso em que o total inicial já cabe na primeira página (FR-005).
 
-A chave de query muda de `notificationsKeys.list(page, unreadOnly)` para `notificationsKeys.infiniteList(unreadOnly)`, pois a lista deixa de ser paginada por página numerada. `notificationsUnreadCountQueryKey` permanece intocada — é uma query independente. O cache de `markAsRead`/`markAllAsRead` (`applyOptimisticMarkAsRead`, `markNotificationAsReadLocally`, `hasUnreadNotification`) precisa ser adaptado para operar sobre `InfiniteData<NotificationsResponse>` (`{ pages, pageParams }`) em vez de `NotificationsResponse` direto, já que o formato do cache mudou.
+A chave de query muda de `notificationsKeys.list(page, unreadOnly)` para `notificationsKeys.infiniteList(unreadOnly)`, pois a lista deixa de ser paginada por página numerada. `notificationsUnreadCountQueryKey` permanece intocada — é uma query independente. O cache de `markAsRead`/`markAllAsRead` (`applyOptimisticMarkAsRead`, `markNotificationAsReadLocally`, `hasUnreadNotification`) precisa ser adaptado para operar sobre `InfiniteData<NotificationsPage>` (`{ pages, pageParams }`) em vez de `NotificationsResponse` direto, já que o formato do cache mudou.
 
 `UseNotificationsResult` ganha `hasNextPage: boolean`, `fetchNextPage: () => void`, `isFetchingNextPage: boolean`. `notifications` passa a ser o achatamento de todas as páginas (`data.pages.flatMap(p => p.notifications)`), e `total` continua vindo de `data.pages[0]?.total ?? 0`.
+
+Cada página armazenada no cache carrega também `fetchedCount` (o tamanho real de `notifications` retornado pela API naquela busca) além dos campos de `NotificationsResponse`. `getNextPageParam` soma `fetchedCount` — não `notifications.length` — de todas as páginas para calcular o próximo `offset`; isso é necessário porque a task-04 insere itens vindos de SSE em `pages[0].notifications` sem tocar em `fetchedCount`, e se o cálculo de offset contasse `notifications.length` diretamente, um item inserido via SSE desalinharia a paginação (o cliente pularia ou repetiria um item real do backend).
 
 ## Arquivos
 
@@ -22,7 +24,7 @@ A chave de query muda de `notificationsKeys.list(page, unreadOnly)` para `notifi
 ### Conformidade com as Skills Padrão
 
 - `tanstack-query-best-practices`: uso correto de `useInfiniteQuery` v5 (`initialPageParam`, `getNextPageParam`, `queryFn: ({ pageParam }) => ...`), chaves de query coerentes com o novo formato paginado, e atualização de cache via `setQueryData` operando sobre `InfiniteData<T>`.
-- `typescript-advanced`: tipagem de `pageParam` (`{ offset: number; limit: number }`), de `InfiniteData<NotificationsResponse>` e propagação correta desses tipos por todas as funções auxiliares do arquivo (`markNotificationAsReadLocally`, `hasUnreadNotification`, `applyOptimisticMarkAsRead`).
+- `typescript-advanced`: tipagem de `pageParam` (`{ offset: number; limit: number }`), de `InfiniteData<NotificationsPage>` e propagação correta desses tipos por todas as funções auxiliares do arquivo (`markNotificationAsReadLocally`, `hasUnreadNotification`, `applyOptimisticMarkAsRead`).
 - `test-antipatterns`: os testes devem exercitar o hook via `renderHook` observando o comportamento público (`notifications`, `hasNextPage`, chamadas a `mockGet`), sem mockar o próprio `useInfiniteQuery`.
 
 ## Passos
@@ -72,6 +74,30 @@ function mockNotificationsRequests(total: number): void {
 ```
 
 Ajustar `beforeEach` para chamar `mockNotificationsRequests(25)` (total padrão maior que a carga inicial, salvo quando um teste sobrescrever explicitamente).
+
+O teste pré-existente `"retorna notificações da API"` assume a resposta fixa de 2 itens de `makeNotificationsResponse()` e a query `{ page: 1, unreadOnly: false }` (sem `offset`/`limit`) — ambas premissas deixam de valer com `mockNotificationsRequests(25)` e a query sempre incluindo `offset`/`limit`. Substituir esse teste por:
+
+```tsx
+test("retorna notificações da API", async () => {
+	mockNotificationsRequests(25)
+	const { wrapper } = createWrapper()
+	const { result } = renderHook(() => useNotifications(), { wrapper })
+	await waitFor(() => expect(result.current.isLoading).toBe(false))
+	expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+		params: {
+			query: {
+				page: 1,
+				unreadOnly: false,
+				offset: 0,
+				limit: 10,
+			},
+		},
+	})
+	expect(result.current.notifications).toEqual(
+		makePaginatedNotificationsResponse(0, 10, 25).notifications,
+	)
+})
+```
 
 Adicionar os 4 testes (um por FR):
 
@@ -153,7 +179,7 @@ describe("paginação infinita", () => {
 - **Step 2: Run test to verify it fails**
 
 Run: `(cd apps/frontend && npx vitest run src/lib/notifications/use-notifications.test.tsx)`
-Expected: FAIL — `useNotifications` ainda usa `useQuery` com `fetchNotifications()` sem argumentos e query fixa `{page, unreadOnly}`; `result.current.hasNextPage`/`fetchNextPage`/`isFetchingNextPage` são `undefined`, e as asserções de `mockGet` com `offset`/`limit` não batem.
+Expected: FAIL — `useNotifications` ainda usa `useQuery` com `fetchNotifications()` sem argumentos e query fixa `{page, unreadOnly}`; `result.current.hasNextPage`/`fetchNextPage`/`isFetchingNextPage` são `undefined`, o teste reescrito `"retorna notificações da API"` falha (resposta mockada agora paginada, não os 2 itens fixos antigos), e as asserções de `mockGet` com `offset`/`limit` não batem.
 
 - **Step 3: Write minimal implementation**
 
@@ -182,6 +208,16 @@ type NotificationsResponse =
 type MarkAsReadResponse =
 	paths["/api/v1/notifications/{id}/read"]["patch"]["responses"][200]["content"]["application/json"]
 
+/**
+ * `fetchedCount` é o tamanho real de `notifications` retornado pela API nesta
+ * página, congelado no momento da busca. A reconciliação de SSE (task-04)
+ * prepend itens em `pages[0].notifications` sem tocar em `fetchedCount` — é
+ * esse campo, não `notifications.length`, que `getNextPageParam` usa para
+ * calcular o próximo `offset`, para um item inserido via SSE nunca desalinhar
+ * a paginação por offset do backend.
+ */
+type NotificationsPage = NotificationsResponse & { fetchedCount: number }
+
 export type NotificationItem = NotificationsResponse["notifications"][number]
 
 export interface UseNotificationsResult {
@@ -197,7 +233,7 @@ export interface UseNotificationsResult {
 }
 
 interface MarkAsReadContext {
-	previousNotifications?: InfiniteData<NotificationsResponse>
+	previousNotifications?: InfiniteData<NotificationsPage>
 	previousUnreadCount?: number
 }
 
@@ -234,7 +270,7 @@ function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 async function fetchNotifications({
 	offset,
 	limit,
-}: FetchNotificationsParams): Promise<NotificationsResponse> {
+}: FetchNotificationsParams): Promise<NotificationsPage> {
 	const { data, error } = await api.GET("/api/v1/notifications", {
 		params: {
 			query: {
@@ -246,7 +282,7 @@ async function fetchNotifications({
 		},
 	})
 	if (error || !data) throw toApiError(error)
-	return data
+	return { ...data, fetchedCount: data.notifications.length }
 }
 
 async function fetchUnreadCount(): Promise<number> {
@@ -274,10 +310,10 @@ async function markAllNotificationsAsReadRequest(): Promise<void> {
 }
 
 function markNotificationAsReadLocally(
-	data: InfiniteData<NotificationsResponse>,
+	data: InfiniteData<NotificationsPage>,
 	notificationId: string,
 	readAt: string,
-): InfiniteData<NotificationsResponse> {
+): InfiniteData<NotificationsPage> {
 	return {
 		...data,
 		pages: data.pages.map((page) => ({
@@ -292,7 +328,7 @@ function markNotificationAsReadLocally(
 }
 
 function hasUnreadNotification(
-	previousNotifications: InfiniteData<NotificationsResponse> | undefined,
+	previousNotifications: InfiniteData<NotificationsPage> | undefined,
 	notificationId: string,
 ): boolean {
 	return (
@@ -310,7 +346,7 @@ function applyOptimisticMarkAsRead(
 	notificationId: string,
 ): MarkAsReadContext {
 	const previousNotifications = queryClient.getQueryData<
-		InfiniteData<NotificationsResponse>
+		InfiniteData<NotificationsPage>
 	>(notificationsInfiniteListQueryKey)
 	const previousUnreadCount = queryClient.getQueryData<number>(
 		notificationsUnreadCountQueryKey,
@@ -320,7 +356,7 @@ function applyOptimisticMarkAsRead(
 		notificationId,
 	)
 	if (previousNotifications) {
-		queryClient.setQueryData<InfiniteData<NotificationsResponse>>(
+		queryClient.setQueryData<InfiniteData<NotificationsPage>>(
 			notificationsInfiniteListQueryKey,
 			markNotificationAsReadLocally(
 				previousNotifications,
@@ -342,7 +378,7 @@ export function useNotifications(): UseNotificationsResult {
 	const queryClient = useQueryClient()
 	const user = useAuthStore((state) => state.user)
 	const isAuthenticated = user !== null
-	const notificationsQuery = useInfiniteQuery<NotificationsResponse, ApiError>({
+	const notificationsQuery = useInfiniteQuery<NotificationsPage, ApiError>({
 		queryKey: notificationsInfiniteListQueryKey,
 		queryFn: ({ pageParam }) =>
 			fetchNotifications(pageParam as FetchNotificationsParams),
@@ -351,10 +387,7 @@ export function useNotifications(): UseNotificationsResult {
 			limit: NOTIFICATIONS_INITIAL_LIMIT,
 		} as FetchNotificationsParams,
 		getNextPageParam: (lastPage, allPages) => {
-			const loaded = allPages.reduce(
-				(sum, page) => sum + page.notifications.length,
-				0,
-			)
+			const loaded = allPages.reduce((sum, page) => sum + page.fetchedCount, 0)
 			if (loaded >= lastPage.total) return undefined
 			return {
 				offset: loaded,
@@ -407,7 +440,7 @@ export function useNotifications(): UseNotificationsResult {
 		},
 		onError: (_error, _notificationId, context) => {
 			if (context?.previousNotifications) {
-				queryClient.setQueryData<InfiniteData<NotificationsResponse>>(
+				queryClient.setQueryData<InfiniteData<NotificationsPage>>(
 					notificationsInfiniteListQueryKey,
 					context.previousNotifications,
 				)
@@ -455,7 +488,7 @@ Observação: `NOTIFICATIONS_DEFAULT_PAGE`/`page` continuam sendo enviados na qu
 - **Step 4: Run test to verify it passes**
 
 Run: `(cd apps/frontend && npx vitest run src/lib/notifications/use-notifications.test.tsx)`
-Expected: PASS — todos os testes do arquivo (os pré-existentes adaptados ao novo formato de cache + os 4 novos) passam.
+Expected: PASS — todos os testes do arquivo (o pré-existente reescrito acima + os 4 novos) passam.
 
 - **Step 5: Commit** *(sequential execution only — em wave paralela, pule e reporte os arquivos)*
 

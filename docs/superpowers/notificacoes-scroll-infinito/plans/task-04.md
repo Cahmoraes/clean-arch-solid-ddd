@@ -12,6 +12,8 @@ Nota de escopo: o índice de tarefas (`tasks-notificacoes-scroll-infinito.md`) a
 
 Hoje, ao receber uma mensagem `{ type: "notification" }`, `handleNotificationStreamMessage` invalida (`invalidateQueries`) tanto a lista quanto o contador de não lidas — o que, com `useInfiniteQuery` (task-02), re-buscaria a partir da primeira página e descartaria os lotes já carregados via scroll, violando FR-007. Esta task substitui essa invalidação por uma reconciliação local: a notificação do payload SSE é inserida no início de `data.pages[0].notifications` via `queryClient.setQueryData` (guardada por checagem de id duplicado), preservando as demais páginas intactas; o contador de não lidas continua sendo invalidado (não afetado pelo FR-007, que fala apenas dos lotes de notificações).
 
+Importante: a inserção NÃO incrementa `firstPage.total` nem afeta `fetchedCount` de nenhuma página. `getNextPageParam` (task-02) soma `fetchedCount` — não `notifications.length` — para calcular o próximo `offset`; se o item inserido via SSE fosse contado nesse cálculo, o próximo `fetchNextPage` pularia ou repetiria um item real do backend. `fetchedCount` reflete apenas o que já foi buscado da API, e o próximo fetch naturalmente inclui o total atualizado assim que o backend responder de novo.
+
 ## Arquivos
 
 - Modify: `apps/frontend/src/lib/notifications/use-notifications.ts`
@@ -19,7 +21,7 @@ Hoje, ao receber uma mensagem `{ type: "notification" }`, `handleNotificationStr
 
 ### Conformidade com as Skills Padrão
 
-- `tanstack-query-best-practices`: atualização imutável de `InfiniteData<NotificationsResponse>` via `setQueryData` com updater funcional, preservando páginas não afetadas — sem `invalidateQueries` na lista paginada.
+- `tanstack-query-best-practices`: atualização imutável de `InfiniteData<NotificationsPage>` via `setQueryData` com updater funcional, preservando páginas não afetadas — sem `invalidateQueries` na lista paginada.
 - `typescript-advanced`: converter `NotificationStreamPayload` (de `use-notification-stream.ts`, com `type: string`) para o formato de `NotificationItem` (com `type` restrito ao union `NotificationsResponse["notifications"][number]["type"]`) sem perder segurança de tipos.
 - `test-antipatterns`: os testes devem observar `result.current.notifications`/contagem de chamadas a `mockGet`, nunca inspecionar o cache interno do `QueryClient` diretamente.
 
@@ -90,13 +92,49 @@ describe("reconciliação de notificações via SSE", () => {
 			),
 		)
 	})
+
+	test("notificação SSE chegando com fetchNextPage em andamento não duplica nem corrompe a próxima página", async () => {
+		mockNotificationsRequests(25)
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+		await act(async () => {
+			result.current.fetchNextPage()
+			streamOptions?.onMessage({
+				type: "notification",
+				payload: {
+					notificationId: "notification-streamed-race",
+					userId: "user-1",
+					type: "PROMOTION",
+					title: "Nova promoção",
+					message: "Você recebeu uma nova promoção.",
+				},
+			})
+		})
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+		expect(result.current.notifications[0]?.id).toBe("notification-streamed-race")
+		// 10 (carga inicial) + 1 (SSE) + 5 (próxima página) = 16, sem duplicar nem pular
+		// nenhum item real do backend — fetchNextPage usou offset=10, não offset=11.
+		expect(result.current.notifications).toHaveLength(16)
+		expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+			params: {
+				query: {
+					page: 1,
+					unreadOnly: false,
+					offset: 10,
+					limit: 5,
+				},
+			},
+		})
+	})
 })
 ```
 
 - **Step 2: Run test to verify it fails**
 
 Run: `(cd apps/frontend && npx vitest run src/lib/notifications/use-notifications.test.tsx)`
-Expected: FAIL — `handleNotificationStreamMessage` ainda chama `invalidateNotifications()`, que re-busca a partir de `offset:0, limit:10` e descarta a segunda página; `result.current.notifications[0]?.id` não é `"notification-streamed-1"` (a notificação streamada não existe na resposta mockada) e a contagem de chamadas à lista aumenta.
+Expected: FAIL — `handleNotificationStreamMessage` ainda chama `invalidateNotifications()`, que re-busca a partir de `offset:0, limit:10` e descarta a segunda página; `result.current.notifications[0]?.id` não é `"notification-streamed-1"` (a notificação streamada não existe na resposta mockada), a contagem de chamadas à lista aumenta, e o teste de corrida falha porque a notificação streamada nunca aparece no topo.
 
 - **Step 3: Write minimal implementation**
 
@@ -107,7 +145,7 @@ function reconcileStreamedNotification(
 	queryClient: QueryClient,
 	payload: NotificationStreamPayload,
 ): void {
-	queryClient.setQueryData<InfiniteData<NotificationsResponse>>(
+	queryClient.setQueryData<InfiniteData<NotificationsPage>>(
 		notificationsInfiniteListQueryKey,
 		(previous) => {
 			if (!previous) return previous
@@ -135,7 +173,6 @@ function reconcileStreamedNotification(
 					{
 						...firstPage,
 						notifications: [newNotification, ...firstPage.notifications],
-						total: firstPage.total + 1,
 					},
 					...restPages,
 				],
@@ -158,7 +195,7 @@ function handleNotificationStreamMessage(message: SseMessage): void {
 - **Step 4: Run test to verify it passes**
 
 Run: `(cd apps/frontend && npx vitest run src/lib/notifications/use-notifications.test.tsx)`
-Expected: PASS — todos os testes do arquivo, incluindo os 2 novos, passam.
+Expected: PASS — todos os testes do arquivo, incluindo os 3 novos, passam.
 
 - **Step 5: Commit** *(sequential execution only — em wave paralela, pule e reporte os arquivos)*
 
@@ -172,3 +209,4 @@ git commit -m "feat(notifications): reconciliar notificações SSE no cache pagi
 
 - Uma notificação recebida via SSE enquanto o dropdown está aberto aparece imediatamente no topo da lista, sem exigir reabertura do dropdown (FR-006).
 - A chegada de uma notificação via SSE não re-busca nem descarta os lotes de notificações já carregados pelo scroll (FR-007).
+- Uma notificação SSE chegando enquanto um `fetchNextPage` está em andamento não duplica nem faz o próximo lote pular um item real do backend (o cálculo de `offset` usa `fetchedCount`, não `notifications.length`).
