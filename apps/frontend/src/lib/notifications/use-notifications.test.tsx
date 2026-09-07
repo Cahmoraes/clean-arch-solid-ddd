@@ -58,47 +58,54 @@ function createWrapper(): {
 	}
 }
 
-function makeNotificationsResponse() {
+function makeNotificationItem(id: string, index: number) {
 	return {
-		notifications: [
-			{
-				id: "notification-1",
-				type: "CHECK_IN_APPROVED" as const,
-				title: "Check-in aprovado",
-				message: "Seu check-in foi aprovado.",
-				gymName: "Iron Gym",
-				reason: null,
-				readAt: null,
-				createdAt: "2024-01-01T10:00:00Z",
-			},
-			{
-				id: "notification-2",
-				type: "PROMOTION" as const,
-				title: "Promoção",
-				message: "Nova promoção disponível.",
-				gymName: null,
-				reason: null,
-				readAt: "2024-01-02T10:00:00Z",
-				createdAt: "2024-01-02T09:00:00Z",
-			},
-		],
-		total: 2,
+		id,
+		type: "CHECK_IN_APPROVED" as const,
+		title: `Notificação ${index}`,
+		message: `Mensagem ${index}`,
+		gymName: null,
+		reason: null,
+		readAt: null,
+		createdAt: `2024-01-01T10:00:0${index}Z`,
 	}
 }
 
-function mockNotificationsRequests(): void {
-	mockGet.mockImplementation((path) => {
+function makePaginatedNotificationsResponse(
+	offset: number,
+	limit: number,
+	total: number,
+) {
+	const items = Array.from(
+		{ length: Math.max(0, Math.min(limit, total - offset)) },
+		(_, i) =>
+			makeNotificationItem(`notification-${offset + i + 1}`, offset + i + 1),
+	)
+	return { notifications: items, total }
+}
+
+function resolveNotificationsGet(
+	options:
+		| { params?: { query?: { offset?: number; limit?: number } } }
+		| undefined,
+	total: number,
+) {
+	const query = options?.params?.query
+	const offset = query?.offset ?? 0
+	const limit = query?.limit ?? 10
+	return Promise.resolve({
+		data: makePaginatedNotificationsResponse(offset, limit, total),
+		error: undefined,
+	})
+}
+
+function mockNotificationsRequests(total: number): void {
+	mockGet.mockImplementation((path, options) => {
 		if (path === "/api/v1/notifications") {
-			return Promise.resolve({
-				data: makeNotificationsResponse(),
-				error: undefined,
-			})
+			return resolveNotificationsGet(options, total)
 		}
 		if (path === "/api/v1/notifications/unread-count") {
-			return Promise.resolve({
-				data: { count: 1 },
-				error: undefined,
-			})
+			return Promise.resolve({ data: { count: 1 }, error: undefined })
 		}
 		throw new Error(`Unexpected GET: ${String(path)}`)
 	})
@@ -115,7 +122,7 @@ beforeEach(() => {
 	}
 	mockUseAuthStore.mockImplementation((selector) => selector(authState))
 	vi.mocked(useNotificationStream).mockImplementation(() => undefined)
-	mockNotificationsRequests()
+	mockNotificationsRequests(25)
 	mockPatch.mockImplementation((path) => {
 		if (path === "/api/v1/notifications/{id}/read") {
 			return Promise.resolve({
@@ -145,22 +152,24 @@ describe("useNotifications", () => {
 	})
 
 	test("retorna notificações da API", async () => {
+		mockNotificationsRequests(25)
 		const { wrapper } = createWrapper()
 		const { result } = renderHook(() => useNotifications(), { wrapper })
 		await waitFor(() => expect(result.current.isLoading).toBe(false))
-		expect(result.current.notifications).toEqual(
-			makeNotificationsResponse().notifications,
-		)
-		expect(result.current.total).toBe(2)
-		expect(result.current.unreadCount).toBe(1)
 		expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
 			params: {
 				query: {
 					page: 1,
 					unreadOnly: false,
+					offset: 0,
+					limit: 10,
 				},
 			},
 		})
+		expect(result.current.notifications).toEqual(
+			makePaginatedNotificationsResponse(0, 10, 25).notifications,
+		)
+		expect(result.current.unreadCount).toBe(1)
 		expect(mockGet).toHaveBeenCalledWith(
 			"/api/v1/notifications/unread-count",
 			{},
@@ -211,5 +220,78 @@ describe("useNotifications", () => {
 			})
 		})
 		await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(4))
+	})
+
+	describe("paginação infinita", () => {
+		test("busca inicial usa limit=10 [FR-003]", async () => {
+			mockNotificationsRequests(25)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+				params: {
+					query: {
+						page: 1,
+						unreadOnly: false,
+						offset: 0,
+						limit: 10,
+					},
+				},
+			})
+			expect(result.current.notifications).toHaveLength(10)
+		})
+
+		test("busca do próximo lote usa limit=5 [FR-002]", async () => {
+			mockNotificationsRequests(25)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			await act(async () => {
+				result.current.fetchNextPage()
+			})
+			await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+			expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+				params: {
+					query: {
+						page: 1,
+						unreadOnly: false,
+						offset: 10,
+						limit: 5,
+					},
+				},
+			})
+			expect(result.current.notifications).toHaveLength(15)
+		})
+
+		test("hasNextPage vira false e não busca mais quando o total já foi carregado [FR-004]", async () => {
+			mockNotificationsRequests(12)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			expect(result.current.hasNextPage).toBe(true)
+			await act(async () => {
+				result.current.fetchNextPage()
+			})
+			await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+			expect(result.current.notifications).toHaveLength(12)
+			expect(result.current.hasNextPage).toBe(false)
+			const listCallsBefore = mockGet.mock.calls.filter(
+				(call) => call[0] === "/api/v1/notifications",
+			).length
+			result.current.fetchNextPage()
+			const listCallsAfter = mockGet.mock.calls.filter(
+				(call) => call[0] === "/api/v1/notifications",
+			).length
+			expect(listCallsAfter).toBe(listCallsBefore)
+		})
+
+		test("quando total <= 10 nunca dispara busca adicional [FR-005]", async () => {
+			mockNotificationsRequests(7)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			expect(result.current.notifications).toHaveLength(7)
+			expect(result.current.hasNextPage).toBe(false)
+		})
 	})
 })

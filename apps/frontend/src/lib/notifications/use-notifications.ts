@@ -2,7 +2,9 @@
 
 import type { paths } from "@repo/api-types"
 import {
+	type InfiniteData,
 	type QueryClient,
+	useInfiniteQuery,
 	useMutation,
 	useQuery,
 	useQueryClient,
@@ -20,6 +22,16 @@ type NotificationsResponse =
 type MarkAsReadResponse =
 	paths["/api/v1/notifications/{id}/read"]["patch"]["responses"][200]["content"]["application/json"]
 
+/**
+ * `fetchedCount` é o tamanho real de `notifications` retornado pela API nesta
+ * página, congelado no momento da busca. A reconciliação de SSE (task-04)
+ * prepend itens em `pages[0].notifications` sem tocar em `fetchedCount` — é
+ * esse campo, não `notifications.length`, que `getNextPageParam` usa para
+ * calcular o próximo `offset`, para um item inserido via SSE nunca desalinhar
+ * a paginação por offset do backend.
+ */
+type NotificationsPage = NotificationsResponse & { fetchedCount: number }
+
 export type NotificationItem = NotificationsResponse["notifications"][number]
 
 export interface UseNotificationsResult {
@@ -27,28 +39,37 @@ export interface UseNotificationsResult {
 	total: number
 	unreadCount: number
 	isLoading: boolean
+	hasNextPage: boolean
+	fetchNextPage: () => void
+	isFetchingNextPage: boolean
 	markAsRead: (notificationId: string) => Promise<void>
 	markAllAsRead: () => Promise<void>
 }
 
 interface MarkAsReadContext {
-	previousNotifications?: NotificationsResponse
+	previousNotifications?: InfiniteData<NotificationsPage>
 	previousUnreadCount?: number
+}
+
+interface FetchNotificationsParams {
+	offset: number
+	limit: number
 }
 
 export const NOTIFICATIONS_QUERY_KEY = "notifications" as const
 export const NOTIFICATIONS_DEFAULT_PAGE = 1
 export const NOTIFICATIONS_DEFAULT_UNREAD_ONLY = false
+export const NOTIFICATIONS_INITIAL_LIMIT = 10
+export const NOTIFICATIONS_PAGE_LIMIT = 5
 
 export const notificationsKeys = {
 	all: [NOTIFICATIONS_QUERY_KEY] as const,
-	list: (page: number, unreadOnly: boolean) =>
-		[...notificationsKeys.all, "list", page, unreadOnly] as const,
+	infiniteList: (unreadOnly: boolean) =>
+		[...notificationsKeys.all, "infinite-list", unreadOnly] as const,
 	unreadCount: () => [...notificationsKeys.all, "unread-count"] as const,
 }
 
-export const notificationsListQueryKey = notificationsKeys.list(
-	NOTIFICATIONS_DEFAULT_PAGE,
+export const notificationsInfiniteListQueryKey = notificationsKeys.infiniteList(
 	NOTIFICATIONS_DEFAULT_UNREAD_ONLY,
 )
 export const notificationsUnreadCountQueryKey = notificationsKeys.unreadCount()
@@ -60,17 +81,22 @@ function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 	return new ApiError(fallbackStatus, "network_error", message)
 }
 
-async function fetchNotifications(): Promise<NotificationsResponse> {
+async function fetchNotifications({
+	offset,
+	limit,
+}: FetchNotificationsParams): Promise<NotificationsPage> {
 	const { data, error } = await api.GET("/api/v1/notifications", {
 		params: {
 			query: {
 				page: NOTIFICATIONS_DEFAULT_PAGE,
 				unreadOnly: NOTIFICATIONS_DEFAULT_UNREAD_ONLY,
+				offset,
+				limit,
 			},
 		},
 	})
 	if (error || !data) throw toApiError(error)
-	return data
+	return { ...data, fetchedCount: data.notifications.length }
 }
 
 async function fetchUnreadCount(): Promise<number> {
@@ -101,32 +127,45 @@ async function markAllNotificationsAsReadRequest(): Promise<void> {
 	if (error || !data) throw toApiError(error)
 }
 
-function markNotificationAsReadLocally(
-	data: NotificationsResponse,
+function markNotificationRead(
+	notification: NotificationItem,
 	notificationId: string,
 	readAt: string,
-): NotificationsResponse {
+): NotificationItem {
+	if (notification.id !== notificationId) return notification
+	if (notification.readAt) return notification
+	return {
+		...notification,
+		readAt,
+	}
+}
+
+function markNotificationAsReadLocally(
+	data: InfiniteData<NotificationsPage>,
+	notificationId: string,
+	readAt: string,
+): InfiniteData<NotificationsPage> {
 	return {
 		...data,
-		notifications: data.notifications.map((notification) => {
-			if (notification.id !== notificationId) return notification
-			if (notification.readAt) return notification
-			return {
-				...notification,
-				readAt,
-			}
-		}),
+		pages: data.pages.map((page) => ({
+			...page,
+			notifications: page.notifications.map((notification) =>
+				markNotificationRead(notification, notificationId, readAt),
+			),
+		})),
 	}
 }
 
 function hasUnreadNotification(
-	previousNotifications: NotificationsResponse | undefined,
+	previousNotifications: InfiniteData<NotificationsPage> | undefined,
 	notificationId: string,
 ): boolean {
 	return (
-		previousNotifications?.notifications.some(
-			(notification) =>
-				notification.id === notificationId && notification.readAt === null,
+		previousNotifications?.pages.some((page) =>
+			page.notifications.some(
+				(notification) =>
+					notification.id === notificationId && notification.readAt === null,
+			),
 		) ?? false
 	)
 }
@@ -135,9 +174,9 @@ function applyOptimisticMarkAsRead(
 	queryClient: QueryClient,
 	notificationId: string,
 ): MarkAsReadContext {
-	const previousNotifications = queryClient.getQueryData<NotificationsResponse>(
-		notificationsListQueryKey,
-	)
+	const previousNotifications = queryClient.getQueryData<
+		InfiniteData<NotificationsPage>
+	>(notificationsInfiniteListQueryKey)
 	const previousUnreadCount = queryClient.getQueryData<number>(
 		notificationsUnreadCountQueryKey,
 	)
@@ -146,8 +185,8 @@ function applyOptimisticMarkAsRead(
 		notificationId,
 	)
 	if (previousNotifications) {
-		queryClient.setQueryData<NotificationsResponse>(
-			notificationsListQueryKey,
+		queryClient.setQueryData<InfiniteData<NotificationsPage>>(
+			notificationsInfiniteListQueryKey,
 			markNotificationAsReadLocally(
 				previousNotifications,
 				notificationId,
@@ -171,9 +210,22 @@ export function useNotifications(): UseNotificationsResult {
 	const queryClient = useQueryClient()
 	const user = useAuthStore((state) => state.user)
 	const isAuthenticated = user !== null
-	const notificationsQuery = useQuery<NotificationsResponse, ApiError>({
-		queryKey: notificationsListQueryKey,
-		queryFn: fetchNotifications,
+	const notificationsQuery = useInfiniteQuery<NotificationsPage, ApiError>({
+		queryKey: notificationsInfiniteListQueryKey,
+		queryFn: ({ pageParam }) =>
+			fetchNotifications(pageParam as FetchNotificationsParams),
+		initialPageParam: {
+			offset: 0,
+			limit: NOTIFICATIONS_INITIAL_LIMIT,
+		} as FetchNotificationsParams,
+		getNextPageParam: (lastPage, allPages) => {
+			const loaded = allPages.reduce((sum, page) => sum + page.fetchedCount, 0)
+			if (loaded >= lastPage.total) return undefined
+			return {
+				offset: loaded,
+				limit: NOTIFICATIONS_PAGE_LIMIT,
+			} satisfies FetchNotificationsParams
+		},
 		enabled: isAuthenticated,
 	})
 	const unreadCountQuery = useQuery<number, ApiError>({
@@ -183,7 +235,9 @@ export function useNotifications(): UseNotificationsResult {
 	})
 	async function invalidateNotifications(): Promise<void> {
 		await Promise.all([
-			queryClient.invalidateQueries({ queryKey: notificationsListQueryKey }),
+			queryClient.invalidateQueries({
+				queryKey: notificationsInfiniteListQueryKey,
+			}),
 			queryClient.invalidateQueries({
 				queryKey: notificationsUnreadCountQueryKey,
 			}),
@@ -207,7 +261,9 @@ export function useNotifications(): UseNotificationsResult {
 		retry: 0,
 		onMutate: async (notificationId) => {
 			await Promise.all([
-				queryClient.cancelQueries({ queryKey: notificationsListQueryKey }),
+				queryClient.cancelQueries({
+					queryKey: notificationsInfiniteListQueryKey,
+				}),
 				queryClient.cancelQueries({
 					queryKey: notificationsUnreadCountQueryKey,
 				}),
@@ -216,8 +272,8 @@ export function useNotifications(): UseNotificationsResult {
 		},
 		onError: (_error, _notificationId, context) => {
 			if (context?.previousNotifications) {
-				queryClient.setQueryData<NotificationsResponse>(
-					notificationsListQueryKey,
+				queryClient.setQueryData<InfiniteData<NotificationsPage>>(
+					notificationsInfiniteListQueryKey,
 					context.previousNotifications,
 				)
 			}
@@ -242,10 +298,17 @@ export function useNotifications(): UseNotificationsResult {
 		await markAllAsReadMutation.mutateAsync()
 	}
 	return {
-		notifications: notificationsQuery.data?.notifications ?? [],
-		total: notificationsQuery.data?.total ?? 0,
+		notifications:
+			notificationsQuery.data?.pages.flatMap((page) => page.notifications) ??
+			[],
+		total: notificationsQuery.data?.pages[0]?.total ?? 0,
 		unreadCount: unreadCountQuery.data ?? 0,
 		isLoading: notificationsQuery.isLoading || unreadCountQuery.isLoading,
+		hasNextPage: notificationsQuery.hasNextPage ?? false,
+		fetchNextPage: () => {
+			void notificationsQuery.fetchNextPage()
+		},
+		isFetchingNextPage: notificationsQuery.isFetchingNextPage,
 		markAsRead,
 		markAllAsRead,
 	}
