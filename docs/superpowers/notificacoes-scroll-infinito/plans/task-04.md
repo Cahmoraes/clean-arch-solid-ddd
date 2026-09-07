@@ -1,6 +1,6 @@
 # Task 4: Frontend — reconciliar notificações recebidas via SSE no cache paginado [FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-notificacoes-scroll-infinito.md
 **Spec:** ../specs/notificacoes-scroll-infinito-design.md
 **Tier:** standard

@@ -1,0 +1,12 @@
+{
+  "us_id": "US-02",
+  "user_story": "Como usuário com poucas notificações (5 ou menos), eu quero que o dropdown continue funcionando normalmente sem comportamento de scroll infinito desnecessário, para que a experiência não mude quando não há nada a paginar",
+  "requirements": ["FR-004", "FR-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Independent Verification (docs/superpowers/notificacoes-scroll-infinito/qa/validation-notificacoes-scroll-infinito.md, HEAD 6926a468) já verdicta PASS 26/26 critérios, incluindo FR-004 (use-notifications.test.tsx:628 - hasNextPage vira false quando acumulado atinge total; :636 - nenhuma chamada nova ao endpoint de lista) e FR-005 (use-notifications.test.tsx:644-645 - total de 7 itens, lista completa aparece com hasNextPage=false). Sensor de mutação: M5 (hasNextPage por >= vs >) killed. Reexecutei isoladamente `pnpm --filter frontend exec vitest run src/lib/notifications/use-notifications.test.tsx`: 1 arquivo, 19 testes, todos passed, exit 0, 15.54s. Nota: a primeira tentativa via `pnpm --filter frontend test -- --run <arquivo>` não restringiu ao arquivo (rodou a suíte inteira de 977 testes, com 1 falha pré-existente não relacionada em admin/academias/[id]/editar/page.test.tsx); usei `vitest run` diretamente com caminho relativo a apps/frontend para isolar o arquivo alvo, que confirma verde.",
+  "screenshot_path": "evidence/us-02-usuario-com-poucas-notificacoes-5/screenshot.png",
+  "failure_details": null,
+  "notes": "UI: login como admin@admin.com (seed padrão) via playwright-cli, dropdown de notificações aberto no header de /inicio. Estado observado: 'Nenhuma notificação' (0 notificações), sem spinner de rodapé 'Carregando mais...' — consistente com hasNextPage=false e nenhum comportamento de scroll infinito quando não há nada a paginar. Não foi possível controlar via seed/dados existentes um usuário com um número específico entre 1 e 5 notificações (seed não popula notificações; população real depende de eventos de check-in/SSE em runtime), então o cenário exato 'usuário com poucas notificações (ex: 3 ou 5)' não foi confirmado visualmente com itens renderizados — apenas o caso-limite de 0, que é subconjunto válido de '5 ou menos' e já corrobora ausência de spinner/scroll infinito. A cobertura funcional completa do requisito (FR-004/FR-005, incluindo o caso com itens reais: 7 notificações, hasNextPage=false) está confirmada pelos testes automatizados e pelo veredito da Independent Verification."
+}

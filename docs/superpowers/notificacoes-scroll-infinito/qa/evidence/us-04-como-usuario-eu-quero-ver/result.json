@@ -1,0 +1,12 @@
+{
+  "us_id": "US-04",
+  "user_story": "Como usuário, eu quero ver um indicador discreto de carregamento enquanto o próximo lote é buscado, para saber que a lista ainda está carregando e não que travou",
+  "requirements": ["FR-008", "FR-009"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "IV independente (docs/superpowers/notificacoes-scroll-infinito/qa/validation-notificacoes-scroll-infinito.md, round 2/3, HEAD 6926a468) aceita como dado: FR-008 e FR-009 ambos PASS, ancorados em apps/frontend/src/components/notification/notification-dropdown.test.tsx:112 (role=status com texto 'Carregando mais...') e :128/:143 (indicador ausente com hasNextPage=false e com hasNextPage=true+isFetchingNextPage=false). Sensor de mutação: mutante M8 (remoção do guard !isFetchingNextPage) morto. Re-execução própria e isolada: `npx vitest run src/components/notification/notification-dropdown.test.tsx` em apps/frontend -> Test Files 1 passed (1), Tests 7 passed (7), exit 0, 14.20s. Confirma observabilidade da user story sob teste automatizado.",
+  "screenshot_path": "evidence/us-04-como-usuario-eu-quero-ver/screenshot.png",
+  "failure_details": null,
+  "notes": "Login via seed admin (admin@admin.com/admin@admin) por instabilidade do browser headless (crashes recorrentes do processo Chromium durante a sessão, exigindo múltiplas reaberturas). Screenshot capturado mostra o dropdown de notificações aberto com sucesso (estado vazio 'Nenhuma notificação', pois o usuário admin de seed não possui notificações). Não foi possível capturar o instante exato do spinner 'Carregando mais...' em screenshot estático porque (a) o usuário logado não tinha notificações suficientes para acionar paginação e (b) a busca de lote é rápida demais para flagrar via screenshot manual, exatamente a limitação antecipada nas instruções da tarefa. Essa limitação é apenas de evidência visual estática; a existência e o comportamento do indicador estão cobertos e comprovados por testes automatizados determinísticos (mock de isFetchingNextPage) tanto na suíte do projeto quanto na IV independente, por isso o veredito permanece PASSED em vez de PARTIAL."
+}

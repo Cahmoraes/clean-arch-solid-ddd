@@ -1,6 +1,6 @@
 # Task 1: Backend — suportar offset/limit em GET /api/v1/notifications, preservando page [FR-012, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-notificacoes-scroll-infinito.md
 **Spec:** ../specs/notificacoes-scroll-infinito-design.md
 **Tier:** standard

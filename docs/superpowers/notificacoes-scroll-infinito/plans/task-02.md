@@ -1,6 +1,6 @@
 # Task 2: Frontend — migrar useNotifications para useInfiniteQuery com paginação por offset/limit [FR-002, FR-003, FR-004, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-notificacoes-scroll-infinito.md
 **Spec:** ../specs/notificacoes-scroll-infinito-design.md
 **Tier:** standard

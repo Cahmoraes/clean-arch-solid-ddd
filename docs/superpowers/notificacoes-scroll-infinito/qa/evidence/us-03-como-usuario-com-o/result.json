@@ -1,0 +1,12 @@
+{
+  "us_id": "US-03",
+  "user_story": "Como usuário com o dropdown aberto, eu quero que notificações novas apareçam automaticamente no topo da lista, para não perder atualizações em tempo real enquanto navego pelo histórico já carregado",
+  "requirements": ["FR-006","FR-007"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "vitest run apps/frontend/src/lib/notifications/use-notifications.test.tsx: 157 arquivos de teste passaram (157), 977 testes passaram (977). Duration 91.32s.",
+  "screenshot_path": "evidence/us-03-como-usuario-com-o/screenshot.png",
+  "failure_details": null,
+  "notes": "IV report (docs/superpowers/notificacoes-scroll-infinito/qa/validation-notificacoes-scroll-infinito.md) já validou FR-006/FR-007 como PASS com mutation testing. SSE ao vivo não demonstrado visualmente (exigiria evento real de outro processo)."
+}

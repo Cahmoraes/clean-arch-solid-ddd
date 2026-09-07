@@ -1,0 +1,12 @@
+{
+  "us_id": "US-01",
+  "user_story": "Como usuário com muitas notificações, eu quero que o dropdown carregue mais itens automaticamente ao rolar para baixo, para não precisar esperar o carregamento de todo o histórico de uma vez",
+  "requirements": ["FR-001", "FR-002", "FR-003", "FR-004", "FR-012", "FR-013"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "4/4 arquivos PASS. notification-dropdown.test.tsx: 7/7 passed. use-notifications.test.tsx: 19/19 passed. get-notifications.usecase.test.ts (backend): 5/5 passed. get-notifications.controller.business-flow-test.ts (backend): 9/9 passed. Nota: `pnpm --filter frontend test -- <path>` travou (hang, sem output, matou por timeout) — contornado rodando `pnpm exec vitest run <path relativo sem prefixo apps/frontend>` diretamente dentro de apps/frontend.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Screenshot não capturado: página inicial (http://localhost:3000) exige login (link 'Entrar' -> /login), nenhuma credencial foi fornecida a este subagente. Snapshot da landing confirma apenas região 'Notifications alt+T' genérica do browser, sem ícone de dropdown de notificações visível (área autenticada). Testes automatizados confirmam a story observável via cobertura de unidade/integração; validação visual em runtime fica pendente de credenciais de login."
+}

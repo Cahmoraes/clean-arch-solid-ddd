@@ -13,11 +13,11 @@
 
 ## Tarefas
 
-- [ ] 1. Backend: suportar `offset`/`limit` em `GET /api/v1/notifications`, preservando `page` [FR-012, FR-013] → `task-01.md`
-- [ ] 2. Frontend: migrar `useNotifications` para `useInfiniteQuery` com paginação por offset/limit [FR-002, FR-003, FR-004, FR-005] → `task-02.md`
-- [ ] 3. Frontend: retry automático silencioso ao falhar a busca de um lote [FR-010, FR-011] → `task-03.md`
-- [ ] 4. Frontend: reconciliar notificações recebidas via SSE no cache paginado [FR-006, FR-007] → `task-04.md`
-- [ ] 5. Frontend: sentinela de scroll + spinner de rodapé no dropdown [FR-001, FR-008, FR-009] → `task-05.md`
+- [x] 1. Backend: suportar `offset`/`limit` em `GET /api/v1/notifications`, preservando `page` [FR-012, FR-013] → `task-01.md`
+- [x] 2. Frontend: migrar `useNotifications` para `useInfiniteQuery` com paginação por offset/limit [FR-002, FR-003, FR-004, FR-005] → `task-02.md`
+- [x] 3. Frontend: retry automático silencioso ao falhar a busca de um lote [FR-010, FR-011] → `task-03.md`
+- [x] 4. Frontend: reconciliar notificações recebidas via SSE no cache paginado [FR-006, FR-007] → `task-04.md`
+- [x] 5. Frontend: sentinela de scroll + spinner de rodapé no dropdown [FR-001, FR-008, FR-009] → `task-05.md`
 
 ## Verificação
 

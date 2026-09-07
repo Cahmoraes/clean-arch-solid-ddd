@@ -1,6 +1,6 @@
 # Task 3: Frontend — retry automático silencioso ao falhar a busca de um lote [FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-notificacoes-scroll-infinito.md
 **Spec:** ../specs/notificacoes-scroll-infinito-design.md
 **Tier:** cheap

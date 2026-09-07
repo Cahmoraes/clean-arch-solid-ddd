@@ -1,6 +1,6 @@
 # Task 5: Frontend — sentinela de scroll + spinner de rodapé no dropdown [FR-001, FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** ../prd/prd-notificacoes-scroll-infinito.md
 **Spec:** ../specs/notificacoes-scroll-infinito-design.md
 **Tier:** standard
