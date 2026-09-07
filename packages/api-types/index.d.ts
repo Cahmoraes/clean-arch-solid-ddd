@@ -4063,6 +4063,10 @@ export interface paths {
                     page: number;
                     /** @description Filter only unread notifications */
                     unreadOnly: boolean;
+                    /** @description Number of items to skip. When combined with limit, overrides page-based pagination */
+                    offset?: number;
+                    /** @description Number of items to return (max 50). When combined with offset, overrides ITEMS_PER_PAGE */
+                    limit?: number;
                 };
                 header?: never;
                 path?: never;

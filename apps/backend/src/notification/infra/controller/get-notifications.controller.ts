@@ -20,6 +20,16 @@ const getNotificationsQuerySchema = z.object({
 		description: "Filter only unread notifications",
 		example: false,
 	}),
+	offset: z.coerce.number().int().min(0).optional().meta({
+		description:
+			"Number of items to skip. When combined with limit, overrides page-based pagination",
+		example: 0,
+	}),
+	limit: z.coerce.number().int().min(1).max(50).optional().meta({
+		description:
+			"Number of items to return (max 50). When combined with offset, overrides ITEMS_PER_PAGE",
+		example: 10,
+	}),
 })
 
 const notificationItemSchema = z.object({
@@ -96,6 +106,8 @@ export class GetNotificationsController extends BaseController {
 			userId: req.user.sub.id,
 			page: parsedQuery.value.page,
 			onlyUnread: parsedQuery.value.unreadOnly,
+			offset: parsedQuery.value.offset,
+			limit: parsedQuery.value.limit,
 		})
 		return ResponseFactory.OK({
 			body: {

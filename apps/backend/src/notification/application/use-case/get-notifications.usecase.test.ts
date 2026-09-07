@@ -59,4 +59,33 @@ describe("GetNotificationsUseCase", () => {
 		expect(result.isSuccess()).toBe(true)
 		expect(result.value.items).toHaveLength(1)
 	})
+
+	test("should use offset/limit when both are provided, overriding page", async () => {
+		for (let i = 0; i < 15; i++) {
+			await repository.save(makeNotification("user-1"))
+		}
+
+		const result = await sut.execute({
+			userId: "user-1",
+			page: 1,
+			offset: 10,
+			limit: 5,
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		expect(result.value.items).toHaveLength(5)
+		expect(result.value.total).toBe(15)
+	})
+
+	test("should preserve page-based pagination when offset/limit are absent", async () => {
+		for (let i = 0; i < 25; i++) {
+			await repository.save(makeNotification("user-1"))
+		}
+
+		const result = await sut.execute({ userId: "user-1", page: 2 })
+
+		expect(result.isSuccess()).toBe(true)
+		expect(result.value.items).toHaveLength(5)
+		expect(result.value.total).toBe(25)
+	})
 })

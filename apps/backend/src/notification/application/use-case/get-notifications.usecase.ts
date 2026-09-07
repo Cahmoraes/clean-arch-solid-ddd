@@ -10,6 +10,8 @@ export interface GetNotificationsInput {
 	userId: string
 	page: number
 	onlyUnread?: boolean
+	offset?: number
+	limit?: number
 }
 
 export type GetNotificationsOutput = FindManyNotificationsOutput
@@ -30,6 +32,8 @@ export class GetNotificationsUseCase {
 			userId: input.userId,
 			page: input.page,
 			onlyUnread: input.onlyUnread,
+			offset: input.offset,
+			limit: input.limit,
 		})
 		return success(result)
 	}

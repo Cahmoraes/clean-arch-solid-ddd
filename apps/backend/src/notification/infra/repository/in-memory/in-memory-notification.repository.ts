@@ -41,9 +41,22 @@ export class InMemoryNotificationRepository implements NotificationRepository {
 		}
 
 		const total = filtered.length
-		const start = (input.page - 1) * env.ITEMS_PER_PAGE
-		const items = filtered.slice(start, start + env.ITEMS_PER_PAGE)
+		const { skip, take } = this.resolvePagination(input)
+		const items = filtered.slice(skip, skip + take)
 		return { items, total }
+	}
+
+	private resolvePagination(input: FindManyNotificationsInput): {
+		skip: number
+		take: number
+	} {
+		if (input.offset !== undefined && input.limit !== undefined) {
+			return { skip: input.offset, take: input.limit }
+		}
+		return {
+			skip: (input.page - 1) * env.ITEMS_PER_PAGE,
+			take: env.ITEMS_PER_PAGE,
+		}
 	}
 
 	public async countUnreadByUserId(userId: string): Promise<number> {

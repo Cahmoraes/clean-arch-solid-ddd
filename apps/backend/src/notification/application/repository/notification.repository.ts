@@ -8,6 +8,8 @@ export interface FindManyNotificationsInput {
 	userId: string
 	page: number
 	onlyUnread?: boolean
+	offset?: number
+	limit?: number
 }
 
 export interface FindManyNotificationsOutput {

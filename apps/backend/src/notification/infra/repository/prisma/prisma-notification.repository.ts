@@ -98,6 +98,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
 		input: FindManyNotificationsInput,
 	): Promise<FindManyNotificationsOutput> {
 		const where = this.buildWhere(input)
+		const { skip, take } = this.resolvePagination(input)
 
 		const [rows, total] = await Promise.all([
 			this.prismaClient.notification.findMany({
@@ -108,8 +109,8 @@ export class PrismaNotificationRepository implements NotificationRepository {
 						take: 1,
 					},
 				},
-				skip: (input.page - 1) * env.ITEMS_PER_PAGE,
-				take: env.ITEMS_PER_PAGE,
+				skip,
+				take,
 				orderBy: { createdAt: "desc" },
 			}),
 			this.prismaClient.notification.count({ where }),
@@ -118,6 +119,19 @@ export class PrismaNotificationRepository implements NotificationRepository {
 		return {
 			items: rows.map((row) => this.toDomain(row)),
 			total,
+		}
+	}
+
+	private resolvePagination(input: FindManyNotificationsInput): {
+		skip: number
+		take: number
+	} {
+		if (input.offset !== undefined && input.limit !== undefined) {
+			return { skip: input.offset, take: input.limit }
+		}
+		return {
+			skip: (input.page - 1) * env.ITEMS_PER_PAGE,
+			take: env.ITEMS_PER_PAGE,
 		}
 	}
 
