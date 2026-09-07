@@ -9,12 +9,13 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { api } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
 import { logger } from "@/lib/observability"
 import {
+	type NotificationStreamPayload,
 	type SseMessage,
 	useNotificationStream,
 } from "./use-notification-stream"
@@ -208,6 +209,81 @@ function applyOptimisticMarkAsRead(
 	}
 }
 
+function pagesContainNotification(
+	pages: NotificationsPage[],
+	notificationId: string,
+): boolean {
+	return pages.some((page) =>
+		page.notifications.some(
+			(notification) => notification.id === notificationId,
+		),
+	)
+}
+
+function toStreamedNotificationItem(
+	payload: NotificationStreamPayload,
+): NotificationItem {
+	return {
+		id: payload.notificationId,
+		type: payload.type as NotificationItem["type"],
+		title: payload.title,
+		message: payload.message,
+		gymName: null,
+		reason: null,
+		readAt: null,
+		createdAt: new Date().toISOString(),
+	}
+}
+
+function prependToFirstPage(
+	previous: InfiniteData<NotificationsPage>,
+	newNotification: NotificationItem,
+): InfiniteData<NotificationsPage> {
+	const [firstPage, ...restPages] = previous.pages
+	if (!firstPage) return previous
+	return {
+		...previous,
+		pages: [
+			{
+				...firstPage,
+				notifications: [newNotification, ...firstPage.notifications],
+			},
+			...restPages,
+		],
+	}
+}
+
+function reconcileStreamedNotification(
+	queryClient: QueryClient,
+	payload: NotificationStreamPayload,
+): void {
+	queryClient.setQueryData<InfiniteData<NotificationsPage>>(
+		notificationsInfiniteListQueryKey,
+		(previous) => {
+			if (!previous) return previous
+			if (pagesContainNotification(previous.pages, payload.notificationId)) {
+				return previous
+			}
+			return prependToFirstPage(previous, toStreamedNotificationItem(payload))
+		},
+	)
+}
+
+function reapplyPendingStreamedNotifications(
+	pending: Map<string, NotificationStreamPayload>,
+	pages: NotificationsPage[] | undefined,
+	queryClient: QueryClient,
+): void {
+	if (pending.size === 0 || !pages) return
+	for (const [notificationId, payload] of pending) {
+		if (pagesContainNotification(pages, notificationId)) {
+			pending.delete(notificationId)
+			continue
+		}
+		reconcileStreamedNotification(queryClient, payload)
+	}
+}
+
 export function useNotifications(): UseNotificationsResult {
 	const queryClient = useQueryClient()
 	const user = useAuthStore((state) => state.user)
@@ -255,9 +331,35 @@ export function useNotifications(): UseNotificationsResult {
 			}),
 		])
 	}
+	/**
+	 * Guarda notificações SSE ainda não confirmadas no cache. `fetchNextPage`
+	 * congela `oldPages` de forma síncrona no início do fetch (antes de
+	 * qualquer `await`) — se uma mensagem SSE chegar depois desse instante mas
+	 * antes do fetch resolver, o `setData` do fetch sobrescreve
+	 * `data.pages` inteiro com `oldPages`, descartando a inserção feita por
+	 * `reconcileStreamedNotification`. O efeito abaixo reaplica qualquer item
+	 * pendente sempre que `data` mudar, até confirmar sua presença.
+	 */
+	const pendingStreamedNotificationsRef = useRef<
+		Map<string, NotificationStreamPayload>
+	>(new Map())
+	useEffect(() => {
+		reapplyPendingStreamedNotifications(
+			pendingStreamedNotificationsRef.current,
+			notificationsQuery.data?.pages,
+			queryClient,
+		)
+	}, [notificationsQuery.data, queryClient])
 	function handleNotificationStreamMessage(message: SseMessage): void {
-		if (message.type !== "notification") return
-		void invalidateNotifications()
+		if (message.type !== "notification" || !message.payload) return
+		pendingStreamedNotificationsRef.current.set(
+			message.payload.notificationId,
+			message.payload,
+		)
+		reconcileStreamedNotification(queryClient, message.payload)
+		void queryClient.invalidateQueries({
+			queryKey: notificationsUnreadCountQueryKey,
+		})
 	}
 	useNotificationStream({
 		enabled: isAuthenticated,

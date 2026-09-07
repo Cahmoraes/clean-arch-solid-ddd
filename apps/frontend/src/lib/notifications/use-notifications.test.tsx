@@ -235,10 +235,14 @@ describe("useNotifications", () => {
 		expect(mockPatch).toHaveBeenCalledWith("/api/v1/notifications/read-all", {})
 	})
 
-	test("invalida as queries ao receber evento notification via SSE", async () => {
+	test("invalida a query de contador de não lidas ao receber evento notification via SSE", async () => {
+		mockNotificationsRequests(25)
 		const { wrapper } = createWrapper()
 		renderHook(() => useNotifications(), { wrapper })
 		await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2))
+		const unreadCountCallsBefore = mockGet.mock.calls.filter(
+			(call) => call[0] === "/api/v1/notifications/unread-count",
+		).length
 		const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
 		await act(async () => {
 			streamOptions?.onMessage({
@@ -252,7 +256,116 @@ describe("useNotifications", () => {
 				},
 			})
 		})
-		await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(4))
+		await waitFor(() => {
+			const unreadCountCallsAfter = mockGet.mock.calls.filter(
+				(call) => call[0] === "/api/v1/notifications/unread-count",
+			).length
+			expect(unreadCountCallsAfter).toBeGreaterThan(unreadCountCallsBefore)
+		})
+	})
+
+	describe("reconciliação de notificações via SSE", () => {
+		test("notificação recebida via SSE é adicionada ao topo sem re-buscar a lista [FR-006, FR-007]", async () => {
+			mockNotificationsRequests(25)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			const listCallsBefore = mockGet.mock.calls.filter(
+				(call) => call[0] === "/api/v1/notifications",
+			).length
+			const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+			await act(async () => {
+				streamOptions?.onMessage({
+					type: "notification",
+					payload: {
+						notificationId: "notification-streamed-1",
+						userId: "user-1",
+						type: "PROMOTION",
+						title: "Nova promoção",
+						message: "Você recebeu uma nova promoção.",
+					},
+				})
+			})
+			await waitFor(() =>
+				expect(result.current.notifications[0]?.id).toBe(
+					"notification-streamed-1",
+				),
+			)
+			const listCallsAfter = mockGet.mock.calls.filter(
+				(call) => call[0] === "/api/v1/notifications",
+			).length
+			expect(listCallsAfter).toBe(listCallsBefore)
+		})
+
+		test("chegada de notificação via SSE não descarta lotes já carregados via scroll [FR-007]", async () => {
+			mockNotificationsRequests(25)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			await act(async () => {
+				result.current.fetchNextPage()
+			})
+			await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+			expect(result.current.notifications).toHaveLength(15)
+			const secondPageIds = result.current.notifications
+				.slice(10)
+				.map((n) => n.id)
+			const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+			await act(async () => {
+				streamOptions?.onMessage({
+					type: "notification",
+					payload: {
+						notificationId: "notification-streamed-2",
+						userId: "user-1",
+						type: "SECURITY_ALERT",
+						title: "Alerta",
+						message: "Novo alerta de segurança.",
+					},
+				})
+			})
+			await waitFor(() => expect(result.current.notifications).toHaveLength(16))
+			expect(result.current.notifications.slice(11)).toEqual(
+				secondPageIds.map((id) => expect.objectContaining({ id })),
+			)
+		})
+
+		test("notificação SSE chegando com fetchNextPage em andamento não duplica nem corrompe a próxima página", async () => {
+			mockNotificationsRequests(25)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+			await act(async () => {
+				result.current.fetchNextPage()
+				streamOptions?.onMessage({
+					type: "notification",
+					payload: {
+						notificationId: "notification-streamed-race",
+						userId: "user-1",
+						type: "PROMOTION",
+						title: "Nova promoção",
+						message: "Você recebeu uma nova promoção.",
+					},
+				})
+			})
+			await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+			// 10 (carga inicial) + 1 (SSE) + 5 (próxima página) = 16, sem duplicar nem pular
+			// nenhum item real do backend — fetchNextPage usou offset=10, não offset=11.
+			await waitFor(() => expect(result.current.notifications).toHaveLength(16))
+			expect(result.current.notifications[0]?.id).toBe(
+				"notification-streamed-race",
+			)
+			expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+				params: {
+					query: {
+						page: 1,
+						unreadOnly: false,
+						offset: 10,
+						limit: 5,
+					},
+				},
+			})
+		})
 	})
 
 	describe("paginação infinita", () => {
