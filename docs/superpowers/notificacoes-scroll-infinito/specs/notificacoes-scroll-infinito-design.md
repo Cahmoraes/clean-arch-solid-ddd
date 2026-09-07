@@ -35,7 +35,7 @@ A API backend (`GET /api/v1/notifications`) já é cursor-based (`cursor`, `limi
 
 ### D2. Notificações via SSE são inseridas manualmente no cache (`setQueryData`), não disparam `invalidateQueries`
 
-- **Contexto:** hoje, uma notificação recebida via SSE invalida a query e reoutine tudo, o que com paginação re-buscaria todos os lotes já carregados — anulando a economia de rede que é o motivo da feature.
+- **Contexto:** hoje, uma notificação recebida via SSE invalida a query e refaz tudo, o que com paginação re-buscaria todos os lotes já carregados — anulando a economia de rede que é o motivo da feature.
 - **Decisão:** o handler de SSE em `use-notification-stream.ts` passa a usar `queryClient.setQueryData` para inserir a notificação recebida no início de `data.pages[0].items`, sem tocar nas demais páginas.
 - **Justificativa técnica:** preserva os lotes já carregados; é o padrão documentado pelo TanStack Query para eventos em tempo real combinados com `useInfiniteQuery`.
 - **Justificativa de negócio:** consistente com o objetivo de performance da feature; sem essa decisão, cada notificação em tempo real anularia o ganho do scroll infinito.
