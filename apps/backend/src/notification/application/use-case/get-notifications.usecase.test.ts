@@ -61,8 +61,11 @@ describe("GetNotificationsUseCase", () => {
 	})
 
 	test("should use offset/limit when both are provided, overriding page", async () => {
+		const saved: Notification[] = []
 		for (let i = 0; i < 15; i++) {
-			await repository.save(makeNotification("user-1"))
+			const notification = makeNotification("user-1")
+			await repository.save(notification)
+			saved.push(notification)
 		}
 
 		const result = await sut.execute({
@@ -75,6 +78,9 @@ describe("GetNotificationsUseCase", () => {
 		expect(result.isSuccess()).toBe(true)
 		expect(result.value.items).toHaveLength(5)
 		expect(result.value.total).toBe(15)
+		expect(result.value.items.map((notification) => notification.id)).toEqual(
+			saved.slice(10, 15).map((notification) => notification.id),
+		)
 	})
 
 	test("should preserve page-based pagination when offset/limit are absent", async () => {

@@ -108,6 +108,42 @@ describe("Notification REST controllers", () => {
 		])
 	})
 
+	test("Deve retornar 400 quando limit exceder o máximo permitido (50)", async () => {
+		const response = await request(fastifyServer.server)
+			.get(NotificationRoutes.LIST)
+			.query({ offset: 0, limit: 51 })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+	})
+
+	test("Deve retornar 400 quando limit for menor que 1", async () => {
+		const response = await request(fastifyServer.server)
+			.get(NotificationRoutes.LIST)
+			.query({ offset: 0, limit: 0 })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+	})
+
+	test("Deve retornar 400 quando offset for negativo", async () => {
+		const response = await request(fastifyServer.server)
+			.get(NotificationRoutes.LIST)
+			.query({ offset: -1, limit: 10 })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+	})
+
+	test("Deve aceitar limit=50 e offset=0 como limites válidos", async () => {
+		const response = await request(fastifyServer.server)
+			.get(NotificationRoutes.LIST)
+			.query({ offset: 0, limit: 50 })
+			.set("Authorization", `Bearer ${token}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+	})
+
 	test("Deve retornar a contagem de notificações não lidas", async () => {
 		await createNotification({ userId: authenticatedUserId })
 		await createNotification({ userId: authenticatedUserId })
