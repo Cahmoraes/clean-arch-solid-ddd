@@ -1,15 +1,15 @@
 ---
 created_at: "2026-09-07T10:34:33-03:00"
-updated_at: "2026-09-07T10:34:33-03:00"
+updated_at: "2026-09-07T10:48:51-03:00"
 ---
 
 # Scroll Infinito no Dropdown de Notificações
 
 ## Visão Geral
 
-O dropdown de notificações no header (`NotificationBell` / `NotificationDropdown`) hoje busca uma página fixa de até 10 notificações e não pagina. Esta feature adiciona scroll infinito: a carga inicial continua trazendo 10 itens; ao rolar até o fim da lista, lotes adicionais de 5 são buscados via cursor até não haver mais notificações. O objetivo é evitar carregar de uma vez todo o histórico de notificações de um usuário, reduzindo consumo de rede e tempo de carregamento quando há muitos itens.
+O dropdown de notificações no header (`NotificationBell` / `NotificationDropdown`) hoje busca uma página fixa de até 10 notificações e não pagina. Esta feature adiciona scroll infinito: a carga inicial continua trazendo 10 itens; ao rolar até o fim da lista, lotes adicionais de 5 são buscados por offset/limit até não haver mais notificações. O objetivo é evitar carregar de uma vez todo o histórico de notificações de um usuário, reduzindo consumo de rede e tempo de carregamento quando há muitos itens.
 
-A API backend (`GET /api/v1/notifications`) já é cursor-based (`cursor`, `limit`) e não precisa de mudança de contrato — a mudança é inteiramente de frontend.
+**Correção pós-pesquisa de planejamento:** a suposição original deste spec de que a API já era cursor-based estava incorreta. `GET /api/v1/notifications` hoje aceita apenas `page`/`unreadOnly`, com tamanho de página fixo no backend (`ITEMS_PER_PAGE`, env var, default 20) — não há como o cliente pedir lotes de tamanhos diferentes (10 na carga inicial, 5 depois). A feature passa a incluir uma mudança de backend mínima e retrocompatível: ver D0 abaixo.
 
 ## Características Arquiteturais
 
@@ -21,9 +21,17 @@ A API backend (`GET /api/v1/notifications`) já é cursor-based (`cursor`, `limi
 | Confiabilidade | Falha de rede ao buscar um lote não pode quebrar a lista já carregada nem duplicar/perder itens ao reconciliar com SSE | Falha em `fetchNextPage` não invalida páginas já carregadas; SSE nunca duplica item já presente no cache |
 | Testabilidade | Primeiro uso de `useInfiniteQuery` no frontend — precisa ficar claro e coberto por teste para servir de referência a usos futuros | Hook e componente cobertos por testes unitários com mocks de múltiplas páginas |
 
-**Consideradas, não priorizadas:** escalabilidade (volume de notificações por usuário não justifica infraestrutura adicional — o cursor já existente é suficiente), acessibilidade além do já existente no componente (fora do escopo pedido).
+**Consideradas, não priorizadas:** escalabilidade (volume de notificações por usuário não justifica um esquema de cursor real — offset/limit sobre a tabela existente é suficiente), acessibilidade além do já existente no componente (fora do escopo pedido).
 
 ## Decisões Arquiteturais
+
+### D0. Backend: adicionar `offset`/`limit` opcionais a `GET /api/v1/notifications`, mantendo `page` para os demais consumidores
+
+- **Contexto:** a paginação atual é por número de página (`page`) com tamanho de página fixo via env var (`ITEMS_PER_PAGE`). Isso não permite lotes de tamanhos diferentes entre a carga inicial (10) e as buscas seguintes (5), porque um esquema `page` + tamanho fixo não compõe corretamente quando o tamanho varia entre páginas.
+- **Decisão:** estender `get-notifications.controller.ts`, `GetNotificationsUseCase` e `PrismaNotificationRepository` para aceitar `offset`/`limit` opcionais que, quando presentes, sobrepõem o cálculo padrão de `skip`/`take` (hoje `skip: (page-1)*ITEMS_PER_PAGE, take: ITEMS_PER_PAGE`). Quando `offset`/`limit` não são enviados, o comportamento por `page` continua idêntico ao atual — mudança retrocompatível. O dropdown de notificações passa a chamar sempre com `offset`/`limit` explícitos; a resposta continua trazendo `total`, que já é suficiente para o frontend calcular `hasNextPage` (itens acumulados < `total`), sem precisar de um campo `nextCursor` novo.
+- **Justificativa técnica:** o repositório Prisma já calcula `skip`/`take` internamente — parametrizar essas duas variáveis é a menor mudança possível que resolve o problema, sem introduzir um segundo modelo de paginação (cursor real) nem reescrever o endpoint.
+- **Justificativa de negócio:** entrega os lotes de 10/5 exigidos pelo PRD sem quebrar nenhum consumidor existente do endpoint (`page` continua funcionando para quem já o usa).
+- **Trade-offs aceitos:** o endpoint passa a ter dois modelos de paginação coexistindo (`page` e `offset`/`limit`) até que, eventualmente, os demais consumidores migrem — dívida técnica pequena e explícita, não um cursor real (não há proteção contra itens inseridos/removidos entre buscas alterarem o offset; aceitável para uma lista de notificações, não para dados financeiros).
 
 ### D1. `useInfiniteQuery` (TanStack Query) com sentinela `IntersectionObserver` em vez de handler de `onScroll`
 
@@ -66,9 +74,9 @@ sequenceDiagram
     User->>Dropdown: Abre dropdown e rola até o fim da lista
     Dropdown->>Sentinel: Sentinela entra na viewport
     Sentinel-->>Hook: onIntersect() dispara fetchNextPage()
-    Hook->>Cache: Lê cursor da última página carregada
-    Hook->>API: GET /api/v1/notifications?cursor=<cursor>&limit=5
-    API-->>Hook: 200 OK { items[5], nextCursor }
+    Hook->>Cache: Lê offset acumulado (itens já carregados)
+    Hook->>API: GET /api/v1/notifications?offset=<offset>&limit=5
+    API-->>Hook: 200 OK { notifications[5], total }
     Hook->>Cache: Anexa nova página ao final de pages[]
     Cache-->>Dropdown: Lista achatada (flatMap) recalculada
     Dropdown-->>User: Renderiza itens adicionais no final da lista
@@ -84,17 +92,20 @@ sequenceDiagram
 Diagrama fonte: `specs/diagrams/notificacoes-scroll-infinito-design_01_sequence_scroll_infinito_e_re.mmd`
 
 **Regras da carga:**
-- Página inicial (sem cursor): `limit=10`.
-- Páginas seguintes (com cursor): `limit=5`.
-- `hasNextPage` vira `false` quando a API não retorna `nextCursor`; a partir daí a sentinela não dispara mais buscas e o spinner de rodapé some.
+- Página inicial: `offset=0&limit=10`.
+- Páginas seguintes: `offset=<itens já acumulados>&limit=5`.
+- `hasNextPage` é calculado no frontend comparando o total de itens já acumulados em `data.pages` com o `total` retornado pela API; quando `acumulado >= total`, a sentinela não dispara mais buscas e o spinner de rodapé some.
 
 ## Estrutura de Componentes
 
-Mudança confinada à fatia de frontend já existente do domínio de notificações — nenhum componente novo é criado, os três arquivos abaixo são modificados:
+Nenhum componente novo é criado; os arquivos abaixo (frontend e backend) são modificados:
 
 | Componente | Responsabilidade | Depende de | Do qual dependem |
 |---|---|---|---|
-| `useNotifications` (`lib/notifications/use-notifications.ts`) | Buscar e paginar notificações via cursor, expor lista achatada + `fetchNextPage`/`hasNextPage`/`isFetchingNextPage` | Cliente API tipado (`@repo/api-types`) | `NotificationDropdown` |
+| `GetNotificationsController` (`notification/infra/controller/get-notifications.controller.ts`) | Aceitar `offset`/`limit` opcionais na query, junto de `page`/`unreadOnly` já existentes | `GetNotificationsUseCase` | Rota `GET /api/v1/notifications` |
+| `GetNotificationsUseCase` (`notification/application/use-case/get-notifications.usecase.ts`) | Repassar `offset`/`limit` ao repositório quando presentes | `NotificationRepository` | `GetNotificationsController` |
+| `PrismaNotificationRepository` (`notification/infra/repository/prisma/prisma-notification.repository.ts`) | Calcular `skip`/`take` a partir de `offset`/`limit` quando fornecidos, senão manter o cálculo atual por `page`/`ITEMS_PER_PAGE` | Prisma Client | `GetNotificationsUseCase` |
+| `useNotifications` (`lib/notifications/use-notifications.ts`) | Buscar e paginar notificações via `offset`/`limit`, expor lista achatada + `fetchNextPage`/`hasNextPage`/`isFetchingNextPage` | Cliente API tipado (`@repo/api-types`, regenerado após a mudança de backend) | `NotificationDropdown` |
 | `useNotificationStream` (`lib/notifications/use-notification-stream.ts`) | Consumir o stream SSE e inserir notificação recebida no topo da primeira página do cache | Query Cache (via `queryClient`) | Executado em paralelo ao `useNotifications`, mesmo cache |
 | `NotificationDropdown` (`components/notification/notification-dropdown.tsx`) | Renderizar a lista com contêiner rolável, sentinela de scroll e spinner de rodapé | `useNotifications` | `NotificationBell` |
 
@@ -106,10 +117,12 @@ Sem mudança de contrato para `NotificationItem` nem para as mutações existent
 |---|---|---|---|---|
 | Primeiro uso de `useInfiniteQuery` no repo — padrão não testado localmente | 2 | 2 | 4 🟡 | Cobrir com teste unitário do hook simulando 3+ páginas antes de integrar ao componente; usar exatamente a API documentada do TanStack v5 (`initialPageParam` obrigatório) |
 | Corrida entre `setQueryData` do SSE e `fetchNextPage` em andamento causando duplicidade/ordem inconsistente | 2 | 2 | 4 🟡 | Updater do SSE insere por id com checagem de duplicidade antes de prepend; teste cobrindo notificação chegando durante fetch de próxima página |
-| Mocks MSW de notificações não existem hoje (nenhum handler específico encontrado) | 1 | 2 | 2 🟢 | Adicionar handlers MSW paginados por cursor junto da atualização dos testes existentes do hook/componente |
+| Mocks MSW de notificações não existem hoje (nenhum handler específico encontrado; testes atuais usam `vi.mock("@/lib/api")`) | 1 | 2 | 2 🟢 | Manter o padrão existente de `vi.mock` nos testes do hook, sem introduzir MSW nesta feature |
+| Endpoint passa a ter dois modelos de paginação coexistindo (`page` e `offset`/`limit`) | 1 | 3 | 3 🟡 | Documentado explicitamente em D0 como dívida técnica aceita; cobrir com teste que `page` continua funcionando sem `offset`/`limit` (retrocompatibilidade) |
 
 ## Testes
 
-- **Unitário (Vitest, `pnpm --filter frontend test -- --run`):** `use-notifications.test.tsx` cobrindo carga inicial (`limit=10`), busca de próxima página (`limit=5`), fim da paginação (`hasNextPage=false`), e inserção via SSE sem afetar páginas já carregadas. `use-notification-stream.test.ts` atualizado para o novo updater de cache.
-- **Componente:** teste de `notification-dropdown.tsx` cobrindo o disparo do sentinela (mock de `IntersectionObserver`) chamando `fetchNextPage`, e exibição/ocultação do spinner de rodapé conforme `isFetchingNextPage`/`hasNextPage`.
-- Mocks MSW adicionados para responder de forma paginada por `cursor`+`limit` nos testes acima.
+- **Backend, unitário (Vitest, `pnpm --filter backend test`):** teste de `GetNotificationsUseCase` cobrindo repasse de `offset`/`limit` ao repositório, e teste de repositório (in-memory) cobrindo `skip`/`take` calculados a partir de `offset`/`limit` quando presentes e o comportamento por `page` preservado quando ausentes (retrocompatibilidade).
+- **Frontend, unitário (Vitest, `pnpm --filter frontend test -- --run`):** `use-notifications.test.tsx` cobrindo carga inicial (`offset=0&limit=10`), busca de próxima página (`offset=10&limit=5`), fim da paginação (`hasNextPage=false` quando acumulado ≥ `total`), e inserção via SSE sem afetar páginas já carregadas. `use-notification-stream.test.ts` atualizado para o novo updater de cache. Mocks via `vi.mock("@/lib/api")`, seguindo o padrão já usado nesses testes (sem introduzir MSW).
+- **Componente:** teste de `notification-dropdown.tsx` cobrindo o disparo do sentinela (mock de `IntersectionObserver`, ausente hoje no setup de testes — precisa ser adicionado) chamando `fetchNextPage`, e exibição/ocultação do spinner de rodapé conforme `isFetchingNextPage`/`hasNextPage`.
+- Após a mudança de backend, rodar `pnpm generate:types` para regenerar `@repo/api-types` antes de implementar o frontend.

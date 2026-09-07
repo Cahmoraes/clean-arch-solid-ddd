@@ -8,13 +8,13 @@ sequenceDiagram
     participant Cache as 💾 Query Cache
     participant SSE as 📡 useNotificationStream (SSE)
 
-    Note over User,Cache: Fluxo 1 — Scroll infinito (paginação por cursor)
+    Note over User,Cache: Fluxo 1 — Scroll infinito (paginação por offset/limit)
     User->>Dropdown: Abre dropdown e rola até o fim da lista
     Dropdown->>Sentinel: Sentinela entra na viewport
     Sentinel-->>Hook: onIntersect() dispara fetchNextPage()
-    Hook->>Cache: Lê cursor da última página carregada
-    Hook->>API: GET /api/v1/notifications?cursor=<cursor>&limit=5
-    API-->>Hook: 200 OK { items[5], nextCursor }
+    Hook->>Cache: Lê offset acumulado (itens já carregados)
+    Hook->>API: GET /api/v1/notifications?offset=<offset>&limit=5
+    API-->>Hook: 200 OK { notifications[5], total }
     Hook->>Cache: Anexa nova página ao final de pages[]
     Cache-->>Dropdown: Lista achatada (flatMap) recalculada
     Dropdown-->>User: Renderiza itens adicionais no final da lista
