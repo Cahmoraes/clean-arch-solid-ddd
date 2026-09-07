@@ -9,9 +9,11 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { api } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
+import { logger } from "@/lib/observability"
 import {
 	type SseMessage,
 	useNotificationStream,
@@ -227,7 +229,17 @@ export function useNotifications(): UseNotificationsResult {
 			} satisfies FetchNotificationsParams
 		},
 		enabled: isAuthenticated,
+		retry: 3,
+		retryDelay: 0,
 	})
+	useEffect(() => {
+		if (notificationsQuery.isError) {
+			logger.error(
+				"Falha ao buscar notificações após esgotar tentativas de retry",
+				notificationsQuery.error,
+			)
+		}
+	}, [notificationsQuery.isError, notificationsQuery.error])
 	const unreadCountQuery = useQuery<number, ApiError>({
 		queryKey: notificationsUnreadCountQueryKey,
 		queryFn: fetchUnreadCount,

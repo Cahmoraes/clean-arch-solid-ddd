@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { beforeEach, describe, expect, test, vi } from "vitest"
+import { logger } from "@/lib/observability"
 import { useNotificationStream } from "./use-notification-stream"
 import { useNotifications } from "./use-notifications"
 
@@ -97,6 +98,38 @@ function resolveNotificationsGet(
 		data: makePaginatedNotificationsResponse(offset, limit, total),
 		error: undefined,
 	})
+}
+
+function isSecondPageRequest(
+	path: unknown,
+	options:
+		| { params?: { query?: { offset?: number; limit?: number } } }
+		| undefined,
+): boolean {
+	return (
+		path === "/api/v1/notifications" && options?.params?.query?.offset === 10
+	)
+}
+
+function makeFailTwiceThenSucceedMock(
+	originalGet: ReturnType<typeof mockGet.getMockImplementation>,
+	onSecondPageAttempt: () => number,
+) {
+	return (
+		path: unknown,
+		options:
+			| { params?: { query?: { offset?: number; limit?: number } } }
+			| undefined,
+	) => {
+		if (!isSecondPageRequest(path, options)) {
+			return originalGet?.(path, options)
+		}
+		const attempts = onSecondPageAttempt()
+		if (attempts < 3) {
+			return Promise.reject(new Error("network error"))
+		}
+		return originalGet?.(path, options)
+	}
 }
 
 function mockNotificationsRequests(total: number): void {
@@ -292,6 +325,77 @@ describe("useNotifications", () => {
 			await waitFor(() => expect(result.current.isLoading).toBe(false))
 			expect(result.current.notifications).toHaveLength(7)
 			expect(result.current.hasNextPage).toBe(false)
+		})
+	})
+
+	describe("retry automático de lote", () => {
+		test("tenta novamente automaticamente uma busca de lote que falhou, sem ação do usuário [FR-010]", async () => {
+			mockNotificationsRequests(25)
+			let secondPageAttempts = 0
+			const originalGet = mockGet.getMockImplementation()
+			mockGet.mockImplementation(
+				makeFailTwiceThenSucceedMock(originalGet, () => ++secondPageAttempts),
+			)
+			// createWrapper() usa retry: false no QueryClient — a query de notificações
+			// só reprocessa a falha porque retry:3/retryDelay:0 é explícito na própria
+			// useInfiniteQuery (opções por-query sobrepõem defaultOptions do QueryClient).
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			await act(async () => {
+				result.current.fetchNextPage()
+			})
+			// Com retryDelay:0 as 3 tentativas (2 falhas + sucesso) se resolvem tão
+			// rápido que `isFetchingNextPage` pode virar true e voltar a false entre
+			// dois polls do waitFor (condição transitória, não monotônica) — checar
+			// esse boolean é uma corrida. `notifications` só chega a 15 depois que a
+			// 3ª tentativa (bem-sucedida) resolve, então esperar por ele é a
+			// condição terminal e monotônica correta para observar o retry.
+			await waitFor(() => expect(result.current.notifications).toHaveLength(15))
+			expect(secondPageAttempts).toBeGreaterThanOrEqual(3)
+		})
+
+		test("uma falha ao buscar um novo lote não remove notificações já carregadas [FR-011]", async () => {
+			mockNotificationsRequests(25)
+			const originalGet = mockGet.getMockImplementation()
+			mockGet.mockImplementation((path, options) => {
+				const query = options?.params?.query as {
+					offset?: number
+					limit?: number
+				}
+				if (path === "/api/v1/notifications" && query?.offset === 10) {
+					return Promise.reject(new Error("network error"))
+				}
+				return originalGet?.(path, options)
+			})
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			const firstPageNotifications = result.current.notifications
+			await act(async () => {
+				result.current.fetchNextPage()
+			})
+			await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+			expect(result.current.notifications).toEqual(firstPageNotifications)
+			expect(result.current.notifications).toHaveLength(10)
+		})
+
+		test("registra um log de erro quando as tentativas de retry se esgotam, sem UI de erro", async () => {
+			// Fazer notificações falharem para forçar isError = true
+			mockGet.mockImplementation((path) => {
+				const isUnreadEndpoint = path === "/api/v1/notifications/unread-count"
+				return isUnreadEndpoint
+					? Promise.resolve({ data: { count: 1 }, error: undefined })
+					: Promise.reject(new Error("network error"))
+			})
+			const loggerErrorSpy = vi
+				.spyOn(logger, "error")
+				.mockImplementation(() => {})
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			expect(loggerErrorSpy).toHaveBeenCalled()
+			loggerErrorSpy.mockRestore()
 		})
 	})
 })
