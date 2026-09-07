@@ -44,7 +44,7 @@ O dropdown de notificações no header (`NotificationBell` / `NotificationDropdo
 ### D2. Notificações via SSE são inseridas manualmente no cache (`setQueryData`), não disparam `invalidateQueries`
 
 - **Contexto:** hoje, uma notificação recebida via SSE invalida a query e refaz tudo, o que com paginação re-buscaria todos os lotes já carregados — anulando a economia de rede que é o motivo da feature.
-- **Decisão:** o handler de SSE em `use-notification-stream.ts` passa a usar `queryClient.setQueryData` para inserir a notificação recebida no início de `data.pages[0].items`, sem tocar nas demais páginas.
+- **Decisão:** o handler de mensagens SSE (`handleNotificationStreamMessage`, definido em `use-notifications.ts` e passado como `onMessage` para `useNotificationStream`) passa a usar `queryClient.setQueryData` para inserir a notificação recebida no início de `data.pages[0].notifications`, sem tocar nas demais páginas. `use-notification-stream.ts` continua responsável apenas por conectar ao SSE e repassar mensagens já parseadas — não é modificado.
 - **Justificativa técnica:** preserva os lotes já carregados; é o padrão documentado pelo TanStack Query para eventos em tempo real combinados com `useInfiniteQuery`.
 - **Justificativa de negócio:** consistente com o objetivo de performance da feature; sem essa decisão, cada notificação em tempo real anularia o ganho do scroll infinito.
 - **Trade-offs aceitos:** mais código que um simples `invalidateQueries` (precisa de um updater específico); se o formato de `data.pages[0]` mudar no futuro, este updater precisa ser atualizado junto.
@@ -106,7 +106,7 @@ Nenhum componente novo é criado; os arquivos abaixo (frontend e backend) são m
 | `GetNotificationsUseCase` (`notification/application/use-case/get-notifications.usecase.ts`) | Repassar `offset`/`limit` ao repositório quando presentes | `NotificationRepository` | `GetNotificationsController` |
 | `PrismaNotificationRepository` (`notification/infra/repository/prisma/prisma-notification.repository.ts`) | Calcular `skip`/`take` a partir de `offset`/`limit` quando fornecidos, senão manter o cálculo atual por `page`/`ITEMS_PER_PAGE` | Prisma Client | `GetNotificationsUseCase` |
 | `useNotifications` (`lib/notifications/use-notifications.ts`) | Buscar e paginar notificações via `offset`/`limit`, expor lista achatada + `fetchNextPage`/`hasNextPage`/`isFetchingNextPage` | Cliente API tipado (`@repo/api-types`, regenerado após a mudança de backend) | `NotificationDropdown` |
-| `useNotificationStream` (`lib/notifications/use-notification-stream.ts`) | Consumir o stream SSE e inserir notificação recebida no topo da primeira página do cache | Query Cache (via `queryClient`) | Executado em paralelo ao `useNotifications`, mesmo cache |
+| `useNotificationStream` (`lib/notifications/use-notification-stream.ts`) | Conectar ao stream SSE e repassar mensagens já parseadas via `onMessage` — não modificado nesta feature | — | `useNotifications`, via o callback `handleNotificationStreamMessage` |
 | `NotificationDropdown` (`components/notification/notification-dropdown.tsx`) | Renderizar a lista com contêiner rolável, sentinela de scroll e spinner de rodapé | `useNotifications` | `NotificationBell` |
 
 Sem mudança de contrato para `NotificationItem` nem para as mutações existentes (marcar como lida / marcar todas como lidas) — ambas continuam operando sobre o array achatado.
