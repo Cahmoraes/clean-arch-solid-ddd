@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 User
+    participant Dropdown as 🔔 NotificationDropdown
+    participant Sentinel as 👁️ IntersectionObserver
+    participant Hook as ⚙️ useNotifications (useInfiniteQuery)
+    participant API as 🌐 Notifications API
+    participant Cache as 💾 Query Cache
+    participant SSE as 📡 useNotificationStream (SSE)
+
+    Note over User,Cache: Fluxo 1 — Scroll infinito (paginação por cursor)
+    User->>Dropdown: Abre dropdown e rola até o fim da lista
+    Dropdown->>Sentinel: Sentinela entra na viewport
+    Sentinel-->>Hook: onIntersect() dispara fetchNextPage()
+    Hook->>Cache: Lê cursor da última página carregada
+    Hook->>API: GET /api/v1/notifications?cursor=<cursor>&limit=5
+    API-->>Hook: 200 OK { items[5], nextCursor }
+    Hook->>Cache: Anexa nova página ao final de pages[]
+    Cache-->>Dropdown: Lista achatada (flatMap) recalculada
+    Dropdown-->>User: Renderiza itens adicionais no final da lista
+
+    Note over User,SSE: Fluxo 2 — Nova notificação via SSE (dropdown aberto)
+    SSE->>SSE: Recebe evento de nova notificação no stream
+    SSE->>Cache: setQueryData — insere item no início de pages[0]
+    Note right of Cache: Sem refetch - pages[1..n] permanecem intactas
+    Cache-->>Dropdown: Lista achatada recalculada com item no topo
+    Dropdown-->>User: Renderiza nova notificação no topo, sem perder scroll/paginação
