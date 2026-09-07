@@ -132,6 +132,48 @@ function makeFailTwiceThenSucceedMock(
 	}
 }
 
+function resolveNotificationsGetWithReadState(
+	options:
+		| { params?: { query?: { offset?: number; limit?: number } } }
+		| undefined,
+	total: number,
+	readNotificationIds: Set<string>,
+) {
+	const query = options?.params?.query
+	const offset = query?.offset ?? 0
+	const limit = query?.limit ?? 10
+	const base = makePaginatedNotificationsResponse(offset, limit, total)
+	return Promise.resolve({
+		data: {
+			...base,
+			notifications: base.notifications.map((notification) =>
+				readNotificationIds.has(notification.id)
+					? { ...notification, readAt: "2024-01-03T10:00:00Z" }
+					: notification,
+			),
+		},
+		error: undefined,
+	})
+}
+
+function mockNotificationsRequestsWithReadState(
+	readNotificationIds: Set<string>,
+): void {
+	mockGet.mockImplementation((path, options) => {
+		if (path === "/api/v1/notifications") {
+			return resolveNotificationsGetWithReadState(
+				options,
+				25,
+				readNotificationIds,
+			)
+		}
+		if (path === "/api/v1/notifications/unread-count") {
+			return Promise.resolve({ data: { count: 1 }, error: undefined })
+		}
+		throw new Error(`Unexpected GET: ${String(path)}`)
+	})
+}
+
 function mockNotificationsRequests(total: number): void {
 	mockGet.mockImplementation((path, options) => {
 		if (path === "/api/v1/notifications") {
@@ -223,6 +265,66 @@ describe("useNotifications", () => {
 				},
 			},
 		})
+	})
+
+	test("markAsRead aplica readAt apenas na notificação alvo, em qualquer página do InfiniteData [AC-14]", async () => {
+		// GET stateful: reflete no servidor mockado o readAt de quem já foi
+		// marcado como lido via PATCH, para o refetch do onSettled não mascarar
+		// a atualização otimista com um readAt sempre null.
+		const readNotificationIds = new Set<string>()
+		mockNotificationsRequestsWithReadState(readNotificationIds)
+		mockPatch.mockImplementation((path, options) => {
+			if (path === "/api/v1/notifications/{id}/read") {
+				const id = (options as { params: { path: { id: string } } }).params.path
+					.id
+				readNotificationIds.add(id)
+				return Promise.resolve({
+					data: { readAt: "2024-01-03T10:00:00Z" },
+					error: undefined,
+				})
+			}
+			throw new Error(`Unexpected PATCH: ${String(path)}`)
+		})
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		await act(async () => {
+			result.current.fetchNextPage()
+		})
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+		expect(result.current.notifications).toHaveLength(15)
+
+		// notification-13 pertence à 2ª página (offset=10, ids notification-11..15)
+		const targetId = "notification-13"
+		await act(async () => {
+			await result.current.markAsRead(targetId)
+		})
+
+		await waitFor(() => {
+			const target = result.current.notifications.find((n) => n.id === targetId)
+			expect(target?.readAt).toBe("2024-01-03T10:00:00Z")
+		})
+		const others = result.current.notifications.filter((n) => n.id !== targetId)
+		expect(others.every((n) => n.readAt === null)).toBe(true)
+	})
+
+	test("markAsRead reverte a atualização otimista quando o PATCH falha [AC-14]", async () => {
+		mockNotificationsRequests(25)
+		mockPatch.mockImplementation((path) => {
+			if (path === "/api/v1/notifications/{id}/read") {
+				return Promise.reject(new Error("network error"))
+			}
+			throw new Error(`Unexpected PATCH: ${String(path)}`)
+		})
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		const targetId = "notification-3"
+		await act(async () => {
+			await result.current.markAsRead(targetId).catch(() => {})
+		})
+		const target = result.current.notifications.find((n) => n.id === targetId)
+		expect(target?.readAt).toBeNull()
 	})
 
 	test("markAllAsRead chama PATCH /api/v1/notifications/read-all", async () => {
@@ -365,6 +467,109 @@ describe("useNotifications", () => {
 					},
 				},
 			})
+		})
+
+		test("SSE não duplica notificação cujo id já existe no cache [AC-05]", async () => {
+			mockNotificationsRequests(25)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			expect(result.current.notifications).toHaveLength(10)
+			const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+
+			// id já presente na página inicial trazida pela API
+			await act(async () => {
+				streamOptions?.onMessage({
+					type: "notification",
+					payload: {
+						notificationId: "notification-5",
+						userId: "user-1",
+						type: "PROMOTION",
+						title: "Duplicada",
+						message: "Não deveria duplicar.",
+					},
+				})
+			})
+			expect(result.current.notifications).toHaveLength(10)
+			expect(
+				result.current.notifications.filter((n) => n.id === "notification-5"),
+			).toHaveLength(1)
+
+			// mesmo id SSE enviado duas vezes
+			await act(async () => {
+				streamOptions?.onMessage({
+					type: "notification",
+					payload: {
+						notificationId: "notification-streamed-dup",
+						userId: "user-1",
+						type: "PROMOTION",
+						title: "Nova",
+						message: "Primeira vez.",
+					},
+				})
+			})
+			await waitFor(() => expect(result.current.notifications).toHaveLength(11))
+			await act(async () => {
+				streamOptions?.onMessage({
+					type: "notification",
+					payload: {
+						notificationId: "notification-streamed-dup",
+						userId: "user-1",
+						type: "PROMOTION",
+						title: "Nova",
+						message: "Repetida.",
+					},
+				})
+			})
+			expect(result.current.notifications).toHaveLength(11)
+			expect(
+				result.current.notifications.filter(
+					(n) => n.id === "notification-streamed-dup",
+				),
+			).toHaveLength(1)
+		})
+
+		test("fetchNextPage após confirmação de item via SSE usa fetchedCount, não notifications.length [AC-06]", async () => {
+			mockNotificationsRequests(25)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			await act(async () => {
+				result.current.fetchNextPage()
+			})
+			await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+			expect(result.current.notifications).toHaveLength(15)
+
+			const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+			await act(async () => {
+				streamOptions?.onMessage({
+					type: "notification",
+					payload: {
+						notificationId: "notification-streamed-confirmed",
+						userId: "user-1",
+						type: "PROMOTION",
+						title: "Nova promoção",
+						message: "Confirmada antes do próximo fetch.",
+					},
+				})
+			})
+			await waitFor(() => expect(result.current.notifications).toHaveLength(16))
+
+			await act(async () => {
+				result.current.fetchNextPage()
+			})
+			await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+			expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+				params: {
+					query: {
+						page: 1,
+						unreadOnly: false,
+						offset: 15,
+						limit: 5,
+					},
+				},
+			})
+			expect(result.current.notifications).toHaveLength(21)
 		})
 	})
 

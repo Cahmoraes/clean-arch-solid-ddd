@@ -108,7 +108,9 @@ describe("NotificationDropdown — scroll infinito", () => {
 				onMarkAllAsRead={vi.fn()}
 			/>,
 		)
-		expect(screen.getByRole("status")).toHaveTextContent("Carregando mais...")
+		const status = screen.getByRole("status")
+		expect(status).toHaveTextContent("Carregando mais...")
+		expect(status).toHaveAttribute("aria-live", "polite")
 	})
 
 	test("não exibe o spinner quando hasNextPage é false [FR-009]", () => {
@@ -124,5 +126,53 @@ describe("NotificationDropdown — scroll infinito", () => {
 			/>,
 		)
 		expect(screen.queryByRole("status")).not.toBeInTheDocument()
+	})
+
+	test("não exibe o spinner quando o lote termina de carregar e hasNextPage continua true [FR-009]", () => {
+		render(
+			<NotificationDropdown
+				notifications={[makeNotification("1")]}
+				isLoading={false}
+				hasNextPage={true}
+				isFetchingNextPage={false}
+				fetchNextPage={vi.fn()}
+				onMarkAsRead={vi.fn()}
+				onMarkAllAsRead={vi.fn()}
+			/>,
+		)
+		expect(screen.queryByRole("status")).not.toBeInTheDocument()
+	})
+
+	test("sentinela de scroll é aria-hidden [AC-11]", () => {
+		render(
+			<NotificationDropdown
+				notifications={[makeNotification("1")]}
+				isLoading={false}
+				hasNextPage={true}
+				isFetchingNextPage={false}
+				fetchNextPage={vi.fn()}
+				onMarkAsRead={vi.fn()}
+				onMarkAllAsRead={vi.fn()}
+			/>,
+		)
+		const observer = observerInstances[0]
+		const sentinel = observer?.observe.mock.calls[0]?.[0] as Element
+		expect(sentinel).toHaveAttribute("aria-hidden", "true")
+	})
+
+	test("desconecta o IntersectionObserver ao desmontar [AC-10]", () => {
+		const { unmount } = render(
+			<NotificationDropdown
+				notifications={[makeNotification("1")]}
+				isLoading={false}
+				hasNextPage={true}
+				isFetchingNextPage={false}
+				fetchNextPage={vi.fn()}
+				onMarkAsRead={vi.fn()}
+				onMarkAllAsRead={vi.fn()}
+			/>,
+		)
+		unmount()
+		expect(observerInstances[0]?.disconnect).toHaveBeenCalled()
 	})
 })
