@@ -1,24 +1,4 @@
-## ALTA PRIORIDADE
-
-- **SE VOCÊ NÃO VERIFICAR AS SKILLS**, tarefa invalidada, gera retrabalho
-- **VOCÊ SÓ PODE finalizar tarefa** se `pnpm lint:fix`, `pnpm tsc:check`, `pnpm test`, `pnpm build` passar 100% (lint + test + build). Sem exceção — falhar qualquer um = tarefa NÃO COMPLETA
-- `lint:fix` tolerância zero. Zero problemas — qualquer issue Biome = falha bloqueante
-- **SEMPRE verifique APIs dos pacotes dependentes** antes de escrever código de integração/testes, evita código errado
-- **NUNCA use gambiarras** — use skill `no-workarounds` para correção/debug + `test-antipatterns` para testes
-- **SEMPRE use skills** `no-workarounds` e `super.systematic-debugging` ao corrigir bugs/problemas complexos
-- **NUNCA use ferramentas** web para código local — use `sg` (padrões AST: decorators, generics, shapes), Grep ou Glob. Prefira `sg` a `grep` para buscas estruturais
-
-## REQUISITOS OBRIGATÓRIOS
-- DEVE rodar `pnpm lint:fix` antes de concluir QUALQUER subtarefa
-- SEMPRE USE skills `super.systematic-debugging` + `no-workarounds` antes de corrigir bug
-
-Pular verificação = REJEIÇÃO IMEDIATA DA TAREFA.
-
 # Overview do Projeto
-
-## Restrições de Comunicação
-- Responder português PT-BR, preservar termos técnicos
-- Nunca emojis
 
 ## Build, Test & Lint
 
