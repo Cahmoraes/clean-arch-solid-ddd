@@ -18,13 +18,22 @@ function hasSessionFlag(): boolean {
 		.some((entry) => entry.trim() === `${SESSION_FLAG_COOKIE}=1`)
 }
 
+// Token ausente ou expirado exige o mesmo bootstrap: sem isso, filhos disparam
+// chamadas de API com um accessToken que o backend já vai rejeitar com 401.
+function needsSessionBootstrap(): boolean {
+	const { accessToken, expiresAt } = useAuthStore.getState()
+	if (!accessToken) return true
+	return expiresAt !== null && expiresAt <= Date.now()
+}
+
 function AuthProvider({ children }: { children: ReactNode }) {
 	const [booting, setBooting] = useState<boolean>(false)
 
 	// Seta booting=true antes do browser pintar para evitar flash de conteúdo
-	// sem auth e evitar que filhos disparem chamadas de API com accessToken nulo.
+	// sem auth e evitar que filhos disparem chamadas de API com accessToken
+	// nulo ou expirado.
 	useLayoutEffect(() => {
-		if (hasSessionFlag() && !useAuthStore.getState().accessToken) {
+		if (hasSessionFlag() && needsSessionBootstrap()) {
 			setBooting(true)
 		}
 	}, [])
@@ -35,7 +44,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
 		const scheduler = getTokenRefreshScheduler()
 		scheduler.start()
 
-		if (hasSessionFlag() && !useAuthStore.getState().accessToken) {
+		if (hasSessionFlag() && needsSessionBootstrap()) {
 			setBooting(true)
 			scheduler
 				.refreshNow()
