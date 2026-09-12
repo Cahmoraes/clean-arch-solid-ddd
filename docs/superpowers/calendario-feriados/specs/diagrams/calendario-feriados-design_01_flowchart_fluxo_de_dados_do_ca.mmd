@@ -12,7 +12,7 @@ flowchart TD
     Mods --> Cal[Calendar - shadcn/react-day-picker]:::secondary
     Cal --> Dia[DiaComFeriado<br/>dia customizado]:::secondary
     Dia -->|dia e feriado| Destaque[Destaque visual do dia]:::action
-    Dia -->|hover/click no dia destacado| Popover[Popover com nome do feriado]:::action
+    Dia -->|hover, clique ou foco no dia destacado| Popover[Popover com nome do feriado]:::action
     Cal -.->|usuario muda de mes novamente| Orq
 
     classDef actor fill:#FFD700,stroke:#333,stroke-width:2px,color:black

@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-12T18:48:22-03:00"
-updated_at: "2026-09-12T18:48:22-03:00"
+updated_at: "2026-09-12T19:45:50-03:00"
 ---
 
 # Calendário de Feriados Nacionais
@@ -33,7 +33,7 @@ Feature 100% frontend (Next.js), sem novo bounded context de backend nem chamada
 3. `useFeriadosDoAno(ano)` calcula (síncrono, via `date-holidays`, memoizado por ano com `useMemo`) a lista de feriados nacionais do ano exibido.
 4. `feriadosParaModifiers` converte essa lista em `modifiers` do `react-day-picker` para o mês exibido.
 5. Ao navegar de mês (`onMonthChange` do `Calendar`), o estado `{mes, ano}` é atualizado; se a navegação cruzar virada de ano (dez → jan), `useFeriadosDoAno` recalcula automaticamente porque a chave do memo (o ano) muda.
-6. Dias marcados como feriado usam o componente customizado `DiaComFeriado` (via prop `components.Day` do `react-day-picker`), que exibe um popover/tooltip com o nome do feriado ao hover/click.
+6. Dias marcados como feriado usam o componente customizado `DiaComFeriado` (via prop `components.DayButton` do `react-day-picker`), que exibe um `Popover` do shadcn com o nome do feriado ao passar o mouse (hover), clicar OU focar via teclado o dia — os três gatilhos, não só hover/click (WCAG 2.2, critério 1.4.13: todo conteúdo revelado por hover também deve ser revelado por foco).
 
 ```mermaid
 flowchart TD
@@ -50,7 +50,7 @@ flowchart TD
     Mods --> Cal[Calendar - shadcn/react-day-picker]:::secondary
     Cal --> Dia[DiaComFeriado<br/>dia customizado]:::secondary
     Dia -->|dia e feriado| Destaque[Destaque visual do dia]:::action
-    Dia -->|hover/click no dia destacado| Popover[Popover com nome do feriado]:::action
+    Dia -->|hover, clique ou foco no dia destacado| Popover[Popover com nome do feriado]:::action
     Cal -.->|usuario muda de mes novamente| Orq
 
     classDef actor fill:#FFD700,stroke:#333,stroke-width:2px,color:black
@@ -71,7 +71,7 @@ Derivados por fluxo de trabalho (navegar mês → destacar feriados → ver nome
 |---|---|---|---|
 | **ObterFeriadosDoAno** (hook `useFeriadosDoAno(ano)`) | Dado um ano, retorna a lista de feriados nacionais calculados via `date-holidays`, memoizada por ano | biblioteca `date-holidays` | CalendarioFeriados |
 | **DestacarFeriadosNaGrade** (função pura `feriadosParaModifiers`) | Converte a lista de feriados em `modifiers`/`modifiersClassNames` do `react-day-picker` para marcar visualmente os dias | ObterFeriadosDoAno | CalendarioFeriados |
-| **ExibirPopoverDeFeriado** (componente `DiaComFeriado`) | Renderiza o popover/tooltip com o nome do feriado ao interagir com um dia marcado | shadcn `Popover`/`Tooltip` | CalendarioFeriados |
+| **ExibirPopoverDeFeriado** (componente `DiaComFeriado`) | Renderiza o `Popover` do shadcn com o nome do feriado ao interagir (hover, clique ou foco via teclado) com um dia marcado; substitui `components.DayButton` do `react-day-picker`, reproduzindo o gerenciamento de foco do componente nativo que substitui | shadcn `Popover` | CalendarioFeriados |
 | **CalendarioFeriados** (componente de orquestração) | Monta o `Calendar` do shadcn, controla o mês/ano exibido (estado local), aplica os modifiers e injeta o componente de dia customizado | DestacarFeriadosNaGrade, ExibirPopoverDeFeriado, shadcn `Calendar` | página `/calendario` |
 
 **Estrutura de arquivos** (convenção feature-based do frontend; `hooks/`+`lib/` no lugar de `api/` porque não há chamada de rede):
@@ -88,6 +88,17 @@ apps/frontend/src/
   app/(authenticated)/calendario/page.tsx
 ```
 
+## Modelo de Dados
+
+Shape mínimo de um feriado, compartilhado por todos os componentes acima (validado via Zod em `schemas/feriado.schema.ts`):
+
+```
+Feriado {
+  data: string  // "YYYY-MM-DD", sem componente de hora/fuso
+  nome: string
+}
+```
+
 ## Decisões Arquiteturais
 
 ### D1. Feriados calculados no frontend via `date-holidays`, sem backend
@@ -101,10 +112,12 @@ apps/frontend/src/
 ### D2. Grade do calendário via shadcn `Calendar` (react-day-picker), não grade própria
 
 - **Contexto:** construir a grade mensal do zero com `date-fns`, ou reaproveitar o componente `Calendar` do shadcn/ui (que embrulha `react-day-picker`).
-- **Decisão:** shadcn `Calendar`, customizando `modifiers` para os feriados e o componente de dia (`components.Day`) para o popover.
+- **Decisão:** shadcn `Calendar`, customizando `modifiers` para os feriados e o componente de dia interativo (`components.DayButton`, não `components.Day` — `Day` renderiza a célula `role="gridcell"` inteira; `DayButton` é só o botão dentro dela, o ponto de customização correto para trocar apenas a interação) para o popover.
+- **Popover, não Tooltip:** o mecanismo de revelação do nome do feriado usa o `Popover` do shadcn (Radix), não `Tooltip` — ambos aparecem no texto de versões anteriores desta spec como sinônimos, mas têm semântica de interação distinta (foco, dismissal, comportamento touch). `Popover` foi escolhido porque o gatilho decidido é hover **e** clique **e** foco de teclado (ver Fluxo, item 6), exigindo wiring manual de todos os três — `Tooltip` cobriria hover/foco nativamente mas não clique persistente.
+- **Seleção de ano (FR-005) via `captionLayout="dropdown"`:** o `DayPicker` aceita `captionLayout: "label" | "dropdown" | "dropdown-months" | "dropdown-years"`; `"dropdown"` gera dropdowns nativos de mês e ano, cobrindo "selecionar um ano diferente do atual" sem construir um seletor próprio (YAGNI: recurso nativo da biblioteca já usada). O mesmo `onMonthChange` do Fluxo, item 5, é o mecanismo que recalcula os feriados quando o ano muda pelo dropdown.
 - **Justificativa técnica:** navegação de mês/ano, foco por teclado e semântica ARIA de grid já resolvidos pela biblioteca; segue a convenção do projeto de UI baseada em shadcn/ui.
 - **Justificativa de negócio:** menor risco de não atingir a conformidade AA/WCAG exigida pelo projeto; menos código para manter.
-- **Trade-offs aceitos:** introduz `react-day-picker` como dependência direta (hoje só transitiva via Prisma Studio); customizar o dia exige aprender a API de `components` da biblioteca.
+- **Trade-offs aceitos:** introduz `react-day-picker` como dependência direta (não há hoje nenhuma dependência, direta ou transitiva, em `react-day-picker` no projeto); customizar `DayButton` exige reproduzir o gerenciamento de foco de teclado do componente nativo que está sendo substituído (ver Riscos).
 
 ## Riscos
 
@@ -113,6 +126,7 @@ apps/frontend/src/
 | Feriado extraordinário decretado por lei avulsa não é coberto por `date-holidays` | 1 | 2 | 2 🟢 | Aceito como limitação conhecida (fora do escopo de "feriados nacionais oficiais recorrentes"); documentado nesta spec |
 | Comparação de datas sujeita a deslocamento por fuso horário (±1 dia) | 2 | 2 | 4 🟡 | Normalizar toda comparação de data para ano-mês-dia puro, sem componente de hora |
 | Versão de `react-day-picker` incompatível com a versão de React do frontend | 2 | 1 | 2 🟢 | Verificar peer deps antes de instalar (regra do projeto: "sempre verifique APIs dos pacotes dependentes") |
+| Substituir `components.DayButton` do `react-day-picker` perde o gerenciamento de foco de teclado que o componente nativo implementa (move o foco real do DOM quando as setas navegam a grade) | 3 | 2 | 6 🔴 | `DiaComFeriado` reproduz o mesmo efeito do componente nativo (`useRef` + `useEffect` movendo o foco quando `modifiers.focused` é `true`), coberto por teste dedicado |
 
 ## Testes
 
@@ -121,5 +135,6 @@ Runner: Vitest + Testing Library + MSW (conforme `apps/frontend/AGENTS.md`); des
 - **`useFeriadosDoAno`**: unitário — para um ano dado, retorna os feriados nacionais esperados (datas fixas e móveis, ex.: Tiradentes, Carnaval/Páscoa daquele ano); memoização não recalcula para o mesmo ano.
 - **`feriadosParaModifiers`**: unitário puro — dado um conjunto de feriados e um mês, retorna os modifiers corretos; casos de borda: mês sem feriado, feriado no primeiro/último dia do mês, virada de ano.
 - **`CalendarioFeriados`** (component test): renderiza o mês atual com os feriados destacados; navegar para o mês seguinte/anterior atualiza a grade; navegar através da virada de ano recalcula os feriados do novo ano.
-- **`DiaComFeriado`**: interação (hover/click) em um dia de feriado exibe o popover com o nome correto; dia sem feriado não exibe popover.
+- **`DiaComFeriado`**: interação (hover, clique OU foco de teclado) em um dia de feriado exibe o popover com o nome correto; dia sem feriado não exibe popover; clicar após o hover não fecha o popover (corrida hover→click); foco de teclado move o foco real do DOM (paridade com o `DayButton` nativo substituído).
+- **e2e de acessibilidade (axe-core, `apps/frontend/e2e/accessibility.spec.ts`):** `/calendario` entra no scan de telas autenticadas que o projeto já roda para `/academias`, `/perfil` e `/check-ins` — testes de componente isolados não cobrem o portal do `Popover`, os dropdowns de mês/ano nem a ordem de foco na grade completa montada.
 - Sem testes de backend/integração (não há bounded context novo) nem `test:business-flow`.
