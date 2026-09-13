@@ -9,6 +9,8 @@ const BRASIL_API_FERIADOS_URL = "https://brasilapi.com.br/api/feriados/v1"
 const FERIADOS_STALE_TIME_MS = 24 * 60 * 60 * 1000
 const FERIADO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const FERIADO_TYPE: FeriadoType = "national"
+const MIN_SUPPORTED_HOLIDAY_YEAR = 1900
+const MAX_SUPPORTED_HOLIDAY_YEAR = 2199
 
 interface BrasilApiHoliday {
 	date: string
@@ -30,8 +32,24 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isValidHolidayDate(date: string): boolean {
 	if (!FERIADO_DATE_PATTERN.test(date)) return false
-	const parsedDate = new Date(`${date}T00:00:00.000Z`)
-	return parsedDate.toISOString().startsWith(date)
+	const [year, month, day] = date.split("-").map(Number)
+	if (
+		year === undefined ||
+		month === undefined ||
+		day === undefined ||
+		month < 1 ||
+		month > 12 ||
+		day < 1
+	) {
+		return false
+	}
+	const parsedDate = new Date(Date.UTC(year, month - 1, day))
+	if (!Number.isFinite(parsedDate.getTime())) return false
+	return (
+		parsedDate.getUTCFullYear() === year &&
+		parsedDate.getUTCMonth() === month - 1 &&
+		parsedDate.getUTCDate() === day
+	)
 }
 
 function isBrasilApiHoliday(value: unknown): value is BrasilApiHoliday {
@@ -149,13 +167,26 @@ function shouldRetryFeriadosQuery(
 	return true
 }
 
+function isSupportedHolidayYear(year: number | null): year is number {
+	return (
+		year !== null &&
+		Number.isInteger(year) &&
+		year >= MIN_SUPPORTED_HOLIDAY_YEAR &&
+		year <= MAX_SUPPORTED_HOLIDAY_YEAR
+	)
+}
+
 export function useFeriadosQuery(
 	year: number | null,
 ): UseQueryResult<Feriado[], ApiError> {
+	const queryKey = isSupportedHolidayYear(year)
+		? feriadosQueryKey(year)
+		: (["feriados", year === null ? "disabled" : "invalid"] as const)
+
 	return useQuery<Feriado[], ApiError>({
-		queryKey: year === null ? ["feriados", "disabled"] : feriadosQueryKey(year),
+		queryKey,
 		queryFn: ({ signal }) => {
-			if (year === null) {
+			if (!isSupportedHolidayYear(year)) {
 				throw ApiError.fromStatus(400, "invalid_holiday_year")
 			}
 			return fetchFeriados(year, signal)

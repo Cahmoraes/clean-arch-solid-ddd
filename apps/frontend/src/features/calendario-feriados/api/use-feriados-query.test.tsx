@@ -239,12 +239,64 @@ describe("useFeriadosQuery", () => {
 		expect(result.current.fetchStatus).toBe("idle")
 	})
 
+	test.each([
+		["NaN", Number.NaN],
+		["Infinity", Number.POSITIVE_INFINITY],
+		["decimal", 2026.5],
+		["negativo", -1],
+		["menor que 1900", 1899],
+		["maior que 2199", 2200],
+	])("falha com ApiError e não consulta BrasilAPI para ano %s", async (_case, year) => {
+		let requestCount = 0
+		server.use(
+			http.get("https://brasilapi.com.br/api/feriados/v1/:year", () => {
+				requestCount += 1
+				return HttpResponse.json([])
+			}),
+		)
+
+		const { result } = renderHook(() => useFeriadosQuery(year), {
+			wrapper: createWrapper(),
+		})
+
+		await waitFor(() => expect(result.current.isError).toBe(true), {
+			timeout: 3_000,
+		})
+		expect(result.current.error).toBeInstanceOf(ApiError)
+		expect(result.current.error?.status).toBe(400)
+		expect(result.current.error?.code).toBe("invalid_holiday_year")
+		expect(requestCount).toBe(0)
+	})
+
 	test("falha com ApiError quando a BrasilAPI muda o contrato", async () => {
 		let requestCount = 0
 		server.use(
 			http.get("https://brasilapi.com.br/api/feriados/v1/2026", () => {
 				requestCount += 1
 				return HttpResponse.json([{ date: "2026-01-01", name: "Ano Novo" }])
+			}),
+		)
+
+		const { result } = renderHook(() => useFeriadosQuery(2026), {
+			wrapper: createWrapper(),
+		})
+
+		await waitFor(() => expect(result.current.isError).toBe(true), {
+			timeout: 3_000,
+		})
+		expect(result.current.error).toBeInstanceOf(ApiError)
+		expect(result.current.error?.code).toBe("holidays_invalid_response")
+		expect(requestCount).toBe(1)
+	})
+
+	test("não retenta quando payload tem data ISO semanticamente inválida", async () => {
+		let requestCount = 0
+		server.use(
+			http.get("https://brasilapi.com.br/api/feriados/v1/2026", () => {
+				requestCount += 1
+				return HttpResponse.json([
+					{ date: "2026-13-01", name: "Ano Novo", type: "national" },
+				])
 			}),
 		)
 
