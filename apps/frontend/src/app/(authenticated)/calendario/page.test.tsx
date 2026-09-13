@@ -61,21 +61,27 @@ describe("CalendarPage", () => {
 		).toBeInTheDocument()
 		expect((await screen.findAllByText("Tiradentes")).length).toBeGreaterThan(0)
 
-		await user.click(screen.getByRole("button", { name: "Ano anterior" }))
+		await user.click(
+			screen.getByRole("button", { name: "Ir para 2025 (ano anterior)" }),
+		)
 
 		expect(
 			screen.getByRole("heading", { name: "Calendário 2025" }),
 		).toBeInTheDocument()
 		expect((await screen.findAllByText("Natal")).length).toBeGreaterThan(0)
 
-		await user.click(screen.getByRole("button", { name: "Ano seguinte" }))
+		await user.click(
+			screen.getByRole("button", { name: "Ir para 2026 (ano seguinte)" }),
+		)
 
 		expect(
 			screen.getByRole("heading", { name: "Calendário 2026" }),
 		).toBeInTheDocument()
 		expect((await screen.findAllByText("Tiradentes")).length).toBeGreaterThan(0)
 
-		await user.click(screen.getByRole("button", { name: "Ano seguinte" }))
+		await user.click(
+			screen.getByRole("button", { name: "Ir para 2027 (ano seguinte)" }),
+		)
 
 		expect(
 			screen.getByRole("heading", { name: "Calendário 2027" }),

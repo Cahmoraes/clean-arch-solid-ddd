@@ -122,7 +122,7 @@ function YearNavigation({
 				type="button"
 				variant="outline"
 				size="sm"
-				aria-label="Ano anterior"
+				aria-label={`Ir para ${selectedYear - 1} (ano anterior)`}
 				onClick={onPreviousYear}
 				className="w-full sm:w-auto"
 			>
@@ -136,7 +136,7 @@ function YearNavigation({
 				type="button"
 				variant="outline"
 				size="sm"
-				aria-label="Ano seguinte"
+				aria-label={`Ir para ${selectedYear + 1} (ano seguinte)`}
 				onClick={onNextYear}
 				className="w-full sm:w-auto"
 			>
