@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { NextRequest } from "next/server"
-import { describe, expect, it } from "vitest"
+import { describe, expect, test } from "vitest"
 import { config, proxy } from "./proxy"
 
 function makeRequest(pathname: string, cookies: Record<string, string> = {}) {
@@ -13,8 +13,8 @@ function makeRequest(pathname: string, cookies: Record<string, string> = {}) {
 	})
 }
 
-describe("Edge proxy", () => {
-	it("redirects unauthenticated requests to /login with redirect param", () => {
+describe("proxy de rotas autenticadas", () => {
+	test("redireciona requisição sem refresh token para /login com redirect", () => {
 		const req = makeRequest("/perfil")
 		const res = proxy(req)
 
@@ -25,7 +25,7 @@ describe("Edge proxy", () => {
 		expect(location).toContain("redirect=%2Fperfil")
 	})
 
-	it("passes through when refreshToken cookie is present", () => {
+	test("permite requisição quando cookie refreshToken está presente", () => {
 		const req = makeRequest("/perfil", { refreshToken: "abc" })
 		const res = proxy(req)
 
@@ -33,21 +33,21 @@ describe("Edge proxy", () => {
 		expect(res.status).toBe(200)
 	})
 
-	it("supports refresh_token cookie name fallback", () => {
+	test("aceita nome alternativo refresh_token", () => {
 		const req = makeRequest("/admin/usuarios", { refresh_token: "xyz" })
 		const res = proxy(req)
 		expect(res.headers.get("location")).toBeNull()
 	})
 
-	it("passes through quando has_session=1 está presente sem refresh cookie (fallback cross-port)", () => {
+	test("redireciona quando só has_session=1 está presente sem refresh token", () => {
 		const req = makeRequest("/academias", { has_session: "1" })
 		const res = proxy(req)
 
-		expect(res.headers.get("location")).toBeNull()
-		expect(res.status).toBe(200)
+		expect(res.status).toBeGreaterThanOrEqual(300)
+		expect(res.headers.get("location")).toContain("/login")
 	})
 
-	it("redireciona quando has_session tem valor inválido e não há refresh cookie", () => {
+	test("redireciona quando has_session tem valor inválido e não há refresh token", () => {
 		const req = makeRequest("/academias", { has_session: "true" })
 		const res = proxy(req)
 
@@ -55,7 +55,7 @@ describe("Edge proxy", () => {
 		expect(res.headers.get("location")).toContain("/login")
 	})
 
-	it("redireciona quando has_session está ausente e não há refresh cookie", () => {
+	test("redireciona quando não há refresh token", () => {
 		const req = makeRequest("/check-ins")
 		const res = proxy(req)
 
@@ -63,7 +63,7 @@ describe("Edge proxy", () => {
 		expect(res.headers.get("location")).toContain("/login")
 	})
 
-	it("redireciona /inicio para /login quando não autenticado (RF-003)", () => {
+	test("redireciona /inicio para /login quando não autenticado (RF-003)", () => {
 		const req = makeRequest("/inicio")
 		const res = proxy(req)
 
@@ -72,7 +72,7 @@ describe("Edge proxy", () => {
 		expect(res.headers.get("location")).toContain("redirect=%2Finicio")
 	})
 
-	it("passa em /inicio quando autenticado (RF-003)", () => {
+	test("passa em /inicio quando autenticado (RF-003)", () => {
 		const req = makeRequest("/inicio", { refreshToken: "abc" })
 		const res = proxy(req)
 
@@ -80,7 +80,7 @@ describe("Edge proxy", () => {
 		expect(res.status).toBe(200)
 	})
 
-	it("protege /calendario pelo matcher e redireciona quando não autenticado", () => {
+	test("protege /calendario pelo matcher e redireciona quando não autenticado", () => {
 		const req = makeRequest("/calendario")
 		const res = proxy(req)
 
@@ -90,7 +90,17 @@ describe("Edge proxy", () => {
 		expect(res.headers.get("location")).toContain("redirect=%2Fcalendario")
 	})
 
-	it("passa em /calendario quando autenticado", () => {
+	test("bloqueia bypass de /calendario com has_session client-side", () => {
+		const req = makeRequest("/calendario", { has_session: "1" })
+		const res = proxy(req)
+
+		expect(config.matcher).toContain("/calendario/:path*")
+		expect(res.status).toBeGreaterThanOrEqual(300)
+		expect(res.headers.get("location")).toContain("/login")
+		expect(res.headers.get("location")).toContain("redirect=%2Fcalendario")
+	})
+
+	test("passa em /calendario quando autenticado", () => {
 		const req = makeRequest("/calendario", { refreshToken: "abc" })
 		const res = proxy(req)
 

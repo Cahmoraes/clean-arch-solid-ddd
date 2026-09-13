@@ -258,7 +258,6 @@ function CalendarDayCell({ day }: { day: CalendarDay }) {
 			aria-label={
 				holiday ? formatHolidayAriaLabel(holiday) : `${day.day}, dia comum`
 			}
-			aria-current={holiday ? "date" : undefined}
 			className={cn(
 				"min-h-10 rounded-[12px] border border-border bg-muted p-2 text-sm",
 				"transition-colors",

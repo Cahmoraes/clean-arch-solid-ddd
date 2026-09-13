@@ -22,8 +22,17 @@ function createDeferred(): Deferred {
 }
 
 describe("CalendarPage", () => {
-	test("renderiza feriados nacionais e permite navegar entre anos", async () => {
+	test("renderiza feriados nacionais e permite navegar para ano anterior e seguinte", async () => {
 		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2025`, () =>
+				HttpResponse.json([
+					{
+						date: "2025-12-25",
+						name: "Natal",
+						type: "national",
+					},
+				]),
+			),
 			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
 				HttpResponse.json([
 					{
@@ -46,6 +55,20 @@ describe("CalendarPage", () => {
 		const user = userEvent.setup()
 
 		renderWithProviders(<CalendarPage initialYear={2026} />)
+
+		expect(
+			screen.getByRole("heading", { name: "Calendário 2026" }),
+		).toBeInTheDocument()
+		expect((await screen.findAllByText("Tiradentes")).length).toBeGreaterThan(0)
+
+		await user.click(screen.getByRole("button", { name: "Ano anterior" }))
+
+		expect(
+			screen.getByRole("heading", { name: "Calendário 2025" }),
+		).toBeInTheDocument()
+		expect((await screen.findAllByText("Natal")).length).toBeGreaterThan(0)
+
+		await user.click(screen.getByRole("button", { name: "Ano seguinte" }))
 
 		expect(
 			screen.getByRole("heading", { name: "Calendário 2026" }),
@@ -202,6 +225,6 @@ describe("CalendarPage", () => {
 		const holidayDay = within(aprilCard).getByRole("listitem", {
 			name: /21 de abril: Tiradentes/,
 		})
-		expect(holidayDay).toHaveAttribute("aria-current", "date")
+		expect(holidayDay).not.toHaveAttribute("aria-current")
 	})
 })

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, test, vi } from "vitest"
 import { authEvents, useAuthStore } from "./auth-store"
 
 function makeJwt(payload: Record<string, unknown>): string {
@@ -12,14 +12,14 @@ function makeJwt(payload: Record<string, unknown>): string {
 }
 
 describe("useAuthStore", () => {
-	it("starts with empty session", () => {
+	test("inicia sem sessão", () => {
 		const state = useAuthStore.getState()
 		expect(state.accessToken).toBeNull()
 		expect(state.user).toBeNull()
 		expect(state.expiresAt).toBeNull()
 	})
 
-	it("setSession decodes JWT and stores token, claims and expiration", () => {
+	test("setSession decodifica JWT e armazena token, claims e expiração", () => {
 		const exp = Math.floor(Date.now() / 1000) + 1200
 		const token = makeJwt({ sub: "user-42", role: "ADMIN", exp })
 
@@ -31,7 +31,7 @@ describe("useAuthStore", () => {
 		expect(state.expiresAt).toBe(exp * 1000)
 	})
 
-	it("clear resets state", () => {
+	test("clear limpa o estado", () => {
 		useAuthStore.setState({
 			accessToken: "x",
 			expiresAt: 1,
@@ -46,7 +46,7 @@ describe("useAuthStore", () => {
 		expect(state.user).toBeNull()
 	})
 
-	it("emits 'login' event when setSession is called with default kind", () => {
+	test("emite evento login quando setSession é chamado com kind padrão", () => {
 		const exp = Math.floor(Date.now() / 1000) + 60
 		const token = makeJwt({ sub: "u-1", role: "MEMBER", exp })
 		const handler = vi.fn()
@@ -62,7 +62,7 @@ describe("useAuthStore", () => {
 		authEvents.removeEventListener("login", handler)
 	})
 
-	it("emits 'refresh' event when setSession is called with kind=refresh", () => {
+	test("emite evento refresh quando setSession é chamado com kind refresh", () => {
 		const token = makeJwt({
 			sub: "u-1",
 			role: "MEMBER",
@@ -77,7 +77,7 @@ describe("useAuthStore", () => {
 		authEvents.removeEventListener("refresh", handler)
 	})
 
-	it("emits 'logout' event when clear is called with default kind", () => {
+	test("emite evento logout quando clear é chamado com kind padrão", () => {
 		const handler = vi.fn()
 		authEvents.addEventListener("logout", handler)
 
@@ -87,7 +87,7 @@ describe("useAuthStore", () => {
 		authEvents.removeEventListener("logout", handler)
 	})
 
-	it("emits 'forced-logout' event when clear is called with kind=forced-logout", () => {
+	test("emite evento forced-logout quando clear é chamado com kind forced-logout", () => {
 		const handler = vi.fn()
 		authEvents.addEventListener("forced-logout", handler)
 
@@ -95,37 +95,5 @@ describe("useAuthStore", () => {
 
 		expect(handler).toHaveBeenCalledOnce()
 		authEvents.removeEventListener("forced-logout", handler)
-	})
-})
-
-describe("writeSessionFlag via document.cookie", () => {
-	afterEach(() => {
-		// Limpa o cookie has_session entre testes via store (que usa document.cookie internamente)
-		useAuthStore.getState().clear()
-	})
-
-	it("escreve has_session=1 ao chamar setSession com JWT válido", () => {
-		const exp = Math.floor(Date.now() / 1000) + 60
-		const token = makeJwt({ sub: "u", role: "MEMBER", exp })
-
-		useAuthStore.getState().setSession(token)
-
-		expect(document.cookie).toContain("has_session=1")
-	})
-
-	it("remove has_session ao chamar clear", () => {
-		const exp = Math.floor(Date.now() / 1000) + 60
-		const token = makeJwt({ sub: "u", role: "MEMBER", exp })
-		useAuthStore.getState().setSession(token) // escreve has_session=1 internamente
-
-		useAuthStore.getState().clear()
-
-		expect(document.cookie).not.toContain("has_session=1")
-	})
-
-	it("não escreve has_session ao chamar setSession com JWT inválido", () => {
-		useAuthStore.getState().setSession("token-invalido-sem-payload")
-
-		expect(document.cookie).not.toContain("has_session=1")
 	})
 })

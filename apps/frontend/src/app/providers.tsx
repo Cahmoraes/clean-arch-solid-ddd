@@ -2,21 +2,14 @@
 
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import { QueryClientProvider } from "@tanstack/react-query"
+import { usePathname } from "next/navigation"
 import { type ReactNode, useEffect, useLayoutEffect, useState } from "react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { getApi } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
+import { isProtectedPathname } from "@/lib/auth/protected-routes"
 import { getTokenRefreshScheduler } from "@/lib/auth/token-refresh"
 import { createQueryClient } from "@/lib/query-client"
-
-const SESSION_FLAG_COOKIE = "has_session"
-
-function hasSessionFlag(): boolean {
-	if (typeof document === "undefined") return false
-	return document.cookie
-		.split(";")
-		.some((entry) => entry.trim() === `${SESSION_FLAG_COOKIE}=1`)
-}
 
 // Token ausente ou expirado exige o mesmo bootstrap: sem isso, filhos disparam
 // chamadas de API com um accessToken que o backend já vai rejeitar com 401.
@@ -26,17 +19,22 @@ function needsSessionBootstrap(): boolean {
 	return expiresAt !== null && expiresAt <= Date.now()
 }
 
+function shouldBootstrapSession(pathname: string | null): boolean {
+	return isProtectedPathname(pathname) && needsSessionBootstrap()
+}
+
 function AuthProvider({ children }: { children: ReactNode }) {
 	const [booting, setBooting] = useState<boolean>(false)
+	const pathname = usePathname()
 
 	// Seta booting=true antes do browser pintar para evitar flash de conteúdo
 	// sem auth e evitar que filhos disparem chamadas de API com accessToken
 	// nulo ou expirado.
 	useLayoutEffect(() => {
-		if (hasSessionFlag() && needsSessionBootstrap()) {
+		if (shouldBootstrapSession(pathname)) {
 			setBooting(true)
 		}
-	}, [])
+	}, [pathname])
 
 	useEffect(() => {
 		// Inicializa singleton do API client (também registra o scheduler).
@@ -44,7 +42,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
 		const scheduler = getTokenRefreshScheduler()
 		scheduler.start()
 
-		if (hasSessionFlag() && needsSessionBootstrap()) {
+		if (shouldBootstrapSession(pathname)) {
 			setBooting(true)
 			scheduler
 				.refreshNow()
@@ -55,7 +53,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
 		return () => {
 			scheduler.stop()
 		}
-	}, [])
+	}, [pathname])
 
 	if (booting) {
 		return <div data-testid="auth-boot-skeleton" aria-busy="true" />

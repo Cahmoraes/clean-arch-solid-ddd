@@ -37,19 +37,6 @@ function emit(type: AuthEventType, user: AuthUser | null): void {
 	)
 }
 
-const SESSION_FLAG_COOKIE = "has_session"
-
-function writeSessionFlag(active: boolean): void {
-	if (typeof document === "undefined") return
-	if (active) {
-		// biome-ignore lint/suspicious/noDocumentCookie: cookieStore não está disponível no Firefox e Safari <17; document.cookie é o fallback compatível
-		document.cookie = `${SESSION_FLAG_COOKIE}=1; path=/; SameSite=Lax`
-		return
-	}
-	// biome-ignore lint/suspicious/noDocumentCookie: cookieStore não está disponível no Firefox e Safari <17; document.cookie é o fallback compatível
-	document.cookie = `${SESSION_FLAG_COOKIE}=; path=/; max-age=0; SameSite=Lax`
-}
-
 export const useAuthStore = create<AuthState>((set) => ({
 	accessToken: null,
 	expiresAt: null,
@@ -58,7 +45,6 @@ export const useAuthStore = create<AuthState>((set) => ({
 		const payload = decodeJwt(token)
 		if (!payload) {
 			set({ accessToken: token, expiresAt: null, user: null })
-			writeSessionFlag(false)
 			emit(kind, null)
 			return
 		}
@@ -68,12 +54,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 			isSuperAdmin: payload.isSuperAdmin,
 		}
 		set({ accessToken: token, expiresAt: payload.exp * 1000, user })
-		writeSessionFlag(true)
 		emit(kind, user)
 	},
 	clear: (kind: ClearKind = "logout") => {
 		set({ accessToken: null, expiresAt: null, user: null })
-		writeSessionFlag(false)
 		emit(kind, null)
 	},
 }))
