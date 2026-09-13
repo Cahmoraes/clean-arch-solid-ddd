@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    actor User as Logged-in User
+    participant Shell as AuthenticatedShell
+    participant Page as /calendario page
+    participant Query as TanStack Query
+    participant API as BrasilAPI
+
+    User->>Shell: Clicks "Calendário" item
+    Shell->>Page: Navigates to /calendario
+    User->>Page: Changes selected year
+    Page->>Query: useQuery({ queryKey: ["feriados", year], queryFn: fetch https://brasilapi.com.br/api/feriados/v1/{year} })
+
+    alt Loading
+        Query-->>Page: isLoading = true
+        Page-->>User: Shows loading state
+    else Success
+        Query->>API: GET https://brasilapi.com.br/api/feriados/v1/{year}
+        API-->>Query: Returns national holidays
+        Query-->>Page: Receives holiday data
+        Page-->>User: Renders calendar and holiday list
+    else Error
+        Query-->>Page: error
+        Page-->>User: Shows error state and Retry action
+        User->>Page: Clicks Retry
+        Page->>Query: refetch()
+    end
