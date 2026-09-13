@@ -1,5 +1,5 @@
 import { fireEvent, screen } from "@testing-library/react"
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 
 vi.mock("next/navigation", () => ({
 	useRouter: () => ({ replace: vi.fn(), push: vi.fn(), prefetch: vi.fn() }),
@@ -37,12 +37,11 @@ function setRole(role: "MEMBER" | "ADMIN") {
 	})
 }
 
-afterEach(() => {
+beforeEach(() => {
 	useAuthStore.getState().clear()
 	useSidebarCollapseStore.setState({ collapsed: false })
 	mockedPathname = "/inicio"
 })
-beforeEach(() => useSidebarCollapseStore.setState({ collapsed: false }))
 
 describe("AuthenticatedShell — VOLT", () => {
 	test("exibe a marca VOLT e a navegação principal", () => {

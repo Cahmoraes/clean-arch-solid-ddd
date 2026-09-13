@@ -3,6 +3,7 @@
 import {
 	BarChart3,
 	Building2,
+	CalendarDays,
 	CheckCircle,
 	CreditCard,
 	LayoutDashboard,
@@ -38,6 +39,7 @@ const MAIN_NAV_ITEMS: ReadonlyArray<NavItem> = [
 	{ href: "/inicio", label: "Dashboard", icon: LayoutDashboard },
 	{ href: "/check-ins", label: "Check-ins", icon: CheckCircle },
 	{ href: "/academias", label: "Academias", icon: Building2 },
+	{ href: "/calendario", label: "Calendário", icon: CalendarDays },
 	{ href: "/perfil", label: "Perfil", icon: User },
 	{ href: "/assinatura", label: "Assinatura", icon: CreditCard },
 ]
