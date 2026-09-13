@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 vi.mock("next/navigation", () => ({
 	useRouter: () => ({ replace: vi.fn(), push: vi.fn(), prefetch: vi.fn() }),
-	usePathname: () => "/inicio",
+	usePathname: () => mockedPathname,
 }))
 
 vi.mock("@/features/auth/api", () => ({
@@ -23,6 +23,12 @@ import { useSidebarCollapseStore } from "@/lib/ui-state/sidebar-collapse-store"
 import { renderWithProviders } from "@/test/render"
 import { AuthenticatedShell } from "./authenticated-shell"
 
+let mockedPathname = "/inicio"
+
+function setPathname(pathname: string) {
+	mockedPathname = pathname
+}
+
 function setRole(role: "MEMBER" | "ADMIN") {
 	useAuthStore.setState({
 		accessToken: "t",
@@ -34,6 +40,7 @@ function setRole(role: "MEMBER" | "ADMIN") {
 afterEach(() => {
 	useAuthStore.getState().clear()
 	useSidebarCollapseStore.setState({ collapsed: false })
+	mockedPathname = "/inicio"
 })
 beforeEach(() => useSidebarCollapseStore.setState({ collapsed: false }))
 
@@ -47,6 +54,7 @@ describe("AuthenticatedShell — VOLT", () => {
 		)
 		expect(screen.getAllByText("VOLT").length).toBeGreaterThanOrEqual(1)
 		expect(screen.getByRole("link", { name: /Dashboard/ })).toBeInTheDocument()
+		expect(screen.getByRole("link", { name: "Calendário" })).toBeInTheDocument()
 		expect(screen.getByRole("link", { name: /Academias/ })).toBeInTheDocument()
 	})
 
@@ -100,6 +108,33 @@ describe("AuthenticatedShell — VOLT", () => {
 		)
 		expect(screen.getByRole("button", { name: /sair/i })).toBeInTheDocument()
 	})
+
+	test("aponta Calendário para a rota autenticada correta", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		expect(screen.getByRole("link", { name: "Calendário" })).toHaveAttribute(
+			"href",
+			"/calendario",
+		)
+	})
+
+	test("marca Calendário como ativo na rota de calendário", () => {
+		setRole("MEMBER")
+		setPathname("/calendario")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		expect(screen.getByRole("link", { name: "Calendário" })).toHaveAttribute(
+			"aria-current",
+			"page",
+		)
+	})
 })
 
 describe("AuthenticatedShell — recolher/expandir", () => {
@@ -146,6 +181,7 @@ describe("AuthenticatedShell — recolher/expandir", () => {
 			</AuthenticatedShell>,
 		)
 		expect(screen.getByRole("link", { name: "Dashboard" })).toBeInTheDocument()
+		expect(screen.getByRole("link", { name: "Calendário" })).toBeInTheDocument()
 	})
 
 	test("Cmd/Ctrl+B alterna o recolhimento (FR-011)", () => {
