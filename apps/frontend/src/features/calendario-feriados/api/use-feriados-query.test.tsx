@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { renderHook, waitFor } from "@testing-library/react"
-import { HttpResponse, http } from "msw"
+import { act, renderHook, waitFor } from "@testing-library/react"
+import { delay, HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
-import { describe, expect, test } from "vitest"
+import { describe, expect, test, vi } from "vitest"
 import { ApiError } from "@/lib/errors"
+import { DEFAULT_REQUEST_TIMEOUT_MS } from "@/lib/query-client"
 import { server } from "@/test/msw/server"
 import { feriadosQueryKey, useFeriadosQuery } from "./use-feriados-query"
 
@@ -109,6 +110,27 @@ describe("useFeriadosQuery", () => {
 		})
 		expect(result.current.error).toBeInstanceOf(ApiError)
 		expect(result.current.error?.code).toBe("holidays_unavailable")
+	})
+
+	test("não retenta erro HTTP não recuperável da BrasilAPI", async () => {
+		let requestCount = 0
+		server.use(
+			http.get("https://brasilapi.com.br/api/feriados/v1/2026", () => {
+				requestCount += 1
+				return HttpResponse.json({ message: "não encontrado" }, { status: 404 })
+			}),
+		)
+
+		const { result } = renderHook(() => useFeriadosQuery(2026), {
+			wrapper: createWrapper(),
+		})
+
+		await waitFor(() => expect(result.current.isError).toBe(true), {
+			timeout: 3_000,
+		})
+		expect(result.current.error).toBeInstanceOf(ApiError)
+		expect(result.current.error?.status).toBe(404)
+		expect(requestCount).toBe(1)
 	})
 
 	test("permite refetch após erro recuperável", async () => {
@@ -218,9 +240,43 @@ describe("useFeriadosQuery", () => {
 	})
 
 	test("falha com ApiError quando a BrasilAPI muda o contrato", async () => {
+		let requestCount = 0
+		server.use(
+			http.get("https://brasilapi.com.br/api/feriados/v1/2026", () => {
+				requestCount += 1
+				return HttpResponse.json([{ date: "2026-01-01", name: "Ano Novo" }])
+			}),
+		)
+
+		const { result } = renderHook(() => useFeriadosQuery(2026), {
+			wrapper: createWrapper(),
+		})
+
+		await waitFor(() => expect(result.current.isError).toBe(true), {
+			timeout: 3_000,
+		})
+		expect(result.current.error).toBeInstanceOf(ApiError)
+		expect(result.current.error?.code).toBe("holidays_invalid_response")
+		expect(requestCount).toBe(1)
+	})
+
+	test.each([
+		[
+			"data fora do formato YYYY-MM-DD",
+			{ date: "01/01/2026", name: "Ano Novo", type: "national" },
+		],
+		[
+			"nome vazio após trim",
+			{ date: "2026-01-01", name: "   ", type: "national" },
+		],
+		[
+			"tipo fora do contrato nacional",
+			{ date: "2026-01-01", name: "Ano Novo", type: "municipal" },
+		],
+	])("falha quando payload mantém string inválida: %s", async (_case, holiday) => {
 		server.use(
 			http.get("https://brasilapi.com.br/api/feriados/v1/2026", () =>
-				HttpResponse.json([{ date: "2026-01-01", name: "Ano Novo" }]),
+				HttpResponse.json([holiday]),
 			),
 		)
 
@@ -233,5 +289,82 @@ describe("useFeriadosQuery", () => {
 		})
 		expect(result.current.error).toBeInstanceOf(ApiError)
 		expect(result.current.error?.code).toBe("holidays_invalid_response")
+	})
+
+	test("limita request pendurado com timeout app-level", async () => {
+		vi.useFakeTimers()
+		try {
+			server.use(
+				http.get("https://brasilapi.com.br/api/feriados/v1/2026", async () => {
+					await delay("infinite")
+					return HttpResponse.json([])
+				}),
+			)
+
+			const { result } = renderHook(() => useFeriadosQuery(2026), {
+				wrapper: createWrapper(),
+			})
+
+			expect(result.current.isPending).toBe(true)
+
+			await act(async () => {
+				await vi.advanceTimersByTimeAsync(DEFAULT_REQUEST_TIMEOUT_MS)
+			})
+			await act(async () => {
+				await vi.advanceTimersByTimeAsync(1_000)
+			})
+			await act(async () => {
+				await vi.advanceTimersByTimeAsync(DEFAULT_REQUEST_TIMEOUT_MS)
+			})
+			await act(async () => {
+				await vi.waitFor(() => expect(result.current.isError).toBe(true))
+			})
+			expect(result.current.error).toBeInstanceOf(ApiError)
+			expect(result.current.error?.status).toBe(504)
+			expect(result.current.error?.code).toBe("holidays_timeout")
+		} finally {
+			vi.useRealTimers()
+		}
+	})
+
+	test("propaga abort do TanStack Query para a request em andamento", async () => {
+		let requestStartedResolve: () => void = () => undefined
+		let abortPromiseResolve: () => void = () => undefined
+		const requestStarted = new Promise<void>((resolve) => {
+			requestStartedResolve = resolve
+		})
+		const abortPromise = new Promise<void>((resolve) => {
+			abortPromiseResolve = resolve
+		})
+		server.use(
+			http.get(
+				"https://brasilapi.com.br/api/feriados/v1/2026",
+				async ({ request }) => {
+					requestStartedResolve()
+					request.signal.addEventListener("abort", abortPromiseResolve, {
+						once: true,
+					})
+					await delay("infinite")
+					return HttpResponse.json([])
+				},
+			),
+		)
+
+		const { result, unmount } = renderHook(() => useFeriadosQuery(2026), {
+			wrapper: createWrapper(),
+		})
+
+		expect(result.current.fetchStatus).toBe("fetching")
+		await requestStarted
+		unmount()
+
+		await expect(
+			Promise.race([
+				abortPromise.then(() => "aborted"),
+				new Promise((resolve) =>
+					globalThis.setTimeout(resolve, 1_000, "pending"),
+				),
+			]),
+		).resolves.toBe("aborted")
 	})
 })
