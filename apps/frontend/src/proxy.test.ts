@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { NextRequest } from "next/server"
 import { describe, expect, it } from "vitest"
-import { proxy } from "./proxy"
+import { config, proxy } from "./proxy"
 
 function makeRequest(pathname: string, cookies: Record<string, string> = {}) {
 	const url = `http://localhost:3000${pathname}`
@@ -76,6 +76,25 @@ describe("Edge proxy", () => {
 		const req = makeRequest("/inicio", { refreshToken: "abc" })
 		const res = proxy(req)
 
+		expect(res.headers.get("location")).toBeNull()
+		expect(res.status).toBe(200)
+	})
+
+	it("protege /calendario pelo matcher e redireciona quando não autenticado", () => {
+		const req = makeRequest("/calendario")
+		const res = proxy(req)
+
+		expect(config.matcher).toContain("/calendario/:path*")
+		expect(res.status).toBeGreaterThanOrEqual(300)
+		expect(res.headers.get("location")).toContain("/login")
+		expect(res.headers.get("location")).toContain("redirect=%2Fcalendario")
+	})
+
+	it("passa em /calendario quando autenticado", () => {
+		const req = makeRequest("/calendario", { refreshToken: "abc" })
+		const res = proxy(req)
+
+		expect(config.matcher).toContain("/calendario/:path*")
 		expect(res.headers.get("location")).toBeNull()
 		expect(res.status).toBe(200)
 	})

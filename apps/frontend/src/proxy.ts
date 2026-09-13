@@ -27,6 +27,7 @@ export const config = {
 		"/inicio/:path*",
 		"/perfil/:path*",
 		"/academias/:path*",
+		"/calendario/:path*",
 		"/check-ins/:path*",
 		"/assinatura/:path*",
 		"/admin/:path*",

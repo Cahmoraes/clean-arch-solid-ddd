@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronLeft, ChevronRight, RefreshCcw } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import {
@@ -51,7 +51,6 @@ const MONTH_NAMES = [
 
 const WEEKDAY_LABELS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
 const CALENDAR_SKELETON_MONTHS = ["sk-1", "sk-2", "sk-3", "sk-4"]
-const EMPTY_HOLIDAYS: Feriado[] = []
 
 function formatDateParts(
 	year: number,
@@ -345,44 +344,11 @@ function HolidaysPanel({
 	)
 }
 
-function CalendarContent({
-	isPending,
-	isError,
-	errorMessage,
-	onRetry,
-	months,
-	holidays,
-	year,
-}: {
-	isPending: boolean
-	isError: boolean
-	errorMessage?: string
-	onRetry: () => void
-	months: ReadonlyArray<CalendarMonth>
-	holidays: ReadonlyArray<Feriado>
-	year: number
-}) {
-	if (isPending) return <CalendarLoadingState />
-	if (isError) {
-		return <CalendarErrorState errorMessage={errorMessage} onRetry={onRetry} />
-	}
-	if (holidays.length === 0) return <CalendarEmptyState />
-	return <CalendarGrid months={months} year={year} />
-}
-
 export default function CalendarPage({ initialYear }: CalendarPageProps) {
 	const [selectedYear, setSelectedYear] = useState(
 		() => initialYear ?? new Date().getFullYear(),
 	)
 	const query = useFeriadosQuery(selectedYear)
-	const holidays = useMemo(
-		() => (query.data ?? EMPTY_HOLIDAYS).toSorted(compareHolidayDate),
-		[query.data],
-	)
-	const months = useMemo(
-		() => buildCalendarMonths(selectedYear, holidays),
-		[selectedYear, holidays],
-	)
 
 	return (
 		<PageContainer as="section" width="wide" className="gap-0">
@@ -399,22 +365,48 @@ export default function CalendarPage({ initialYear }: CalendarPageProps) {
 				}
 			/>
 
-			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-				<div className="min-w-0">
-					<CalendarContent
-						isPending={query.isPending}
-						isError={query.isError}
-						errorMessage={query.error?.userMessage}
-						onRetry={() => {
-							void query.refetch()
-						}}
-						months={months}
-						holidays={holidays}
-						year={selectedYear}
-					/>
-				</div>
-				<HolidaysPanel holidays={holidays} year={selectedYear} />
-			</div>
+			<CalendarQueryContent
+				query={query}
+				selectedYear={selectedYear}
+				onRetry={() => {
+					void query.refetch()
+				}}
+			/>
 		</PageContainer>
+	)
+}
+
+function CalendarQueryContent({
+	query,
+	selectedYear,
+	onRetry,
+}: {
+	query: ReturnType<typeof useFeriadosQuery>
+	selectedYear: number
+	onRetry: () => void
+}) {
+	if (query.isPending) return <CalendarLoadingState />
+	if (query.isError) {
+		return (
+			<CalendarErrorState
+				errorMessage={query.error.userMessage}
+				onRetry={onRetry}
+			/>
+		)
+	}
+
+	const holidays = query.data.toSorted(compareHolidayDate)
+
+	if (holidays.length === 0) return <CalendarEmptyState />
+
+	const months = buildCalendarMonths(selectedYear, holidays)
+
+	return (
+		<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+			<div className="min-w-0">
+				<CalendarGrid months={months} year={selectedYear} />
+			</div>
+			<HolidaysPanel holidays={holidays} year={selectedYear} />
+		</div>
 	)
 }

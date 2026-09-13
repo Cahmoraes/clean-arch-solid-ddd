@@ -100,6 +100,12 @@ describe("CalendarPage", () => {
 		expect(await screen.findByRole("status")).toHaveTextContent(
 			"Carregando feriados",
 		)
+		expect(
+			screen.queryByRole("heading", { name: "Feriados de 2026" }),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByText("Nenhum feriado encontrado"),
+		).not.toBeInTheDocument()
 
 		deferred.resolve()
 
@@ -125,6 +131,12 @@ describe("CalendarPage", () => {
 		expect(
 			screen.getByRole("button", { name: "Tentar novamente" }),
 		).toBeEnabled()
+		expect(
+			screen.queryByRole("heading", { name: "Feriados de 2026" }),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByText("Nenhum feriado encontrado"),
+		).not.toBeInTheDocument()
 	})
 
 	test("refaz consulta ao acionar retry após erro", async () => {
@@ -166,6 +178,9 @@ describe("CalendarPage", () => {
 			await screen.findByText("Nenhum feriado encontrado"),
 		).toBeInTheDocument()
 		expect(screen.getByText("Tente consultar outro ano.")).toBeInTheDocument()
+		expect(
+			screen.queryByRole("heading", { name: "Feriados de 2026" }),
+		).not.toBeInTheDocument()
 	})
 
 	test("renderiza feriado destacado no mês correspondente", async () => {
