@@ -1,6 +1,6 @@
 # Task 2: Componentes `MonthlyCalendar` e `HolidayList` + filtro e animação [FR-001, FR-005, FR-006, FR-008, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-calendario-layout-mes-unico.md`
 **Spec:** `../specs/calendario-layout-mes-unico-design.md`
 **Tier:** standard

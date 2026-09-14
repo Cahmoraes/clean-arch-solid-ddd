@@ -1,6 +1,6 @@
 # Task 1: Hook de navegação `useCalendarNavigation` com virada de ano e acessibilidade [FR-002, FR-003, FR-006, FR-009, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-calendario-layout-mes-unico.md`
 **Spec:** `../specs/calendario-layout-mes-unico-design.md`
 **Tier:** cheap

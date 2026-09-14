@@ -13,9 +13,9 @@
 
 ## Tarefas
 
-- [ ] 1. Hook de navegação `useCalendarNavigation` com virada de ano e acessibilidade [FR-002, FR-003, FR-006, FR-009, FR-011] → `task-01.md`
-- [ ] 2. Componentes `MonthlyCalendar` e `HolidayList` + filtro e animação [FR-001, FR-005, FR-006, FR-008, FR-011] → `task-02.md`
-- [ ] 3. Integração na `page.tsx`: mês único, pill híbrido, aria-live, swipe e estados preservados [FR-001, FR-002, FR-003, FR-004, FR-005, FR-007, FR-009, FR-010, FR-011] → `task-03.md`
+- [x] 1. Hook de navegação `useCalendarNavigation` com virada de ano e acessibilidade [FR-002, FR-003, FR-006, FR-009, FR-011] → `task-01.md`
+- [x] 2. Componentes `MonthlyCalendar` e `HolidayList` + filtro e animação [FR-001, FR-005, FR-006, FR-008, FR-011] → `task-02.md`
+- [x] 3. Integração na `page.tsx`: mês único, pill híbrido, aria-live, swipe e estados preservados [FR-001, FR-002, FR-003, FR-004, FR-005, FR-007, FR-009, FR-010, FR-011] → `task-03.md`
 
 ## Ondas de Execução
 

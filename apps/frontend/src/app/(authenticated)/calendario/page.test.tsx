@@ -358,9 +358,7 @@ describe("CalendarPage", () => {
 			screen.getByRole("heading", { name: "Calendário 2027" }),
 		).toBeInTheDocument()
 		expect(
-			within(screen.getByRole("complementary")).getByText(
-				/Confraternização/,
-			),
+			within(screen.getByRole("complementary")).getByText(/Confraternização/),
 		).toBeInTheDocument()
 	})
 
@@ -431,9 +429,7 @@ describe("CalendarPage", () => {
 			await screen.findByRole("heading", { name: /Setembro 2026/ }),
 		).toBeInTheDocument()
 
-		const grid = screen
-			.getByRole("complementary")
-			.parentElement as HTMLElement
+		const grid = screen.getByRole("complementary").parentElement as HTMLElement
 		expect(grid).not.toBeNull()
 		expect(grid.className).toContain("grid")
 

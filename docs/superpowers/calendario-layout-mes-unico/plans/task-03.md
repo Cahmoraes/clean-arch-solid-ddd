@@ -1,6 +1,6 @@
 # Task 3: Integração na `page.tsx`: mês único, pill híbrido, aria-live, swipe e estados preservados [FR-001, FR-002, FR-003, FR-004, FR-005, FR-007, FR-009, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-calendario-layout-mes-unico.md`
 **Spec:** `../specs/calendario-layout-mes-unico-design.md`
 **Tier:** standard
