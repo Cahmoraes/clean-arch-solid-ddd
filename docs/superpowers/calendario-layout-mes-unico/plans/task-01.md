@@ -77,28 +77,35 @@ export interface UseCalendarNavigationReturn {
 }
 
 export function useCalendarNavigation(initialYear?: number, initialMonth?: number): UseCalendarNavigationReturn {
-  const now = new Date()
-  const [selectedYear, setYear] = useState(initialYear ?? now.getFullYear())
-  const [selectedMonth, setMonth] = useState(initialMonth ?? now.getMonth())
+  const getInitial = () => {
+    const d = new Date()
+    return { year: initialYear ?? d.getFullYear(), month: initialMonth ?? d.getMonth() }
+  }
+  const [state, setState] = useState<State>(getInitial)
+  const clampYear = (y: number) => Math.min(2199, Math.max(1900, y))
 
   const goPrevMonth = useCallback(() => {
-    setMonth((m) => {
-      if (m === 0) { setYear((y) => y - 1); return 11 }
-      return m - 1
+    setState((prev) => {
+      if (prev.month === 0) return { year: clampYear(prev.year - 1), month: 11 }
+      return { year: prev.year, month: prev.month - 1 }
     })
   }, [])
   const goNextMonth = useCallback(() => {
-    setMonth((m) => {
-      if (m === 11) { setYear((y) => y + 1); return 0 }
-      return m + 1
+    setState((prev) => {
+      if (prev.month === 11) return { year: clampYear(prev.year + 1), month: 0 }
+      return { year: prev.year, month: prev.month + 1 }
     })
   }, [])
-  const goPrevYear = useCallback(() => setYear((y) => y - 1), [])
-  const goNextYear = useCallback(() => setYear((y) => y + 1), [])
-  const goToToday = useCallback(() => { setYear(now.getFullYear()); setMonth(now.getMonth()) }, [])
+  const goPrevYear = useCallback(() => setState((prev) => ({ ...prev, year: clampYear(prev.year - 1) })), [])
+  const goNextYear = useCallback(() => setState((prev) => ({ ...prev, year: clampYear(prev.year + 1) })), [])
+  const goToToday = useCallback(() => {
+    const d = new Date()
+    setState({ year: clampYear(d.getFullYear()), month: d.getMonth() })
+  }, [])
 
-  return { selectedYear, selectedMonth, goPrevMonth, goNextMonth, goPrevYear, goNextYear, goToToday }
+  return { selectedYear: state.year, selectedMonth: state.month, goPrevMonth, goNextMonth, goPrevYear, goNextYear, goToToday }
 }
+type State = { year: number; month: number }
 
 export function getMonthLabel(monthIndex: number, year: number): string {
   const MONTH_NAMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]

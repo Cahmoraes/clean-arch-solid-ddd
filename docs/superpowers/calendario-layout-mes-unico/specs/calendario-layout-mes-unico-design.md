@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-14T10:27:46-03:00"
-updated_at: "2026-09-14T10:27:46-03:00"
+updated_at: "2026-09-14T10:46:34-03:00"
 ---
 
 # Design — Calendário Layout Mês Único
@@ -23,7 +23,7 @@ Evoluir a rota autenticada `/calendario` (feature `calendario-feriados`) de um g
 
 ## Escopo
 
-Inclui: estado `selectedMonth` (0-11) + `selectedYear`, hook `useCalendarNavigation` com virada de ano automática (dez→jan, jan→dez), componente `MonthlyCalendar` (header com setas + grid 7cols + destaque feriado), `HolidayList` filtrada por mês, animação `180ms slide+fade` com fallback `prefers-reduced-motion`, swipe horizontal em `<768px`, atualização de `page.test.tsx` para novo layout. Exclui: alteração em `useFeriadosQuery`/`feriadosQueryKey`/BrasilAPI, feriados estaduais/municipais, persistência, backend/proxy, mudanças em `AuthenticatedShell`.
+Inclui: estado `selectedMonth` (0-11) + `selectedYear`, hook `useCalendarNavigation` com virada de ano automática (dez→jan, jan→dez) e clamp opcional a `[1900,2199]`, componente `MonthlyCalendar` (header com setas + grid 7cols + destaque feriado), `HolidayList` filtrada por mês, animação `180ms slide+fade` com fallback `prefers-reduced-motion`, swipe horizontal com threshold `40px` em eixo X (ignora vertical `>30px`, apenas `<768px`), atualização de `page.test.tsx` para novo layout. Exclui: alteração em `useFeriadosQuery`/`feriadosQueryKey`/BrasilAPI, feriados estaduais/municipais, persistência, backend/proxy, mudanças em `AuthenticatedShell`.
 
 ## Especificação Visual
 
@@ -32,11 +32,11 @@ Inclui: estado `selectedMonth` (0-11) + `selectedYear`, hook `useCalendarNavigat
 **Fonte de design original:** nenhuma; layout definido apenas via mockup do companion.
 
 **Decisões visuais (norte, não pixel-final):**
-- Layout: `PageContainer as="section" width="wide"` → `PageHeader` (título `Calendário` + `pill` ano com `ChevronLeft/Right`) → `grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]` com calendário mês único + sidebar; em `<768px` 1 coluna com swipe.
-- Hierarquia: título do mês (`strong 15px`, `aria-live="polite"`) entre setas `32px` circulares no `CardHeader`; `Card rounded-[22px]`; `weekdays` 11px uppercase; `days grid-cols-7 gap-1` com `day min-h-10` e feriado `bg-[#ecfdf5] border-[#39e58c]` + `data-name` 7px.
+- Layout: `PageContainer as="section" width="wide"` → `PageHeader` (título `Calendário` + `pill` ano com `ChevronLeft/Right`) → `grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]` com calendário mês único + sidebar; em `<768px` 1 coluna com swipe horizontal `40px` threshold (ignora vertical `>30px`).
+- Hierarquia: título do mês único `CardTitle as="h2"` com `aria-live="polite"` (sem `strong` duplicado) entre setas `32px` circulares no `CardHeader`; `Card rounded-[22px]`; `weekdays` 11px uppercase; `days grid-cols-7 gap-1` com `day min-h-10` e feriado `bg-primary/10 border-primary` (`--color-primary #39e58c`) + `data-name` 7px.
 - Spacing/escala: `gap-6` grid principal, `gap-1` dias, `p-3` `FeriadoItem`; `radius 22px` Card, `14px` item.
-- Tokens: `--volt-green #39e58c`, `--muted #f4f4f5`, `--border #e4e4e7`; tipografia sans + mono para data/ano.
-- Interação: `aria-label="Mês anterior, agosto 2026"` nas setas, foco mantido via `ref`, `role="grid"` nos dias, animação `180ms` desabilitada com `prefers-reduced-motion`.
+- Tokens: `--color-primary #39e58c` (mapeado de `--volt-green`), `--muted`/`--border` via shadcn `muted`/`border`; tipografia sans + mono para data/ano; sem hardcode `bg-[#ecfdf5]`, usar `bg-primary/10`.
+- Interação: `aria-label="Mês anterior, agosto 2026"` nas setas, foco mantido via `ref` passado ao `MonthlyCalendar`, semântica única `role="grid"` com `role="row"`/`role="gridcell"` (ou `ul` sem `grid` — escolher uma), animação `180ms` desabilitada com `prefers-reduced-motion`, loading com `keepPreviousData` (overlay `isFetching` não desmonta grid).
 
 **Fidelidade:** o mockup é direcional. Fidelidade final construída na implementação com `Card`, `Button`, `Skeleton`, `PageContainer`, `PageHeader` reais.
 
@@ -44,15 +44,15 @@ Inclui: estado `selectedMonth` (0-11) + `selectedYear`, hook `useCalendarNavigat
 
 | Componente | Responsabilidade | Depende de | Usado por |
 |---|---|---|---|
-| Navegar entre meses e anos | Controlar `selectedMonth/Year`, virada de ano, manter foco, expor `goPrev/goNext/goToday` | `useState`, `Date` local | `MonthlyCalendar`, `page.tsx` |
-| Apresentar mês único | Renderizar header com setas + weekdays + grid de dias + destaque de feriado | navegação, `Feriado[]` filtrado | rota `/calendario` |
-| Listar feriados do mês | Filtrar `feriadosDoAno` por `selectedMonth` e exibir lista vazia quando ausente | `Feriado[]`, `selectedMonth` | sidebar |
+| `useCalendarNavigation` | Controlar `selectedMonth/Year` com estado único `{year, month}`, virada de ano, clamp `[1900,2199]`, expor `goPrevMonth/goNextMonth/goPrevYear/goNextYear/goToToday` e `getMonthLabel` | `useReducer`/`useState`, `Date` local (recalculado em `goToToday`) | `page.tsx` |
+| `MonthlyCalendar` | Renderizar header com setas + `weekdays` + `grid` de dias com destaque `bg-primary/10 border-primary` e `aria-label`/`aria-live` | `getMonthLabel`, `Feriado[]` filtrado, `prevBtnRef`/`nextBtnRef` opcionais | rota `/calendario` |
+| `HolidayList` | Filtrar `feriadosDoAno` por `selectedMonth` via `getFeriadosDoMes` e exibir lista vazia quando ausente | `Feriado[]`, `selectedMonth` | sidebar |
 
-Os nomes descrevem responsabilidades; a implementação mapeia para `features/calendario-feriados/ui/MonthlyCalendar.tsx`, `useCalendarNavigation.ts` e `HolidayList.tsx`, evitando sufixos genéricos Manager/Service.
+Os nomes acima são os reais; evitam sufixos genéricos Manager/Service. Semântica ARIA unificada: `div role="grid"` com `role="row"`/`role="gridcell"` ou `ul` sem `grid` — não ambos.
 
 ## Fluxo de Dados
 
-`page.tsx` inicializa `selectedYear` (ano atual via `new Date().getFullYear()`) e `selectedMonth` (mês atual `0-11`). `useFeriadosQuery(year)` busca `https://brasilapi.com.br/api/feriados/v1/{year}` com `queryKey ["feriados", year]` e cache client-side. `feriadosDoAno` é filtrado em memória por `getFeriadosDoMes(feriadosDoAno, selectedMonth)` para `MonthlyCalendar` e `HolidayList`. Clique em seta de mês chama `goNextMonth`/`goPrevMonth`: se `month` sai de `0-11`, ajusta `selectedYear` e corrige `month` (ex.: `11 → 0` incrementa ano). Título do mês atualiza e `aria-live="polite"` anuncia. Swipe e `ArrowLeft/Right` também disparam navegação. `prefers-reduced-motion` desabilita transição.
+`page.tsx` é Client Component (`"use client"`) e inicializa `selectedYear`/`selectedMonth` exclusivamente via `useCalendarNavigation(initialYear, initialMonth)`, que usa `new Date()` apenas no cliente como fallback `initial ?? new Date()` — sem leitura de `Date` em Server Component, evitando hydration mismatch de timezone/virada de dia. `useFeriadosQuery(year)` busca `https://brasilapi.com.br/api/feriados/v1/{year}` com `queryKey ["feriados", year]`, `placeholderData: keepPreviousData` para manter `MonthlyCalendar` do ano anterior visível durante `isFetching` e `cache` client-side. `feriadosDoAno` é filtrado em memória por `getFeriadosDoMes(feriadosDoAno, selectedMonth)` para `MonthlyCalendar` e `HolidayList`. Clique em seta de mês chama `goNextMonth`/`goPrevMonth` com estado único `{year, month}` (via `useReducer` ou cálculo pré-`setState`): se `month` sai de `0-11`, ajusta `selectedYear` e corrige `month` (ex.: `11 → 0` incrementa ano). Título do mês atualiza com `aria-live="polite"` único no `CardTitle h2`. Swipe horizontal com threshold `40px` em eixo X (ignora vertical `>30px`, apenas `<768px`) e `ArrowLeft/Right` também disparam navegação. `prefers-reduced-motion` desabilita transição.
 
 ```mermaid
 sequenceDiagram
@@ -130,8 +130,8 @@ Diagrama fonte: `specs/diagrams/calendario-layout-mes-unico-design_01_sequence_m
 |---|---|---|---|---|
 | `page.test.tsx` quebra — esperava 12 cards, agora 1 | 2 | 3 | 6 🟡 | Atualizar testes para asserir 1 `Card` + navegação mês/ano e filtro por mês |
 | `prefers-reduced-motion` ignorado → animação causa desconforto | 2 | 2 | 4 🟡 | `@media (prefers-reduced-motion: reduce) { transition: none }` e teste com `matchMedia` |
-| Foco perdido ao trocar mês/ano (seta perde `focus`) | 2 | 2 | 4 🟡 | Guardar `ref` nas setas, `focus()` após `setState`, teste `aria-label` dinâmico |
-| Virada de ano não dispara `useFeriadosQuery` novo → lista vazia | 3 | 1 | 3 🟡 | `goNextMonth`/`goPrevMonth` atualizam `selectedYear` e `queryKey` reage; teste dez→jan e jan→dez |
+| Foco perdido ao trocar mês/ano (seta perde `focus`) | 2 | 2 | 4 🟡 | Passar `prevBtnRef`/`nextBtnRef` opcionais a `MonthlyCalendar`, `focus()` após `setState` via `queueMicrotask`, teste `aria-label` dinâmico com `getMonthLabel` |
+| Virada de ano não dispara `useFeriadosQuery` novo → lista vazia ou flicker | 3 | 1 | 3 🟡 | `goNextMonth`/`goPrevMonth` com estado único atualizam `selectedYear` e `queryKey`; usar `placeholderData: keepPreviousData`/`isFetching` overlay sem desmontar grid; clamp opcional a `[1900,2199]`; teste dez→jan e jan→dez com `role="status"` |
 | Extração prematura sem reuso futuro | 1 | 2 | 2 🟢 | Manter `MonthlyCalendar` com props mínimas (`feriados`, `month`, `year`, `onNavigate`); YAGNI — não generalizar além de feriados |
 
 ## Testes

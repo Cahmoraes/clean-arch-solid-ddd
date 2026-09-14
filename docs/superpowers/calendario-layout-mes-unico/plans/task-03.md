@@ -35,7 +35,7 @@ Refatorar `apps/frontend/src/app/(authenticated)/calendario/page.tsx` para usar 
 
 - **Step 0: Confirm design source & fidelity tools**
 
-Confirmar mockup em `../specs/mockups/calendario-layout-mes-unico-visual.md` e que não há Figma externo; usar `PageContainer`/`PageHeader` reais e `MonthlyCalendar` da Task 02 como baseline — não re-derivar tokens `--volt-green #39e58c`.
+Confirmar mockup em `../specs/mockups/calendario-layout-mes-unico-visual.md` e que não há Figma externo; usar `PageContainer`/`PageHeader` reais e `MonthlyCalendar` da Task 02 como baseline — não re-derivar tokens `--color-primary #39e58c` (`--volt-green`), usar `bg-primary/10` sem hardcode.
 
 - **Step 1: Write the failing test**
 
@@ -93,19 +93,20 @@ import { getFeriadosDoMes } from "@/features/calendario-feriados/lib/get-feriado
 
 export default function CalendarPage({ initialYear, initialMonth }: { initialYear?: number; initialMonth?: number }) {
   const { selectedYear, selectedMonth, goPrevMonth, goNextMonth, goPrevYear, goNextYear } = useCalendarNavigation(initialYear, initialMonth)
-  const query = useFeriadosQuery(selectedYear)
+  const query = useFeriadosQuery(selectedYear) // com placeholderData: keepPreviousData no hook para não flickar ao trocar de ano
   const feriadosDoMes = query.data ? getFeriadosDoMes(query.data, selectedMonth) : []
+  const prevBtnRef = useRef<HTMLButtonElement>(null)
   const nextBtnRef = useRef<HTMLButtonElement>(null)
-  // wrappers que preservam foco:
+  const handlePrevMonth = () => { goPrevMonth(); queueMicrotask(() => prevBtnRef.current?.focus()) }
   const handleNextMonth = () => { goNextMonth(); queueMicrotask(() => nextBtnRef.current?.focus()) }
-  // preservar YearNavigation pill, CalendarLoadingState (role=status), CalendarErrorState (role=alert), swipe handlers (onTouchStart/End) e ArrowLeft/Right keydown
   return (
     <PageContainer as="section" width="wide" className="gap-0">
       <PageHeader title={`Calendário ${selectedYear}`} action={<YearNavigation selectedYear={selectedYear} onPreviousYear={goPrevYear} onNextYear={goNextYear} />} />
-      {query.isPending ? <CalendarLoadingState /> : query.isError ? <CalendarErrorState query={query} /> :
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <MonthlyCalendar monthIndex={selectedMonth} year={selectedYear} feriados={feriadosDoMes} onPrevMonth={goPrevMonth} onNextMonth={handleNextMonth} nextBtnRef={nextBtnRef} />
-          <aside role="complementary" aria-label="Feriados do mês"><HolidayList monthIndex={selectedMonth} year={selectedYear} feriados={feriadosDoMes} totalNoAno={query.data!.length} /></aside>
+      {query.isPending && !query.data ? <CalendarLoadingState /> : query.isError ? <CalendarErrorState query={query} /> :
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <MonthlyCalendar monthIndex={selectedMonth} year={selectedYear} feriados={feriadosDoMes} onPrevMonth={handlePrevMonth} onNextMonth={handleNextMonth} prevBtnRef={prevBtnRef} nextBtnRef={nextBtnRef} />
+          <aside role="complementary" aria-label="Feriados do mês"><HolidayList monthIndex={selectedMonth} year={selectedYear} feriados={feriadosDoMes} totalNoAno={query.data?.length ?? 0} /></aside>
+          {query.isFetching && <span role="status" className="sr-only">Carregando feriados de {selectedYear}</span>}
         </div>}
     </PageContainer>
   )
@@ -113,7 +114,7 @@ export default function CalendarPage({ initialYear, initialMonth }: { initialYea
 // manter YearNavigation, CalendarLoadingState, CalendarErrorState existentes; remover buildCalendarMonths de 12 meses
 ```
 
-Swipe: `const touch = useRef<{x:number} | null>(null); onTouchStart={e=>touch.current={x:e.touches[0].clientX}} onTouchEnd={e=>{ const dx=e.changedTouches[0].clientX-(touch.current?.x??0); if(Math.abs(dx)>40) dx>0?goPrevMonth():goNextMonth() }}` com `useEffect` para `keydown ArrowLeft/Right`.
+Swipe: `const touch = useRef<{x:number; y:number} | null>(null); onTouchStart={e=>touch.current={x:e.touches[0].clientX, y:e.touches[0].clientY}} onTouchEnd={e=>{ const dx=e.changedTouches[0].clientX-(touch.current?.x??0); const dy=Math.abs(e.changedTouches[0].clientY-(touch.current?.y??0)); if(dy>30) return; if(Math.abs(dx)>40) dx>0?handlePrevMonth():handleNextMonth() }}` ativo apenas `<768px` via `matchMedia` ou CSS; `useEffect` para `keydown ArrowLeft/Right` com teardown.
 
 - **Step 4: Run test to verify it passes**
 

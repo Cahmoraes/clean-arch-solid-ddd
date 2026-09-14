@@ -22,7 +22,7 @@ Extrair `MonthlyCalendar` (header com setas + grid 7cols + destaque feriado) e `
 
 - `shadcn`: usa `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `Button` com `rounded-[22px]` e `cn`.
 - `wcag-audit-patterns`: `aria-label` dinâmico nas setas com `getMonthLabel`, `role="grid"` nos dias, `day.holiday` com `aria-label` e `prefers-reduced-motion`.
-- `typescript-advanced`: props tipadas `MonthlyCalendarProps { monthIndex: number; year: number; feriados: Feriado[]; onPrevMonth/onNextMonth }` e `HolidayListProps`.
+- `typescript-advanced`: props tipadas `MonthlyCalendarProps { monthIndex: number; year: number; feriados: Feriado[]; onPrevMonth/onNextMonth; prevBtnRef?: RefObject<HTMLButtonElement|null>; nextBtnRef?: RefObject<HTMLButtonElement|null> }` e `HolidayListProps`.
 - `vercel-react-best-practices`: componente puro, sem fetch interno, recebe `Feriado[]` filtrado; anima apenas via CSS.
 
 ### Fidelidade Visual
@@ -31,7 +31,7 @@ Extrair `MonthlyCalendar` (header com setas + grid 7cols + destaque feriado) e `
 - **Fonte de design original:** nenhuma; seguir o mockup curado
 - **Confirmar com o usuário:** existe uma fonte de design original (ex.: URL) para esta tela?
 - **Ferramentas de fidelidade visual (descobrir no ambiente):** nenhuma; construir manualmente a partir do mockup
-- **Decisões visuais já tomadas (não refazer):** `Card rounded-[22px]`, `weekdays 11px uppercase`, `days grid-cols-7 gap-1` com `day min-h-10` e feriado `bg-[#ecfdf5] border-[#39e58c]` + `data-name 7px`, tokens `--volt-green #39e58c --muted #f4f4f5 --border #e4e4e7`, `HolidayList` com `FeriadoItem bg-muted p-3` e `f-date rounded-[10px] mono`.
+- **Decisões visuais já tomadas (não refazer):** `Card rounded-[22px]`, `weekdays 11px uppercase`, `days grid-cols-7 gap-1` com `day min-h-10` e feriado `bg-primary/10 border-primary` (`--color-primary #39e58c`) + `data-name 7px`, `HolidayList` com `FeriadoItem bg-muted p-3` e `f-date rounded-[10px] mono`, `aria-live="polite"` único no `CardTitle h2`, sem hardcode `bg-[#ecfdf5]`.
 
 ## Passos
 
@@ -98,24 +98,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type { Feriado } from "@/features/calendario-feriados/model/feriado"
 import { getMonthLabel } from "@/features/calendario-feriados/hooks/use-calendar-navigation"
 const WEEKDAY_LABELS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"]
-interface Props { monthIndex: number; year: number; feriados: Feriado[]; onPrevMonth: () => void; onNextMonth: () => void }
-export function MonthlyCalendar({ monthIndex, year, feriados, onPrevMonth, onNextMonth }: Props) {
+interface Props { monthIndex: number; year: number; feriados: Feriado[]; onPrevMonth: () => void; onNextMonth: () => void; prevBtnRef?: React.RefObject<HTMLButtonElement | null>; nextBtnRef?: React.RefObject<HTMLButtonElement | null> }
+export function MonthlyCalendar({ monthIndex, year, feriados, onPrevMonth, onNextMonth, prevBtnRef, nextBtnRef }: Props) {
   const prevLabel = monthIndex === 0 ? `Mês anterior, dezembro ${year - 1}` : `Mês anterior, ${getMonthLabel(monthIndex - 1, year)}`
   const nextLabel = monthIndex === 11 ? `Próximo mês, janeiro ${year + 1}` : `Próximo mês, ${getMonthLabel(monthIndex + 1, year)}`
   // build days: 1..daysInMonth + feriado lookup + muted days — filtrado via getFeriadosDoMes já no caller
   return (
     <Card className="rounded-[22px] transition-[transform,opacity] duration-[180ms] motion-reduce:transition-none">
       <CardHeader className="flex-row items-center justify-between">
-        <div><CardTitle as="h2">{getMonthLabel(monthIndex, year)}</CardTitle><CardDescription>{feriados.length} feriado(s) no mês</CardDescription></div>
+        <div><CardTitle as="h2" aria-live="polite">{getMonthLabel(monthIndex, year)}</CardTitle><CardDescription>{feriados.length} feriado(s) no mês</CardDescription></div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" aria-label={prevLabel} onClick={onPrevMonth}>‹</Button>
-          <strong aria-live="polite" className="min-w-[140px] text-center text-sm">{getMonthLabel(monthIndex, year)}</strong>
-          <Button variant="outline" size="icon" aria-label={nextLabel} onClick={onNextMonth}>›</Button>
+          <Button ref={prevBtnRef} variant="outline" size="icon" aria-label={prevLabel} onClick={onPrevMonth}>‹</Button>
+          <Button ref={nextBtnRef} variant="outline" size="icon" aria-label={nextLabel} onClick={onNextMonth}>›</Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase text-muted-foreground">{WEEKDAY_LABELS.map((w) => <span key={w}>{w}</span>)}</div>
-        <div role="grid" className="mt-2 grid grid-cols-7 gap-1">{/* CalendarDayCell mapping com feriado destacado bg-[#ecfdf5] border-[#39e58c] data-name */}</div>
+        <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold uppercase text-muted-foreground" aria-hidden="true">{WEEKDAY_LABELS.map((w) => <span key={w}>{w}</span>)}</div>
+        <div role="grid" className="mt-2 grid grid-cols-7 gap-1">{/* CalendarDayCell com role="gridcell" e feriado bg-primary/10 border-primary data-name */}</div>
       </CardContent>
     </Card>
   )
