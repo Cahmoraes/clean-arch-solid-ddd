@@ -1,0 +1,31 @@
+sequenceDiagram
+    autonumber
+    actor User as Usuário logado
+    participant Page as /calendario page
+    participant Nav as useCalendarNavigation
+    participant Query as TanStack Query
+    participant API as BrasilAPI
+    participant Cal as MonthlyCalendar
+    participant List as HolidayList
+
+    User->>Page: Abre /calendario
+    Page->>Nav: selectedYear=2026, selectedMonth=8 (set)
+    Page->>Query: useFeriadosQuery(2026)
+    Query->>API: GET /feriados/v1/2026
+    API-->>Query: Feriado[] (ano)
+    Query-->>Page: feriadosDoAno
+    Page->>Cal: feriadosDoMes = filter(feriadosDoAno, 8)
+    Page->>List: feriadosDoMes
+    Cal-->>User: Renderiza setembro + 07/09 destacado
+    List-->>User: Lista "Feriados de setembro" (1)
+    User->>Cal: Clica "›" (próximo mês)
+    Cal->>Nav: goNextMonth()
+    Nav->>Page: selectedMonth=9 (outubro)
+    Page->>Cal: feriadosDoMes = filter(feriadosDoAno, 9)
+    Page->>List: atualiza para outubro
+    Cal-->>User: Anima 180ms, aria-live anuncia "Outubro 2026"
+    User->>Cal: Clica "›" em dezembro
+    Cal->>Nav: goNextMonth() (month 11→12)
+    Nav->>Page: selectedYear=2027, selectedMonth=0
+    Page->>Query: useFeriadosQuery(2027)
+    Query->>API: GET /feriados/v1/2027
