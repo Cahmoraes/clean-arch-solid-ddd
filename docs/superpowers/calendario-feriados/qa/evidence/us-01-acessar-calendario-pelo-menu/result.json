@@ -1,0 +1,12 @@
+{
+	"us_id": "us-001",
+	"user_story": "Como usuário logado, eu quero acessar Calendario pelo menu principal para consultar feriados sem sair da area logada",
+	"requirements": ["FR-001", "FR-002", "FR-003"],
+	"status": "PASSED",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "2 arquivos de teste passaram; 26 testes passaram, 0 falharam. Testes relevantes: authenticated-shell.test.tsx verifica item Calendário na navegação principal, href /calendario e aria-current=page na rota /calendario; proxy.test.ts verifica matcher autenticado de /calendario, redirecionamento sem refresh token, bloqueio de has_session client-side e acesso com refreshToken.",
+	"screenshot_path": "docs/superpowers/calendario-feriados/qa/evidence/us-01-acessar-calendario-pelo-menu/screenshot.png",
+	"failure_details": null,
+	"notes": "Relatório de verificação independente validation-calendario-feriados.md não existia; aplicado fallback do prompt. Cobertura existente foi considerada suficiente para FR-001, FR-002 e FR-003: menu principal exibe Calendário, link aponta para /calendario, rota está protegida pelo proxy e item recebe estado ativo visual por aria-current quando a rota é /calendario. Screenshot capturada após cadastro e login via UI, acionando Calendário pelo menu principal."
+}

@@ -13,9 +13,9 @@
 
 ## Tarefas
 
-- [ ] 1. Adicionar item Calendário ao menu autenticado [FR-001, FR-002, FR-003] → `task-01.md`
-- [ ] 2. Criar consulta client-only de feriados nacionais [FR-004, FR-007, FR-008, FR-009, FR-010, FR-011] → `task-02.md`
-- [ ] 3. Implementar tela autenticada de calendário por ano [FR-002, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011] → `task-03.md`
+- [x] 1. Adicionar item Calendário ao menu autenticado [FR-001, FR-002, FR-003] → `task-01.md`
+- [x] 2. Criar consulta client-only de feriados nacionais [FR-004, FR-007, FR-008, FR-009, FR-010, FR-011] → `task-02.md`
+- [x] 3. Implementar tela autenticada de calendário por ano [FR-002, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010, FR-011] → `task-03.md`
 
 ## Ondas de Execução
 

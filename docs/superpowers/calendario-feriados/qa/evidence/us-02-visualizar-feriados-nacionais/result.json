@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como usuário logado, eu quero visualizar os feriados nacionais do ano selecionado para planejar minhas atividades",
+  "requirements": ["FR-004", "FR-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "2 arquivos de teste executados: apps/frontend/src/app/(authenticated)/calendario/page.test.tsx e apps/frontend/src/features/calendario-feriados/api/use-feriados-query.test.tsx. Resultado: 28 testes passaram, 0 falharam. Testes relevantes: \"renderiza feriados nacionais e permite navegar para ano anterior e seguinte\", \"mostra ano atual como padrão quando initialYear não é informado\", \"renderiza feriado destacado no mês correspondente\" e \"busca e normaliza feriados nacionais por ano\".",
+  "screenshot_path": "docs/superpowers/calendario-feriados/qa/evidence/us-02-visualizar-feriados-nacionais/screenshot.png",
+  "failure_details": null,
+  "notes": "Relatório de Independent Verification não encontrado em docs/superpowers/calendario-feriados/qa/validation-calendario-feriados.md; fallback executado. Testes existentes cobrem FR-004 e FR-005 sem divergência literal de mecanismo. Screenshot autenticado capturado mostrando /calendario com ano 2026, feriados nacionais no calendário e painel \"Feriados de 2026\"."
+}

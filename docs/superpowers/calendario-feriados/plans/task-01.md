@@ -1,6 +1,6 @@
 # Task 1: Adicionar item Calendário ao menu autenticado [FR-001, FR-002, FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-calendario-feriados.md`
 **Spec:** `../specs/calendario-feriados-design.md`
 **Tier:** cheap

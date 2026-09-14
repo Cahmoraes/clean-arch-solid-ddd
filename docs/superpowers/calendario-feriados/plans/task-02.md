@@ -1,6 +1,6 @@
 # Task 2: Criar consulta client-only de feriados nacionais [FR-004, FR-007, FR-008, FR-009, FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-calendario-feriados.md`
 **Spec:** `../specs/calendario-feriados-design.md`
 **Tier:** standard

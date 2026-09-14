@@ -1,0 +1,12 @@
+{
+	"us_id": "us-03",
+	"user_story": "Como usuário logado, eu quero navegar entre anos para consultar feriados passados ou futuros",
+	"requirements": ["FR-006", "FR-007"],
+	"status": "PARTIAL",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "2 arquivos de teste executados: apps/frontend/src/app/(authenticated)/calendario/page.test.tsx e apps/frontend/src/features/calendario-feriados/api/use-feriados-query.test.tsx. 28 testes passaram, 0 falharam. Testes relevantes: \"renderiza feriados nacionais e permite navegar para ano anterior e seguinte\" e \"mantém cache separado por ano selecionado\".",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "Relatório IV docs/superpowers/calendario-feriados/qa/validation-calendario-feriados.md não encontrado; fallback usado para localizar cobertura existente. FR-006 e FR-007 têm cobertura por teste de página, que clica em ano anterior e ano seguinte e verifica atualização de cabeçalho e feriados por ano, além de teste do hook com cache separado por ano. Screenshot não capturado após 3 tentativas permitidas: tentativa 1 falhou por resolução de módulo do script fora do workspace; tentativa 2 redirecionou para /login durante bootstrap auth; tentativa 3 alcançou Calendário 2027, mas a espera pelo texto Confraternização Universal expirou antes da captura. Script de captura preservado em docs/superpowers/calendario-feriados/qa/evidence/us-03-navegar-entre-anos/screenshot-script.js."
+}

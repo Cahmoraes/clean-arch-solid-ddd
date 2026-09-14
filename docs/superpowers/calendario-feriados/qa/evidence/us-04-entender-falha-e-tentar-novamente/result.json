@@ -1,0 +1,12 @@
+{
+	"us_id": "us-04",
+	"user_story": "Como usuário logado, eu quero entender quando os feriados não puderem ser carregados e tentar novamente para não confundir falha externa com ausência de feriados",
+	"requirements": ["FR-008", "FR-009", "FR-010"],
+	"status": "PARTIAL",
+	"existing_tests_found": true,
+	"acceptance_tests_created": [],
+	"test_output_summary": "2 arquivos de teste executados: apps/frontend/src/features/calendario-feriados/api/use-feriados-query.test.tsx e apps/frontend/src/app/(authenticated)/calendario/page.test.tsx. Resultado: 28 testes passaram, 0 falharam. Testes relevantes: \"expõe estado de loading enquanto busca feriados\", \"retorna ApiError quando a BrasilAPI falha\", \"retorna ApiError quando a rede falha\", \"permite refetch após erro recuperável\", \"anuncia loading enquanto feriados carregam\", \"mostra erro recuperável quando feriados não carregam\" e \"refaz consulta ao acionar retry após erro\".",
+	"screenshot_path": null,
+	"failure_details": null,
+	"notes": "Relatório IV docs/superpowers/calendario-feriados/qa/validation-calendario-feriados.md não encontrado; fallback usado. Cobertura existente é suficiente para FR-008, FR-009 e FR-010, sem divergência literal de mecanismo: o hook expõe loading/erro/refetch e a página mostra role=status, role=alert, mensagem recuperável e botão \"Tentar novamente\" que refaz a consulta. Screenshot não capturado após 3 tentativas permitidas: tentativa 1 redirecionou para /login porque o setup de auth falhou com \"ReferenceError: Buffer is not defined\"; tentativa 2 redirecionou para /login porque o setup de auth falhou com \"ReferenceError: btoa is not defined\"; tentativa 3 abriu /calendario, mas o bootstrap de auth redirecionou para /login antes da captura, e o estado de erro/retry não ficou visível."
+}
