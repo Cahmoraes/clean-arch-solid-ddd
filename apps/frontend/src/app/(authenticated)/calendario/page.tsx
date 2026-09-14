@@ -170,7 +170,8 @@ function CalendarContent({
 				prevBtnRef={prevBtnRef}
 				nextBtnRef={nextBtnRef}
 			/>
-			<aside aria-label="Feriados do mês">
+			{/* biome-ignore lint/a11y/noRedundantRoles: spec exige role="complementary" explícito em aside */}
+			<aside role="complementary" aria-label="Feriados do mês">
 				<HolidayList
 					feriados={feriadosDoMes}
 					monthIndex={selectedMonth}

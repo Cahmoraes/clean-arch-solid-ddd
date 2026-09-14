@@ -1,7 +1,7 @@
-import { screen, waitFor, within } from "@testing-library/react"
+import { fireEvent, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
-import { describe, expect, test } from "vitest"
+import { describe, expect, test, vi } from "vitest"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import CalendarPage from "./page"
@@ -318,5 +318,179 @@ describe("CalendarPage", () => {
 		expect(heading.closest("[aria-live='polite']")).toBeInTheDocument()
 		// isFetching sr-only status after navigation not present initially
 		expect(screen.queryByText(/Carregando feriados de/)).not.toBeInTheDocument()
+	})
+
+	test("navega de dezembro para janeiro com virada de ano e busca novo ano", async () => {
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
+				HttpResponse.json([
+					{ date: "2026-12-25", name: "Natal", type: "national" },
+				]),
+			),
+			http.get(`${BRASIL_API_FERIADOS_URL}/2027`, () =>
+				HttpResponse.json([
+					{
+						date: "2027-01-01",
+						name: "Confraternização Universal",
+						type: "national",
+					},
+				]),
+			),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={11} />)
+
+		expect(
+			await screen.findByRole("heading", { name: /Dezembro 2026/ }),
+		).toBeInTheDocument()
+		expect(
+			within(screen.getByRole("complementary")).getByText(/Natal/),
+		).toBeInTheDocument()
+
+		await user.click(
+			screen.getByRole("button", { name: /Próximo mês, janeiro 2027/ }),
+		)
+
+		expect(
+			await screen.findByRole("heading", { name: /Janeiro 2027/ }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("heading", { name: "Calendário 2027" }),
+		).toBeInTheDocument()
+		expect(
+			within(screen.getByRole("complementary")).getByText(
+				/Confraternização/,
+			),
+		).toBeInTheDocument()
+	})
+
+	test("navega de janeiro para dezembro do ano anterior com virada", async () => {
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
+				HttpResponse.json([
+					{
+						date: "2026-01-01",
+						name: "Confraternização Universal",
+						type: "national",
+					},
+				]),
+			),
+			http.get(`${BRASIL_API_FERIADOS_URL}/2025`, () =>
+				HttpResponse.json([
+					{ date: "2025-12-25", name: "Natal", type: "national" },
+				]),
+			),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={0} />)
+
+		expect(
+			await screen.findByRole("heading", { name: /Janeiro 2026/ }),
+		).toBeInTheDocument()
+
+		await user.click(
+			screen.getByRole("button", { name: /Mês anterior, dezembro 2025/ }),
+		)
+
+		expect(
+			await screen.findByRole("heading", { name: /Dezembro 2025/ }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("heading", { name: "Calendário 2025" }),
+		).toBeInTheDocument()
+		expect(
+			within(screen.getByRole("complementary")).getByText(/Natal/),
+		).toBeInTheDocument()
+	})
+
+	test("navega via swipe horizontal e ignora swipe vertical (dy>30)", async () => {
+		const matchMediaMock = vi.fn().mockImplementation((query: string) => ({
+			matches: query === "(max-width: 767px)",
+			media: query,
+			onchange: null,
+			addListener: vi.fn(),
+			removeListener: vi.fn(),
+			addEventListener: vi.fn(),
+			removeEventListener: vi.fn(),
+			dispatchEvent: vi.fn(),
+		}))
+		vi.stubGlobal("matchMedia", matchMediaMock)
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
+				HttpResponse.json([
+					{
+						date: "2026-09-07",
+						name: "Independência do Brasil",
+						type: "national",
+					},
+				]),
+			),
+		)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
+		expect(
+			await screen.findByRole("heading", { name: /Setembro 2026/ }),
+		).toBeInTheDocument()
+
+		const grid = screen
+			.getByRole("complementary")
+			.parentElement as HTMLElement
+		expect(grid).not.toBeNull()
+		expect(grid.className).toContain("grid")
+
+		// dx -90 (swipe left) => próximo mês, dy 5 dentro do limite 30
+		fireEvent.touchStart(grid, {
+			touches: [{ clientX: 100, clientY: 100 }],
+		})
+		fireEvent.touchEnd(grid, {
+			changedTouches: [{ clientX: 10, clientY: 105 }],
+		})
+
+		expect(
+			await screen.findByRole("heading", { name: /Outubro 2026/ }),
+		).toBeInTheDocument()
+
+		// dy 50 >30 deve ser ignorado, permanece em outubro
+		fireEvent.touchStart(grid, {
+			touches: [{ clientX: 100, clientY: 100 }],
+		})
+		fireEvent.touchEnd(grid, {
+			changedTouches: [{ clientX: 10, clientY: 150 }],
+		})
+
+		expect(
+			screen.getByRole("heading", { name: /Outubro 2026/ }),
+		).toBeInTheDocument()
+		expect(
+			screen.queryByRole("heading", { name: /Setembro 2026/ }),
+		).not.toBeInTheDocument()
+		vi.unstubAllGlobals()
+	})
+
+	test("navega via teclado ArrowLeft/Right", async () => {
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
+				HttpResponse.json([
+					{
+						date: "2026-09-07",
+						name: "Independência do Brasil",
+						type: "national",
+					},
+				]),
+			),
+		)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
+		expect(
+			await screen.findByRole("heading", { name: /Setembro 2026/ }),
+		).toBeInTheDocument()
+
+		fireEvent.keyDown(window, { key: "ArrowRight" })
+		expect(
+			await screen.findByRole("heading", { name: /Outubro 2026/ }),
+		).toBeInTheDocument()
+
+		fireEvent.keyDown(window, { key: "ArrowLeft" })
+		expect(
+			await screen.findByRole("heading", { name: /Setembro 2026/ }),
+		).toBeInTheDocument()
 	})
 })

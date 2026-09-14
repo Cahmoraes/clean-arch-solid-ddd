@@ -45,4 +45,38 @@ describe("MonthlyCalendar", () => {
 			screen.getByRole("button", { name: /Próximo mês, outubro 2026/ }),
 		).toBeInTheDocument()
 	})
+
+	test("setas têm aria-label correto na virada de ano dez→jan e jan→dez", () => {
+		const { rerender } = render(
+			<MonthlyCalendar
+				monthIndex={11}
+				year={2026}
+				feriados={[]}
+				onPrevMonth={() => {}}
+				onNextMonth={() => {}}
+			/>,
+		)
+		expect(
+			screen.getByRole("button", { name: /Mês anterior, novembro 2026/ }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: /Próximo mês, janeiro 2027/ }),
+		).toBeInTheDocument()
+
+		rerender(
+			<MonthlyCalendar
+				monthIndex={0}
+				year={2026}
+				feriados={[]}
+				onPrevMonth={() => {}}
+				onNextMonth={() => {}}
+			/>,
+		)
+		expect(
+			screen.getByRole("button", { name: /Mês anterior, dezembro 2025/ }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: /Próximo mês, fevereiro 2026/ }),
+		).toBeInTheDocument()
+	})
 })
