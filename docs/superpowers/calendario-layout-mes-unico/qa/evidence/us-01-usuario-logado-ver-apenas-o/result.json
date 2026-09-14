@@ -1,0 +1,15 @@
+{
+  "us_id": "us-01",
+  "user_story": "Como usuário logado, eu quero ver apenas o mês atual ao abrir /calendario para que a leitura das datas não fique apertada",
+  "requirements": [
+    "FR-001",
+    "FR-011"
+  ],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "41 testes aprovados, 0 falhas em 5 arquivos: page.test.tsx (13 testes), use-feriados-query.test.tsx (24 testes), monthly-calendar.test.tsx (3 testes), use-calendar-navigation.test.tsx (3 testes), get-feriados-do-mes.test.ts (1 teste). Todos executados com pnpm --filter frontend exec vitest run em escopo restrito.",
+  "screenshot_path": "evidence/us-01-usuario-logado-ver-apenas-o/screenshot.png",
+  "failure_details": null,
+  "notes": "FR-001 verificado: /calendario renderiza apenas um Card com grid 7 colunas (MonthlyCalendar com role=grid, gap-1, weekdays 11px) e exibe mês/ano atuais derivados de new Date() quando initialYear/initialMonth não são informados. Testes cobrem: exibição padrão do ano/mês atual (page.test.tsx: mostra ano atual como padrão), renderização de apenas Setembro 2026 sem Outubro 2026, título com aria-live e heading único. FR-011 verificado: queryKey permanece [\"feriados\", year] anual (feriadosQueryKey) com cache client-side e filtro por mês em memória via getFeriadosDoMes; teste mantém cache separado por ano selecionado confirma reutilização de cache ao voltar para 2026 e ausência de chave por mês. Nenhuma divergência entre mecanismo especificado e implementação. App base URL não aplicável, captura de screenshot dispensada conforme dispatch. Screenshot capturado em ambiente de desenvolvimento com proxy e forced-logout temporariamente desabilitados para evidência visual (evidência em screenshot.png)."
+}

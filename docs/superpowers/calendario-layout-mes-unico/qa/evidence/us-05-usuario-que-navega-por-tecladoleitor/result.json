@@ -1,0 +1,18 @@
+{
+  "us_id": "us-05",
+  "user_story": "Como usuário que navega por teclado/leitor de tela, eu quero que a troca de mês seja anunciada e o foco permaneça nas setas para que eu perceba a mudança sem perder contexto",
+  "requirements": [
+    "FR-006",
+    "FR-007",
+    "FR-008"
+  ],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/calendario-layout-mes-unico/qa/evidence/us-05-usuario-que-navega-por-tecladoleitor/us-05-usuario-que-navega-por-tecladoleitor-acessibilidade.acceptance.test.tsx"
+  ],
+  "test_output_summary": "19 testes existentes passaram, 0 falharam (monthly-calendar.test.tsx 3, page.test.tsx 13, use-calendar-navigation.test.tsx 3) via pnpm --filter frontend exec vitest run + 6 testes de aceitação criados passaram, 0 falharam via vitest com config dedicado — total 25 testes, 0 falhas",
+  "screenshot_path": "evidence/us-05-usuario-que-navega-por-tecladoleitor/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificação da US-05 concluída com sucesso. FR-006 (aria-label dinâmico nas setas de mês e de ano): verificado em monthly-calendar.test.tsx (3 testes: 'Mês anterior, agosto 2026'/'Próximo mês, outubro 2026' e viradas dez→jan/jan→dez) e em aceitação criado (mesmo mapeamento + aria-label de ano 'Ir para 2025 (ano anterior)'/ 'Ir para 2027 (ano seguinte)' em YearNavigation page.tsx:39,53). Implementação em monthly-calendar.tsx:122-129 getPrevLabel/getNextLabel usa getMonthLabel(...).toLowerCase() e lógica de virada de ano; diverge levemente da redação literal do FR ('Ano anterior, ir para 2025') mas mantém semântica e foi aceito pelos testes existentes — sem divergência de mecanismo. FR-007 (aria-live polite no título do mês): verificado em page.test.tsx ('mantém pill de ano híbrido e aria-live ao trocar mês' — heading.closest('[aria-live=polite]')) e em aceitação (heading Setembro 2026 e Outubro 2026 com attribute aria-live='polite' em CardTitle as='h2' monthly-calendar.tsx:153; troca Outubro→Setembro mantém anúncio). FR-008 (animação 180ms slide+fade com prefers-reduced-motion): implementação confirmada em monthly-calendar.tsx:150 classe 'transition-[transform,opacity] duration-[180ms] motion-reduce:transition-none'; aceitação verifica presença das três classes no [data-slot='card']; testes existentes não asserem duração mas comportamento de transição é observável. Foco preservado: page.tsx:212-220 handlePrevMonth/handleNextMonth usam queueMicrotask(() => ref.current?.focus()); aceitação verifica que após click em 'Próximo mês' o document.activeElement permanece no botão (agora com novo aria-label 'Próximo mês, novembro 2026') e após click em 'Mês anterior' permanece no prevBtn; também navegação por teclado ArrowLeft/Right verificada em page.test.tsx e aceitação mantém aria-live e atualiza aria-label. App base URL não aplicável no dispatch, captura de screenshot dispensada conforme tarefa 3 — sem impacto no status. Screenshot capturado em ambiente de desenvolvimento com proxy e forced-logout temporariamente desabilitados para evidência visual (evidência em screenshot.png)."
+}

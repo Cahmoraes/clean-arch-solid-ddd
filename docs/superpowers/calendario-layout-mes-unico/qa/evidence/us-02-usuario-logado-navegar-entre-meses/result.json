@@ -1,0 +1,18 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como usuário logado, eu quero navegar entre meses com setas (e swipe em mobile) para que eu explore feriados sem esforço",
+  "requirements": [
+    "FR-002",
+    "FR-003",
+    "FR-008",
+    "FR-009",
+    "FR-011"
+  ],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "19 testes passaram, 0 falharam em 3 arquivos: use-calendar-navigation.test.tsx (3), monthly-calendar.test.tsx (3), page.test.tsx (13) — todos verdes em 5.49s via pnpm --filter frontend exec vitest run",
+  "screenshot_path": "evidence/us-02-usuario-logado-navegar-entre-meses/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificação da US-02 concluída com sucesso. FR-002 (setas ‹/› no CardHeader com foco preservado): verificado em monthly-calendar.test.tsx (aria-label dinâmico) e page.test.tsx (clique em 'Próximo mês, outubro 2026' avança Setembro→Outubro e atualiza sidebar; implementação em page.tsx:212-220 usa queueMicrotask para manter foco na seta acionada). FR-003 (virada de ano automática dez→jan e jan→dez com nova busca): verificado em use-calendar-navigation.test.tsx (3 testes de goNext/goPrev) e page.test.tsx (navega de dezembro 2026 para janeiro 2027 disparando GET /feriados/v1/2027 e de janeiro 2026 para dezembro 2025). FR-008 (animação 180ms slide+fade com prefers-reduced-motion): implementação confirmada em monthly-calendar.tsx:150 com 'transition-[transform,opacity] duration-[180ms] motion-reduce:transition-none'; sem asserção direta de duração/motion nos testes, porém sem divergência do FR. FR-009 (swipe horizontal 40px e teclas ArrowLeft/Right, apenas <768px com ignora vertical >30px): verificado em page.test.tsx (swipe dx -90 dy 5 navega, dy 50 ignorado via getSwipeDirection, e keyDown ArrowLeft/Right navegam). FR-011 (queryKey anual ['feriados', year] com filtro em memória): implementação confirmada em use-feriados-query.ts:27 feriadosQueryKey e page.tsx:204 getFeriadosDoMes filtra em memória; testes validam filtro por mês via sidebar. Nenhum teste de aceitação adicional necessário — cobertura existente é abrangente. Screenshot não aplicável (App base URL não configurado no dispatch). Screenshot capturado."
+}

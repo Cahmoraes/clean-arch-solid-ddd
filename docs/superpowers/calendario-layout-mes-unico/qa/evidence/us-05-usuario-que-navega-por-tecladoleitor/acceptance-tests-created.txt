@@ -1,0 +1,1 @@
+docs/superpowers/calendario-layout-mes-unico/qa/evidence/us-05-usuario-que-navega-por-tecladoleitor/us-05-usuario-que-navega-por-tecladoleitor-acessibilidade.acceptance.test.tsx

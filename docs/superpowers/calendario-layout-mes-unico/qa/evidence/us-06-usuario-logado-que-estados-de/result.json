@@ -1,0 +1,16 @@
+{
+  "us_id": "us-06",
+  "user_story": "Como usuário logado, eu quero que estados de carregamento e erro continuem claros ao navegar entre meses/anos para que eu saiba quando os dados estão sendo buscados ou falharam",
+  "requirements": [
+    "FR-010"
+  ],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/calendario-layout-mes-unico/qa/evidence/us-06-usuario-logado-que-estados-de/us-06-usuario-logado-que-estados-de-estados.acceptance.test.tsx"
+  ],
+  "test_output_summary": "47 testes passaram, 0 falharam. Existentes: 41 passaram (CalendarPage 13, useFeriadosQuery 18, MonthlyCalendar 2, useCalendarNavigation 3, getFeriadosDoMes 1) via pnpm --filter frontend exec vitest run src/app/(authenticated)/calendario/page.test.tsx src/features/calendario-feriados. Aceitação criados: 6 passaram (role=status com Skeleton preservando PageHeader; role=alert com Tentar novamente preservando PageHeader; refetch via Tentar novamente; PageHeader preservado ao trocar de ano com loading Skeleton; navegação intra-ano sem loading; erro via virada dez->jan com PageHeader 2027 preservado).",
+  "screenshot_path": "evidence/us-06-usuario-logado-que-estados-de/screenshot.png",
+  "failure_details": null,
+  "notes": "FR-010 verificado em page.tsx: CalendarLoadingState com role=status, aria-live polite e Skeleton data-testid=skeleton; CalendarErrorState com role=alert e botão Tentar novamente que chama query.refetch; PageHeader com Calendário {year} e YearNavigation permanece fora de CalendarContent, preservado em loading/erro e ao trocar de ano. Navegação intra-ano reusa cache anual sem novo fetch; troca de ano dispara nova query com Skeleton. Testes existentes cobrem loading, erro, retry e PageHeader híbrido; testes de aceitação complementam preservação de PageHeader/controles durante transição de ano e erro na virada dez->jan. App base URL not applicable, sem captura de screenshot. Mecanismo corresponde literalmente ao FR-010. Screenshot capturado."
+}

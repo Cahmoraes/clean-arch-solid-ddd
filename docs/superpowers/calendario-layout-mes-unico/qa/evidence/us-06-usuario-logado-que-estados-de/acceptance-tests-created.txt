@@ -1,0 +1,1 @@
+docs/superpowers/calendario-layout-mes-unico/qa/evidence/us-06-usuario-logado-que-estados-de/us-06-usuario-logado-que-estados-de-estados.acceptance.test.tsx

@@ -1,0 +1,1 @@
+docs/superpowers/calendario-layout-mes-unico/qa/evidence/us-04-usuario-logado-ver-a-lista/us-04-usuario-logado-ver-a-lista-filtro-mes.acceptance.test.tsx

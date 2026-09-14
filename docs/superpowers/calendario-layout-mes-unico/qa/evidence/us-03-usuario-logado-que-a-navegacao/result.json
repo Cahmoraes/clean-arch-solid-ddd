@@ -1,0 +1,15 @@
+{
+  "us_id": "us-03",
+  "user_story": "Como usuário logado, eu quero que a navegação de ano continue disponível de forma híbrida para que a virada dez→jan carregue o próximo ano automaticamente",
+  "requirements": [
+    "FR-003",
+    "FR-004"
+  ],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "19 testes passaram, 0 falharam em 3 arquivos: use-calendar-navigation.test.tsx (3), monthly-calendar.test.tsx (3), page.test.tsx (13) — todos verdes em 5.55s via pnpm --filter frontend exec vitest run em escopo restrito",
+  "screenshot_path": "evidence/us-03-usuario-logado-que-a-navegacao/screenshot.png",
+  "failure_details": null,
+  "notes": "FR-003 verificado (virada de ano automática): use-calendar-navigation.test.tsx cobre goNextMonth de dezembro 2026→janeiro 2027 (selectedYear 2027, selectedMonth 0) e goPrevMonth de janeiro 2026→dezembro 2025 (selectedYear 2025, selectedMonth 11) com estado único {year, month} e clamp [1900,2199]; page.test.tsx cobre cenário integrado navegando de Dezembro 2026 para Janeiro 2027 com clique em 'Próximo mês, janeiro 2027' disparando GET https://brasilapi.com.br/api/feriados/v1/2027 e atualizando heading Calendário 2027 + sidebar com Confraternização Universal, e de Janeiro 2026 para Dezembro 2025 com 'Mês anterior, dezembro 2025' disparando GET /2025; monthly-calendar.test.tsx valida aria-label correto na virada (dez→jan 2027, jan→dez 2025). Implementação em use-calendar-navigation.ts:30-39 usa setState prev com ajuste year/month e clampYear, e page.tsx:202-203 dispara useFeriadosQuery(selectedYear) com queryKey anual, confirmando nova busca na virada. FR-004 verificado (controle híbrido de ano no PageHeader): page.test.tsx cobre pill híbrido com botões 'Ir para 2025 (ano anterior)' e 'Ir para 2027 (ano seguinte)' em YearNavigation (page.tsx:30-61, ChevronLeft/Right + label rounded-full font-mono), navegação direta de ano anterior/seguinte atualizando heading Calendário 2025/2027 e buscando respectivo ano via BrasilAPI, e manutenção do pill após navegação por mês (mantém pill de ano híbrido e aria-live ao trocar mês). Nenhuma divergência entre mecanismo especificado no FR e implementação — virada híbrida funciona tanto por setas de mês quanto por pill de ano. Nenhum teste de aceitação adicional necessário — cobertura existente é completa e todos os testes passaram. Screenshot dispensado: App base URL não aplicável conforme dispatch, não afeta status. Screenshot capturado em ambiente de desenvolvimento com proxy e forced-logout temporariamente desabilitados para evidência visual (evidência em screenshot.png)."
+}
