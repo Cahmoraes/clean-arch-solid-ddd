@@ -27,7 +27,7 @@ describe("CalendarPage", () => {
 			http.get(`${BRASIL_API_FERIADOS_URL}/2025`, () =>
 				HttpResponse.json([
 					{
-						date: "2025-12-25",
+						date: "2025-09-07",
 						name: "Natal",
 						type: "national",
 					},
@@ -36,7 +36,7 @@ describe("CalendarPage", () => {
 			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
 				HttpResponse.json([
 					{
-						date: "2026-04-21",
+						date: "2026-09-07",
 						name: "Tiradentes",
 						type: "national",
 					},
@@ -45,7 +45,7 @@ describe("CalendarPage", () => {
 			http.get(`${BRASIL_API_FERIADOS_URL}/2027`, () =>
 				HttpResponse.json([
 					{
-						date: "2027-01-01",
+						date: "2027-09-07",
 						name: "Confraternização Universal",
 						type: "national",
 					},
@@ -54,12 +54,19 @@ describe("CalendarPage", () => {
 		)
 		const user = userEvent.setup()
 
-		renderWithProviders(<CalendarPage initialYear={2026} />)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
 		expect(
 			screen.getByRole("heading", { name: "Calendário 2026" }),
 		).toBeInTheDocument()
 		expect((await screen.findAllByText("Tiradentes")).length).toBeGreaterThan(0)
+		// single month rendered, not 12
+		expect(
+			screen.getByRole("heading", { name: /Setembro 2026/ }),
+		).toBeInTheDocument()
+		expect(
+			screen.queryByRole("heading", { name: /Outubro 2026/ }),
+		).not.toBeInTheDocument()
 
 		await user.click(
 			screen.getByRole("button", { name: "Ir para 2025 (ano anterior)" }),
@@ -93,11 +100,13 @@ describe("CalendarPage", () => {
 
 	test("mostra ano atual como padrão quando initialYear não é informado", async () => {
 		const currentYear = new Date().getFullYear()
+		const month = new Date().getMonth()
+		const monthStr = String(month + 1).padStart(2, "0")
 		server.use(
 			http.get(`${BRASIL_API_FERIADOS_URL}/${currentYear}`, () =>
 				HttpResponse.json([
 					{
-						date: `${currentYear}-09-07`,
+						date: `${currentYear}-${monthStr}-07`,
 						name: "Independência do Brasil",
 						type: "national",
 					},
@@ -124,7 +133,7 @@ describe("CalendarPage", () => {
 			}),
 		)
 
-		renderWithProviders(<CalendarPage initialYear={2026} />)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
 		expect(await screen.findByRole("status")).toHaveTextContent(
 			"Carregando feriados",
@@ -152,7 +161,7 @@ describe("CalendarPage", () => {
 			),
 		)
 
-		renderWithProviders(<CalendarPage initialYear={2026} />)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
 		expect(
 			await screen.findByRole("alert", undefined, { timeout: 3_000 }),
@@ -178,7 +187,7 @@ describe("CalendarPage", () => {
 				}
 				return HttpResponse.json([
 					{
-						date: "2026-12-25",
+						date: "2026-09-07",
 						name: "Natal",
 						type: "national",
 					},
@@ -187,7 +196,7 @@ describe("CalendarPage", () => {
 		)
 		const user = userEvent.setup()
 
-		renderWithProviders(<CalendarPage initialYear={2026} />)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
 		await screen.findByRole("alert", undefined, { timeout: 3_000 })
 		await user.click(screen.getByRole("button", { name: "Tentar novamente" }))
@@ -201,7 +210,7 @@ describe("CalendarPage", () => {
 			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () => HttpResponse.json([])),
 		)
 
-		renderWithProviders(<CalendarPage initialYear={2026} />)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
 		expect(
 			await screen.findByText("Nenhum feriado encontrado"),
@@ -225,12 +234,89 @@ describe("CalendarPage", () => {
 			),
 		)
 
-		renderWithProviders(<CalendarPage initialYear={2026} />)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={3} />)
 
-		const aprilCard = await screen.findByRole("region", { name: "Abril 2026" })
-		const holidayDay = within(aprilCard).getByRole("listitem", {
-			name: /21 de abril: Tiradentes/,
+		expect(
+			await screen.findByRole("heading", { name: /Abril 2026/ }),
+		).toBeInTheDocument()
+		expect(screen.getByLabelText(/21 de abril: Tiradentes/)).toBeInTheDocument()
+		// garante mês único
+		expect(
+			screen.queryByRole("heading", { name: /Maio 2026/ }),
+		).not.toBeInTheDocument()
+	})
+
+	test("exibe mês atual por padrão e navega com setas de mês com virada de ano", async () => {
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
+				HttpResponse.json([
+					{
+						date: "2026-09-07",
+						name: "Independência do Brasil",
+						type: "national",
+					},
+					{
+						date: "2026-10-12",
+						name: "Nossa Senhora Aparecida",
+						type: "national",
+					},
+				]),
+			),
+			http.get(`${BRASIL_API_FERIADOS_URL}/2027`, () =>
+				HttpResponse.json([
+					{
+						date: "2027-01-01",
+						name: "Confraternização Universal",
+						type: "national",
+					},
+				]),
+			),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
+		expect(
+			await screen.findByRole("heading", { name: /Setembro 2026/ }),
+		).toBeInTheDocument()
+		expect(
+			within(screen.getByRole("complementary")).getByText(/Independência/),
+		).toBeInTheDocument()
+		await user.click(
+			screen.getByRole("button", { name: /Próximo mês, outubro 2026/ }),
+		)
+		expect(
+			await screen.findByRole("heading", { name: /Outubro 2026/ }),
+		).toBeInTheDocument()
+		expect(
+			within(screen.getByRole("complementary")).getByText(/Aparecida/),
+		).toBeInTheDocument()
+	})
+
+	test("mantém pill de ano híbrido e aria-live ao trocar mês", async () => {
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
+				HttpResponse.json([
+					{
+						date: "2026-09-07",
+						name: "Independência do Brasil",
+						type: "national",
+					},
+				]),
+			),
+		)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
+		// pill híbrido
+		expect(
+			screen.getByRole("button", { name: /Ir para 2025/ }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: /Ir para 2027/ }),
+		).toBeInTheDocument()
+		// aria-live no título do mês
+		const heading = await screen.findByRole("heading", {
+			name: /Setembro 2026/,
 		})
-		expect(holidayDay).not.toHaveAttribute("aria-current")
+		expect(heading.closest("[aria-live='polite']")).toBeInTheDocument()
+		// isFetching sr-only status after navigation not present initially
+		expect(screen.queryByText(/Carregando feriados de/)).not.toBeInTheDocument()
 	})
 })
