@@ -108,6 +108,30 @@ describe("OperatingHoursField", () => {
 		expect(screen.getByText("Máximo 3 intervalos")).toBeInTheDocument()
 	})
 
+	test("botão + intervalo usa seed sem sobrepor intervalos existentes", async () => {
+		const user = userEvent.setup()
+		const onChange = vi.fn()
+		const value = [
+			{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+		]
+		renderWithProviders(
+			<OperatingHoursField value={value} onChange={onChange} />,
+		)
+
+		await user.click(screen.getByLabelText("Adicionar intervalo em Segunda"))
+
+		expect(onChange).toHaveBeenCalledTimes(1)
+		expect(onChange).toHaveBeenCalledWith([
+			{
+				weekday: 1,
+				intervals: [
+					{ open: "08:00", close: "18:00" },
+					{ open: "18:00", close: "19:00" },
+				],
+			},
+		])
+	})
+
 	test("exibe erro inline quando error prop é fornecido", () => {
 		renderWithProviders(
 			<OperatingHoursField

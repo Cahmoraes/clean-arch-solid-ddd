@@ -5,7 +5,10 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-schema"
+import type {
+	DayScheduleDTO,
+	TimeIntervalDTO,
+} from "@/features/gyms/schemas/operating-hours-schema"
 
 export interface OperatingHoursFieldProps {
 	value: DayScheduleDTO[] | null | undefined
@@ -24,8 +27,79 @@ const WEEKDAYS = [
 	"Sábado",
 ] as const
 
+const DEFAULT_INTERVAL_DURATION_MINUTES = 60
+const DAY_END_MINUTES = 23 * 60 + 59
+
 function sortByWeekday(schedules: DayScheduleDTO[]): DayScheduleDTO[] {
 	return [...schedules].sort((a, b) => a.weekday - b.weekday)
+}
+
+function parseTimeToMinutes(value: string): number | null {
+	const [hoursString, minutesString] = value.split(":")
+	const hours = Number(hoursString)
+	const minutes = Number(minutesString)
+	if (
+		!Number.isInteger(hours) ||
+		!Number.isInteger(minutes) ||
+		hours < 0 ||
+		hours > 23 ||
+		minutes < 0 ||
+		minutes > 59
+	) {
+		return null
+	}
+	return hours * 60 + minutes
+}
+
+function formatMinutesToTime(totalMinutes: number): string {
+	const hours = Math.floor(totalMinutes / 60)
+	const minutes = totalMinutes % 60
+	return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`
+}
+
+function buildIntervalSeed(
+	intervals: TimeIntervalDTO[],
+): TimeIntervalDTO | null {
+	if (intervals.length === 0) return null
+
+	const sorted = [...intervals].sort((a, b) => a.open.localeCompare(b.open))
+	const lastClose = parseTimeToMinutes(sorted[sorted.length - 1].close)
+	const firstOpen = parseTimeToMinutes(sorted[0].open)
+	if (lastClose === null || firstOpen === null) return null
+	const gaps = [
+		{
+			start: lastClose,
+			end: DAY_END_MINUTES + 1,
+		},
+		...sorted.slice(0, -1).map((interval, index) => {
+			const start = parseTimeToMinutes(interval.close)
+			const end = parseTimeToMinutes(sorted[index + 1].open)
+			return { start, end }
+		}),
+		{
+			start: 0,
+			end: firstOpen,
+		},
+	]
+
+	for (const gap of gaps) {
+		if (gap.start === null || gap.end === null) return null
+		if (gap.end <= gap.start) continue
+		const closeLimit =
+			gap.end === DAY_END_MINUTES + 1 ? DAY_END_MINUTES : gap.end
+		const close = Math.min(
+			gap.start + DEFAULT_INTERVAL_DURATION_MINUTES,
+			closeLimit,
+		)
+		if (close > gap.start) {
+			return {
+				open: formatMinutesToTime(gap.start),
+				close: formatMinutesToTime(close),
+			}
+		}
+	}
+
+	return null
 }
 
 export function OperatingHoursField({
@@ -57,9 +131,13 @@ export function OperatingHoursField({
 		const next = schedules.map((s) => {
 			if (s.weekday !== weekday) return s
 			if (s.intervals.length >= 3) return s
+			const seed: TimeIntervalDTO = buildIntervalSeed(s.intervals) ?? {
+				open: "",
+				close: "",
+			}
 			return {
 				...s,
-				intervals: [...s.intervals, { open: "08:00", close: "18:00" }],
+				intervals: [...s.intervals, seed],
 			}
 		})
 		onChange(sortByWeekday(next))

@@ -21,7 +21,7 @@ export interface GymSummary {
 	operatingHours?: DayScheduleDTO[] | null
 }
 
-export interface GymCreateBody {
+interface GymBodyBase {
 	cnpj: string
 	title: string
 	description?: string
@@ -29,17 +29,13 @@ export interface GymCreateBody {
 	latitude: number
 	longitude: number
 	address: string
+}
+
+export interface GymCreateBody extends GymBodyBase {
 	operatingHours?: DayScheduleDTO[]
 }
 
-export interface GymUpdateBody {
-	cnpj: string
-	title: string
-	description?: string
-	phone?: string
-	latitude: number
-	longitude: number
-	address: string
+export interface GymUpdateBody extends GymBodyBase {
 	operatingHours: DayScheduleDTO[] | null
 }
 
