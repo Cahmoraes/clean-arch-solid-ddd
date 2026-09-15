@@ -49,7 +49,7 @@ export type GymCreateProps = Omit<
 	longitude: number
 	cnpj: string
 	address: string
-	operatingHours?: DayScheduleDTO[] | OperatingHours | null
+	operatingHours?: DayScheduleDTO[] | OperatingHours | null // allow VO for factory/tests, still validates via OperatingHours.create when DTO passed
 }
 
 export type GymRestoreProps = Omit<

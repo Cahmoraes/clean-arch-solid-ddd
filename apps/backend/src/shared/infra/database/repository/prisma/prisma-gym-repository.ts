@@ -118,11 +118,25 @@ export class PrismaGymRepository implements GymRepository {
 		return { items: gymData.map(this.createGym), total }
 	}
 
+	private parseOperatingHours(rawHours: unknown): DayScheduleDTO[] | null {
+		if (
+			rawHours === null ||
+			rawHours === Prisma.JsonNull ||
+			rawHours === Prisma.DbNull
+		) {
+			return null
+		}
+		if (Array.isArray(rawHours)) {
+			return rawHours as DayScheduleDTO[]
+		}
+		// corrupt Json value (e.g. {}, string) → treat as null to avoid hydration crash
+		return null
+	}
+
 	private createGym(props: GymCreateProps): Gym {
-		const rawHours = props.operating_hours as unknown
-		const operatingHours = Array.isArray(rawHours)
-			? (rawHours as DayScheduleDTO[])
-			: null
+		const operatingHours = this.parseOperatingHours(
+			props.operating_hours as unknown,
+		)
 		return Gym.restore({
 			id: props.id,
 			title: props.title,

@@ -18,8 +18,8 @@ export interface CreateAndSaveGym {
 }
 
 export async function createAndSaveGym(props: CreateAndSaveGym) {
-	const gymId = props.id ?? "any_gym_id"
-	const { gymRepository, ...rest } = props
+	const { gymRepository, id, operatingHours, ...restClean } = props
+	const gymId = id ?? "any_gym_id"
 	const gym = Gym.create({
 		id: gymId,
 		title: "any_name",
@@ -27,7 +27,8 @@ export async function createAndSaveGym(props: CreateAndSaveGym) {
 		longitude: props.longitude ?? 0,
 		cnpj: "11.222.333/0001-81",
 		address: props.address ?? "Rua Padrão, 1, São Paulo - SP",
-		...rest,
+		...(operatingHours !== undefined ? { operatingHours } : {}),
+		...restClean,
 	}).forceSuccess().value
 	await gymRepository.save(gym)
 	return gymRepository.gyms.toArray()[0]
