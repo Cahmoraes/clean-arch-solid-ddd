@@ -2,10 +2,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { renderHook, waitFor } from "@testing-library/react"
 import { HttpResponse, http } from "msw"
 import type { ReactNode } from "react"
-import { describe, expect, it } from "vitest"
+import { describe, expect, expectTypeOf, it } from "vitest"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import {
+	type GymCreateInput,
+	type GymCreateOperatingHours,
+	type GymUpdateInput,
+	type GymUpdateOperatingHours,
 	useActivateGym,
 	useAllGyms,
 	useCreateGym,
@@ -17,6 +21,21 @@ import {
 } from "./index"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
+
+describe("contratos OpenAPI de operatingHours", () => {
+	it("mantém POST sem null e PUT com null explícito", () => {
+		expectTypeOf<
+			GymCreateInput["operatingHours"]
+		>().toEqualTypeOf<GymCreateOperatingHours>()
+		expectTypeOf<
+			GymUpdateInput["operatingHours"]
+		>().toEqualTypeOf<GymUpdateOperatingHours>()
+		expectTypeOf<
+			Extract<GymCreateOperatingHours, null>
+		>().toEqualTypeOf<never>()
+		expectTypeOf<Extract<GymUpdateOperatingHours, null>>().toEqualTypeOf<null>()
+	})
+})
 
 function makeWrapper() {
 	const queryClient = new QueryClient({
@@ -234,6 +253,36 @@ describe("useCreateGym", () => {
 		expect(received).not.toHaveProperty("operatingHours")
 	})
 
+	it("envia lista vazia quando o horário está fechado", async () => {
+		let received: Record<string, unknown> | null = null
+		server.use(
+			http.post(`${apiBaseUrl}/gyms`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json(
+					{ message: "Gym created", id: "new-gym-id" },
+					{ status: 201 },
+				)
+			}),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useCreateGym(), { wrapper: Wrapper })
+
+		await result.current.mutateAsync({
+			title: "Iron Gym",
+			cnpj: "12345678000100",
+			description: "ok",
+			phone: "11999999999",
+			location: {
+				address: "Av. Paulista, 1578, São Paulo - SP",
+				latitude: -23.5,
+				longitude: -46.6,
+			},
+			operatingHours: [],
+		})
+
+		expect(received).toHaveProperty("operatingHours", [])
+	})
+
 	it("propaga ApiError quando backend retorna 409", async () => {
 		server.use(
 			http.post(`${apiBaseUrl}/gyms`, () =>
@@ -306,6 +355,25 @@ describe("useUpdateGym", () => {
 		expect(received).toMatchObject({
 			operatingHours: null,
 		})
+	})
+
+	it("envia lista vazia no PUT para representar agenda fechada", async () => {
+		let received: Record<string, unknown> | null = null
+		server.use(
+			http.put(`${apiBaseUrl}/gyms/:id`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json({ message: "Gym updated", id: "gym-1" })
+			}),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useUpdateGym(), { wrapper: Wrapper })
+
+		await result.current.mutateAsync({
+			id: "gym-1",
+			input: { ...validUpdateInput, operatingHours: [] },
+		})
+
+		expect(received).toHaveProperty("operatingHours", [])
 	})
 
 	it("omite operatingHours no PUT quando o campo não foi definido", async () => {

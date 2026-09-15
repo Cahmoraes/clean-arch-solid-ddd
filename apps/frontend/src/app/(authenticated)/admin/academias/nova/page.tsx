@@ -16,7 +16,7 @@ import { GymPhoneField } from "@/features/gyms/components/gym-phone-field"
 import { OperatingHoursField } from "@/features/gyms/components/operating-hours-field"
 import {
 	updateOperatingHoursFieldValue,
-	validateOperatingHoursInput,
+	validateCreateOperatingHoursInput,
 } from "@/features/gyms/lib/operating-hours-validation"
 import {
 	type CreateGymInput,
@@ -84,7 +84,7 @@ export default function AdminNovaAcademiaPage() {
 	}
 
 	async function onSubmit(values: CreateGymInput) {
-		const validation = validateOperatingHoursInput(operatingHours)
+		const validation = validateCreateOperatingHoursInput(operatingHours)
 		if (!validation.success) {
 			setOperatingHoursError(validation.error)
 			setOperatingHoursDayErrors(validation.dayErrors)

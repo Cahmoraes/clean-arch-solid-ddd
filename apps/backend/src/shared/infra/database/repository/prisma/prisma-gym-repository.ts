@@ -116,7 +116,7 @@ export class PrismaGymRepository implements GymRepository {
 			this.prismaClient.gym.count({ where }),
 		])
 
-		return { items: gymData.map(this.createGym), total }
+		return { items: gymData.map((props) => this.createGym(props)), total }
 	}
 
 	private parseOperatingHours(

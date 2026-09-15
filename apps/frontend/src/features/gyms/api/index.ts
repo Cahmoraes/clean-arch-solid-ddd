@@ -8,8 +8,6 @@ import {
 	useQuery,
 	useQueryClient,
 } from "@tanstack/react-query"
-import type { CreateGymInput } from "@/features/gyms/schemas/create-gym-schema"
-import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-schema"
 import { API_BASE_URL, api } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
@@ -25,6 +23,8 @@ type GymListResponse =
 type GymStatusChangeResult =
 	paths["/gyms/{gymId}/activate"]["patch"]["responses"][200]["content"]["application/json"]
 
+type GymLocationFields = "address" | "latitude" | "longitude"
+
 export type GymSummary = GymListResponse["gyms"][number]
 
 export interface PaginatedGyms {
@@ -35,9 +35,16 @@ export interface PaginatedGyms {
 
 export type Gym = GymSummary
 
-export type GymCreateInput = Omit<CreateGymInput, "operatingHours"> & {
-	operatingHours?: DayScheduleDTO[] | null
+export type GymCreateInput = Omit<GymCreateBody, GymLocationFields> & {
+	location: Pick<GymCreateBody, GymLocationFields>
 }
+
+export type GymUpdateInput = Omit<GymUpdateBody, GymLocationFields> & {
+	location: Pick<GymUpdateBody, GymLocationFields>
+}
+
+export type GymCreateOperatingHours = GymCreateBody["operatingHours"]
+export type GymUpdateOperatingHours = GymUpdateBody["operatingHours"]
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 	if (error instanceof ApiError) return error
@@ -106,15 +113,21 @@ function buildCreateGymBody(input: GymCreateInput): GymCreateBody {
 		longitude: input.location.longitude,
 		...(input.description ? { description: input.description } : {}),
 		...(input.phone ? { phone: input.phone } : {}),
-		...(input.operatingHours != null
+		...(input.operatingHours !== undefined
 			? { operatingHours: input.operatingHours }
 			: {}),
 	}
 }
 
-function buildUpdateGymBody(input: GymCreateInput): GymUpdateBody {
+function buildUpdateGymBody(input: GymUpdateInput): GymUpdateBody {
 	return {
-		...buildCreateGymBody(input),
+		title: input.title,
+		cnpj: input.cnpj,
+		address: input.location.address,
+		latitude: input.location.latitude,
+		longitude: input.location.longitude,
+		...(input.description ? { description: input.description } : {}),
+		...(input.phone ? { phone: input.phone } : {}),
 		...(input.operatingHours !== undefined
 			? { operatingHours: input.operatingHours }
 			: {}),
@@ -200,7 +213,7 @@ export function useCreateGym(): UseMutationResult<
 
 export interface UpdateGymVariables {
 	id: string
-	input: GymCreateInput
+	input: GymUpdateInput
 }
 
 async function updateGymRequest({

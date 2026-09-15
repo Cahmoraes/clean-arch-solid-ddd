@@ -75,6 +75,30 @@ describe("PrismaGymRepository operating hours", () => {
 		expect(restored?.operatingHours?.toJSON()).toEqual(operatingHours)
 	})
 
+	test("hidrata operatingHours ao buscar a lista de academias", async () => {
+		const operatingHours = [
+			{ weekday: 2, intervals: [{ open: "07:00", close: "19:00" }] },
+		]
+		const id = await saveGym(operatingHours)
+
+		const result = await sut.fetchGyms({ page: 1 })
+		const restored = result.items.find((gym) => gym.id === id)
+
+		expect(restored?.operatingHours?.toJSON()).toEqual(operatingHours)
+	})
+
+	test("hidrata operatingHours ao buscar academias por título", async () => {
+		const operatingHours = [
+			{ weekday: 3, intervals: [{ open: "06:00", close: "22:00" }] },
+		]
+		const id = await saveGym(operatingHours)
+
+		const result = await sut.fetchGyms({ title: "Prisma", page: 1 })
+		const restored = result.items.find((gym) => gym.id === id)
+
+		expect(restored?.operatingHours?.toJSON()).toEqual(operatingHours)
+	})
+
 	test("propaga erro explícito quando operating_hours persistido é inválido", async () => {
 		const id = await saveGym()
 		await prismaClient.gym.update({

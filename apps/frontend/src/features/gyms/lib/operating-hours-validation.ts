@@ -10,6 +10,20 @@ export interface OperatingHoursValidationResult {
 	dayErrors: Partial<Record<number, string>>
 }
 
+export type CreateOperatingHoursValidationResult =
+	| {
+			success: true
+			value: DayScheduleDTO[] | undefined
+			error: null
+			dayErrors: Partial<Record<number, string>>
+	  }
+	| {
+			success: false
+			value: null
+			error: string
+			dayErrors: Partial<Record<number, string>>
+	  }
+
 export function updateOperatingHoursFieldValue(
 	next: DayScheduleDTO[],
 	setOperatingHours: Dispatch<
@@ -88,5 +102,33 @@ export function validateOperatingHoursInput(
 		value: null,
 		error: error ?? parsed.error.issues[0]?.message ?? "Horário inválido",
 		dayErrors,
+	}
+}
+
+export function validateCreateOperatingHoursInput(
+	value: DayScheduleDTO[] | null | undefined,
+): CreateOperatingHoursValidationResult {
+	const validation = validateOperatingHoursInput(value)
+	if (!validation.success) {
+		return {
+			success: false,
+			value: null,
+			error: validation.error ?? "Horário inválido",
+			dayErrors: validation.dayErrors,
+		}
+	}
+	if (validation.value === null) {
+		return {
+			success: false,
+			value: null,
+			error: "Horário nulo não é suportado no cadastro da academia.",
+			dayErrors: {},
+		}
+	}
+	return {
+		success: true,
+		value: validation.value,
+		error: null,
+		dayErrors: {},
 	}
 }
