@@ -1,4 +1,5 @@
 import { injectable } from "inversify"
+import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import {
 	type Either,
 	failure,
@@ -13,9 +14,9 @@ export class InMemoryWeatherGateway implements WeatherGateway {
 	private shouldFail = false
 	private temperature: Temperature = { current: 24, min: 18, max: 27 }
 
-	public async getCurrentWeather(): Promise<
-		Either<WeatherProviderUnavailableError, Temperature>
-	> {
+	public async getCurrentWeather(
+		_coordinate?: Coordinate,
+	): Promise<Either<WeatherProviderUnavailableError, Temperature>> {
 		if (this.shouldFail) {
 			return failure(new WeatherProviderUnavailableError())
 		}

@@ -19,6 +19,7 @@ import {
 	GymStatusFactory,
 	type GymStatusTypes,
 } from "./value-object/gym-status.js"
+import type { OperatingHours } from "./value-object/spec-gym-dates.js"
 
 interface GymConstructor {
 	id: Id
@@ -30,11 +31,12 @@ interface GymConstructor {
 	address?: string
 	imageKey?: string
 	status: GymStatusTypes
+	operatingHours?: OperatingHours | null
 }
 
 export type GymCreateProps = Omit<
 	GymConstructor,
-	"id" | "coordinate" | "title" | "phone" | "cnpj" | "status"
+	"id" | "coordinate" | "title" | "phone" | "cnpj" | "status" | "operatingHours"
 > & {
 	id?: string
 	phone?: string
@@ -43,6 +45,7 @@ export type GymCreateProps = Omit<
 	longitude: number
 	cnpj: string
 	address: string
+	operatingHours?: OperatingHours | null
 }
 
 export type GymRestoreProps = Omit<
@@ -57,6 +60,7 @@ export type GymRestoreProps = Omit<
 	cnpj: string
 	address?: string
 	status: GymStatusTypes
+	operatingHours?: OperatingHours | null
 }
 
 export class Gym {
@@ -69,6 +73,7 @@ export class Gym {
 	private readonly _address?: string
 	private readonly _imageKey?: string
 	private _status: GymStatus
+	private readonly _operatingHours?: OperatingHours | null
 
 	private constructor(gymProps: GymConstructor) {
 		this._id = gymProps.id
@@ -80,6 +85,7 @@ export class Gym {
 		this._address = gymProps.address
 		this._imageKey = gymProps.imageKey
 		this._status = GymStatusFactory.create(this, gymProps.status)
+		this._operatingHours = gymProps.operatingHours ?? null
 	}
 
 	public static create(
@@ -111,6 +117,7 @@ export class Gym {
 			phone: phoneOrError.value,
 			cnpj: cnpjOrError.value,
 			status: "activated",
+			operatingHours: gymProps.operatingHours ?? null,
 		})
 		return success(gym)
 	}
@@ -132,6 +139,7 @@ export class Gym {
 			phone,
 			cnpj,
 			status: gymProps.status,
+			operatingHours: gymProps.operatingHours ?? null,
 		})
 	}
 
@@ -173,6 +181,10 @@ export class Gym {
 
 	get status(): GymStatusTypes {
 		return this._status.type
+	}
+
+	get operatingHours(): OperatingHours | null {
+		return this._operatingHours ?? null
 	}
 
 	public _changeStatus(gymStatus: GymStatus): void {
