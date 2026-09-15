@@ -289,6 +289,24 @@ describe("useUpdateGym", () => {
 			],
 		})
 	})
+
+	it("envia operatingHours nulo no PUT quando o horário é limpo", async () => {
+		let received: Record<string, unknown> | null = null
+		server.use(
+			http.put(`${apiBaseUrl}/gyms/:id`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json({ message: "Gym updated", id: "gym-1" })
+			}),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useUpdateGym(), { wrapper: Wrapper })
+		const clearedInput = { ...validUpdateInput, operatingHours: null }
+		result.current.mutate({ id: "gym-1", input: clearedInput })
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(received).toMatchObject({
+			operatingHours: null,
+		})
+	})
 })
 
 describe("useSetGymImage", () => {

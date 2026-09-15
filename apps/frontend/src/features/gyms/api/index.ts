@@ -16,6 +16,7 @@ import {
 	type GymCreateBody,
 	type GymStatusChangeResult,
 	type GymSummary,
+	type GymUpdateBody,
 	getGymsExtendedClient,
 	type PaginatedGyms,
 } from "./extended-paths"
@@ -97,6 +98,13 @@ function buildCreateGymBody(input: GymCreateInput): GymCreateBody {
 		...(input.operatingHours != null
 			? { operatingHours: input.operatingHours }
 			: {}),
+	}
+}
+
+function buildUpdateGymBody(input: GymCreateInput): GymUpdateBody {
+	return {
+		...buildCreateGymBody(input),
+		operatingHours: input.operatingHours ?? null,
 	}
 }
 
@@ -190,7 +198,7 @@ async function updateGymRequest({
 	const client = getGymsExtendedClient()
 	const { data, error } = await client.PUT("/gyms/{id}", {
 		params: { path: { id } },
-		body: buildCreateGymBody(input),
+		body: buildUpdateGymBody(input),
 	})
 	if (error || !data) throw toApiError(error)
 	return { id: data.id }
