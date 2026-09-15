@@ -65,19 +65,20 @@ model CheckIn {
 }
 
 model Gym {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  cnpj        String    @unique
-  title       String
-  description String?
-  phone       String?
-  address     String?
-  image_key   String?
-  latitude    Decimal
-  longitude   Decimal
-  status      GymStatus @default(activated)
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  checkIns    CheckIn[]
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cnpj            String    @unique
+  title           String
+  description     String?
+  phone           String?
+  address         String?
+  image_key       String?
+  latitude        Decimal
+  longitude       Decimal
+  status          GymStatus @default(activated)
+  operating_hours Json?     @db.Json
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  checkIns        CheckIn[]
 
   @@map("gyms")
 }

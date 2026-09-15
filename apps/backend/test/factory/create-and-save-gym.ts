@@ -1,4 +1,8 @@
 import { Gym } from "@/gym/domain/gym"
+import type {
+	DayScheduleDTO,
+	OperatingHours,
+} from "@/gym/domain/value-object/spec-gym-dates.js"
 import type { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
 
 export interface CreateAndSaveGym {
@@ -10,10 +14,12 @@ export interface CreateAndSaveGym {
 	description?: string
 	phone?: string
 	address?: string
+	operatingHours?: DayScheduleDTO[] | OperatingHours | null
 }
 
 export async function createAndSaveGym(props: CreateAndSaveGym) {
 	const gymId = props.id ?? "any_gym_id"
+	const { gymRepository, ...rest } = props
 	const gym = Gym.create({
 		id: gymId,
 		title: "any_name",
@@ -21,8 +27,8 @@ export async function createAndSaveGym(props: CreateAndSaveGym) {
 		longitude: props.longitude ?? 0,
 		cnpj: "11.222.333/0001-81",
 		address: props.address ?? "Rua Padrão, 1, São Paulo - SP",
-		...props,
+		...rest,
 	}).forceSuccess().value
-	await props.gymRepository.save(gym)
-	return props.gymRepository.gyms.toArray()[0]
+	await gymRepository.save(gym)
+	return gymRepository.gyms.toArray()[0]
 }

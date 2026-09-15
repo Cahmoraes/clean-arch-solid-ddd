@@ -1099,6 +1099,7 @@ export const GymScalarFieldEnum = {
   latitude: 'latitude',
   longitude: 'longitude',
   status: 'status',
+  operating_hours: 'operating_hours',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const

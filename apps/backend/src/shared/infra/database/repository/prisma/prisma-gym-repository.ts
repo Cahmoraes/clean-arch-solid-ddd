@@ -9,6 +9,7 @@ import type {
 } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
 import { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
+import type { DayScheduleDTO } from "@/gym/domain/value-object/spec-gym-dates.js"
 import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import {
 	Prisma,
@@ -30,6 +31,7 @@ export interface GymCreateProps {
 	longitude: Decimal
 	cnpj: string
 	status: "activated" | "deactivated"
+	operating_hours?: Prisma.JsonValue | null
 }
 
 @injectable()
@@ -59,6 +61,9 @@ export class PrismaGymRepository implements GymRepository {
 				longitude: gym.longitude,
 				cnpj: gym.cnpj,
 				status: gym.status,
+				operating_hours:
+					(gym.operatingHours?.toJSON() as unknown as Prisma.InputJsonValue) ??
+					Prisma.JsonNull,
 			},
 			select: { id: true },
 		})
@@ -78,6 +83,9 @@ export class PrismaGymRepository implements GymRepository {
 				longitude: gym.longitude,
 				cnpj: gym.cnpj,
 				status: gym.status,
+				operating_hours:
+					(gym.operatingHours?.toJSON() as unknown as Prisma.InputJsonValue) ??
+					Prisma.JsonNull,
 			},
 		})
 	}
@@ -111,6 +119,10 @@ export class PrismaGymRepository implements GymRepository {
 	}
 
 	private createGym(props: GymCreateProps): Gym {
+		const rawHours = props.operating_hours as unknown
+		const operatingHours = Array.isArray(rawHours)
+			? (rawHours as DayScheduleDTO[])
+			: null
 		return Gym.restore({
 			id: props.id,
 			title: props.title,
@@ -122,6 +134,7 @@ export class PrismaGymRepository implements GymRepository {
 			longitude: props.longitude.toNumber(),
 			cnpj: props.cnpj,
 			status: props.status,
+			operatingHours,
 		})
 	}
 

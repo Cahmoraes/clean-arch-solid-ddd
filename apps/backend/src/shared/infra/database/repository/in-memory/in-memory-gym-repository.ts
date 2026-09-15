@@ -33,6 +33,7 @@ export class InMemoryGymRepository implements GymRepository {
 			address: gym.address,
 			imageKey: gym.imageKey,
 			status: gym.status,
+			operatingHours: gym.operatingHours ? gym.operatingHours.toJSON() : null,
 		})
 		this.gyms.add(gymWithId)
 		return { id: gym.id }
@@ -53,6 +54,7 @@ export class InMemoryGymRepository implements GymRepository {
 				address: gym.address,
 				imageKey: gym.imageKey,
 				status: gym.status,
+				operatingHours: gym.operatingHours ? gym.operatingHours.toJSON() : null,
 			}),
 		)
 	}

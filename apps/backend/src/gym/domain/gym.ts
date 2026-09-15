@@ -14,12 +14,16 @@ import type { GymAlreadyActivatedError } from "./error/gym-already-activated-err
 import type { GymAlreadyDeactivatedError } from "./error/gym-already-deactivated-error.js"
 import type { InvalidCNPJError } from "./error/invalid-cnpj-error.js"
 import { CNPJ } from "./value-object/CNPJ.js"
+import type { InvalidOperatingHoursError } from "./value-object/errors/invalid-operating-hours-error.js"
 import {
 	type GymStatus,
 	GymStatusFactory,
 	type GymStatusTypes,
 } from "./value-object/gym-status.js"
-import type { OperatingHours } from "./value-object/spec-gym-dates.js"
+import {
+	type DayScheduleDTO,
+	OperatingHours,
+} from "./value-object/spec-gym-dates.js"
 
 interface GymConstructor {
 	id: Id
@@ -45,12 +49,12 @@ export type GymCreateProps = Omit<
 	longitude: number
 	cnpj: string
 	address: string
-	operatingHours?: OperatingHours | null
+	operatingHours?: DayScheduleDTO[] | OperatingHours | null
 }
 
 export type GymRestoreProps = Omit<
 	GymConstructor,
-	"id" | "coordinate" | "title" | "phone" | "cnpj"
+	"id" | "coordinate" | "title" | "phone" | "cnpj" | "status" | "operatingHours"
 > & {
 	id: string
 	phone?: string
@@ -60,7 +64,7 @@ export type GymRestoreProps = Omit<
 	cnpj: string
 	address?: string
 	status: GymStatusTypes
-	operatingHours?: OperatingHours | null
+	operatingHours?: DayScheduleDTO[] | OperatingHours | null
 }
 
 export class Gym {
@@ -94,7 +98,8 @@ export class Gym {
 		| InvalidNameLengthError
 		| InvalidLatitudeError
 		| InvalidLongitudeError
-		| InvalidCNPJError,
+		| InvalidCNPJError
+		| InvalidOperatingHoursError,
 		Gym
 	> {
 		const id = Id.create(gymProps.id)
@@ -109,6 +114,11 @@ export class Gym {
 		if (phoneOrError.isFailure()) return failure(phoneOrError.value)
 		const cnpjOrError = CNPJ.create(gymProps.cnpj)
 		if (cnpjOrError.isFailure()) return failure(cnpjOrError.value)
+		const operatingHoursResult = Gym.resolveOperatingHoursForCreate(
+			gymProps.operatingHours,
+		)
+		if (operatingHoursResult.isFailure())
+			return failure(operatingHoursResult.value)
 		const gym = new Gym({
 			...gymProps,
 			id,
@@ -117,9 +127,27 @@ export class Gym {
 			phone: phoneOrError.value,
 			cnpj: cnpjOrError.value,
 			status: "activated",
-			operatingHours: gymProps.operatingHours ?? null,
+			operatingHours: operatingHoursResult.value,
 		})
 		return success(gym)
+	}
+
+	private static resolveOperatingHoursForCreate(
+		input: DayScheduleDTO[] | OperatingHours | null | undefined,
+	): Either<InvalidOperatingHoursError, OperatingHours | null> {
+		if (!input) return success(null)
+		if (input instanceof OperatingHours) return success(input)
+		if (Array.isArray(input)) return OperatingHours.create(input)
+		return success(null)
+	}
+
+	private static resolveOperatingHoursForRestore(
+		input: DayScheduleDTO[] | OperatingHours | null | undefined,
+	): OperatingHours | null {
+		if (!input) return null
+		if (input instanceof OperatingHours) return input
+		if (Array.isArray(input)) return OperatingHours.restore(input)
+		return null
 	}
 
 	public static restore(gymProps: GymRestoreProps): Gym {
@@ -139,7 +167,9 @@ export class Gym {
 			phone,
 			cnpj,
 			status: gymProps.status,
-			operatingHours: gymProps.operatingHours ?? null,
+			operatingHours: Gym.resolveOperatingHoursForRestore(
+				gymProps.operatingHours,
+			),
 		})
 	}
 

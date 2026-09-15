@@ -77,6 +77,7 @@ export type GymCountAggregateOutputType = {
   latitude: number
   longitude: number
   status: number
+  operating_hours: number
   created_at: number
   updated_at: number
   _all: number
@@ -134,6 +135,7 @@ export type GymCountAggregateInputType = {
   latitude?: true
   longitude?: true
   status?: true
+  operating_hours?: true
   created_at?: true
   updated_at?: true
   _all?: true
@@ -236,6 +238,7 @@ export type GymGroupByOutputType = {
   latitude: runtime.Decimal
   longitude: runtime.Decimal
   status: $Enums.GymStatus
+  operating_hours: runtime.JsonValue | null
   created_at: Date
   updated_at: Date
   _count: GymCountAggregateOutputType | null
@@ -274,6 +277,7 @@ export type GymWhereInput = {
   latitude?: Prisma.DecimalFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusFilter<"Gym"> | $Enums.GymStatus
+  operating_hours?: Prisma.JsonNullableFilter<"Gym">
   created_at?: Prisma.DateTimeFilter<"Gym"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Gym"> | Date | string
   checkIns?: Prisma.CheckInListRelationFilter
@@ -290,6 +294,7 @@ export type GymOrderByWithRelationInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  operating_hours?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   checkIns?: Prisma.CheckInOrderByRelationAggregateInput
@@ -309,6 +314,7 @@ export type GymWhereUniqueInput = Prisma.AtLeast<{
   latitude?: Prisma.DecimalFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusFilter<"Gym"> | $Enums.GymStatus
+  operating_hours?: Prisma.JsonNullableFilter<"Gym">
   created_at?: Prisma.DateTimeFilter<"Gym"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Gym"> | Date | string
   checkIns?: Prisma.CheckInListRelationFilter
@@ -325,6 +331,7 @@ export type GymOrderByWithAggregationInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  operating_hours?: Prisma.SortOrderInput | Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   _count?: Prisma.GymCountOrderByAggregateInput
@@ -348,6 +355,7 @@ export type GymScalarWhereWithAggregatesInput = {
   latitude?: Prisma.DecimalWithAggregatesFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalWithAggregatesFilter<"Gym"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusWithAggregatesFilter<"Gym"> | $Enums.GymStatus
+  operating_hours?: Prisma.JsonNullableWithAggregatesFilter<"Gym">
   created_at?: Prisma.DateTimeWithAggregatesFilter<"Gym"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"Gym"> | Date | string
 }
@@ -363,6 +371,7 @@ export type GymCreateInput = {
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Date | string
   updated_at?: Date | string
   checkIns?: Prisma.CheckInCreateNestedManyWithoutGymInput
@@ -379,6 +388,7 @@ export type GymUncheckedCreateInput = {
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Date | string
   updated_at?: Date | string
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutGymInput
@@ -395,6 +405,7 @@ export type GymUpdateInput = {
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusFieldUpdateOperationsInput | $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkIns?: Prisma.CheckInUpdateManyWithoutGymNestedInput
@@ -411,6 +422,7 @@ export type GymUncheckedUpdateInput = {
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusFieldUpdateOperationsInput | $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutGymNestedInput
@@ -427,6 +439,7 @@ export type GymCreateManyInput = {
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -442,6 +455,7 @@ export type GymUpdateManyMutationInput = {
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusFieldUpdateOperationsInput | $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -457,6 +471,7 @@ export type GymUncheckedUpdateManyInput = {
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusFieldUpdateOperationsInput | $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -477,6 +492,7 @@ export type GymCountOrderByAggregateInput = {
   latitude?: Prisma.SortOrder
   longitude?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  operating_hours?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -550,6 +566,7 @@ export type GymCreateWithoutCheckInsInput = {
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -565,6 +582,7 @@ export type GymUncheckedCreateWithoutCheckInsInput = {
   latitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -596,6 +614,7 @@ export type GymUpdateWithoutCheckInsInput = {
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusFieldUpdateOperationsInput | $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -611,6 +630,7 @@ export type GymUncheckedUpdateWithoutCheckInsInput = {
   latitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   longitude?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumGymStatusFieldUpdateOperationsInput | $Enums.GymStatus
+  operating_hours?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -657,6 +677,7 @@ export type GymSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   latitude?: boolean
   longitude?: boolean
   status?: boolean
+  operating_hours?: boolean
   created_at?: boolean
   updated_at?: boolean
   checkIns?: boolean | Prisma.Gym$checkInsArgs<ExtArgs>
@@ -674,6 +695,7 @@ export type GymSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   latitude?: boolean
   longitude?: boolean
   status?: boolean
+  operating_hours?: boolean
   created_at?: boolean
   updated_at?: boolean
 }, ExtArgs["result"]["gym"]>
@@ -689,6 +711,7 @@ export type GymSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   latitude?: boolean
   longitude?: boolean
   status?: boolean
+  operating_hours?: boolean
   created_at?: boolean
   updated_at?: boolean
 }, ExtArgs["result"]["gym"]>
@@ -704,11 +727,12 @@ export type GymSelectScalar = {
   latitude?: boolean
   longitude?: boolean
   status?: boolean
+  operating_hours?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type GymOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "cnpj" | "title" | "description" | "phone" | "address" | "image_key" | "latitude" | "longitude" | "status" | "created_at" | "updated_at", ExtArgs["result"]["gym"]>
+export type GymOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "cnpj" | "title" | "description" | "phone" | "address" | "image_key" | "latitude" | "longitude" | "status" | "operating_hours" | "created_at" | "updated_at", ExtArgs["result"]["gym"]>
 export type GymInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   checkIns?: boolean | Prisma.Gym$checkInsArgs<ExtArgs>
   _count?: boolean | Prisma.GymCountOutputTypeDefaultArgs<ExtArgs>
@@ -732,6 +756,7 @@ export type $GymPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     latitude: runtime.Decimal
     longitude: runtime.Decimal
     status: $Enums.GymStatus
+    operating_hours: runtime.JsonValue | null
     created_at: Date
     updated_at: Date
   }, ExtArgs["result"]["gym"]>
@@ -1168,6 +1193,7 @@ export interface GymFieldRefs {
   readonly latitude: Prisma.FieldRef<"Gym", 'Decimal'>
   readonly longitude: Prisma.FieldRef<"Gym", 'Decimal'>
   readonly status: Prisma.FieldRef<"Gym", 'GymStatus'>
+  readonly operating_hours: Prisma.FieldRef<"Gym", 'Json'>
   readonly created_at: Prisma.FieldRef<"Gym", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"Gym", 'DateTime'>
 }
