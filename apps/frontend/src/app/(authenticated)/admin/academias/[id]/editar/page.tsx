@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { FormField } from "@/components/ui/form-field"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
-	type Gym,
+	type GymDetail,
 	type UpdateGymVariables,
 	useGymById,
 	useUpdateGym,
@@ -53,7 +53,7 @@ async function submitEditedGym({
 }: {
 	gymId: string
 	values: CreateGymInput
-	operatingHours: DayScheduleDTO[] | null
+	operatingHours: DayScheduleDTO[] | null | undefined
 	updateGym: (variables: UpdateGymVariables) => Promise<{ id: string }>
 	setOperatingHoursError: (value: string | null) => void
 	setOperatingHoursDayErrors: (value: Partial<Record<number, string>>) => void
@@ -82,16 +82,16 @@ async function submitEditedGym({
 }
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: form composition is intentionally dense
-function EditGymForm({ gym }: { gym: Gym }) {
+function EditGymForm({ gym }: { gym: GymDetail }) {
 	const router = useRouter()
 	const titleId = useId()
 	const cnpjId = useId()
 	const descriptionId = useId()
 	const phoneId = useId()
 	const { mutateAsync: updateGym, isPending } = useUpdateGym()
-	const [operatingHours, setOperatingHours] = useState<DayScheduleDTO[] | null>(
-		gym.operatingHours ?? null,
-	)
+	const [operatingHours, setOperatingHours] = useState<
+		DayScheduleDTO[] | null | undefined
+	>(gym.operatingHours ?? undefined)
 	const [operatingHoursError, setOperatingHoursError] = useState<string | null>(
 		null,
 	)

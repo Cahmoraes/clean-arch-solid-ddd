@@ -4,7 +4,7 @@ import { Search } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
-import type { Gym } from "@/features/gyms/api"
+import type { GymSummary } from "@/features/gyms/api"
 import { GymCard } from "@/features/gyms/components/gym-card"
 import { GymCardSkeleton } from "@/features/gyms/components/gym-card-skeleton"
 import { GymRow } from "@/features/gyms/components/gym-row"
@@ -36,7 +36,7 @@ export interface GymResultsProps {
 	isError: boolean
 	errorMessage?: string
 	onRetry: () => void
-	items: Gym[]
+	items: GymSummary[]
 	isAdmin?: boolean
 }
 
@@ -103,7 +103,7 @@ function ResultsListItem({
 	view,
 	adminEditHref,
 }: {
-	gym: Gym
+	gym: GymSummary
 	view: GymView
 	adminEditHref?: string
 }) {
@@ -126,7 +126,13 @@ function ResultsListItem({
 	)
 }
 
-function ResultsList({ items, isAdmin }: { items: Gym[]; isAdmin?: boolean }) {
+function ResultsList({
+	items,
+	isAdmin,
+}: {
+	items: GymSummary[]
+	isAdmin?: boolean
+}) {
 	const view = useGymViewStore((state) => state.view)
 
 	return (

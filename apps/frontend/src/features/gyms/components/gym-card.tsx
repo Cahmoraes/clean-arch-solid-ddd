@@ -2,13 +2,13 @@ import { MapPin, Pencil } from "lucide-react"
 import { motion } from "motion/react"
 import Link from "next/link"
 import { StatusBadge } from "@/components/ui/status-badge"
-import type { Gym } from "@/features/gyms/api"
+import type { GymSummary } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
 import { resolveLocation } from "@/features/gyms/lib/resolve-location"
 import { resolveGymStatusBadge } from "@/features/gyms/lib/resolve-status-badge"
 
 export interface GymCardProps {
-	gym: Gym
+	gym: GymSummary
 	adminEditHref?: string
 }
 

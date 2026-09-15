@@ -123,7 +123,13 @@ export function OperatingHoursField({
 				weekday,
 				intervals: [{ open: "08:00", close: "18:00" }],
 			}
-			onChange(sortByWeekday([...schedules, next]))
+			const scheduleExists = schedules.some((s) => s.weekday === weekday)
+			const nextSchedules = scheduleExists
+				? schedules.map((schedule) =>
+						schedule.weekday === weekday ? next : schedule,
+					)
+				: [...schedules, next]
+			onChange(sortByWeekday(nextSchedules))
 		}
 	}
 

@@ -1,5 +1,6 @@
 "use client"
 
+import type { paths } from "@repo/api-types"
 import {
 	type UseMutationResult,
 	type UseQueryResult,
@@ -12,14 +13,25 @@ import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-sch
 import { API_BASE_URL, api } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
-import {
-	type GymCreateBody,
-	type GymStatusChangeResult,
-	type GymSummary,
-	type GymUpdateBody,
-	getGymsExtendedClient,
-	type PaginatedGyms,
-} from "./extended-paths"
+
+export type GymDetail =
+	paths["/gyms/{gymId}"]["get"]["responses"][200]["content"]["application/json"]
+type GymCreateBody =
+	paths["/gyms"]["post"]["requestBody"]["content"]["application/json"]
+type GymUpdateBody =
+	paths["/gyms/{gymId}"]["put"]["requestBody"]["content"]["application/json"]
+type GymListResponse =
+	paths["/gyms"]["get"]["responses"][200]["content"]["application/json"]
+type GymStatusChangeResult =
+	paths["/gyms/{gymId}/activate"]["patch"]["responses"][200]["content"]["application/json"]
+
+export type GymSummary = GymListResponse["gyms"][number]
+
+export interface PaginatedGyms {
+	items: GymSummary[]
+	page: number
+	total: number
+}
 
 export type Gym = GymSummary
 
@@ -67,7 +79,7 @@ async function searchGymsByName(
 		if (error || !data) throw toApiError(error)
 		const { gyms, pagination } = data
 		return {
-			items: gyms as GymSummary[],
+			items: gyms.map((gym) => ({ ...gym, address: null })),
 			page: pagination.page,
 			total: pagination.total,
 		}
@@ -77,9 +89,8 @@ async function searchGymsByName(
 	}
 }
 
-async function fetchGymById(id: string): Promise<Gym> {
-	const client = getGymsExtendedClient()
-	const { data, error } = await client.GET("/gyms/{gymId}", {
+async function fetchGymById(id: string): Promise<GymDetail> {
+	const { data, error } = await api.GET("/gyms/{gymId}", {
 		params: { path: { gymId: id } },
 	})
 	if (error || !data) throw toApiError(error)
@@ -138,8 +149,7 @@ export function useGymsByName({
 }
 
 async function fetchAllGyms(page: number): Promise<PaginatedGyms> {
-	const client = getGymsExtendedClient()
-	const { data, error } = await client.GET("/gyms", {
+	const { data, error } = await api.GET("/gyms", {
 		params: { query: { page } },
 	})
 	if (error || !data) throw toApiError(error)
@@ -166,8 +176,8 @@ export function useAllGyms({
 
 export function useGymById(
 	id: string | undefined,
-): UseQueryResult<Gym, ApiError> {
-	return useQuery<Gym, ApiError>({
+): UseQueryResult<GymDetail, ApiError> {
+	return useQuery<GymDetail, ApiError>({
 		queryKey: gymsKeys.detail(id ?? ""),
 		enabled: Boolean(id),
 		queryFn: () => fetchGymById(id ?? ""),
@@ -197,8 +207,7 @@ async function updateGymRequest({
 	id,
 	input,
 }: UpdateGymVariables): Promise<CreateGymResult> {
-	const client = getGymsExtendedClient()
-	const { data, error } = await client.PUT("/gyms/{gymId}", {
+	const { data, error } = await api.PUT("/gyms/{gymId}", {
 		params: { path: { gymId: id } },
 		body: buildUpdateGymBody(input),
 	})
@@ -266,8 +275,7 @@ export function useSetGymImage(): UseMutationResult<
 async function deactivateGymRequest(
 	gymId: string,
 ): Promise<GymStatusChangeResult> {
-	const client = getGymsExtendedClient()
-	const { data, error } = await client.PATCH("/gyms/{gymId}/deactivate", {
+	const { data, error } = await api.PATCH("/gyms/{gymId}/deactivate", {
 		params: { path: { gymId } },
 	})
 	if (error || !data) throw toApiError(error)
@@ -291,8 +299,7 @@ export function useDeactivateGym(): UseMutationResult<
 async function activateGymRequest(
 	gymId: string,
 ): Promise<GymStatusChangeResult> {
-	const client = getGymsExtendedClient()
-	const { data, error } = await client.PATCH("/gyms/{gymId}/activate", {
+	const { data, error } = await api.PATCH("/gyms/{gymId}/activate", {
 		params: { path: { gymId } },
 	})
 	if (error || !data) throw toApiError(error)

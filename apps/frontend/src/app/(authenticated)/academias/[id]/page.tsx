@@ -18,7 +18,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCreateCheckIn } from "@/features/check-ins/api"
 import {
-	type Gym,
+	type GymDetail,
 	useActivateGym,
 	useDeactivateGym,
 	useGymById,
@@ -102,7 +102,7 @@ function getUserPosition(timeoutMs = 5000): Promise<UserCoords | null> {
 }
 
 interface CheckInButtonProps {
-	gym: Gym
+	gym: GymDetail
 }
 
 function CheckInButton({ gym }: CheckInButtonProps) {
@@ -143,7 +143,7 @@ function CheckInButton({ gym }: CheckInButtonProps) {
 }
 
 interface GymStatusToggleButtonProps {
-	gym: Gym
+	gym: GymDetail
 }
 
 interface StatusConfig {
@@ -232,7 +232,7 @@ function GymStatusToggleButton({ gym }: GymStatusToggleButtonProps) {
 }
 
 interface DetailCardProps {
-	gym: Gym
+	gym: GymDetail
 	adminEditHref?: string
 }
 
@@ -312,7 +312,7 @@ interface DetailBodyProps {
 	isError: boolean
 	errorMessage?: string
 	onRetry: () => void
-	gym: Gym | undefined
+	gym: GymDetail | undefined
 	adminEditHref?: string
 }
 

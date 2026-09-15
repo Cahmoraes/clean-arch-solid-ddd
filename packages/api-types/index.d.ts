@@ -2290,6 +2290,27 @@ export interface paths {
                          * @example Rua das Flores, 123, São Paulo - SP
                          */
                         address: string;
+                        /** @description Horários de funcionamento semanal */
+                        operatingHours?: {
+                            /**
+                             * @description Dia da semana 0=Dom … 6=Sáb
+                             * @example 1
+                             */
+                            weekday: number;
+                            /** @description Intervalos do dia */
+                            intervals: {
+                                /**
+                                 * @description Horário de abertura HH:mm
+                                 * @example 08:00
+                                 */
+                                open: string;
+                                /**
+                                 * @description Horário de fechamento HH:mm
+                                 * @example 18:00
+                                 */
+                                close: string;
+                            }[];
+                        }[];
                     };
                 };
             };
@@ -2418,6 +2439,27 @@ export interface paths {
                              * @enum {string}
                              */
                             status: "activated" | "deactivated";
+                            /** @description Horários de funcionamento ou null quando não informado */
+                            operatingHours: {
+                                /**
+                                 * @description Dia da semana 0=Dom … 6=Sáb
+                                 * @example 1
+                                 */
+                                weekday: number;
+                                /** @description Intervalos do dia */
+                                intervals: {
+                                    /**
+                                     * @description Horário de abertura HH:mm
+                                     * @example 08:00
+                                     */
+                                    open: string;
+                                    /**
+                                     * @description Horário de fechamento HH:mm
+                                     * @example 18:00
+                                     */
+                                    close: string;
+                                }[];
+                            }[] | null;
                         };
                     };
                 };
@@ -2499,6 +2541,27 @@ export interface paths {
                          * @example Rua das Flores, 123, São Paulo - SP
                          */
                         address: string;
+                        /** @description Horários de funcionamento semanal ou null */
+                        operatingHours?: {
+                            /**
+                             * @description Dia da semana 0=Dom … 6=Sáb
+                             * @example 1
+                             */
+                            weekday: number;
+                            /** @description Intervalos do dia */
+                            intervals: {
+                                /**
+                                 * @description Horário de abertura HH:mm
+                                 * @example 08:00
+                                 */
+                                open: string;
+                                /**
+                                 * @description Horário de fechamento HH:mm
+                                 * @example 18:00
+                                 */
+                                close: string;
+                            }[];
+                        }[] | null;
                     };
                 };
             };

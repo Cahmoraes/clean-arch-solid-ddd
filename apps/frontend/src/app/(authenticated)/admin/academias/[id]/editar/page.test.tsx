@@ -163,7 +163,7 @@ describe("AdminEditarAcademiaPage", () => {
 		})
 	})
 
-	test("envia operatingHours nulo no PUT ao limpar horário existente", async () => {
+	test("envia operatingHours vazio no PUT ao fechar todos os dias", async () => {
 		let received: Record<string, unknown> | null = null
 		server.use(
 			http.get(`${apiBaseUrl}/gyms/:id`, () =>
@@ -199,7 +199,7 @@ describe("AdminEditarAcademiaPage", () => {
 
 		await waitFor(() => {
 			expect(received).toMatchObject({
-				operatingHours: null,
+				operatingHours: [],
 			})
 		})
 	})

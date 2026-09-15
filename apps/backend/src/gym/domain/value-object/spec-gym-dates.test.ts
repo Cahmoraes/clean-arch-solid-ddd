@@ -90,6 +90,22 @@ describe("OperatingHours", () => {
 		expect(OperatingHours.create(dto).isFailure()).toBe(true)
 	})
 
+	test("deve rejeitar mais de 3 intervalos por dia na criação", () => {
+		const intervals = [
+			{ open: "06:00", close: "08:00" },
+			{ open: "09:00", close: "11:00" },
+			{ open: "12:00", close: "14:00" },
+			{ open: "15:00", close: "17:00" },
+		]
+
+		expect(OperatingHours.create([{ weekday: 1, intervals }]).isFailure()).toBe(
+			true,
+		)
+		expect(
+			OperatingHours.createFromUnknown([{ weekday: 1, intervals }]).isFailure(),
+		).toBe(true)
+	})
+
 	test("deve aceitar intervalos adjacentes prev.close == next.open", () => {
 		const result = OperatingHours.create([
 			{

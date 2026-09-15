@@ -127,6 +127,11 @@ export class DaySchedule {
 				new InvalidOperatingHoursError("intervals deve ser um array"),
 			)
 		}
+		if (dto.intervals.length > 3) {
+			return failure(
+				new InvalidOperatingHoursError("máximo 3 intervalos por dia"),
+			)
+		}
 		const intervalsOrError: TimeInterval[] = []
 		for (const intervalDTO of dto.intervals) {
 			const result = TimeInterval.create(intervalDTO)

@@ -43,9 +43,9 @@ export default function AdminNovaAcademiaPage() {
 	const { mutateAsync, isPending } = useCreateGym()
 	const { mutateAsync: setGymImage } = useSetGymImage()
 	const [imageBlob, setImageBlob] = useState<Blob | null>(null)
-	const [operatingHours, setOperatingHours] = useState<DayScheduleDTO[] | null>(
-		null,
-	)
+	const [operatingHours, setOperatingHours] = useState<
+		DayScheduleDTO[] | null | undefined
+	>(undefined)
 	const [operatingHoursError, setOperatingHoursError] = useState<string | null>(
 		null,
 	)

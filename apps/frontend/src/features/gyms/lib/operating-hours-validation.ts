@@ -5,20 +5,22 @@ import { operatingHoursSchema } from "@/features/gyms/schemas/operating-hours-sc
 
 export interface OperatingHoursValidationResult {
 	success: boolean
-	value: DayScheduleDTO[] | null
+	value: DayScheduleDTO[] | null | undefined
 	error: string | null
 	dayErrors: Partial<Record<number, string>>
 }
 
 export function updateOperatingHoursFieldValue(
 	next: DayScheduleDTO[],
-	setOperatingHours: Dispatch<SetStateAction<DayScheduleDTO[] | null>>,
+	setOperatingHours: Dispatch<
+		SetStateAction<DayScheduleDTO[] | null | undefined>
+	>,
 	setOperatingHoursError: Dispatch<SetStateAction<string | null>>,
 	setOperatingHoursDayErrors: Dispatch<
 		SetStateAction<Partial<Record<number, string>>>
 	>,
 ) {
-	setOperatingHours(next.length === 0 ? null : next)
+	setOperatingHours(next)
 	setOperatingHoursError(null)
 	setOperatingHoursDayErrors({})
 }
@@ -57,9 +59,7 @@ function collectDayErrors(
 	return dayErrors
 }
 
-function collectGlobalError(
-	issues: ZodIssue[],
-): string | null {
+function collectGlobalError(issues: ZodIssue[]): string | null {
 	return (
 		issues.find((issue) => getDayIndex(issue.path) === null)?.message ?? null
 	)
@@ -68,11 +68,13 @@ function collectGlobalError(
 export function validateOperatingHoursInput(
 	value: DayScheduleDTO[] | null | undefined,
 ): OperatingHoursValidationResult {
-	const parsed = operatingHoursSchema.safeParse(value ?? undefined)
+	const parsed = operatingHoursSchema.safeParse(
+		value === null ? undefined : value,
+	)
 	if (parsed.success) {
 		return {
 			success: true,
-			value: parsed.data ?? null,
+			value: value === null ? null : parsed.data,
 			error: null,
 			dayErrors: {},
 		}
