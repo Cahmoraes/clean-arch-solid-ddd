@@ -13,13 +13,13 @@
 
 ## Tarefas
 
-- [ ] 1. VO de domínio OperatingHours (TimeInterval/DaySchedule) com validação e isOpenAt [FR-003, FR-004, FR-005] → `task-01.md`
-- [ ] 2. Prisma migration + entidade Gym + PrismaGymRepository + factory [FR-001, FR-006] → `task-02.md`
-- [ ] 3. Backend API: use cases create/update/fetch + controllers Zod + OpenAPI [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006] → `task-03.md`
-- [ ] 4. Frontend base: tipos @repo/api-types + Zod + OperatingHoursField [FR-010, FR-003, FR-004, FR-005] → `task-04.md`
-- [ ] 5. Frontend detalhe: OperatingHoursSummary + useIsGymOpen + integração DetailCard [FR-006, FR-007, FR-008, FR-009] → `task-05.md`
-- [ ] 6. Frontend admin: integração OperatingHoursField nas páginas nova/editar + client create/update [FR-001, FR-002, FR-010] → `task-06.md`
-- [ ] 7. Testes de cobertura e polish: unit/integration/component + regeneração tipos + ajustes finais [FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010] → `task-07.md`
+- [x] 1. VO de domínio OperatingHours (TimeInterval/DaySchedule) com validação e isOpenAt [FR-003, FR-004, FR-005] → `task-01.md`
+- [x] 2. Prisma migration + entidade Gym + PrismaGymRepository + factory [FR-001, FR-006] → `task-02.md`
+- [x] 3. Backend API: use cases create/update/fetch + controllers Zod + OpenAPI [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006] → `task-03.md`
+- [x] 4. Frontend base: tipos @repo/api-types + Zod + OperatingHoursField [FR-010, FR-003, FR-004, FR-005] → `task-04.md`
+- [x] 5. Frontend detalhe: OperatingHoursSummary + useIsGymOpen + integração DetailCard [FR-006, FR-007, FR-008, FR-009] → `task-05.md`
+- [x] 6. Frontend admin: integração OperatingHoursField nas páginas nova/editar + client create/update [FR-001, FR-002, FR-010] → `task-06.md`
+- [x] 7. Testes de cobertura e polish: unit/integration/component + regeneração tipos + ajustes finais [FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010] → `task-07.md`
 
 ## Ondas de Execução
 

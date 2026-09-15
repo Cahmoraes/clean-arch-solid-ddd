@@ -1,6 +1,6 @@
 # Task 1: VO de domínio OperatingHours (TimeInterval/DaySchedule) com validação e isOpenAt [FR-003, FR-004, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-spec-gym-dates.md`
 **Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** capable

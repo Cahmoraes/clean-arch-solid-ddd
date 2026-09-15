@@ -1,6 +1,6 @@
 # Task 6: Frontend admin: integração OperatingHoursField nas páginas nova/editar + client create/update [FR-001, FR-002, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-spec-gym-dates.md`
 **Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard

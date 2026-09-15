@@ -1,6 +1,6 @@
 # Task 5: Frontend detalhe: OperatingHoursSummary + useIsGymOpen + integração DetailCard [FR-006, FR-007, FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-spec-gym-dates.md`
 **Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard

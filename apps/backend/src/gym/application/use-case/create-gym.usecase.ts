@@ -11,9 +11,8 @@ import {
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 import type { InvalidNameLengthError } from "@/user/domain/error/invalid-name-length-error"
 
-import type { GymAlreadyExistsError } from "../error/gym-already-exists-error"
-import { GymWithCNPJAlreadyExistsError } from "../error/gym-with-cnpj-already-exists-error"
-import type { GymRepository } from "../repository/gym-repository"
+import { GymWithCNPJAlreadyExistsError } from "../error/gym-with-cnpj-already-exists-error.js"
+import type { GymRepository } from "../repository/gym-repository.js"
 
 export interface CreateGymUseCaseInput {
 	cnpj: string
@@ -31,7 +30,9 @@ export interface CreateGymResponse {
 }
 
 export type CreateGymUseCaseOutput = Either<
-	InvalidNameLengthError | GymAlreadyExistsError | InvalidOperatingHoursError,
+	| InvalidNameLengthError
+	| GymWithCNPJAlreadyExistsError
+	| InvalidOperatingHoursError,
 	CreateGymResponse
 >
 

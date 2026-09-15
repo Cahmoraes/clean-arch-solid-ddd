@@ -1,0 +1,23 @@
+{
+  "us_id": "US-04",
+  "user_story": "Como usuário, eu quero saber se a academia está aberta agora e quando ela fecha/abre para que eu decida se vou agora",
+  "requirements": [
+    "FR-009"
+  ],
+  "status": "PASSED",
+  "existing_tests_found": [
+    "apps/frontend/src/features/gyms/components/operating-hours-summary.test.tsx",
+    "apps/frontend/src/features/gyms/lib/operating-hours.test.ts"
+  ],
+  "acceptance_tests_created": [],
+  "test_output_summary": [
+    "pnpm --filter frontend exec vitest run src/features/gyms/components/operating-hours-summary.test.tsx src/features/gyms/lib/operating-hours.test.ts: 2 arquivos, 20 testes, 20 passaram.",
+    "A screenshot existente foi reaproveitada na página de detalhe da academia com badge 'Fechado', texto 'Abre às 09:00', resumo compacto e tabela semanal expandida."
+  ],
+  "screenshot_path": "docs/superpowers/spec-gym-dates/qa/evidence/us-04-usuario-saber-se-a-academia/fr-009-detail.png",
+  "failure_details": [],
+  "notes": [
+    "A captura final mostra o status calculado no client em America/Sao_Paulo e destaca a linha do dia atual.",
+    "Como a evidência visual já era válida, não foi necessário gerar uma nova screenshot."
+  ]
+}

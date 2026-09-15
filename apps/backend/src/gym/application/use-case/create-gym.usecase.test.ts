@@ -1,4 +1,5 @@
 import type { Gym } from "@/gym/domain/gym"
+import { InvalidOperatingHoursError } from "@/gym/domain/value-object/errors/invalid-operating-hours-error.js"
 import { InvalidLatitudeError } from "@/shared/domain/error/invalid-latitude-error"
 import { InvalidLongitudeError } from "@/shared/domain/error/invalid-longitude-error"
 import { InMemoryGymRepository } from "@/shared/infra/database/repository/in-memory/in-memory-gym-repository"
@@ -10,6 +11,7 @@ import type {
 	CreateGymUseCase,
 	CreateGymUseCaseInput,
 } from "./create-gym.usecase"
+import { FetchGymByIdUseCase } from "./fetch-gym-by-id.usecase.js"
 
 describe("CreateGymUseCase", () => {
 	let sut: CreateGymUseCase
@@ -153,5 +155,48 @@ describe("CreateGymUseCase", () => {
 		const result = await sut.execute(input)
 		expect(result.isFailure()).toBe(true)
 		expect(result.value).toBeInstanceOf(GymWithCNPJAlreadyExistsError)
+	})
+
+	test("Deve rejeitar horário com intervalo sobreposto", async () => {
+		const result = await sut.execute({
+			title: "Academia Teste",
+			cnpj: "11.222.333/0001-81",
+			latitude: -23.5,
+			longitude: -46.6,
+			address: "Rua X",
+			phone: "11999999999",
+			operatingHours: [
+				{
+					weekday: 1,
+					intervals: [
+						{ open: "08:00", close: "12:00" },
+						{ open: "11:30", close: "14:00" },
+					],
+				},
+			],
+		})
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(InvalidOperatingHoursError)
+	})
+
+	test("Deve criar gym com operatingHours válido e fetch deve retornar", async () => {
+		const operatingHours = [
+			{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+		]
+		const created = await sut.execute({
+			title: "Academia B",
+			cnpj: "11.444.777/0001-61",
+			latitude: -23.5,
+			longitude: -46.6,
+			address: "Rua Y",
+			phone: "11999999999",
+			operatingHours,
+		})
+		expect(created.isSuccess()).toBe(true)
+		const gymId = created.forceSuccess().value.gymId
+		const fetchById = new FetchGymByIdUseCase(gymRepository)
+		const fetched = await fetchById.execute({ gymId })
+		expect(fetched.isSuccess()).toBe(true)
+		expect(fetched.forceSuccess().value.operatingHours).toEqual(operatingHours)
 	})
 })

@@ -1,0 +1,13 @@
+{
+  "us_id": "us-03",
+  "story": "Como usuário, eu quero ver um resumo do horário de funcionamento na tela de detalhe da academia para que eu saiba rapidamente quando ela está aberta",
+  "user_story": "Como usuário, eu quero ver um resumo do horário de funcionamento na tela de detalhe da academia para que eu saiba rapidamente quando ela está aberta",
+  "requirements": ["FR-006", "FR-007", "FR-008"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Backend: src/gym/application/use-case/fetch-gym-by-id.usecase.test.ts passou com 9 testes, incluindo a asserção de que operatingHours volta idêntico quando existe. Frontend: src/features/gyms/components/operating-hours-summary.test.tsx passou com 11 testes cobrindo resumo compacto, badge, estado vazio e tabela expansível; src/app/(authenticated)/academias/[id]/page.test.tsx passou com 12 testes para a tela de detalhe.",
+  "screenshot_path": "docs/superpowers/spec-gym-dates/qa/evidence/us-03-usuario-ver-um-resumo-do/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificação feita no navegador com usuário autenticado e academia seedada via API. A tela de detalhe exibiu o bloco 'Horário de funcionamento', o badge 'Aberto agora', o resumo compacto 'Dom fechado · Seg–Sex 06:00–22:00 · Sáb 08:00–14:00' e o controle para expandir horários completos."
+}

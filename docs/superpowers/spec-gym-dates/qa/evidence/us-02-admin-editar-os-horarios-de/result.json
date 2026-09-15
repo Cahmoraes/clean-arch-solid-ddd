@@ -1,0 +1,12 @@
+{
+  "us_id": "us-002",
+  "user_story": "Como admin, eu quero editar os horários de uma academia já cadastrada para que correções e mudanças de expediente sejam refletidas no detalhe",
+  "requirements": ["FR-002", "FR-010"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Frontend: 3 arquivos aprovados com 33 testes no total — src/app/(authenticated)/admin/academias/[id]/editar/page.test.tsx, src/features/gyms/components/operating-hours-field.test.tsx e src/features/gyms/components/operating-hours-summary.test.tsx. Backend: src/gym/application/use-case/update-gym.usecase.test.ts passou com 8 testes. Backend flow: src/gym/infra/controller/update-gym.business-flow-test.ts foi validado com filtro de nome e aprovou o caso relevante de limpar operatingHours no update.",
+  "screenshot_path": "docs/superpowers/spec-gym-dates/qa/evidence/us-02-admin-editar-os-horarios-de/screenshot.png",
+  "failure_details": null,
+  "notes": "Verifiquei o fluxo real no navegador com o admin seed admin@admin.com/admin@admin. Acessei /admin/academias/035ea224-d262-4102-885c-99facf46b357/editar, expandi o bloco de horário e capturei a tela do formulário com as 7 linhas de funcionamento visíveis."
+}

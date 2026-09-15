@@ -1,6 +1,6 @@
 # Task 4: Frontend base: tipos @repo/api-types + Zod + OperatingHoursField [FR-010, FR-003, FR-004, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-spec-gym-dates.md`
 **Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard

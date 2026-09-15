@@ -49,6 +49,7 @@ describe("FetchGymByIdUseCase", () => {
 			expect(result.value.phone).toBe("11988887777")
 			expect(result.value.latitude).toBe(-23.563099)
 			expect(result.value.longitude).toBe(-46.656571)
+			expect(result.value.operatingHours).toBeNull()
 		}
 	})
 
@@ -78,6 +79,34 @@ describe("FetchGymByIdUseCase", () => {
 		if (result.isSuccess()) {
 			expect(result.value.description).toBeNull()
 			expect(result.value.phone).toBeNull()
+			expect(result.value.operatingHours).toBeNull()
+		}
+	})
+
+	test("Deve retornar operatingHours quando a academia possuir horário", async () => {
+		const operatingHours = [
+			{
+				weekday: 1,
+				intervals: [
+					{ open: "06:00", close: "12:00" },
+					{ open: "14:00", close: "18:00" },
+				],
+			},
+		]
+		await createAndSaveGym({
+			id: "gym-operating-hours",
+			gymRepository,
+			title: "Academia com Horário",
+			latitude: -23.0,
+			longitude: -46.0,
+			operatingHours,
+		})
+
+		const result = await sut.execute({ gymId: "gym-operating-hours" })
+
+		expect(result.isSuccess()).toBe(true)
+		if (result.isSuccess()) {
+			expect(result.value.operatingHours).toEqual(operatingHours)
 		}
 	})
 

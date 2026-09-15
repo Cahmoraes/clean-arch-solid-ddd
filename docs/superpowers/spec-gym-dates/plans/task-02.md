@@ -1,6 +1,6 @@
 # Task 2: Prisma migration + entidade Gym + PrismaGymRepository + factory [FR-001, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-spec-gym-dates.md`
 **Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard
