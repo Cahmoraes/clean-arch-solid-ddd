@@ -1,6 +1,8 @@
 import { inject, injectable } from "inversify"
 
 import { Gym } from "@/gym/domain/gym"
+import type { InvalidOperatingHoursError } from "@/gym/domain/value-object/errors/invalid-operating-hours-error.js"
+import type { DayScheduleDTO } from "@/gym/domain/value-object/spec-gym-dates.js"
 import {
 	type Either,
 	failure,
@@ -21,6 +23,7 @@ export interface CreateGymUseCaseInput {
 	latitude: number
 	longitude: number
 	address: string
+	operatingHours?: DayScheduleDTO[] | null
 }
 
 export interface CreateGymResponse {
@@ -28,7 +31,7 @@ export interface CreateGymResponse {
 }
 
 export type CreateGymUseCaseOutput = Either<
-	InvalidNameLengthError | GymAlreadyExistsError,
+	InvalidNameLengthError | GymAlreadyExistsError | InvalidOperatingHoursError,
 	CreateGymResponse
 >
 

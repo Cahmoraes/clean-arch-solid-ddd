@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify"
 import type { Gym } from "@/gym/domain/gym"
 import type { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
+import type { DayScheduleDTO } from "@/gym/domain/value-object/spec-gym-dates.js"
 import {
 	type Either,
 	failure,
@@ -26,6 +27,7 @@ export interface FetchGymByIdUseCaseOutputDTO {
 	latitude: number
 	longitude: number
 	status: GymStatusTypes
+	operatingHours: DayScheduleDTO[] | null
 }
 
 export type FetchGymByIdUseCaseOutput = Either<
@@ -63,6 +65,7 @@ export class FetchGymByIdUseCase {
 			latitude: gym.latitude,
 			longitude: gym.longitude,
 			status: gym.status,
+			operatingHours: gym.operatingHours?.toJSON() ?? null,
 		}
 	}
 }

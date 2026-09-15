@@ -14,6 +14,7 @@ import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import { RoleValues } from "@/user/domain/value-object/role"
 import { GymRoutes } from "./routes/gym-routes"
+import { gymOperatingHoursResponseSchema } from "./schemas/gym-schemas.js"
 
 const fetchGymByIdParamsSchema = z.object({
 	gymId: z.string().min(1).meta({
@@ -91,6 +92,7 @@ const gymResponseSchema = z.object({
 	status: z
 		.enum(["activated", "deactivated"])
 		.meta({ description: "Gym status", example: "activated" }),
+	operatingHours: gymOperatingHoursResponseSchema,
 })
 
 function makeFetchGymByIdSwaggerSchema(): Schema {

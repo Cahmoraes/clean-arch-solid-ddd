@@ -2,14 +2,20 @@ import type { FastifyRequest } from "fastify"
 import { inject } from "inversify"
 import { z } from "zod"
 import type { UpdateGymUseCase } from "@/gym/application/use-case/update-gym.usecase"
+import { InvalidOperatingHoursError } from "@/gym/domain/value-object/errors/invalid-operating-hours-error.js"
 import { BaseController } from "@/shared/infra/controller/base-controller"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory"
 import { Logger } from "@/shared/infra/decorator/logger"
 import { GYM_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
-import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
+import type {
+	HandleCallbackResponse,
+	HttpServer,
+	Schema,
+} from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import { GymRoutes } from "./routes/gym-routes"
+import { operatingHoursSchema } from "./schemas/gym-schemas.js"
 
 const updateGymParamsSchema = z.object({
 	gymId: z.string().min(1).meta({
@@ -37,6 +43,7 @@ const updateGymBodySchema = z.object({
 		description: "Full gym address",
 		example: "Rua das Flores, 123, São Paulo - SP",
 	}),
+	operatingHours: operatingHoursSchema,
 })
 
 export type UpdateGymPayload = z.infer<typeof updateGymBodySchema>
@@ -50,6 +57,19 @@ export class UpdateGymController extends BaseController {
 	) {
 		super()
 		this.bindMethods()
+	}
+
+	protected override mapResponseError(
+		error: Error | Error[],
+	): HandleCallbackResponse | undefined {
+		const target = Array.isArray(error) ? error[0] : error
+		if (target instanceof InvalidOperatingHoursError) {
+			return ResponseFactory.create({
+				status: HTTP_STATUS.BAD_REQUEST,
+				message: target.message,
+			})
+		}
+		return undefined
 	}
 
 	private bindMethods() {

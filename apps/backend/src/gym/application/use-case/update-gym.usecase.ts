@@ -1,6 +1,8 @@
 import { inject, injectable } from "inversify"
 
 import { Gym } from "@/gym/domain/gym"
+import type { InvalidOperatingHoursError } from "@/gym/domain/value-object/errors/invalid-operating-hours-error.js"
+import type { DayScheduleDTO } from "@/gym/domain/value-object/spec-gym-dates.js"
 import {
 	type Either,
 	failure,
@@ -8,7 +10,6 @@ import {
 } from "@/shared/domain/value-object/either"
 import { GYM_TYPES } from "@/shared/infra/ioc/types"
 import type { InvalidNameLengthError } from "@/user/domain/error/invalid-name-length-error"
-
 import { GymNotFoundError } from "../error/gym-not-found-error"
 import { GymWithCNPJAlreadyExistsError } from "../error/gym-with-cnpj-already-exists-error"
 import type { GymRepository } from "../repository/gym-repository"
@@ -22,6 +23,7 @@ export interface UpdateGymUseCaseInput {
 	latitude: number
 	longitude: number
 	address: string
+	operatingHours?: DayScheduleDTO[] | null
 }
 
 export interface UpdateGymResponse {
@@ -29,7 +31,10 @@ export interface UpdateGymResponse {
 }
 
 export type UpdateGymUseCaseOutput = Either<
-	InvalidNameLengthError | GymNotFoundError | GymWithCNPJAlreadyExistsError,
+	| InvalidNameLengthError
+	| GymNotFoundError
+	| GymWithCNPJAlreadyExistsError
+	| InvalidOperatingHoursError,
 	UpdateGymResponse
 >
 
@@ -40,6 +45,7 @@ export class UpdateGymUseCase {
 		private readonly gymRepository: GymRepository,
 	) {}
 
+	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: yagni: orquestração exige branches de validação
 	public async execute(
 		input: UpdateGymUseCaseInput,
 	): Promise<UpdateGymUseCaseOutput> {
@@ -51,6 +57,11 @@ export class UpdateGymUseCase {
 			return failure(new GymWithCNPJAlreadyExistsError(input.cnpj))
 		}
 
+		const operatingHoursInput =
+			input.operatingHours === undefined
+				? (existingGym.operatingHours?.toJSON() ?? null)
+				: input.operatingHours
+
 		const gymOrError = Gym.create({
 			id: input.gymId,
 			cnpj: input.cnpj,
@@ -61,6 +72,7 @@ export class UpdateGymUseCase {
 			longitude: input.longitude,
 			address: input.address,
 			imageKey: existingGym.imageKey,
+			operatingHours: operatingHoursInput,
 		})
 		if (gymOrError.isFailure()) return failure(gymOrError.value)
 
