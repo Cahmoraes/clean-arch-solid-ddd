@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-15T19:27:45-03:00"
-updated_at: "2026-09-15T19:27:45-03:00"
+updated_at: "2026-09-15T19:29:12-03:00"
 ---
 
 # Design: Modernização do layout de usuários
@@ -62,7 +62,7 @@ uma conveniência; o backend permanece a autoridade para ações permitidas.
 - Detalhe com abas internas para `Visão geral`, `Atividade` e `Permissões`.
 - Tokens visuais alinhados ao tema existente: fundo escuro, superfície elevada, bordas
   discretas, destaque verde para seleção/status e radius médio/grande.
-- Em mobile, lista ocupa a tela e o detalhe abre como drawer ou página de detalhe.
+- Abaixo de 1024px, a lista ocupa a tela e o detalhe abre como drawer.
 
 O mockup é um norte visual, não uma especificação pixel-final.
 
@@ -77,8 +77,8 @@ O mockup é um norte visual, não uma especificação pixel-final.
 - **Justificativa técnica:** reutiliza o grid existente e mantém a seleção fora da
   navegação de página.
 - **Justificativa de negócio:** reduz o tempo para revisar vários usuários.
-- **Trade-offs aceitos:** em larguras intermediárias o detalhe pode ocupar pouco espaço;
-  nesses casos, usar drawer em vez de comprimir o conteúdo.
+- **Trade-offs aceitos:** abaixo de 1024px não há comparação simultânea; o drawer prioriza
+  legibilidade e evita comprimir o detalhe em tablets.
 
 ### D2. Segmented control para tipos de usuário
 
@@ -103,7 +103,7 @@ O mockup é um norte visual, não uma especificação pixel-final.
 
 | Risco | Impacto | Probabilidade | Score | Mitigação |
 |---|---:|---:|---:|---|
-| Painel comprimido em tablet | 2 | 2 | 4 | Ativar drawer abaixo do breakpoint definido e testar 768px/1024px |
+| Painel comprimido em tablet | 2 | 2 | 4 | Ativar drawer abaixo de 1024px e testar 768px/1024px |
 | Perda de foco ao abrir ou fechar drawer | 2 | 2 | 4 | Testar foco inicial, retorno ao `UserRow` e navegação por teclado |
 | Contagem de resultados não anunciada | 2 | 2 | 4 | Usar região `aria-live` e teste de acessibilidade |
 | Divergência entre detalhe desktop e mobile | 2 | 1 | 2 | Reutilizar o mesmo conteúdo e cobrir ambos os presenters |

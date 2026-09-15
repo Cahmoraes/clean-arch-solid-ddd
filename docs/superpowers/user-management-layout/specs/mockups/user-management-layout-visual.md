@@ -12,7 +12,7 @@ hierarquia sem adicionar ruído visual ou alterar o fluxo de negócio.
 - Lista com seleção persistente, avatar, nome, e-mail, papel e status.
 - Detalhe com avatar ampliado, status, ação `Editar dados`, menu `Mais ações`,
   informações resumidas e abas de atividade/permissões.
-- Mobile: lista em tela cheia; detalhe em drawer ou página de detalhe.
+- Abaixo de 1024px: lista em tela cheia; detalhe em drawer.
 - Painel desktop sticky e rolagem independente.
 
 ## Tokens aplicados
