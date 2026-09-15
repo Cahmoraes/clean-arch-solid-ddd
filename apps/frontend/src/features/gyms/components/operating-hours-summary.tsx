@@ -86,13 +86,15 @@ function millisecondsUntilNextMinute(): number {
 	return 60_000 - (now.getSeconds() * 1_000 + now.getMilliseconds())
 }
 
+const HYDRATION_SAFE_DATE = new Date(0)
+
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: yagni layout C exige branches
 export function OperatingHoursSummary({
 	operatingHours,
 	now,
 	timeZone = "America/Sao_Paulo",
 }: OperatingHoursSummaryProps) {
-	const [currentTime, setCurrentTime] = useState(() => new Date())
+	const [currentTime, setCurrentTime] = useState<Date | null>(null)
 
 	useEffect(() => {
 		if (now) return
@@ -112,7 +114,7 @@ export function OperatingHoursSummary({
 		}
 	}, [now])
 
-	const effectiveNow = now ?? currentTime
+	const effectiveNow = now ?? currentTime ?? HYDRATION_SAFE_DATE
 	const { isOpen, closesAt, opensAt } = useIsGymOpen(
 		operatingHours,
 		effectiveNow,

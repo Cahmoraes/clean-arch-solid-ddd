@@ -1,4 +1,6 @@
 import { act, screen } from "@testing-library/react"
+import { hydrateRoot } from "react-dom/client"
+import { renderToString } from "react-dom/server"
 import { describe, expect, test, vi } from "vitest"
 import { renderWithProviders } from "@/test/render"
 import { OperatingHoursSummary } from "./operating-hours-summary"
@@ -171,6 +173,39 @@ describe("OperatingHoursSummary", () => {
 				/Fechado/,
 			)
 		} finally {
+			vi.useRealTimers()
+		}
+	})
+
+	test("mantém o HTML inicial estável entre SSR e hidratação", async () => {
+		const hours = [
+			{ weekday: 1, intervals: [{ open: "06:00", close: "22:00" }] },
+		]
+		vi.useFakeTimers()
+		vi.setSystemTime(new Date(Date.UTC(2026, 0, 6, 0, 59, 59, 999)))
+
+		const container = document.createElement("div")
+		container.innerHTML = renderToString(
+			<OperatingHoursSummary operatingHours={hours} />,
+		)
+		vi.setSystemTime(new Date(Date.UTC(2026, 0, 6, 1, 0, 0, 0)))
+
+		const consoleError = vi
+			.spyOn(console, "error")
+			.mockImplementation(() => undefined)
+		let root: ReturnType<typeof hydrateRoot> | undefined
+
+		try {
+			await act(async () => {
+				root = hydrateRoot(
+					container,
+					<OperatingHoursSummary operatingHours={hours} />,
+				)
+			})
+			expect(consoleError).not.toHaveBeenCalled()
+		} finally {
+			root?.unmount()
+			consoleError.mockRestore()
 			vi.useRealTimers()
 		}
 	})
