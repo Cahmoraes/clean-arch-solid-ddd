@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-15T09:04:44-03:00"
-updated_at: "2026-09-15T09:04:44-03:00"
+updated_at: "2026-09-15T09:05:45-03:00"
 ---
 
 # Design — Horário de Funcionamento da Academia
@@ -96,7 +96,7 @@ sequenceDiagram
 | Componente | Responsabilidade | Observação |
 |---|---|---|
 | `TimeInterval` (VO interno) | par `open/close` HH:mm, invariante `open<close` | value object imutável, `HH:mm` regex `^([01]\d|2[0-3]):[0-5]\d$` |
-| `DaySchedule` | `weekday 0-6 (Dom=0 via lib ou Seg=0 — definir) + intervals: TimeInterval[]` ordenados sem sobreposição | ordena por `open`, verifica `prev.close <= next.open` |
+| `DaySchedule` | `weekday 0-6 (0=Dom … 6=Sáb, conforme JS `getDay`) + intervals: TimeInterval[]` ordenados sem sobreposição | ordena por `open`, verifica `prev.close <= next.open` |
 | `OperatingHours` (VO) | coleção 0-7 `DaySchedule`, `isEmpty`, `toJSON`, `toCompactString`, `isOpenAt(date, tz)` | `create(dto): Either<InvalidOperatingHoursError, OperatingHours>`, `restore(json)`, `equals` |
 | `InvalidOperatingHoursError` | erro de domínio tipado | usado em `Either` chain de `Gym.create` |
 | `Gym` | entidade estendida com `operatingHours?: OperatingHours` | `GymCreateProps` adiciona campo opcional, `restore` aceita `null` |
