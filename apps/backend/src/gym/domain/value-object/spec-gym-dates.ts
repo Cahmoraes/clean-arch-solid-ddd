@@ -193,13 +193,18 @@ export class OperatingHours {
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: yagni: timezone conversion exige branches
 	isOpenAt(date: Date, timeZone: string): boolean {
 		if (this.isEmpty()) return false
-		const parts = new Intl.DateTimeFormat("en-US", {
-			timeZone,
-			weekday: "short",
-			hour: "2-digit",
-			minute: "2-digit",
-			hour12: false,
-		}).formatToParts(date)
+		let parts: Intl.DateTimeFormatPart[]
+		try {
+			parts = new Intl.DateTimeFormat("en-US", {
+				timeZone,
+				weekday: "short",
+				hour: "2-digit",
+				minute: "2-digit",
+				hour12: false,
+			}).formatToParts(date)
+		} catch {
+			return false
+		}
 		const weekdayStr = parts.find((p) => p.type === "weekday")?.value ?? ""
 		const hourStr = parts.find((p) => p.type === "hour")?.value ?? "0"
 		const minuteStr = parts.find((p) => p.type === "minute")?.value ?? "0"

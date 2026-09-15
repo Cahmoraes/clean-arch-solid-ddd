@@ -1,19 +1,19 @@
-import type { InvalidLatitudeError } from "@/shared/domain/error/invalid-latitude-error"
-import type { InvalidLongitudeError } from "@/shared/domain/error/invalid-longitude-error"
+import type { InvalidLatitudeError } from "@/shared/domain/error/invalid-latitude-error.js"
+import type { InvalidLongitudeError } from "@/shared/domain/error/invalid-longitude-error.js"
 import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import {
 	type Either,
 	failure,
 	success,
-} from "@/shared/domain/value-object/either"
-import { Id } from "@/shared/domain/value-object/id"
-import type { InvalidNameLengthError } from "@/user/domain/error/invalid-name-length-error"
-import { Name } from "@/user/domain/value-object/name"
-import { Phone } from "@/user/domain/value-object/phone"
+} from "@/shared/domain/value-object/either.js"
+import { Id } from "@/shared/domain/value-object/id.js"
+import type { InvalidNameLengthError } from "@/user/domain/error/invalid-name-length-error.js"
+import { Name } from "@/user/domain/value-object/name.js"
+import { Phone } from "@/user/domain/value-object/phone.js"
 import type { GymAlreadyActivatedError } from "./error/gym-already-activated-error.js"
 import type { GymAlreadyDeactivatedError } from "./error/gym-already-deactivated-error.js"
-import type { InvalidCNPJError } from "./error/invalid-cnpj-error"
-import { CNPJ } from "./value-object/CNPJ"
+import type { InvalidCNPJError } from "./error/invalid-cnpj-error.js"
+import { CNPJ } from "./value-object/CNPJ.js"
 import {
 	type GymStatus,
 	GymStatusFactory,
