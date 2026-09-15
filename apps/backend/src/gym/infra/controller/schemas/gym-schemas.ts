@@ -49,9 +49,7 @@ export const operatingHoursSchema = z
 	)
 	.meta({ description: "Horários de funcionamento semanal" })
 
-export const operatingHoursNullableSchema = z
-	.array(dayScheduleSchema)
-	.max(7, "máximo 7 DaySchedule")
+export const operatingHoursNullableSchema = operatingHoursSchema
 	.nullable()
 	.meta({ description: "Horários de funcionamento semanal ou null" })
 

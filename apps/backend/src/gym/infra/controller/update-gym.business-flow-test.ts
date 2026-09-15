@@ -71,6 +71,44 @@ describe("Atualizar Academia", () => {
 		expect(response.body.id).toBeDefined()
 	})
 
+	test("Deve aceitar null para limpar operatingHours no update", async () => {
+		const userInputDto = {
+			email: "admin@email.com",
+			password: "password",
+			role: RoleValues.ADMIN,
+		}
+		await createAndSaveUser({ userRepository, ...userInputDto })
+		await createAndSaveGym({
+			gymRepository,
+			id: "gym-001",
+			operatingHours: [
+				{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+			],
+		})
+		const { token } = (
+			await authenticate.execute({
+				email: userInputDto.email,
+				password: userInputDto.password,
+			})
+		).forceSuccess().value
+
+		const response = await request(fastifyServer.server)
+			.put("/gyms/gym-001")
+			.auth(token, { type: "bearer" })
+			.send({
+				cnpj: "11.222.333/0001-81",
+				title: "Academia Atualizada",
+				latitude: 0,
+				longitude: 0,
+				address: "Rua B, 2",
+				operatingHours: null,
+			})
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		const updatedGym = await gymRepository.gymOfId("gym-001")
+		expect(updatedGym?.operatingHours).toBeNull()
+	})
+
 	test("Deve retornar 404 quando academia não existe", async () => {
 		const userInputDto = {
 			email: "admin@email.com",

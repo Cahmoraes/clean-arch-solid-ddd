@@ -153,4 +153,102 @@ describe("UpdateGymUseCase", () => {
 		expect(result.isFailure()).toBe(true)
 		expect(result.value).toBeInstanceOf(GymWithCNPJAlreadyExistsError)
 	})
+
+	test("deve substituir horário integralmente; [] zera", async () => {
+		const { gymRepository, sut } = makeSut()
+		const initialHours = [
+			{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+		]
+		await gymRepository.save(
+			Gym.restore({
+				id: "gym-1",
+				title: "Academia 1",
+				latitude: 0,
+				longitude: 0,
+				cnpj: "11.222.333/0001-81",
+				address: "Rua A, 1",
+				status: "activated",
+				operatingHours: initialHours,
+			}),
+		)
+
+		const result = await sut.execute({
+			gymId: "gym-1",
+			cnpj: "11.222.333/0001-81",
+			title: "Academia 1",
+			latitude: 0,
+			longitude: 0,
+			address: "Rua A, 1",
+			operatingHours: [],
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		const found = await gymRepository.gymOfId("gym-1")
+		expect(found?.operatingHours?.toJSON()).toEqual([])
+	})
+
+	test("null limpa horário existente", async () => {
+		const { gymRepository, sut } = makeSut()
+		const initialHours = [
+			{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+		]
+		await gymRepository.save(
+			Gym.restore({
+				id: "gym-1",
+				title: "Academia 1",
+				latitude: 0,
+				longitude: 0,
+				cnpj: "11.222.333/0001-81",
+				address: "Rua A, 1",
+				status: "activated",
+				operatingHours: initialHours,
+			}),
+		)
+
+		const result = await sut.execute({
+			gymId: "gym-1",
+			cnpj: "11.222.333/0001-81",
+			title: "Academia 1",
+			latitude: 0,
+			longitude: 0,
+			address: "Rua A, 1",
+			operatingHours: null,
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		const found = await gymRepository.gymOfId("gym-1")
+		expect(found?.operatingHours).toBeNull()
+	})
+
+	test("undefined mantém horário anterior", async () => {
+		const { gymRepository, sut } = makeSut()
+		const initialHours = [
+			{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+		]
+		await gymRepository.save(
+			Gym.restore({
+				id: "gym-1",
+				title: "Academia 1",
+				latitude: 0,
+				longitude: 0,
+				cnpj: "11.222.333/0001-81",
+				address: "Rua A, 1",
+				status: "activated",
+				operatingHours: initialHours,
+			}),
+		)
+
+		const result = await sut.execute({
+			gymId: "gym-1",
+			cnpj: "11.222.333/0001-81",
+			title: "Academia 1",
+			latitude: 0,
+			longitude: 0,
+			address: "Rua A, 1",
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		const found = await gymRepository.gymOfId("gym-1")
+		expect(found?.operatingHours?.toJSON()).toEqual(initialHours)
+	})
 })

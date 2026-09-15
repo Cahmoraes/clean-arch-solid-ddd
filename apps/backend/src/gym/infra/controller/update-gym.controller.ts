@@ -15,7 +15,7 @@ import type {
 } from "@/shared/infra/server/http-server"
 import { HTTP_STATUS } from "@/shared/infra/server/http-status"
 import { GymRoutes } from "./routes/gym-routes"
-import { operatingHoursSchema } from "./schemas/gym-schemas.js"
+import { operatingHoursNullableSchema } from "./schemas/gym-schemas.js"
 
 const updateGymParamsSchema = z.object({
 	gymId: z.string().min(1).meta({
@@ -43,7 +43,7 @@ const updateGymBodySchema = z.object({
 		description: "Full gym address",
 		example: "Rua das Flores, 123, São Paulo - SP",
 	}),
-	operatingHours: operatingHoursSchema,
+	operatingHours: operatingHoursNullableSchema,
 })
 
 export type UpdateGymPayload = z.infer<typeof updateGymBodySchema>
