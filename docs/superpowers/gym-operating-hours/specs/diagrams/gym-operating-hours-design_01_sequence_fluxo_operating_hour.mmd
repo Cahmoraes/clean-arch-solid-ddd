@@ -1,0 +1,45 @@
+sequenceDiagram
+    actor Admin as 👤 Admin
+    participant Field as 🌐 OperatingHoursField
+    participant API as ⚙️ API
+    participant VO as 🔐 OperatingHours VO
+    participant Entity as 📦 Gym
+    participant Repo as 💾 PrismaGymRepository
+    participant DB as 🗄️ PostgreSQL
+    participant Page as 🌐 Pagina Academia
+    participant Summary as 🌐 OperatingHoursSummary
+    Note over Admin, DB: Escrita - Cadastro/Edicao
+    Admin->>+Field: preenche DaySchedule/TimeInterval HH:mm por dia
+    Field->>Field: valida client-side formato fim maior inicio sem sobreposicao
+    Field->>+API: POST /gyms ou PUT /gyms/:id operatingHours JSON
+    API->>+VO: OperatingHours.create(payload)
+    Note over VO: valida DaySchedule TimeInterval sobreposicao regex HH:mm 00:00-23:59
+    alt payload invalido
+        VO-->>API: DomainError
+        API-->>Field: 400 Bad Request
+        Field-->>Admin: exibe erro no campo
+    else payload valido
+        VO-->>API: VO valido
+        API->>Entity: Gym.create com operating_hours VO.toJSON()
+        Entity-->>API: aggregate Gym
+        API->>+Repo: save(gym)
+        Repo->>+DB: INSERT/UPDATE Gym.operating_hours Json?
+        DB-->>-Repo: OK
+        Repo-->>-API: persistido
+        API-->>-Field: 201 Created / 200 OK
+        Field-->>Admin: toast sucesso
+    end
+    Note over Page, DB: Leitura - DetailCard em /academias/[id]
+    Admin->>+Page: acessa /academias/[id]
+    Page->>+API: GET /gyms/:id
+    API->>+Repo: findById(id)
+    Repo->>+DB: SELECT operating_hours
+    DB-->>-Repo: Json ou null
+    Repo->>Repo: hydrate para VO ou null
+    Repo-->>-API: Gym com operatingHours
+    API-->>-Page: 200 OK com operatingHours
+    Page->>+Summary: props operatingHours
+    Summary->>Summary: isOpenNow() calcula badge Aberto agora / Fechado
+    Summary->>Summary: layout C compacto+expansivel+status hoje em destaque
+    Summary-->>-Page: DetailCard com OperatingHoursSummary
+    Page-->>-Admin: exibe resumo horarios
