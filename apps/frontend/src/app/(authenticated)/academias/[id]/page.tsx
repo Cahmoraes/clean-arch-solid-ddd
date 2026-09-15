@@ -28,6 +28,7 @@ import {
 	type GymStatusAction,
 	GymStatusConfirmationDialog,
 } from "@/features/gyms/components/gym-status-confirmation-dialog"
+import { OperatingHoursSummary } from "@/features/gyms/components/operating-hours-summary"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError } from "@/lib/errors"
 
@@ -296,6 +297,8 @@ function DetailCard({ gym, adminEditHref }: DetailCardProps) {
 					</dd>
 				</div>
 			</dl>
+
+			<OperatingHoursSummary operatingHours={gym.operatingHours} />
 
 			<div>
 				<CheckInButton gym={gym} />

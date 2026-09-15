@@ -1,4 +1,5 @@
 import type { Client } from "openapi-fetch"
+import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-schema"
 import { getApi } from "@/lib/api"
 
 /**
@@ -17,6 +18,7 @@ export interface GymSummary {
 	latitude: number
 	longitude: number
 	status: "activated" | "deactivated"
+	operatingHours?: DayScheduleDTO[] | null
 }
 
 export interface GymUpdateBody {
