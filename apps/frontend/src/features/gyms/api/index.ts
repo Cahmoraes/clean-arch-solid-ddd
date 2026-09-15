@@ -79,8 +79,8 @@ async function searchGymsByName(
 
 async function fetchGymById(id: string): Promise<Gym> {
 	const client = getGymsExtendedClient()
-	const { data, error } = await client.GET("/gyms/{id}", {
-		params: { path: { id } },
+	const { data, error } = await client.GET("/gyms/{gymId}", {
+		params: { path: { gymId: id } },
 	})
 	if (error || !data) throw toApiError(error)
 	return data
@@ -104,7 +104,9 @@ function buildCreateGymBody(input: GymCreateInput): GymCreateBody {
 function buildUpdateGymBody(input: GymCreateInput): GymUpdateBody {
 	return {
 		...buildCreateGymBody(input),
-		operatingHours: input.operatingHours ?? null,
+		...(input.operatingHours !== undefined
+			? { operatingHours: input.operatingHours }
+			: {}),
 	}
 }
 
@@ -196,8 +198,8 @@ async function updateGymRequest({
 	input,
 }: UpdateGymVariables): Promise<CreateGymResult> {
 	const client = getGymsExtendedClient()
-	const { data, error } = await client.PUT("/gyms/{id}", {
-		params: { path: { id } },
+	const { data, error } = await client.PUT("/gyms/{gymId}", {
+		params: { path: { gymId: id } },
 		body: buildUpdateGymBody(input),
 	})
 	if (error || !data) throw toApiError(error)

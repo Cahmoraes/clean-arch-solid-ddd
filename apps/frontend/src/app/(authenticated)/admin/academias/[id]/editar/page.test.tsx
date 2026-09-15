@@ -120,6 +120,49 @@ describe("AdminEditarAcademiaPage", () => {
 		expect(mockReplace).toHaveBeenCalledWith("/academias/gym-123")
 	})
 
+	test("carrega e valida dia fechado retornado pela API", async () => {
+		let received: Record<string, unknown> | null = null
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json({
+					id: "gym-123",
+					title: "Academia Volt",
+					description: "Top",
+					phone: "11999999999",
+					address: "Rua A, 100",
+					cnpj: "11222333000181",
+					imageKey: null,
+					latitude: -23.5,
+					longitude: -46.6,
+					operatingHours: [{ weekday: 1, intervals: [] }],
+				}),
+			),
+			http.put(`${apiBaseUrl}/gyms/:id`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json({ message: "Gym updated", id: "gym-123" })
+			}),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<AdminEditarAcademiaPage />)
+
+		await waitFor(() =>
+			expect(screen.getByTestId("gym-form-title")).toHaveValue("Academia Volt"),
+		)
+		await user.click(screen.getByText(/horário de funcionamento \(opcional\)/i))
+		expect(screen.getByLabelText("Segunda Fechado")).toBeChecked()
+		expect(
+			screen.queryByLabelText("Segunda abertura 1"),
+		).not.toBeInTheDocument()
+
+		await user.click(screen.getByTestId("gym-form-submit"))
+
+		await waitFor(() => {
+			expect(received).toMatchObject({
+				operatingHours: [{ weekday: 1, intervals: [] }],
+			})
+		})
+	})
+
 	test("envia operatingHours nulo no PUT ao limpar horário existente", async () => {
 		let received: Record<string, unknown> | null = null
 		server.use(

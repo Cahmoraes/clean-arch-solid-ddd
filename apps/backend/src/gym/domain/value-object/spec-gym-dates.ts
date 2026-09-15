@@ -15,6 +15,40 @@ export interface DayScheduleDTO {
 	intervals: TimeIntervalDTO[]
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null
+}
+
+function parseTimeIntervals(input: unknown): TimeIntervalDTO[] | null {
+	if (!Array.isArray(input)) return null
+
+	const intervals: TimeIntervalDTO[] = []
+	for (const interval of input) {
+		if (
+			!isRecord(interval) ||
+			typeof interval.open !== "string" ||
+			typeof interval.close !== "string"
+		) {
+			return null
+		}
+		intervals.push({ open: interval.open, close: interval.close })
+	}
+	return intervals
+}
+
+function parseDaySchedule(input: unknown): DayScheduleDTO | null {
+	if (
+		!isRecord(input) ||
+		typeof input.weekday !== "number" ||
+		!("intervals" in input)
+	) {
+		return null
+	}
+	const intervals = parseTimeIntervals(input.intervals)
+	if (intervals === null) return null
+	return { weekday: input.weekday, intervals }
+}
+
 const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/
 
 const WEEKDAY_LABELS = [
@@ -137,6 +171,31 @@ export class DaySchedule {
 
 export class OperatingHours {
 	private constructor(private readonly schedules: DaySchedule[]) {}
+
+	static createFromUnknown(
+		input: unknown,
+	): Either<InvalidOperatingHoursError, OperatingHours> {
+		if (!Array.isArray(input)) {
+			return failure(
+				new InvalidOperatingHoursError("operatingHours deve ser um array"),
+			)
+		}
+
+		const schedules: DayScheduleDTO[] = []
+		for (const day of input) {
+			const schedule = parseDaySchedule(day)
+			if (!schedule) {
+				return failure(
+					new InvalidOperatingHoursError(
+						"operatingHours contém um dia inválido",
+					),
+				)
+			}
+			schedules.push(schedule)
+		}
+
+		return OperatingHours.create(schedules)
+	}
 
 	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: yagni: validação de domínio exige branches
 	static create(

@@ -153,10 +153,10 @@ describe("operatingHoursSchema", () => {
 		expect(result.success).toBe(true)
 	})
 
-	test("deve rejeitar intervalos vazios (min 1)", () => {
+	test("deve aceitar dia fechado com intervals vazio", () => {
 		const result = operatingHoursSchema.safeParse([
 			{ weekday: 1, intervals: [] },
 		])
-		expect(result.success).toBe(false)
+		expect(result.success).toBe(true)
 	})
 })

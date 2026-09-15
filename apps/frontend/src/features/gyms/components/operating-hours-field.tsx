@@ -176,7 +176,7 @@ export function OperatingHoursField({
 		<div className="space-y-2">
 			{WEEKDAYS.map((label, weekday) => {
 				const schedule = getSchedule(weekday)
-				const isClosed = !schedule
+				const isClosed = !schedule || schedule.intervals.length === 0
 				const intervals = schedule?.intervals ?? []
 				const canAdd = intervals.length < 3
 				const weekdayId = `operating-hours-${weekday}`

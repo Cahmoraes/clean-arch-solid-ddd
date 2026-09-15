@@ -36,7 +36,7 @@ export interface GymCreateBody extends GymBodyBase {
 }
 
 export interface GymUpdateBody extends GymBodyBase {
-	operatingHours: DayScheduleDTO[] | null
+	operatingHours?: DayScheduleDTO[] | null
 }
 
 export interface PaginatedGyms {
@@ -69,15 +69,15 @@ export interface GymExtendedPaths {
 			}
 		}
 	}
-	"/gyms/{id}": {
+	"/gyms/{gymId}": {
 		get: {
-			parameters: { path: { id: string } }
+			parameters: { path: { gymId: string } }
 			responses: {
 				200: { content: { "application/json": GymSummary } }
 			}
 		}
 		put: {
-			parameters: { path: { id: string } }
+			parameters: { path: { gymId: string } }
 			requestBody: { content: { "application/json": GymUpdateBody } }
 			responses: {
 				200: {

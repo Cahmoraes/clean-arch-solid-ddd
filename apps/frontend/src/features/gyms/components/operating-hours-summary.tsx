@@ -1,7 +1,7 @@
 "use client"
 
 import { Clock } from "lucide-react"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useIsGymOpen } from "@/features/gyms/hooks/use-is-gym-open"
 import { toCompactString } from "@/features/gyms/lib/operating-hours"
 import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-schema"
@@ -81,13 +81,38 @@ export interface OperatingHoursSummaryProps {
 	timeZone?: string
 }
 
+function millisecondsUntilNextMinute(): number {
+	const now = new Date()
+	return 60_000 - (now.getSeconds() * 1_000 + now.getMilliseconds())
+}
+
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: yagni layout C exige branches
 export function OperatingHoursSummary({
 	operatingHours,
 	now,
 	timeZone = "America/Sao_Paulo",
 }: OperatingHoursSummaryProps) {
-	const effectiveNow = useMemo(() => now ?? new Date(), [now])
+	const [currentTime, setCurrentTime] = useState(() => new Date())
+
+	useEffect(() => {
+		if (now) return
+
+		const updateCurrentTime = () => setCurrentTime(new Date())
+		updateCurrentTime()
+
+		let intervalId: number | undefined
+		const timeoutId = window.setTimeout(() => {
+			updateCurrentTime()
+			intervalId = window.setInterval(updateCurrentTime, 60_000)
+		}, millisecondsUntilNextMinute())
+
+		return () => {
+			window.clearTimeout(timeoutId)
+			if (intervalId !== undefined) window.clearInterval(intervalId)
+		}
+	}, [now])
+
+	const effectiveNow = now ?? currentTime
 	const { isOpen, closesAt, opensAt } = useIsGymOpen(
 		operatingHours,
 		effectiveNow,

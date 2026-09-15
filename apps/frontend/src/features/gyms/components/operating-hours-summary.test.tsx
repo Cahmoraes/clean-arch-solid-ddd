@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react"
-import { describe, expect, test } from "vitest"
+import { act, screen } from "@testing-library/react"
+import { describe, expect, test, vi } from "vitest"
 import { renderWithProviders } from "@/test/render"
 import { OperatingHoursSummary } from "./operating-hours-summary"
 
@@ -26,8 +26,12 @@ describe("OperatingHoursSummary", () => {
 		]
 		// 23:00 SP segunda = 02:00 UTC terça
 		const now = new Date(Date.UTC(2026, 0, 6, 2, 0, 0))
-		renderWithProviders(<OperatingHoursSummary operatingHours={hours} now={now} />)
-		expect(screen.getByTestId("operating-hours-badge")).toHaveTextContent(/Fechado/i)
+		renderWithProviders(
+			<OperatingHoursSummary operatingHours={hours} now={now} />,
+		)
+		expect(screen.getByTestId("operating-hours-badge")).toHaveTextContent(
+			/Fechado/i,
+		)
 		expect(screen.getByText(/Abre às/i)).toBeInTheDocument()
 	})
 
@@ -64,7 +68,9 @@ describe("OperatingHoursSummary", () => {
 		]
 		// Segunda 10:00 SP
 		const now = new Date(Date.UTC(2026, 0, 5, 13, 0, 0))
-		renderWithProviders(<OperatingHoursSummary operatingHours={hours} now={now} />)
+		renderWithProviders(
+			<OperatingHoursSummary operatingHours={hours} now={now} />,
+		)
 		expect(screen.getByText("Horário de funcionamento")).toBeInTheDocument()
 		expect(screen.getByText("Ver horários completos ▾")).toBeInTheDocument()
 		// 7 linhas
@@ -75,7 +81,9 @@ describe("OperatingHoursSummary", () => {
 		const mondayRow = screen.getByTestId("operating-hours-row-1")
 		expect(mondayRow.className).toContain("bg-[rgba(57,229,140,.10)]")
 		// Dom fechado
-		expect(screen.getByTestId("operating-hours-row-0")).toHaveTextContent("Fechado")
+		expect(screen.getByTestId("operating-hours-row-0")).toHaveTextContent(
+			"Fechado",
+		)
 	})
 
 	test("badge correto em bordas 21:59 aberto, 22:01 fechado com America/Sao_Paulo", () => {
@@ -94,8 +102,12 @@ describe("OperatingHoursSummary", () => {
 
 		// 22:01 SP segunda = 01:01 UTC terça -> fechado
 		const closedBorder = new Date(Date.UTC(2026, 0, 6, 1, 1, 0))
-		rerender(<OperatingHoursSummary operatingHours={hours} now={closedBorder} />)
-		expect(screen.getByTestId("operating-hours-badge")).toHaveTextContent(/Fechado/)
+		rerender(
+			<OperatingHoursSummary operatingHours={hours} now={closedBorder} />,
+		)
+		expect(screen.getByTestId("operating-hours-badge")).toHaveTextContent(
+			/Fechado/,
+		)
 	})
 
 	test("exibe resumo agrupado Seg–Sex quando mesmo horário", () => {
@@ -108,7 +120,9 @@ describe("OperatingHoursSummary", () => {
 			{ weekday: 6, intervals: [{ open: "08:00", close: "14:00" }] },
 		]
 		const now = new Date(Date.UTC(2026, 0, 5, 13, 0, 0))
-		renderWithProviders(<OperatingHoursSummary operatingHours={hours} now={now} />)
+		renderWithProviders(
+			<OperatingHoursSummary operatingHours={hours} now={now} />,
+		)
 		const compact = screen.getByTestId("operating-hours-compact")
 		expect(compact.textContent).toContain("Seg–Sex 06:00–22:00")
 		expect(compact.textContent).toContain("Sáb 08:00–14:00")
@@ -126,8 +140,38 @@ describe("OperatingHoursSummary", () => {
 		]
 		// 13:00 SP segunda = 16:00 UTC -> entre intervalos, fechado, abre 14:00
 		const now = new Date(Date.UTC(2026, 0, 5, 16, 0, 0))
-		renderWithProviders(<OperatingHoursSummary operatingHours={hours} now={now} />)
-		expect(screen.getByTestId("operating-hours-badge")).toHaveTextContent(/Fechado/)
+		renderWithProviders(
+			<OperatingHoursSummary operatingHours={hours} now={now} />,
+		)
+		expect(screen.getByTestId("operating-hours-badge")).toHaveTextContent(
+			/Fechado/,
+		)
 		expect(screen.getByText("Abre às 14:00")).toBeInTheDocument()
+	})
+
+	test("atualiza o status na próxima virada de minuto sem override de now", () => {
+		vi.useFakeTimers()
+		vi.setSystemTime(new Date(Date.UTC(2026, 0, 6, 0, 59, 30)))
+
+		try {
+			const hours = [
+				{ weekday: 1, intervals: [{ open: "06:00", close: "22:00" }] },
+			]
+			renderWithProviders(<OperatingHoursSummary operatingHours={hours} />)
+
+			expect(screen.getByTestId("operating-hours-badge")).toHaveTextContent(
+				/Aberto agora/,
+			)
+
+			act(() => {
+				vi.advanceTimersByTime(30_000)
+			})
+
+			expect(screen.getByTestId("operating-hours-badge")).toHaveTextContent(
+				/Fechado/,
+			)
+		} finally {
+			vi.useRealTimers()
+		}
 	})
 })

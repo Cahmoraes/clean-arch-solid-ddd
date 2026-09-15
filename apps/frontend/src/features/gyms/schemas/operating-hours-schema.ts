@@ -21,7 +21,6 @@ export const dayScheduleSchema = z
 			.max(6, "weekday deve estar entre 0 e 6"),
 		intervals: z
 			.array(timeIntervalSchema)
-			.min(1, "Ao menos 1 intervalo")
 			.max(3, "Máximo 3 intervalos por dia"),
 	})
 	.refine(

@@ -307,6 +307,29 @@ describe("useUpdateGym", () => {
 			operatingHours: null,
 		})
 	})
+
+	it("omite operatingHours no PUT quando o campo não foi definido", async () => {
+		let received: Record<string, unknown> | null = null
+		server.use(
+			http.put(`${apiBaseUrl}/gyms/:id`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json({ message: "Gym updated", id: "gym-1" })
+			}),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useUpdateGym(), { wrapper: Wrapper })
+		const inputWithoutOperatingHours = {
+			...validUpdateInput,
+			operatingHours: undefined,
+		}
+
+		await result.current.mutateAsync({
+			id: "gym-1",
+			input: inputWithoutOperatingHours,
+		})
+
+		expect(received).not.toHaveProperty("operatingHours")
+	})
 })
 
 describe("useSetGymImage", () => {

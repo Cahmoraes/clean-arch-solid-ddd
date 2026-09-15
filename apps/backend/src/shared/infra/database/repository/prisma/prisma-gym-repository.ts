@@ -9,13 +9,14 @@ import type {
 } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
 import { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
-import type { DayScheduleDTO } from "@/gym/domain/value-object/spec-gym-dates.js"
+import { OperatingHours } from "@/gym/domain/value-object/spec-gym-dates.js"
 import type { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import {
 	Prisma,
 	type PrismaClient,
 } from "@/shared/infra/database/generated/prisma/client"
 import { env } from "@/shared/infra/env"
+import { InvalidPersistedGymError } from "@/shared/infra/errors/invalid-persisted-gym-error"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { PrismaUnitOfWork } from "../unit-of-work/prisma-unit-of-work"
@@ -118,7 +119,10 @@ export class PrismaGymRepository implements GymRepository {
 		return { items: gymData.map(this.createGym), total }
 	}
 
-	private parseOperatingHours(rawHours: unknown): DayScheduleDTO[] | null {
+	private parseOperatingHours(
+		rawHours: unknown,
+		gymId: string,
+	): OperatingHours | null {
 		if (
 			rawHours === null ||
 			rawHours === Prisma.JsonNull ||
@@ -126,16 +130,18 @@ export class PrismaGymRepository implements GymRepository {
 		) {
 			return null
 		}
-		if (Array.isArray(rawHours)) {
-			return rawHours as DayScheduleDTO[]
+
+		const result = OperatingHours.createFromUnknown(rawHours)
+		if (result.isFailure()) {
+			throw new InvalidPersistedGymError(gymId, result.value)
 		}
-		// corrupt Json value (e.g. {}, string) → treat as null to avoid hydration crash
-		return null
+		return result.value
 	}
 
 	private createGym(props: GymCreateProps): Gym {
 		const operatingHours = this.parseOperatingHours(
 			props.operating_hours as unknown,
+			props.id,
 		)
 		return Gym.restore({
 			id: props.id,

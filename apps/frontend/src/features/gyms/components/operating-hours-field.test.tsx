@@ -69,6 +69,20 @@ describe("OperatingHoursField", () => {
 		)
 	})
 
+	test("renderiza dia fechado retornado pela API com intervals vazio", () => {
+		renderWithProviders(
+			<OperatingHoursField
+				value={[{ weekday: 1, intervals: [] }]}
+				onChange={vi.fn()}
+			/>,
+		)
+
+		expect(screen.getByLabelText("Segunda Fechado")).toBeChecked()
+		expect(
+			screen.queryByLabelText("Segunda abertura 1"),
+		).not.toBeInTheDocument()
+	})
+
 	test("botão + intervalo adiciona até max 3 por dia", async () => {
 		const user = userEvent.setup()
 		const onChange = vi.fn()
