@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react"
+import { fireEvent, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import { describe, expect, it, test, vi } from "vitest"
@@ -100,6 +100,15 @@ describe("AdminNovaAcademiaPage", () => {
 			)
 		})
 
+		await user.click(screen.getByText(/horário de funcionamento \(opcional\)/i))
+		await user.click(screen.getByLabelText("Segunda Fechado"))
+		fireEvent.change(screen.getByLabelText("Segunda abertura 1"), {
+			target: { value: "08:00" },
+		})
+		fireEvent.change(screen.getByLabelText("Segunda fechamento 1"), {
+			target: { value: "18:00" },
+		})
+
 		await user.click(screen.getByTestId("gym-form-submit"))
 
 		await waitFor(() => {
@@ -112,10 +121,55 @@ describe("AdminNovaAcademiaPage", () => {
 				address: "Av. Paulista, 1578",
 				latitude: -23.5505,
 				longitude: -46.6333,
+				operatingHours: [
+					{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+				],
 			})
 		})
 		await waitFor(() => {
 			expect(replace).toHaveBeenCalledWith("/academias/new-gym-77")
+		})
+	})
+
+	it("exibe erro inline quando operatingHours é inválido", async () => {
+		server.use(
+			http.get("https://nominatim.openstreetmap.org/search", () => {
+				return HttpResponse.json(NOMINATIM_SEARCH_RESULT)
+			}),
+		)
+
+		const user = userEvent.setup()
+		renderWithProviders(<AdminNovaAcademiaPage />)
+
+		await user.type(screen.getByTestId("gym-form-title"), "Iron Gym")
+		await user.type(screen.getByTestId("gym-form-cnpj"), "12345678000100")
+		await user.type(
+			screen.getByTestId("gym-location-address"),
+			"Av. Paulista, 1578",
+		)
+		await user.click(screen.getByTestId("gym-location-search"))
+
+		await waitFor(() => {
+			expect(screen.getByTestId("gym-location-lat-display")).toHaveTextContent(
+				"-23.5505",
+			)
+		})
+
+		await user.click(screen.getByText(/horário de funcionamento \(opcional\)/i))
+		await user.click(screen.getByLabelText("Segunda Fechado"))
+		fireEvent.change(screen.getByLabelText("Segunda abertura 1"), {
+			target: { value: "18:00" },
+		})
+		fireEvent.change(screen.getByLabelText("Segunda fechamento 1"), {
+			target: { value: "08:00" },
+		})
+
+		await user.click(screen.getByTestId("gym-form-submit"))
+
+		await waitFor(() => {
+			expect(screen.getByTestId("day-row-1")).toHaveTextContent(
+				/Horário de abertura deve ser antes do fechamento/i,
+			)
 		})
 	})
 

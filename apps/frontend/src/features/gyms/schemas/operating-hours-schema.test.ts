@@ -102,6 +102,9 @@ describe("operatingHoursSchema", () => {
 		expect(result.success).toBe(false)
 		if (!result.success) {
 			expect(result.error.issues[0].message).toMatch(/weekday duplicado/i)
+			expect(result.error.issues.some((issue) => issue.path[0] === 1)).toBe(
+				true,
+			)
 		}
 	})
 
@@ -148,5 +151,12 @@ describe("operatingHoursSchema", () => {
 			},
 		])
 		expect(result.success).toBe(true)
+	})
+
+	test("deve rejeitar intervalos vazios (min 1)", () => {
+		const result = operatingHoursSchema.safeParse([
+			{ weekday: 1, intervals: [] },
+		])
+		expect(result.success).toBe(false)
 	})
 })

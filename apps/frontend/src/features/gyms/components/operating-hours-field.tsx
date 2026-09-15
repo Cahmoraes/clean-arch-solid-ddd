@@ -1,5 +1,5 @@
-// biome-ignore-all lint/complexity/noExcessiveCognitiveComplexity: yagni: campo com 7 dias exige branches
-// biome-ignore-all lint/suspicious/noArrayIndexKey: yagni: intervalos estáveis por índice
+// biome-ignore-all lint/complexity/noExcessiveCognitiveComplexity: yagni field 7 rows
+// biome-ignore-all lint/suspicious/noArrayIndexKey: yagni stable idx
 "use client"
 
 import { Button } from "@/components/ui/button"
@@ -9,8 +9,9 @@ import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-sch
 
 export interface OperatingHoursFieldProps {
 	value: DayScheduleDTO[] | null | undefined
-	onChange: (v: DayScheduleDTO[] | null) => void
+	onChange: (v: DayScheduleDTO[]) => void
 	error?: string | null
+	dayErrors?: Partial<Record<number, string>>
 }
 
 const WEEKDAYS = [
@@ -31,6 +32,7 @@ export function OperatingHoursField({
 	value,
 	onChange,
 	error,
+	dayErrors,
 }: OperatingHoursFieldProps) {
 	const schedules = value ?? []
 
@@ -100,6 +102,8 @@ export function OperatingHoursField({
 				const intervals = schedule?.intervals ?? []
 				const canAdd = intervals.length < 3
 				const weekdayId = `operating-hours-${weekday}`
+				const dayError = dayErrors?.[weekday] ?? null
+				const dayErrorId = `${weekdayId}-error`
 
 				return (
 					<div
@@ -123,6 +127,8 @@ export function OperatingHoursField({
 										handleToggleClosed(weekday, e.target.checked)
 									}
 									aria-label={`${label} Fechado`}
+									aria-invalid={Boolean(dayError)}
+									aria-describedby={dayError ? dayErrorId : undefined}
 									className="h-4 w-4 rounded border-input accent-primary"
 								/>
 								Fechado
@@ -155,6 +161,8 @@ export function OperatingHoursField({
 												)
 											}
 											aria-label={`${label} abertura ${idx + 1}`}
+											aria-invalid={Boolean(dayError)}
+											aria-describedby={dayError ? dayErrorId : undefined}
 											className="h-9"
 										/>
 										<span className="text-sm text-muted-foreground">até</span>
@@ -177,6 +185,8 @@ export function OperatingHoursField({
 												)
 											}
 											aria-label={`${label} fechamento ${idx + 1}`}
+											aria-invalid={Boolean(dayError)}
+											aria-describedby={dayError ? dayErrorId : undefined}
 											className="h-9"
 										/>
 										{intervals.length > 1 && (
@@ -213,6 +223,16 @@ export function OperatingHoursField({
 								</div>
 							</div>
 						)}
+
+						{dayError ? (
+							<p
+								id={dayErrorId}
+								role="alert"
+								className="text-xs text-destructive"
+							>
+								{dayError}
+							</p>
+						) : null}
 					</div>
 				)
 			})}

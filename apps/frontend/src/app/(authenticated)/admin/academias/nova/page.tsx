@@ -13,10 +13,16 @@ import { GymCnpjField } from "@/features/gyms/components/gym-cnpj-field"
 import { GymImageUploader } from "@/features/gyms/components/gym-image-uploader"
 import { GymLocationPicker } from "@/features/gyms/components/gym-location-picker"
 import { GymPhoneField } from "@/features/gyms/components/gym-phone-field"
+import { OperatingHoursField } from "@/features/gyms/components/operating-hours-field"
+import {
+	updateOperatingHoursFieldValue,
+	validateOperatingHoursInput,
+} from "@/features/gyms/lib/operating-hours-validation"
 import {
 	type CreateGymInput,
 	createGymSchema,
 } from "@/features/gyms/schemas/create-gym-schema"
+import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-schema"
 import { ApiError } from "@/lib/errors"
 
 function createGymErrorMessage(error: unknown): string {
@@ -37,6 +43,15 @@ export default function AdminNovaAcademiaPage() {
 	const { mutateAsync, isPending } = useCreateGym()
 	const { mutateAsync: setGymImage } = useSetGymImage()
 	const [imageBlob, setImageBlob] = useState<Blob | null>(null)
+	const [operatingHours, setOperatingHours] = useState<DayScheduleDTO[] | null>(
+		null,
+	)
+	const [operatingHoursError, setOperatingHoursError] = useState<string | null>(
+		null,
+	)
+	const [operatingHoursDayErrors, setOperatingHoursDayErrors] = useState<
+		Partial<Record<number, string>>
+	>({})
 	const {
 		register,
 		handleSubmit,
@@ -69,8 +84,19 @@ export default function AdminNovaAcademiaPage() {
 	}
 
 	async function onSubmit(values: CreateGymInput) {
+		const validation = validateOperatingHoursInput(operatingHours)
+		if (!validation.success) {
+			setOperatingHoursError(validation.error)
+			setOperatingHoursDayErrors(validation.dayErrors)
+			return
+		}
+		setOperatingHoursError(null)
+		setOperatingHoursDayErrors({})
 		try {
-			const { id } = await mutateAsync(values)
+			const { id } = await mutateAsync({
+				...values,
+				operatingHours: validation.value,
+			})
 			await uploadImageIfPresent(id)
 			toast.success("Academia cadastrada com sucesso.")
 			router.replace(`/academias/${id}`)
@@ -162,6 +188,27 @@ export default function AdminNovaAcademiaPage() {
 				/>
 
 				<GymImageUploader onCropped={setImageBlob} />
+
+				<details className="rounded-md border p-3">
+					<summary className="cursor-pointer text-sm font-medium">
+						Horário de funcionamento (opcional)
+					</summary>
+					<div className="pt-3">
+						<OperatingHoursField
+							value={operatingHours}
+							onChange={(next) =>
+								updateOperatingHoursFieldValue(
+									next,
+									setOperatingHours,
+									setOperatingHoursError,
+									setOperatingHoursDayErrors,
+								)
+							}
+							error={operatingHoursError}
+							dayErrors={operatingHoursDayErrors}
+						/>
+					</div>
+				</details>
 
 				<div className="flex justify-end">
 					<Button

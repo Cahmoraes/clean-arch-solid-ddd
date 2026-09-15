@@ -172,13 +172,50 @@ describe("useGymById", () => {
 
 describe("useCreateGym", () => {
 	it("envia payload e retorna id após sucesso", async () => {
+		let received: Record<string, unknown> | null = null
 		server.use(
-			http.post(`${apiBaseUrl}/gyms`, () =>
-				HttpResponse.json(
+			http.post(`${apiBaseUrl}/gyms`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json(
 					{ message: "Gym created", id: "new-gym-id" },
 					{ status: 201 },
-				),
-			),
+				)
+			}),
+		)
+		const { Wrapper } = makeWrapper()
+		const { result } = renderHook(() => useCreateGym(), { wrapper: Wrapper })
+		const created = await result.current.mutateAsync({
+			title: "Iron Gym",
+			cnpj: "12345678000100",
+			description: "ok",
+			phone: "11999999999",
+			location: {
+				address: "Av. Paulista, 1578, São Paulo - SP",
+				latitude: -23.5,
+				longitude: -46.6,
+			},
+			operatingHours: [
+				{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+			],
+		})
+		expect(created.id).toBe("new-gym-id")
+		expect(received).toMatchObject({
+			operatingHours: [
+				{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+			],
+		})
+	})
+
+	it("envia payload com operatingHours nulo quando omitido", async () => {
+		let received: Record<string, unknown> | null = null
+		server.use(
+			http.post(`${apiBaseUrl}/gyms`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json(
+					{ message: "Gym created", id: "new-gym-id" },
+					{ status: 201 },
+				)
+			}),
 		)
 		const { Wrapper } = makeWrapper()
 		const { result } = renderHook(() => useCreateGym(), { wrapper: Wrapper })
@@ -194,6 +231,7 @@ describe("useCreateGym", () => {
 			},
 		})
 		expect(created.id).toBe("new-gym-id")
+		expect(received).not.toHaveProperty("operatingHours")
 	})
 
 	it("propaga ApiError quando backend retorna 409", async () => {
@@ -226,20 +264,30 @@ const validUpdateInput = {
 	description: "",
 	phone: "",
 	location: { address: "Rua B, 2", latitude: -23.5, longitude: -46.6 },
+	operatingHours: [
+		{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+	],
 }
 
 describe("useUpdateGym", () => {
 	it("atualiza a academia via PUT e retorna o id", async () => {
+		let received: Record<string, unknown> | null = null
 		server.use(
-			http.put(`${apiBaseUrl}/gyms/:id`, () =>
-				HttpResponse.json({ message: "Gym updated", id: "gym-1" }),
-			),
+			http.put(`${apiBaseUrl}/gyms/:id`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json({ message: "Gym updated", id: "gym-1" })
+			}),
 		)
 		const { Wrapper } = makeWrapper()
 		const { result } = renderHook(() => useUpdateGym(), { wrapper: Wrapper })
 		result.current.mutate({ id: "gym-1", input: validUpdateInput })
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
 		expect(result.current.data?.id).toBe("gym-1")
+		expect(received).toMatchObject({
+			operatingHours: [
+				{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] },
+			],
+		})
 	})
 })
 

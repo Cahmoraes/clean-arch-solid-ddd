@@ -121,6 +121,23 @@ describe("OperatingHoursField", () => {
 		)
 	})
 
+	test("exibe erro inline na linha do dia quando dayErrors é fornecido", () => {
+		renderWithProviders(
+			<OperatingHoursField
+				value={[{ weekday: 1, intervals: [{ open: "08:00", close: "12:00" }] }]}
+				onChange={vi.fn()}
+				dayErrors={{ 1: "Intervalos sobrepostos" }}
+			/>,
+		)
+		expect(screen.getByTestId("day-row-1")).toHaveTextContent(
+			"Intervalos sobrepostos",
+		)
+		expect(screen.getByLabelText("Segunda abertura 1")).toHaveAttribute(
+			"aria-describedby",
+			"operating-hours-1-error",
+		)
+	})
+
 	test("editar horário chama onChange com novo valor", () => {
 		const onChange = vi.fn()
 		const value = [

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { useId } from "react"
+import { useId, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/page-container"
@@ -12,15 +12,26 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { FormField } from "@/components/ui/form-field"
 import { Skeleton } from "@/components/ui/skeleton"
-import { type Gym, useGymById, useUpdateGym } from "@/features/gyms/api"
+import {
+	type Gym,
+	type UpdateGymVariables,
+	useGymById,
+	useUpdateGym,
+} from "@/features/gyms/api"
 import { GymCnpjField } from "@/features/gyms/components/gym-cnpj-field"
 import { GymImageEditOverlay } from "@/features/gyms/components/gym-image-edit-overlay"
 import { GymLocationPicker } from "@/features/gyms/components/gym-location-picker"
 import { GymPhoneField } from "@/features/gyms/components/gym-phone-field"
+import { OperatingHoursField } from "@/features/gyms/components/operating-hours-field"
+import {
+	updateOperatingHoursFieldValue,
+	validateOperatingHoursInput,
+} from "@/features/gyms/lib/operating-hours-validation"
 import {
 	type CreateGymInput,
 	createGymSchema,
 } from "@/features/gyms/schemas/create-gym-schema"
+import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-schema"
 import { ApiError } from "@/lib/errors"
 
 function updateGymErrorMessage(error: unknown): string {
@@ -32,6 +43,45 @@ function updateGymErrorMessage(error: unknown): string {
 	return "Não foi possível atualizar a academia. Tente novamente."
 }
 
+async function submitEditedGym({
+	gymId,
+	values,
+	operatingHours,
+	updateGym,
+	setOperatingHoursError,
+	setOperatingHoursDayErrors,
+}: {
+	gymId: string
+	values: CreateGymInput
+	operatingHours: DayScheduleDTO[] | null
+	updateGym: (variables: UpdateGymVariables) => Promise<{ id: string }>
+	setOperatingHoursError: (value: string | null) => void
+	setOperatingHoursDayErrors: (value: Partial<Record<number, string>>) => void
+}): Promise<boolean> {
+	const validation = validateOperatingHoursInput(operatingHours)
+	if (!validation.success) {
+		setOperatingHoursError(validation.error)
+		setOperatingHoursDayErrors(validation.dayErrors)
+		return false
+	}
+
+	setOperatingHoursError(null)
+	setOperatingHoursDayErrors({})
+
+	try {
+		await updateGym({
+			id: gymId,
+			input: { ...values, operatingHours: validation.value },
+		})
+		toast.success("Academia atualizada com sucesso.")
+		return true
+	} catch (submitError) {
+		toast.error(updateGymErrorMessage(submitError))
+		return false
+	}
+}
+
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: form composition is intentionally dense
 function EditGymForm({ gym }: { gym: Gym }) {
 	const router = useRouter()
 	const titleId = useId()
@@ -39,6 +89,16 @@ function EditGymForm({ gym }: { gym: Gym }) {
 	const descriptionId = useId()
 	const phoneId = useId()
 	const { mutateAsync: updateGym, isPending } = useUpdateGym()
+	const [operatingHours, setOperatingHours] = useState<DayScheduleDTO[] | null>(
+		gym.operatingHours ?? null,
+	)
+	const [operatingHoursError, setOperatingHoursError] = useState<string | null>(
+		null,
+	)
+	const [operatingHoursDayErrors, setOperatingHoursDayErrors] = useState<
+		Partial<Record<number, string>>
+	>({})
+
 	const {
 		register,
 		handleSubmit,
@@ -60,13 +120,15 @@ function EditGymForm({ gym }: { gym: Gym }) {
 	})
 
 	async function onSubmit(values: CreateGymInput) {
-		try {
-			await updateGym({ id: gym.id, input: values })
-			toast.success("Academia atualizada com sucesso.")
-			router.replace(`/academias/${gym.id}`)
-		} catch (submitError) {
-			toast.error(updateGymErrorMessage(submitError))
-		}
+		const updated = await submitEditedGym({
+			gymId: gym.id,
+			values,
+			operatingHours,
+			updateGym,
+			setOperatingHoursError,
+			setOperatingHoursDayErrors,
+		})
+		if (updated) router.replace(`/academias/${gym.id}`)
 	}
 
 	return (
@@ -136,6 +198,26 @@ function EditGymForm({ gym }: { gym: Gym }) {
 					/>
 				)}
 			/>
+			<details className="rounded-md border p-3">
+				<summary className="cursor-pointer text-sm font-medium">
+					Horário de funcionamento (opcional)
+				</summary>
+				<div className="pt-3">
+					<OperatingHoursField
+						value={operatingHours}
+						onChange={(next) =>
+							updateOperatingHoursFieldValue(
+								next,
+								setOperatingHours,
+								setOperatingHoursError,
+								setOperatingHoursDayErrors,
+							)
+						}
+						error={operatingHoursError}
+						dayErrors={operatingHoursDayErrors}
+					/>
+				</div>
+			</details>
 			<div className="flex justify-end gap-2">
 				<Button
 					type="button"

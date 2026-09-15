@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react"
+import { fireEvent, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import { beforeEach, describe, expect, test, vi } from "vitest"
@@ -55,6 +55,9 @@ describe("AdminEditarAcademiaPage", () => {
 					imageKey: null,
 					latitude: -23.5,
 					longitude: -46.6,
+					operatingHours: [
+						{ weekday: 1, intervals: [{ open: "08:00", close: "12:00" }] },
+					],
 				}),
 			),
 		)
@@ -65,6 +68,56 @@ describe("AdminEditarAcademiaPage", () => {
 		expect(screen.getByTestId("gym-form-cnpj")).toHaveValue(
 			"11.222.333/0001-81",
 		)
+		await userEvent.click(
+			screen.getByText(/horário de funcionamento \(opcional\)/i),
+		)
+		expect(screen.getByLabelText("Segunda abertura 1")).toHaveValue("08:00")
+	})
+
+	test("envia operatingHours atualizado no PUT", async () => {
+		let received: Record<string, unknown> | null = null
+		server.use(
+			http.get(`${apiBaseUrl}/gyms/:id`, () =>
+				HttpResponse.json({
+					id: "gym-123",
+					title: "Academia Volt",
+					description: "Top",
+					phone: "11999999999",
+					address: "Rua A, 100",
+					cnpj: "11222333000181",
+					imageKey: null,
+					latitude: -23.5,
+					longitude: -46.6,
+					operatingHours: [
+						{ weekday: 1, intervals: [{ open: "08:00", close: "12:00" }] },
+					],
+				}),
+			),
+			http.put(`${apiBaseUrl}/gyms/:id`, async ({ request }) => {
+				received = (await request.json()) as Record<string, unknown>
+				return HttpResponse.json({ message: "Gym updated", id: "gym-123" })
+			}),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<AdminEditarAcademiaPage />)
+
+		await waitFor(() =>
+			expect(screen.getByTestId("gym-form-title")).toHaveValue("Academia Volt"),
+		)
+		await user.click(screen.getByText(/horário de funcionamento \(opcional\)/i))
+		fireEvent.change(screen.getByLabelText("Segunda fechamento 1"), {
+			target: { value: "13:00" },
+		})
+		await user.click(screen.getByTestId("gym-form-submit"))
+
+		await waitFor(() => {
+			expect(received).toMatchObject({
+				operatingHours: [
+					{ weekday: 1, intervals: [{ open: "08:00", close: "13:00" }] },
+				],
+			})
+		})
+		expect(mockReplace).toHaveBeenCalledWith("/academias/gym-123")
 	})
 
 	test("deve renderizar GymImageEditOverlay em vez de GymImageUploader", async () => {

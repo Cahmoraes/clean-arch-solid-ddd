@@ -8,10 +8,12 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query"
 import type { CreateGymInput } from "@/features/gyms/schemas/create-gym-schema"
+import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-schema"
 import { API_BASE_URL, api } from "@/lib/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
 import {
+	type GymCreateBody,
 	type GymStatusChangeResult,
 	type GymSummary,
 	getGymsExtendedClient,
@@ -19,6 +21,10 @@ import {
 } from "./extended-paths"
 
 export type Gym = GymSummary
+
+export type GymCreateInput = Omit<CreateGymInput, "operatingHours"> & {
+	operatingHours?: DayScheduleDTO[] | null
+}
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 	if (error instanceof ApiError) return error
@@ -79,7 +85,7 @@ async function fetchGymById(id: string): Promise<Gym> {
 	return data
 }
 
-function buildCreateGymBody(input: CreateGymInput) {
+function buildCreateGymBody(input: GymCreateInput): GymCreateBody {
 	return {
 		title: input.title,
 		cnpj: input.cnpj,
@@ -88,11 +94,14 @@ function buildCreateGymBody(input: CreateGymInput) {
 		longitude: input.location.longitude,
 		...(input.description ? { description: input.description } : {}),
 		...(input.phone ? { phone: input.phone } : {}),
+		...(input.operatingHours != null
+			? { operatingHours: input.operatingHours }
+			: {}),
 	}
 }
 
 async function createGymRequest(
-	input: CreateGymInput,
+	input: GymCreateInput,
 ): Promise<CreateGymResult> {
 	const { data, error } = await api.POST("/gyms", {
 		body: buildCreateGymBody(input),
@@ -158,10 +167,10 @@ export function useGymById(
 export function useCreateGym(): UseMutationResult<
 	CreateGymResult,
 	ApiError,
-	CreateGymInput
+	GymCreateInput
 > {
 	const queryClient = useQueryClient()
-	return useMutation<CreateGymResult, ApiError, CreateGymInput>({
+	return useMutation<CreateGymResult, ApiError, GymCreateInput>({
 		mutationFn: createGymRequest,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: gymsKeys.all })
@@ -171,7 +180,7 @@ export function useCreateGym(): UseMutationResult<
 
 export interface UpdateGymVariables {
 	id: string
-	input: CreateGymInput
+	input: GymCreateInput
 }
 
 async function updateGymRequest({
