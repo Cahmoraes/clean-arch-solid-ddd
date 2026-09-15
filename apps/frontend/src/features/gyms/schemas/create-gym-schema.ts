@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { operatingHoursSchema } from "./operating-hours-schema"
 
 const CNPJ_DIGITS = 14
 const PHONE_MIN = 10
@@ -57,6 +58,7 @@ export const createGymSchema = z.object({
 		.optional()
 		.or(z.literal("")),
 	location: gymLocationSchema,
+	operatingHours: operatingHoursSchema,
 })
 
 export type CreateGymInput = z.infer<typeof createGymSchema>
