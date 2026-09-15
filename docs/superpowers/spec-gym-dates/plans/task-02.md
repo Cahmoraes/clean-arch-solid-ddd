@@ -1,8 +1,8 @@
 # Task 2: Prisma migration + entidade Gym + PrismaGymRepository + factory [FR-001, FR-006]
 
 **Status:** PENDING
-**PRD:** `../prd/prd-gym-operating-hours.md`
-**Spec:** `../specs/gym-operating-hours-design.md`
+**PRD:** `../prd/prd-spec-gym-dates.md`
+**Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard
 **Depends on:** task-01
 
@@ -32,7 +32,7 @@ Adiciona coluna `operating_hours Json?` ao `Gym` no Prisma, estende `Gym` restor
 ```typescript
 // apps/backend/src/gym/domain/gym.test.ts (novo caso)
 import { Gym } from "./gym.js";
-import { OperatingHours } from "./value-object/gym-operating-hours.js";
+import { OperatingHours } from "./value-object/spec-gym-dates.js";
 
 test("Gym deve persistir operatingHours via restore", () => {
   const hours = OperatingHours.create([{ weekday: 1, intervals: [{ open: "08:00", close: "18:00" }] }]).forceSuccess().value;

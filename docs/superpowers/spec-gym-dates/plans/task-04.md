@@ -1,8 +1,8 @@
 # Task 4: Frontend base: tipos @repo/api-types + Zod + OperatingHoursField [FR-010, FR-003, FR-004, FR-005]
 
 **Status:** PENDING
-**PRD:** `../prd/prd-gym-operating-hours.md`
-**Spec:** `../specs/gym-operating-hours-design.md`
+**PRD:** `../prd/prd-spec-gym-dates.md`
+**Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard
 **Depends on:** task-01
 
@@ -28,7 +28,7 @@ Cria tipos compartilhados, Zod schemas frontend e componente `OperatingHoursFiel
 
 ### Fidelidade Visual
 
-- **Mockup de referência:** `../specs/mockups/gym-operating-hours-visual.md` (não para este field, mas tokens compartilhados)
+- **Mockup de referência:** `../specs/mockups/spec-gym-dates-visual.md` (não para este field, mas tokens compartilhados)
 - **Fonte de design original:** nenhuma; seguir tokens de `src/app/globals.css`
 - **Ferramentas de fidelidade visual:** nenhuma configurada; construir manualmente a partir do mockup/tokens
 - **Decisões visuais já tomadas:** primary #39e58c, border #e4e4dc, radius 10-14px, Inter/Space Grotesk

@@ -52,7 +52,7 @@ Jornada admin: acessa cadastro (`/academias/nova` ou fluxo atual) → seção �
 
 Jornada usuário: acessa `/academias/[id]` → vê `DetailCard` com imagem, endereço, telefone e, abaixo, bloco de horário: resumo em 1 linha + badge de status; clica “Ver horários completos” para expandir tabela 7 dias com hoje destacado. Se sem horário, vê “Horário não informado” tracejado.
 
-Visual (WHAT/WHY): layout C prioriza economia vertical e prova imediata de status; decisões de hierarchy/spacing/tokens em `specs/mockups/gym-operating-hours-visual.md` (primary `#39e58c`, card `rounded-[12px]`, Space Grotesk/Inter) — implementação deve seguir esse norte sem re-derivar.
+Visual (WHAT/WHY): layout C prioriza economia vertical e prova imediata de status; decisões de hierarchy/spacing/tokens em `specs/mockups/spec-gym-dates-visual.md` (primary `#39e58c`, card `rounded-[12px]`, Space Grotesk/Inter) — implementação deve seguir esse norte sem re-derivar.
 
 Acessibilidade: inputs `type=time` com `label` por dia/intervalo, toggle Fechado com `aria-pressed`, tabela com `caption` “Horário semanal”, badge com `aria-live="polite"` para mudança de status.
 

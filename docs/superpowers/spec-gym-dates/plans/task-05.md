@@ -1,8 +1,8 @@
 # Task 5: Frontend detalhe: OperatingHoursSummary + useIsGymOpen + integração DetailCard [FR-006, FR-007, FR-008, FR-009]
 
 **Status:** PENDING
-**PRD:** `../prd/prd-gym-operating-hours.md`
-**Spec:** `../specs/gym-operating-hours-design.md`
+**PRD:** `../prd/prd-spec-gym-dates.md`
+**Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard
 **Depends on:** task-02
 
@@ -28,7 +28,7 @@ Implementa `OperatingHoursSummary` com layout C (resumo compacto agrupado + badg
 
 ### Fidelidade Visual
 
-- **Mockup de referência:** `../specs/mockups/gym-operating-hours-visual.md` (layout C — baseline)
+- **Mockup de referência:** `../specs/mockups/spec-gym-dates-visual.md` (layout C — baseline)
 - **Fonte de design original:** nenhuma; seguir o mockup curado
 - **Confirmar com o usuário:** existe fonte de design original para o detalhe além do mockup?
 - **Ferramentas de fidelidade visual:** nenhuma; construir manualmente a partir do mockup
@@ -38,7 +38,7 @@ Implementa `OperatingHoursSummary` com layout C (resumo compacto agrupado + badg
 
 - **Step 0: Confirm design source & fidelity tools**
 
-Ler `### Fidelidade Visual` acima; confirmar com usuário se há URL de Figma além do mockup. Se não houver, seguir `gym-operating-hours-visual.md` manualmente.
+Ler `### Fidelidade Visual` acima; confirmar com usuário se há URL de Figma além do mockup. Se não houver, seguir `spec-gym-dates-visual.md` manualmente.
 
 - **Step 1: Write the failing test**
 

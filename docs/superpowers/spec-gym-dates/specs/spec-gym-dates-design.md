@@ -23,7 +23,7 @@ Permitir informar dias e horários de funcionamento da academia no cadastro (opc
 
 ## Especificação Visual
 
-**Artefato curado:** `mockups/gym-operating-hours-visual.md` (prosa + core JSX, relativo a este spec)
+**Artefato curado:** `mockups/spec-gym-dates-visual.md` (prosa + core JSX, relativo a este spec)
 
 **Fonte de design original:** Nenhuma; layout definido apenas via mockup do companion `operating-hours-v1.html`.
 
@@ -41,7 +41,7 @@ Escrita: `OperatingHoursField` (validação client Zod) → `POST /gyms` ou `PUT
 
 Leitura: `GET /gyms/:id` → `PrismaGymRepository.findById` (`SELECT operating_hours`) → `Gym.restore` hydrata VO ou `null` → DTO `{ operatingHours: json|null }` → `useGymById` → `OperatingHoursSummary` computa `isOpenAt(now, 'America/Sao_Paulo')` no client e renderiza layout C (agrupamento + badge + tabela). Sem request extra para status.
 
-Diagrama fonte: `specs/diagrams/gym-operating-hours-design_01_sequence_fluxo_operating_hour.mmd`
+Diagrama fonte: `specs/diagrams/spec-gym-dates-design_01_sequence_fluxo_operating_hour.mmd`
 
 ```mermaid
 sequenceDiagram

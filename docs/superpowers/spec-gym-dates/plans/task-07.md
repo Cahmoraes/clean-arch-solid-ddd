@@ -1,8 +1,8 @@
 # Task 7: Testes de cobertura e polish: unit/integration/component + regeneração tipos + ajustes finais [FR-003, FR-004, FR-005, FR-006, FR-007, FR-008, FR-009, FR-010]
 
 **Status:** PENDING
-**PRD:** `../prd/prd-gym-operating-hours.md`
-**Spec:** `../specs/gym-operating-hours-design.md`
+**PRD:** `../prd/prd-spec-gym-dates.md`
+**Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard
 **Depends on:** task-05, task-06
 
@@ -12,8 +12,8 @@ Garante cobertura dos invariantes não cobertos nas tasks anteriores, testes de 
 
 ## Arquivos
 
-- Modify: `apps/backend/src/gym/domain/value-object/gym-operating-hours.test.ts` (casos de borda adicionais)
-- Create: `apps/backend/test/gym-operating-hours.business-flow-test.ts` (HTTP 400/201 com operatingHours)
+- Modify: `apps/backend/src/gym/domain/value-object/spec-gym-dates.test.ts` (casos de borda adicionais)
+- Create: `apps/backend/test/spec-gym-dates.business-flow-test.ts` (HTTP 400/201 com operatingHours)
 - Modify: `apps/frontend/src/features/gyms/components/operating-hours-field.test.tsx` (casos adicionais)
 - Modify: `apps/frontend/src/features/gyms/components/operating-hours-summary.test.tsx` (bordas timezone 22:00, múltiplos intervalos)
 - Modify: `packages/api-types/index.d.ts` (regenerado via `pnpm generate:types`)
@@ -30,7 +30,7 @@ Garante cobertura dos invariantes não cobertos nas tasks anteriores, testes de 
 - **Step 1: Write the failing test**
 
 ```typescript
-// gym-operating-hours.test.ts casos de borda
+// spec-gym-dates.test.ts casos de borda
 test("toCompactString agrupa Seg-Sex com mesmo horário", () => {
   const hours = OperatingHours.create([
     { weekday:1, intervals:[{open:"06:00",close:"22:00"}] },
@@ -54,10 +54,10 @@ test("POST /gyms deve rejeitar operatingHours sobreposto com 400", async () => {
 
 - **Step 2: Run test to verify it fails**
 
-Run: `npx vitest run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/domain/value-object/gym-operating-hours.test.ts -t "toCompactString agrupa"`
+Run: `npx vitest run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/domain/value-object/spec-gym-dates.test.ts -t "toCompactString agrupa"`
 Expected: FAIL se método ainda não agrupa corretamente (esperado `Seg–Sex` mas retorna lista separada)
 
-Run: `npx vitest run --config ./test/vite.config.business-flow.ts test/gym-operating-hours.business-flow-test.ts -t "rejeitar"`
+Run: `npx vitest run --config ./test/vite.config.business-flow.ts test/spec-gym-dates.business-flow-test.ts -t "rejeitar"`
 Expected: FAIL se controller ainda não valida corretamente
 
 - **Step 3: Write minimal implementation**
@@ -73,10 +73,10 @@ Ajusta `OperatingHoursSummary` para exibir `Abre às HH:mm` quando fechado e pr�
 
 - **Step 4: Run test to verify it passes**
 
-Run: `npx vitest run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/domain/value-object/gym-operating-hours.test.ts -t "toCompactString"`
+Run: `npx vitest run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/domain/value-object/spec-gym-dates.test.ts -t "toCompactString"`
 Expected: PASS
 
-Run: `npx vitest run --config ./test/vite.config.business-flow.ts test/gym-operating-hours.business-flow-test.ts -t "rejeitar"`
+Run: `npx vitest run --config ./test/vite.config.business-flow.ts test/spec-gym-dates.business-flow-test.ts -t "rejeitar"`
 Expected: PASS com 400 e 201 para válido
 
 Run: `npx vitest run src/features/gyms/components/operating-hours-summary.test.tsx`

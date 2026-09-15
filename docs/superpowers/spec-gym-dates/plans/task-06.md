@@ -1,8 +1,8 @@
 # Task 6: Frontend admin: integração OperatingHoursField nas páginas nova/editar + client create/update [FR-001, FR-002, FR-010]
 
 **Status:** PENDING
-**PRD:** `../prd/prd-gym-operating-hours.md`
-**Spec:** `../specs/gym-operating-hours-design.md`
+**PRD:** `../prd/prd-spec-gym-dates.md`
+**Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard
 **Depends on:** task-03, task-04
 
@@ -27,7 +27,7 @@ Liga `OperatingHoursField` às páginas de cadastro e edição de academia, ajus
 
 ### Fidelidade Visual
 
-- **Mockup de referência:** `../specs/mockups/gym-operating-hours-visual.md` (tokens compartilhados, não layout direto)
+- **Mockup de referência:** `../specs/mockups/spec-gym-dates-visual.md` (tokens compartilhados, não layout direto)
 - **Fonte de design original:** nenhuma
 - **Ferramentas de fidelidade visual:** nenhuma
 - **Decisões visuais já tomadas:** seção colapsada por padrão, 7 linhas com toggle, spacing do form existente.

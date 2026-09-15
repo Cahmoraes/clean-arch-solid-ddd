@@ -1,7 +1,7 @@
 # Tarefas: Horário de Funcionamento da Academia
 
-**Spec:** `../specs/gym-operating-hours-design.md`
-**PRD:** `../prd/prd-gym-operating-hours.md`
+**Spec:** `../specs/spec-gym-dates-design.md`
+**PRD:** `../prd/prd-spec-gym-dates.md`
 
 **Goal:** Adicionar horário de funcionamento opcional ao Gym (VO + Json, múltiplos intervalos/dia) com cadastro/edição e resumo na tela de detalhe (layout C compacto + badge Aberto agora + tabela expansível).
 

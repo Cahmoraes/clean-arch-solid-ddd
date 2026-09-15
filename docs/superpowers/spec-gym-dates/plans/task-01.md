@@ -1,8 +1,8 @@
 # Task 1: VO de domínio OperatingHours (TimeInterval/DaySchedule) com validação e isOpenAt [FR-003, FR-004, FR-005]
 
 **Status:** PENDING
-**PRD:** `../prd/prd-gym-operating-hours.md`
-**Spec:** `../specs/gym-operating-hours-design.md`
+**PRD:** `../prd/prd-spec-gym-dates.md`
+**Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** capable
 **Depends on:** N/A
 
@@ -12,10 +12,10 @@ Criar Value Objects de domínio `TimeInterval`, `DaySchedule` e `OperatingHours`
 
 ## Arquivos
 
-- Create: `apps/backend/src/gym/domain/value-object/gym-operating-hours.ts`
+- Create: `apps/backend/src/gym/domain/value-object/spec-gym-dates.ts`
 - Create: `apps/backend/src/gym/domain/value-object/errors/invalid-operating-hours-error.ts`
 - Modify: `apps/backend/src/gym/domain/gym.ts` (adiciona campo opcional e integração no create/restore, mas sem persistência ainda — persistência é task-02)
-- Test: `apps/backend/src/gym/domain/value-object/gym-operating-hours.test.ts`
+- Test: `apps/backend/src/gym/domain/value-object/spec-gym-dates.test.ts`
 
 ### Conformidade com as Skills Padrão
 
@@ -28,9 +28,9 @@ Criar Value Objects de domínio `TimeInterval`, `DaySchedule` e `OperatingHours`
 - **Step 1: Write the failing test**
 
 ```typescript
-// apps/backend/src/gym/domain/value-object/gym-operating-hours.test.ts
+// apps/backend/src/gym/domain/value-object/spec-gym-dates.test.ts
 import { describe, test, expect } from "vitest";
-import { OperatingHours } from "./gym-operating-hours.js";
+import { OperatingHours } from "./spec-gym-dates.js";
 
 describe("OperatingHours", () => {
   test("deve rejeitar open >= close", () => {
@@ -52,13 +52,13 @@ describe("OperatingHours", () => {
 
 - **Step 2: Run test to verify it fails**
 
-Run: `npx vitest run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/domain/value-object/gym-operating-hours.test.ts`
-Expected: FAIL with "Cannot find module ./gym-operating-hours.js" / "OperatingHours is not defined"
+Run: `npx vitest run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/domain/value-object/spec-gym-dates.test.ts`
+Expected: FAIL with "Cannot find module ./spec-gym-dates.js" / "OperatingHours is not defined"
 
 - **Step 3: Write minimal implementation**
 
 ```typescript
-// apps/backend/src/gym/domain/value-object/gym-operating-hours.ts
+// apps/backend/src/gym/domain/value-object/spec-gym-dates.ts
 import { Either, failure, success } from "@/shared/domain/either.js";
 import { InvalidOperatingHoursError } from "./errors/invalid-operating-hours-error.js";
 
@@ -105,7 +105,7 @@ Ajuste `Gym` para aceitar `operatingHours?: OperatingHours | null` em `GymCreate
 
 - **Step 4: Run test to verify it passes**
 
-Run: `npx vitest run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/domain/value-object/gym-operating-hours.test.ts`
+Run: `npx vitest run --config ./test/vite.config.app-domain.ts apps/backend/src/gym/domain/value-object/spec-gym-dates.test.ts`
 Expected: PASS (3 tests)
 
 ## Critérios de Sucesso

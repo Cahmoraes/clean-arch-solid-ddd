@@ -1,8 +1,8 @@
 # Task 3: Backend API: use cases create/update/fetch + controllers Zod + OpenAPI [FR-001, FR-002, FR-003, FR-004, FR-005, FR-006]
 
 **Status:** PENDING
-**PRD:** `../prd/prd-gym-operating-hours.md`
-**Spec:** `../specs/gym-operating-hours-design.md`
+**PRD:** `../prd/prd-spec-gym-dates.md`
+**Spec:** `../specs/spec-gym-dates-design.md`
 **Tier:** standard
 **Depends on:** task-02
 
