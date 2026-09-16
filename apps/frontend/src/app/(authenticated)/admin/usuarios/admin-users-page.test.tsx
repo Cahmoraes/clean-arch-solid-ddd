@@ -153,6 +153,51 @@ describe("AdminUsersPage modal integration", () => {
 		).toHaveAttribute("aria-pressed", "false")
 	})
 
+	test("FR-008: após deep-link válido inicial, trocar de página seleciona o primeiro usuário da nova página", async () => {
+		const user = userEvent.setup()
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("userId=user-1") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		const allUsers = buildManyUsers(11)
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				const page = Number(url.searchParams.get("page") ?? "1")
+				const limit = Number(url.searchParams.get("limit") ?? "10")
+				const start = (page - 1) * limit
+				const pageUsers = allUsers.slice(start, start + limit)
+				return HttpResponse.json(
+					{
+						users: pageUsers,
+						pagination: { page, limit, total: allUsers.length },
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+		renderPage()
+
+		// deep-link inicial (?userId=user-1) seleciona o primeiro usuário da página 1
+		await waitFor(() => {
+			expect(
+				within(screen.getByTestId("user-row-user-1")).getByRole("button"),
+			).toHaveAttribute("aria-pressed", "true")
+		})
+
+		await user.click(screen.getByTestId("admin-users-page-2"))
+
+		// FR-008: sem seleção prévia na página 2, o primeiro usuário dela deve
+		// ser selecionado automaticamente — o match do deep-link inicial não
+		// pode bloquear o fallback para sempre.
+		await waitFor(() => {
+			expect(
+				within(screen.getByTestId("user-row-user-11")).getByRole("button"),
+			).toHaveAttribute("aria-pressed", "true")
+		})
+	})
+
 	test("não exibe o painel de detalhes quando não há resultados", async () => {
 		mockUsersList([])
 		renderPage()

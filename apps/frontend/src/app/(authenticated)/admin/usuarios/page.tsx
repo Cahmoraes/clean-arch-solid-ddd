@@ -287,7 +287,10 @@ function AdminUsersContent({
 	// síncrona: o efeito de FR-008 roda no mesmo commit logo em seguida e
 	// não pode confiar em `selectedUser` (state só reflete o `setSelectedUser`
 	// abaixo em um próximo render), então lê o ref para não sobrescrever um
-	// deep-link válido com o fallback do primeiro usuário.
+	// deep-link válido com o fallback do primeiro usuário. `deepLinkMatchedRef`
+	// é resetado em `handlePageChange`: a proteção vale apenas para a página
+	// em que o deep-link chegou — depois de uma troca de página (limpeza
+	// explícita da seleção) o fallback de FR-008 volta a poder agir.
 	const deepLinkResolvedRef = useRef(false)
 	const deepLinkMatchedRef = useRef(false)
 
@@ -318,7 +321,14 @@ function AdminUsersContent({
 	// termina (encontrado ou não), o fallback pode agir: se encontrado,
 	// selectedUser já está preenchido e o guard abaixo bloqueia; se o
 	// userId é inválido/fora da lista atual, o fallback seleciona o
-	// primeiro usuário em vez de deixar o painel vazio para sempre.
+	// primeiro usuário em vez de deixar o painel vazio para sempre. Após uma
+	// troca de página, `handlePageChange` zera `deepLinkMatchedRef` junto
+	// com `selectedUser`, permitindo que este fallback selecione o primeiro
+	// usuário da nova página normalmente. O guard `isFetching` evita
+	// selecionar o primeiro usuário da página anterior: `useUsers` usa
+	// `placeholderData: keepPreviousData`, então `data` ainda aponta para a
+	// página antiga enquanto a nova página está sendo buscada — o fallback
+	// só deve agir quando `data` já reflete a página atual.
 	// Restrito ao desktop: no mobile a apresentação é sob demanda (drawer),
 	// então selecionar automaticamente abriria o drawer sem ação do usuário.
 	useEffect(() => {
@@ -329,12 +339,13 @@ function AdminUsersContent({
 			deepLinkPending ||
 			deepLinkMatchedRef.current ||
 			selectedUser ||
+			isFetching ||
 			!data?.users?.length
 		) {
 			return
 		}
 		setSelectedUser(data.users[0])
-	}, [isDesktop, initialUserId, data?.users, selectedUser])
+	}, [isDesktop, initialUserId, data?.users, selectedUser, isFetching])
 
 	function focusRow(userId: string) {
 		const row = listContainerRef.current?.querySelector<HTMLElement>(
@@ -346,6 +357,12 @@ function AdminUsersContent({
 	function handlePageChange(target: number) {
 		setPage((current) => clampPage(target, Math.max(totalPages, current)))
 		setSelectedUser(null)
+		// Troca de página é uma limpeza explícita da seleção: o deep-link
+		// (?userId=) só é válido para o resultado inicial da página em que
+		// chegou. Sem resetar aqui, `deepLinkMatchedRef` continuaria `true`
+		// para sempre e bloquearia o fallback de FR-008 (auto-selecionar o
+		// primeiro usuário) nas páginas seguintes.
+		deepLinkMatchedRef.current = false
 	}
 
 	function handleUserSelect(user: AdminUser) {
