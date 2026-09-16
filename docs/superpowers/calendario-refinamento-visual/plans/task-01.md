@@ -1,6 +1,6 @@
 # Task 1: Grid do mês — introduz destaque do dia atual e aumenta as células [FR-001, FR-002, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-calendario-refinamento-visual.md`
 **Spec:** `../specs/calendario-refinamento-visual-design.md`
 **Tier:** standard

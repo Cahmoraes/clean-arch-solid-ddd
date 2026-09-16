@@ -1,6 +1,6 @@
 # Task 2: Lista de feriados agrupada por semana [FR-003, FR-004, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-calendario-refinamento-visual.md`
 **Spec:** `../specs/calendario-refinamento-visual-design.md`
 **Tier:** standard

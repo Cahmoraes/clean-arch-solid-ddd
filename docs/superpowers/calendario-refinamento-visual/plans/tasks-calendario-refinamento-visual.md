@@ -9,8 +9,8 @@
 
 ## Tarefas
 
-- [ ] 1. Grid do mês — introduz destaque do dia atual e aumenta as células [FR-001, FR-002, FR-005] → `task-01.md`
-- [ ] 2. Lista de feriados agrupada por semana [FR-003, FR-004, FR-006] → `task-02.md`
+- [x] 1. Grid do mês — introduz destaque do dia atual e aumenta as células [FR-001, FR-002, FR-005] → `task-01.md`
+- [x] 2. Lista de feriados agrupada por semana [FR-003, FR-004, FR-006] → `task-02.md`
 
 ## Ondas de Execução
 
