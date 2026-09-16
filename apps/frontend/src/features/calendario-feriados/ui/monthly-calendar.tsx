@@ -142,7 +142,6 @@ export function MonthlyCalendar({
 	const nextLabel = getNextLabel(monthIndex, year)
 
 	const holidaysByDate = new Map(feriados.map((h) => [h.date, h] as const))
-	const daysInMonth = getDaysInMonth(year, monthIndex)
 	const firstWeekday = new Date(year, monthIndex, 1).getDay()
 	const monthNameLower = MONTH_NAMES_LOWER[monthIndex] ?? ""
 

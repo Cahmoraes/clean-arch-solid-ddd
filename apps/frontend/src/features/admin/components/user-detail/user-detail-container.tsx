@@ -79,7 +79,7 @@ function MobileView({
 			}}
 		>
 			<SheetContent
-				className="w-full overflow-y-auto sm:max-w-md"
+				className="w-full overflow-y-auto pt-6 sm:max-w-md"
 				onCloseAutoFocus={(event) => {
 					// Assumimos o controle do foco pós-fechamento: o Radix não
 					// conhece a linha que abriu o drawer (Sheet controlado, sem
