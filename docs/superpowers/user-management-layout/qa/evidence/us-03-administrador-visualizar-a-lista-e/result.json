@@ -1,0 +1,12 @@
+{
+  "us_id": "us-03",
+  "user_story": "Como administrador, eu quero visualizar a lista e o detalhe do usuário selecionado no mesmo contexto para que eu compare informações sem perder minha posição",
+  "requirements": ["FR-005", "FR-006", "FR-007", "FR-008", "FR-009", "FR-011", "FR-012"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "91 testes passaram, 0 falharam, em 6 arquivos: page.test.tsx (grid split-view 40/60, FR-012), admin-users-page.test.tsx (30 testes: seleção automática do primeiro usuário FR-008, navegação por seta ArrowDown/ArrowUp com foco visível FR-007, persistência de contexto), user-row.test.tsx (16 testes: avatar/nome/e-mail/papel/status por linha FR-005, aria-pressed no item selecionado FR-006), user-detail-container.test.tsx (5 testes: cabeçalho do usuário renderizado sem dialog no desktop FR-009), user-detail-panel.test.tsx (15 testes: cabeçalho, papel, status e ação de edição FR-009), more-actions-menu.test.tsx (19 testes: menu de ações secundárias/destrutivas separado com confirmação FR-011).",
+  "screenshot_path": "evidence/us-03-administrador-visualizar-a-lista-e/screenshot.png",
+  "failure_details": null,
+  "notes": "Relatório de Verificação Independente não faz parte deste pipeline; mapeamento FR→teste feito diretamente nesta verificação. Todas as FRs da US-03 (FR-005, FR-006, FR-007, FR-008, FR-009, FR-011, FR-012) têm teste correspondente e mecanismo de implementação alinhado ao texto literal da FR (sem divergência). Comportamento confirmado ao vivo via Playwright em http://localhost:3000/admin/usuarios (login com admin@admin.com): lista e detalhe visíveis no mesmo contexto, primeiro usuário auto-selecionado (FR-008), linha selecionada com estado pressionado (FR-006), avatar/nome/e-mail/papel/status por linha (FR-005), cabeçalho do detalhe com papel, status e ação 'Editar dados' (FR-009), menu 'Mais ações' separado (FR-011). Screenshot capturado em viewport 1440x900 confirmando split-view desktop (FR-012)."
+}

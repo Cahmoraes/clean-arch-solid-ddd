@@ -1,6 +1,6 @@
 # Task 5: Integrar estados, anúncios acessíveis e cobertura final da página [FR-015, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-management-layout.md`
 **Spec:** `../specs/user-management-layout-design.md`
 **Tier:** standard

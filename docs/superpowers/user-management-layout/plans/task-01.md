@@ -1,6 +1,6 @@
 # Task 1: Refinar filtros segmentados e busca de usuários [FR-001, FR-002, FR-003, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-management-layout.md`
 **Spec:** `../specs/user-management-layout-design.md`
 **Tier:** cheap

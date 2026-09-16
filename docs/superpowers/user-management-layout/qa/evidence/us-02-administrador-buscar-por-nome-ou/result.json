@@ -1,0 +1,14 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como administrador, eu quero buscar por nome ou e-mail para que eu localize um usuário específico sem percorrer toda a lista",
+  "requirements": ["FR-003", "FR-004"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/user-management-layout/qa/evidence/us-02-administrador-buscar-por-nome-ou/us-02-administrador-buscar-por-nome-ou-search-reset-and-preserve.acceptance.test.tsx"
+  ],
+  "test_output_summary": "Testes existentes (admin-users-page.test.tsx, use-users.test.tsx, user-filter-bar.test.tsx): 51 passaram, 0 falharam — cobrem busca por query param, debounce de 500ms e comportamento de filtro. Teste de aceite criado (2 testes): 2 passaram, 0 falharam — cobrem especificamente o reset de paginação da página 2 para 1 ao alterar a busca (FR-003) e a preservação de busca/filtro ativos ao abrir o detalhe do usuário (FR-004).",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Nenhum relatório de Verificação Independente foi indicado para esta pipeline (campo 'not part of this pipeline'). Testes existentes cobriam bem o envio do query param e o debounce, mas não tinham um caso dedicado para o reset de paginação (página 2 → 1) nem para a preservação de filtro/busca ao abrir o painel de detalhe; criei um teste de aceite cobrindo exatamente essas duas lacunas, ambos passando. Validação em browser real (login como admin@admin.com, http://localhost:3000/admin/usuarios): busca por 'Andrea' filtrou a lista de 139 para 1 usuário e manteve o painel de detalhe funcionando normalmente, confirmando o comportamento fim a fim."
+}

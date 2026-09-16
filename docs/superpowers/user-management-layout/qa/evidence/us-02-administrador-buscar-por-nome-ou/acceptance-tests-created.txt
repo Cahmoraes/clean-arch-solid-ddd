@@ -1,0 +1,1 @@
+docs/superpowers/user-management-layout/qa/evidence/us-02-administrador-buscar-por-nome-ou/us-02-administrador-buscar-por-nome-ou-search-reset-and-preserve.acceptance.test.tsx

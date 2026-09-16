@@ -1,6 +1,6 @@
 # Task 3: Organizar painel de detalhe e abas de contexto [FR-009, FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-management-layout.md`
 **Spec:** `../specs/user-management-layout-design.md`
 **Tier:** cheap

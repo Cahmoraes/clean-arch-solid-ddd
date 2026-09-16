@@ -25,9 +25,9 @@ sem executar os runners de backend não relacionados:
 
 - [x] 1. Refinar filtros segmentados e busca de usuários [FR-001, FR-002, FR-003, FR-004] → `task-01.md`
 - [x] 2. Implementar seleção persistente e navegação da lista [FR-005, FR-006, FR-007, FR-008] → `task-02.md`
-- [ ] 3. Organizar painel de detalhe e abas de contexto [FR-009, FR-010, FR-011] → `task-03.md`
-- [ ] 4. Adaptar detalhe para drawer responsivo e restauração de foco [FR-012, FR-013, FR-014] → `task-04.md`
-- [ ] 5. Integrar estados, anúncios acessíveis e cobertura final da página [FR-015, FR-016] → `task-05.md`
+- [x] 3. Organizar painel de detalhe e abas de contexto [FR-009, FR-010, FR-011] → `task-03.md`
+- [x] 4. Adaptar detalhe para drawer responsivo e restauração de foco [FR-012, FR-013, FR-014] → `task-04.md`
+- [x] 5. Integrar estados, anúncios acessíveis e cobertura final da página [FR-015, FR-016] → `task-05.md`
 
 ## Ondas de Execução
 

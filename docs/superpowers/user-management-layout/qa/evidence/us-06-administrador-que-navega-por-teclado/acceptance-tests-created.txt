@@ -1,0 +1,1 @@
+Nenhum teste de aceitação criado — cobertura existente já cobre FR-007, FR-014, FR-015 e FR-016.

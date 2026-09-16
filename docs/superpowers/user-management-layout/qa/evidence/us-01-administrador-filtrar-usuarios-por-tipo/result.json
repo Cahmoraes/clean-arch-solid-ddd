@@ -1,0 +1,12 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como administrador, eu quero filtrar usuários por tipo e status para que eu encontre rapidamente o grupo que preciso gerenciar",
+  "requirements": ["FR-001", "FR-002", "FR-004"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "42 testes passaram, 0 falharam (2 arquivos: user-filter-bar.test.tsx com 12 testes cobrindo as 5 tabs de filtro, badges de contagem, aria-pressed na tab ativa e comportamento do Sheet mobile — inclui teste FR-001 explícito; admin-users-page.test.tsx com 30 testes incluindo cenários de deep-link ?userId=&query= que comprovam a preservação de filtro/busca ao abrir o detalhe do usuário, e o teste 'mantém o status atualizado no painel após ativar usuário que sai do filtro Inativos').",
+  "screenshot_path": "evidence/us-01-administrador-filtrar-usuarios-por-tipo/screenshot.png",
+  "failure_details": null,
+  "notes": "Independent Verification report não faz parte deste pipeline; localizei e rodei os testes diretamente. Screenshot capturado ao vivo (login via UI com usuário admin provisionado por API+SQL, sem mocks): tabs Todos/Membros/Administradores/Ativos/Inativos com contadores (139/111/28/135/3), filtro 'Administradores' ativo, lista filtrada e painel de detalhes do usuário selecionado aberto ao lado, confirmando FR-001, FR-002 e FR-004 observáveis na aplicação real."
+}

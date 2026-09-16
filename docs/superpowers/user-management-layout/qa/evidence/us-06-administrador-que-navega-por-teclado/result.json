@@ -1,0 +1,12 @@
+{
+  "us_id": "us-06",
+  "user_story": "Como administrador que navega por teclado ou tecnologia assistiva, eu quero perceber seleção, resultados e foco para que eu execute o fluxo com segurança",
+  "requirements": ["FR-007", "FR-014", "FR-015", "FR-016"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "35 testes passaram, 0 falharam (2 arquivos: admin-users-page.test.tsx com 30 testes cobrindo FR-007 ArrowDown/ArrowUp move foco visível entre linhas, FR-014 foco retorna à linha de origem ao fechar drawer mobile, FR-015 região aria-live anuncia contagem de resultados e seleção sem duplicar/desatualizar; page.test.tsx com 5 testes cobrindo FR-016 Skeleton durante carregamento, EmptyState quando lista vazia, paginação entre páginas e mensagem de erro amigável em falha de rede, preservando a estrutura da tela em todos os estados)",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Independent Verification não faz parte deste pipeline (workflow.independent_verification: false); testes localizados e mapeados manualmente às FRs. Testes rotulados explicitamente FR-007/FR-014/FR-015 em admin-users-page.test.tsx; FR-016 (loading/erro/vazio/paginação sem remover estrutura da tela) coberto em page.test.tsx sem rótulo explícito de FR, porém os 4 estados exigidos são exercitados e passam. Screenshot confirma navegação por teclado observável: login como admin@admin.com, clique na 1ª linha, duas teclas ArrowDown moveram foco visível (contorno) e seleção (fundo verde, aria-pressed) até a 3ª linha, com painel de detalhes sincronizado à direita."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "us-04",
+  "user_story": "Como administrador, eu quero consultar visão geral, atividade e permissões para que eu compreenda o estado e o histórico do usuário",
+  "requirements": ["FR-009", "FR-010", "FR-011"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "74 testes passaram, 0 falharam, em 7 arquivos (user-detail-panel.test.tsx: 15, more-actions-menu.test.tsx: 19, user-detail-container.test.tsx, details-tab.test.tsx, permissions-tab.test.tsx, activity-tab.test.tsx: 18, use-user-activity.test.tsx: 8). Teste 'exibe nome, e-mail e as três abas' cobre FR-009/FR-010 (cabeçalho + abas Detalhes/Permissões/Atividade); teste 'FR-010/FR-011: aba Permissões exibe a role atual e aciona a confirmação de promoção/rebaixamento' cobre FR-010/FR-011 diretamente; more-actions-menu.test.tsx cobre menu separado de ações destrutivas com confirmação (FR-011).",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Não há relatório de Independent Verification neste pipeline (workflow.independent_verification: false); testes e cobertura mapeados diretamente por mim. Cobertura existente já é abrangente (74 testes verdes), nenhum teste de aceitação novo foi necessário. Verificação de UI real feita via playwright-cli: login como admin recém-provisionado (signup + promoção via SQL), busca de um membro em /admin/usuarios, seleção do usuário e inspeção do painel de detalhe, confirmando cabeçalho (nome, papel, status), ação primária 'Editar dados', menu 'Mais ações' separado e as três abas internas (Detalhes/Permissões/Atividade) — tudo consistente com FR-009, FR-010 e FR-011. Usuários de teste (admin e membro) foram removidos do banco ao final."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "us-05",
+  "user_story": "Como administrador em dispositivo menor, eu quero abrir o detalhe em uma apresentação legível para que eu consiga consultar usuários sem conteúdo comprimido",
+  "requirements": ["FR-012", "FR-013"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "41 testes passaram, 0 falharam, em 3 arquivos: page.test.tsx (5 testes, incluindo 'FR-012: grid split-view usa proporção ~40/60 a partir do breakpoint de 1024px (lg:)'), user-detail-container.test.tsx (6 testes: no desktop renderiza painel sem dialog, no mobile renderiza painel dentro de dialog com conteúdo íntegro do usuário selecionado, classes sticky/max-height no desktop), admin-users-page.test.tsx (30 testes, incluindo 'no mobile, exibe o painel em Dialog e fecha no botão X' e 'FR-014: ao fechar o drawer mobile, o foco retorna para a linha de origem', que confirmam a apresentação em drawer sem perda do usuário selecionado enquanto aberto).",
+  "screenshot_path": "evidence/us-05-administrador-em-dispositivo-menor-abrir/screenshot.png",
+  "failure_details": null,
+  "notes": "Relatório de Verificação Independente não faz parte deste pipeline; mapeamento FR→teste feito diretamente nesta verificação. FR-012 (split-view 40/60 a partir de 1024px) coberto em page.test.tsx via classes lg:grid-cols. FR-013 (drawer abaixo de 1024px sem perder o usuário selecionado) coberto em user-detail-container.test.tsx (useIsDesktop mockado como false monta o painel dentro de role=dialog com o mesmo conteúdo do usuário, banner com nome correto) e em admin-users-page.test.tsx (abre dialog ao clicar na linha, fecha no botão X, foco retorna à origem). Hook use-is-desktop.ts confirma breakpoint exato de 1024px (min-width media query), alinhado ao texto literal da FR. Nenhuma divergência de mecanismo encontrada. Comportamento confirmado ao vivo via Playwright: login como admin@admin.com, navegação para /admin/usuarios, viewport redimensionado para 390x844 (mobile), captura de tela mostrando o detalhe do usuário em drawer full-width, com abas Detalhes/Permissões/Atividade, todos os campos (nome, e-mail, ID, status, permissão, datas) legíveis e sem conteúdo comprimido ou truncado, e botão de fechar (X) visível."
+}

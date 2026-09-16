@@ -1,6 +1,6 @@
 # Task 4: Adaptar detalhe para drawer responsivo e restauração de foco [FR-012, FR-013, FR-014]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-management-layout.md`
 **Spec:** `../specs/user-management-layout-design.md`
 **Tier:** standard
