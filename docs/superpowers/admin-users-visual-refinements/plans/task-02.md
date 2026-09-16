@@ -1,6 +1,6 @@
 # Task 2: Cor de seleção destaque vs. marcado + contraste do e-mail [FR-003, FR-004, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-users-visual-refinements.md`
 **Spec:** `../specs/admin-users-visual-refinements-design.md`
 **Tier:** standard
