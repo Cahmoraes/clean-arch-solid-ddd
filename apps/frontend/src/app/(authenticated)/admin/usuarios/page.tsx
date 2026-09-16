@@ -220,6 +220,20 @@ function UsersContent({
 	)
 }
 
+// FR-015: monta a mensagem anunciada por tecnologia assistiva quando a
+// contagem de resultados ou a seleção mudam. Vazio durante o carregamento
+// para não anunciar um total transitório/desatualizado.
+function buildLiveAnnouncement(
+	isLoading: boolean,
+	total: number | undefined,
+	selectedUser: AdminUser | null,
+): string {
+	if (isLoading || total === undefined) return ""
+	const countText = `${total} usuário${total === 1 ? "" : "s"} encontrado${total === 1 ? "" : "s"}.`
+	const selectionText = selectedUser ? `${selectedUser.name} selecionado.` : ""
+	return [countText, selectionText].filter(Boolean).join(" ")
+}
+
 function isArrowKey(key: string): boolean {
 	return key === "ArrowDown" || key === "ArrowUp"
 }
@@ -469,6 +483,19 @@ function AdminUsersContent({
 						className="w-full"
 					/>
 				</div>
+			</div>
+
+			<div
+				role="status"
+				aria-live="polite"
+				data-testid="admin-users-live-region"
+				className="sr-only"
+			>
+				{buildLiveAnnouncement(
+					isLoading,
+					data?.pagination.total,
+					activeSelectedUser,
+				)}
 			</div>
 
 			<div

@@ -487,6 +487,21 @@ describe("AdminUsersPage modal integration", () => {
 		await new Promise((resolve) => setTimeout(resolve, 250))
 		expect(callCount).toBe(initialCallCount)
 	}, 20_000)
+
+	test("FR-015: anuncia a contagem de resultados e a seleção via região aria-live", async () => {
+		const user = userEvent.setup()
+		mockUsersList(buildManyUsers(2))
+		renderPage()
+
+		await screen.findByTestId("user-row-user-1")
+		const status = screen.getByTestId("admin-users-live-region")
+		expect(status).toHaveTextContent(/2 usuários encontrados/i)
+
+		await user.click(
+			within(screen.getByTestId("user-row-user-2")).getByRole("button"),
+		)
+		expect(status).toHaveTextContent(/usuário 2 selecionado/i)
+	})
 })
 
 describe("seleção em massa", () => {
