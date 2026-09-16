@@ -1,6 +1,6 @@
 # Task 1: Status vira faixa lateral; badge de papel único [FR-001, FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-users-visual-refinements.md`
 **Spec:** `../specs/admin-users-visual-refinements-design.md`
 **Tier:** standard

@@ -10,7 +10,7 @@ runner de arquivo único, de dentro de `apps/frontend`: `pnpm exec vitest run <a
 
 ## Tarefas
 
-- [ ] 1. Status vira faixa lateral; badge de papel único [FR-001, FR-002] → `task-01.md`
+- [x] 1. Status vira faixa lateral; badge de papel único [FR-001, FR-002] → `task-01.md`
 - [ ] 2. Cor de seleção destaque vs. marcado + contraste do e-mail [FR-003, FR-004, FR-005] → `task-02.md`
 - [ ] 3. Transição suave do painel de detalhes (split-view) [FR-006, FR-007] → `task-03.md`
 
