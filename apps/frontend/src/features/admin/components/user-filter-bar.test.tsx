@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, test, vi } from "vitest"
 import type { UserStats } from "../types"
@@ -179,7 +179,7 @@ describe("UserFilterBar — mobile sheet", () => {
 		expect(onFilterChange).toHaveBeenCalledWith("all")
 	})
 
-	test("chama onFilterChange com pendingFilter ao clicar em Aplicar", async () => {
+	test("FR-001: seleção no Sheet mobile aplica o filtro imediatamente (sem botão Aplicar)", async () => {
 		const onFilterChange = vi.fn()
 		render(
 			<UserFilterBar
@@ -191,7 +191,13 @@ describe("UserFilterBar — mobile sheet", () => {
 		await userEvent.click(
 			screen.getByRole("button", { name: /abrir filtros/i }),
 		)
-		await userEvent.click(screen.getByRole("button", { name: /^aplicar$/i }))
-		expect(onFilterChange).toHaveBeenCalledWith("all")
+		const dialog = screen.getByRole("dialog")
+		await userEvent.click(
+			within(dialog).getByRole("button", { name: /membros/i }),
+		)
+		expect(onFilterChange).toHaveBeenCalledWith("member")
+		await waitFor(() => {
+			expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+		})
 	})
 })

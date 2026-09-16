@@ -50,20 +50,9 @@ export function UserFilterBar({
 	className,
 }: UserFilterBarProps) {
 	const [sheetOpen, setSheetOpen] = useState(false)
-	const [pendingFilter, setPendingFilter] = useState<UserFilter>(activeFilter)
 
-	function openSheet() {
-		setPendingFilter(activeFilter)
-		setSheetOpen(true)
-	}
-
-	function applyFilter() {
-		onFilterChange(pendingFilter)
-		setSheetOpen(false)
-	}
-
-	function clearFilter() {
-		onFilterChange("all")
+	function selectFilter(filter: UserFilter) {
+		onFilterChange(filter)
 		setSheetOpen(false)
 	}
 
@@ -86,7 +75,7 @@ export function UserFilterBar({
 				<Button
 					variant="outline"
 					size="sm"
-					onClick={openSheet}
+					onClick={() => setSheetOpen(true)}
 					aria-label="Abrir filtros"
 				>
 					<Filter className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -108,22 +97,17 @@ export function UserFilterBar({
 						<SegmentedControl
 							aria-label="Selecionar filtro de usuários"
 							items={buildItems(stats)}
-							value={pendingFilter}
-							onValueChange={setPendingFilter}
+							value={activeFilter}
+							onValueChange={selectFilter}
 							countFloat={stats !== undefined}
 						/>
-						<div className="flex gap-2">
-							<Button
-								variant="outline"
-								className="flex-1"
-								onClick={clearFilter}
-							>
-								Limpar
-							</Button>
-							<Button className="flex-1" onClick={applyFilter}>
-								Aplicar
-							</Button>
-						</div>
+						<Button
+							variant="outline"
+							className="w-full"
+							onClick={() => selectFilter("all")}
+						>
+							Limpar
+						</Button>
 					</div>
 				</SheetContent>
 			</Sheet>
