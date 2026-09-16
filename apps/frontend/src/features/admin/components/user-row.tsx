@@ -79,12 +79,19 @@ function rowClassName(
 ): string {
 	return cn(
 		"flex w-full items-center gap-4 rounded-lg border border-l-[3px] border-border bg-card px-5 py-4 transition-[border-color] duration-300 ease-out",
-		!isSelected && !isMarkedOnly && statusStripeClass,
 		isInteractive &&
 			!hasNestedCheckbox &&
 			"cursor-pointer hover:border-border-strong",
 		isSelected && "border-accent bg-accent/40",
 		isMarkedOnly && "bg-selected-tint border-border-strong",
+		// D1 do spec só simplifica a faixa de status no destaque (isSelected,
+		// verde accent), onde a borda esquerda vira `border-accent`. Marcado
+		// (checked, sem isSelected) não tem exceção prevista no spec — sem a
+		// faixa, o status fica invisível para usuário vidente durante seleção
+		// em massa, já que o texto é sr-only. Vem por último no cn() para que
+		// `border-l-{tone}` vença o `border-border-strong` (4 lados) do
+		// merge de classes conflitantes no mesmo grupo de border-color.
+		!isSelected && statusStripeClass,
 		className,
 	)
 }

@@ -31,19 +31,24 @@ function DesktopView({
 	onClose: () => void
 	onUserPatched?: (patch: Partial<AdminUser>) => void
 }) {
+	// Envolve EmptyState + AnimatedPanel num único wrapper DOM: durante a
+	// transição de fechamento (FR-006/FR-007) os dois ficam montados ao
+	// mesmo tempo (EmptyState já aparece, o painel antigo ainda desvanece).
+	// Sem este wrapper, o grid pai (`admin-users-grid`, 2 colunas explícitas)
+	// recebe 3 filhos diretos nesse intervalo e o auto-placement do CSS
+	// grid quebra o layout do split-view.
 	return (
-		<>
+		<div className="lg:self-start lg:sticky lg:top-4">
 			{!user && (
 				<EmptyState
 					icon={UserRound}
 					title="Selecione um usuário"
 					description="Escolha um usuário na lista para ver os detalhes."
-					className="lg:self-start lg:sticky lg:top-4"
 				/>
 			)}
 			<AnimatedPanel
 				open={user !== null}
-				className="rounded-lg border border-border bg-card p-5 lg:self-start lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto"
+				className="rounded-lg border border-border bg-card p-5 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto"
 			>
 				{user ? (
 					<UserDetailPanel
@@ -53,7 +58,7 @@ function DesktopView({
 					/>
 				) : null}
 			</AnimatedPanel>
-		</>
+		</div>
 	)
 }
 

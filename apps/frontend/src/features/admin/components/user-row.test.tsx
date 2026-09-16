@@ -243,6 +243,24 @@ describe("seleção em massa", () => {
 		expect(row.className).not.toContain("border-accent")
 		expect(row.className).not.toContain("bg-accent/40")
 	})
+
+	// Regressão do finding de review (rodada final): checked/isMarkedOnly
+	// suprimia a faixa de status junto com isSelected, deixando o status
+	// (texto sr-only) sem nenhum sinal visual para usuário vidente durante
+	// seleção em massa. O spec (D1) só prevê a supressão no destaque.
+	test("mantém a faixa de status visível quando a linha está apenas marcada (checked, sem isSelected)", () => {
+		const adminUser = buildUser({ status: "activated" })
+
+		render(
+			<ul>
+				<UserRow user={adminUser} selectable checked={true} />
+			</ul>,
+		)
+
+		const row = screen.getByTestId(`user-row-${adminUser.id}`)
+
+		expect(row.className).toContain("border-l-success")
+	})
 })
 
 describe("cor de destaque vs. marcado e contraste do e-mail", () => {

@@ -38,6 +38,31 @@ function renderContainer(user: AdminUser | null) {
 	})
 }
 
+// Reproduz o grid pai real de `admin-users-grid`
+// (apps/frontend/src/app/(authenticated)/admin/usuarios/page.tsx), 2
+// colunas explícitas via `lg:grid-cols-[...]`. `UserDetailContainer` ocupa
+// a 2ª coluna sozinho; se render() dele produzir >1 filho direto do grid
+// (Fragment com 2 irmãos), o auto-placement do CSS grid empurra o extra
+// para uma linha implícita e quebra o split-view.
+function renderInGrid(user: AdminUser | null) {
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: { retry: false, gcTime: 0, staleTime: 0 },
+			mutations: { retry: false },
+		},
+	})
+	const wrapper = ({ children }: { children: ReactNode }) => (
+		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+	)
+	return render(
+		<div data-testid="admin-users-grid">
+			<div>lista</div>
+			<UserDetailContainer user={user} onClose={vi.fn()} />
+		</div>,
+		{ wrapper },
+	)
+}
+
 beforeEach(() => {
 	isDesktopMock.mockReset()
 })
@@ -78,8 +103,10 @@ describe("UserDetailContainer", () => {
 		expect(wrapper.className).toContain("lg:self-start")
 		expect(wrapper.className).toContain("lg:sticky")
 		expect(wrapper.className).toContain("lg:top-4")
-		expect(wrapper.className).toContain("lg:max-h-[calc(100vh-2rem)]")
-		expect(wrapper.className).toContain("lg:overflow-y-auto")
+
+		const panel = wrapper.firstChild as HTMLElement
+		expect(panel.className).toContain("lg:max-h-[calc(100vh-2rem)]")
+		expect(panel.className).toContain("lg:overflow-y-auto")
 	})
 
 	test("no desktop sem usuário (EmptyState), wrapper tem classe self-start e sticky", () => {
@@ -118,6 +145,34 @@ describe("UserDetailContainer", () => {
 
 			expect(screen.queryByRole("banner")).not.toBeInTheDocument()
 			expect(screen.getByText(/selecione um usuário/i)).toBeInTheDocument()
+		})
+
+		test("no grid de 2 colunas, mantém exatamente 2 filhos diretos durante a transição de fechamento", () => {
+			isDesktopMock.mockReturnValue(true)
+			const user = buildUser()
+			const { container, rerender } = renderInGrid(user)
+			const grid = container.querySelector(
+				'[data-testid="admin-users-grid"]',
+			) as HTMLElement
+			expect(grid.children).toHaveLength(2)
+
+			rerender(
+				<div data-testid="admin-users-grid">
+					<div>lista</div>
+					<UserDetailContainer user={null} onClose={vi.fn()} />
+				</div>,
+			)
+
+			// Janela de transição: EmptyState e painel antigo (fade-out) montados
+			// ao mesmo tempo — o grid ainda deve ver só 2 filhos diretos.
+			expect(screen.getByText(/selecione um usuário/i)).toBeInTheDocument()
+			expect(grid.children).toHaveLength(2)
+
+			act(() => {
+				vi.advanceTimersByTime(300)
+			})
+
+			expect(grid.children).toHaveLength(2)
 		})
 	})
 })
