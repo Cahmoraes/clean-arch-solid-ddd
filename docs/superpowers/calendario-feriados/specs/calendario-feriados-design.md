@@ -1,127 +1,140 @@
 ---
-created_at: "2026-09-13T18:32:36.384-03:00"
-updated_at: "2026-09-13T18:32:36.384-03:00"
+created_at: "2026-09-12T18:48:22-03:00"
+updated_at: "2026-09-12T19:45:50-03:00"
 ---
 
-# Design — Calendario de Feriados
+# Calendário de Feriados Nacionais
 
-## Visao Geral
+## Visão Geral
 
-Adicionar uma rota autenticada `/calendario` acessivel por um novo item **Calendario** no menu principal da area logada. A tela mostra feriados nacionais brasileiros por ano, sem criar backend, endpoint proprio, migracao ou persistencia. O usuario abre a tela pelo `AuthenticatedShell`, visualiza o ano atual por padrao e navega entre anos anteriores/proximos.
+Nova rota autenticada `/calendario` no frontend, mostrando uma grade mensal com os feriados nacionais do Brasil destacados visualmente, navegação entre meses e anos, e um popover com o nome do feriado ao interagir com o dia marcado.
 
-## Caracteristicas Arquiteturais
+**Fora de escopo:** feriados estaduais/municipais, backend/endpoint próprio, notificações, integração com agenda externa (Google Calendar etc).
+
+## Características Arquiteturais
 
 **Priorizadas (top 3):**
 
-| Caracteristica | Por que | Criterio mensuravel |
+| Característica | Por quê (preocupação de domínio) | Critério mensurável |
 |---|---|---|
-| Usabilidade | A tela e uma consulta visual rapida dentro da area logada | Usuario encontra o item no menu principal e troca de ano em uma acao |
-| Disponibilidade percebida | A fonte e uma API publica sem SLA do app | Falha da BrasilAPI mostra erro recuperavel com retry, sem quebrar shell/navegacao |
-| Manutenibilidade | A feature nao deve contaminar contratos backend/OpenAPI | Nenhum endpoint proprio, schema backend ou tipo gerado e alterado |
+| Acessibilidade (AA/WCAG) | Regra "sempre" do projeto (conformidade AA/LBI/eMAG); calendário é navegação por teclado e leitor de tela | Grade navegável por teclado, dias com `aria-label` incluindo o nome do feriado quando houver |
+| Manutenibilidade | Feature isolada, sem tocar backend; deve ser fácil de estender/revisar | 100% dos arquivos novos dentro de `features/calendario/`, zero acoplamento com outras features |
+| Testabilidade | Cálculo de feriados é lógica pura, sem rede — deve ser barato de testar | Cobertura de teste unitário nos componentes de lógica pura (`useFeriadosDoAno`, `feriadosParaModifiers`) |
 
-**Consideradas, nao priorizadas:** escalabilidade (consulta anual pequena e cacheada no cliente), compliance (informativo, nao regra regulatoria), internacionalizacao (escopo PT-BR/Brasil).
+**Consideradas, não priorizadas:** performance (volume de dados é trivial — feriados de um ano), internacionalização (sem expansão prevista para outros países).
 
-## Escopo
+## Arquitetura e Fluxo de Dados
 
-Inclui: novo item no menu logado, rota `/calendario`, busca por ano na BrasilAPI, estados de loading/erro/retry, visualizacao dos feriados nacionais e testes frontend. Exclui: feriados estaduais/municipais, backend proprio, persistencia local duravel, admin-only behavior, mudancas no login, drawer mobile/off-canvas e qualquer novo contrato OpenAPI.
+Feature 100% frontend (Next.js), sem novo bounded context de backend nem chamada de rede. Os feriados nacionais são calculados localmente via a biblioteca `date-holidays`.
 
-## Especificacao Visual
+**Fluxo:**
+1. Página `/calendario` (rota autenticada) monta `<CalendarioFeriados />`.
+2. `CalendarioFeriados` guarda o mês/ano exibido em estado local (`useState`, inicializado no mês/ano atual).
+3. `useFeriadosDoAno(ano)` calcula (síncrono, via `date-holidays`, memoizado por ano com `useMemo`) a lista de feriados nacionais do ano exibido.
+4. `feriadosParaModifiers` converte essa lista em `modifiers` do `react-day-picker` para o mês exibido.
+5. Ao navegar de mês (`onMonthChange` do `Calendar`), o estado `{mes, ano}` é atualizado; se a navegação cruzar virada de ano (dez → jan), `useFeriadosDoAno` recalcula automaticamente porque a chave do memo (o ano) muda.
+6. Dias marcados como feriado usam o componente customizado `DiaComFeriado` (via prop `components.DayButton` do `react-day-picker`), que exibe um `Popover` do shadcn com o nome do feriado ao passar o mouse (hover), clicar OU focar via teclado o dia — os três gatilhos, não só hover/click (WCAG 2.2, critério 1.4.13: todo conteúdo revelado por hover também deve ser revelado por foco).
 
-**Artefato curado:** `mockups/calendario-feriados-visual.md`.
+```mermaid
+flowchart TD
+    Start([Usuario navega mes/ano]):::actor --> Page[Pagina /calendario - autenticada]:::secondary
+    Page --> Orq[CalendarioFeriados<br/>orquestrador - estado local mes/ano]:::secondary
+    Orq -->|onMonthChange| Decide{Ano mudou?}:::decision
+    Decide -->|Sim| Recalc[useFeriadosDoAno recalcula<br/>memo por ano]:::primary
+    Decide -->|Nao| Cache[useFeriadosDoAno retorna<br/>valor memoizado do ano atual]:::primary
+    Recalc --> Lib[date-holidays calcula<br/>feriados nacionais do ano<br/>sem chamada de rede]:::database
+    Lib --> Lista[Lista de feriados do ano]:::primary
+    Cache --> Lista
+    Lista --> Pure[feriadosParaModifiers<br/>funcao pura]:::primary
+    Pure --> Mods[Modifiers do mes exibido]:::primary
+    Mods --> Cal[Calendar - shadcn/react-day-picker]:::secondary
+    Cal --> Dia[DiaComFeriado<br/>dia customizado]:::secondary
+    Dia -->|dia e feriado| Destaque[Destaque visual do dia]:::action
+    Dia -->|hover, clique ou foco no dia destacado| Popover[Popover com nome do feriado]:::action
+    Cal -.->|usuario muda de mes novamente| Orq
 
-**Fonte de design original:** nenhuma; layout definido apenas via mockup do companion.
+    classDef actor fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    classDef decision fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    classDef primary fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef secondary fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
+    classDef database fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+    classDef action fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:black
+```
 
-**Decisoes visuais:** o item **Calendario** fica na secao **Principal** do `AuthenticatedShell`; ativo usa o padrao verde da sidebar. A pagina usa `PageHeader`, navegacao de ano no topo, card principal para calendario e painel lateral para proximos feriados/fonte dos dados. Loading e erro ocupam a area de conteudo, mantendo o cabecalho e os controles visiveis.
+Diagrama fonte: `specs/diagrams/calendario-feriados-design_01_flowchart_fluxo_de_dados_do_ca.mmd`
 
-**Fidelidade:** o mockup e direcional. A fidelidade final deve usar os componentes e tokens reais do frontend.
+## Estrutura de Componentes
 
-## Componentes Logicos
+Derivados por fluxo de trabalho (navegar mês → destacar feriados → ver nome do feriado). Cada um passa no teste de responsabilidade única e não usa sufixo genérico (Manager/Handler/Service).
 
 | Componente | Responsabilidade | Depende de | Usado por |
 |---|---|---|---|
-| Navegar para calendario | Expor a entrada autenticada e preservar o comportamento existente da sidebar | `AuthenticatedShell`, `next/navigation` | Usuario logado |
-| Consultar feriados nacionais | Buscar e normalizar feriados por ano diretamente da BrasilAPI | `fetch`, TanStack Query | Tela de calendario |
-| Apresentar calendario anual | Renderizar ano selecionado, feriados, loading, erro e retry | Hook de consulta, componentes UI | Rota `/calendario` |
+| **ObterFeriadosDoAno** (hook `useFeriadosDoAno(ano)`) | Dado um ano, retorna a lista de feriados nacionais calculados via `date-holidays`, memoizada por ano | biblioteca `date-holidays` | CalendarioFeriados |
+| **DestacarFeriadosNaGrade** (função pura `feriadosParaModifiers`) | Converte a lista de feriados em `modifiers`/`modifiersClassNames` do `react-day-picker` para marcar visualmente os dias | ObterFeriadosDoAno | CalendarioFeriados |
+| **ExibirPopoverDeFeriado** (componente `DiaComFeriado`) | Renderiza o `Popover` do shadcn com o nome do feriado ao interagir (hover, clique ou foco via teclado) com um dia marcado; substitui `components.DayButton` do `react-day-picker`, reproduzindo o gerenciamento de foco do componente nativo que substitui | shadcn `Popover` | CalendarioFeriados |
+| **CalendarioFeriados** (componente de orquestração) | Monta o `Calendar` do shadcn, controla o mês/ano exibido (estado local), aplica os modifiers e injeta o componente de dia customizado | DestacarFeriadosNaGrade, ExibirPopoverDeFeriado, shadcn `Calendar` | página `/calendario` |
 
-Os nomes acima descrevem responsabilidades; a implementacao deve mapear para arquivos existentes do frontend, evitando classes genericas do tipo Manager/Service.
+**Estrutura de arquivos** (convenção feature-based do frontend; `hooks/`+`lib/` no lugar de `api/` porque não há chamada de rede):
 
-## Fluxo de Dados
-
-O clique em **Calendario** navega para `/calendario`. A pagina calcula o ano inicial pelo calendario local do navegador e chama um hook de consulta com `queryKey` por ano. O hook requisita `https://brasilapi.com.br/api/feriados/v1/{year}`, normaliza a resposta em `date`, `name` e marcador nacional/tipo, e entrega esse modelo para a UI. Ao trocar o ano, a query muda e o cache client-side evita refetch desnecessario para anos ja carregados.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Logged-in User
-    participant Shell as AuthenticatedShell
-    participant Page as /calendario page
-    participant Query as TanStack Query
-    participant API as BrasilAPI
-
-    User->>Shell: Clicks "Calendário" item
-    Shell->>Page: Navigates to /calendario
-    User->>Page: Changes selected year
-    Page->>Query: useQuery({ queryKey: ["feriados", year], queryFn: fetch BrasilAPI year endpoint })
-
-    alt Loading
-        Query-->>Page: isLoading = true
-        Page-->>User: Shows loading state
-    else Success
-        Query->>API: GET /api/feriados/v1/{year}
-        API-->>Query: Returns national holidays
-        Query-->>Page: Receives holiday data
-        Page-->>User: Renders calendar and holiday list
-    else Error
-        Query-->>Page: error
-        Page-->>User: Shows error state and Retry action
-        User->>Page: Clicks Retry
-        Page->>Query: refetch()
-    end
+```
+apps/frontend/src/
+  components/ui/calendar.tsx          # adicionado via shadcn CLI
+  features/calendario/
+    hooks/use-feriados-do-ano.ts
+    lib/feriados-para-modifiers.ts
+    components/calendario-feriados.tsx
+    components/dia-com-feriado.tsx
+    schemas/feriado.schema.ts         # tipo/shape do feriado (Zod)
+  app/(authenticated)/calendario/page.tsx
 ```
 
-Diagrama fonte: `diagrams/calendario-feriados-design_01_sequence_frontend_brasilapi_f.mmd`.
+## Modelo de Dados
 
-## Decisoes Arquiteturais
+Shape mínimo de um feriado, compartilhado por todos os componentes acima (validado via Zod em `schemas/feriado.schema.ts`):
 
-### D1. BrasilAPI consumida direto no frontend
+```
+Feriado {
+  data: string  // "YYYY-MM-DD", sem componente de hora/fuso
+  nome: string
+}
+```
 
-- **Contexto:** o requisito pede feriados nacionais sem backend proprio.
-- **Decisao:** usar `https://brasilapi.com.br/api/feriados/v1/{year}` diretamente na camada frontend.
-- **Justificativa tecnica:** evita endpoint proprio, migrations e tipos OpenAPI; o payload anual e pequeno e combina com cache por `queryKey`.
-- **Justificativa de negocio:** entrega a consulta rapidamente com fonte brasileira conhecida para feriados nacionais.
-- **Trade-offs aceitos:** dependencia de terceiro sem SLA, possivel instabilidade/CORS/rate-limit e necessidade de mensagem de erro clara.
+## Decisões Arquiteturais
 
-### D2. TanStack Query como fronteira de estado remoto
+### D1. Feriados calculados no frontend via `date-holidays`, sem backend
 
-- **Contexto:** a tela precisa cachear por ano, diferenciar loading/success/error e permitir retry.
-- **Decisao:** encapsular a chamada em hook de query de feature, com normalizacao local da resposta.
-- **Justificativa tecnica:** segue padrao existente do frontend para dados remotos e mantem a UI declarativa.
-- **Justificativa de negocio:** melhora responsividade ao alternar anos ja consultados.
-- **Trade-offs aceitos:** adiciona um pequeno modulo de feature mesmo sem backend proprio.
+- **Contexto:** os feriados nacionais podem vir de uma API pública (ex.: BrasilAPI) via um endpoint próprio no backend, ou ser calculados localmente no frontend sem chamada de rede.
+- **Decisão:** biblioteca `date-holidays` (npm), instanciada com país `BR`, sem estado — calcula feriados nacionais localmente, sem rede e sem novo bounded context de backend.
+- **Justificativa técnica:** elimina dependência de disponibilidade de rede/API externa; nenhuma mudança no backend (sem endpoint, sem migração).
+- **Justificativa de negócio:** decisão explícita do usuário — menor custo de implementação, sem tocar o backend.
+- **Trade-offs aceitos:** um feriado extraordinário decretado por lei avulsa (ponto facultativo pontual) não é coberto pela biblioteca até uma atualização manual de versão/código (ver Riscos).
 
-### D3. Sem fallback estatico na primeira versao
+### D2. Grade do calendário via shadcn `Calendar` (react-day-picker), não grade própria
 
-- **Contexto:** fallback local aumentaria manutencao e escopo.
-- **Decisao:** a primeira versao usa BrasilAPI + erro recuperavel/retry, sem dataset local.
-- **Justificativa tecnica:** reduz fontes divergentes de verdade e evita calendario desatualizado embutido.
-- **Justificativa de negocio:** prioriza velocidade e simplicidade para uma tela informativa.
-- **Trade-offs aceitos:** em indisponibilidade da API, a tela informa falha em vez de mostrar dados antigos.
+- **Contexto:** construir a grade mensal do zero com `date-fns`, ou reaproveitar o componente `Calendar` do shadcn/ui (que embrulha `react-day-picker`).
+- **Decisão:** shadcn `Calendar`, customizando `modifiers` para os feriados e o componente de dia interativo (`components.DayButton`, não `components.Day` — `Day` renderiza a célula `role="gridcell"` inteira; `DayButton` é só o botão dentro dela, o ponto de customização correto para trocar apenas a interação) para o popover.
+- **Popover, não Tooltip:** o mecanismo de revelação do nome do feriado usa o `Popover` do shadcn (Radix), não `Tooltip` — ambos aparecem no texto de versões anteriores desta spec como sinônimos, mas têm semântica de interação distinta (foco, dismissal, comportamento touch). `Popover` foi escolhido porque o gatilho decidido é hover **e** clique **e** foco de teclado (ver Fluxo, item 6), exigindo wiring manual de todos os três — `Tooltip` cobriria hover/foco nativamente mas não clique persistente.
+- **Seleção de ano (FR-005) via `captionLayout="dropdown"`:** o `DayPicker` aceita `captionLayout: "label" | "dropdown" | "dropdown-months" | "dropdown-years"`; `"dropdown"` gera dropdowns nativos de mês e ano, cobrindo "selecionar um ano diferente do atual" sem construir um seletor próprio (YAGNI: recurso nativo da biblioteca já usada). O mesmo `onMonthChange` do Fluxo, item 5, é o mecanismo que recalcula os feriados quando o ano muda pelo dropdown.
+- **Justificativa técnica:** navegação de mês/ano, foco por teclado e semântica ARIA de grid já resolvidos pela biblioteca; segue a convenção do projeto de UI baseada em shadcn/ui.
+- **Justificativa de negócio:** menor risco de não atingir a conformidade AA/WCAG exigida pelo projeto; menos código para manter.
+- **Trade-offs aceitos:** introduz `react-day-picker` como dependência direta (não há hoje nenhuma dependência, direta ou transitiva, em `react-day-picker` no projeto); customizar `DayButton` exige reproduzir o gerenciamento de foco de teclado do componente nativo que está sendo substituído (ver Riscos).
 
 ## Riscos
 
-| Risco | Impacto | Probabilidade | Score | Mitigacao |
-|---|---:|---:|---:|---|
-| BrasilAPI indisponivel, com CORS bloqueado ou limitando requisicoes | 2 | 3 | 6 | Implementar erro claro, retry e teste do estado de falha |
-| Formato da resposta mudar | 2 | 2 | 4 | Normalizar em uma fronteira unica e testar contrato esperado |
-| Sidebar/regressao de navegacao em modo colapsado | 2 | 2 | 4 | Testar item visivel/ativo e preservar regras desktop-only existentes |
+| Risco | Impacto (1-3) | Probabilidade (1-3) | Score | Mitigação |
+|---|---|---|---|---|
+| Feriado extraordinário decretado por lei avulsa não é coberto por `date-holidays` | 1 | 2 | 2 🟢 | Aceito como limitação conhecida (fora do escopo de "feriados nacionais oficiais recorrentes"); documentado nesta spec |
+| Comparação de datas sujeita a deslocamento por fuso horário (±1 dia) | 2 | 2 | 4 🟡 | Normalizar toda comparação de data para ano-mês-dia puro, sem componente de hora |
+| Versão de `react-day-picker` incompatível com a versão de React do frontend | 2 | 1 | 2 🟢 | Verificar peer deps antes de instalar (regra do projeto: "sempre verifique APIs dos pacotes dependentes") |
+| Substituir `components.DayButton` do `react-day-picker` perde o gerenciamento de foco de teclado que o componente nativo implementa (move o foco real do DOM quando as setas navegam a grade) | 3 | 2 | 6 🔴 | `DiaComFeriado` reproduz o mesmo efeito do componente nativo (`useRef` + `useEffect` movendo o foco quando `modifiers.focused` é `true`), coberto por teste dedicado |
 
 ## Testes
 
-Runner: Vitest com Testing Library no frontend.
+Runner: Vitest + Testing Library + MSW (conforme `apps/frontend/AGENTS.md`); descrições em PT-BR usando `test` (nunca `it`).
 
-- Menu autenticado mostra **Calendario** na navegacao principal e aplica estado ativo em `/calendario`.
-- Rota `/calendario` inicia no ano atual e permite navegar para ano anterior/proximo.
-- Hook de feriados consulta BrasilAPI com o ano selecionado e normaliza os campos usados pela UI.
-- Tela renderiza feriados nacionais no calendario/lista quando a consulta tem sucesso.
-- Tela exibe loading, erro e retry quando a consulta falha.
-- Nenhum teste ou tipo depende de endpoint backend proprio/OpenAPI gerado.
+- **`useFeriadosDoAno`**: unitário — para um ano dado, retorna os feriados nacionais esperados (datas fixas e móveis, ex.: Tiradentes, Carnaval/Páscoa daquele ano); memoização não recalcula para o mesmo ano.
+- **`feriadosParaModifiers`**: unitário puro — dado um conjunto de feriados e um mês, retorna os modifiers corretos; casos de borda: mês sem feriado, feriado no primeiro/último dia do mês, virada de ano.
+- **`CalendarioFeriados`** (component test): renderiza o mês atual com os feriados destacados; navegar para o mês seguinte/anterior atualiza a grade; navegar através da virada de ano recalcula os feriados do novo ano.
+- **`DiaComFeriado`**: interação (hover, clique OU foco de teclado) em um dia de feriado exibe o popover com o nome correto; dia sem feriado não exibe popover; clicar após o hover não fecha o popover (corrida hover→click); foco de teclado move o foco real do DOM (paridade com o `DayButton` nativo substituído).
+- **e2e de acessibilidade (axe-core, `apps/frontend/e2e/accessibility.spec.ts`):** `/calendario` entra no scan de telas autenticadas que o projeto já roda para `/academias`, `/perfil` e `/check-ins` — testes de componente isolados não cobrem o portal do `Popover`, os dropdowns de mês/ano nem a ordem de foco na grade completa montada.
+- Sem testes de backend/integração (não há bounded context novo) nem `test:business-flow`.

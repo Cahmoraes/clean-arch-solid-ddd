@@ -1,186 +1,162 @@
-# Task 2: Criar consulta client-only de feriados nacionais [FR-004, FR-007, FR-008, FR-009, FR-010, FR-011]
+# Task 2: Converter feriados em modifiers da grade [FR-002]
 
-**Status:** DONE
+**Status:** PENDING
 **PRD:** `../prd/prd-calendario-feriados.md`
 **Spec:** `../specs/calendario-feriados-design.md`
-**Tier:** standard
-**Depends on:** N/A
+**Tier:** cheap
+**Depends on:** task-01
 
 ## Visão Geral
 
-Criar a fronteira client-only de dados da feature: modelo normalizado de feriado e hook `useFeriadosQuery(year)` com TanStack Query, query key serializável por ano, fetch direto na BrasilAPI e erro tipado com `ApiError`.
+Cria a função pura `feriadosParaModifiers`, que filtra a lista de feriados de `useFeriadosDoAno` para o mês exibido e a converte em `modifiers`/`modifiersClassNames` do `react-day-picker`, para o `Calendar` do shadcn destacar visualmente os dias de feriado.
+
+API confirmada de `react-day-picker@10.0.1` (verificada via `.d.ts` do pacote — a mesma versão que a Task 3 instalará via shadcn CLI): a prop `modifiers` do `DayPicker`/`Calendar` tem o tipo `Record<string, Matcher | Matcher[] | undefined>`, onde `Matcher` aceita `Date[]` entre outras formas; `modifiersClassNames` tem o tipo `Record<string, string>`. Ambas continuam suportadas na v10 (confirmado em `types/props.d.ts` e `types/shared.d.ts` do pacote).
 
 ## Arquivos
 
-- Create: `apps/frontend/src/features/calendario-feriados/model/feriado.ts`
-- Create: `apps/frontend/src/features/calendario-feriados/api/use-feriados-query.ts`
-- Test: `apps/frontend/src/features/calendario-feriados/api/use-feriados-query.test.tsx`
+- Create: `apps/frontend/src/features/calendario/lib/feriados-para-modifiers.ts`
+- Test: `apps/frontend/src/features/calendario/lib/feriados-para-modifiers.test.ts`
 
 ### Conformidade com as Skills Padrão
 
-- `no-workarounds`: validar/normalizar a resposta na fronteira em vez de espalhar `?.`, `as any` ou defaults silenciosos.
-- `test-antipatterns`: usar MSW para simular rede e assertar comportamento do hook, não chamadas do mock.
-- `tanstack-query-best-practices`: query key em array, dependência `year` na key, retry/cache explícitos e erro tratado.
-- `vercel-react-best-practices`: evitar transformações pesadas no render; normalizar no `queryFn`.
-- `typescript-advanced`: manter tipos de payload bruto e view model sem casts evasivos.
-- `vitest`: usar `renderHook`, `waitFor` e wrapper de providers do projeto.
-- `context7`: consultar docs atuais do TanStack Query se houver dúvida sobre opções de `useQuery`.
+- `typescript-advanced`: tipagem de `FeriadosModifiers` usando `Record<"feriado", ...>` e o tipo `Matcher` importado de `react-day-picker`.
+- `test-antipatterns`: função pura, sem I/O — os testes devem exercitar comportamento real com fixtures de dados, sem mocks.
 
 ## Passos
 
 - **Step 1: Write the failing test**
 
-```tsx
-import { HttpResponse, http } from "msw";
-import { describe, expect, test } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { server } from "@/test/msw/server";
-import { wrapper } from "@/test/render";
-import { useFeriadosQuery } from "./use-feriados-query";
+```typescript
+// apps/frontend/src/features/calendario/lib/feriados-para-modifiers.test.ts
+import { describe, expect, test } from "vitest"
+import type { Feriado } from "../schemas/feriado.schema"
+import { feriadosParaModifiers } from "./feriados-para-modifiers"
 
-describe("useFeriadosQuery", () => {
-  test("busca e normaliza feriados nacionais por ano", async () => {
-    server.use(
-      http.get("https://brasilapi.com.br/api/feriados/v1/2026", () =>
-        HttpResponse.json([
-          {
-            date: "2026-01-01",
-            name: " Confraternização Universal ",
-            type: "Feriado Nacional",
-          },
-        ]),
-      ),
-    );
+const feriados2025: Feriado[] = [
+	{ data: "2025-01-01", nome: "Ano Novo" },
+	{ data: "2025-04-18", nome: "Sexta-Feira Santa" },
+	{ data: "2025-04-21", nome: "Dia de Tiradentes" },
+	{ data: "2025-12-25", nome: "Natal" },
+]
 
-    const { result } = renderHook(() => useFeriadosQuery(2026), {
-      wrapper: wrapper(),
-    });
+describe("feriadosParaModifiers", () => {
+	test("retorna apenas os feriados do mês exibido como modifiers", () => {
+		const { modifiers } = feriadosParaModifiers(feriados2025, new Date(2025, 3, 1))
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual([
-      {
-        date: "2026-01-01",
-        name: "Confraternização Universal",
-        type: "Feriado Nacional",
-        isNational: true,
-      },
-    ]);
-  });
+		expect(modifiers.feriado).toEqual([
+			new Date(2025, 3, 18),
+			new Date(2025, 3, 21),
+		])
+	})
 
-  test("retorna ApiError quando a BrasilAPI falha", async () => {
-    server.use(
-      http.get("https://brasilapi.com.br/api/feriados/v1/2026", () =>
-        HttpResponse.json({ message: "indisponível" }, { status: 503 }),
-      ),
-    );
+	test("retorna modifiers vazio para mês sem feriado", () => {
+		const { modifiers } = feriadosParaModifiers(feriados2025, new Date(2025, 1, 1))
 
-    const { result } = renderHook(() => useFeriadosQuery(2026), {
-      wrapper: wrapper(),
-    });
+		expect(modifiers.feriado).toEqual([])
+	})
 
-    await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(result.current.error?.code).toBe("holidays_unavailable");
-  });
-});
+	test("inclui feriado no primeiro e no último dia do mês exibido", () => {
+		const feriadosDeBorda: Feriado[] = [
+			{ data: "2025-04-01", nome: "Feriado no primeiro dia" },
+			{ data: "2025-04-30", nome: "Feriado no último dia" },
+		]
+
+		const { modifiers } = feriadosParaModifiers(
+			feriadosDeBorda,
+			new Date(2025, 3, 1),
+		)
+
+		expect(modifiers.feriado).toEqual([
+			new Date(2025, 3, 1),
+			new Date(2025, 3, 30),
+		])
+	})
+
+	test("na virada de ano, considera apenas os feriados do ano/mês exibido", () => {
+		const feriadosDeDezJan: Feriado[] = [
+			{ data: "2025-12-25", nome: "Natal" },
+			{ data: "2026-01-01", nome: "Ano Novo" },
+		]
+
+		const { modifiers } = feriadosParaModifiers(
+			feriadosDeDezJan,
+			new Date(2026, 0, 1),
+		)
+
+		expect(modifiers.feriado).toEqual([new Date(2026, 0, 1)])
+	})
+
+	test("retorna modifiersClassNames com a chave feriado", () => {
+		const { modifiersClassNames } = feriadosParaModifiers(feriados2025, new Date(2025, 3, 1))
+
+		expect(modifiersClassNames.feriado).toBeTypeOf("string")
+		expect(modifiersClassNames.feriado.length).toBeGreaterThan(0)
+	})
+})
 ```
 
 - **Step 2: Run test to verify it fails**
 
-Run: `pnpm --filter frontend exec vitest run src/features/calendario-feriados/api/use-feriados-query.test.tsx`
-Expected: FAIL with module `./use-feriados-query` not found.
+Run: `cd apps/frontend && pnpm exec vitest run src/features/calendario/lib/feriados-para-modifiers.test.ts`
+Expected: FAIL com `Cannot find module './feriados-para-modifiers'` (arquivo ainda não existe)
 
 - **Step 3: Write minimal implementation**
 
-```ts
-// apps/frontend/src/features/calendario-feriados/model/feriado.ts
-export type Feriado = {
-  date: string;
-  name: string;
-  type: string;
-  isNational: boolean;
-};
-```
+```typescript
+// apps/frontend/src/features/calendario/lib/feriados-para-modifiers.ts
+import type { Matcher } from "react-day-picker"
+import {
+	FERIADO_HIGHLIGHT_CLASSNAME,
+	type Feriado,
+} from "../schemas/feriado.schema"
 
-```ts
-// apps/frontend/src/features/calendario-feriados/api/use-feriados-query.ts
-import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { ApiError } from "@/lib/errors";
-import type { Feriado } from "../model/feriado";
-
-type BrasilApiHoliday = {
-  date?: string;
-  name?: string;
-  type?: string;
-};
-
-export const feriadosQueryKey = (year: number) => ["feriados", year] as const;
-
-function normalizeHoliday(raw: BrasilApiHoliday): Feriado | null {
-  if (!raw.date || !raw.name || !raw.type) {
-    return null;
-  }
-
-  return {
-    date: raw.date,
-    name: raw.name.trim(),
-    type: raw.type,
-    isNational: raw.type === "Feriado Nacional",
-  };
+export interface FeriadosModifiers {
+	modifiers: Record<"feriado", Matcher[]>
+	modifiersClassNames: Record<"feriado", string>
 }
 
-async function fetchFeriados(year: number): Promise<Feriado[]> {
-  const response = await fetch(
-    `https://brasilapi.com.br/api/feriados/v1/${year}`,
-  );
-
-  if (!response.ok) {
-    throw ApiError.fromStatus(response.status, "holidays_unavailable");
-  }
-
-  const payload = (await response.json()) as BrasilApiHoliday[];
-
-  return payload.flatMap((holiday) => {
-    const normalized = normalizeHoliday(holiday);
-    return normalized ? [normalized] : [];
-  });
+function paraDataLocal(feriado: Feriado): Date {
+	const [ano, mes, dia] = feriado.data.split("-").map(Number)
+	return new Date(ano, mes - 1, dia)
 }
 
-export function useFeriadosQuery(
-  year: number | null,
-): UseQueryResult<Feriado[], ApiError> {
-  return useQuery({
-    queryKey: year ? feriadosQueryKey(year) : ["feriados", "disabled"],
-    queryFn: () => {
-      if (!year) {
-        throw ApiError.fromStatus(400, "invalid_holiday_year");
-      }
+export function feriadosParaModifiers(
+	feriados: Feriado[],
+	mesExibido: Date,
+): FeriadosModifiers {
+	const anoExibido = mesExibido.getFullYear()
+	const mesExibidoIndex = mesExibido.getMonth()
 
-      return fetchFeriados(year);
-    },
-    enabled: Boolean(year),
-    retry: 1,
-    staleTime: 1000 * 60 * 60 * 24,
-  });
+	const datasDoMes = feriados
+		.filter((feriado) => {
+			const [ano, mes] = feriado.data.split("-").map(Number)
+			return ano === anoExibido && mes - 1 === mesExibidoIndex
+		})
+		.map(paraDataLocal)
+
+	return {
+		modifiers: { feriado: datasDoMes },
+		modifiersClassNames: { feriado: FERIADO_HIGHLIGHT_CLASSNAME },
+	}
 }
 ```
+
+**Nota (achado da revisão de spec):** `modifiersClassNames.feriado` é aplicado pelo `react-day-picker` à célula `role="gridcell"` (`components.Day`), não ao botão interativo (`components.DayButton`) — confirmado lendo o código-fonte real do pacote (`DayPicker.js`: `getClassNamesForModifiers` alimenta o `className` de `components.Day`; `components.DayButton` recebe só `classNames[UI.DayButton]`, fixo). O destaque visível que o usuário vê no botão é responsabilidade exclusiva de `DiaComFeriado` (Task 3), que reaplica a mesma constante `FERIADO_HIGHLIGHT_CLASSNAME` (importada de `../schemas/feriado.schema`, criada na Task 1) para manter os dois nós de DOM consistentes sem duplicar a string literal.
 
 - **Step 4: Run test to verify it passes**
 
-Run: `pnpm --filter frontend exec vitest run src/features/calendario-feriados/api/use-feriados-query.test.tsx`
-Expected: PASS for success normalization and error state.
+Run: `cd apps/frontend && pnpm exec vitest run src/features/calendario/lib/feriados-para-modifiers.test.ts`
+Expected: `Test Files  1 passed (1)` / `Tests  5 passed (5)`
 
-- **Step 5: Commit** *(sequential execution only — in a parallel wave the orchestrator commits at the integration barrier. If your prompt says you are one of several implementers in a shared tree, skip this step and report the files instead.)*
+- **Step 5: Commit** *(execução sequencial apenas — em uma wave paralela o orquestrador commita na barreira de integração; se seu prompt indicar que você é um de vários implementadores em uma árvore compartilhada, pule este passo e reporte os arquivos)*
 
 ```bash
-git add apps/frontend/src/features/calendario-feriados
-git commit -m "feat(frontend): adiciona consulta de feriados nacionais"
+git add apps/frontend/src/features/calendario/lib/feriados-para-modifiers.ts apps/frontend/src/features/calendario/lib/feriados-para-modifiers.test.ts
+git commit -m "feat(calendario): converte feriados do mes exibido em modifiers do react-day-picker"
 ```
 
 ## Critérios de Sucesso
 
-- `FR-004`: o hook entrega feriados nacionais normalizados por ano.
-- `FR-007`: a query key inclui o ano selecionado.
-- `FR-008`: TanStack Query expõe estado de carregamento.
-- `FR-009`: falha da BrasilAPI vira `ApiError` recuperável.
-- `FR-010`: consumidores podem chamar `refetch()`.
-- `FR-011`: nenhum `api.GET`, endpoint backend ou tipo OpenAPI é usado.
+- `feriadosParaModifiers(feriados, mesExibido)` retorna apenas os feriados cujo ano/mês batem com `mesExibido`, como `Date[]` em `modifiers.feriado` [FR-002].
+- Casos de borda cobertos por teste: mês sem feriado, feriado no primeiro dia do mês, feriado no último dia do mês, virada de ano (dezembro → janeiro).
+- `modifiersClassNames.feriado` é uma string de classes Tailwind não vazia, usada pelo `Calendar` para destacar visualmente o dia.

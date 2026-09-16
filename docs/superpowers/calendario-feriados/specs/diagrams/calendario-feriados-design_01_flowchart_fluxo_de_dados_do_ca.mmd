@@ -1,0 +1,23 @@
+flowchart TD
+    Start([Usuario navega mes/ano]):::actor --> Page[Pagina /calendario - autenticada]:::secondary
+    Page --> Orq[CalendarioFeriados<br/>orquestrador - estado local mes/ano]:::secondary
+    Orq -->|onMonthChange| Decide{Ano mudou?}:::decision
+    Decide -->|Sim| Recalc[useFeriadosDoAno recalcula<br/>memo por ano]:::primary
+    Decide -->|Nao| Cache[useFeriadosDoAno retorna<br/>valor memoizado do ano atual]:::primary
+    Recalc --> Lib[date-holidays calcula<br/>feriados nacionais do ano<br/>sem chamada de rede]:::database
+    Lib --> Lista[Lista de feriados do ano]:::primary
+    Cache --> Lista
+    Lista --> Pure[feriadosParaModifiers<br/>funcao pura]:::primary
+    Pure --> Mods[Modifiers do mes exibido]:::primary
+    Mods --> Cal[Calendar - shadcn/react-day-picker]:::secondary
+    Cal --> Dia[DiaComFeriado<br/>dia customizado]:::secondary
+    Dia -->|dia e feriado| Destaque[Destaque visual do dia]:::action
+    Dia -->|hover, clique ou foco no dia destacado| Popover[Popover com nome do feriado]:::action
+    Cal -.->|usuario muda de mes novamente| Orq
+
+    classDef actor fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    classDef decision fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    classDef primary fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef secondary fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
+    classDef database fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+    classDef action fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:black
