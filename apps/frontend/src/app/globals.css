@@ -37,6 +37,7 @@
 
 	--color-surface: #ffffff;
 	--color-surface-2: #f7f7f3;
+	--color-selected-tint: #f7f7f3;
 	--color-surface-3: #efefe9;
 
 	--color-success: #2fcf80;
@@ -97,6 +98,7 @@
 
 	--color-surface: #161616;
 	--color-surface-2: #1d1d1d;
+	--color-selected-tint: #1d1d1d;
 	--color-surface-3: #242424;
 
 	--color-success: #2fcf80;

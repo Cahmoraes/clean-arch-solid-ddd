@@ -228,7 +228,7 @@ describe("seleção em massa", () => {
 		expect(rowButton).toHaveAttribute("aria-pressed")
 	})
 
-	test("aplica destaque visual quando checked é verdadeiro", () => {
+	test("aplica cor de marcado (não de destaque) quando checked é verdadeiro sem isSelected", () => {
 		const adminUser = buildUser()
 
 		render(
@@ -239,7 +239,41 @@ describe("seleção em massa", () => {
 
 		const row = screen.getByTestId(`user-row-${adminUser.id}`)
 
-		expect(row.className).toContain("border-accent")
-		expect(row.className).toContain("bg-accent/40")
+		expect(row.className).toContain("bg-selected-tint")
+		expect(row.className).not.toContain("border-accent")
+		expect(row.className).not.toContain("bg-accent/40")
+	})
+})
+
+describe("cor de destaque vs. marcado e contraste do e-mail", () => {
+	test("FR-003, FR-004: destaque e marcado usam cores de fundo distintas", () => {
+		const user = buildUser({ status: "activated", role: "MEMBER" })
+
+		const { rerender } = render(
+			<UserRow user={user} isSelected checked={false} />,
+		)
+		const highlightedRow = screen.getByText(user.name).closest("li")
+		expect(highlightedRow).toHaveClass("bg-accent/40")
+		expect(highlightedRow).not.toHaveClass("bg-selected-tint")
+
+		rerender(<UserRow user={user} isSelected={false} checked />)
+		const markedRow = screen.getByText(user.name).closest("li")
+		expect(markedRow).toHaveClass("bg-selected-tint")
+		expect(markedRow).not.toHaveClass("bg-accent/40")
+	})
+
+	test("FR-005: e-mail sobe para muted-foreground só no destaque", () => {
+		const user = buildUser({ status: "activated", role: "MEMBER" })
+
+		const { rerender } = render(
+			<UserRow user={user} isSelected checked={false} />,
+		)
+		expect(screen.getByText(user.email)).toHaveClass("text-muted-foreground")
+
+		rerender(<UserRow user={user} isSelected={false} checked />)
+		expect(screen.getByText(user.email)).toHaveClass("text-subtle")
+		expect(screen.getByText(user.email)).not.toHaveClass(
+			"text-muted-foreground",
+		)
 	})
 })

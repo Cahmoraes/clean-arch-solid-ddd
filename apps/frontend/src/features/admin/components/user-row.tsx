@@ -72,17 +72,19 @@ function buildInteractiveRowProps(
 function rowClassName(
 	isInteractive: boolean,
 	hasNestedCheckbox: boolean,
-	isHighlighted: boolean,
+	isSelected: boolean,
+	isMarkedOnly: boolean,
 	statusStripeClass: string,
 	className: string | undefined,
 ): string {
 	return cn(
 		"flex w-full items-center gap-4 rounded-lg border border-l-[3px] border-border bg-card px-5 py-4 transition-[border-color] duration-300 ease-out",
-		!isHighlighted && statusStripeClass,
+		!isSelected && !isMarkedOnly && statusStripeClass,
 		isInteractive &&
 			!hasNestedCheckbox &&
 			"cursor-pointer hover:border-border-strong",
-		isHighlighted && "border-accent bg-accent/40",
+		isSelected && "border-accent bg-accent/40",
+		isMarkedOnly && "bg-selected-tint border-border-strong",
 		className,
 	)
 }
@@ -130,6 +132,11 @@ export function UserRow({
 	const hasNestedCheckbox = Boolean(selectable)
 	const tone = statusTone(user.status)
 	const statusStripeClass = statusStripeBorderClass(tone)
+	const isMarkedOnly = Boolean(checked) && !isSelected
+	const emailClassName = cn(
+		"truncate font-mono text-[13px]",
+		isSelected ? "text-muted-foreground" : "text-subtle",
+	)
 
 	function handleSelect() {
 		onSelect?.(user)
@@ -152,7 +159,8 @@ export function UserRow({
 			className={rowClassName(
 				isInteractive,
 				hasNestedCheckbox,
-				Boolean(isSelected || checked),
+				Boolean(isSelected),
+				isMarkedOnly,
 				statusStripeClass,
 				className,
 			)}
@@ -176,9 +184,7 @@ export function UserRow({
 					<span className="text-[15.5px] font-semibold text-card-foreground">
 						{user.name}
 					</span>
-					<span className="truncate font-mono text-[13px] text-subtle">
-						{user.email}
-					</span>
+					<span className={emailClassName}>{user.email}</span>
 				</div>
 				<RoleBadge role={user.role} />
 				<StatusBadge tone={tone} variant="stripe">
