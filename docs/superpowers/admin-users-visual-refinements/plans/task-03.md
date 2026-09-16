@@ -1,6 +1,6 @@
 # Task 3: Transição suave do painel de detalhes (split-view) [FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-admin-users-visual-refinements.md`
 **Spec:** `../specs/admin-users-visual-refinements-design.md`
 **Tier:** standard
