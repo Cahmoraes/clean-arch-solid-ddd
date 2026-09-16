@@ -1,6 +1,6 @@
 import { screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { HttpResponse, http } from "msw"
+import { delay, HttpResponse, http } from "msw"
 import { useSearchParams } from "next/navigation"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import { useAuthStore } from "@/lib/auth/auth-store"
@@ -501,6 +501,109 @@ describe("AdminUsersPage modal integration", () => {
 			within(screen.getByTestId("user-row-user-2")).getByRole("button"),
 		)
 		expect(status).toHaveTextContent(/usuário 2 selecionado/i)
+	})
+
+	test("FR-015: não duplica o anúncio de estado vazio com o EmptyState", async () => {
+		mockUsersList([])
+		renderPage()
+
+		await screen.findByText("Nenhum usuário cadastrado")
+
+		// EmptyState já possui `role="status" aria-live="polite"` própria para
+		// anunciar o estado vazio; a região da página deve permanecer muda
+		// para não duplicar/conflitar com esse anúncio.
+		expect(screen.getByTestId("admin-users-live-region")).toHaveTextContent("")
+	})
+
+	test("FR-015: não anuncia contagem desatualizada enquanto uma nova busca está em andamento (isFetching)", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users`, async ({ request }) => {
+				const url = new URL(request.url)
+				const query = url.searchParams.get("query")
+				// A busca por "ana" nunca resolve nesta rota: mantém a query em
+				// isFetching=true/isLoading=false indefinidamente, simulando a
+				// janela de refetch com `placeholderData: keepPreviousData` em
+				// que `data` ainda aponta para o resultado anterior.
+				if (query) await delay("infinite")
+				const users = buildManyUsers(3)
+				return HttpResponse.json(
+					{ users, pagination: { page: 1, limit: 10, total: users.length } },
+					{ status: 200 },
+				)
+			}),
+		)
+		renderPage()
+
+		await screen.findByTestId("user-row-user-1")
+		const status = screen.getByTestId("admin-users-live-region")
+		expect(status).toHaveTextContent(/3 usuários encontrados/i)
+
+		await user.type(screen.getByTestId("admin-users-search"), "ana")
+
+		await waitFor(
+			() => {
+				expect(status).not.toHaveTextContent(/3 usuários encontrados/i)
+			},
+			{ timeout: 2000 },
+		)
+		expect(status).toHaveTextContent("")
+	}, 20_000)
+
+	test("FR-015: limpa a seleção anunciada quando o filtro remove o usuário selecionado dos resultados", async () => {
+		const user = userEvent.setup()
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				const role = url.searchParams.get("role")
+				const users =
+					role === "ADMIN"
+						? [
+								buildUser({
+									id: "user-9",
+									name: "Diretor Admin",
+									email: "diretor@example.com",
+									role: "ADMIN",
+								}),
+							]
+						: [
+								buildUser({ id: "user-1" }),
+								buildUser({
+									id: "user-2",
+									name: "Carlos Lima",
+									email: "carlos@example.com",
+								}),
+							]
+				return HttpResponse.json(
+					{ users, pagination: { page: 1, limit: 10, total: users.length } },
+					{ status: 200 },
+				)
+			}),
+		)
+		renderPage()
+
+		await screen.findByTestId("user-row-user-1")
+		await user.click(
+			within(screen.getByTestId("user-row-user-2")).getByRole("button"),
+		)
+		const status = screen.getByTestId("admin-users-live-region")
+		await waitFor(() => {
+			expect(status).toHaveTextContent(/carlos lima selecionado/i)
+		})
+
+		await user.click(
+			await screen.findByRole("button", { name: /administradores/i }),
+		)
+
+		await waitFor(() => {
+			expect(screen.getByTestId("user-row-user-9")).toBeInTheDocument()
+		})
+		// A seleção antiga (Carlos Lima, fora do filtro "Administradores") não
+		// pode continuar sendo anunciada nem exibida como selecionada.
+		expect(status).not.toHaveTextContent(/carlos lima/i)
+		expect(
+			within(screen.getByTestId("user-row-user-9")).getByRole("button"),
+		).toHaveAttribute("aria-pressed", "true")
 	})
 })
 

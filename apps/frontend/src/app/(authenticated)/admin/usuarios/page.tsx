@@ -221,14 +221,23 @@ function UsersContent({
 }
 
 // FR-015: monta a mensagem anunciada por tecnologia assistiva quando a
-// contagem de resultados ou a seleção mudam. Vazio durante o carregamento
-// para não anunciar um total transitório/desatualizado.
+// contagem de resultados ou a seleção mudam.
+// - Vazio enquanto `isFetching` é verdadeiro: com `placeholderData:
+//   keepPreviousData` (ver `useUsers`), `data` ainda aponta para o
+//   resultado anterior durante busca/filtro/paginação (isLoading já é
+//   falso nesse momento), então usar apenas `isLoading` anunciaria um
+//   total desatualizado/transitório. `isFetching` cobre também o
+//   carregamento inicial.
+// - Vazio quando `total === 0`: o `EmptyState` renderizado nesse caso já
+//   possui sua própria região `role="status" aria-live="polite"` — anunciar
+//   a contagem aqui duplicaria/conflitaria com o anúncio dele para o mesmo
+//   estado vazio.
 function buildLiveAnnouncement(
-	isLoading: boolean,
+	isFetching: boolean,
 	total: number | undefined,
 	selectedUser: AdminUser | null,
 ): string {
-	if (isLoading || total === undefined) return ""
+	if (isFetching || total === undefined || total === 0) return ""
 	const countText = `${total} usuário${total === 1 ? "" : "s"} encontrado${total === 1 ? "" : "s"}.`
 	const selectionText = selectedUser ? `${selectedUser.name} selecionado.` : ""
 	return [countText, selectionText].filter(Boolean).join(" ")
@@ -276,9 +285,18 @@ function AdminUsersContent({
 		setPage(1)
 	}, [debouncedQuery])
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: page, activeFilter e debouncedQuery são os gatilhos intencionais para limpar a seleção; nenhum é consumido no corpo do efeito
+	// biome-ignore lint/correctness/useExhaustiveDependencies: page, activeFilter e debouncedQuery são os gatilhos intencionais para limpar a seleção em massa e a seleção de detalhe; nenhum é consumido no corpo do efeito
 	useEffect(() => {
 		setSelectedIds(new Set())
+		// Troca de página/filtro/busca invalida a seleção de detalhe atual: sem
+		// isso, `activeSelectedUser` cai no fallback `?? selectedUser` (usado
+		// para sobreviver a um refetch que remove o usuário da MESMA
+		// consulta, como em "ativar usuário que sai do filtro Inativos") e
+		// continua anunciando/exibindo um usuário que não pertence mais aos
+		// resultados atuais. Como este efeito só dispara quando page/
+		// activeFilter/debouncedQuery mudam (não a cada refetch), o fallback
+		// acima continua funcionando para o caso de mesma consulta.
+		setSelectedUser(null)
 	}, [page, activeFilter, debouncedQuery])
 
 	const { data, isLoading, isError, error, isFetching } = useUsers({
@@ -492,7 +510,7 @@ function AdminUsersContent({
 				className="sr-only"
 			>
 				{buildLiveAnnouncement(
-					isLoading,
+					isFetching,
 					data?.pagination.total,
 					activeSelectedUser,
 				)}
