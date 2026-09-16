@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como usuário autenticado, eu quero ver os feriados do mês agrupados por semana na lista lateral para localizar um feriado específico sem escanear uma lista longa e uniforme",
+  "requirements": ["FR-003", "FR-004", "FR-006"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "2 arquivos de teste, 4 testes, 4 passaram, 0 falharam. get-semana-do-mes.test.ts (2 testes: cálculo da semana do 1º dia do mês e de dia próximo ao fim do mês; agrupamento por semana ordenado por número). holiday-list.test.tsx (1 teste: 'agrupa feriados do mês por semana, com divisor visual acessível' — verifica fieldset/legend expostos como role=group com nome 'Semana N' via testing-library, contendo os feriados corretos em cada grupo).",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Gate de Independent Verification não faz parte deste pipeline para esta US; localizei e rodei os testes existentes diretamente. FR-003 (agrupar por semana com divisor visual) e FR-004 (cálculo client-side da semana a partir da data, sem endpoint novo) verificados por get-semana-do-mes.ts/.test.ts e holiday-list.tsx/.test.tsx — agrupamento usa <fieldset>/<legend> (role=group, nome acessível 'Semana N'), calculado localmente por getSemanaDoMes sem chamada de API adicional. FR-006 (grid de 2 colunas + empilhamento responsivo) confirmado em apps/frontend/src/app/(authenticated)/calendario/page.tsx:160 (`grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]`), inalterado por esta feature. Verificação end-to-end no navegador (login real via API + UI, playwright-cli) confirmou na tela /calendario: card lateral 'Feriados de setembro' com divisor 'SEMANA 2' contendo o feriado 'Independência do Brasil' com data e dia da semana — comportamento observável ao usuário autenticado confere com a US."
+}

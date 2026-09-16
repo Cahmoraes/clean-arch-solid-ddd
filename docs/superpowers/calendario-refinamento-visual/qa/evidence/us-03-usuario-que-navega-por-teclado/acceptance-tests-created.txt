@@ -1,0 +1,1 @@
+docs/superpowers/calendario-refinamento-visual/qa/evidence/us-03-usuario-que-navega-por-teclado/us-03-usuario-que-navega-por-teclado-acessibilidade-preservada.acceptance.test.tsx

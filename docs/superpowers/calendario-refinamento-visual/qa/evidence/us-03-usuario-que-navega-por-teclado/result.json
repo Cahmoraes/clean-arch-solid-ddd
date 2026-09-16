@@ -1,0 +1,14 @@
+{
+  "us_id": "us-003",
+  "user_story": "Como usuário que navega por teclado ou usa leitor de tela, eu quero que a navegação e os destaques do calendário continuem totalmente acessíveis após a mudança visual, para não perder capacidade de uso",
+  "requirements": ["FR-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [
+    "docs/superpowers/calendario-refinamento-visual/qa/evidence/us-03-usuario-que-navega-por-teclado/us-03-usuario-que-navega-por-teclado-acessibilidade-preservada.acceptance.test.tsx"
+  ],
+  "test_output_summary": "monthly-calendar.test.tsx: 4 testes, 4 passaram (inclui 'destaca o dia atual com aria-current e a mesma cor primária do feriado', com data mockada via vi.setSystemTime). Teste de aceitação criado (us-03-usuario-que-navega-por-teclado-acessibilidade-preservada.acceptance.test.tsx, rodado via vitest.config.ts local): 1 teste, 1 passou, cobrindo role=grid no container do mês, role=gridcell em cada dia, aria-live=polite preservado no heading do mês, aria-current=date aplicado apenas ao dia atual e aria-label das setas de navegação de mês.",
+  "screenshot_path": "evidence/us-03-usuario-que-navega-por-teclado/screenshot.png",
+  "failure_details": null,
+  "notes": "Nenhum relatório de Independent Verification foi indicado para esta pipeline; localizei e mapeei os testes eu mesma. Confirmei via 'git show 03b76d53' que o diff da feature (destaque do dia atual) só adicionou aria-current='date' e a classe visual de destaque em DayCell — role='grid' (container), role='gridcell' (cada dia) e aria-live='polite' (cabeçalho do mês, CardTitle) permaneceram linha-a-linha inalterados, satisfazendo literalmente FR-005 ('manter, sem alteração, os atributos de acessibilidade já existentes'). O teste unitário existente cobre diretamente apenas aria-current; como os demais atributos preservados (role grid/gridcell, aria-live, anel de foco duplo) não tinham asserção dedicada, criei um teste de aceitação cobrindo explicitamente role=grid, role=gridcell, aria-live e aria-current simultaneamente. O anel de foco duplo (classe utilitária 'focus-ring-duplo' no componente Button, não tocado por este PR) foi confirmado visualmente no screenshot: o botão 'Próximo mês' focado via teclado exibe o anel duplo de foco nítido. Login e navegação até /calendario feitos com usuário de teste criado via POST /users no backend e login via UI com playwright-cli."
+}

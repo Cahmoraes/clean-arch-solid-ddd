@@ -1,0 +1,12 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como usuário autenticado, eu quero ver o dia atual e os feriados destacados de forma inequívoca no grid do mês para identificar rapidamente feriados relevantes",
+  "requirements": ["FR-001", "FR-002", "FR-006"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "2 arquivos de teste, 17 testes, 17 passaram, 0 falharam (monthly-calendar.test.tsx: 4 testes, incluindo 'destaca o dia atual com aria-current e a mesma cor primária do feriado' com data do sistema mockada via vi.setSystemTime; page.test.tsx: 13 testes de integração da página /calendario, incluindo navegação, estados de loading/erro/vazio e presença do aside role=complementary).",
+  "screenshot_path": "evidence/us-01-usuario-autenticado-ver-o-dia/screenshot.png",
+  "failure_details": null,
+  "notes": "Nenhum relatório de Independent Verification foi indicado para esta pipeline; localizei e mapeei os testes eu mesma. FR-001 (destaque de hoje e feriado, cor primária exclusiva) coberto diretamente por teste unitário em monthly-calendar.tsx (aria-current='date' + classes border-primary/bg-primary/10, mutuamente exclusivas via DayCell). FR-002 (altura mínima maior da célula, nome do feriado fora dela) está implementado (min-h-14 em DayCell) mas não há assert de classe dedicado nos testes; confirmado visualmente via screenshot. FR-006 (layout de 2 colunas preservado) confirmado estruturalmente pelos testes (aside role='complementary' presente, grid com classe xl:grid-cols-[...]) e visualmente via screenshot. Login e navegação até /calendario feitos com usuário de teste criado via POST /users no backend (ativação automática no signup) e login via UI com playwright-cli. Screenshot mostra dia 7 (feriado 'Independência do Brasil') e dia 16 (hoje) destacados de forma visualmente distinta e inequívoca, ambos usando a cor primária verde, sem uso dessa cor em outras células do grid."
+}
