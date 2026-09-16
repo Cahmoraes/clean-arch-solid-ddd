@@ -62,7 +62,11 @@ describe("AdminUsersPage", () => {
 		await waitFor(() =>
 			expect(screen.getByTestId("admin-users-list")).toBeInTheDocument(),
 		)
-		expect(screen.getByText("user1@example.com")).toBeInTheDocument()
+		expect(
+			within(screen.getByTestId("admin-users-list")).getByText(
+				"user1@example.com",
+			),
+		).toBeInTheDocument()
 	})
 
 	test("exibe EmptyState quando lista está vazia", async () => {
@@ -107,13 +111,21 @@ describe("AdminUsersPage", () => {
 		await waitFor(() =>
 			expect(screen.getByTestId("admin-users-list")).toBeInTheDocument(),
 		)
-		expect(screen.getByText("user1@example.com")).toBeInTheDocument()
+		expect(
+			within(screen.getByTestId("admin-users-list")).getByText(
+				"user1@example.com",
+			),
+		).toBeInTheDocument()
 
 		await user.click(screen.getByTestId("admin-users-next"))
 
 		await waitFor(() => expect(requestedPages).toContain("2"))
 		await waitFor(() =>
-			expect(screen.getByText("user2@example.com")).toBeInTheDocument(),
+			expect(
+				within(screen.getByTestId("admin-users-list")).getByText(
+					"user2@example.com",
+				),
+			).toBeInTheDocument(),
 		)
 
 		await user.click(screen.getByTestId("admin-users-page-3"))

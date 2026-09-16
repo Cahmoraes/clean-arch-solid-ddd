@@ -87,15 +87,87 @@ describe("AdminUsersPage modal integration", () => {
 		)
 	})
 
-	test("não exibe o painel de detalhes inicialmente", async () => {
+	test("FR-008: seleciona automaticamente o primeiro usuário quando há resultados e nenhum estava selecionado", async () => {
 		mockUsersList()
 		renderPage()
 
 		await waitFor(() => {
 			expect(screen.getByTestId("admin-users-list")).toBeInTheDocument()
 		})
+		expect(screen.getByRole("tab", { name: "Detalhes" })).toBeInTheDocument()
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("button"),
+		).toHaveAttribute("aria-pressed", "true")
+		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+	})
+
+	test("preserva o usuário indicado por ?userId= mesmo quando ele não é o primeiro resultado", async () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("userId=user-2") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		mockUsersList([
+			buildUser(),
+			buildUser({
+				id: "user-2",
+				name: "Carlos Lima",
+				email: "carlos@example.com",
+			}),
+		])
+		renderPage()
+
+		await waitFor(() => {
+			expect(
+				within(screen.getByTestId("user-row-user-2")).getByRole("button"),
+			).toHaveAttribute("aria-pressed", "true")
+		})
+		expect(
+			within(screen.getByTestId("user-row-user-1")).getByRole("button"),
+		).toHaveAttribute("aria-pressed", "false")
+	})
+
+	test("não exibe o painel de detalhes quando não há resultados", async () => {
+		mockUsersList([])
+		renderPage()
+
+		await waitFor(() => {
+			expect(screen.getByText(/nenhum usuário cadastrado/i)).toBeInTheDocument()
+		})
 		expect(screen.getByText(/selecione um usuário/i)).toBeInTheDocument()
 		expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+	})
+
+	test("FR-007: ArrowDown move a seleção e o foco visível para a próxima linha da lista", async () => {
+		const user = userEvent.setup()
+		mockUsersList([
+			buildUser(),
+			buildUser({
+				id: "user-2",
+				name: "Carlos Lima",
+				email: "carlos@example.com",
+			}),
+		])
+		renderPage()
+
+		const row1Button = within(
+			await screen.findByTestId("user-row-user-1"),
+		).getByRole("button")
+		row1Button.focus()
+
+		await user.keyboard("{ArrowDown}")
+
+		const row2Button = within(screen.getByTestId("user-row-user-2")).getByRole(
+			"button",
+		)
+		expect(row2Button).toHaveAttribute("aria-pressed", "true")
+		expect(row2Button).toHaveFocus()
+		expect(row1Button).toHaveAttribute("aria-pressed", "false")
+
+		await user.keyboard("{ArrowUp}")
+
+		expect(row1Button).toHaveAttribute("aria-pressed", "true")
+		expect(row1Button).toHaveFocus()
 	})
 
 	test("abre o painel de detalhes inline ao clicar em um usuário (desktop)", async () => {

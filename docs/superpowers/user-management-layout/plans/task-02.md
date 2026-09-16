@@ -1,6 +1,6 @@
 # Task 2: Implementar seleção persistente e navegação da lista [FR-005, FR-006, FR-007, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-user-management-layout.md`
 **Spec:** `../specs/user-management-layout-design.md`
 **Tier:** standard

@@ -31,6 +31,7 @@ import type { UserFilter } from "@/features/admin/types"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import type { ApiError } from "@/lib/errors"
+import { useIsDesktop } from "@/lib/hooks/use-is-desktop"
 
 const SKELETON_ROWS = 5
 const SKELETON_KEYS = Array.from(
@@ -297,6 +298,28 @@ function AdminUsersContent({
 		)
 	}, [data?.users, selectedUser])
 
+	const listContainerRef = useRef<HTMLDivElement>(null)
+	const isDesktop = useIsDesktop()
+
+	// FR-008: seleciona o primeiro usuário quando há resultados e nenhum
+	// usuário está selecionado. A seleção por ?userId= tem precedência para
+	// preservar deep-links mesmo quando o usuário não é o primeiro resultado.
+	// Restrito ao desktop: no mobile a apresentação é sob demanda (drawer),
+	// então selecionar automaticamente abriria o drawer sem ação do usuário.
+	useEffect(() => {
+		if (!isDesktop || initialUserId || selectedUser || !data?.users?.length) {
+			return
+		}
+		setSelectedUser(data.users[0])
+	}, [isDesktop, initialUserId, data?.users, selectedUser])
+
+	function focusRow(userId: string) {
+		const row = listContainerRef.current?.querySelector<HTMLElement>(
+			`[data-testid="user-row-${userId}"] [role="button"]`,
+		)
+		row?.focus()
+	}
+
 	function handlePageChange(target: number) {
 		setPage((current) => clampPage(target, Math.max(totalPages, current)))
 		setSelectedUser(null)
@@ -372,7 +395,9 @@ function AdminUsersContent({
 		if (!isArrowKey(event.key) || !list || list.length === 0) return
 		event.preventDefault()
 		const nextIndex = resolveNextIndex(list, activeSelectedUser, event.key)
-		setSelectedUser(list[nextIndex])
+		const nextUser = list[nextIndex]
+		setSelectedUser(nextUser)
+		focusRow(nextUser.id)
 	}
 
 	return (
@@ -408,7 +433,7 @@ function AdminUsersContent({
 
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
 				{/* biome-ignore lint/a11y/noStaticElementInteractions: navegação por teclado entre linhas da lista */}
-				<div onKeyDown={handleListKeyNavigation}>
+				<div ref={listContainerRef} onKeyDown={handleListKeyNavigation}>
 					<UsersContent
 						isLoading={isLoading}
 						isError={isError}
