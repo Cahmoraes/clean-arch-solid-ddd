@@ -84,14 +84,13 @@ function rowClassName(
 			"cursor-pointer hover:border-border-strong",
 		isSelected && "border-accent bg-accent/40",
 		isMarkedOnly && "bg-selected-tint border-border-strong",
-		// D1 do spec só simplifica a faixa de status no destaque (isSelected,
-		// verde accent), onde a borda esquerda vira `border-accent`. Marcado
-		// (checked, sem isSelected) não tem exceção prevista no spec — sem a
-		// faixa, o status fica invisível para usuário vidente durante seleção
-		// em massa, já que o texto é sr-only. Vem por último no cn() para que
-		// `border-l-{tone}` vença o `border-border-strong` (4 lados) do
-		// merge de classes conflitantes no mesmo grupo de border-color.
-		!isSelected && statusStripeClass,
+		// A faixa de status nunca é descartada, nem em destaque (isSelected)
+		// nem em marcado (isMarkedOnly) — sem ela, o status fica invisível
+		// para usuário vidente, já que o texto é sr-only. Vem por último no
+		// cn() para que `border-l-{tone}` vença o `border-accent`/
+		// `border-border-strong` (4 lados) no merge de classes conflitantes
+		// do mesmo grupo de border-color.
+		statusStripeClass,
 		className,
 	)
 }

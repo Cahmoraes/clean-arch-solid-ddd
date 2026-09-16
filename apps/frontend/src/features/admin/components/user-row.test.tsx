@@ -261,6 +261,21 @@ describe("seleção em massa", () => {
 
 		expect(row.className).toContain("border-l-success")
 	})
+
+	// Regressão reportada pelo usuário: selecionar (isSelected) um usuário
+	// inativo trocava a faixa de status para verde (border-accent), como se
+	// o usuário estivesse ativo. A faixa lateral deve sempre refletir o
+	// status real, independente do destaque de seleção.
+	test("mantém a faixa de status real (vermelha) quando um usuário inativo está selecionado", () => {
+		const adminUser = buildUser({ status: "suspended" })
+
+		render(<UserRow user={adminUser} isSelected checked={false} />)
+
+		const row = screen.getByTestId(`user-row-${adminUser.id}`)
+
+		expect(row.className).toContain("border-l-destructive")
+		expect(row.className).toContain("border-accent")
+	})
 })
 
 describe("cor de destaque vs. marcado e contraste do e-mail", () => {
