@@ -127,8 +127,9 @@ na implementação, contra os tokens e componentes reais do tema.
 
 ## Testes
 
-Runner: Vitest (`pnpm --filter frontend test -- --run`), conforme
-`apps/frontend/AGENTS.md`. Framework: Next.js + React Testing Library.
+Runner: Vitest. Comando estreito (um arquivo coletado), de dentro de `apps/frontend`:
+`pnpm exec vitest run <arquivo>` — o script `pnpm test -- --run <arquivo>` do pacote não
+estreita, coleta a suíte inteira. Framework: Next.js + React Testing Library.
 
 - `status-badge.test.tsx`: cobrir o novo `variant="stripe"` (renderiza borda + texto
   acessível, sem pill) mantendo os casos existentes do `variant="pill"`.
