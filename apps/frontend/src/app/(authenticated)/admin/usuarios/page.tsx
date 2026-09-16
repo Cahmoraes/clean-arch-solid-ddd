@@ -279,16 +279,27 @@ function AdminUsersContent({
 		return Math.max(1, Math.ceil(data.pagination.total / data.pagination.limit))
 	}, [data])
 
-	const autoSelectedRef = useRef(false)
+	// Marca a resolução do deep-link (?userId=) como concluída assim que os
+	// dados chegam, independente de o usuário ter sido encontrado ou não —
+	// evita reprocessar a busca a cada render e sinaliza ao efeito de
+	// auto-seleção (FR-008) quando é seguro cair no fallback do primeiro
+	// usuário. `deepLinkMatchedRef` guarda o resultado do match de forma
+	// síncrona: o efeito de FR-008 roda no mesmo commit logo em seguida e
+	// não pode confiar em `selectedUser` (state só reflete o `setSelectedUser`
+	// abaixo em um próximo render), então lê o ref para não sobrescrever um
+	// deep-link válido com o fallback do primeiro usuário.
+	const deepLinkResolvedRef = useRef(false)
+	const deepLinkMatchedRef = useRef(false)
 
 	useEffect(() => {
-		if (autoSelectedRef.current || !initialUserId || !data?.users?.length)
+		if (deepLinkResolvedRef.current || !initialUserId || !data?.users?.length)
 			return
 		const found = data.users.find((user) => user.id === initialUserId)
 		if (found) {
 			setSelectedUser(found)
-			autoSelectedRef.current = true
+			deepLinkMatchedRef.current = true
 		}
+		deepLinkResolvedRef.current = true
 	}, [data?.users, initialUserId])
 
 	const activeSelectedUser = useMemo(() => {
@@ -302,12 +313,24 @@ function AdminUsersContent({
 	const isDesktop = useIsDesktop()
 
 	// FR-008: seleciona o primeiro usuário quando há resultados e nenhum
-	// usuário está selecionado. A seleção por ?userId= tem precedência para
-	// preservar deep-links mesmo quando o usuário não é o primeiro resultado.
+	// usuário está selecionado. A seleção por ?userId= tem precedência
+	// enquanto o deep-link ainda não foi resolvido — assim que a resolução
+	// termina (encontrado ou não), o fallback pode agir: se encontrado,
+	// selectedUser já está preenchido e o guard abaixo bloqueia; se o
+	// userId é inválido/fora da lista atual, o fallback seleciona o
+	// primeiro usuário em vez de deixar o painel vazio para sempre.
 	// Restrito ao desktop: no mobile a apresentação é sob demanda (drawer),
 	// então selecionar automaticamente abriria o drawer sem ação do usuário.
 	useEffect(() => {
-		if (!isDesktop || initialUserId || selectedUser || !data?.users?.length) {
+		const deepLinkPending =
+			Boolean(initialUserId) && !deepLinkResolvedRef.current
+		if (
+			!isDesktop ||
+			deepLinkPending ||
+			deepLinkMatchedRef.current ||
+			selectedUser ||
+			!data?.users?.length
+		) {
 			return
 		}
 		setSelectedUser(data.users[0])

@@ -127,6 +127,32 @@ describe("AdminUsersPage modal integration", () => {
 		).toHaveAttribute("aria-pressed", "false")
 	})
 
+	test("FR-008: cai no fallback do primeiro usuário quando ?userId= não corresponde a nenhum resultado da lista atual", async () => {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("userId=user-inexistente") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		mockUsersList([
+			buildUser(),
+			buildUser({
+				id: "user-2",
+				name: "Carlos Lima",
+				email: "carlos@example.com",
+			}),
+		])
+		renderPage()
+
+		await waitFor(() => {
+			expect(
+				within(screen.getByTestId("user-row-user-1")).getByRole("button"),
+			).toHaveAttribute("aria-pressed", "true")
+		})
+		expect(
+			within(screen.getByTestId("user-row-user-2")).getByRole("button"),
+		).toHaveAttribute("aria-pressed", "false")
+	})
+
 	test("não exibe o painel de detalhes quando não há resultados", async () => {
 		mockUsersList([])
 		renderPage()
