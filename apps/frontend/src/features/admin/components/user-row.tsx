@@ -2,7 +2,10 @@ import type { KeyboardEvent } from "react"
 import { Avatar } from "@/components/ui/avatar"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RoleBadge } from "@/components/ui/role-badge"
-import { StatusBadge } from "@/components/ui/status-badge"
+import {
+	StatusBadge,
+	statusStripeBorderClass,
+} from "@/components/ui/status-badge"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { cn } from "@/lib/cn"
 
@@ -70,10 +73,12 @@ function rowClassName(
 	isInteractive: boolean,
 	hasNestedCheckbox: boolean,
 	isHighlighted: boolean,
+	statusStripeClass: string,
 	className: string | undefined,
 ): string {
 	return cn(
-		"flex w-full items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 transition-[border-color] duration-300 ease-out",
+		"flex w-full items-center gap-4 rounded-lg border border-l-[3px] border-border bg-card px-5 py-4 transition-[border-color] duration-300 ease-out",
+		!isHighlighted && statusStripeClass,
 		isInteractive &&
 			!hasNestedCheckbox &&
 			"cursor-pointer hover:border-border-strong",
@@ -123,6 +128,8 @@ export function UserRow({
 	// elemento interativo, preservando o contrato já usado por consumidores
 	// existentes (ex.: página de usuários sem seleção em massa).
 	const hasNestedCheckbox = Boolean(selectable)
+	const tone = statusTone(user.status)
+	const statusStripeClass = statusStripeBorderClass(tone)
 
 	function handleSelect() {
 		onSelect?.(user)
@@ -146,6 +153,7 @@ export function UserRow({
 				isInteractive,
 				hasNestedCheckbox,
 				Boolean(isSelected || checked),
+				statusStripeClass,
 				className,
 			)}
 		>
@@ -173,7 +181,7 @@ export function UserRow({
 					</span>
 				</div>
 				<RoleBadge role={user.role} />
-				<StatusBadge tone={statusTone(user.status)}>
+				<StatusBadge tone={tone} variant="stripe">
 					{statusLabel(user.status)}
 				</StatusBadge>
 			</div>

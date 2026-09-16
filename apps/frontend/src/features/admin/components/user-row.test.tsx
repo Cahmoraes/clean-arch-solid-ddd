@@ -65,28 +65,22 @@ describe("UserRow VOLT", () => {
 		expect(screen.getByText("Bloqueado")).toBeInTheDocument()
 	})
 
-	test("status Inativo (suspenso) renderiza com ícone semântico (tone danger)", () => {
+	test("FR-001, FR-002: status vira faixa lateral, papel continua como único pill", () => {
+		const user = buildUser({ status: "activated", role: "MEMBER" })
 		render(
 			<ul>
-				<UserRow user={buildUser({ status: "suspended" })} />
+				<UserRow user={user} />
 			</ul>,
 		)
-		const badge = screen.getByText("Inativo").closest("span")
-		expect(badge).not.toBeNull()
-		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
-	})
 
-	test("status Bloqueado (locked) renderiza com ícone semântico (tone warning)", () => {
-		render(
-			<ul>
-				<UserRow user={buildUser({ status: "locked" })} />
-			</ul>,
-		)
-		const badge = screen.getByText("Bloqueado").closest("span")
-		expect(badge).not.toBeNull()
-		const icon = (badge as HTMLElement).querySelector("svg")
-		expect(icon).toBeInTheDocument()
-		expect(icon).toHaveClass("lucide-triangle-alert")
+		// FR-002: um único pill visível (papel) — o pill de status não existe mais
+		expect(screen.getByText("Membro")).toBeInTheDocument()
+		expect(screen.queryByText("Ativo")?.className).not.toMatch(/rounded-full/)
+
+		// FR-001: a faixa lateral usa a cor do tom, e o texto continua acessível
+		const row = screen.getByText(user.name).closest("li")
+		expect(row).toHaveClass("border-l-success")
+		expect(screen.getByText("Ativo")).toHaveClass("sr-only")
 	})
 
 	test("chama onSelect com os dados do usuário ao clicar na linha", async () => {
