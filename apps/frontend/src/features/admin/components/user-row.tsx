@@ -135,7 +135,7 @@ export function UserRow({
 	const isMarkedOnly = Boolean(checked) && !isSelected
 	const emailClassName = cn(
 		"truncate font-mono text-[13px]",
-		isSelected ? "text-muted-foreground" : "text-subtle",
+		isSelected ? "text-highlight-foreground" : "text-subtle",
 	)
 
 	function handleSelect() {

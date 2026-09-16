@@ -262,16 +262,32 @@ describe("cor de destaque vs. marcado e contraste do e-mail", () => {
 		expect(markedRow).not.toHaveClass("bg-accent/40")
 	})
 
-	test("FR-005: e-mail sobe para muted-foreground só no destaque", () => {
+	test("FR-005: e-mail sobe para highlight-foreground só no destaque", () => {
 		const user = buildUser({ status: "activated", role: "MEMBER" })
 
 		const { rerender } = render(
 			<UserRow user={user} isSelected checked={false} />,
 		)
-		expect(screen.getByText(user.email)).toHaveClass("text-muted-foreground")
+		expect(screen.getByText(user.email)).toHaveClass(
+			"text-highlight-foreground",
+		)
 
 		rerender(<UserRow user={user} isSelected={false} checked />)
 		expect(screen.getByText(user.email)).toHaveClass("text-subtle")
+		expect(screen.getByText(user.email)).not.toHaveClass(
+			"text-highlight-foreground",
+		)
+	})
+
+	// Regressão do finding de contraste (code review task-02): --color-muted-foreground
+	// dark (#a3a39c) sobre o card com destaque (bg-accent/40 em #161616) dava 2.60:1,
+	// abaixo do AA 4.5:1 (WCAG 1.4.1/1.4.3). --color-highlight-foreground dark
+	// (#d7d7ce) foi calibrado para >=4.5:1 nesse mesmo fundo, sem alterar o token
+	// --color-muted-foreground global (usado em ~75 outros arquivos do app).
+	test("FR-005: e-mail em destaque não usa mais o token antigo de contraste insuficiente no dark", () => {
+		const user = buildUser({ status: "activated", role: "MEMBER" })
+		render(<UserRow user={user} isSelected checked={false} />)
+
 		expect(screen.getByText(user.email)).not.toHaveClass(
 			"text-muted-foreground",
 		)

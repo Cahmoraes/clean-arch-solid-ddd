@@ -31,6 +31,7 @@
 	--color-secondary-foreground: #111110;
 	--color-muted: #f7f7f3;
 	--color-muted-foreground: #57574f;
+	--color-highlight-foreground: #57574f;
 	--color-subtle: #8a8a80;
 	--color-accent: #39e58c;
 	--color-accent-foreground: #0a0a0a;
@@ -92,6 +93,10 @@
 	--color-secondary-foreground: #f6f6f4;
 	--color-muted: #1d1d1d;
 	--color-muted-foreground: #a3a39c;
+	/* #a3a39c não passa 4.5:1 do WCAG AA sobre bg-accent/40 no card escuro
+	   (2.60:1). Token dedicado só p/ e-mail em destaque (FR-005), sem alterar
+	   --color-muted-foreground global (75 usos fora deste contexto). */
+	--color-highlight-foreground: #d7d7ce;
 	--color-subtle: #6f6f68;
 	--color-accent: #39e58c;
 	--color-accent-foreground: #0a0a0a;
