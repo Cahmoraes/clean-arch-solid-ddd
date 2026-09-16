@@ -60,13 +60,20 @@ function formatHolidayAriaLabel(holiday: Feriado): string {
 	return `${dayNum} de ${monthName}: ${holiday.name}, feriado nacional de ${yearNum}`
 }
 
+function getTodayDateStr(): string {
+	const now = new Date()
+	return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+}
+
 function DayCell({
 	day,
 	holiday,
+	isToday,
 	monthNameLower,
 }: {
 	day: number
 	holiday?: Feriado
+	isToday: boolean
 	monthNameLower: string
 }) {
 	return (
@@ -74,14 +81,17 @@ function DayCell({
 		<div
 			role="gridcell"
 			tabIndex={-1}
+			aria-current={isToday ? "date" : undefined}
 			aria-label={
 				holiday
 					? formatHolidayAriaLabel(holiday)
 					: `${day} de ${monthNameLower}`
 			}
 			className={cn(
-				"flex min-h-10 flex-col items-center justify-center rounded-md border p-1 text-sm",
-				holiday ? "border-primary bg-primary/10" : "border-transparent",
+				"flex min-h-14 flex-col items-center justify-center rounded-md border p-1 text-sm",
+				holiday || isToday
+					? "border-primary bg-primary/10"
+					: "border-transparent",
 			)}
 		>
 			<span className="block font-mono leading-none">{day}</span>
@@ -104,6 +114,7 @@ function renderDayCells(
 	monthNameLower: string,
 ) {
 	const daysInMonth = getDaysInMonth(year, monthIndex)
+	const todayStr = getTodayDateStr()
 	return Array.from({ length: daysInMonth }, (_, index) => {
 		const day = index + 1
 		const dateStr = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
@@ -113,6 +124,7 @@ function renderDayCells(
 				key={dateStr}
 				day={day}
 				holiday={holiday}
+				isToday={dateStr === todayStr}
 				monthNameLower={monthNameLower}
 			/>
 		)

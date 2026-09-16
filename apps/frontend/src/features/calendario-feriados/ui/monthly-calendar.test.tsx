@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, test } from "vitest"
+import { describe, expect, test, vi } from "vitest"
 import { MonthlyCalendar } from "./monthly-calendar"
 
 describe("MonthlyCalendar", () => {
@@ -78,5 +78,28 @@ describe("MonthlyCalendar", () => {
 		expect(
 			screen.getByRole("button", { name: /Próximo mês, fevereiro 2026/ }),
 		).toBeInTheDocument()
+	})
+
+	test("destaca o dia atual com aria-current e a mesma cor primária do feriado", () => {
+		vi.useFakeTimers()
+		vi.setSystemTime(new Date(2026, 8, 7, 12, 0, 0))
+
+		try {
+			render(
+				<MonthlyCalendar
+					monthIndex={8}
+					year={2026}
+					feriados={[]}
+					onPrevMonth={() => {}}
+					onNextMonth={() => {}}
+				/>,
+			)
+
+			const todayCell = screen.getByLabelText("7 de setembro")
+			expect(todayCell).toHaveAttribute("aria-current", "date")
+			expect(todayCell).toHaveClass("border-primary", "bg-primary/10")
+		} finally {
+			vi.useRealTimers()
+		}
 	})
 })
