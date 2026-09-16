@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { render, screen, within } from "@testing-library/react"
+import { act, render, screen, within } from "@testing-library/react"
 import type { ReactNode } from "react"
-import { beforeEach, describe, expect, test, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { UserDetailContainer } from "./user-detail-container"
 
@@ -88,5 +88,36 @@ describe("UserDetailContainer", () => {
 		const wrapper = container.firstChild as HTMLElement
 		expect(wrapper.className).toContain("lg:self-start")
 		expect(wrapper.className).toContain("lg:sticky")
+	})
+
+	describe("FR-006, FR-007: transição do painel ao trocar/fechar seleção no desktop", () => {
+		beforeEach(() => {
+			vi.useFakeTimers()
+		})
+
+		afterEach(() => {
+			vi.useRealTimers()
+		})
+
+		test("ao desselecionar, mantém o painel visível durante os 300ms antes de mostrar o EmptyState", () => {
+			isDesktopMock.mockReturnValue(true)
+			const user = buildUser()
+			const { rerender } = renderContainer(user)
+			expect(screen.getByRole("banner")).toBeInTheDocument()
+
+			rerender(<UserDetailContainer user={null} onClose={vi.fn()} />)
+
+			// EmptyState aparece de imediato; o painel antigo continua montado
+			// durante a janela de saída da transição (FR-006, FR-007).
+			expect(screen.getByRole("banner")).toBeInTheDocument()
+			expect(screen.getByText(/selecione um usuário/i)).toBeInTheDocument()
+
+			act(() => {
+				vi.advanceTimersByTime(300)
+			})
+
+			expect(screen.queryByRole("banner")).not.toBeInTheDocument()
+			expect(screen.getByText(/selecione um usuário/i)).toBeInTheDocument()
+		})
 	})
 })

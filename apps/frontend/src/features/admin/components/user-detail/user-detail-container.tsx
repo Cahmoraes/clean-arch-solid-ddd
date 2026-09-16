@@ -2,6 +2,7 @@
 
 import { UserRound } from "lucide-react"
 import { useEffect, useRef } from "react"
+import { AnimatedPanel } from "@/components/ui/animated-panel"
 import { EmptyState } from "@/components/ui/empty-state"
 import {
 	Sheet,
@@ -30,24 +31,29 @@ function DesktopView({
 	onClose: () => void
 	onUserPatched?: (patch: Partial<AdminUser>) => void
 }) {
-	if (!user) {
-		return (
-			<EmptyState
-				icon={UserRound}
-				title="Selecione um usuário"
-				description="Escolha um usuário na lista para ver os detalhes."
-				className="lg:self-start lg:sticky lg:top-4"
-			/>
-		)
-	}
 	return (
-		<div className="rounded-lg border border-border bg-card p-5 lg:self-start lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
-			<UserDetailPanel
-				user={user}
-				onClose={onClose}
-				onUserPatched={onUserPatched}
-			/>
-		</div>
+		<>
+			{!user && (
+				<EmptyState
+					icon={UserRound}
+					title="Selecione um usuário"
+					description="Escolha um usuário na lista para ver os detalhes."
+					className="lg:self-start lg:sticky lg:top-4"
+				/>
+			)}
+			<AnimatedPanel
+				open={user !== null}
+				className="rounded-lg border border-border bg-card p-5 lg:self-start lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto"
+			>
+				{user ? (
+					<UserDetailPanel
+						user={user}
+						onClose={onClose}
+						onUserPatched={onUserPatched}
+					/>
+				) : null}
+			</AnimatedPanel>
+		</>
 	)
 }
 
