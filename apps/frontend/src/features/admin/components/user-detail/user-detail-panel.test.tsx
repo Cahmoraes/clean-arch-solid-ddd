@@ -46,14 +46,12 @@ describe("UserDetailPanel", () => {
 		useAuthStore.getState().clear()
 	})
 
-	test("exibe nome, e-mail e as duas abas", () => {
+	test("exibe nome, e-mail e as três abas", () => {
 		renderPanel(buildUser())
 		const header = within(screen.getByRole("banner"))
 		expect(header.getByText("João Damasio")).toBeInTheDocument()
 		expect(screen.getByRole("tab", { name: "Detalhes" })).toBeInTheDocument()
-		expect(
-			screen.queryByRole("tab", { name: "Permissões" }),
-		).not.toBeInTheDocument()
+		expect(screen.getByRole("tab", { name: "Permissões" })).toBeInTheDocument()
 		expect(screen.getByRole("tab", { name: "Atividade" })).toBeInTheDocument()
 	})
 
@@ -63,6 +61,28 @@ describe("UserDetailPanel", () => {
 		await user.click(screen.getByRole("tab", { name: "Atividade" }))
 		expect(
 			screen.getByText("Sem dados de atividade disponíveis"),
+		).toBeInTheDocument()
+	})
+
+	test("FR-010/FR-011: aba Permissões exibe a role atual e aciona a confirmação de promoção/rebaixamento", async () => {
+		const user = userEvent.setup()
+		useAuthStore
+			.getState()
+			.setSession(
+				makeTestJwt({ sub: "root-id", role: "ADMIN", isSuperAdmin: true }),
+			)
+		renderPanel(buildUser({ id: "target-id", role: "MEMBER" }))
+
+		await user.click(screen.getByRole("tab", { name: "Permissões" }))
+		expect(
+			screen.getByText("Acesso somente às próprias informações."),
+		).toBeInTheDocument()
+
+		await user.click(
+			screen.getByRole("button", { name: /tornar administrador/i }),
+		)
+		expect(
+			screen.getByRole("heading", { name: /tornar administrador/i }),
 		).toBeInTheDocument()
 	})
 
