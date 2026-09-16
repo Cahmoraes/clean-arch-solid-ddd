@@ -23,7 +23,9 @@ e do mockup gerado no visual companion durante o brainstorming.
 - **Hierarquia por contraste, não por cor nova:** a cor primária (`--color-primary #39e58c`,
   token VOLT) passa a ser usada exclusivamente para dois estados no grid — dia **hoje**
   (borda sólida) e **feriado** (fundo `primary/10` + borda) — em vez de aparecer de forma
-  genérica em outros elementos decorativos da tela.
+  genérica em outros elementos decorativos da tela. **Nota:** o destaque de "hoje" não existe
+  na implementação atual (só o feriado é destacado hoje) — é introduzido como parte deste
+  redesenho, reaproveitando a mesma classe visual já usada no feriado.
 - **Grid do mês mais expressivo:** células maiores (`min-h-14`, hoje `min-h-10`), mantendo
   `rounded-md` e o texto do feriado fora da célula (clipped, como hoje) — o nome completo do
   feriado permanece na sidebar, nunca espremido dentro da célula.
