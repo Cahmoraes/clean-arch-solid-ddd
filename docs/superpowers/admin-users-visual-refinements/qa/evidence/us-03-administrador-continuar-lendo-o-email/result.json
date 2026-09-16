@@ -1,0 +1,12 @@
+{
+  "us_id": "us-03",
+  "user_story": "Como administrador, eu quero continuar lendo o e-mail do usuário sem esforço quando o card dele estiver em destaque, para que a cor de destaque não atrapalhe a leitura de um dado que uso para identificar a pessoa certa.",
+  "requirements": ["FR-005"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "apps/frontend/src/features/admin/components/user-row.test.tsx: 19 testes passaram, 0 falharam. Cobertura dedicada ao FR-005: 'FR-005: e-mail sobe para highlight-foreground só no destaque' e 'FR-005: e-mail em destaque não usa mais o token antigo de contraste insuficiente no dark' (regressão do finding de contraste WCAG 1.4.1/1.4.3, commit c31fcc18).",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "IV report não faz parte deste pipeline (workflow.independent_verification: false); tests localizados manualmente via git log (commit c31fcc18) e grep no spec. Implementação usa token dedicado --color-highlight-foreground (globals.css:34,99) aplicado via classe text-highlight-foreground em user-row.tsx quando isSelected=true, mesmo mecanismo descrito no spec (seção sobre contraste do e-mail). Screenshot em /admin/usuarios (login admin@admin.com, seed) confirma linha em destaque (fundo verde) com e-mail 'qa-us06-member@ex…' legível em texto claro, sem baixo contraste."
+}

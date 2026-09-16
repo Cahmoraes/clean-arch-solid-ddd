@@ -1,0 +1,12 @@
+{
+  "us_id": "us-04",
+  "user_story": "Como administrador, eu quero que o painel de detalhes abra e feche com uma transição suave, para que a troca de usuário selecionado não pareça abrupta.",
+  "requirements": ["FR-006", "FR-007"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "apps/frontend/src/components/ui/animated-panel.test.tsx (4 testes) + apps/frontend/src/features/admin/components/user-detail/user-detail-container.test.tsx (7 testes): 11 testes passaram, 0 falharam. Cobrem: AnimatedPanel não renderiza quando open=false, renderiza quando open=true, mantém conteúdo visível durante saída por 299ms e remove aos 300ms; UserDetailContainer mantém painel visível durante os 300ms de saída no desktop e preserva exatamente 2 filhos diretos no grid durante o fechamento (evita quebra de layout).",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "IV report não faz parte deste pipeline (workflow.independent_verification: false); tests localizados manualmente via grep por FR-006/FR-007 no código de teste. FR-006 (transição perceptível, não instantânea) está corretamente implementado: AnimatedPanel (apps/frontend/src/components/ui/animated-panel.tsx) aplica fade+translateY/scale em 300ms ease-in-out via classes Tailwind, com testes e screenshot confirmando o painel populado em split-view. Divergência literal em FR-007 ('duração ... deve ser igual à duração já usada pela gaveta de detalhes em telas menores'): o Sheet mobile (apps/frontend/src/components/ui/sheet.tsx:63) usa durações assimétricas via Radix — data-[state=open]:duration-500 (abertura = 500ms) e data-[state=closed]:duration-300 (fechamento = 300ms), padrão shadcn não alterado por esta feature. O AnimatedPanel usa 300ms fixo nos dois sentidos (abertura e fechamento), então bate com o fechamento da gaveta (300=300) mas diverge da abertura (300 vs 500). O próprio spec de design (docs/superpowers/admin-users-visual-refinements/specs/admin-users-visual-refinements-design.md:114) afirma '300ms alinha com a duração de abertura do Sheet', o que está tecnicamente incorreto face ao código real (300ms é a duração de FECHAMENTO da gaveta, não de abertura) — nenhum teste existente verifica essa relação contra o valor real do Sheet, todos hardcodam 300ms como esperado. Comportamento visível (transição suave, sem abrupção) está satisfeito; a igualdade exata de duração exigida por FR-007 só se sustenta para o fechamento."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como administrador, eu quero que o usuário aberto no painel de detalhes tenha uma cor claramente diferente dos demais usuários apenas marcados para ação em massa, para que eu não confunda qual está em destaque ao selecionar vários de uma vez.",
+  "requirements": ["FR-003", "FR-004"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "user-row.test.tsx: 19 testes passaram, 0 falharam. Inclui teste explícito 'FR-003, FR-004: destaque e marcado usam cores de fundo distintas' que confirma isSelected aplica bg-accent/40 (e não bg-selected-tint) e checked-sem-isSelected aplica bg-selected-tint (e não bg-accent/40).",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Cobertura de teste já existia e é direta (verifica classes de fundo mutuamente exclusivas), sem necessidade de teste novo. Confirmado em código: --color-accent (#39e58c) para destaque vs. --color-selected-tint (#f7f7f3 light / #1d1d1d dark, tom neutro de superfície) para apenas marcado, tokens definidos em apps/frontend/src/app/globals.css nos dois temas — satisfaz FR-003. Para FR-004, confirmado que a cor do checkbox marcado (data-[state=checked]:bg-primary, indigo) é um terceiro token distinto de accent e de selected-tint, então nenhuma das três cores colide. Verificação visual ao vivo via playwright-cli: logado como admin, buscado dois usuários de teste ('QA Member Destaque' aberto no painel de detalhes, 'QA Member Marcado' apenas com checkbox marcado) — screenshot confirma visualmente o verde accent forte no destaque vs. o tom neutro escuro no apenas marcado, claramente distinguíveis num relance."
+}

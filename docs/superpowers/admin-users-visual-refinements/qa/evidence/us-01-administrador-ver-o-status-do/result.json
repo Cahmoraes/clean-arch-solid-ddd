@@ -1,0 +1,12 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como administrador, eu quero ver o status do usuário sem que ele espreme o badge de papel, para que eu leia nome, papel e status rapidamente mesmo em cards estreitos.",
+  "requirements": ["FR-001", "FR-002"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "src/features/admin/components/user-row.test.tsx: 19 testes passaram, 0 falharam. Cobertura direta de FR-001/FR-002 no teste 'FR-001, FR-002: status vira faixa lateral, papel continua como único pill' (linha 68) e na regressão 'mantém a faixa de status visível quando a linha está apenas marcada' (linha 251).",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Relatório de Independent Verification não faz parte deste pipeline (workflow.independent_verification: false) — localizei os testes eu mesmo. Implementação (UserRow em apps/frontend/src/features/admin/components/user-row.tsx + StatusBadge em apps/frontend/src/components/ui/status-badge.tsx) satisfaz FR-001 literalmente: status vira indicador de borda lateral colorida por tom (statusStripeBorderClass) com texto sr-only equivalente para leitor de tela, badge textual de status foi removido. FR-002: RoleBadge (Membro/Administrador) permanece único badge textual visível, ocupando o espaço horizontal liberado. Verificação visual via playwright-cli em /admin/usuarios logado como admin confirmou: cada linha exibe só um pill (papel) e uma faixa fina colorida à esquerda, sem badge de status textual visível."
+}
