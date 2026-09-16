@@ -198,6 +198,74 @@ describe("AdminUsersPage modal integration", () => {
 		})
 	})
 
+	test("FR-008: após deep-link válido inicial, buscar/filtrar sem trocar de página seleciona o primeiro usuário da nova lista", async () => {
+		const user = userEvent.setup()
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams("userId=user-1") as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+		server.use(
+			http.get(`${apiBaseUrl}/users`, ({ request }) => {
+				const url = new URL(request.url)
+				const query = url.searchParams.get("query")
+				// Sem busca, a lista original (com o alvo do deep-link) é
+				// retornada; ao buscar "carlos", o backend retorna uma lista
+				// totalmente nova (sem user-1) — a página não muda em nenhum
+				// dos dois casos.
+				const users = query
+					? [
+							buildUser({
+								id: "user-2",
+								name: "Carlos Lima",
+								email: "carlos@example.com",
+							}),
+						]
+					: [
+							buildUser(),
+							buildUser({
+								id: "user-2",
+								name: "Carlos Lima",
+								email: "carlos@example.com",
+							}),
+						]
+				return HttpResponse.json(
+					{
+						users,
+						pagination: { page: 1, limit: 10, total: users.length },
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+		renderPage()
+
+		// deep-link inicial (?userId=user-1) seleciona user-1 e "trava" o
+		// fallback de FR-008 (deepLinkMatchedRef = true) para essa consulta.
+		await waitFor(() => {
+			expect(
+				within(screen.getByTestId("user-row-user-1")).getByRole("button"),
+			).toHaveAttribute("aria-pressed", "true")
+		})
+
+		const searchInput = screen.getByTestId("admin-users-search")
+		await user.type(searchInput, "carlos")
+
+		// A busca troca a consulta (debouncedQuery) sem trocar de página:
+		// user-1 sai da lista e o painel não pode ficar vazio nem preso à
+		// seleção antiga — o primeiro usuário da nova lista (Carlos) deve
+		// ser selecionado automaticamente, mesmo com deepLinkMatchedRef
+		// tendo sido `true` para a consulta anterior.
+		await waitFor(
+			() => {
+				expect(
+					within(screen.getByTestId("user-row-user-2")).getByRole("button"),
+				).toHaveAttribute("aria-pressed", "true")
+			},
+			{ timeout: 2000 },
+		)
+	}, 20_000)
+
 	test("não exibe o painel de detalhes quando não há resultados", async () => {
 		mockUsersList([])
 		renderPage()

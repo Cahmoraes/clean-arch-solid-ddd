@@ -280,12 +280,19 @@ function AdminUsersContent({
 	const [activeFilter, setActiveFilter] = useState<UserFilter>("all")
 	const { data: stats } = useUserStats()
 
+	// `deepLinkResolvedRef`/`deepLinkMatchedRef` precisam existir antes do
+	// efeito abaixo, que reseta `deepLinkMatchedRef` a cada troca de
+	// página/filtro/busca (ver explicação completa junto ao efeito que os
+	// preenche, mais abaixo).
+	const deepLinkResolvedRef = useRef(false)
+	const deepLinkMatchedRef = useRef(false)
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: debouncedQuery é o gatilho intencional para resetar a página; não é consumido no corpo do efeito
 	useEffect(() => {
 		setPage(1)
 	}, [debouncedQuery])
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: page, activeFilter e debouncedQuery são os gatilhos intencionais para limpar a seleção em massa e a seleção de detalhe; nenhum é consumido no corpo do efeito
+	// biome-ignore lint/correctness/useExhaustiveDependencies: page, activeFilter e debouncedQuery são os gatilhos intencionais para limpar a seleção em massa, a seleção de detalhe e a proteção de deep-link; nenhum é consumido no corpo do efeito
 	useEffect(() => {
 		setSelectedIds(new Set())
 		// Troca de página/filtro/busca invalida a seleção de detalhe atual: sem
@@ -297,6 +304,14 @@ function AdminUsersContent({
 		// activeFilter/debouncedQuery mudam (não a cada refetch), o fallback
 		// acima continua funcionando para o caso de mesma consulta.
 		setSelectedUser(null)
+		// A proteção do deep-link (`deepLinkMatchedRef`) só vale para a
+		// consulta em que ele chegou. Filtro/busca mudando SEM troca de
+		// página também dispara este efeito (debouncedQuery/activeFilter
+		// estão nas deps) e por isso também precisa resetar o ref aqui —
+		// sem isso, o fallback de FR-008 ficava bloqueado para sempre após
+		// um deep-link válido, mesmo com uma lista de resultados totalmente
+		// nova, deixando o painel de detalhe vazio.
+		deepLinkMatchedRef.current = false
 	}, [page, activeFilter, debouncedQuery])
 
 	const { data, isLoading, isError, error, isFetching } = useUsers({
@@ -320,12 +335,11 @@ function AdminUsersContent({
 	// não pode confiar em `selectedUser` (state só reflete o `setSelectedUser`
 	// abaixo em um próximo render), então lê o ref para não sobrescrever um
 	// deep-link válido com o fallback do primeiro usuário. `deepLinkMatchedRef`
-	// é resetado em `handlePageChange`: a proteção vale apenas para a página
-	// em que o deep-link chegou — depois de uma troca de página (limpeza
-	// explícita da seleção) o fallback de FR-008 volta a poder agir.
-	const deepLinkResolvedRef = useRef(false)
-	const deepLinkMatchedRef = useRef(false)
-
+	// é resetado no efeito de page/activeFilter/debouncedQuery (e também em
+	// `handlePageChange`, de forma explícita/síncrona): a proteção vale
+	// apenas para a consulta em que o deep-link chegou — depois de uma
+	// troca de página, filtro ou busca (limpeza explícita da seleção) o
+	// fallback de FR-008 volta a poder agir.
 	useEffect(() => {
 		if (deepLinkResolvedRef.current || !initialUserId || !data?.users?.length)
 			return
@@ -354,9 +368,12 @@ function AdminUsersContent({
 	// selectedUser já está preenchido e o guard abaixo bloqueia; se o
 	// userId é inválido/fora da lista atual, o fallback seleciona o
 	// primeiro usuário em vez de deixar o painel vazio para sempre. Após uma
-	// troca de página, `handlePageChange` zera `deepLinkMatchedRef` junto
-	// com `selectedUser`, permitindo que este fallback selecione o primeiro
-	// usuário da nova página normalmente. O guard `isFetching` evita
+	// troca de página, filtro ou busca, o efeito de
+	// page/activeFilter/debouncedQuery (e, no caso de página,
+	// `handlePageChange` de forma explícita/síncrona) zera
+	// `deepLinkMatchedRef` junto com `selectedUser`, permitindo que este
+	// fallback selecione o primeiro usuário da nova lista normalmente. O
+	// guard `isFetching` evita
 	// selecionar o primeiro usuário da página anterior: `useUsers` usa
 	// `placeholderData: keepPreviousData`, então `data` ainda aponta para a
 	// página antiga enquanto a nova página está sendo buscada — o fallback
