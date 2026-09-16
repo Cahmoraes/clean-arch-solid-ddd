@@ -36,6 +36,12 @@ afterEach(() => {
 })
 
 describe("useIsDesktop", () => {
+	test("consulta a media query a partir do breakpoint de 1024px (lg:)", () => {
+		mockMatchMedia(true)
+		renderHook(() => useIsDesktop())
+		expect(window.matchMedia).toHaveBeenCalledWith("(min-width: 1024px)")
+	})
+
 	test("retorna true quando o viewport corresponde a min-width 768px", () => {
 		mockMatchMedia(true)
 		const { result } = renderHook(() => useIsDesktop())

@@ -75,18 +75,18 @@ describe("UserDetailContainer", () => {
 		isDesktopMock.mockReturnValue(true)
 		const { container } = renderContainer(buildUser())
 		const wrapper = container.firstChild as HTMLElement
-		expect(wrapper.className).toContain("md:self-start")
-		expect(wrapper.className).toContain("md:sticky")
-		expect(wrapper.className).toContain("md:top-4")
-		expect(wrapper.className).toContain("md:max-h-[calc(100vh-2rem)]")
-		expect(wrapper.className).toContain("md:overflow-y-auto")
+		expect(wrapper.className).toContain("lg:self-start")
+		expect(wrapper.className).toContain("lg:sticky")
+		expect(wrapper.className).toContain("lg:top-4")
+		expect(wrapper.className).toContain("lg:max-h-[calc(100vh-2rem)]")
+		expect(wrapper.className).toContain("lg:overflow-y-auto")
 	})
 
 	test("no desktop sem usuário (EmptyState), wrapper tem classe self-start e sticky", () => {
 		isDesktopMock.mockReturnValue(true)
 		const { container } = renderContainer(null)
 		const wrapper = container.firstChild as HTMLElement
-		expect(wrapper.className).toContain("md:self-start")
-		expect(wrapper.className).toContain("md:sticky")
+		expect(wrapper.className).toContain("lg:self-start")
+		expect(wrapper.className).toContain("lg:sticky")
 	})
 })

@@ -308,6 +308,26 @@ describe("AdminUsersPage modal integration", () => {
 		})
 	})
 
+	test("FR-014: ao fechar o drawer mobile, o foco retorna para a linha de origem", async () => {
+		isDesktopMock.mockReturnValue(false)
+		const user = userEvent.setup()
+		mockUsersList()
+		renderPage()
+
+		const rowButton = within(
+			await screen.findByTestId("user-row-user-1"),
+		).getByRole("button")
+		await user.click(rowButton)
+
+		expect(screen.getByRole("dialog")).toBeInTheDocument()
+		await user.click(screen.getByRole("button", { name: /close/i }))
+
+		await waitFor(() => {
+			expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+		})
+		expect(rowButton).toHaveFocus()
+	})
+
 	test("renderiza o campo de busca na página", async () => {
 		mockUsersList()
 		renderPage()

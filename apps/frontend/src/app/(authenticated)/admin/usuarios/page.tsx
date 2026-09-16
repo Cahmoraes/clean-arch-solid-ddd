@@ -471,7 +471,10 @@ function AdminUsersContent({
 				</div>
 			</div>
 
-			<div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+			<div
+				data-testid="admin-users-grid"
+				className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]"
+			>
 				{/* biome-ignore lint/a11y/noStaticElementInteractions: navegação por teclado entre linhas da lista */}
 				<div ref={listContainerRef} onKeyDown={handleListKeyNavigation}>
 					<UsersContent
@@ -494,6 +497,7 @@ function AdminUsersContent({
 					user={activeSelectedUser}
 					onClose={handleModalClose}
 					onUserPatched={handleUserPatched}
+					onDrawerClosed={focusRow}
 				/>
 			</div>
 

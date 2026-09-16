@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 
-const DESKTOP_QUERY = "(min-width: 768px)"
+const DESKTOP_QUERY = "(min-width: 1024px)"
 
 function getMatch(): boolean {
 	if (typeof window === "undefined" || !window.matchMedia) return true

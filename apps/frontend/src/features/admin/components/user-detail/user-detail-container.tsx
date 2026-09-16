@@ -1,14 +1,15 @@
 "use client"
 
 import { UserRound } from "lucide-react"
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog"
+import { useEffect, useRef } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+} from "@/components/ui/sheet"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { useIsDesktop } from "@/lib/hooks/use-is-desktop"
 import { UserDetailPanel } from "./user-detail-panel"
@@ -17,6 +18,7 @@ export interface UserDetailContainerProps {
 	user: AdminUser | null
 	onClose: () => void
 	onUserPatched?: (patch: Partial<AdminUser>) => void
+	onDrawerClosed?: (userId: string) => void
 }
 
 function DesktopView({
@@ -34,12 +36,12 @@ function DesktopView({
 				icon={UserRound}
 				title="Selecione um usuário"
 				description="Escolha um usuário na lista para ver os detalhes."
-				className="md:self-start md:sticky md:top-4"
+				className="lg:self-start lg:sticky lg:top-4"
 			/>
 		)
 	}
 	return (
-		<div className="rounded-lg border border-border bg-card p-5 md:self-start md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:overflow-y-auto">
+		<div className="rounded-lg border border-border bg-card p-5 lg:self-start lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
 			<UserDetailPanel
 				user={user}
 				onClose={onClose}
@@ -53,25 +55,46 @@ function MobileView({
 	user,
 	onClose,
 	onUserPatched,
+	onDrawerClosed,
 }: {
 	user: AdminUser | null
 	onClose: () => void
 	onUserPatched?: (patch: Partial<AdminUser>) => void
+	onDrawerClosed?: (userId: string) => void
 }) {
+	// FR-014: guarda o último usuário exibido para devolver o foco à linha de
+	// origem quando o Radix efetivamente desmontar o conteúdo
+	// (onCloseAutoFocus), já que nesse momento `user` (prop) já pode ter
+	// voltado a `null`.
+	const lastUserIdRef = useRef<string | null>(null)
+	useEffect(() => {
+		if (user) lastUserIdRef.current = user.id
+	}, [user])
+
 	return (
-		<Dialog
+		<Sheet
 			open={user !== null}
 			onOpenChange={(open) => {
 				if (!open) onClose()
 			}}
 		>
-			<DialogContent className="max-w-2xl">
-				<DialogHeader className="sr-only">
-					<DialogTitle>Detalhes do usuário</DialogTitle>
-					<DialogDescription>
+			<SheetContent
+				className="w-full overflow-y-auto sm:max-w-md"
+				onCloseAutoFocus={(event) => {
+					// Assumimos o controle do foco pós-fechamento: o Radix não
+					// conhece a linha que abriu o drawer (Sheet controlado, sem
+					// `SheetTrigger`), então delegamos ao chamador via
+					// `onDrawerClosed`.
+					event.preventDefault()
+					if (lastUserIdRef.current) onDrawerClosed?.(lastUserIdRef.current)
+				}}
+			>
+				<SheetHeader className="sr-only">
+					<SheetTitle>Detalhes do usuário</SheetTitle>
+					<SheetDescription>
 						Visualize os dados da conta e execute ações administrativas.
-					</DialogDescription>
-				</DialogHeader>
+					</SheetDescription>
+				</SheetHeader>
 				{user ? (
 					<UserDetailPanel
 						user={user}
@@ -79,8 +102,8 @@ function MobileView({
 						onUserPatched={onUserPatched}
 					/>
 				) : null}
-			</DialogContent>
-		</Dialog>
+			</SheetContent>
+		</Sheet>
 	)
 }
 
@@ -88,6 +111,7 @@ export function UserDetailContainer({
 	user,
 	onClose,
 	onUserPatched,
+	onDrawerClosed,
 }: UserDetailContainerProps) {
 	const isDesktop = useIsDesktop()
 	if (isDesktop) {
@@ -100,6 +124,11 @@ export function UserDetailContainer({
 		)
 	}
 	return (
-		<MobileView user={user} onClose={onClose} onUserPatched={onUserPatched} />
+		<MobileView
+			user={user}
+			onClose={onClose}
+			onUserPatched={onUserPatched}
+			onDrawerClosed={onDrawerClosed}
+		/>
 	)
 }

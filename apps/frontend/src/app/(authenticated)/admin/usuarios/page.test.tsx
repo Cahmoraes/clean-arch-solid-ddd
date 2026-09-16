@@ -132,6 +132,26 @@ describe("AdminUsersPage", () => {
 		await waitFor(() => expect(requestedPages).toContain("3"))
 	})
 
+	test("FR-012: grid split-view usa proporção ~40/60 a partir do breakpoint de 1024px (lg:)", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users`, () =>
+				HttpResponse.json(
+					{
+						users: [userFixture("u1", 1)],
+						pagination: { page: 1, limit: 10, total: 1 },
+					},
+					{ status: 200 },
+				),
+			),
+		)
+		renderPage()
+
+		const grid = await screen.findByTestId("admin-users-grid")
+		expect(grid.className).toContain(
+			"lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]",
+		)
+	})
+
 	test("exibe mensagem de erro amigável em falha de rede", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users`, () =>
