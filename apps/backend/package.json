@@ -41,7 +41,7 @@
 		"docker:build": "docker build --pull --tag clean-arch-solid-ddd:latest --tag clean-arch-solid-ddd:$npm_package_version .",
 		"docker:build:nocache": "docker build --pull --no-cache --tag clean-arch-solid-ddd:latest --tag clean-arch-solid-ddd:$npm_package_version .",
 		"docker:run": "docker run --rm -p 3333:3333 --env-file .env --name clean-arch-solid-ddd clean-arch-solid-ddd:latest",
-		"openapi:export": "tsx scripts/export-openapi-spec.ts",
+		"openapi:export": "NODE_ENV=test tsx scripts/export-openapi-spec.ts",
 		"openapi:generate-client": "pnpm --filter @repo/api-types openapi:generate-client"
 	},
 	"keywords": [],

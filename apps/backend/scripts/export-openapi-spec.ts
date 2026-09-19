@@ -2,7 +2,10 @@ import "reflect-metadata"
 import { mkdirSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { serverBuild } from "@/bootstrap/server-build.js"
+import { GoogleAuthProviderImpl } from "@/session/infra/provider/google-auth-provider-impl.js"
 import { container } from "@/shared/infra/ioc/container.js"
+import { AUTH_TYPES } from "@/shared/infra/ioc/module/service-identifier/auth-types.js"
+import { NOTIFICATION_TYPES } from "@/shared/infra/ioc/module/service-identifier/notification-types.js"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types.js"
 import { FastifyAdapter } from "@/shared/infra/server/fastify-adapter.js"
 
@@ -30,6 +33,26 @@ async function exportSpec(): Promise<void> {
 	container
 		.rebind(SHARED_TYPES.Server.Fastify)
 		.to(FastifyAdapter)
+		.inSingletonScope()
+
+	// A spec so depende das rotas: neutraliza integracoes que exigem infra
+	// (RabbitMQ/Redis), no mesmo padrao de test/setup-test.ts
+	container
+		.rebind(NOTIFICATION_TYPES.EventHandlers.CreateNotificationOnCheckIn)
+		.toConstantValue({ subscribe: () => undefined })
+	container
+		.rebind(NOTIFICATION_TYPES.Infra.NotificationBroadcastSubscriber)
+		.toConstantValue({
+			start: async () => undefined,
+			stop: async () => undefined,
+		})
+	container
+		.rebind(NOTIFICATION_TYPES.Infra.NotificationQueueWorker)
+		.toConstantValue({ init: async () => undefined })
+	// Provider real, como em producao: evita expor a rota dev-token na spec
+	container
+		.rebind(AUTH_TYPES.Providers.GoogleAuth)
+		.to(GoogleAuthProviderImpl)
 		.inSingletonScope()
 
 	const server = await serverBuild()
