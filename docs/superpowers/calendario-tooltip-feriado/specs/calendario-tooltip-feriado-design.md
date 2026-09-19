@@ -70,6 +70,7 @@ Escopo: um componente (`DayCell`) e seu teste. Sem backend, sem novo componente,
 ## Testes
 
 Runner: Vitest + Testing Library (`pnpm test -- --run` em `apps/frontend`); descrições em PT-BR com `test`.
+- o teste passa a renderizar com `renderWithProviders` (de `@/test/render`, que inclui o `TooltipProvider`) em vez do `render` cru, que hoje não tem provider e quebraria o `Tooltip`;
 - feriado tem classes `border-warning bg-warning/10` e não `border-primary`; dia atual (relógio fixo com `vi.useFakeTimers({ toFake: ["Date"] })`) mantém `border-primary bg-primary/10`;
 - dia que é feriado e hoje: classes de hoje, `aria-current="date"`;
 - hover no feriado exibe `role="tooltip"` com o nome; dia comum não tem tooltip;
