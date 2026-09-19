@@ -21,6 +21,7 @@ coverage/
 .github
 .claude
 .opencode
+.serena
 
 # Python bytecode (skill scripts)
 __pycache__/
