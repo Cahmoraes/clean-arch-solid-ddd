@@ -1,6 +1,6 @@
 # Task 1: Tooltip no feriado e cor âmbar distinta do dia atual
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** N/A
 **Spec:** `../specs/calendario-tooltip-feriado-design.md`
 **Tier:** standard

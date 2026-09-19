@@ -9,7 +9,7 @@
 
 ## Tarefas
 
-- [ ] 1. Tooltip no feriado e cor âmbar distinta do dia atual → `task-01.md`
+- [x] 1. Tooltip no feriado e cor âmbar distinta do dia atual → `task-01.md`
 
 ## Ondas de Execução
 
