@@ -9,6 +9,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { getMonthLabel } from "@/features/calendario-feriados/hooks/use-calendar-navigation"
 import type { Feriado } from "@/features/calendario-feriados/model/feriado"
 import { cn } from "@/lib/cn"
@@ -65,6 +70,12 @@ function getTodayDateStr(): string {
 	return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
 }
 
+function getDayCellStateClass(isHoliday: boolean, isToday: boolean): string {
+	if (isToday) return "border-primary bg-primary/10"
+	if (isHoliday) return "border-warning bg-warning/10"
+	return "border-transparent"
+}
+
 function DayCell({
 	day,
 	holiday,
@@ -76,7 +87,7 @@ function DayCell({
 	isToday: boolean
 	monthNameLower: string
 }) {
-	return (
+	const cell = (
 		// biome-ignore lint/a11y/useSemanticElements: gridcell semantics required
 		<div
 			role="gridcell"
@@ -89,9 +100,7 @@ function DayCell({
 			}
 			className={cn(
 				"flex min-h-14 flex-col items-center justify-center rounded-md border p-1 text-sm",
-				holiday || isToday
-					? "border-primary bg-primary/10"
-					: "border-transparent",
+				getDayCellStateClass(Boolean(holiday), isToday),
 			)}
 		>
 			<span className="block font-mono leading-none">{day}</span>
@@ -104,6 +113,15 @@ function DayCell({
 				</span>
 			) : null}
 		</div>
+	)
+
+	if (!holiday) return cell
+
+	return (
+		<Tooltip>
+			<TooltipTrigger asChild>{cell}</TooltipTrigger>
+			<TooltipContent>{holiday.name}</TooltipContent>
+		</Tooltip>
 	)
 }
 
