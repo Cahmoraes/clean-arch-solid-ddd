@@ -1,7 +1,9 @@
+import { motion } from "motion/react"
 import type { KeyboardEvent } from "react"
 import { Avatar } from "@/components/ui/avatar"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RoleBadge } from "@/components/ui/role-badge"
+import { staggerItemVariants } from "@/components/ui/stagger"
 import {
 	StatusBadge,
 	statusStripeBorderClass,
@@ -159,7 +161,8 @@ export function UserRow({
 	)
 
 	return (
-		<li
+		<motion.li
+			variants={staggerItemVariants}
 			data-testid={`user-row-${user.id}`}
 			{...rowInteractiveProps}
 			className={rowClassName(
@@ -197,6 +200,6 @@ export function UserRow({
 					{statusLabel(user.status)}
 				</StatusBadge>
 			</div>
-		</li>
+		</motion.li>
 	)
 }

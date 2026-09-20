@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
+import { StaggerList } from "@/components/ui/stagger"
 import {
 	CHECK_INS_DEFAULT_PAGE_SIZE,
 	type CheckIn,
@@ -68,7 +69,10 @@ function AdminCheckInsEmpty({ status }: { status: CheckInFilterStatus }) {
 
 function AdminCheckInList({ items }: { items: ReadonlyArray<CheckIn> }) {
 	return (
-		<ul data-testid="admin-checkins-list" className="flex flex-col gap-2">
+		<StaggerList
+			data-testid="admin-checkins-list"
+			className="flex flex-col gap-2"
+		>
 			{items.map((checkIn) => (
 				<CheckInItem
 					key={checkIn.id}
@@ -76,7 +80,7 @@ function AdminCheckInList({ items }: { items: ReadonlyArray<CheckIn> }) {
 					action={<CheckInActions checkIn={checkIn} />}
 				/>
 			))}
-		</ul>
+		</StaggerList>
 	)
 }
 

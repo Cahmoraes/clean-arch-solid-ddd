@@ -11,6 +11,7 @@ import { NumberedPagination } from "@/components/ui/numbered-pagination"
 import { PageHeader } from "@/components/ui/page-header"
 import { SearchBar } from "@/components/ui/search-bar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { StaggerList } from "@/components/ui/stagger"
 import { useBulkChangeUserStatus } from "@/features/admin/api/use-bulk-change-user-status"
 import { useUserStats } from "@/features/admin/api/use-user-stats"
 import {
@@ -145,7 +146,10 @@ function UsersList({
 					<span className="text-sm text-subtle">Selecionar página</span>
 				</div>
 			) : null}
-			<ul data-testid="admin-users-list" className="flex flex-col gap-2">
+			<StaggerList
+				data-testid="admin-users-list"
+				className="flex flex-col gap-2"
+			>
 				{users.map((user) => (
 					<UserRow
 						key={user.id}
@@ -158,7 +162,7 @@ function UsersList({
 						onToggleSelect={onToggleSelect}
 					/>
 				))}
-			</ul>
+			</StaggerList>
 			{totalPages > 1 ? (
 				<NumberedPagination
 					page={page}

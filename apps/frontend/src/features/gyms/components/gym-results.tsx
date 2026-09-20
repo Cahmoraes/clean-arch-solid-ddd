@@ -4,6 +4,10 @@ import { Search } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
+import {
+	staggerItemVariants,
+	staggerListVariants,
+} from "@/components/ui/stagger"
 import type { GymSummary } from "@/features/gyms/api"
 import { GymCard } from "@/features/gyms/components/gym-card"
 import { GymCardSkeleton } from "@/features/gyms/components/gym-card-skeleton"
@@ -13,21 +17,6 @@ import type { GymView } from "@/lib/ui-state/gym-view-cookie"
 import { useGymViewStore } from "@/lib/ui-state/gym-view-store"
 
 const SKELETON_COUNT = 6
-
-const listVariants = {
-	hidden: {},
-	show: { transition: { staggerChildren: 0.07 } },
-} as const
-
-const cardVariants = {
-	hidden: { opacity: 0, scale: 0.92 },
-	show: {
-		opacity: 1,
-		scale: 1,
-		transition: { type: "spring", stiffness: 280, damping: 22 },
-	},
-	exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
-} as const
 
 export interface GymResultsProps {
 	query: string
@@ -109,8 +98,8 @@ function ResultsListItem({
 }) {
 	return (
 		<motion.li
-			variants={cardVariants}
-			exit={cardVariants.exit}
+			variants={staggerItemVariants}
+			exit={staggerItemVariants.exit}
 			className={cn(
 				view === "cards"
 					? "flex flex-col"
@@ -138,7 +127,7 @@ function ResultsList({
 	return (
 		<motion.ul
 			data-testid="gym-results-list"
-			variants={listVariants}
+			variants={staggerListVariants}
 			initial="hidden"
 			animate="show"
 			className={cn(

@@ -1,5 +1,7 @@
 import { Check, Clock, X } from "lucide-react"
+import { motion } from "motion/react"
 import type { ComponentType } from "react"
+import { staggerItemVariants } from "@/components/ui/stagger"
 import type { CheckIn } from "@/features/check-ins/api"
 import { cn } from "@/lib/cn"
 
@@ -33,7 +35,8 @@ export function CheckInItem({ checkIn, action }: CheckInItemProps) {
 	const { Icon } = chip
 
 	return (
-		<li
+		<motion.li
+			variants={staggerItemVariants}
 			data-testid={`checkin-item-${checkIn.id}`}
 			className="flex items-center gap-4 rounded-lg border border-border bg-card px-5 py-4 transition-[border-color] duration-300 ease-out hover:border-border-strong"
 		>
@@ -58,6 +61,6 @@ export function CheckInItem({ checkIn, action }: CheckInItemProps) {
 				{formatDate(checkIn.createdAt)}
 			</time>
 			{action}
-		</li>
+		</motion.li>
 	)
 }

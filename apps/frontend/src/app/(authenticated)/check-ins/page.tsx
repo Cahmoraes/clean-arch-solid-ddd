@@ -6,6 +6,7 @@ import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
+import { StaggerList } from "@/components/ui/stagger"
 import {
 	CHECK_INS_DEFAULT_PAGE_SIZE,
 	useMyCheckIns,
@@ -63,7 +64,7 @@ function CheckInsList({ items }: ListProps) {
 	const isAdmin = user?.role === "ADMIN"
 
 	return (
-		<ul data-testid="checkins-list" className="flex flex-col gap-2">
+		<StaggerList data-testid="checkins-list" className="flex flex-col gap-2">
 			{items.map((checkIn) => (
 				<CheckInItem
 					key={checkIn.id}
@@ -71,7 +72,7 @@ function CheckInsList({ items }: ListProps) {
 					action={isAdmin ? <CheckInActions checkIn={checkIn} /> : undefined}
 				/>
 			))}
-		</ul>
+		</StaggerList>
 	)
 }
 
