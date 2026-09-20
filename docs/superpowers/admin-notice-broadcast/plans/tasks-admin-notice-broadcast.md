@@ -12,11 +12,11 @@
 - [x] 1. Tipo NOTICE no domínio, Prisma e schema do GET [FR-006] → `task-01.md`
 - [x] 2. Persistência em lote de notificações (saveMany) [FR-006] → `task-02.md`
 - [x] 3. Provedor de destinatários ativos [FR-011, FR-012] → `task-03.md`
-- [ ] 4. Caso de uso de broadcast do aviso [FR-006, FR-010, FR-012] → `task-04.md`
-- [ ] 5. Endpoint POST de broadcast e tipos gerados [FR-001, FR-002, FR-003, FR-012] → `task-05.md`
-- [ ] 6. Autorização do endpoint de broadcast [FR-016] → `task-06.md`
-- [ ] 7. Aviso no sino com identificação própria [FR-006, FR-007, FR-008, FR-009] → `task-07.md`
-- [ ] 8. Schema, mutation e handler MSW do aviso [FR-002, FR-003] → `task-08.md`
+- [x] 4. Caso de uso de broadcast do aviso [FR-006, FR-010, FR-012] → `task-04.md`
+- [x] 5. Endpoint POST de broadcast e tipos gerados [FR-001, FR-002, FR-003, FR-012] → `task-05.md`
+- [x] 6. Autorização do endpoint de broadcast [FR-016] → `task-06.md`
+- [x] 7. Aviso no sino com identificação própria [FR-006, FR-007, FR-008, FR-009] → `task-07.md`
+- [x] 8. Schema, mutation e handler MSW do aviso [FR-002, FR-003] → `task-08.md`
 - [ ] 9. Pré-visualização do aviso [FR-013] → `task-09.md`
 - [ ] 10. Formulário e página Novo aviso [FR-001, FR-003, FR-004, FR-005, FR-013] → `task-10.md`
 - [x] 11. Item Novo aviso no menu de administração [FR-014] → `task-11.md`

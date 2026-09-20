@@ -1,6 +1,7 @@
 # Task 4: Caso de uso de broadcast do aviso [FR-006, FR-010, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `pnpm --filter backend exec vitest --run --config ./test/vite.config.app-domain.ts src/notification/application/use-case/broadcast-notice.usecase.test.ts` → exit 0
 **PRD:** `../prd/prd-admin-notice-broadcast.md`
 **Spec:** `../specs/admin-notice-broadcast-design.md`
 **Tier:** standard

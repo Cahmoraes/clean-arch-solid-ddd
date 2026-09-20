@@ -1,6 +1,7 @@
 # Task 6: Autorização do endpoint de broadcast [FR-016]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `pnpm --filter backend exec vitest --run --config ./test/vite.config.business-flow.ts src/notification/infra/controller/broadcast-notice.authorization.business-flow-test.ts` → exit 0
 **PRD:** `../prd/prd-admin-notice-broadcast.md`
 **Spec:** `../specs/admin-notice-broadcast-design.md`
 **Tier:** standard

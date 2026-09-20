@@ -1,6 +1,7 @@
 # Task 8: Schema, mutation e handler MSW do aviso [FR-002, FR-003]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `pnpm --filter frontend exec vitest run src/features/notices` → exit 0
 **PRD:** `../prd/prd-admin-notice-broadcast.md`
 **Spec:** `../specs/admin-notice-broadcast-design.md`
 **Tier:** standard
