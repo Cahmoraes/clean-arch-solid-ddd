@@ -196,4 +196,7 @@ export const handlers = [
 			{ status: 200 },
 		)
 	}),
+	http.post(endpoint("/api/v1/notifications/broadcast"), () =>
+		HttpResponse.json({ recipients: 3 }, { status: 201 }),
+	),
 ]
