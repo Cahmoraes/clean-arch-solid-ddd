@@ -1,0 +1,40 @@
+sequenceDiagram
+    participant Admin as 👤 Admin
+    participant FE as 🌐 Frontend (Novo aviso)
+    participant Guard as 🔐 RouteGuard
+    participant Ctrl as ⚙️ BroadcastNoticeController
+    participant UC as ⚙️ BroadcastNoticeUseCase
+    participant Prov as ⚙️ ActiveRecipientsProvider
+    participant Repo as 📦 NotificationRepository
+    participant DB as 💾 Postgres
+    participant MQ as 📬 RabbitMQ
+    participant Worker as ⚙️ NotificationQueueWorker
+    participant Sub as ⚙️ NotificationBroadcastSubscriber
+    participant SSE as 📡 SseManager
+    participant Bell as 🔔 Sino dos usuários
+
+    Admin->>FE: Preenche título e mensagem
+    FE->>Guard: POST /api/v1/notifications/broadcast {title, message}
+    alt Sem token JWT
+        Guard-->>FE: 401 Não autenticado
+    else Role MEMBER
+        Guard-->>FE: 403 Acesso negado
+    end
+    Guard->>Ctrl: JWT válido e role ADMIN
+    Ctrl->>UC: execute({title, message})
+    UC->>Prov: Listar ids de usuários ativos
+    Prov-->>UC: userIds
+    loop A cada lote de 500 usuários
+        UC->>Repo: saveMany(notificações tipo NOTICE)
+        Repo->>DB: INSERT lote
+        UC->>MQ: Publica cada notificação em notificationCreated
+        Note over UC,MQ: Best-effort: falhas são logadas e não falham a requisição
+    end
+    UC-->>Ctrl: Either sucesso {recipients: N}
+    Ctrl-->>FE: 201 Created
+    Note over MQ,Bell: Entrega assíncrona (pipeline existente, inalterado)
+    MQ->>Worker: Consome notificationCreated
+    Worker->>MQ: Publica no fanout notificationBroadcast
+    MQ->>Sub: Entrega a NotificationBroadcastSubscriber
+    Sub->>SSE: send(userId)
+    SSE-->>Bell: Evento SSE de nova notificação
