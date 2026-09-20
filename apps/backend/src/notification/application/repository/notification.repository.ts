@@ -19,6 +19,7 @@ export interface FindManyNotificationsOutput {
 
 export interface NotificationRepository {
 	save(notification: Notification): Promise<SaveNotificationResponse>
+	saveMany(notifications: Notification[]): Promise<void>
 	findById(id: string): Promise<Notification | null>
 	findManyByUserId(
 		input: FindManyNotificationsInput,

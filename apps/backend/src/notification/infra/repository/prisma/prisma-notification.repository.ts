@@ -46,6 +46,44 @@ export class PrismaNotificationRepository implements NotificationRepository {
 		return { id: notification.id }
 	}
 
+	public async saveMany(notifications: Notification[]): Promise<void> {
+		if (notifications.length === 0) return
+		await this.runInTransaction(async (client) => {
+			await client.notification.createMany({
+				data: notifications.map((notification) => ({
+					id: notification.id,
+					userId: notification.userId,
+					type: notification.type,
+					title: notification.title,
+					message: notification.message,
+					gymName: notification.gymName ?? null,
+					reason: notification.reason ?? null,
+					createdAt: notification.createdAt,
+					updatedAt: notification.updatedAt,
+				})),
+			})
+			await client.userNotification.createMany({
+				data: notifications.map((notification) => ({
+					notificationId: notification.id,
+					userId: notification.userId,
+					readAt: notification.readAt ?? null,
+					deletedAt: notification.deletedAt ?? null,
+					createdAt: notification.createdAt,
+					updatedAt: notification.updatedAt,
+				})),
+			})
+		})
+	}
+
+	private runInTransaction(
+		work: (client: Prisma.TransactionClient) => Promise<void>,
+	): Promise<void> {
+		if ("$transaction" in this.prismaClient) {
+			return this.prismaClient.$transaction(work)
+		}
+		return work(this.prismaClient)
+	}
+
 	private toCreateInput(notification: Notification) {
 		return {
 			id: notification.id,

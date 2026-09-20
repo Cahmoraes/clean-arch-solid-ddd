@@ -25,6 +25,12 @@ export class InMemoryNotificationRepository implements NotificationRepository {
 		return { id: notification.id }
 	}
 
+	public async saveMany(notifications: Notification[]): Promise<void> {
+		for (const notification of notifications) {
+			await this.save(notification)
+		}
+	}
+
 	public async findById(id: string): Promise<Notification | null> {
 		return this.notifications.find((n) => n.id === id) ?? null
 	}
