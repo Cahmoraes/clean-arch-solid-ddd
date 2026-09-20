@@ -8,6 +8,7 @@ import {
 	CreditCard,
 	LayoutDashboard,
 	LogOut,
+	Megaphone,
 	PanelLeftClose,
 	PanelLeftOpen,
 	User,
@@ -48,6 +49,7 @@ const ADMIN_NAV_ITEMS: ReadonlyArray<NavItem> = [
 	{ href: "/admin/usuarios", label: "Usuários", icon: Users },
 	{ href: "/admin/check-ins", label: "Check-ins", icon: CheckCircle },
 	{ href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+	{ href: "/admin/avisos/novo", label: "Novo aviso", icon: Megaphone },
 ]
 
 function isPathActive(pathname: string | null, href: string): boolean {

@@ -226,3 +226,61 @@ describe("AuthenticatedShell — skip-link", () => {
 		expect(container.querySelector("#main-content")).toBeInTheDocument()
 	})
 })
+
+describe("AuthenticatedShell — item Novo aviso", () => {
+	test("ADMIN vê o link Novo aviso apontando para /admin/avisos/novo", () => {
+		setRole("ADMIN")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+
+		expect(screen.getByRole("link", { name: "Novo aviso" })).toHaveAttribute(
+			"href",
+			"/admin/avisos/novo",
+		)
+	})
+
+	test("o link fica ativo em /admin/avisos/novo", () => {
+		setRole("ADMIN")
+		setPathname("/admin/avisos/novo")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+
+		expect(screen.getByRole("link", { name: "Novo aviso" })).toHaveAttribute(
+			"aria-current",
+			"page",
+		)
+	})
+
+	test("o link não fica ativo em outra rota de administração", () => {
+		setRole("ADMIN")
+		setPathname("/admin/usuarios")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+
+		expect(
+			screen.getByRole("link", { name: "Novo aviso" }),
+		).not.toHaveAttribute("aria-current")
+	})
+
+	test("MEMBER não vê o link Novo aviso", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+
+		expect(
+			screen.queryByRole("link", { name: "Novo aviso" }),
+		).not.toBeInTheDocument()
+	})
+})
