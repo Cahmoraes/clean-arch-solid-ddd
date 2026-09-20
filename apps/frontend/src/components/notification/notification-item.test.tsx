@@ -84,4 +84,21 @@ describe("NotificationItem com tipo NOTICE", () => {
 
 		expect(onMarkAsRead).not.toHaveBeenCalled()
 	})
+
+	test("Review Focus: HTML e script na mensagem aparecem como texto no sino, sem executar", () => {
+		const scriptMessage =
+			'<script>window.__xss = true</script><img src="x" onerror="window.__xss = true">'
+		const boldTitle = "<b>Título em negrito</b>"
+
+		const { container } = renderItem(
+			makeNotification({ title: boldTitle, message: scriptMessage }),
+		)
+
+		expect(screen.getByText(boldTitle)).toBeInTheDocument()
+		expect(screen.getByText(scriptMessage)).toBeInTheDocument()
+		expect(container.querySelector("script")).toBeNull()
+		expect(container.querySelector("img")).toBeNull()
+		expect(container.querySelector("b")).toBeNull()
+		expect(Reflect.get(window, "__xss")).toBeUndefined()
+	})
 })
