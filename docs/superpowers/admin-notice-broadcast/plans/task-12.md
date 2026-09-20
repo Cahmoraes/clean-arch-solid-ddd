@@ -1,6 +1,7 @@
 # Task 12: Acesso restrito da página Novo aviso [FR-015]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `pnpm --filter frontend exec vitest run src/app/(authenticated)/admin/avisos/novo/page.access.test.tsx` → exit 0
 **PRD:** `../prd/prd-admin-notice-broadcast.md`
 **Spec:** `../specs/admin-notice-broadcast-design.md`
 **Tier:** standard

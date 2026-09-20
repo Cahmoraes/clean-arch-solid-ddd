@@ -17,10 +17,10 @@
 - [x] 6. Autorização do endpoint de broadcast [FR-016] → `task-06.md`
 - [x] 7. Aviso no sino com identificação própria [FR-006, FR-007, FR-008, FR-009] → `task-07.md`
 - [x] 8. Schema, mutation e handler MSW do aviso [FR-002, FR-003] → `task-08.md`
-- [ ] 9. Pré-visualização do aviso [FR-013] → `task-09.md`
-- [ ] 10. Formulário e página Novo aviso [FR-001, FR-003, FR-004, FR-005, FR-013] → `task-10.md`
+- [x] 9. Pré-visualização do aviso [FR-013] → `task-09.md`
+- [x] 10. Formulário e página Novo aviso [FR-001, FR-003, FR-004, FR-005, FR-013] → `task-10.md`
 - [x] 11. Item Novo aviso no menu de administração [FR-014] → `task-11.md`
-- [ ] 12. Acesso restrito da página Novo aviso [FR-015] → `task-12.md`
+- [x] 12. Acesso restrito da página Novo aviso [FR-015] → `task-12.md`
 
 ## Foco de Revisão
 

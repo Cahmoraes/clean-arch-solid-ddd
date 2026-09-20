@@ -1,6 +1,7 @@
 # Task 10: Formulário e página Novo aviso [FR-001, FR-003, FR-004, FR-005, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `pnpm --filter frontend exec vitest run src/features/notices/components/notice-form.test.tsx` → exit 0
 **PRD:** `../prd/prd-admin-notice-broadcast.md`
 **Spec:** `../specs/admin-notice-broadcast-design.md`
 **Tier:** capable
