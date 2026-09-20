@@ -2,11 +2,15 @@ export const NOTIFICATION_TYPES = {
 	Repositories: {
 		Notification: Symbol.for("NotificationRepository"),
 	},
+	Providers: {
+		ActiveRecipients: Symbol.for("ActiveRecipientsProvider"),
+	},
 	UseCases: {
 		GetNotifications: Symbol.for("GetNotificationsUseCase"),
 		GetUnreadCount: Symbol.for("GetUnreadCountUseCase"),
 		MarkAsRead: Symbol.for("MarkAsReadUseCase"),
 		MarkAllAsRead: Symbol.for("MarkAllAsReadUseCase"),
+		BroadcastNotice: Symbol.for("BroadcastNoticeUseCase"),
 	},
 	Controllers: {
 		GetNotifications: Symbol.for("GetNotificationsController"),
