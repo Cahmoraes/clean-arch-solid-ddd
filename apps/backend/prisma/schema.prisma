@@ -147,6 +147,7 @@ enum NotificationType {
   CHECK_IN_REJECTED
   SECURITY_ALERT
   PROMOTION
+  NOTICE
 }
 
 enum Role {

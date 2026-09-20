@@ -10,6 +10,7 @@ import { NOTIFICATION_TYPES, SHARED_TYPES } from "@/shared/infra/ioc/types.js"
 import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-builder.js"
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server.js"
 import { NotificationRoutes } from "./routes/notification-routes.js"
+import { notificationTypeSchema } from "./schema/notification-type.schema.js"
 
 const getNotificationsQuerySchema = z.object({
 	page: z.coerce.number().int().min(1).default(1).meta({
@@ -34,14 +35,7 @@ const getNotificationsQuerySchema = z.object({
 
 const notificationItemSchema = z.object({
 	id: z.uuid().meta({ description: "Notification ID" }),
-	type: z
-		.enum([
-			"CHECK_IN_APPROVED",
-			"CHECK_IN_REJECTED",
-			"SECURITY_ALERT",
-			"PROMOTION",
-		])
-		.meta({ description: "Notification type" }),
+	type: notificationTypeSchema.meta({ description: "Notification type" }),
 	title: z.string().meta({ description: "Notification title" }),
 	message: z.string().meta({ description: "Notification message" }),
 	gymName: z.string().nullable().meta({ description: "Gym name" }),

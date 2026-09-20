@@ -1,10 +1,14 @@
 import { randomUUID } from "node:crypto"
 
-export type NotificationType =
-	| "CHECK_IN_APPROVED"
-	| "CHECK_IN_REJECTED"
-	| "SECURITY_ALERT"
-	| "PROMOTION"
+export const NOTIFICATION_TYPE_VALUES = [
+	"CHECK_IN_APPROVED",
+	"CHECK_IN_REJECTED",
+	"SECURITY_ALERT",
+	"PROMOTION",
+	"NOTICE",
+] as const
+
+export type NotificationType = (typeof NOTIFICATION_TYPE_VALUES)[number]
 
 export interface NotificationProps {
 	id: string

@@ -4157,7 +4157,7 @@ export interface paths {
                                  * @description Notification type
                                  * @enum {string}
                                  */
-                                type: "CHECK_IN_APPROVED" | "CHECK_IN_REJECTED" | "SECURITY_ALERT" | "PROMOTION";
+                                type: "CHECK_IN_APPROVED" | "CHECK_IN_REJECTED" | "SECURITY_ALERT" | "PROMOTION" | "NOTICE";
                                 /** @description Notification title */
                                 title: string;
                                 /** @description Notification message */

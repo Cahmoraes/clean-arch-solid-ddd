@@ -1,6 +1,6 @@
 "use client"
 
-import { CheckCircle, ShieldAlert, Tag, XCircle } from "lucide-react"
+import { CheckCircle, Megaphone, ShieldAlert, Tag, XCircle } from "lucide-react"
 import { cn } from "@/lib/cn"
 import type { NotificationItem as NotificationItemData } from "@/lib/notifications/use-notifications"
 
@@ -30,6 +30,10 @@ const NOTIFICATION_TYPE_STYLE: Record<
 	PROMOTION: {
 		icon: Tag,
 		iconClassName: "bg-accent/15 text-accent",
+	},
+	NOTICE: {
+		icon: Megaphone,
+		iconClassName: "bg-primary/15 text-primary",
 	},
 }
 
