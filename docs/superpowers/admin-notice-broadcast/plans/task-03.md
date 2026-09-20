@@ -1,6 +1,7 @@
 # Task 3: Provedor de destinatários ativos [FR-011, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `pnpm --filter backend test:run` → exit 0
 **PRD:** `../prd/prd-admin-notice-broadcast.md`
 **Spec:** `../specs/admin-notice-broadcast-design.md`
 **Tier:** standard

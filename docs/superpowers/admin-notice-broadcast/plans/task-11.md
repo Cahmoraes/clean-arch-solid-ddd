@@ -1,6 +1,7 @@
 # Task 11: Item Novo aviso no menu de administração [FR-014]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `pnpm --filter frontend exec vitest run src/components/layout/authenticated-shell.test.tsx` → exit 0
 **PRD:** `../prd/prd-admin-notice-broadcast.md`
 **Spec:** `../specs/admin-notice-broadcast-design.md`
 **Tier:** cheap
