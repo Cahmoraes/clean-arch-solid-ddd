@@ -116,10 +116,12 @@ describe("useUserActivity", () => {
 		)
 	})
 
-	test("chama /users/me/activity com página e retorna paginação", async () => {
+	test("chama /users/me/activity com página, pageSize e retorna paginação", async () => {
 		server.use(
 			http.get(`${apiBaseUrl}/users/me/activity`, ({ request }) => {
-				expect(new URL(request.url).searchParams.get("page")).toBe("2")
+				const searchParams = new URL(request.url).searchParams
+				expect(searchParams.get("page")).toBe("2")
+				expect(searchParams.get("pageSize")).toBe("50")
 				return HttpResponse.json(
 					{
 						events: [
@@ -130,6 +132,50 @@ describe("useUserActivity", () => {
 								occurredAt: "2025-01-10T12:00:00.000Z",
 							},
 						],
+						pagination: {
+							page: 2,
+							pageSize: 50,
+							total: 51,
+							totalPages: 2,
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+
+		const { result } = renderHook(
+			() => useUserActivity(undefined, { page: 2, pageSize: 50 }),
+			{
+				wrapper: wrapper(),
+			},
+		)
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data?.events).toHaveLength(1)
+		expect(result.current.data?.pagination).toEqual({
+			page: 2,
+			pageSize: 50,
+			total: 51,
+			totalPages: 2,
+		})
+		expect(userActivityQueryKey(undefined, 2, 50)).toEqual([
+			"user-activity",
+			"me",
+			2,
+			50,
+		])
+	})
+
+	test("não envia pageSize para o endpoint administrativo", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users/:userId/activity`, ({ request }) => {
+				const searchParams = new URL(request.url).searchParams
+				expect(searchParams.get("page")).toBe("2")
+				expect(searchParams.has("pageSize")).toBe(false)
+				return HttpResponse.json(
+					{
+						events: [],
 						pagination: {
 							page: 2,
 							pageSize: 20,
@@ -143,25 +189,68 @@ describe("useUserActivity", () => {
 		)
 
 		const { result } = renderHook(
-			() => useUserActivity(undefined, { page: 2 }),
+			() => useUserActivity("user-1", { page: 2, pageSize: 50 }),
+			{ wrapper: wrapper() },
+		)
+
+		await waitFor(() => expect(result.current.isSuccess).toBe(true))
+		expect(result.current.data?.pagination?.pageSize).toBe(20)
+	})
+
+	test("não reaproveita placeholder de outro pageSize no perfil", async () => {
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, async ({ request }) => {
+				const searchParams = new URL(request.url).searchParams
+				const pageSize = searchParams.get("pageSize") ?? "20"
+				if (pageSize === "50") {
+					await new Promise((resolve) => setTimeout(resolve, 50))
+				}
+				return HttpResponse.json(
+					{
+						events: [
+							{
+								id: `activity-size-${pageSize}`,
+								type: "LOGIN",
+								description: `Login com pageSize ${pageSize}`,
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+						],
+						pagination: {
+							page: 1,
+							pageSize: Number(pageSize),
+							total: 60,
+							totalPages: Math.ceil(60 / Number(pageSize)),
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+
+		const { result, rerender } = renderHook(
+			({ pageSize }: { pageSize: 10 | 50 }) =>
+				useUserActivity(undefined, { page: 1, pageSize }),
 			{
+				initialProps: { pageSize: 10 },
 				wrapper: wrapper(),
 			},
 		)
 
-		await waitFor(() => expect(result.current.isSuccess).toBe(true))
-		expect(result.current.data?.events).toHaveLength(1)
-		expect(result.current.data?.pagination).toEqual({
-			page: 2,
-			pageSize: 20,
-			total: 21,
-			totalPages: 2,
-		})
-		expect(userActivityQueryKey(undefined, 2)).toEqual([
-			"user-activity",
-			"me",
-			2,
-		])
+		await waitFor(() =>
+			expect(result.current.data?.events[0].description).toBe(
+				"Login com pageSize 10",
+			),
+		)
+
+		rerender({ pageSize: 50 })
+
+		expect(result.current.data).toBeUndefined()
+		expect(result.current.isFetching).toBe(true)
+		await waitFor(() =>
+			expect(result.current.data?.events[0].description).toBe(
+				"Login com pageSize 50",
+			),
+		)
 	})
 
 	test("inclui a página na chave administrativa e mantém isolamento do perfil", () => {
@@ -237,7 +326,12 @@ describe("useUserActivity", () => {
 
 		await waitFor(() => expect(result.current.isSuccess).toBe(true))
 		expect(result.current.data?.events).toEqual([])
-		expect(userActivityQueryKey(undefined)).toEqual(["user-activity", "me", 1])
+		expect(userActivityQueryKey(undefined)).toEqual([
+			"user-activity",
+			"me",
+			1,
+			20,
+		])
 	})
 
 	test("descarta placeholder de página inválida durante recuperação", async () => {

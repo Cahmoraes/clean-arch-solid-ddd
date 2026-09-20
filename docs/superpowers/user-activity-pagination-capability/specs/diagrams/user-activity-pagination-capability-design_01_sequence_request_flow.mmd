@@ -1,0 +1,24 @@
+sequenceDiagram
+    actor Usuário
+    participant Frontend
+    participant Hook as Hook TanStack Query
+    participant Controller
+    participant UseCase as Use Case
+    participant DAO
+    Usuário->>Frontend: Escolhe 10/20/50
+    Frontend->>Frontend: Redefine page=1 e pageSize na URL
+    Frontend->>Hook: Atualiza page e pageSize na query key
+    Hook->>Controller: GET /users/me/activity com page e pageSize
+    Controller->>Controller: Valida page e pageSize
+    alt pageSize inválido
+        Controller-->>Frontend: 400 Bad Request
+    else pageSize válido
+        Controller->>UseCase: Executa com page e pageSize
+        UseCase->>DAO: Busca eventos com pageSize
+        DAO->>DAO: Aplica skip/take
+        DAO-->>UseCase: Eventos e paginação
+        UseCase-->>Controller: events e pagination.pageSize
+        Controller-->>Hook: Response
+        Hook-->>Frontend: Dados para renderização
+        Frontend->>Frontend: Renderiza dados
+    end

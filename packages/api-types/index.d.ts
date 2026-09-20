@@ -1523,6 +1523,8 @@ export interface paths {
                 query?: {
                     /** @description Page number */
                     page?: number;
+                    /** @description Events per page */
+                    pageSize?: number;
                 };
                 header?: never;
                 path?: never;

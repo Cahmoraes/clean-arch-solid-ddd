@@ -175,6 +175,40 @@ describe("Buscar Histórico de Atividade do Usuário", () => {
 		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
 	})
 
+	test("deve ignorar pageSize no endpoint administrativo e manter 20 itens", async () => {
+		const targetId = randomUUID()
+		const activities = Array.from({ length: 30 }, (_, index) => ({
+			id: `activity-${index + 1}`,
+			type: "LOGIN" as const,
+			description: `Login ${index + 1}`,
+			occurredAt: new Date(
+				`2025-03-${String((index % 28) + 1).padStart(2, "0")}T12:00:00.000Z`,
+			),
+		}))
+		container
+			.rebind(USER_TYPES.DAO.UserActivity)
+			.toConstantValue(new InMemoryUserActivityDao(activities))
+		const server = await bootServerAndAuthenticateAdmin()
+		await createAndSaveUser({
+			userRepository,
+			id: targetId,
+			email: "target-admin-page-size@activity.test",
+		})
+
+		const response = await request(server.server)
+			.get(`/users/${targetId}/activity?page=1&pageSize=50`)
+			.set("Authorization", `Bearer ${adminToken}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.pagination).toEqual({
+			page: 1,
+			pageSize: 20,
+			total: 30,
+			totalPages: 2,
+		})
+		expect(response.body.events).toHaveLength(20)
+	})
+
 	test("deve retornar 404 quando o usuário alvo não existe", async () => {
 		const server = await bootServerAndAuthenticateAdmin()
 

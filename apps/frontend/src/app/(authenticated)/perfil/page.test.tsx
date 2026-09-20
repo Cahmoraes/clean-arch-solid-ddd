@@ -645,7 +645,7 @@ describe("ProfilePage — aba Atividade", () => {
 				queries: { retry: false, staleTime: 0, gcTime: 0 },
 			},
 		})
-		queryClient.setQueryData(["user-activity", "me", 999], {
+		queryClient.setQueryData(["user-activity", "me", 999, 20], {
 			events: [
 				{
 					id: "cached-activity",
@@ -684,5 +684,164 @@ describe("ProfilePage — aba Atividade", () => {
 		await waitFor(() => {
 			expect(replaceMock).toHaveBeenCalledWith("?page=3")
 		})
+	})
+
+	test("preserva pageSize ao navegar entre páginas da atividade", async () => {
+		const user = userEvent.setup()
+		const requestedParams: string[] = []
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, ({ request }) => {
+				const searchParams = new URL(request.url).searchParams
+				requestedParams.push(searchParams.toString())
+				const requestedPage = searchParams.get("page") ?? "1"
+				const requestedPageSize = searchParams.get("pageSize") ?? "20"
+				return HttpResponse.json(
+					{
+						events: [
+							{
+								id: `activity-page-${requestedPage}`,
+								type: "LOGIN",
+								description: `Login da página ${requestedPage}`,
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+						],
+						pagination: {
+							page: Number(requestedPage),
+							pageSize: Number(requestedPageSize),
+							total: 120,
+							totalPages: 3,
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+		currentSearchParams = new URLSearchParams("filter=all&page=2&pageSize=50")
+
+		renderProfilePageWithStatefulSearchParams()
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		expect(await screen.findByText("Login da página 2")).toBeInTheDocument()
+
+		await user.click(screen.getByTestId("activity-next"))
+
+		expect(replaceMock).toHaveBeenCalledWith("?filter=all&page=3&pageSize=50")
+		expect(await screen.findByText("Login da página 3")).toBeInTheDocument()
+		expect(requestedParams).toEqual([
+			"page=2&pageSize=50",
+			"page=3&pageSize=50",
+		])
+	})
+
+	test("canonicaliza pageSize inválido para 20 sem repetir replace", async () => {
+		const user = userEvent.setup()
+		const requestedPageSizes: string[] = []
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, ({ request }) => {
+				const requestedPageSize =
+					new URL(request.url).searchParams.get("pageSize") ?? ""
+				requestedPageSizes.push(requestedPageSize)
+				return HttpResponse.json(
+					{
+						events: [
+							{
+								id: "activity-default-size",
+								type: "LOGIN",
+								description: "Login com tamanho padrão",
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+						],
+						pagination: {
+							page: 1,
+							pageSize: 20,
+							total: 1,
+							totalPages: 1,
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+		currentSearchParams = new URLSearchParams("page=1&pageSize=999")
+
+		renderProfilePageWithStatefulSearchParams()
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+
+		await waitFor(() => {
+			expect(replaceMock).toHaveBeenCalledWith("?page=1&pageSize=20")
+		})
+		expect(replaceMock).toHaveBeenCalledTimes(1)
+		expect(currentSearchParams.get("pageSize")).toBe("20")
+		expect(requestedPageSizes).toEqual(["20"])
+		expect(
+			await screen.findByText("Login com tamanho padrão"),
+		).toBeInTheDocument()
+	})
+
+	test("altera itens por página, volta para page 1 e mantém demais parâmetros", async () => {
+		const user = userEvent.setup()
+		const requestedParams: string[] = []
+		server.use(
+			http.get(`${apiBaseUrl}/users/me/activity`, ({ request }) => {
+				const searchParams = new URL(request.url).searchParams
+				requestedParams.push(searchParams.toString())
+				const requestedPage = searchParams.get("page") ?? "1"
+				const requestedPageSize = searchParams.get("pageSize") ?? "20"
+				return HttpResponse.json(
+					{
+						events: [
+							{
+								id: `activity-${requestedPageSize}`,
+								type: "LOGIN",
+								description: `Login com ${requestedPageSize} itens`,
+								occurredAt: "2025-01-10T12:00:00.000Z",
+							},
+						],
+						pagination: {
+							page: Number(requestedPage),
+							pageSize: Number(requestedPageSize),
+							total: 120,
+							totalPages: Math.ceil(120 / Number(requestedPageSize)),
+						},
+					},
+					{ status: 200 },
+				)
+			}),
+		)
+		currentSearchParams = new URLSearchParams("filter=all&page=3&pageSize=20")
+
+		renderProfilePageWithStatefulSearchParams()
+
+		await waitFor(() => {
+			expect(screen.getByTestId("profile-card")).toBeInTheDocument()
+		})
+		await user.click(screen.getByRole("tab", { name: "Atividade" }))
+		expect(await screen.findByText("Login com 20 itens")).toBeInTheDocument()
+
+		await user.selectOptions(
+			screen.getByRole("combobox", { name: "Itens por página" }),
+			"50",
+		)
+
+		expect(replaceMock).toHaveBeenCalledWith("?filter=all&page=1&pageSize=50")
+		expect(await screen.findByText("Login com 50 itens")).toBeInTheDocument()
+		expect(
+			screen.getByRole("combobox", { name: "Itens por página" }),
+		).toHaveValue("50")
+		expect(screen.getByTestId("activity-summary")).toHaveTextContent(
+			"Exibindo 1–50 de 120 atividades",
+		)
+		expect(requestedParams).toEqual([
+			"page=3&pageSize=20",
+			"page=1&pageSize=50",
+		])
 	})
 })

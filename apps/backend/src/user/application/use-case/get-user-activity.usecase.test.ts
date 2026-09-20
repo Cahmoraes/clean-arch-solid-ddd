@@ -161,4 +161,44 @@ describe("GetUserActivityUseCase", () => {
 		expect(result.forceSuccess().value.events).toHaveLength(1)
 		expect(result.forceSuccess().value.events[0].id).toBe("activity-20")
 	})
+
+	test("deve aplicar pageSize informado para a atividade do próprio usuário", async () => {
+		const user = (
+			await User.create({
+				id: "user-1",
+				name: "John Doe",
+				email: "john@doe.com",
+				password: "any_password",
+			})
+		).forceSuccess().value
+		await userRepository.save(user)
+		const items = Array.from({ length: 25 }, (_, index) => ({
+			id: `activity-${index}`,
+			type: "LOGIN" as const,
+			description: "Login realizado",
+			occurredAt: new Date(
+				`2025-01-${String(index + 1).padStart(2, "0")}T00:00:00.000Z`,
+			),
+		}))
+		const sut = new GetUserActivityUseCase(
+			userRepository,
+			new FakeUserActivityDao(items),
+		)
+
+		const result = await sut.execute({
+			userId: "user-1",
+			page: 2,
+			pageSize: 10,
+		})
+
+		expect(result.isSuccess()).toBe(true)
+		expect(result.forceSuccess().value.pagination).toEqual({
+			page: 2,
+			pageSize: 10,
+			total: 25,
+			totalPages: 3,
+		})
+		expect(result.forceSuccess().value.events).toHaveLength(10)
+		expect(result.forceSuccess().value.events[0].id).toBe("activity-10")
+	})
 })

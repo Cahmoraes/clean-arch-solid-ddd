@@ -20,8 +20,11 @@ import {
 import { ActivityPaginationCardHeader } from "@/features/activity/components/activity-pagination-card-header"
 import { ActivityTab } from "@/features/activity/components/activity-tab"
 import {
+	DEFAULT_ACTIVITY_PAGE_SIZE,
 	getActivityPageFromParam,
+	getActivityPageSizeFromParam,
 	isValidActivityPageParam,
+	isValidActivityPageSizeParam,
 } from "@/features/activity/lib/activity-pagination"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"
 import { EditProfileModal } from "@/features/profile/components/EditProfileModal"
@@ -368,8 +371,11 @@ function ProfilePageContent() {
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const pageParam = searchParams.get("page")
+	const pageSizeParam = searchParams.get("pageSize")
 	const hasValidPage = isValidActivityPageParam(pageParam)
+	const hasValidPageSize = isValidActivityPageSizeParam(pageSizeParam)
 	const page = getActivityPageFromParam(pageParam)
+	const pageSize = getActivityPageSizeFromParam(pageSizeParam)
 	const {
 		data: me,
 		isLoading: meLoading,
@@ -392,6 +398,7 @@ function ProfilePageContent() {
 	} = useUserActivity(undefined, {
 		enabled: activeTab === "atividade",
 		page,
+		pageSize,
 	})
 	const activityPageOutOfRange = isActivityPageOutOfRange({
 		enabled:
@@ -412,6 +419,14 @@ function ProfilePageContent() {
 	}, [hasValidPage, pageParam, router, searchParams])
 
 	React.useEffect(() => {
+		if (pageSizeParam === null || hasValidPageSize) return
+
+		const params = new URLSearchParams(searchParams.toString())
+		params.set("pageSize", String(pageSize))
+		router.replace(`?${params.toString()}`)
+	}, [hasValidPageSize, pageSize, pageSizeParam, router, searchParams])
+
+	React.useEffect(() => {
 		if (!activityPageOutOfRange || !activityData?.pagination) return
 
 		router.replace(
@@ -425,6 +440,19 @@ function ProfilePageContent() {
 	function handleActivityPageChange(nextPage: number) {
 		const params = new URLSearchParams(searchParams.toString())
 		params.set("page", String(nextPage))
+		if (
+			searchParams.has("pageSize") ||
+			pageSize !== DEFAULT_ACTIVITY_PAGE_SIZE
+		) {
+			params.set("pageSize", String(pageSize))
+		}
+		router.replace(`?${params.toString()}`)
+	}
+
+	function handleActivityPageSizeChange(nextPageSize: number) {
+		const params = new URLSearchParams(searchParams.toString())
+		params.set("page", "1")
+		params.set("pageSize", String(nextPageSize))
 		router.replace(`?${params.toString()}`)
 	}
 
@@ -473,6 +501,8 @@ function ProfilePageContent() {
 							pagination={activityData?.pagination}
 							isTransitioning={isActivityFetching || isActivityPlaceholderData}
 							onPageChange={handleActivityPageChange}
+							onPageSizeChange={handleActivityPageSizeChange}
+							pageSize={pageSize}
 							testIdPrefix="activity-top"
 						/>
 						<CardContent className="pt-6">

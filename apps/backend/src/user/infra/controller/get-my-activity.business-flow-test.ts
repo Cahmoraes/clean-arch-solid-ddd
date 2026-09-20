@@ -159,6 +159,58 @@ describe("Buscar Meu Histórico de Atividade", () => {
 		})
 	})
 
+	test.each([
+		"10",
+		"20",
+		"50",
+	])("deve aceitar pageSize %s no histórico do próprio usuário", async (pageSize) => {
+		const activities = Array.from({ length: 55 }, (_, index) => ({
+			id: `activity-${index + 1}`,
+			type: "LOGIN" as const,
+			description: `Login ${index + 1}`,
+			occurredAt: new Date(
+				`2025-02-${String((index % 28) + 1).padStart(2, "0")}T12:00:00.000Z`,
+			),
+		}))
+		container
+			.rebind(USER_TYPES.DAO.UserActivity)
+			.toConstantValue(new InMemoryUserActivityDao(activities))
+		const server = await bootServerAndAuthenticateMember()
+
+		const response = await request(server.server)
+			.get(`/users/me/activity?page=1&pageSize=${pageSize}`)
+			.set("Authorization", `Bearer ${memberToken}`)
+
+		expect(response.status).toBe(HTTP_STATUS.OK)
+		expect(response.body.pagination).toEqual({
+			page: 1,
+			pageSize: Number(pageSize),
+			total: 55,
+			totalPages: Math.ceil(55 / Number(pageSize)),
+		})
+		expect(response.body.events).toHaveLength(Number(pageSize))
+	})
+
+	test.each([
+		"5",
+		"100",
+		"abc",
+	])("deve rejeitar pageSize inválido %s", async (pageSize) => {
+		container
+			.rebind(USER_TYPES.DAO.UserActivity)
+			.toConstantValue(new InMemoryUserActivityDao([]))
+		const server = await bootServerAndAuthenticateMember()
+
+		const response = await request(server.server)
+			.get(`/users/me/activity?pageSize=${pageSize}`)
+			.set("Authorization", `Bearer ${memberToken}`)
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+		expect(response.body).toEqual({
+			message: expect.any(String),
+		})
+	})
+
 	test("deve retornar 401 sem token", async () => {
 		container
 			.rebind(USER_TYPES.DAO.UserActivity)

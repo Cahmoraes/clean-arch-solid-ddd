@@ -9,12 +9,14 @@ import { OpenApiSchemaBuilder } from "@/shared/infra/openapi/openapi-schema-buil
 import type { HttpServer, Schema } from "@/shared/infra/server/http-server"
 import {
 	type GetUserActivityUseCase,
+	isUserActivityPageSize,
+	USER_ACTIVITY_MAX_PAGE_SIZE,
 	USER_ACTIVITY_PAGE_SIZE,
 } from "@/user/application/use-case/get-user-activity.usecase"
 import { UserRoutes } from "./routes/user-routes"
 
 const MAX_ACTIVITY_PAGE = Math.floor(
-	Number.MAX_SAFE_INTEGER / USER_ACTIVITY_PAGE_SIZE,
+	Number.MAX_SAFE_INTEGER / USER_ACTIVITY_MAX_PAGE_SIZE,
 )
 
 const getMyActivityQuerySchema = z.object({
@@ -23,6 +25,19 @@ const getMyActivityQuerySchema = z.object({
 		example: 1,
 		default: 1,
 	}),
+	pageSize: z.coerce
+		.number()
+		.int()
+		.refine(
+			(pageSize) => isUserActivityPageSize(pageSize),
+			"Page size must be one of 10, 20 or 50",
+		)
+		.optional()
+		.meta({
+			description: "Events per page",
+			example: USER_ACTIVITY_PAGE_SIZE,
+			default: USER_ACTIVITY_PAGE_SIZE,
+		}),
 })
 
 export class GetMyActivityController extends BaseController {
@@ -64,6 +79,7 @@ export class GetMyActivityController extends BaseController {
 		const result = await this.getUserActivity.execute({
 			userId: req.user.sub.id,
 			page: parsedQuery.value.page ?? 1,
+			pageSize: parsedQuery.value.pageSize,
 		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)
