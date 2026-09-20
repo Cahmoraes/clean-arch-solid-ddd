@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-20T17:26:54-03:00"
-updated_at: "2026-09-20T17:26:54-03:00"
+updated_at: "2026-09-20T17:33:14-03:00"
 ---
 
 # Aviso administrativo em broadcast - Design
@@ -149,12 +149,13 @@ Nomeados por responsabilidade.
 - **Justificativa técnica:** semântica correta e estilo próprio no sino; evita ambiguidade futura quando promoções existirem.
 - **Justificativa de negócio:** evita retrabalho de migração de dados depois.
 - **Trade-offs aceitos:** migration e edição nos 4 lugares onde o enum é duplicado (domínio, Prisma, migration, zod) mais o mapa de estilo do frontend.
+- **Banco de dados:** sem novas tabelas. A única mudança é a migration `ALTER TYPE "NotificationType" ADD VALUE 'NOTICE'`. Os dados usam as tabelas existentes: `notifications` (uma linha por destinatário, `gymName` e `reason` nulos) e `user_notifications` (vínculo por usuário com `readAt` e `deletedAt`), que o `saveMany` também grava.
 
 ### D4. Porta `ActiveRecipientsProvider` no contexto `notification`
 
 - **Contexto:** o contexto `notification` não pode depender do contexto `user`.
-- **Decisão:** porta própria implementada em infra com consulta Prisma dos usuários ativos.
-- **Trade-offs aceitos:** uma consulta a mais mantida em infra; a regra de "ativo" fica no provider e deve acompanhar o status do usuário (verificar `UserStatus` ao planejar).
+- **Decisão:** porta própria implementada em infra com consulta Prisma dos usuários ativos. "Ativo" significa `UserStatus = activated`; `suspended` e `locked` não recebem o aviso.
+- **Trade-offs aceitos:** uma consulta a mais mantida em infra; a regra de "ativo" vive no provider e precisa acompanhar o enum `UserStatus` se ele ganhar novos valores.
 
 ### D5. Sem deduplicação no servidor; admin incluído; sem confirmação modal
 
@@ -169,7 +170,7 @@ Nomeados por responsabilidade.
 | Falha parcial no meio dos blocos (parte dos usuários sem aviso) | 2 | 1 | 2 🟢 | Blocos já persistidos permanecem; a resposta reporta erro; sem retentativa automática nesta versão |
 | Drift do enum `NotificationType` (duplicado em 4 lugares) | 2 | 2 | 4 🟡 | Teste de contrato que percorre todos os valores; `pnpm tsc:check` e `pnpm generate:types` no gate final |
 | Requisição longa com base grande | 2 | 1 | 2 🟢 | D2 define o gatilho de migração |
-| Aviso enviado a usuário inativo/incorreto por regra de "ativo" errada | 2 | 2 | 4 🟡 | Verificar `UserStatus` real no plano; teste do provider com usuários de status variados |
+| Aviso enviado a usuário suspenso/bloqueado, ou omitido de ativo, por regra de "ativo" errada | 2 | 1 | 2 🟢 | Regra fixada na D4 (`activated`); teste do provider com usuários `activated`, `suspended` e `locked` |
 
 ## Testes
 
@@ -177,7 +178,7 @@ Nomeados por responsabilidade.
 
 - **Unitário do use case** (repositório, provider e fila em memória): cria uma notificação por destinatário; blocos de 500; contagem retornada; falha de publicação não falha o caso de uso; sem destinatários retorna sucesso com 0.
 - **Business-flow:** 401 sem token, 403 para `MEMBER`, 201 para `ADMIN`, corpo inválido retorna 400, e um segundo usuário vê o aviso em `GET /api/v1/notifications`.
-- **Prisma e2e:** `saveMany` persiste as linhas com o vínculo `UserNotification`; provider lista só usuários ativos.
+- **Prisma e2e:** `saveMany` persiste as linhas com o vínculo `UserNotification`; provider lista só usuários `activated` (exclui `suspended` e `locked`).
 - **Contrato do enum:** todos os valores de `NotificationType` aceitos pelo zod do GET e pelo mapa de estilo.
 - **Frontend:** validação do schema, preview reflete o digitado, submit chama a mutation e mostra toast, botão desabilitado durante o envio, item de menu visível só para ADMIN.
 - Testes do frontend escritos em PT-BR com `test` (nunca `it`), conforme `apps/frontend/AGENTS.md`.
