@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState } from "react"
+import { useId } from "react"
 import { NotificationItem } from "@/components/notification/notification-item"
 import type { NotificationItem as NotificationItemData } from "@/lib/notifications/use-notifications"
 
@@ -17,7 +17,7 @@ const ignoreMarkAsRead = (): void => undefined
 
 export function NoticePreview({ title, message }: NoticePreviewProps) {
 	const labelId = useId()
-	const [createdAt] = useState(() => new Date().toISOString())
+	const createdAt = new Date().toISOString()
 	const isEmpty = title.trim() === "" && message.trim() === ""
 	const notification: NotificationItemData = {
 		id: PREVIEW_NOTIFICATION_ID,

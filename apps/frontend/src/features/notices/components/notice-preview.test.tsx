@@ -1,10 +1,14 @@
 import { render, screen, within } from "@testing-library/react"
-import { describe, expect, test } from "vitest"
+import { afterEach, describe, expect, test, vi } from "vitest"
 import { NoticePreview } from "./notice-preview"
 
 const EMPTY_STATE = "Digite o título e a mensagem para ver a pré-visualização."
 
 describe("NoticePreview", () => {
+	afterEach(() => {
+		vi.useRealTimers()
+	})
+
 	test("exibe o rótulo Como o usuário verá", () => {
 		render(<NoticePreview title="Manutenção" message="Sistema fora do ar." />)
 
@@ -26,13 +30,29 @@ describe("NoticePreview", () => {
 		).toBeInTheDocument()
 	})
 
-	test("usa o item real de notificação, exibido como não lido e recente", () => {
+	test("usa o item real de notificação, exibido como recente", () => {
 		render(<NoticePreview title="Aviso" message="Mensagem" />)
 
 		expect(
 			within(screen.getByRole("list")).getByRole("button"),
 		).toBeInTheDocument()
 		expect(screen.getByText("agora")).toBeInTheDocument()
+	})
+
+	test("mantém o rótulo agora ao digitar após minutos de montagem", () => {
+		vi.useFakeTimers()
+		vi.setSystemTime(new Date("2026-01-01T10:00:00.000Z"))
+		const { rerender } = render(
+			<NoticePreview title="Manutenção" message="Sistema fora do ar." />,
+		)
+
+		vi.advanceTimersByTime(2 * 60_000)
+		rerender(
+			<NoticePreview title="Manutenção!" message="Sistema fora do ar hoje." />,
+		)
+
+		expect(screen.getByText("agora")).toBeInTheDocument()
+		expect(screen.queryByText(/atrás/)).not.toBeInTheDocument()
 	})
 
 	test("atualiza a pré-visualização quando as props mudam", () => {
