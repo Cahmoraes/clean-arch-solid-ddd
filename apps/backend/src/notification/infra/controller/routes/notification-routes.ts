@@ -4,6 +4,7 @@ export const NotificationRoutes = {
 	MARK_AS_READ: "/api/v1/notifications/:id/read",
 	MARK_ALL_AS_READ: "/api/v1/notifications/read-all",
 	STREAM: "/api/v1/notifications/stream",
+	BROADCAST: "/api/v1/notifications/broadcast",
 } as const
 
 export type NotificationRoutesType =

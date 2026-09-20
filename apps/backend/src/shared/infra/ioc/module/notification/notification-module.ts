@@ -1,15 +1,18 @@
 import { connect } from "amqp-connection-manager"
 import { ContainerModule } from "inversify"
 import { CreateNotificationOnCheckInEventHandler } from "@/notification/application/event-handler/create-notification-on-check-in-event.handler"
+import { BroadcastNoticeUseCase } from "@/notification/application/use-case/broadcast-notice.usecase"
 import { GetNotificationsUseCase } from "@/notification/application/use-case/get-notifications.usecase"
 import { GetUnreadCountUseCase } from "@/notification/application/use-case/get-unread-count.usecase"
 import { MarkAllAsReadUseCase } from "@/notification/application/use-case/mark-all-as-read.usecase"
 import { MarkAsReadUseCase } from "@/notification/application/use-case/mark-as-read.usecase"
+import { BroadcastNoticeController } from "@/notification/infra/controller/broadcast-notice.controller.js"
 import { GetNotificationsController } from "@/notification/infra/controller/get-notifications.controller.js"
 import { GetUnreadCountController } from "@/notification/infra/controller/get-unread-count.controller.js"
 import { MarkAllAsReadController } from "@/notification/infra/controller/mark-all-as-read.controller.js"
 import { MarkAsReadController } from "@/notification/infra/controller/mark-as-read.controller.js"
 import { NotificationStreamController } from "@/notification/infra/controller/notification-stream.controller.js"
+import { ActiveRecipientsProviderResolver } from "@/notification/infra/provider/active-recipients-provider-resolver"
 import { NotificationBroadcastPublisher } from "@/notification/infra/queue/notification-broadcast-publisher"
 import { NotificationBroadcastSubscriber } from "@/notification/infra/queue/notification-broadcast-subscriber"
 import { NotificationRepositoryProvider } from "@/notification/infra/repository/notification-repository-provider"
@@ -21,10 +24,14 @@ export const notificationModule = new ContainerModule(({ bind }) => {
 	bind(NOTIFICATION_TYPES.Repositories.Notification)
 		.toDynamicValue(NotificationRepositoryProvider.provide)
 		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Providers.ActiveRecipients)
+		.toDynamicValue(ActiveRecipientsProviderResolver.provide)
+		.inSingletonScope()
 	bind(NOTIFICATION_TYPES.UseCases.GetNotifications).to(GetNotificationsUseCase)
 	bind(NOTIFICATION_TYPES.UseCases.GetUnreadCount).to(GetUnreadCountUseCase)
 	bind(NOTIFICATION_TYPES.UseCases.MarkAsRead).to(MarkAsReadUseCase)
 	bind(NOTIFICATION_TYPES.UseCases.MarkAllAsRead).to(MarkAllAsReadUseCase)
+	bind(NOTIFICATION_TYPES.UseCases.BroadcastNotice).to(BroadcastNoticeUseCase)
 	bind(NOTIFICATION_TYPES.EventHandlers.CreateNotificationOnCheckIn)
 		.to(CreateNotificationOnCheckInEventHandler)
 		.inSingletonScope()
@@ -53,5 +60,8 @@ export const notificationModule = new ContainerModule(({ bind }) => {
 		.inSingletonScope()
 	bind(NOTIFICATION_TYPES.Controllers.NotificationStream)
 		.to(NotificationStreamController)
+		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Controllers.BroadcastNotice)
+		.to(BroadcastNoticeController)
 		.inSingletonScope()
 })

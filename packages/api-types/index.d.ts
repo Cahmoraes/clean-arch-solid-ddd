@@ -4453,6 +4453,100 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notifications/broadcast": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Broadcast a notice
+         * @description Sends a notice as an in-app notification to every active user. Requires admin authentication.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Notice title (1 to 100 characters)
+                         * @example Manutenção programada
+                         */
+                        title: string;
+                        /**
+                         * @description Notice message (1 to 500 characters)
+                         * @example O sistema ficará fora do ar hoje às 22h.
+                         */
+                        message: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Notice sent successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /**
+                             * @description Number of active users that received the notice
+                             * @example 42
+                             */
+                            recipients: number;
+                        };
+                    };
+                };
+                /** @description Invalid notice */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/analytics/checkins": {
         parameters: {
             query?: never;

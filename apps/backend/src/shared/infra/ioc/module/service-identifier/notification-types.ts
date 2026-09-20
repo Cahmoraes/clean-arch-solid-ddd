@@ -18,6 +18,7 @@ export const NOTIFICATION_TYPES = {
 		MarkAsRead: Symbol.for("MarkAsReadController"),
 		MarkAllAsRead: Symbol.for("MarkAllAsReadController"),
 		NotificationStream: Symbol.for("NotificationStreamController"),
+		BroadcastNotice: Symbol.for("BroadcastNoticeController"),
 	},
 	EventHandlers: {
 		CreateNotificationOnCheckIn: Symbol.for(

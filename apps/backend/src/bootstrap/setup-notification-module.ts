@@ -1,4 +1,5 @@
 import type { CreateNotificationOnCheckInEventHandler } from "@/notification/application/event-handler/create-notification-on-check-in-event.handler"
+import type { BroadcastNoticeController } from "@/notification/infra/controller/broadcast-notice.controller.js"
 import type { GetNotificationsController } from "@/notification/infra/controller/get-notifications.controller.js"
 import type { GetUnreadCountController } from "@/notification/infra/controller/get-unread-count.controller.js"
 import type { MarkAllAsReadController } from "@/notification/infra/controller/mark-all-as-read.controller.js"
@@ -39,6 +40,9 @@ export async function setupNotificationModule(): Promise<ModuleControllers> {
 			),
 			resolve<NotificationStreamController>(
 				NOTIFICATION_TYPES.Controllers.NotificationStream,
+			),
+			resolve<BroadcastNoticeController>(
+				NOTIFICATION_TYPES.Controllers.BroadcastNotice,
 			),
 		],
 		workers: [notificationQueueWorker],
