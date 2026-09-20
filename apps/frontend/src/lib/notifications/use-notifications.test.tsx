@@ -399,6 +399,43 @@ describe("useNotifications", () => {
 			expect(listCallsAfter).toBe(listCallsBefore)
 		})
 
+		test("aviso NOTICE recebido via SSE entra no topo da lista e invalida o contador de não lidas [FR-007, FR-008]", async () => {
+			mockNotificationsRequests(25)
+			const { wrapper } = createWrapper()
+			const { result } = renderHook(() => useNotifications(), { wrapper })
+			await waitFor(() => expect(result.current.isLoading).toBe(false))
+			const unreadCountCallsBefore = mockGet.mock.calls.filter(
+				(call) => call[0] === "/api/v1/notifications/unread-count",
+			).length
+			const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+			await act(async () => {
+				streamOptions?.onMessage({
+					type: "notification",
+					payload: {
+						notificationId: "notice-streamed-1",
+						userId: "user-1",
+						type: "NOTICE",
+						title: "Manutenção programada",
+						message: "O sistema ficará fora do ar hoje às 22h.",
+					},
+				})
+			})
+			await waitFor(() =>
+				expect(result.current.notifications[0]).toMatchObject({
+					id: "notice-streamed-1",
+					type: "NOTICE",
+					title: "Manutenção programada",
+					readAt: null,
+				}),
+			)
+			await waitFor(() => {
+				const unreadCountCallsAfter = mockGet.mock.calls.filter(
+					(call) => call[0] === "/api/v1/notifications/unread-count",
+				).length
+				expect(unreadCountCallsAfter).toBeGreaterThan(unreadCountCallsBefore)
+			})
+		})
+
 		test("chegada de notificação via SSE não descarta lotes já carregados via scroll [FR-007]", async () => {
 			mockNotificationsRequests(25)
 			const { wrapper } = createWrapper()
