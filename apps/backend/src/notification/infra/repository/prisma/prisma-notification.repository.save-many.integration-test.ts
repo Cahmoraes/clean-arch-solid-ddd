@@ -103,6 +103,40 @@ describe("PrismaNotificationRepository.saveMany", () => {
 		}
 	})
 
+	test("falha na escrita de user_notifications desfaz o insert em notifications", async () => {
+		// readAt so e gravado na segunda escrita (user_notifications) e esta fora
+		// do intervalo de timestamp do Postgres (limite: 4713 AC), entao a
+		// primeira escrita (notifications) ja teve sucesso quando a segunda falha.
+		const outOfRangeReadAt = new Date(-300_000_000_000_000)
+		const now = new Date()
+		const batch = userIds.map((userId, index) =>
+			Notification.restore({
+				id: randomUUID(),
+				userId,
+				type: "PROMOTION",
+				title: "Aviso em lote",
+				message: "Mensagem em lote",
+				readAt: index === userIds.length - 1 ? outOfRangeReadAt : undefined,
+				createdAt: now,
+				updatedAt: now,
+			}),
+		)
+		const batchIds = batch.map((notification) => notification.id)
+
+		await expect(sut.saveMany(batch)).rejects.toThrow()
+
+		expect(
+			await prismaClient.notification.count({
+				where: { id: { in: batchIds } },
+			}),
+		).toBe(0)
+		expect(
+			await prismaClient.userNotification.count({
+				where: { notificationId: { in: batchIds } },
+			}),
+		).toBe(0)
+	})
+
 	test("lote vazio nao grava nada", async () => {
 		await sut.saveMany([])
 		expect(
