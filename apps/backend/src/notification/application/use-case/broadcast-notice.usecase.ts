@@ -3,6 +3,7 @@ import type { ActiveRecipientsProvider } from "@/notification/application/provid
 import type { NotificationRepository } from "@/notification/application/repository/notification.repository.js"
 import { InvalidNoticeError } from "@/notification/domain/errors/invalid-notice-error.js"
 import { Notification } from "@/notification/domain/notification.js"
+import { NoticeAudience } from "@/notification/domain/value-object/notice-audience.js"
 import {
 	type Either,
 	failure,
@@ -52,7 +53,9 @@ export class BroadcastNoticeUseCase {
 		const message = input.message.trim()
 		const invalid = this.validate(title, message)
 		if (invalid) return failure(invalid)
-		const userIds = await this.activeRecipientsProvider.listActiveUserIds()
+		const userIds = await this.activeRecipientsProvider.listActiveUserIds(
+			NoticeAudience.all(),
+		)
 		for (const block of this.toBlocks(userIds)) {
 			const notifications = block.map((userId) =>
 				Notification.create({ userId, type: "NOTICE", title, message }),

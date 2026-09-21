@@ -1,3 +1,5 @@
+import type { NoticeAudience } from "@/notification/domain/value-object/notice-audience.js"
+
 export interface ActiveRecipientsProvider {
-	listActiveUserIds(): Promise<string[]>
+	listActiveUserIds(audience: NoticeAudience): Promise<string[]>
 }
