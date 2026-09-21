@@ -7,6 +7,7 @@ import {
 	NOTICE_TITLE_MAX,
 } from "@/notification/application/use-case/broadcast-notice.usecase.js"
 import { InvalidNoticeError } from "@/notification/domain/errors/invalid-notice-error.js"
+import { NoticeAudienceValues } from "@/notification/domain/value-object/notice-audience.js"
 import { BaseController } from "@/shared/infra/controller/base-controller.js"
 import { ResponseFactory } from "@/shared/infra/controller/factory/response-factory.js"
 import { Logger } from "@/shared/infra/decorator/logger.js"
@@ -28,11 +29,14 @@ const broadcastNoticeBodySchema = z.object({
 		description: "Notice message (1 to 500 characters)",
 		example: "O sistema ficará fora do ar hoje às 22h.",
 	}),
-	audience: z.enum(["ALL", "MEMBERS", "ADMINS"]).default("ALL").meta({
-		description:
-			"Who receives the notice: ALL (active members and admins), MEMBERS (active members only) or ADMINS (active admins only). Defaults to ALL",
-		example: "MEMBERS",
-	}),
+	audience: z
+		.enum(NoticeAudienceValues)
+		.default(NoticeAudienceValues.ALL)
+		.meta({
+			description:
+				"Who receives the notice: ALL (active members and admins), MEMBERS (active members only) or ADMINS (active admins only). Defaults to ALL",
+			example: "MEMBERS",
+		}),
 })
 
 const broadcastNoticeResponseSchema = z.object({
