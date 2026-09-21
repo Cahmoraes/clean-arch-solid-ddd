@@ -2,11 +2,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { beforeEach, describe, expect, test, vi } from "vitest"
+import { ApiError } from "@/lib/errors"
 import { logger } from "@/lib/observability"
 import { useNotificationStream } from "./use-notification-stream"
 import { useNotifications } from "./use-notifications"
 
-const { mockGet, mockPatch, mockUseAuthStore } = vi.hoisted(() => ({
+const { mockDelete, mockGet, mockPatch, mockUseAuthStore } = vi.hoisted(() => ({
+	mockDelete: vi.fn(),
 	mockGet: vi.fn(),
 	mockPatch: vi.fn(),
 	mockUseAuthStore: vi.fn(),
@@ -14,6 +16,7 @@ const { mockGet, mockPatch, mockUseAuthStore } = vi.hoisted(() => ({
 
 vi.mock("@/lib/api", () => ({
 	api: {
+		DELETE: mockDelete,
 		GET: mockGet,
 		PATCH: mockPatch,
 	},
@@ -186,8 +189,54 @@ function mockNotificationsRequests(total: number): void {
 	})
 }
 
+function resolveNotificationsGetWithDeletedState(
+	options:
+		| { params?: { query?: { offset?: number; limit?: number } } }
+		| undefined,
+	total: number,
+	deletedIds: Set<string>,
+) {
+	const query = options?.params?.query
+	const offset = query?.offset ?? 0
+	const limit = query?.limit ?? 10
+	const remaining = Array.from({ length: total }, (_, index) =>
+		makeNotificationItem(`notification-${index + 1}`, index + 1),
+	).filter((notification) => !deletedIds.has(notification.id))
+	return Promise.resolve({
+		data: {
+			notifications: remaining.slice(offset, offset + limit),
+			total: remaining.length,
+		},
+		error: undefined,
+	})
+}
+
+function mockNotificationsRequestsWithDeletedState(
+	total: number,
+	deletedIds: Set<string>,
+): void {
+	mockGet.mockImplementation((path, options) => {
+		if (path === "/api/v1/notifications") {
+			return resolveNotificationsGetWithDeletedState(options, total, deletedIds)
+		}
+		if (path === "/api/v1/notifications/unread-count") {
+			return Promise.resolve({ data: { count: 1 }, error: undefined })
+		}
+		throw new Error(`Unexpected GET: ${String(path)}`)
+	})
+}
+
+function countGetCalls(path: string): number {
+	return mockGet.mock.calls.filter((call) => call[0] === path).length
+}
+
 beforeEach(() => {
 	vi.clearAllMocks()
+	mockDelete.mockReset()
+	mockDelete.mockResolvedValue({
+		error: undefined,
+		response: { status: 204 },
+	})
 	authState = {
 		accessToken: "token",
 		expiresAt: null,
@@ -752,5 +801,263 @@ describe("useNotifications", () => {
 			expect(loggerErrorSpy).toHaveBeenCalled()
 			loggerErrorSpy.mockRestore()
 		})
+	})
+})
+
+describe("useNotifications: deleteNotification", () => {
+	test("remove o item da lista antes da resposta do servidor e chama DELETE [FR-002]", async () => {
+		mockDelete.mockReturnValue(new Promise(() => {}))
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		expect(
+			result.current.notifications.some((n) => n.id === "notification-3"),
+		).toBe(true)
+
+		await act(async () => {
+			void result.current.deleteNotification("notification-3")
+		})
+
+		await waitFor(() =>
+			expect(
+				result.current.notifications.some((n) => n.id === "notification-3"),
+			).toBe(false),
+		)
+		expect(result.current.notifications).toHaveLength(9)
+		expect(mockDelete).toHaveBeenCalledWith("/api/v1/notifications/{id}", {
+			params: { path: { id: "notification-3" } },
+		})
+	})
+
+	test("decrementa o contador de não lidas ao excluir uma notificação não lida [FR-008]", async () => {
+		mockDelete.mockReturnValue(new Promise(() => {}))
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		expect(result.current.unreadCount).toBe(1)
+
+		await act(async () => {
+			void result.current.deleteNotification("notification-1")
+		})
+
+		await waitFor(() => expect(result.current.unreadCount).toBe(0))
+	})
+
+	test("mantém o contador de não lidas ao excluir uma notificação já lida [FR-008]", async () => {
+		mockDelete.mockReturnValue(new Promise(() => {}))
+		mockNotificationsRequestsWithReadState(new Set(["notification-2"]))
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+		await act(async () => {
+			void result.current.deleteNotification("notification-2")
+		})
+
+		await waitFor(() =>
+			expect(
+				result.current.notifications.some((n) => n.id === "notification-2"),
+			).toBe(false),
+		)
+		expect(result.current.unreadCount).toBe(1)
+	})
+
+	test.each([
+		["da primeira página", "notification-3"],
+		["da segunda página", "notification-13"],
+	])("ajusta fetchedCount e total ao excluir um item %s: o próximo fetchNextPage pede o offset correto [FR-009]", async (_label, targetId) => {
+		mockDelete.mockReturnValue(new Promise(() => {}))
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		await act(async () => {
+			result.current.fetchNextPage()
+		})
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+		expect(result.current.notifications).toHaveLength(15)
+		expect(result.current.total).toBe(25)
+
+		await act(async () => {
+			void result.current.deleteNotification(targetId)
+		})
+		await waitFor(() => expect(result.current.total).toBe(24))
+		expect(result.current.hasNextPage).toBe(true)
+
+		await act(async () => {
+			result.current.fetchNextPage()
+		})
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+		expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+			params: {
+				query: { page: 1, unreadOnly: false, offset: 14, limit: 5 },
+			},
+		})
+	})
+
+	test.each([
+		["erro 5xx", () => new ApiError(500, "api_error", "Erro interno")],
+		["falha de rede", () => new Error("network error")],
+	])("restaura item, contador, fetchedCount e total em caso de %s [FR-003]", async (_label, makeError) => {
+		mockDelete.mockImplementation(() => Promise.reject(makeError()))
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		await act(async () => {
+			result.current.fetchNextPage()
+		})
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+		const idsBefore = result.current.notifications.map((n) => n.id)
+		expect(idsBefore).toHaveLength(15)
+
+		await act(async () => {
+			await result.current.deleteNotification("notification-3")
+		})
+
+		expect(result.current.notifications.map((n) => n.id)).toEqual(idsBefore)
+		expect(result.current.unreadCount).toBe(1)
+		expect(result.current.total).toBe(25)
+		await act(async () => {
+			result.current.fetchNextPage()
+		})
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+		expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+			params: {
+				query: { page: 1, unreadOnly: false, offset: 15, limit: 5 },
+			},
+		})
+		expect(result.current.notifications).toHaveLength(20)
+		expect(
+			result.current.notifications.some((n) => n.id === "notification-3"),
+		).toBe(true)
+	})
+
+	test("mantém a remoção e invalida a lista quando o servidor responde 404 [FR-010]", async () => {
+		const deletedIds = new Set<string>()
+		mockNotificationsRequestsWithDeletedState(25, deletedIds)
+		mockDelete.mockImplementation(() => {
+			deletedIds.add("notification-2")
+			return Promise.reject(
+				new ApiError(404, "api_error", "Notification not found"),
+			)
+		})
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		const listCallsBefore = countGetCalls("/api/v1/notifications")
+
+		await act(async () => {
+			await result.current.deleteNotification("notification-2")
+		})
+
+		await waitFor(() =>
+			expect(countGetCalls("/api/v1/notifications")).toBeGreaterThan(
+				listCallsBefore,
+			),
+		)
+		expect(
+			result.current.notifications.some((n) => n.id === "notification-2"),
+		).toBe(false)
+		expect(result.current.total).toBe(24)
+	})
+
+	test("em 204 invalida só a contagem de não lidas, sem refetch da lista [FR-002]", async () => {
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		const listCallsBefore = countGetCalls("/api/v1/notifications")
+		const countCallsBefore = countGetCalls("/api/v1/notifications/unread-count")
+
+		await act(async () => {
+			await result.current.deleteNotification("notification-1")
+		})
+
+		await waitFor(() =>
+			expect(
+				countGetCalls("/api/v1/notifications/unread-count"),
+			).toBeGreaterThan(countCallsBefore),
+		)
+		expect(countGetCalls("/api/v1/notifications")).toBe(listCallsBefore)
+		expect(
+			result.current.notifications.some((n) => n.id === "notification-1"),
+		).toBe(false)
+	})
+
+	test("Review Focus: clique duplo, o segundo DELETE devolve 404 e o item não reaparece nem é descontado duas vezes [FR-010]", async () => {
+		const deletedIds = new Set<string>()
+		mockNotificationsRequestsWithDeletedState(25, deletedIds)
+		let rejectSecond: (reason: ApiError) => void = () => {}
+		mockDelete
+			.mockImplementationOnce(() => {
+				deletedIds.add("notification-1")
+				return Promise.resolve({
+					error: undefined,
+					response: { status: 204 },
+				})
+			})
+			.mockImplementationOnce(
+				() =>
+					new Promise((_resolve, reject) => {
+						rejectSecond = reject
+					}),
+			)
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		const listCallsBefore = countGetCalls("/api/v1/notifications")
+
+		await act(async () => {
+			void result.current.deleteNotification("notification-1")
+			void result.current.deleteNotification("notification-1")
+		})
+
+		await waitFor(() => expect(result.current.total).toBe(24))
+		expect(
+			result.current.notifications.some((n) => n.id === "notification-1"),
+		).toBe(false)
+
+		await act(async () => {
+			rejectSecond(new ApiError(404, "api_error", "Notification not found"))
+		})
+
+		await waitFor(() =>
+			expect(countGetCalls("/api/v1/notifications")).toBeGreaterThan(
+				listCallsBefore,
+			),
+		)
+		expect(mockDelete).toHaveBeenCalledTimes(2)
+		expect(
+			result.current.notifications.some((n) => n.id === "notification-1"),
+		).toBe(false)
+		expect(result.current.total).toBe(24)
+	})
+
+	test("Review Focus: item excluído ainda pendente de reaplicação do SSE não reaparece na lista [FR-002]", async () => {
+		mockDelete.mockReturnValue(new Promise(() => {}))
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+		const streamedId = "notification-streamed-deleted"
+
+		await act(async () => {
+			result.current.fetchNextPage()
+			streamOptions?.onMessage({
+				type: "notification",
+				payload: {
+					notificationId: streamedId,
+					userId: "user-1",
+					type: "PROMOTION",
+					title: "Nova promoção",
+					message: "Você recebeu uma nova promoção.",
+				},
+			})
+			void result.current.deleteNotification(streamedId)
+		})
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+		await act(async () => {})
+
+		expect(result.current.notifications.some((n) => n.id === streamedId)).toBe(
+			false,
+		)
 	})
 })

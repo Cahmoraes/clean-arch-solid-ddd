@@ -47,9 +47,15 @@ export interface UseNotificationsResult {
 	isFetchingNextPage: boolean
 	markAsRead: (notificationId: string) => Promise<void>
 	markAllAsRead: () => Promise<void>
+	deleteNotification: (notificationId: string) => Promise<void>
 }
 
 interface MarkAsReadContext {
+	previousNotifications?: InfiniteData<NotificationsPage>
+	previousUnreadCount?: number
+}
+
+interface DeleteNotificationContext {
 	previousNotifications?: InfiniteData<NotificationsPage>
 	previousUnreadCount?: number
 }
@@ -130,6 +136,19 @@ async function markAllNotificationsAsReadRequest(): Promise<void> {
 	if (error || !data) throw toApiError(error)
 }
 
+async function deleteNotificationRequest(
+	notificationId: string,
+): Promise<void> {
+	try {
+		const { error } = await api.DELETE("/api/v1/notifications/{id}", {
+			params: { path: { id: notificationId } },
+		})
+		if (error) throw toApiError(error)
+	} catch (error) {
+		throw toApiError(error)
+	}
+}
+
 function markNotificationRead(
 	notification: NotificationItem,
 	notificationId: string,
@@ -206,6 +225,77 @@ function applyOptimisticMarkAsRead(
 	return {
 		previousNotifications,
 		previousUnreadCount,
+	}
+}
+
+function removeNotificationLocally(
+	data: InfiniteData<NotificationsPage>,
+	notificationId: string,
+): InfiniteData<NotificationsPage> {
+	if (!pagesContainNotification(data.pages, notificationId)) return data
+	return {
+		...data,
+		pages: data.pages.map((page) => {
+			const notifications = page.notifications.filter(
+				(notification) => notification.id !== notificationId,
+			)
+			const wasInThisPage = notifications.length !== page.notifications.length
+			return {
+				...page,
+				notifications,
+				total: Math.max(page.total - 1, 0),
+				fetchedCount: wasInThisPage
+					? Math.max(page.fetchedCount - 1, 0)
+					: page.fetchedCount,
+			}
+		}),
+	}
+}
+
+function applyOptimisticDelete(
+	queryClient: QueryClient,
+	notificationId: string,
+): DeleteNotificationContext {
+	const previousNotifications = queryClient.getQueryData<
+		InfiniteData<NotificationsPage>
+	>(notificationsInfiniteListQueryKey)
+	const previousUnreadCount = queryClient.getQueryData<number>(
+		notificationsUnreadCountQueryKey,
+	)
+	const shouldDecreaseUnreadCount = hasUnreadNotification(
+		previousNotifications,
+		notificationId,
+	)
+	if (previousNotifications) {
+		queryClient.setQueryData<InfiniteData<NotificationsPage>>(
+			notificationsInfiniteListQueryKey,
+			removeNotificationLocally(previousNotifications, notificationId),
+		)
+	}
+	if (typeof previousUnreadCount === "number" && shouldDecreaseUnreadCount) {
+		queryClient.setQueryData<number>(
+			notificationsUnreadCountQueryKey,
+			Math.max(previousUnreadCount - 1, 0),
+		)
+	}
+	return { previousNotifications, previousUnreadCount }
+}
+
+function restoreNotificationsSnapshot(
+	queryClient: QueryClient,
+	context: DeleteNotificationContext | undefined,
+): void {
+	if (context?.previousNotifications) {
+		queryClient.setQueryData<InfiniteData<NotificationsPage>>(
+			notificationsInfiniteListQueryKey,
+			context.previousNotifications,
+		)
+	}
+	if (typeof context?.previousUnreadCount === "number") {
+		queryClient.setQueryData<number>(
+			notificationsUnreadCountQueryKey,
+			context.previousUnreadCount,
+		)
 	}
 }
 
@@ -405,11 +495,53 @@ export function useNotifications(): UseNotificationsResult {
 		retry: 0,
 		onSuccess: invalidateNotifications,
 	})
+	const deleteNotificationMutation = useMutation<
+		void,
+		ApiError,
+		string,
+		DeleteNotificationContext
+	>({
+		mutationFn: deleteNotificationRequest,
+		retry: 0,
+		onMutate: async (notificationId) => {
+			pendingStreamedNotificationsRef.current.delete(notificationId)
+			await Promise.all([
+				queryClient.cancelQueries({
+					queryKey: notificationsInfiniteListQueryKey,
+				}),
+				queryClient.cancelQueries({
+					queryKey: notificationsUnreadCountQueryKey,
+				}),
+			])
+			return applyOptimisticDelete(queryClient, notificationId)
+		},
+		onError: (error, _notificationId, context) => {
+			if (error.status === 404) {
+				void queryClient.invalidateQueries({
+					queryKey: notificationsInfiniteListQueryKey,
+				})
+				return
+			}
+			restoreNotificationsSnapshot(queryClient, context)
+		},
+		onSuccess: () => {
+			void queryClient.invalidateQueries({
+				queryKey: notificationsUnreadCountQueryKey,
+			})
+		},
+	})
 	async function markAsRead(notificationId: string): Promise<void> {
 		await markAsReadMutation.mutateAsync(notificationId)
 	}
 	async function markAllAsRead(): Promise<void> {
 		await markAllAsReadMutation.mutateAsync()
+	}
+	async function deleteNotification(notificationId: string): Promise<void> {
+		try {
+			await deleteNotificationMutation.mutateAsync(notificationId)
+		} catch (error) {
+			logger.error("Falha ao excluir notificação", error)
+		}
 	}
 	return {
 		notifications:
@@ -425,5 +557,6 @@ export function useNotifications(): UseNotificationsResult {
 		isFetchingNextPage: notificationsQuery.isFetchingNextPage,
 		markAsRead,
 		markAllAsRead,
+		deleteNotification,
 	}
 }
