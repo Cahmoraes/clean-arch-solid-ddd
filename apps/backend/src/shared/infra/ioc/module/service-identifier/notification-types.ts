@@ -10,6 +10,7 @@ export const NOTIFICATION_TYPES = {
 		GetUnreadCount: Symbol.for("GetUnreadCountUseCase"),
 		MarkAsRead: Symbol.for("MarkAsReadUseCase"),
 		MarkAllAsRead: Symbol.for("MarkAllAsReadUseCase"),
+		DeleteNotification: Symbol.for("DeleteNotificationUseCase"),
 		BroadcastNotice: Symbol.for("BroadcastNoticeUseCase"),
 	},
 	Controllers: {
@@ -17,6 +18,7 @@ export const NOTIFICATION_TYPES = {
 		GetUnreadCount: Symbol.for("GetUnreadCountController"),
 		MarkAsRead: Symbol.for("MarkAsReadController"),
 		MarkAllAsRead: Symbol.for("MarkAllAsReadController"),
+		DeleteNotification: Symbol.for("DeleteNotificationController"),
 		NotificationStream: Symbol.for("NotificationStreamController"),
 		BroadcastNotice: Symbol.for("BroadcastNoticeController"),
 	},

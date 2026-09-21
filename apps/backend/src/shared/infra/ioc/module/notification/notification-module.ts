@@ -2,11 +2,13 @@ import { connect } from "amqp-connection-manager"
 import { ContainerModule } from "inversify"
 import { CreateNotificationOnCheckInEventHandler } from "@/notification/application/event-handler/create-notification-on-check-in-event.handler"
 import { BroadcastNoticeUseCase } from "@/notification/application/use-case/broadcast-notice.usecase"
+import { DeleteNotificationUseCase } from "@/notification/application/use-case/delete-notification.usecase"
 import { GetNotificationsUseCase } from "@/notification/application/use-case/get-notifications.usecase"
 import { GetUnreadCountUseCase } from "@/notification/application/use-case/get-unread-count.usecase"
 import { MarkAllAsReadUseCase } from "@/notification/application/use-case/mark-all-as-read.usecase"
 import { MarkAsReadUseCase } from "@/notification/application/use-case/mark-as-read.usecase"
 import { BroadcastNoticeController } from "@/notification/infra/controller/broadcast-notice.controller.js"
+import { DeleteNotificationController } from "@/notification/infra/controller/delete-notification.controller.js"
 import { GetNotificationsController } from "@/notification/infra/controller/get-notifications.controller.js"
 import { GetUnreadCountController } from "@/notification/infra/controller/get-unread-count.controller.js"
 import { MarkAllAsReadController } from "@/notification/infra/controller/mark-all-as-read.controller.js"
@@ -31,6 +33,9 @@ export const notificationModule = new ContainerModule(({ bind }) => {
 	bind(NOTIFICATION_TYPES.UseCases.GetUnreadCount).to(GetUnreadCountUseCase)
 	bind(NOTIFICATION_TYPES.UseCases.MarkAsRead).to(MarkAsReadUseCase)
 	bind(NOTIFICATION_TYPES.UseCases.MarkAllAsRead).to(MarkAllAsReadUseCase)
+	bind(NOTIFICATION_TYPES.UseCases.DeleteNotification).to(
+		DeleteNotificationUseCase,
+	)
 	bind(NOTIFICATION_TYPES.UseCases.BroadcastNotice).to(BroadcastNoticeUseCase)
 	bind(NOTIFICATION_TYPES.EventHandlers.CreateNotificationOnCheckIn)
 		.to(CreateNotificationOnCheckInEventHandler)
@@ -57,6 +62,9 @@ export const notificationModule = new ContainerModule(({ bind }) => {
 		.inSingletonScope()
 	bind(NOTIFICATION_TYPES.Controllers.MarkAllAsRead)
 		.to(MarkAllAsReadController)
+		.inSingletonScope()
+	bind(NOTIFICATION_TYPES.Controllers.DeleteNotification)
+		.to(DeleteNotificationController)
 		.inSingletonScope()
 	bind(NOTIFICATION_TYPES.Controllers.NotificationStream)
 		.to(NotificationStreamController)
