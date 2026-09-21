@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import { InvalidNoticeError } from "@/notification/domain/errors/invalid-notice-error.js"
+import type { NoticeAudienceTypes } from "@/notification/domain/value-object/notice-audience.js"
 import { InMemoryActiveRecipientsProvider } from "@/notification/infra/provider/in-memory/in-memory-active-recipients.provider.js"
 import { InMemoryNotificationRepository } from "@/notification/infra/repository/in-memory/in-memory-notification.repository.js"
 import { TestingLogger } from "@/shared/infra/logger/testing-logger.js"
@@ -30,6 +31,12 @@ class FakeQueue implements Queue {
 
 function makeUserIds(total: number): string[] {
 	return Array.from({ length: total }, (_, index) => `user-${index}`)
+}
+
+// Simula um valor que chegou de fora do dominio sem ter sido validado: o
+// comportamento sob teste e justamente a validacao em runtime do use case.
+function untrustedAudience(value: string): NoticeAudienceTypes {
+	return value as NoticeAudienceTypes
 }
 
 describe("BroadcastNoticeUseCase", () => {
@@ -214,5 +221,151 @@ describe("BroadcastNoticeUseCase", () => {
 
 		expect(result.isSuccess()).toBe(true)
 		expect(repository.notifications.size).toBe(501)
+	})
+
+	describe("publico-alvo", () => {
+		beforeEach(() => {
+			recipients.userIds = ["admin-1", "member-1", "member-2"]
+			recipients.adminIds = ["admin-1"]
+		})
+
+		function receivers(): string[] {
+			return repository.notifications
+				.toArray()
+				.map((notification) => notification.userId)
+				.sort()
+		}
+
+		test("MEMBERS cria notificacoes so para os alunos e chama o provider com o publico MEMBERS", async () => {
+			const listActiveUserIds = vi.spyOn(recipients, "listActiveUserIds")
+
+			const result = await sut.execute({
+				title: "Aviso",
+				message: "Mensagem",
+				audience: "MEMBERS",
+			})
+
+			expect(result.isSuccess()).toBe(true)
+			expect(result.force.success().value).toEqual({ recipients: 2 })
+			expect(receivers()).toEqual(["member-1", "member-2"])
+			expect(listActiveUserIds).toHaveBeenCalledTimes(1)
+			expect(listActiveUserIds.mock.calls[0]?.[0].value).toBe("MEMBERS")
+			expect(queue.published).toHaveLength(2)
+		})
+
+		test("ADMINS cria notificacoes so para os administradores", async () => {
+			const result = await sut.execute({
+				title: "Aviso",
+				message: "Mensagem",
+				audience: "ADMINS",
+			})
+
+			expect(result.force.success().value).toEqual({ recipients: 1 })
+			expect(receivers()).toEqual(["admin-1"])
+			expect(queue.published).toHaveLength(1)
+		})
+
+		test("ALL explicito cria notificacoes para administradores e alunos", async () => {
+			const result = await sut.execute({
+				title: "Aviso",
+				message: "Mensagem",
+				audience: "ALL",
+			})
+
+			expect(result.force.success().value).toEqual({ recipients: 3 })
+			expect(receivers()).toEqual(["admin-1", "member-1", "member-2"])
+		})
+
+		test("audience omitido equivale a ALL", async () => {
+			const listActiveUserIds = vi.spyOn(recipients, "listActiveUserIds")
+
+			const result = await sut.execute({ title: "Aviso", message: "Mensagem" })
+
+			expect(result.force.success().value).toEqual({ recipients: 3 })
+			expect(receivers()).toEqual(["admin-1", "member-1", "member-2"])
+			expect(listActiveUserIds.mock.calls[0]?.[0].value).toBe("ALL")
+		})
+
+		test.each([
+			["minusculas", "all"],
+			["nome em portugues", "todos"],
+			["string vazia", ""],
+			["papel do dominio user", "ADMIN"],
+		])("audience invalido (%s) retorna InvalidNoticeError e nao cria nada", async (_, value) => {
+			const listActiveUserIds = vi.spyOn(recipients, "listActiveUserIds")
+
+			const result = await sut.execute({
+				title: "Aviso",
+				message: "Mensagem",
+				audience: untrustedAudience(value),
+			})
+
+			expect(result.isFailure()).toBe(true)
+			expect(result.value).toBeInstanceOf(InvalidNoticeError)
+			expect(repository.notifications.size).toBe(0)
+			expect(queue.published).toHaveLength(0)
+			expect(listActiveUserIds).not.toHaveBeenCalled()
+		})
+
+		test("FR-012: o administrador remetente fora do publico MEMBERS nao recebe o aviso", async () => {
+			const result = await sut.execute({
+				title: "Aviso",
+				message: "Mensagem",
+				audience: "MEMBERS",
+			})
+
+			expect(result.isSuccess()).toBe(true)
+			expect(receivers()).not.toContain("admin-1")
+			expect(queue.published.map(({ data }) => data)).not.toContainEqual(
+				expect.objectContaining({ userId: "admin-1" }),
+			)
+		})
+
+		test("FR-010: usuarios fora do publico nao recebem notificacao persistida nem evento", async () => {
+			await sut.execute({
+				title: "Aviso",
+				message: "Mensagem",
+				audience: "ADMINS",
+			})
+
+			expect(receivers()).toEqual(["admin-1"])
+			expect(queue.published.map(({ data }) => data)).toEqual([
+				expect.objectContaining({ userId: "admin-1" }),
+			])
+		})
+
+		test.each([
+			{
+				audience: "ADMINS",
+				userIds: ["member-1", "member-2"],
+				adminIds: [] as string[],
+			},
+			{
+				audience: "MEMBERS",
+				userIds: ["admin-1"],
+				adminIds: ["admin-1"],
+			},
+		])("Review Focus: publico $audience sem nenhum usuario ativo conclui com 0 destinatarios, sem erro e sem notificacao", async ({
+			audience,
+			userIds,
+			adminIds,
+		}) => {
+			recipients.userIds = userIds
+			recipients.adminIds = adminIds
+			const saveMany = vi.spyOn(repository, "saveMany")
+
+			const result = await sut.execute({
+				title: "Aviso",
+				message: "Mensagem",
+				audience: untrustedAudience(audience),
+			})
+
+			expect(result.isSuccess()).toBe(true)
+			expect(result.force.success().value).toEqual({ recipients: 0 })
+			expect(repository.notifications.size).toBe(0)
+			expect(saveMany).not.toHaveBeenCalled()
+			expect(queue.published).toHaveLength(0)
+			expect(logger.detecteErrorMethod).toBe(false)
+		})
 	})
 })
