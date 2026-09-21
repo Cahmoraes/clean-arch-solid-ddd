@@ -182,3 +182,13 @@ Nomeados por responsabilidade.
 - **Contrato do enum:** todos os valores de `NotificationType` aceitos pelo zod do GET e pelo mapa de estilo.
 - **Frontend:** validação do schema, preview reflete o digitado, submit chama a mutation e mostra toast, botão desabilitado durante o envio, item de menu visível só para ADMIN.
 - Testes do frontend escritos em PT-BR com `test` (nunca `it`), conforme `apps/frontend/AGENTS.md`.
+
+
+## Adendo (2026-09-21): público-alvo
+
+A feature `notice-audience` permite escolher o público do aviso (Todos, Alunos ou Administradores). Duas decisões deste design mudam:
+
+- A segmentação deixou de ser fora de escopo. O aviso agora chega só ao público escolhido; sem `audience` no corpo, vale `ALL`, o comportamento descrito acima.
+- A decisão D5 (o administrador que envia sempre recebe o aviso) foi substituída. O remetente segue o filtro do público: recebe apenas se o público incluir administradores.
+
+O restante deste design (fan-out em blocos de 500, `notificationCreated`, sino e tabelas) não muda. Detalhes em `docs/superpowers/notice-audience/specs/notice-audience-design.md`.

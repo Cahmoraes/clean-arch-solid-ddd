@@ -81,3 +81,13 @@ Decisões visuais (norte, não pixel-final; detalhes em `docs/superpowers/admin-
 - Limite de frequência de envios (rate limit) e trilha de auditoria de quem enviou.
 - Segmentação de destinatários (apenas "todos os usuários ativos").
 - Confirmação modal antes do envio (a pré-visualização cumpre esse papel).
+
+
+## Adendo (2026-09-21): público-alvo
+
+A feature `notice-audience` revisa dois pontos deste PRD:
+
+- A segmentação de destinatários deixou de estar em "Fora de Escopo". O administrador escolhe o público do aviso: Todos, Alunos ou Administradores. Um envio sem público equivale a Todos.
+- O FR-012 original (o administrador que envia sempre recebe o aviso) foi substituído. O remetente é tratado como qualquer usuário e recebe o aviso apenas se o público escolhido incluir administradores.
+
+Os demais requisitos deste PRD seguem valendo. Detalhes em `docs/superpowers/notice-audience/prd/prd-notice-audience.md`.
