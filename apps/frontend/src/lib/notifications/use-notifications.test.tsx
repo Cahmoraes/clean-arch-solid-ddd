@@ -894,6 +894,47 @@ describe("useNotifications: deleteNotification", () => {
 		})
 	})
 
+	test("excluir item inserido via SSE não desloca total nem o offset do próximo fetchNextPage [FR-009]", async () => {
+		mockDelete.mockReturnValue(new Promise(() => {}))
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		const streamOptions = vi.mocked(useNotificationStream).mock.calls[0]?.[0]
+		const streamedId = "notification-streamed-uncounted"
+		await act(async () => {
+			streamOptions?.onMessage({
+				type: "notification",
+				payload: {
+					notificationId: streamedId,
+					userId: "user-1",
+					type: "PROMOTION",
+					title: "Nova promoção",
+					message: "Você recebeu uma nova promoção.",
+				},
+			})
+		})
+		await waitFor(() => expect(result.current.notifications).toHaveLength(11))
+
+		await act(async () => {
+			void result.current.deleteNotification(streamedId)
+		})
+		await waitFor(() => expect(result.current.notifications).toHaveLength(10))
+		expect(result.current.total).toBe(25)
+
+		await act(async () => {
+			result.current.fetchNextPage()
+		})
+		await waitFor(() => expect(result.current.isFetchingNextPage).toBe(false))
+		expect(mockGet).toHaveBeenCalledWith("/api/v1/notifications", {
+			params: {
+				query: { page: 1, unreadOnly: false, offset: 10, limit: 5 },
+			},
+		})
+		const ids = result.current.notifications.map((n) => n.id)
+		expect(new Set(ids).size).toBe(ids.length)
+		expect(ids).toHaveLength(15)
+	})
+
 	test.each([
 		["erro 5xx", () => new ApiError(500, "api_error", "Erro interno")],
 		["falha de rede", () => new Error("network error")],
@@ -958,6 +999,26 @@ describe("useNotifications: deleteNotification", () => {
 			result.current.notifications.some((n) => n.id === "notification-2"),
 		).toBe(false)
 		expect(result.current.total).toBe(24)
+	})
+
+	test("invalida também a contagem de não lidas quando o servidor responde 404 [FR-010]", async () => {
+		mockDelete.mockImplementation(() =>
+			Promise.reject(new ApiError(404, "api_error", "Notification not found")),
+		)
+		const { wrapper } = createWrapper()
+		const { result } = renderHook(() => useNotifications(), { wrapper })
+		await waitFor(() => expect(result.current.isLoading).toBe(false))
+		const countCallsBefore = countGetCalls("/api/v1/notifications/unread-count")
+
+		await act(async () => {
+			await result.current.deleteNotification("notification-1")
+		})
+
+		await waitFor(() =>
+			expect(
+				countGetCalls("/api/v1/notifications/unread-count"),
+			).toBeGreaterThan(countCallsBefore),
+		)
 	})
 
 	test("em 204 invalida só a contagem de não lidas, sem refetch da lista [FR-002]", async () => {

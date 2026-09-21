@@ -33,7 +33,16 @@ type MarkAsReadResponse =
  * calcular o próximo `offset`, para um item inserido via SSE nunca desalinhar
  * a paginação por offset do backend.
  */
-type NotificationsPage = NotificationsResponse & { fetchedCount: number }
+type NotificationsPage = NotificationsResponse & {
+	fetchedCount: number
+	/**
+	 * Ids inseridos em `notifications` via SSE, ainda fora de `fetchedCount` e
+	 * `total`. Vive na própria página: um refetch substitui a página (sem este
+	 * campo, já com contagens do servidor), então um id velho nunca pula um
+	 * decremento indevido.
+	 */
+	streamedIds?: string[]
+}
 
 export type NotificationItem = NotificationsResponse["notifications"][number]
 
@@ -239,6 +248,13 @@ function removeNotificationLocally(
 			const notifications = page.notifications.filter(
 				(notification) => notification.id !== notificationId,
 			)
+			if (page.streamedIds?.includes(notificationId)) {
+				return {
+					...page,
+					notifications,
+					streamedIds: page.streamedIds.filter((id) => id !== notificationId),
+				}
+			}
 			const wasInThisPage = notifications.length !== page.notifications.length
 			return {
 				...page,
@@ -337,6 +353,7 @@ function prependToFirstPage(
 			{
 				...firstPage,
 				notifications: [newNotification, ...firstPage.notifications],
+				streamedIds: [...(firstPage.streamedIds ?? []), newNotification.id],
 			},
 			...restPages,
 		],
@@ -519,6 +536,9 @@ export function useNotifications(): UseNotificationsResult {
 			if (error.status === 404) {
 				void queryClient.invalidateQueries({
 					queryKey: notificationsInfiniteListQueryKey,
+				})
+				void queryClient.invalidateQueries({
+					queryKey: notificationsUnreadCountQueryKey,
 				})
 				return
 			}
