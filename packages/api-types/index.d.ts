@@ -4464,7 +4464,7 @@ export interface paths {
         put?: never;
         /**
          * Broadcast a notice
-         * @description Sends a notice as an in-app notification to every active user. Requires admin authentication.
+         * @description Sends a notice as an in-app notification to the active users of the chosen audience (ALL by default). Requires admin authentication.
          */
         post: {
             parameters: {
