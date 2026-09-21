@@ -25,6 +25,7 @@ const VALID_NOTICE = {
 describe("Autorizacao de POST /api/v1/notifications/broadcast", () => {
 	let fastifyServer: FastifyAdapter
 	let notificationRepository: InMemoryNotificationRepository
+	let activeRecipients: InMemoryActiveRecipientsProvider
 	let authenticate: AuthenticateUseCase
 	let adminToken: string
 	let memberToken: string
@@ -40,7 +41,7 @@ describe("Autorizacao de POST /api/v1/notifications/broadcast", () => {
 	beforeEach(async () => {
 		container.snapshot()
 		notificationRepository = new InMemoryNotificationRepository()
-		const activeRecipients = new InMemoryActiveRecipientsProvider()
+		activeRecipients = new InMemoryActiveRecipientsProvider()
 		const userRepository = new InMemoryUserRepository()
 		container
 			.rebind(USER_TYPES.Repositories.User)
@@ -85,6 +86,7 @@ describe("Autorizacao de POST /api/v1/notifications/broadcast", () => {
 			role: "MEMBER",
 		})
 		activeRecipients.userIds = [adminId, memberId]
+		activeRecipients.adminIds = [adminId]
 		adminToken = await login("admin.auth@test.com")
 		memberToken = await login("member.auth@test.com")
 	})
@@ -132,5 +134,35 @@ describe("Autorizacao de POST /api/v1/notifications/broadcast", () => {
 		expect(response.status).toBe(HTTP_STATUS.CREATED)
 		expect(response.body).toEqual({ recipients: 2 })
 		expect(notificationRepository.notifications.size).toBe(2)
+	})
+
+	test("FR-017: 401 sem token mesmo com audience valido e nenhuma notificacao criada", async () => {
+		const response = await request(fastifyServer.server)
+			.post(NotificationRoutes.BROADCAST)
+			.send({ ...VALID_NOTICE, audience: "MEMBERS" })
+
+		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
+		expect(notificationRepository.notifications.size).toBe(0)
+	})
+
+	test("FR-017: 403 para MEMBER mesmo com audience ADMINS e nenhuma notificacao criada", async () => {
+		const response = await request(fastifyServer.server)
+			.post(NotificationRoutes.BROADCAST)
+			.set("Authorization", `Bearer ${memberToken}`)
+			.send({ ...VALID_NOTICE, audience: "ADMINS" })
+
+		expect(response.status).toBe(HTTP_STATUS.FORBIDDEN)
+		expect(notificationRepository.notifications.size).toBe(0)
+	})
+
+	test("201 para ADMIN com audience MEMBERS entrega so ao aluno", async () => {
+		const response = await request(fastifyServer.server)
+			.post(NotificationRoutes.BROADCAST)
+			.set("Authorization", `Bearer ${adminToken}`)
+			.send({ ...VALID_NOTICE, audience: "MEMBERS" })
+
+		expect(response.status).toBe(HTTP_STATUS.CREATED)
+		expect(response.body).toEqual({ recipients: 1 })
+		expect(notificationRepository.notifications.size).toBe(1)
 	})
 })

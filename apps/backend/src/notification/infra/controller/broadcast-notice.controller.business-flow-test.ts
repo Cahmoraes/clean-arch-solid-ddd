@@ -84,6 +84,7 @@ describe("POST /api/v1/notifications/broadcast", () => {
 			role: "MEMBER",
 		})
 		activeRecipients.userIds = [adminId, memberId]
+		activeRecipients.adminIds = [adminId]
 		adminToken = await login("admin.notice@test.com")
 		memberToken = await login("member.notice@test.com")
 	})
@@ -98,6 +99,32 @@ describe("POST /api/v1/notifications/broadcast", () => {
 			.post(NotificationRoutes.BROADCAST)
 			.set("Authorization", `Bearer ${adminToken}`)
 			.send(body)
+	}
+
+	async function addSecondMember(): Promise<string> {
+		const secondMemberId = randomUUID()
+		await createAndSaveUser({
+			userRepository,
+			id: secondMemberId,
+			email: "member2.notice@test.com",
+			password: "any_password",
+			role: "MEMBER",
+		})
+		activeRecipients.userIds = [adminId, memberId, secondMemberId]
+		return secondMemberId
+	}
+
+	function receivers(): string[] {
+		return notificationRepository.notifications
+			.toArray()
+			.map((notification) => notification.userId)
+			.sort()
+	}
+
+	async function listAs(token: string) {
+		return request(fastifyServer.server)
+			.get(NotificationRoutes.LIST)
+			.set("Authorization", `Bearer ${token}`)
 	}
 
 	test("ADMIN envia o aviso e recebe 201 com o numero de destinatarios", async () => {
@@ -239,5 +266,59 @@ describe("POST /api/v1/notifications/broadcast", () => {
 
 		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
 		expect(notificationRepository.notifications.size).toBe(0)
+	})
+
+	test("FR-007 e FR-012: MEMBERS entrega so aos alunos e o administrador remetente nao recebe", async () => {
+		const secondMemberId = await addSecondMember()
+
+		const response = await broadcast({
+			title: "Aviso",
+			message: "Mensagem",
+			audience: "MEMBERS",
+		})
+
+		expect(response.status).toBe(HTTP_STATUS.CREATED)
+		expect(response.body).toEqual({ recipients: 2 })
+		expect(receivers()).toEqual([memberId, secondMemberId].sort())
+		expect((await listAs(adminToken)).body.total).toBe(0)
+		expect((await listAs(memberToken)).body.total).toBe(1)
+	})
+
+	test("FR-008 e FR-010: ADMINS entrega so ao administrador e os alunos nao recebem", async () => {
+		await addSecondMember()
+
+		const response = await broadcast({
+			title: "Aviso",
+			message: "Mensagem",
+			audience: "ADMINS",
+		})
+
+		expect(response.status).toBe(HTTP_STATUS.CREATED)
+		expect(response.body).toEqual({ recipients: 1 })
+		expect(receivers()).toEqual([adminId])
+		expect((await listAs(adminToken)).body.total).toBe(1)
+		expect((await listAs(memberToken)).body.total).toBe(0)
+	})
+
+	test("FR-009: ALL entrega ao administrador e a todos os alunos", async () => {
+		const secondMemberId = await addSecondMember()
+
+		const response = await broadcast({
+			title: "Aviso",
+			message: "Mensagem",
+			audience: "ALL",
+		})
+
+		expect(response.status).toBe(HTTP_STATUS.CREATED)
+		expect(response.body).toEqual({ recipients: 3 })
+		expect(receivers()).toEqual([adminId, memberId, secondMemberId].sort())
+	})
+
+	test("sem audience o envio alcanca administrador e alunos, como antes", async () => {
+		await addSecondMember()
+
+		const response = await broadcast({ title: "Aviso", message: "Mensagem" })
+
+		expect(response.body).toEqual({ recipients: 3 })
 	})
 })
