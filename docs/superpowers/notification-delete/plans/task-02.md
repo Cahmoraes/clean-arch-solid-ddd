@@ -1,6 +1,6 @@
 # Task 2: Endpoint DELETE, IoC, OpenAPI e business-flow [FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-delete.md`
 **Spec:** `../specs/notification-delete-design.md`
 **Tier:** standard

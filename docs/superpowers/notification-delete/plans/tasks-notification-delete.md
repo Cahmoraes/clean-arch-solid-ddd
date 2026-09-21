@@ -9,11 +9,11 @@
 
 ## Tarefas
 
-- [ ] 1. Exclusão no domínio e no caso de uso [FR-004, FR-005, FR-006, FR-007] → `task-01.md`
-- [ ] 2. Endpoint DELETE, IoC, OpenAPI e business-flow [FR-005, FR-006] → `task-02.md`
-- [ ] 3. Mutation deleteNotification com cache otimista [FR-002, FR-003, FR-008, FR-009, FR-010] → `task-03.md`
-- [ ] 4. Item do bell com botão de excluir [FR-001, FR-012, FR-013] → `task-04.md`
-- [ ] 5. Fiação do dropdown e do bell e estado da lista após excluir [FR-001, FR-011] → `task-05.md`
+- [x] 1. Exclusão no domínio e no caso de uso [FR-004, FR-005, FR-006, FR-007] → `task-01.md`
+- [x] 2. Endpoint DELETE, IoC, OpenAPI e business-flow [FR-005, FR-006] → `task-02.md`
+- [x] 3. Mutation deleteNotification com cache otimista [FR-002, FR-003, FR-008, FR-009, FR-010] → `task-03.md`
+- [x] 4. Item do bell com botão de excluir [FR-001, FR-012, FR-013] → `task-04.md`
+- [x] 5. Fiação do dropdown e do bell e estado da lista após excluir [FR-001, FR-011] → `task-05.md`
 
 ## Restrições Globais
 

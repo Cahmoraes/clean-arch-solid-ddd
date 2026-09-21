@@ -1,6 +1,6 @@
 # Task 4: Item do bell com botão de excluir [FR-001, FR-012, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-delete.md`
 **Spec:** `../specs/notification-delete-design.md`
 **Tier:** standard

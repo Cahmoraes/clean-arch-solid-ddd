@@ -1,6 +1,6 @@
 # Task 5: Fiação do dropdown e do bell e estado da lista após excluir [FR-001, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-delete.md`
 **Spec:** `../specs/notification-delete-design.md`
 **Tier:** standard

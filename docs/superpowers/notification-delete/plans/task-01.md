@@ -1,6 +1,6 @@
 # Task 1: Exclusão no domínio e no caso de uso [FR-004, FR-005, FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-delete.md`
 **Spec:** `../specs/notification-delete-design.md`
 **Tier:** standard

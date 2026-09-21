@@ -1,6 +1,6 @@
 # Task 3: Mutation deleteNotification com cache otimista [FR-002, FR-003, FR-008, FR-009, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-notification-delete.md`
 **Spec:** `../specs/notification-delete-design.md`
 **Tier:** capable
