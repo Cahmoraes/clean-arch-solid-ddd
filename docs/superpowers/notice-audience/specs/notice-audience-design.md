@@ -1,6 +1,6 @@
 ---
 created_at: "2026-09-21T09:21:11-03:00"
-updated_at: "2026-09-21T09:21:11-03:00"
+updated_at: "2026-09-21T09:22:21-03:00"
 ---
 
 # Público-alvo do aviso (notice-audience) - Design
@@ -41,6 +41,8 @@ O admin passa a escolher, ao criar um aviso em `/admin/avisos/novo`, quem o rece
   - `NoticePreview`: mostra a linha "Público: X".
   - `use-broadcast-notice`: envia `audience` no body.
   - Página `/admin/avisos/novo`: subtítulo passa de "todos os usuários" para "o público escolhido".
+
+- **Documentação:** adendo curto no spec e no PRD de `admin-notice-broadcast` registrando que a segmentação deixou de ser out-of-scope e apontando para este design.
 
 Mapeamento de rótulos (frontend): `ALL` = "Todos", `MEMBERS` = "Alunos", `ADMINS` = "Administradores".
 
