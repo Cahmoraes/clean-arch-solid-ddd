@@ -47,7 +47,10 @@ export function NoticeForm() {
 		resolver: zodResolver(noticeSchema),
 		defaultValues: EMPTY_NOTICE,
 	})
-	const [title, message] = useWatch({ control, name: ["title", "message"] })
+	const [title, message, audience] = useWatch({
+		control,
+		name: ["title", "message", "audience"],
+	})
 
 	async function onSubmit(values: NoticeInput) {
 		try {
@@ -110,7 +113,7 @@ export function NoticeForm() {
 					</form>
 				</CardContent>
 			</Card>
-			<NoticePreview title={title} message={message} />
+			<NoticePreview title={title} message={message} audience={audience} />
 		</div>
 	)
 }

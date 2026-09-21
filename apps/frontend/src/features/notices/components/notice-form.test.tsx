@@ -215,4 +215,13 @@ describe("NoticeForm", () => {
 			"Informe o título do aviso.",
 		)
 	})
+
+	test("FR-014: a pré-visualização mostra o público padrão Todos assim que há texto", async () => {
+		renderWithProviders(<NoticeForm />)
+		expect(screen.queryByText(/Público:/)).not.toBeInTheDocument()
+
+		await userEvent.type(titleInput(), "Manutenção")
+
+		expect(screen.getByText("Público: Todos")).toBeInTheDocument()
+	})
 })

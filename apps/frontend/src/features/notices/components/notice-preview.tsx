@@ -2,11 +2,14 @@
 
 import { useId } from "react"
 import { NotificationItem } from "@/components/notification/notification-item"
+import { noticeAudienceLabel } from "@/features/notices/notice-audience-options"
+import type { NoticeAudience } from "@/features/notices/schemas/notice-schema"
 import type { NotificationItem as NotificationItemData } from "@/lib/notifications/use-notifications"
 
 export interface NoticePreviewProps {
 	title: string
 	message: string
+	audience: NoticeAudience
 }
 
 const PREVIEW_NOTIFICATION_ID = "notice-preview"
@@ -15,7 +18,11 @@ const EMPTY_STATE_TEXT =
 
 const ignoreMarkAsRead = (): void => undefined
 
-export function NoticePreview({ title, message }: NoticePreviewProps) {
+export function NoticePreview({
+	title,
+	message,
+	audience,
+}: NoticePreviewProps) {
 	const labelId = useId()
 	const createdAt = new Date().toISOString()
 	const isEmpty = title.trim() === "" && message.trim() === ""
@@ -44,15 +51,20 @@ export function NoticePreview({ title, message }: NoticePreviewProps) {
 			{isEmpty ? (
 				<p className="text-sm text-muted-foreground">{EMPTY_STATE_TEXT}</p>
 			) : (
-				<ul
-					aria-labelledby={labelId}
-					className="overflow-hidden rounded-md border border-border bg-card"
-				>
-					<NotificationItem
-						notification={notification}
-						onMarkAsRead={ignoreMarkAsRead}
-					/>
-				</ul>
+				<>
+					<ul
+						aria-labelledby={labelId}
+						className="overflow-hidden rounded-md border border-border bg-card"
+					>
+						<NotificationItem
+							notification={notification}
+							onMarkAsRead={ignoreMarkAsRead}
+						/>
+					</ul>
+					<p className="font-mono text-xs uppercase tracking-wide text-primary">
+						{`Público: ${noticeAudienceLabel(audience)}`}
+					</p>
+				</>
 			)}
 		</section>
 	)

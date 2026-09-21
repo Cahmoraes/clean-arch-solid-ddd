@@ -13,7 +13,7 @@ describe("AdminNovoAvisoPage", () => {
 		).toBeInTheDocument()
 		expect(
 			screen.getByText(
-				"Comunicado enviado a todos os usuários pelo sino de notificações.",
+				"Comunicado enviado ao público escolhido pelo sino de notificações.",
 			),
 		).toBeInTheDocument()
 	})

@@ -8,7 +8,7 @@ export default function AdminNovoAvisoPage() {
 			<PageHeader
 				eyebrow="Admin"
 				title="Novo aviso"
-				subtitle="Comunicado enviado a todos os usuários pelo sino de notificações."
+				subtitle="Comunicado enviado ao público escolhido pelo sino de notificações."
 			/>
 			<NoticeForm />
 		</PageContainer>
