@@ -1,0 +1,33 @@
+sequenceDiagram
+    autonumber
+    participant Bell as Bell UI
+    participant Cache as Cache TanStack (InfiniteData)
+    participant API as DELETE /api/v1/notifications/:id
+    participant UC as DeleteNotificationUseCase
+    participant Repo as NotificationRepository
+    participant UN as UserNotification
+
+    Bell->>Cache: onMutate: cancelQueries e snapshot
+    Cache->>Cache: remove o item, decrementa o badge, ajusta fetchedCount
+    Cache-->>Bell: re-render sem a notificação
+    Bell->>API: DELETE /notifications/:id
+    API->>UC: execute(userId, notificationId)
+    UC->>Repo: findById(notificationId)
+    Repo->>UN: busca com deletedAt nulo
+    alt existe e pertence ao usuário
+        UC->>UC: marca como excluída (deletedAt)
+        UC->>Repo: save(notification)
+        Repo->>UN: deletedAt = agora
+        Note over UN: linha compartilhada Notification intacta
+        UC-->>API: sucesso
+        API-->>Bell: 204
+        Bell->>Cache: onSettled: invalida só a contagem de não lidas
+    else inexistente, já excluída ou de outro usuário
+        UC-->>API: NotificationNotFoundError
+        API-->>Bell: 404
+        Bell->>Cache: onError: mantém a remoção e invalida a lista
+    else falha de rede ou 5xx
+        API--xBell: erro
+        Bell->>Cache: onError: rollback do snapshot
+        Cache-->>Bell: restaura item, badge e fetchedCount
+    end
