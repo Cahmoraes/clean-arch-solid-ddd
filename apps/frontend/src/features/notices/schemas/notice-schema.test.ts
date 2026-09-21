@@ -5,7 +5,11 @@ import {
 	noticeSchema,
 } from "./notice-schema"
 
-const VALID = { title: "Manutenção", message: "Sistema fora do ar às 22h." }
+const VALID = {
+	title: "Manutenção",
+	message: "Sistema fora do ar às 22h.",
+	audience: "ALL",
+}
 
 describe("noticeSchema", () => {
 	test("aceita título e mensagem válidos", () => {
@@ -91,7 +95,32 @@ describe("noticeSchema", () => {
 		const result = noticeSchema.parse({
 			title: "  Aviso  ",
 			message: "  Mensagem  ",
+			audience: "ALL",
 		})
-		expect(result).toEqual({ title: "Aviso", message: "Mensagem" })
+		expect(result).toEqual({
+			title: "Aviso",
+			message: "Mensagem",
+			audience: "ALL",
+		})
+	})
+
+	test.each(["ALL", "MEMBERS", "ADMINS"])("aceita o público %s", (audience) => {
+		expect(noticeSchema.safeParse({ ...VALID, audience }).success).toBe(true)
+	})
+
+	test.each([
+		["em minúsculas", "all"],
+		["string vazia", ""],
+		["nome em português", "todos"],
+		["papel do domínio user", "ADMIN"],
+		["null", null],
+	])("recusa público %s", (_, audience) => {
+		expect(noticeSchema.safeParse({ ...VALID, audience }).success).toBe(false)
+	})
+
+	test("recusa envio sem público: o formulário é quem fornece o padrão ALL", () => {
+		const { audience: _audience, ...withoutAudience } = VALID
+
+		expect(noticeSchema.safeParse(withoutAudience).success).toBe(false)
 	})
 })

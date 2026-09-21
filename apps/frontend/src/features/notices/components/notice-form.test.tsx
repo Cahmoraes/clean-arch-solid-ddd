@@ -123,6 +123,7 @@ describe("NoticeForm", () => {
 		expect(receivedBody).toEqual({
 			title: "Manutenção programada",
 			message: "O sistema ficará fora do ar às 22h.",
+			audience: "ALL",
 		})
 		await waitFor(() => expect(titleInput()).toHaveValue(""))
 		expect(messageInput()).toHaveValue("")

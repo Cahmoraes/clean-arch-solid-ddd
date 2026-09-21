@@ -3,6 +3,10 @@ import { z } from "zod"
 export const NOTICE_TITLE_MAX = 100
 export const NOTICE_MESSAGE_MAX = 500
 
+export const noticeAudienceSchema = z.enum(["ALL", "MEMBERS", "ADMINS"])
+
+export type NoticeAudience = z.infer<typeof noticeAudienceSchema>
+
 export const noticeSchema = z.object({
 	title: z
 		.string()
@@ -20,6 +24,7 @@ export const noticeSchema = z.object({
 			NOTICE_MESSAGE_MAX,
 			`A mensagem deve ter no máximo ${NOTICE_MESSAGE_MAX} caracteres.`,
 		),
+	audience: noticeAudienceSchema,
 })
 
 export type NoticeInput = z.infer<typeof noticeSchema>

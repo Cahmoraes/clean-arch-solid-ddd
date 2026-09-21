@@ -18,7 +18,7 @@ import {
 import { cn } from "@/lib/cn"
 import { ApiError } from "@/lib/errors"
 
-const EMPTY_NOTICE: NoticeInput = { title: "", message: "" }
+const EMPTY_NOTICE: NoticeInput = { title: "", message: "", audience: "ALL" }
 const FALLBACK_ERROR_MESSAGE =
 	"Não foi possível enviar o aviso. Tente novamente."
 

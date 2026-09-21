@@ -4486,6 +4486,13 @@ export interface paths {
                          * @example O sistema ficará fora do ar hoje às 22h.
                          */
                         message: string;
+                        /**
+                         * @description Who receives the notice: ALL (active members and admins), MEMBERS (active members only) or ADMINS (active admins only). Defaults to ALL
+                         * @default ALL
+                         * @example MEMBERS
+                         * @enum {string}
+                         */
+                        audience: "ALL" | "MEMBERS" | "ADMINS";
                     };
                 };
             };

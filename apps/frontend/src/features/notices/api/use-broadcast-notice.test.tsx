@@ -28,7 +28,7 @@ function wrapper(
 }
 
 describe("useBroadcastNotice", () => {
-	test("envia título e mensagem e devolve o número de destinatários (handler padrão)", async () => {
+	test("envia título, mensagem e público e devolve o número de destinatários (handler padrão)", async () => {
 		const { result } = renderHook(() => useBroadcastNotice(), {
 			wrapper: wrapper(makeQueryClient()),
 		})
@@ -37,6 +37,7 @@ describe("useBroadcastNotice", () => {
 			await result.current.mutateAsync({
 				title: "Manutenção",
 				message: "Sistema fora do ar às 22h.",
+				audience: "ALL",
 			})
 		})
 
@@ -44,7 +45,7 @@ describe("useBroadcastNotice", () => {
 		expect(result.current.data).toEqual({ recipients: 3 })
 	})
 
-	test("envia o corpo { title, message } para POST /api/v1/notifications/broadcast", async () => {
+	test("envia o corpo { title, message, audience } para POST /api/v1/notifications/broadcast", async () => {
 		let receivedBody: unknown
 		server.use(
 			http.post(BROADCAST_URL, async ({ request }) => {
@@ -57,10 +58,18 @@ describe("useBroadcastNotice", () => {
 		})
 
 		await act(async () => {
-			await result.current.mutateAsync({ title: "Aviso", message: "Mensagem" })
+			await result.current.mutateAsync({
+				title: "Aviso",
+				message: "Mensagem",
+				audience: "MEMBERS",
+			})
 		})
 
-		expect(receivedBody).toEqual({ title: "Aviso", message: "Mensagem" })
+		expect(receivedBody).toEqual({
+			title: "Aviso",
+			message: "Mensagem",
+			audience: "MEMBERS",
+		})
 		await waitFor(() => expect(result.current.data).toEqual({ recipients: 1 }))
 	})
 
@@ -76,7 +85,11 @@ describe("useBroadcastNotice", () => {
 
 		await act(async () => {
 			await expect(
-				result.current.mutateAsync({ title: "Aviso", message: "Mensagem" }),
+				result.current.mutateAsync({
+					title: "Aviso",
+					message: "Mensagem",
+					audience: "ALL",
+				}),
 			).rejects.toBeInstanceOf(ApiError)
 		})
 
