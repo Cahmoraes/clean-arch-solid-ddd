@@ -87,6 +87,16 @@ export class Notification {
 		this._props.updatedAt = now
 	}
 
+	public softDelete(): void {
+		if (this._props.deletedAt !== undefined) {
+			return
+		}
+
+		const now = new Date()
+		this._props.deletedAt = now
+		this._props.updatedAt = now
+	}
+
 	public get id(): string {
 		return this._props.id
 	}

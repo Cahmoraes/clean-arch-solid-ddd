@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest"
+import { afterEach, describe, expect, test, vi } from "vitest"
 import { NotificationNotFoundError } from "./errors/notification-not-found-error"
 import { Notification } from "./notification"
 
@@ -118,5 +118,49 @@ describe("NotificationNotFoundError", () => {
 		expect(error).toBeInstanceOf(Error)
 		expect(error.message).toBe("Notification not found")
 		expect(error.name).toBe("NotificationNotFoundError")
+	})
+})
+
+describe("Notification.softDelete()", () => {
+	afterEach(() => {
+		vi.useRealTimers()
+	})
+
+	test("deve marcar a notificação como excluída sem alterar o restante [FR-004, FR-007]", () => {
+		const notification = Notification.create({
+			userId: "user-1",
+			type: "CHECK_IN_APPROVED",
+			title: "Check-in aprovado",
+			message: "Aprovado",
+		})
+
+		expect(notification.isDeleted).toBe(false)
+		notification.softDelete()
+
+		expect(notification.isDeleted).toBe(true)
+		expect(notification.deletedAt).toBeInstanceOf(Date)
+		expect(notification.updatedAt).toEqual(notification.deletedAt)
+		expect(notification.readAt).toBeUndefined()
+		expect(notification.title).toBe("Check-in aprovado")
+	})
+
+	test("deve ser idempotente quando a notificação já está excluída", () => {
+		vi.useFakeTimers()
+		vi.setSystemTime(new Date("2026-01-01T10:00:00Z"))
+		const notification = Notification.create({
+			userId: "user-1",
+			type: "CHECK_IN_APPROVED",
+			title: "Check-in aprovado",
+			message: "Aprovado",
+		})
+
+		notification.softDelete()
+		const firstDeletedAt = notification.deletedAt
+
+		vi.setSystemTime(new Date("2026-01-01T11:00:00Z"))
+		notification.softDelete()
+
+		expect(notification.deletedAt).toEqual(firstDeletedAt)
+		expect(notification.updatedAt).toEqual(firstDeletedAt)
 	})
 })
