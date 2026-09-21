@@ -8,26 +8,26 @@ sequenceDiagram
     participant UN as UserNotification
 
     Bell->>Cache: onMutate: cancelQueries e snapshot
-    Cache->>Cache: remove o item, decrementa o badge, ajusta fetchedCount
+    Cache->>Cache: remove o item, decrementa o badge, ajusta fetchedCount e total
     Cache-->>Bell: re-render sem a notificação
     Bell->>API: DELETE /notifications/:id
     API->>UC: execute(userId, notificationId)
     UC->>Repo: findById(notificationId)
-    Repo->>UN: busca com deletedAt nulo
-    alt existe e pertence ao usuário
-        UC->>UC: marca como excluída (deletedAt)
+    Repo->>UN: busca a notificação (sem filtrar deletedAt)
+    alt existe, é do usuário e não está excluída
+        UC->>UC: softDelete()
         UC->>Repo: save(notification)
         Repo->>UN: deletedAt = agora
-        Note over UN: linha compartilhada Notification intacta
+        Note over UN: notificações dos demais destinatários intactas
         UC-->>API: sucesso
         API-->>Bell: 204
-        Bell->>Cache: onSettled: invalida só a contagem de não lidas (se for query separada)
-    else inexistente, já excluída ou de outro usuário
+        Bell->>Cache: onSettled: invalida só a contagem de não lidas
+    else inexistente, de outro usuário ou já excluída
         UC-->>API: NotificationNotFoundError
         API-->>Bell: 404
         Bell->>Cache: onError: mantém a remoção e invalida a lista
     else falha de rede ou 5xx
         API--xBell: erro
         Bell->>Cache: onError: rollback do snapshot
-        Cache-->>Bell: restaura item, badge e fetchedCount
+        Cache-->>Bell: restaura item, badge, fetchedCount e total
     end

@@ -4,7 +4,7 @@
 
 **Problema:** o menu de notificações (bell) só permite visualizar e marcar como lida. O usuário não consegue remover uma notificação da própria caixa.
 
-**Objetivo:** permitir que o usuário autenticado exclua uma notificação por vez, direto no item do bell. A exclusão vale só para o próprio usuário: a linha compartilhada `Notification` fica intacta e os demais destinatários de um broadcast continuam vendo a sua.
+**Objetivo:** permitir que o usuário autenticado exclua uma notificação por vez, direto no item do bell. A exclusão vale só para o próprio usuário: em um broadcast cada destinatário tem a sua própria notificação, e as dos demais não são afetadas.
 
 **Sucesso:** o item some da lista imediatamente, o badge de não lidas acompanha, o scroll infinito não pula nem repete itens e a exclusão sobrevive a um reload.
 
@@ -20,7 +20,7 @@
 
 | Característica | Por quê | Critério mensurável |
 |---|---|---|
-| Isolamento entre usuários | Notificação é compartilhada em broadcast | Excluir notificação de outro usuário devolve 404 e não altera nenhuma linha |
+| Isolamento entre usuários | Avisos em broadcast geram uma notificação por destinatário | Excluir notificação de outro usuário devolve 404 e não altera nenhuma linha |
 | Consistência percebida | A lista tem scroll infinito por `offset` | Após excluir, `fetchNextPage` não pula nem repete itens (teste do ajuste de `fetchedCount`) |
 | Manutenibilidade | Já existe o padrão de `markAsRead` | Zero migration; nenhum componente novo além do caso de uso, do controller e do hook |
 
@@ -29,15 +29,14 @@
 ## Estrutura de Componentes
 
 **Backend, bounded context `notification`:**
-- **Exclusão no domínio:** método que marca a notificação do usuário como excluída (`deletedAt`), no estilo de `markAsRead()`.
-- **`DeleteNotificationUseCase`:** carrega pelo `findById`, confere que a notificação é do usuário e aplica a exclusão; depois `save()`. Se não existe, é de outro usuário ou já está excluída, devolve `NotificationNotFoundError`. `findById` já filtra `deletedAt: null`, então a exclusão repetida cai em 404.
+- **Exclusão no domínio:** novo método `softDelete()` na entidade `Notification`, no estilo de `markAsRead()`, que preenche `deletedAt`. Os getters `deletedAt` e `isDeleted` já existem.
+- **`DeleteNotificationUseCase`:** carrega pelo `findById(notificationId)`, confere que `notification.userId` é o do requisitante e que `notification.isDeleted` é falso, aplica `softDelete()` e persiste com `save()`. Se não existe, é de outro usuário ou já está excluída, devolve `NotificationNotFoundError`. O `findById` não filtra `deletedAt`, então a checagem de `isDeleted` é do caso de uso. O `save()` já persiste `deletedAt` (upsert com `updateMany` por `userId`), sem mudança no repositório nem migration.
 - **Controller:** `DELETE /api/v1/notifications/:id`, protegido, resposta 204. O OpenAPI descreve 204, 401 e 404; o IoC ganha os símbolos do caso de uso e do controller.
 - **Contrato compartilhado:** `pnpm generate:types` para o `@repo/api-types` expor o `DELETE`.
 
 **Frontend:**
 - **`NotificationItem`:** o `<li>` vira contêiner flex com o botão principal (marca como lida) e um botão irmão de excluir; nunca `<button>` aninhado.
-- **`useDeleteNotification` (em `lib/notifications/use-notifications.ts`):** mutation com atualização otimista sobre o cache `InfiniteData`.
-- **MSW:** handler de `DELETE`.
+- **`deleteNotification` (mutation dentro de `useNotifications`, em `lib/notifications/use-notifications.ts`, retornada como `deleteNotification(id)`):** atualização otimista sobre o cache `InfiniteData` da lista e sobre a query separada da contagem de não lidas. O `NotificationDropdown` e o `NotificationBell` repassam `onDelete` até o item.
 
 ## Especificação Visual
 
@@ -55,7 +54,7 @@
 
 ## Fluxo de Dados
 
-O usuário clica em excluir e o hook remove o item do cache antes da resposta. O backend valida a posse e marca `deletedAt`. Em sucesso (204) o cache permanece como está; o badge já foi ajustado no `onMutate` e, se a contagem de não lidas for uma query separada, só ela é invalidada. Em 404 (o item já não existe para o usuário) a remoção é mantida e a lista é invalidada para se ressincronizar. Em falha de rede ou 5xx o snapshot é restaurado.
+O usuário clica em excluir e o hook remove o item do cache antes da resposta, ajustando `fetchedCount`, `total` e a contagem de não lidas. O backend valida a posse e marca `deletedAt`. Em sucesso (204) a lista permanece como está e só a query de contagem de não lidas é invalidada. Em 404 (o item já não existe para o usuário) a remoção é mantida e a lista é invalidada para se ressincronizar. Em falha de rede ou 5xx o snapshot é restaurado.
 
 ```mermaid
 sequenceDiagram
@@ -68,28 +67,28 @@ sequenceDiagram
     participant UN as UserNotification
 
     Bell->>Cache: onMutate: cancelQueries e snapshot
-    Cache->>Cache: remove o item, decrementa o badge, ajusta fetchedCount
+    Cache->>Cache: remove o item, decrementa o badge, ajusta fetchedCount e total
     Cache-->>Bell: re-render sem a notificação
     Bell->>API: DELETE /notifications/:id
     API->>UC: execute(userId, notificationId)
     UC->>Repo: findById(notificationId)
-    Repo->>UN: busca com deletedAt nulo
-    alt existe e pertence ao usuário
-        UC->>UC: marca como excluída (deletedAt)
+    Repo->>UN: busca a notificação (sem filtrar deletedAt)
+    alt existe, é do usuário e não está excluída
+        UC->>UC: softDelete()
         UC->>Repo: save(notification)
         Repo->>UN: deletedAt = agora
-        Note over UN: linha compartilhada Notification intacta
+        Note over UN: notificações dos demais destinatários intactas
         UC-->>API: sucesso
         API-->>Bell: 204
-        Bell->>Cache: onSettled: invalida só a contagem de não lidas (se for query separada)
-    else inexistente, já excluída ou de outro usuário
+        Bell->>Cache: onSettled: invalida só a contagem de não lidas
+    else inexistente, de outro usuário ou já excluída
         UC-->>API: NotificationNotFoundError
         API-->>Bell: 404
         Bell->>Cache: onError: mantém a remoção e invalida a lista
     else falha de rede ou 5xx
         API--xBell: erro
         Bell->>Cache: onError: rollback do snapshot
-        Cache-->>Bell: restaura item, badge e fetchedCount
+        Cache-->>Bell: restaura item, badge, fetchedCount e total
     end
 ```
 
@@ -99,8 +98,8 @@ Diagrama fonte: `specs/diagrams/notification-delete-design_01_sequence_delete_no
 
 ### D1. Exclusão lógica em `UserNotification.deletedAt` via `DELETE /notifications/:id`
 
-- **Contexto:** o modelo já separa `Notification` compartilhada e `UserNotification` por destinatário, com `deletedAt` e listagens filtrando `deletedAt: null`.
-- **Decisão:** `DELETE` que preenche `deletedAt`; 204 no sucesso, 404 quando não encontrada ou de outro usuário.
+- **Contexto:** cada destinatário tem a sua `Notification` com uma linha `UserNotification` que guarda `readAt` e `deletedAt`; as listagens e a contagem já filtram `deletedAt: null`, e o `save()` já persiste `deletedAt`.
+- **Decisão:** `DELETE` que preenche `deletedAt`; 204 no sucesso, 404 quando não encontrada, de outro usuário ou já excluída.
 - **Justificativa técnica:** reaproveita schema, filtros e o padrão do `MarkAsReadUseCase`; zero migration.
 - **Justificativa de negócio:** respeita a retenção de 90 dias das notificações de segurança e permite auditoria.
 - **Trade-offs aceitos:** as linhas nunca somem do banco; a purga fica para trabalho futuro. Descartadas: remoção física (viola RF-023) e `PATCH dismiss` (foge do padrão REST sem ganho).
@@ -108,7 +107,7 @@ Diagrama fonte: `specs/diagrams/notification-delete-design_01_sequence_delete_no
 ### D2. Remoção otimista com `fetchedCount` ajustado
 
 - **Contexto:** o scroll infinito pagina por `offset`; remover um item entre buscas deslocaria o offset.
-- **Decisão:** remover do cache, decrementar o badge se era não lida e decrementar `fetchedCount`; rollback só em falha de rede ou 5xx.
+- **Decisão:** remover do cache, decrementar o badge se era não lida, decrementar o `fetchedCount` da página que continha o item e o `total` de todas as páginas (o `getNextPageParam` usa `total` e a soma dos `fetchedCount`); remover também o item pendente de reaplicação do SSE; rollback só em falha de rede ou 5xx.
 - **Justificativa técnica:** o próximo `fetchNextPage` continua a partir do ponto correto, sem refetch das páginas carregadas. Segue a regra D2 de `notificacoes-scroll-infinito`.
 - **Justificativa de negócio:** o item some na hora, sem "pulo" de scroll.
 - **Trade-offs aceitos:** mais lógica de cache e um teste dedicado ao offset. Descartada: invalidar a lista inteira a cada exclusão (refetch de todas as páginas, scroll instável).
@@ -127,16 +126,18 @@ Diagrama fonte: `specs/diagrams/notification-delete-design_01_sequence_delete_no
 |---|---|---|---|---|
 | Deslocamento de offset no scroll infinito após excluir | 2 | 2 | 4 🟡 | D2 e teste do hook que verifica `fetchedCount` e o próximo `fetchNextPage` |
 | Excluir a última notificação carregada com `hasNextPage` ativo deixa o sentinel sem gatilho | 2 | 2 | 4 🟡 | Teste do componente: lista vazia com `hasNextPage` volta a buscar |
-| `save()` não persiste `deletedAt`, existe cache de contagem no backend, ou a contagem de não lidas não é query separada no frontend | 2 | 1 | 2 🟢 | Confirmar no código na primeira task do plano; criar método de repositório ou ajustar o `onSettled` se preciso |
+| `findById` não filtra `deletedAt`: uma exclusão repetida devolveria 204 se o caso de uso não checar `isDeleted` | 2 | 2 | 4 🟡 | O caso de uso checa `isDeleted` e devolve 404; teste unitário de exclusão repetida |
+| Um item excluído ainda pendente de reaplicação do SSE reaparece na lista | 2 | 2 | 4 🟡 | A mutation remove a entrada pendente; teste no hook |
+| O 404 não é distinguível de erro de rede na camada de API do frontend | 2 | 2 | 4 🟡 | Ler o status da resposta na função de requisição; teste do hook para 404 e para 5xx |
 | Sem sincronização entre abas | 1 | 3 | 3 🟡 | Aceito e registrado como fora de escopo; a lista se acerta no próximo fetch |
 
 ## Testes
 
-Backend: runner do script `test:run` do `apps/backend` (`*.test.ts`) e `*.business-flow-test.ts` para HTTP. Frontend: Vitest via `pnpm --filter frontend test -- --run`. Sem framework novo; backend em Fastify e frontend em Next.js, já declarados nos manifests.
+Backend: Vitest via `pnpm --filter backend test` (`*.test.ts`) e `pnpm --filter backend test:business-flow` (`*.business-flow-test.ts`). Frontend: Vitest via `pnpm --filter frontend test -- --run`. Sem framework novo; backend em Fastify e frontend em Next.js, já declarados nos manifests.
 
 - **Unitário do caso de uso (repositório em memória):** sucesso, inexistente, de outro usuário, exclusão repetida (404).
 - **Business-flow HTTP:** 204, 401 sem token, 404 para notificação de outro usuário, e a notificação some do `GET /notifications`.
-- **Hook `useDeleteNotification`:** remoção do item, decremento do badge só se não lida, ajuste de `fetchedCount`, rollback em 5xx, sem rollback em 404.
-- **Componente `NotificationItem`:** botão de excluir com `aria-label`, revelado por foco, não aninhado ao botão principal, e o clique nele não dispara marcar como lida.
-- **MSW:** handler de `DELETE` usado pelos testes de frontend.
+- **Hook `useNotifications` (`deleteNotification`):** remoção do item, decremento do badge só se não lida, ajuste de `fetchedCount` e `total`, rollback em 5xx, sem rollback em 404, item pendente do SSE não reaparece.
+- **Componente `NotificationItem`:** botão de excluir com `aria-label`, revelado por foco, não aninhado ao botão principal, e o clique nele não dispara marcar como lida. Os testes existentes que usam `getByRole("button")` passam a filtrar por nome.
+- **Mocks:** os testes do hook mockam `@/lib/api` com `vi.mock` (adicionando `DELETE`), como os existentes; não há handler MSW de notificações.
 - **Gates:** `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` verdes; fitness e dependency-cruiser sem regressão.
