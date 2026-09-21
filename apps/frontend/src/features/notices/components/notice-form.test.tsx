@@ -27,6 +27,10 @@ function submitButton() {
 	return screen.getByRole("button", { name: /Enviar aviso|Enviando/ })
 }
 
+function audienceRadio(name: string) {
+	return screen.getByRole("radio", { name })
+}
+
 async function fillValidNotice() {
 	await userEvent.type(titleInput(), "Manutenção programada")
 	await userEvent.type(messageInput(), "O sistema ficará fora do ar às 22h.")
@@ -223,5 +227,142 @@ describe("NoticeForm", () => {
 		await userEvent.type(titleInput(), "Manutenção")
 
 		expect(screen.getByText("Público: Todos")).toBeInTheDocument()
+	})
+
+	test("FR-001: renderiza o grupo Público-alvo com Todos marcado ao abrir", () => {
+		renderWithProviders(<NoticeForm />)
+
+		expect(
+			screen.getByRole("group", { name: "Público-alvo" }),
+		).toBeInTheDocument()
+		expect(audienceRadio("Todos")).toBeChecked()
+		expect(audienceRadio("Alunos")).not.toBeChecked()
+		expect(audienceRadio("Administradores")).not.toBeChecked()
+	})
+
+	test("FR-005: escolher Alunos e enviar inclui audience MEMBERS no corpo", async () => {
+		let receivedBody: unknown
+		server.use(
+			http.post(endpoint(BROADCAST_PATH), async ({ request }) => {
+				receivedBody = await request.json()
+				return HttpResponse.json({ recipients: 2 }, { status: 201 })
+			}),
+		)
+		renderWithProviders(<NoticeForm />)
+		await fillValidNotice()
+
+		await userEvent.click(audienceRadio("Alunos"))
+		await userEvent.click(submitButton())
+
+		await waitFor(() => expect(toast.success).toHaveBeenCalled())
+		expect(receivedBody).toEqual({
+			title: "Manutenção programada",
+			message: "O sistema ficará fora do ar às 22h.",
+			audience: "MEMBERS",
+		})
+	})
+
+	test("FR-005: após o sucesso o público volta a Todos e título e mensagem são limpos", async () => {
+		renderWithProviders(<NoticeForm />)
+		await fillValidNotice()
+		await userEvent.click(audienceRadio("Administradores"))
+		expect(audienceRadio("Administradores")).toBeChecked()
+
+		await userEvent.click(submitButton())
+
+		await waitFor(() => expect(titleInput()).toHaveValue(""))
+		expect(messageInput()).toHaveValue("")
+		expect(audienceRadio("Todos")).toBeChecked()
+		expect(audienceRadio("Administradores")).not.toBeChecked()
+	})
+
+	test("FR-006: o toast usa o número de destinatários devolvido para o público escolhido", async () => {
+		server.use(
+			http.post(endpoint(BROADCAST_PATH), () =>
+				HttpResponse.json({ recipients: 2 }, { status: 201 }),
+			),
+		)
+		renderWithProviders(<NoticeForm />)
+		await fillValidNotice()
+		await userEvent.click(audienceRadio("Alunos"))
+
+		await userEvent.click(submitButton())
+
+		await waitFor(() =>
+			expect(toast.success).toHaveBeenCalledWith(
+				"Aviso enviado para 2 usuários.",
+			),
+		)
+	})
+
+	test("a pré-visualização mostra o público escolhido e atualiza ao trocar", async () => {
+		renderWithProviders(<NoticeForm />)
+		await userEvent.type(titleInput(), "Manutenção")
+		expect(screen.getByText("Público: Todos")).toBeInTheDocument()
+
+		await userEvent.click(audienceRadio("Alunos"))
+
+		expect(screen.getByText("Público: Alunos")).toBeInTheDocument()
+		expect(screen.queryByText("Público: Todos")).not.toBeInTheDocument()
+
+		await userEvent.click(audienceRadio("Administradores"))
+
+		expect(screen.getByText("Público: Administradores")).toBeInTheDocument()
+	})
+
+	test("Review Focus: trocar o público depois de digitar título e mensagem preserva o texto digitado", async () => {
+		renderWithProviders(<NoticeForm />)
+		await fillValidNotice()
+
+		await userEvent.click(audienceRadio("Alunos"))
+		await userEvent.click(audienceRadio("Administradores"))
+		await userEvent.click(audienceRadio("Todos"))
+
+		expect(titleInput()).toHaveValue("Manutenção programada")
+		expect(messageInput()).toHaveValue("O sistema ficará fora do ar às 22h.")
+		expect(
+			screen.getByText(`${"O sistema ficará fora do ar às 22h.".length} / 500`),
+		).toBeInTheDocument()
+		expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+	})
+
+	test("erro: mantém o público escolhido junto com o texto digitado", async () => {
+		server.use(
+			http.post(endpoint(BROADCAST_PATH), () =>
+				HttpResponse.json({ message: "falha" }, { status: 500 }),
+			),
+		)
+		renderWithProviders(<NoticeForm />)
+		await fillValidNotice()
+		await userEvent.click(audienceRadio("Alunos"))
+
+		await userEvent.click(submitButton())
+
+		await waitFor(() => expect(toast.error).toHaveBeenCalled())
+		expect(audienceRadio("Alunos")).toBeChecked()
+		expect(titleInput()).toHaveValue("Manutenção programada")
+	})
+
+	test("desabilita as opções de público durante o envio", async () => {
+		let release: () => void = () => undefined
+		const gate = new Promise<void>((resolve) => {
+			release = resolve
+		})
+		server.use(
+			http.post(endpoint(BROADCAST_PATH), async () => {
+				await gate
+				return HttpResponse.json({ recipients: 3 }, { status: 201 })
+			}),
+		)
+		renderWithProviders(<NoticeForm />)
+		await fillValidNotice()
+
+		await userEvent.click(submitButton())
+
+		await waitFor(() => expect(audienceRadio("Alunos")).toBeDisabled())
+		expect(audienceRadio("Todos")).toBeDisabled()
+
+		release()
+		await waitFor(() => expect(audienceRadio("Alunos")).toBeEnabled())
 	})
 })

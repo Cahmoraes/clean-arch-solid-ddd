@@ -2,13 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useId } from "react"
-import { useForm, useWatch } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { FieldShell } from "@/components/ui/field-shell"
 import { FormField } from "@/components/ui/form-field"
 import { useBroadcastNotice } from "@/features/notices/api/use-broadcast-notice"
+import { AudienceSelector } from "@/features/notices/components/audience-selector"
 import { NoticePreview } from "@/features/notices/components/notice-preview"
 import {
 	NOTICE_MESSAGE_MAX,
@@ -105,6 +106,17 @@ export function NoticeForm() {
 								{`${message.length} / ${NOTICE_MESSAGE_MAX}`}
 							</span>
 						</FieldShell>
+						<Controller
+							control={control}
+							name="audience"
+							render={({ field }) => (
+								<AudienceSelector
+									value={field.value}
+									onChange={field.onChange}
+									disabled={isPending}
+								/>
+							)}
+						/>
 						<div className="flex justify-end">
 							<Button type="submit" disabled={isPending}>
 								{isPending ? "Enviando..." : "Enviar aviso"}
