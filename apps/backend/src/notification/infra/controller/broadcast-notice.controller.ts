@@ -28,6 +28,11 @@ const broadcastNoticeBodySchema = z.object({
 		description: "Notice message (1 to 500 characters)",
 		example: "O sistema ficará fora do ar hoje às 22h.",
 	}),
+	audience: z.enum(["ALL", "MEMBERS", "ADMINS"]).default("ALL").meta({
+		description:
+			"Who receives the notice: ALL (active members and admins), MEMBERS (active members only) or ADMINS (active admins only). Defaults to ALL",
+		example: "MEMBERS",
+	}),
 })
 
 const broadcastNoticeResponseSchema = z.object({

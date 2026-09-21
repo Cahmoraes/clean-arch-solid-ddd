@@ -187,4 +187,57 @@ describe("POST /api/v1/notifications/broadcast", () => {
 		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
 		expect(notificationRepository.notifications.size).toBe(0)
 	})
+
+	test("FR-015: sem audience o envio equivale a ALL e alcanca todos os usuarios ativos", async () => {
+		const response = await broadcast({
+			title: "Aviso",
+			message: "Mensagem",
+		})
+
+		expect(response.status).toBe(HTTP_STATUS.CREATED)
+		expect(response.body).toEqual({ recipients: 2 })
+		expect(notificationRepository.notifications.size).toBe(2)
+	})
+
+	test.each([
+		"ALL",
+		"MEMBERS",
+		"ADMINS",
+	])("aceita audience %s e responde 201", async (audience) => {
+		const response = await broadcast({
+			title: "Aviso",
+			message: "Mensagem",
+			audience,
+		})
+
+		expect(response.status).toBe(HTTP_STATUS.CREATED)
+	})
+
+	test("FR-016: audience desconhecido retorna 400 e nao cria notificacao", async () => {
+		const response = await broadcast({
+			title: "Aviso",
+			message: "Mensagem",
+			audience: "todos",
+		})
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+		expect(notificationRepository.notifications.size).toBe(0)
+	})
+
+	test.each([
+		["em minusculas", "all"],
+		["string vazia", ""],
+		["null", null],
+		["numero", 1],
+		["papel do dominio user", "ADMIN"],
+	])("Review Focus: audience %s retorna 400 e nenhuma notificacao e criada", async (_, audience) => {
+		const response = await broadcast({
+			title: "Aviso",
+			message: "Mensagem",
+			audience,
+		})
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+		expect(notificationRepository.notifications.size).toBe(0)
+	})
 })
