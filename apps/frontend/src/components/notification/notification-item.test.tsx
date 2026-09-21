@@ -188,6 +188,22 @@ describe("NotificationItem: botão de excluir", () => {
 		expect(icon).toHaveAttribute("aria-hidden", "true")
 	})
 
+	test("em item não lido o botão de excluir ocupa o lugar da hora, à esquerda do ponto de não lida [FR-012]", () => {
+		renderItem(makeNotification())
+		const deleteButton = getDeleteButton()
+
+		expect(deleteButton).toHaveClass("right-9.5", "top-1")
+		expect(deleteButton).not.toHaveClass("right-4", "right-3", "top-2")
+	})
+
+	test("em item lido, sem ponto, o botão de excluir alinha à borda direita do conteúdo [FR-012]", () => {
+		renderItem(makeNotification({ readAt: "2026-09-20T10:00:00.000Z" }))
+		const deleteButton = getDeleteButton()
+
+		expect(deleteButton).toHaveClass("right-4", "top-1")
+		expect(deleteButton).not.toHaveClass("right-9.5", "right-3", "top-2")
+	})
+
 	test("Review Focus: em dispositivo touch (@media (hover: none)) o botão de excluir fica visível sem hover [FR-012]", () => {
 		renderItem(makeNotification())
 

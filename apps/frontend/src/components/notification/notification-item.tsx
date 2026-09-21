@@ -123,7 +123,10 @@ export function NotificationItem({
 				type="button"
 				aria-label="Excluir notificação"
 				onClick={handleDelete}
-				className="absolute right-3 top-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 hover:bg-destructive-soft hover:text-destructive"
+				className={cn(
+					"absolute top-1 inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 hover:bg-destructive-soft hover:text-destructive",
+					isUnread ? "right-9.5" : "right-4",
+				)}
 			>
 				<Trash2 className="h-4 w-4" aria-hidden="true" />
 			</button>
