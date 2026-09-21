@@ -1,6 +1,7 @@
 # Task 5: Controller aceita audience opcional com padrão ALL e recusa valor inválido [FR-015, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/backend && npx vitest run --config ./test/vite.config.business-flow.ts src/notification/infra/controller/broadcast-notice.controller.business-flow-test.ts` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** standard

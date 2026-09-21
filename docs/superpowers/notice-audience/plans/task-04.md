@@ -1,6 +1,7 @@
 # Task 4: Caso de uso repassa o público e trata público sem usuários [FR-010, FR-012, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/backend && npx vitest --run --config ./test/vite.config.app-domain.ts src/notification/application/use-case/broadcast-notice.usecase.test.ts` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** standard

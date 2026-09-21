@@ -1,6 +1,7 @@
 # Task 6: Fluxo de negócio do broadcast por público e acesso restrito [FR-007, FR-008, FR-009, FR-010, FR-012, FR-017]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/backend && npx vitest run --config ./test/vite.config.business-flow.ts src/notification/infra/controller/broadcast-notice.controller.business-flow-test.ts src/notification/infra/controller/broadcast-notice.authorization.business-flow-test.ts` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** standard

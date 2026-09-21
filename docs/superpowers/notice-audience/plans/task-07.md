@@ -1,6 +1,7 @@
 # Task 7: Tipos regenerados, schema e hook do frontend enviam o público [FR-002, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/frontend && pnpm exec vitest run src/features/notices/schemas/notice-schema.test.ts src/features/notices/notice-audience-options.test.ts src/features/notices/api/use-broadcast-notice.test.tsx src/features/notices/components/notice-form.test.tsx` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** standard

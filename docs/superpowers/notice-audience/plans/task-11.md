@@ -1,6 +1,7 @@
 # Task 11: Adendo de documentação em admin-notice-broadcast [FR-012]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c grep -q "^## Adendo (2026-09-21): público-alvo" docs/superpowers/admin-notice-broadcast/specs/admin-notice-broadcast-design.md && grep -q "^## Adendo (2026-09-21): público-alvo" docs/superpowers/admin-notice-broadcast/prd/prd-admin-notice-broadcast.md` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** cheap

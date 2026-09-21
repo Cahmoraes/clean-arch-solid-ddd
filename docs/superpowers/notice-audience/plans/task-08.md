@@ -1,6 +1,7 @@
 # Task 8: AudienceSelector em cartões de rádio acessíveis [FR-001, FR-002, FR-003, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/frontend && pnpm exec vitest run src/features/notices/components/audience-selector.test.tsx` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** standard

@@ -1,6 +1,7 @@
 # Task 10: NoticeForm integra o seletor, o envio e o reset [FR-001, FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/frontend && pnpm exec vitest run src/features/notices/components/notice-form.test.tsx` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** standard

@@ -1,6 +1,7 @@
 # Task 2: Porta ActiveRecipientsProvider e provider in-memory filtram por público [FR-007, FR-008, FR-009, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/backend && npx vitest --run --config ./test/vite.config.app-domain.ts src/notification/infra/provider/in-memory/in-memory-active-recipients.provider.test.ts src/notification/application/use-case/broadcast-notice.usecase.test.ts` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** standard

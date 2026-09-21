@@ -1,6 +1,7 @@
 # Task 1: Value object NoticeAudience no domínio de notificação [FR-015]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/backend && npx vitest --run --config ./test/vite.config.app-domain.ts src/notification/domain/value-object/notice-audience.test.ts` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** cheap

@@ -1,6 +1,7 @@
 # Task 9: Pré-visualização mostra o público e subtítulo da página [FR-014]
 
-**Status:** PENDING
+**Status:** DONE
+**Verified:** `bash -c cd apps/frontend && pnpm exec vitest run src/features/notices/components/notice-preview.test.tsx src/features/notices/components/notice-form.test.tsx 'src/app/(authenticated)/admin/avisos/novo/page.test.tsx'` → exit 0
 **PRD:** `../prd/prd-notice-audience.md`
 **Spec:** `../specs/notice-audience-design.md`
 **Tier:** cheap
