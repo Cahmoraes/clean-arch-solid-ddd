@@ -12,6 +12,7 @@ interface NotificationDropdownProps {
 	isFetchingNextPage: boolean
 	fetchNextPage: () => void
 	onMarkAsRead: (id: string) => void
+	onDelete: (id: string) => void
 	onMarkAllAsRead: () => void
 }
 
@@ -51,6 +52,7 @@ function NotificationDropdownContent({
 	isFetchingNextPage,
 	fetchNextPage,
 	onMarkAsRead,
+	onDelete,
 }: Pick<
 	NotificationDropdownProps,
 	| "notifications"
@@ -59,6 +61,7 @@ function NotificationDropdownContent({
 	| "isFetchingNextPage"
 	| "fetchNextPage"
 	| "onMarkAsRead"
+	| "onDelete"
 >) {
 	const sentinelRef = useLoadMoreOnIntersect(
 		hasNextPage,
@@ -74,7 +77,7 @@ function NotificationDropdownContent({
 		)
 	}
 
-	if (notifications.length === 0) {
+	if (notifications.length === 0 && !hasNextPage) {
 		return (
 			<div className="flex flex-col items-center gap-3 px-4 py-10 text-center">
 				<span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-surface-2 text-muted-foreground">
@@ -95,6 +98,7 @@ function NotificationDropdownContent({
 						key={notification.id}
 						notification={notification}
 						onMarkAsRead={onMarkAsRead}
+						onDelete={onDelete}
 					/>
 				))}
 			</ul>
@@ -121,6 +125,7 @@ export function NotificationDropdown({
 	isFetchingNextPage,
 	fetchNextPage,
 	onMarkAsRead,
+	onDelete,
 	onMarkAllAsRead,
 }: NotificationDropdownProps) {
 	const hasUnreadNotifications = notifications.some(
@@ -154,6 +159,7 @@ export function NotificationDropdown({
 					isFetchingNextPage={isFetchingNextPage}
 					fetchNextPage={fetchNextPage}
 					onMarkAsRead={onMarkAsRead}
+					onDelete={onDelete}
 				/>
 			</div>
 		</div>

@@ -31,6 +31,7 @@ export function NotificationBell() {
 		fetchNextPage,
 		markAsRead,
 		markAllAsRead,
+		deleteNotification,
 	} = useNotifications()
 
 	useEffect(() => {
@@ -85,6 +86,9 @@ export function NotificationBell() {
 					fetchNextPage={fetchNextPage}
 					onMarkAsRead={(notificationId) => {
 						void markAsRead(notificationId)
+					}}
+					onDelete={(notificationId) => {
+						void deleteNotification(notificationId)
 					}}
 					onMarkAllAsRead={() => {
 						void markAllAsRead()

@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import type { NotificationItem } from "@/lib/notifications/use-notifications"
 import { NotificationDropdown } from "./notification-dropdown"
@@ -69,6 +70,7 @@ describe("NotificationDropdown — scroll infinito", () => {
 				fetchNextPage={fetchNextPage}
 				onMarkAsRead={vi.fn()}
 				onMarkAllAsRead={vi.fn()}
+				onDelete={vi.fn()}
 			/>,
 		)
 		const observer = observerInstances[0]
@@ -88,6 +90,7 @@ describe("NotificationDropdown — scroll infinito", () => {
 				fetchNextPage={fetchNextPage}
 				onMarkAsRead={vi.fn()}
 				onMarkAllAsRead={vi.fn()}
+				onDelete={vi.fn()}
 			/>,
 		)
 		const observer = observerInstances[0]
@@ -106,6 +109,7 @@ describe("NotificationDropdown — scroll infinito", () => {
 				fetchNextPage={vi.fn()}
 				onMarkAsRead={vi.fn()}
 				onMarkAllAsRead={vi.fn()}
+				onDelete={vi.fn()}
 			/>,
 		)
 		const status = screen.getByRole("status")
@@ -123,6 +127,7 @@ describe("NotificationDropdown — scroll infinito", () => {
 				fetchNextPage={vi.fn()}
 				onMarkAsRead={vi.fn()}
 				onMarkAllAsRead={vi.fn()}
+				onDelete={vi.fn()}
 			/>,
 		)
 		expect(screen.queryByRole("status")).not.toBeInTheDocument()
@@ -138,6 +143,7 @@ describe("NotificationDropdown — scroll infinito", () => {
 				fetchNextPage={vi.fn()}
 				onMarkAsRead={vi.fn()}
 				onMarkAllAsRead={vi.fn()}
+				onDelete={vi.fn()}
 			/>,
 		)
 		expect(screen.queryByRole("status")).not.toBeInTheDocument()
@@ -153,6 +159,7 @@ describe("NotificationDropdown — scroll infinito", () => {
 				fetchNextPage={vi.fn()}
 				onMarkAsRead={vi.fn()}
 				onMarkAllAsRead={vi.fn()}
+				onDelete={vi.fn()}
 			/>,
 		)
 		const observer = observerInstances[0]
@@ -170,9 +177,81 @@ describe("NotificationDropdown — scroll infinito", () => {
 				fetchNextPage={vi.fn()}
 				onMarkAsRead={vi.fn()}
 				onMarkAllAsRead={vi.fn()}
+				onDelete={vi.fn()}
 			/>,
 		)
 		unmount()
 		expect(observerInstances[0]?.disconnect).toHaveBeenCalled()
+	})
+})
+
+describe("NotificationDropdown: exclusão", () => {
+	test("clicar em excluir chama onDelete com o id da notificação, sem marcar como lida [FR-001]", async () => {
+		const onDelete = vi.fn()
+		const onMarkAsRead = vi.fn()
+		render(
+			<NotificationDropdown
+				notifications={[makeNotification("1")]}
+				isLoading={false}
+				hasNextPage={false}
+				isFetchingNextPage={false}
+				fetchNextPage={vi.fn()}
+				onMarkAsRead={onMarkAsRead}
+				onMarkAllAsRead={vi.fn()}
+				onDelete={onDelete}
+			/>,
+		)
+
+		await userEvent.click(
+			screen.getByRole("button", { name: "Excluir notificação" }),
+		)
+
+		expect(onDelete).toHaveBeenCalledTimes(1)
+		expect(onDelete).toHaveBeenCalledWith("1")
+		expect(onMarkAsRead).not.toHaveBeenCalled()
+	})
+
+	test("Review Focus: excluir a última notificação carregada com hasNextPage ativo volta a buscar mais e, sem mais páginas, mostra o estado vazio [FR-011]", () => {
+		const fetchNextPage = vi.fn()
+		const baseProps = {
+			isLoading: false,
+			isFetchingNextPage: false,
+			fetchNextPage,
+			onMarkAsRead: vi.fn(),
+			onMarkAllAsRead: vi.fn(),
+			onDelete: vi.fn(),
+		}
+		const { rerender } = render(
+			<NotificationDropdown
+				{...baseProps}
+				notifications={[makeNotification("1")]}
+				hasNextPage={true}
+			/>,
+		)
+		const observer = observerInstances[0]
+		const sentinel = observer?.observe.mock.calls[0]?.[0]
+
+		rerender(
+			<NotificationDropdown
+				{...baseProps}
+				notifications={[]}
+				hasNextPage={true}
+			/>,
+		)
+
+		expect(screen.queryByText("Nenhuma notificação")).not.toBeInTheDocument()
+		expect(sentinel).toBeInTheDocument()
+		observer?.trigger(true, sentinel)
+		expect(fetchNextPage).toHaveBeenCalledTimes(1)
+
+		rerender(
+			<NotificationDropdown
+				{...baseProps}
+				notifications={[]}
+				hasNextPage={false}
+			/>,
+		)
+
+		expect(screen.getByText("Nenhuma notificação")).toBeInTheDocument()
 	})
 })
