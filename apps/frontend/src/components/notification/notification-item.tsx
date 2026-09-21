@@ -1,12 +1,20 @@
 "use client"
 
-import { CheckCircle, Megaphone, ShieldAlert, Tag, XCircle } from "lucide-react"
+import {
+	CheckCircle,
+	Megaphone,
+	ShieldAlert,
+	Tag,
+	Trash2,
+	XCircle,
+} from "lucide-react"
 import { cn } from "@/lib/cn"
 import type { NotificationItem as NotificationItemData } from "@/lib/notifications/use-notifications"
 
 interface NotificationItemProps {
 	notification: NotificationItemData
 	onMarkAsRead: (id: string) => void
+	onDelete: (id: string) => void
 }
 
 type NotificationIcon = typeof CheckCircle
@@ -56,6 +64,7 @@ function formatRelativeTime(dateStr: string): string {
 export function NotificationItem({
 	notification,
 	onMarkAsRead,
+	onDelete,
 }: NotificationItemProps) {
 	const notificationTypeStyle = NOTIFICATION_TYPE_STYLE[notification.type]
 	const Icon = notificationTypeStyle.icon
@@ -66,8 +75,12 @@ export function NotificationItem({
 		onMarkAsRead(notification.id)
 	}
 
+	function handleDelete() {
+		onDelete(notification.id)
+	}
+
 	return (
-		<li>
+		<li className="group relative">
 			<button
 				type="button"
 				onClick={handleClick}
@@ -90,7 +103,7 @@ export function NotificationItem({
 						<p className="line-clamp-1 text-sm font-semibold text-foreground">
 							{notification.title}
 						</p>
-						<span className="flex-shrink-0 text-xs text-muted-foreground">
+						<span className="flex-shrink-0 text-xs text-muted-foreground group-hover:invisible group-focus-within:invisible [@media(hover:none)]:invisible">
 							{formatRelativeTime(notification.createdAt)}
 						</span>
 					</div>
@@ -105,6 +118,14 @@ export function NotificationItem({
 						aria-hidden="true"
 					/>
 				) : null}
+			</button>
+			<button
+				type="button"
+				aria-label="Excluir notificação"
+				onClick={handleDelete}
+				className="absolute right-3 top-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 hover:bg-destructive-soft hover:text-destructive"
+			>
+				<Trash2 className="h-4 w-4" aria-hidden="true" />
 			</button>
 		</li>
 	)
