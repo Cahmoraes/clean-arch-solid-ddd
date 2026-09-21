@@ -17,6 +17,7 @@ const EMPTY_STATE_TEXT =
 	"Digite o título e a mensagem para ver a pré-visualização."
 
 const ignoreMarkAsRead = (): void => undefined
+const ignoreDelete = (): void => undefined
 
 export function NoticePreview({
 	title,
@@ -59,6 +60,7 @@ export function NoticePreview({
 						<NotificationItem
 							notification={notification}
 							onMarkAsRead={ignoreMarkAsRead}
+							onDelete={ignoreDelete}
 						/>
 					</ul>
 					<p className="font-mono text-xs uppercase tracking-wide text-primary">

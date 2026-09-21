@@ -41,7 +41,7 @@ describe("NoticePreview", () => {
 		render(<NoticePreview title="Aviso" message="Mensagem" audience="ALL" />)
 
 		expect(
-			within(screen.getByRole("list")).getByRole("button"),
+			within(screen.getByRole("list")).getByRole("button", { name: /Aviso/ }),
 		).toBeInTheDocument()
 		expect(screen.getByText("agora")).toBeInTheDocument()
 	})
