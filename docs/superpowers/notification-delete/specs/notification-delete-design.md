@@ -55,7 +55,7 @@
 
 ## Fluxo de Dados
 
-O usuário clica em excluir e o hook remove o item do cache antes da resposta. O backend valida a posse e marca `deletedAt`. Em sucesso (204) o cache permanece como está e só a contagem de não lidas é invalidada. Em 404 (o item já não existe para o usuário) a remoção é mantida e a lista é invalidada para se ressincronizar. Em falha de rede ou 5xx o snapshot é restaurado.
+O usuário clica em excluir e o hook remove o item do cache antes da resposta. O backend valida a posse e marca `deletedAt`. Em sucesso (204) o cache permanece como está; o badge já foi ajustado no `onMutate` e, se a contagem de não lidas for uma query separada, só ela é invalidada. Em 404 (o item já não existe para o usuário) a remoção é mantida e a lista é invalidada para se ressincronizar. Em falha de rede ou 5xx o snapshot é restaurado.
 
 ```mermaid
 sequenceDiagram
@@ -81,7 +81,7 @@ sequenceDiagram
         Note over UN: linha compartilhada Notification intacta
         UC-->>API: sucesso
         API-->>Bell: 204
-        Bell->>Cache: onSettled: invalida só a contagem de não lidas
+        Bell->>Cache: onSettled: invalida só a contagem de não lidas (se for query separada)
     else inexistente, já excluída ou de outro usuário
         UC-->>API: NotificationNotFoundError
         API-->>Bell: 404
@@ -127,7 +127,7 @@ Diagrama fonte: `specs/diagrams/notification-delete-design_01_sequence_delete_no
 |---|---|---|---|---|
 | Deslocamento de offset no scroll infinito após excluir | 2 | 2 | 4 🟡 | D2 e teste do hook que verifica `fetchedCount` e o próximo `fetchNextPage` |
 | Excluir a última notificação carregada com `hasNextPage` ativo deixa o sentinel sem gatilho | 2 | 2 | 4 🟡 | Teste do componente: lista vazia com `hasNextPage` volta a buscar |
-| `save()` não persiste `deletedAt` ou existe cache de contagem no backend | 2 | 1 | 2 🟢 | Confirmar no código na primeira task do plano; criar método de repositório se preciso |
+| `save()` não persiste `deletedAt`, existe cache de contagem no backend, ou a contagem de não lidas não é query separada no frontend | 2 | 1 | 2 🟢 | Confirmar no código na primeira task do plano; criar método de repositório ou ajustar o `onSettled` se preciso |
 | Sem sincronização entre abas | 1 | 3 | 3 🟡 | Aceito e registrado como fora de escopo; a lista se acerta no próximo fetch |
 
 ## Testes

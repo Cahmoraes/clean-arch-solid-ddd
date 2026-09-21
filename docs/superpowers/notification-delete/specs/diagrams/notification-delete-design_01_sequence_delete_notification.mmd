@@ -21,7 +21,7 @@ sequenceDiagram
         Note over UN: linha compartilhada Notification intacta
         UC-->>API: sucesso
         API-->>Bell: 204
-        Bell->>Cache: onSettled: invalida só a contagem de não lidas
+        Bell->>Cache: onSettled: invalida só a contagem de não lidas (se for query separada)
     else inexistente, já excluída ou de outro usuário
         UC-->>API: NotificationNotFoundError
         API-->>Bell: 404
