@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify"
 import type { ActiveRecipientsProvider } from "@/notification/application/provider/active-recipients.provider.js"
+import type { NoticeAudience } from "@/notification/domain/value-object/notice-audience.js"
 import type { PrismaClient } from "@/shared/infra/database/generated/prisma/client"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types.js"
 
@@ -12,11 +13,28 @@ export class PrismaActiveRecipientsProvider
 		private readonly prismaClient: PrismaClient,
 	) {}
 
-	public async listActiveUserIds(): Promise<string[]> {
+	public async listActiveUserIds(audience: NoticeAudience): Promise<string[]> {
 		const users = await this.prismaClient.user.findMany({
-			where: { status: "activated", deleted_at: null },
+			where: {
+				status: "activated",
+				deleted_at: null,
+				...this.roleFilter(audience),
+			},
 			select: { id: true },
 		})
 		return users.map((user) => user.id)
+	}
+
+	private roleFilter(
+		audience: NoticeAudience,
+	): { role: "MEMBER" | "ADMIN" } | undefined {
+		switch (audience.value) {
+			case "MEMBERS":
+				return { role: "MEMBER" }
+			case "ADMINS":
+				return { role: "ADMIN" }
+			case "ALL":
+				return undefined
+		}
 	}
 }
