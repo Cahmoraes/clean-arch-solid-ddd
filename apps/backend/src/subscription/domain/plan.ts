@@ -39,7 +39,8 @@ export class Plan {
 	): Either<InvalidPlanNameError | InvalidPriceError, Plan> {
 		const name = props.name.trim()
 		if (name.length === 0) return failure(new InvalidPlanNameError())
-		if (props.priceCents < 0) return failure(new InvalidPriceError())
+		if (props.priceCents < 0 || !Number.isInteger(props.priceCents))
+			return failure(new InvalidPriceError())
 
 		return success(
 			new Plan({

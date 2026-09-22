@@ -56,6 +56,13 @@ describe("Plan", () => {
 		expect(result.forceSuccess().value.priceCents).toBe(0)
 	})
 
+	test("deve rejeitar priceCents fracionário com InvalidPriceError", () => {
+		const result = Plan.create({ ...VALID_PROPS, priceCents: 49.5 })
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.value).toBeInstanceOf(InvalidPriceError)
+	})
+
 	test("inactivate() retorna uma nova instância com isActive false, preservando os demais campos", () => {
 		const plan = Plan.create(VALID_PROPS).forceSuccess().value
 
