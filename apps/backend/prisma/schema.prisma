@@ -108,6 +108,28 @@ model StripeWebhookEvent {
   @@map("stripe_webhook_events")
 }
 
+model Plan {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  price_cents     Int
+  billing_period  BillingPeriod
+  tagline         String
+  features        String[]
+  is_active       Boolean       @default(true)
+  // Reservado para integração futura com Stripe Products API (fora de escopo desta
+  // feature — ver "Fora do Escopo" na spec). Vazio por padrão quando o admin não preenche.
+  stripe_price_id String?       @default("")
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  @@map("plans")
+}
+
+enum BillingPeriod {
+  monthly
+  yearly
+}
+
 model Notification {
   id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String           @map("user_id") @db.Uuid
