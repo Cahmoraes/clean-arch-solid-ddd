@@ -98,6 +98,61 @@ describe("CalendarPage", () => {
 		).toBeGreaterThan(0)
 	})
 
+	test("botão Hoje restaura mês/ano atuais após navegação e fica desabilitado quando já está no atual", async () => {
+		const currentYear = new Date().getFullYear()
+		const currentMonth = new Date().getMonth()
+		const currentMonthStr = String(currentMonth + 1).padStart(2, "0")
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/${currentYear}`, () =>
+				HttpResponse.json([
+					{
+						date: `${currentYear}-${currentMonthStr}-07`,
+						name: "Independência do Brasil",
+						type: "national",
+					},
+				]),
+			),
+			http.get(`${BRASIL_API_FERIADOS_URL}/${currentYear - 1}`, () =>
+				HttpResponse.json([]),
+			),
+		)
+		const user = userEvent.setup()
+
+		renderWithProviders(<CalendarPage />)
+
+		await screen.findByRole("heading", { name: `Calendário ${currentYear}` })
+		expect(screen.getByRole("button", { name: "Ir para hoje" })).toBeDisabled()
+
+		await user.click(
+			screen.getByRole("button", {
+				name: `Ir para ${currentYear - 1} (ano anterior)`,
+			}),
+		)
+		await screen.findByRole("heading", {
+			name: `Calendário ${currentYear - 1}`,
+		})
+		expect(screen.getByRole("button", { name: "Ir para hoje" })).toBeEnabled()
+
+		await user.click(screen.getByRole("button", { name: "Ir para hoje" }))
+
+		expect(
+			await screen.findByRole("heading", { name: `Calendário ${currentYear}` }),
+		).toBeInTheDocument()
+		expect(
+			(await screen.findAllByText("Independência do Brasil")).length,
+		).toBeGreaterThan(0)
+		expect(screen.getByRole("button", { name: "Ir para hoje" })).toBeDisabled()
+		// o botão "Hoje" desabilita a si mesmo após o clique; o foco deve ir
+		// para um controle estável (ano anterior), nunca se perder
+		await waitFor(() => {
+			expect(
+				screen.getByRole("button", {
+					name: `Ir para ${currentYear - 1} (ano anterior)`,
+				}),
+			).toHaveFocus()
+		})
+	})
+
 	test("mostra ano atual como padrão quando initialYear não é informado", async () => {
 		const currentYear = new Date().getFullYear()
 		const month = new Date().getMonth()

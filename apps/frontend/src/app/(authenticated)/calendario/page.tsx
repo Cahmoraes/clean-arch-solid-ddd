@@ -1,6 +1,11 @@
 "use client"
 
-import { ChevronLeft, ChevronRight, RefreshCcw } from "lucide-react"
+import {
+	CalendarDays,
+	ChevronLeft,
+	ChevronRight,
+	RefreshCcw,
+} from "lucide-react"
 import { useCallback, useEffect, useRef } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
@@ -22,10 +27,16 @@ function YearNavigation({
 	selectedYear,
 	onPreviousYear,
 	onNextYear,
+	onToday,
+	isToday,
+	prevYearBtnRef,
 }: {
 	selectedYear: number
 	onPreviousYear: () => void
 	onNextYear: () => void
+	onToday: () => void
+	isToday: boolean
+	prevYearBtnRef?: React.RefObject<HTMLButtonElement | null>
 }) {
 	return (
 		<nav
@@ -33,6 +44,7 @@ function YearNavigation({
 			className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center"
 		>
 			<Button
+				ref={prevYearBtnRef}
 				type="button"
 				variant="outline"
 				size="sm"
@@ -56,6 +68,18 @@ function YearNavigation({
 			>
 				{selectedYear + 1}
 				<ChevronRight aria-hidden="true" className="size-4" />
+			</Button>
+			<Button
+				type="button"
+				variant="secondary"
+				size="sm"
+				aria-label="Ir para hoje"
+				onClick={onToday}
+				disabled={isToday}
+				className="w-full sm:w-auto"
+			>
+				<CalendarDays aria-hidden="true" className="size-4" />
+				Hoje
 			</Button>
 		</nav>
 	)
@@ -199,14 +223,19 @@ export default function CalendarPage({
 		goNextMonth,
 		goPrevYear,
 		goNextYear,
+		goToToday,
 	} = useCalendarNavigation(initialYear, initialMonth)
 	const query = useFeriadosQuery(selectedYear)
 	const feriadosDoMes = query.data
 		? getFeriadosDoMes(query.data, selectedMonth)
 		: []
+	const now = new Date()
+	const isToday =
+		selectedYear === now.getFullYear() && selectedMonth === now.getMonth()
 
 	const prevBtnRef = useRef<HTMLButtonElement>(null)
 	const nextBtnRef = useRef<HTMLButtonElement>(null)
+	const prevYearBtnRef = useRef<HTMLButtonElement>(null)
 	const touchRef = useRef<{ x: number; y: number } | null>(null)
 
 	const handlePrevMonth = useCallback(() => {
@@ -218,6 +247,13 @@ export default function CalendarPage({
 		goNextMonth()
 		queueMicrotask(() => nextBtnRef.current?.focus())
 	}, [goNextMonth])
+
+	const handleToday = useCallback(() => {
+		goToToday()
+		// o próprio botão "Hoje" fica disabled após a ação; move o foco para
+		// o botão de ano anterior (sempre habilitado) em vez de perdê-lo
+		queueMicrotask(() => prevYearBtnRef.current?.focus())
+	}, [goToToday])
 
 	const onTouchStart = useCallback((e: React.TouchEvent) => {
 		touchRef.current = {
@@ -263,6 +299,9 @@ export default function CalendarPage({
 						selectedYear={selectedYear}
 						onPreviousYear={goPrevYear}
 						onNextYear={goNextYear}
+						onToday={handleToday}
+						isToday={isToday}
+						prevYearBtnRef={prevYearBtnRef}
 					/>
 				}
 			/>
