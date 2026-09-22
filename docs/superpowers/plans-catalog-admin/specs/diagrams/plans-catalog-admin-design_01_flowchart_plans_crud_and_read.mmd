@@ -1,0 +1,29 @@
+flowchart TD
+    Admin["Admin Panel"] -->|"POST/PUT/PATCH /admin/plans"| AdminCtrl["Admin PlanController - onlyAdmin"]
+    AdminCtrl --> CreateUC["CreatePlanUseCase"]
+    AdminCtrl --> UpdateUC["UpdatePlanUseCase"]
+    AdminCtrl --> InactivateUC["InactivatePlanUseCase"]
+
+    Home["Home Page - public"] -->|"GET /plans"| PubCtrl["Public PlanController - no auth"]
+    Assinatura["Assinatura Page - auth"] -->|"GET /plans"| PubCtrl
+    PubCtrl --> ListUC["ListActivePlansUseCase"]
+
+    CreateUC --> Repo["PlanRepository"]
+    UpdateUC --> Repo
+    InactivateUC --> Repo
+    ListUC --> Repo
+
+    Repo --> Prisma["PrismaPlanRepository"]
+    Prisma --> DB[("plans table - Postgres")]
+
+    classDef fe fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
+    classDef ctrl fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    classDef uc fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef repo fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+    classDef db fill:#FFB6C1,stroke:#DC143C,stroke-width:2px,color:black
+
+    class Admin,Home,Assinatura fe
+    class AdminCtrl,PubCtrl ctrl
+    class CreateUC,UpdateUC,InactivateUC,ListUC uc
+    class Repo,Prisma repo
+    class DB db
