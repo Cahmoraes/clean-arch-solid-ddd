@@ -12,7 +12,7 @@ O fluxo de checkout/criação real de assinatura (`create-subscription.usecase.t
 
 | Característica | Por quê (preocupação de domínio) | Critério mensurável |
 |---|---|---|
-| Compatibilidade de contrato | `GET /plans` já é consumido pela home e por `/assinatura`; quebrar o shape de resposta quebra duas telas em produção | Resposta de `GET /plans` mantém exatamente `{ id, name, priceLabel, tagline, features[] }` |
+| Compatibilidade de contrato | `GET /plans` já é consumido pela home e por `/assinatura` (que usa `priceId` para criar a assinatura); quebrar o shape de resposta quebra duas telas em produção | Resposta de `GET /plans` mantém exatamente `{ id, name, priceId, priceLabel, tagline, features[] }` |
 | Integridade referencial | Planos podem estar referenciados por assinaturas já criadas; excluir um plano em uso pode derrubar consultas/telas que dependem dele | Nenhum endpoint permite hard delete de `Plan` — apenas inativação (`is_active`) |
 | Manutenibilidade | Feature deve seguir exatamente os padrões já estabelecidos no repo (camadas, IoC, rotas admin) para não introduzir uma segunda convenção | 100% dos arquivos novos seguem o layout `domain/ → application/ → infra/` e o IoC de 3 passos já documentado em `apps/backend/AGENTS.md` |
 
@@ -56,7 +56,7 @@ flowchart TD
 
 Diagrama fonte: `specs/diagrams/plans-catalog-admin-design_01_flowchart_plans_crud_and_read.mmd`
 
-**Migration:** a migration Prisma que cria a tabela `plans` já traz um seed populando os planos hoje hardcoded em `DEMO_PLANS` (nome, preço, tagline, features), preservando a continuidade da tela pública no primeiro deploy.
+**Migration:** a migration Prisma que cria a tabela `plans` já traz um seed populando os planos hoje hardcoded em `DEMO_PLANS` (nome, preço, tagline, features), incluindo os `priceId` demo atuais (`price_demo_monthly`, `price_demo_yearly`) em `stripe_price_id`, preservando o fluxo de assinatura demo existente e a continuidade da tela pública no primeiro deploy.
 
 ## Estrutura de Componentes
 
@@ -72,7 +72,7 @@ Diagrama fonte: `specs/diagrams/plans-catalog-admin-design_01_flowchart_plans_cr
 **Frontend** (`apps/frontend/src/`):
 - `app/(authenticated)/admin/planos/page.tsx` — lista em grid de cards (ver Especificação Visual).
 - `features/plans-admin/components/plan-form-dialog.tsx` — formulário criar/editar (react-hook-form + zod), reaproveitando o padrão de outras telas admin.
-- `features/plans-admin/schemas/plan-admin-schema.ts` — schema zod (nome, preço, periodicidade, tagline, features, status).
+- `features/plans-admin/schemas/plan-admin-schema.ts` — schema zod (nome, preço, periodicidade, tagline, features, status, `stripePriceId` opcional).
 - `features/plans-admin/api/` — hooks TanStack Query (`usePlans`, `useCreatePlan`, `useUpdatePlan`, `useInactivatePlan`); erro de validação (ex. preço negativo, campo obrigatório) é reportado no próprio campo do formulário (zod), erro de submissão HTTP via `toast.error` — mesmo padrão já usado nas demais telas admin.
 - Remoção de `DEMO_PLANS` de `features/subscriptions/schemas/index.ts`; `/assinatura` e a home passam a depender só de `GET /plans`.
 
@@ -90,7 +90,7 @@ Diagrama fonte: `specs/diagrams/plans-catalog-admin-design_01_flowchart_plans_cr
 
 | Método | Rota | Auth | Descrição |
 |---|---|---|---|
-| GET | `/plans` | pública | Lista planos ativos. Contrato de resposta preservado: `{ id, name, priceLabel, tagline, features[] }[]` |
+| GET | `/plans` | pública | Lista planos ativos. Contrato de resposta preservado: `{ id, name, priceId, priceLabel, tagline, features[] }[]` — `priceId` é obrigatório no contrato porque a tela `/assinatura` o envia ao criar uma assinatura (`useCreateSubscription`); mapeado de `Plan.stripe_price_id` (string vazia quando o admin não preencheu, mesmo comportamento tolerado hoje pelo fluxo demo sem Stripe real) |
 | GET | `/admin/plans` | `onlyAdmin` | Lista todos os planos (ativos e inativos) |
 | POST | `/admin/plans` | `onlyAdmin` | Cria plano |
 | PUT | `/admin/plans/:id` | `onlyAdmin` | Edita campos de conteúdo do plano (nome, preço, periodicidade, tagline, features). **Não altera `is_active`** — status só muda pelas rotas PATCH abaixo, para não existirem dois caminhos concorrentes de mudar o mesmo estado |
@@ -110,7 +110,7 @@ Diagrama fonte: `specs/diagrams/plans-catalog-admin-design_01_flowchart_plans_cr
 ### D2. Preço estruturado (`price_cents` + `billing_period`) em vez de string livre
 
 - **Contexto:** o `DemoPlan` atual guarda `priceLabel` como texto pronto ("R$ 49,90/mês"), sem estrutura.
-- **Decisão:** `Plan.price_cents: int` + `Plan.billing_period: enum(MONTHLY, YEARLY)`; `priceLabel` é computado na serialização para preservar o contrato de `GET /plans`.
+- **Decisão:** `Plan.price_cents: int` + `Plan.billing_period: enum(MONTHLY, YEARLY)`; `priceLabel` é computado na serialização para preservar o contrato de `GET /plans`. O campo `priceId` do contrato é mapeado de `Plan.stripe_price_id` (string opcional preenchida pelo admin; vazia por padrão).
 - **Justificativa técnica:** permite validação (preço não-negativo), ordenação e formatação consistente; abre caminho para integração futura com Stripe Products API sem mudar o contrato de resposta (decisão já registrada na feature `home-planos-contato`).
 - **Justificativa de negócio:** evita erros de digitação/formatação inconsistente no texto livre atual.
 - **Trade-offs aceitos:** um pouco mais de código de formatação (`price_cents` → `priceLabel`) na camada de apresentação da resposta pública.
