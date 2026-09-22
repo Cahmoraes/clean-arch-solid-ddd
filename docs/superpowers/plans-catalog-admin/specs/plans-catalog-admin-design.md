@@ -73,7 +73,7 @@ Diagrama fonte: `specs/diagrams/plans-catalog-admin-design_01_flowchart_plans_cr
 - `app/(authenticated)/admin/planos/page.tsx` — lista em grid de cards (ver Especificação Visual).
 - `features/plans-admin/components/plan-form-dialog.tsx` — formulário criar/editar (react-hook-form + zod), reaproveitando o padrão de outras telas admin.
 - `features/plans-admin/schemas/plan-admin-schema.ts` — schema zod (nome, preço, periodicidade, tagline, features, status).
-- `features/plans-admin/api/` — hooks TanStack Query (`usePlans`, `useCreatePlan`, `useUpdatePlan`, `useInactivatePlan`).
+- `features/plans-admin/api/` — hooks TanStack Query (`usePlans`, `useCreatePlan`, `useUpdatePlan`, `useInactivatePlan`); erro de validação (ex. preço negativo, campo obrigatório) é reportado no próprio campo do formulário (zod), erro de submissão HTTP via `toast.error` — mesmo padrão já usado nas demais telas admin.
 - Remoção de `DEMO_PLANS` de `features/subscriptions/schemas/index.ts`; `/assinatura` e a home passam a depender só de `GET /plans`.
 
 ## Especificação Visual
@@ -93,7 +93,7 @@ Diagrama fonte: `specs/diagrams/plans-catalog-admin-design_01_flowchart_plans_cr
 | GET | `/plans` | pública | Lista planos ativos. Contrato de resposta preservado: `{ id, name, priceLabel, tagline, features[] }[]` |
 | GET | `/admin/plans` | `onlyAdmin` | Lista todos os planos (ativos e inativos) |
 | POST | `/admin/plans` | `onlyAdmin` | Cria plano |
-| PUT | `/admin/plans/:id` | `onlyAdmin` | Edita plano |
+| PUT | `/admin/plans/:id` | `onlyAdmin` | Edita campos de conteúdo do plano (nome, preço, periodicidade, tagline, features). **Não altera `is_active`** — status só muda pelas rotas PATCH abaixo, para não existirem dois caminhos concorrentes de mudar o mesmo estado |
 | PATCH | `/admin/plans/:id/inactivate` | `onlyAdmin` | Inativa plano (soft delete) |
 | PATCH | `/admin/plans/:id/reactivate` | `onlyAdmin` | Reativa plano |
 
