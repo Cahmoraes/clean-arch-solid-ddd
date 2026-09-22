@@ -72,6 +72,11 @@ export type Subscription = Prisma.SubscriptionModel
  */
 export type StripeWebhookEvent = Prisma.StripeWebhookEventModel
 /**
+ * Model Plan
+ * 
+ */
+export type Plan = Prisma.PlanModel
+/**
  * Model Notification
  * 
  */

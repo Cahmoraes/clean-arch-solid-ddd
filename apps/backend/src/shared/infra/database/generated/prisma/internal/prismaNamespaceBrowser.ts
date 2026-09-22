@@ -57,6 +57,7 @@ export const ModelName = {
   Gym: 'Gym',
   Subscription: 'Subscription',
   StripeWebhookEvent: 'StripeWebhookEvent',
+  Plan: 'Plan',
   Notification: 'Notification',
   UserNotification: 'UserNotification'
 } as const
@@ -164,6 +165,22 @@ export const StripeWebhookEventScalarFieldEnum = {
 } as const
 
 export type StripeWebhookEventScalarFieldEnum = (typeof StripeWebhookEventScalarFieldEnum)[keyof typeof StripeWebhookEventScalarFieldEnum]
+
+
+export const PlanScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  price_cents: 'price_cents',
+  billing_period: 'billing_period',
+  tagline: 'tagline',
+  features: 'features',
+  is_active: 'is_active',
+  stripe_price_id: 'stripe_price_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {

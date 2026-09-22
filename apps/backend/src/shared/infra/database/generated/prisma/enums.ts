@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const BillingPeriod = {
+  monthly: 'monthly',
+  yearly: 'yearly'
+} as const
+
+export type BillingPeriod = (typeof BillingPeriod)[keyof typeof BillingPeriod]
+
+
 export const NotificationType = {
   CHECK_IN_APPROVED: 'CHECK_IN_APPROVED',
   CHECK_IN_REJECTED: 'CHECK_IN_REJECTED',
