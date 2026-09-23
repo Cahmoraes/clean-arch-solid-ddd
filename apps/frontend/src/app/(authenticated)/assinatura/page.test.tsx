@@ -129,3 +129,245 @@ describe("SubscriptionPage", () => {
 		expect(alert.textContent ?? "").not.toMatch(/500|stack/i)
 	})
 })
+
+const PLAN_ANUAL = {
+	id: "plan-anual",
+	name: "Premium Anual",
+	priceId: "price_demo_yearly",
+}
+const PLAN_MENSAL = {
+	id: "plan-mensal",
+	name: "Premium Mensal",
+	priceId: "price_demo_monthly",
+}
+
+function makeSubscription(overrides: Record<string, unknown> = {}) {
+	return {
+		id: "sub-1",
+		state: "active",
+		plan: PLAN_ANUAL,
+		currentPeriodStart: "2026-10-15T12:00:00.000Z",
+		currentPeriodEnd: "2026-11-15T12:00:00.000Z",
+		cancelAtPeriodEnd: false,
+		...overrides,
+	}
+}
+
+function serveSubscription(initial: Record<string, unknown> | null) {
+	const state = { current: initial, getCalls: 0 }
+	server.use(
+		http.get(`${apiBaseUrl}/subscriptions/me`, () => {
+			state.getCalls += 1
+			return HttpResponse.json(state.current)
+		}),
+	)
+	return state
+}
+
+describe("SubscriptionPage com assinatura", () => {
+	beforeEach(() => {
+		server.use(
+			http.get(`${apiBaseUrl}/plans`, () => HttpResponse.json(STUB_PLANS)),
+		)
+	})
+
+	it("pré-seleciona o plano vigente e marca Plano atual só nele", async () => {
+		serveSubscription(makeSubscription())
+		renderWithProviders(<SubscriptionPage />)
+
+		const annual = await screen.findByTestId("subscription-plan-plan-anual")
+		const monthly = screen.getByTestId("subscription-plan-plan-mensal")
+
+		expect(annual).toHaveAttribute("data-selected", "true")
+		expect(monthly).toHaveAttribute("data-selected", "false")
+		expect(within(annual).getByText("Plano atual")).toBeInTheDocument()
+		expect(within(monthly).queryByText("Plano atual")).not.toBeInTheDocument()
+	})
+
+	it("mostra dados reais no banner, sem o texto fixo de 30 dias", async () => {
+		serveSubscription(makeSubscription())
+		renderWithProviders(<SubscriptionPage />)
+
+		const banner = await screen.findByTestId("billing-banner")
+
+		expect(banner).toHaveTextContent("Premium Anual")
+		expect(banner).toHaveTextContent("R$ 479,00/ano")
+		expect(banner).toHaveTextContent("15/11/2026")
+		expect(banner).not.toHaveTextContent(/30 dias/)
+	})
+
+	it("oferece Trocar plano no lugar de Assinar e só habilita com outro plano selecionado", async () => {
+		serveSubscription(makeSubscription())
+		const user = userEvent.setup()
+		renderWithProviders(<SubscriptionPage />)
+
+		const change = await screen.findByRole("button", { name: "Trocar plano" })
+
+		expect(
+			screen.queryByRole("button", { name: /assinar plano demo/i }),
+		).not.toBeInTheDocument()
+		expect(change).toBeDisabled()
+
+		await user.click(screen.getByTestId("subscription-plan-plan-mensal"))
+
+		expect(screen.getByRole("button", { name: "Trocar plano" })).toBeEnabled()
+	})
+
+	it("troca de plano enviando o priceId escolhido e passa a marcar o novo plano como atual", async () => {
+		const state = serveSubscription(makeSubscription())
+		let received: { priceId: string } | null = null
+		server.use(
+			http.patch(`${apiBaseUrl}/subscriptions/me/plan`, async ({ request }) => {
+				received = (await request.json()) as { priceId: string }
+				state.current = makeSubscription({ plan: PLAN_MENSAL })
+				return HttpResponse.json(state.current)
+			}),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<SubscriptionPage />)
+
+		await user.click(await screen.findByTestId("subscription-plan-plan-mensal"))
+		await user.click(screen.getByRole("button", { name: "Trocar plano" }))
+
+		await waitFor(() => {
+			expect(received).toEqual({ priceId: "price_demo_monthly" })
+		})
+		const monthly = screen.getByTestId("subscription-plan-plan-mensal")
+		await waitFor(() => {
+			expect(within(monthly).getByText("Plano atual")).toBeInTheDocument()
+		})
+		expect(
+			within(screen.getByTestId("subscription-plan-plan-anual")).queryByText(
+				"Plano atual",
+			),
+		).not.toBeInTheDocument()
+	})
+
+	it("cancela ao fim do período, mostra a data de fim e deixa de oferecer a troca", async () => {
+		const state = serveSubscription(makeSubscription())
+		server.use(
+			http.post(`${apiBaseUrl}/subscriptions/me/cancel`, () => {
+				state.current = makeSubscription({
+					state: "cancel_scheduled",
+					cancelAtPeriodEnd: true,
+				})
+				return HttpResponse.json(state.current)
+			}),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<SubscriptionPage />)
+
+		await user.click(
+			await screen.findByRole("button", { name: "Cancelar assinatura" }),
+		)
+
+		const notice = await screen.findByTestId("subscription-cancellation-notice")
+		expect(notice).toHaveTextContent("15/11/2026")
+		expect(screen.getByTestId("billing-banner")).toHaveTextContent(
+			/cancelamento agendado/i,
+		)
+		expect(
+			screen.queryByRole("button", { name: "Trocar plano" }),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByRole("button", { name: "Cancelar assinatura" }),
+		).not.toBeInTheDocument()
+	})
+
+	it("com cancelamento já agendado ao abrir, mostra a data de fim e não oferece troca", async () => {
+		serveSubscription(
+			makeSubscription({ state: "cancel_scheduled", cancelAtPeriodEnd: true }),
+		)
+		renderWithProviders(<SubscriptionPage />)
+
+		const notice = await screen.findByTestId("subscription-cancellation-notice")
+
+		expect(notice).toHaveTextContent("15/11/2026")
+		expect(
+			screen.queryByRole("button", { name: "Trocar plano" }),
+		).not.toBeInTheDocument()
+	})
+
+	it("em 409 na troca mostra o motivo e recarrega a assinatura para o estado real", async () => {
+		const state = serveSubscription(makeSubscription())
+		server.use(
+			http.patch(`${apiBaseUrl}/subscriptions/me/plan`, () => {
+				state.current = makeSubscription({
+					state: "cancel_scheduled",
+					cancelAtPeriodEnd: true,
+				})
+				return HttpResponse.json({ message: "conflict" }, { status: 409 })
+			}),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<SubscriptionPage />)
+
+		await user.click(await screen.findByTestId("subscription-plan-plan-mensal"))
+		await user.click(screen.getByRole("button", { name: "Trocar plano" }))
+
+		const alert = await screen.findByTestId("subscription-error")
+		expect(alert).toHaveTextContent(/cancelamento/i)
+		expect(alert.textContent ?? "").not.toMatch(/409|conflict/i)
+		await screen.findByTestId("subscription-cancellation-notice")
+		expect(state.getCalls).toBeGreaterThanOrEqual(2)
+		expect(
+			screen.queryByRole("button", { name: "Trocar plano" }),
+		).not.toBeInTheDocument()
+	})
+
+	it("mostra plano não identificado para assinatura legada e oferece trocar e cancelar", async () => {
+		serveSubscription(makeSubscription({ plan: null }))
+		renderWithProviders(<SubscriptionPage />)
+
+		const banner = await screen.findByTestId("billing-banner")
+
+		expect(banner).toHaveTextContent(/plano não identificado/i)
+		expect(screen.getByRole("button", { name: "Trocar plano" })).toBeEnabled()
+		expect(
+			screen.getByRole("button", { name: "Cancelar assinatura" }),
+		).toBeEnabled()
+	})
+
+	it("em 404 no cancelamento mostra a mensagem e volta ao fluxo de assinar", async () => {
+		const state = serveSubscription(makeSubscription())
+		server.use(
+			http.post(`${apiBaseUrl}/subscriptions/me/cancel`, () => {
+				state.current = null
+				return HttpResponse.json({ message: "no active" }, { status: 404 })
+			}),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<SubscriptionPage />)
+
+		await user.click(
+			await screen.findByRole("button", { name: "Cancelar assinatura" }),
+		)
+
+		const alert = await screen.findByTestId("subscription-error")
+		expect(alert).toHaveTextContent("Você não possui assinatura ativa")
+		expect(
+			await screen.findByRole("button", { name: /assinar plano demo/i }),
+		).toBeInTheDocument()
+	})
+
+	it("com assinatura vencida mantém o fluxo de assinar, sem pré-seleção nem Plano atual", async () => {
+		serveSubscription(
+			makeSubscription({ state: "expired", cancelAtPeriodEnd: true }),
+		)
+		renderWithProviders(<SubscriptionPage />)
+
+		const submit = await screen.findByRole("button", {
+			name: /assinar plano demo/i,
+		})
+
+		expect(submit).toBeEnabled()
+		expect(
+			screen.queryByRole("button", { name: "Trocar plano" }),
+		).not.toBeInTheDocument()
+		expect(screen.queryByText("Plano atual", { selector: "span" })).toBeNull()
+		expect(screen.getByTestId("subscription-plan-plan-mensal")).toHaveAttribute(
+			"data-selected",
+			"true",
+		)
+	})
+})

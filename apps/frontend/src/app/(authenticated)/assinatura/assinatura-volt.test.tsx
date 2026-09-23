@@ -31,6 +31,22 @@ vi.mock("@/features/subscriptions/api/use-plans", () => ({
 	}),
 }))
 
+vi.mock(
+	"@/features/subscriptions/api/use-my-subscription",
+	async (importOriginal) => ({
+		...(await importOriginal<
+			typeof import("@/features/subscriptions/api/use-my-subscription")
+		>()),
+		useMySubscription: () => ({
+			data: null,
+			isLoading: false,
+			isError: false,
+			error: null,
+			refetch: vi.fn(),
+		}),
+	}),
+)
+
 import SubscriptionPage from "./page"
 
 describe("Assinatura VOLT", () => {

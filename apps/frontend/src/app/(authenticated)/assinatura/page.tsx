@@ -6,7 +6,13 @@ import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useCancelSubscription } from "@/features/subscriptions/api/use-cancel-subscription"
+import { useChangePlan } from "@/features/subscriptions/api/use-change-plan"
 import { useCreateSubscription } from "@/features/subscriptions/api/use-create-subscription"
+import {
+	type MySubscription,
+	useMySubscription,
+} from "@/features/subscriptions/api/use-my-subscription"
 import { type Plan, usePlans } from "@/features/subscriptions/api/use-plans"
 import {
 	type CreateSubscriptionResponse,
@@ -15,9 +21,74 @@ import {
 import { cn } from "@/lib/cn"
 import { ApiError } from "@/lib/errors"
 
+const dayFormatter = new Intl.DateTimeFormat("pt-BR", {
+	day: "2-digit",
+	month: "2-digit",
+	year: "numeric",
+})
+
+function formatDay(isoInstant: string): string {
+	return dayFormatter.format(new Date(isoInstant))
+}
+
 function subscriptionErrorMessage(error: unknown): string {
 	if (error instanceof ApiError) return error.userMessage
 	return "Não foi possível concluir a assinatura. Tente novamente."
+}
+
+function changePlanErrorMessage(error: unknown): string {
+	if (error instanceof ApiError && error.status === 409) {
+		return "O cancelamento desta assinatura já está agendado, por isso não é possível trocar de plano."
+	}
+	if (error instanceof ApiError && error.status === 404) {
+		return "Você não possui assinatura ativa."
+	}
+	if (error instanceof ApiError) return error.userMessage
+	return "Não foi possível trocar o plano. Tente novamente."
+}
+
+function cancelErrorMessage(error: unknown): string {
+	if (error instanceof ApiError && error.status === 404) {
+		return "Você não possui assinatura ativa."
+	}
+	if (error instanceof ApiError) return error.userMessage
+	return "Não foi possível cancelar a assinatura. Tente novamente."
+}
+
+interface MutationErrors {
+	create: unknown
+	change: unknown
+	cancel: unknown
+}
+
+function resolveErrorMessage(errors: MutationErrors): string | null {
+	if (errors.create) return subscriptionErrorMessage(errors.create)
+	if (errors.change) return changePlanErrorMessage(errors.change)
+	if (errors.cancel) return cancelErrorMessage(errors.cancel)
+	return null
+}
+
+type PageMode = "subscribe" | "manage" | "cancel-scheduled"
+type PendingAction = "create" | "change" | "cancel" | null
+
+function modeOf(subscription: MySubscription | null): PageMode {
+	if (!subscription) return "subscribe"
+	return subscription.state === "cancel_scheduled"
+		? "cancel-scheduled"
+		: "manage"
+}
+
+interface PendingFlags {
+	create: boolean
+	change: boolean
+	cancel: boolean
+}
+
+function pendingActionOf(flags: PendingFlags): PendingAction {
+	if (flags.create) return "create"
+	if (flags.change) return "change"
+	if (flags.cancel) return "cancel"
+	return null
 }
 
 interface DemoBannerProps {
@@ -49,11 +120,66 @@ function DemoBanner({ className }: DemoBannerProps) {
 	)
 }
 
-interface BillingBannerProps {
-	plan: Plan | undefined
+interface BillingSummary {
+	label: string
+	name: string
+	priceLabel: string
+	note: string | null
 }
 
-function BillingBanner({ plan }: BillingBannerProps) {
+function describeSelectedPlanBilling(
+	selectedPlan: Plan | undefined,
+): BillingSummary {
+	return {
+		label: "Plano selecionado",
+		name: selectedPlan?.name ?? "Nenhum plano selecionado",
+		priceLabel: selectedPlan?.priceLabel ?? "—",
+		note: null,
+	}
+}
+
+function billingNoteOf(subscription: MySubscription, end: string): string {
+	return subscription.state === "cancel_scheduled"
+		? `Cancelamento agendado. Acesso até ${end}`
+		: `Próxima cobrança em ${end}`
+}
+
+function describeActiveSubscriptionBilling(
+	subscription: MySubscription,
+	plans: ReadonlyArray<Plan>,
+): BillingSummary {
+	const catalogPlan = subscription.plan
+		? plans.find((plan) => plan.id === subscription.plan?.id)
+		: undefined
+	return {
+		label: "Plano atual",
+		name: subscription.plan?.name ?? "Plano não identificado",
+		priceLabel: catalogPlan?.priceLabel ?? "—",
+		note: billingNoteOf(subscription, formatDay(subscription.currentPeriodEnd)),
+	}
+}
+
+function describeBilling(
+	subscription: MySubscription | null,
+	plans: ReadonlyArray<Plan>,
+	selectedPlan: Plan | undefined,
+): BillingSummary {
+	if (!subscription) return describeSelectedPlanBilling(selectedPlan)
+	return describeActiveSubscriptionBilling(subscription, plans)
+}
+
+interface BillingBannerProps {
+	subscription: MySubscription | null
+	plans: ReadonlyArray<Plan>
+	selectedPlan: Plan | undefined
+}
+
+function BillingBanner({
+	subscription,
+	plans,
+	selectedPlan,
+}: BillingBannerProps) {
+	const summary = describeBilling(subscription, plans, selectedPlan)
 	return (
 		<div
 			data-testid="billing-banner"
@@ -61,18 +187,18 @@ function BillingBanner({ plan }: BillingBannerProps) {
 		>
 			<div>
 				<p className="font-mono text-[10.5px] uppercase tracking-wider text-subtle">
-					Plano atual
+					{summary.label}
 				</p>
 				<p className="mt-1 font-display text-xl font-semibold">
-					{plan?.name ?? "Nenhum plano selecionado"}
+					{summary.name}
 				</p>
-				<p className="text-sm text-muted-foreground">
-					Próxima cobrança em 30 dias
-				</p>
+				{summary.note ? (
+					<p className="text-sm text-muted-foreground">{summary.note}</p>
+				) : null}
 			</div>
 			<div className="flex flex-col items-end gap-2">
 				<span className="tabular font-mono text-[28px] font-bold leading-none">
-					{plan?.priceLabel ?? "—"}
+					{summary.priceLabel}
 				</span>
 			</div>
 		</div>
@@ -82,6 +208,7 @@ function BillingBanner({ plan }: BillingBannerProps) {
 interface PlanCardProps {
 	plan: Plan
 	selected: boolean
+	current: boolean
 	disabled: boolean
 	onSelect: (plan: Plan) => void
 	groupName: string
@@ -90,6 +217,7 @@ interface PlanCardProps {
 function PlanCard({
 	plan,
 	selected,
+	current,
 	disabled,
 	onSelect,
 	groupName,
@@ -119,7 +247,7 @@ function PlanCard({
 				onChange={() => onSelect(plan)}
 				className="sr-only"
 			/>
-			{selected ? (
+			{current ? (
 				<span className="absolute right-4.5 top-4.5 rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
 					Plano atual
 				</span>
@@ -199,6 +327,7 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 interface PlansListProps {
 	plans: ReadonlyArray<Plan>
 	selectedPlanId: string
+	currentPlanId: string | null
 	disabled: boolean
 	groupName: string
 	onSelect: (plan: Plan) => void
@@ -207,6 +336,7 @@ interface PlansListProps {
 function PlansList({
 	plans,
 	selectedPlanId,
+	currentPlanId,
 	disabled,
 	groupName,
 	onSelect,
@@ -222,6 +352,7 @@ function PlansList({
 					key={plan.id}
 					plan={plan}
 					selected={plan.id === selectedPlanId}
+					current={plan.id === currentPlanId}
 					disabled={disabled}
 					onSelect={onSelect}
 					groupName={groupName}
@@ -276,30 +407,107 @@ function SubscribeActions({
 	)
 }
 
+interface ManageActionsProps {
+	pendingAction: PendingAction
+	disabled: boolean
+	canChange: boolean
+	onChange: () => void
+	onCancel: () => void
+}
+
+function ManageActions({
+	pendingAction,
+	disabled,
+	canChange,
+	onChange,
+	onCancel,
+}: ManageActionsProps) {
+	return (
+		<div className="flex flex-col gap-3">
+			<div className="flex flex-wrap gap-3">
+				<Button
+					type="button"
+					data-testid="subscription-change-plan"
+					disabled={disabled || !canChange}
+					onClick={onChange}
+					aria-busy={pendingAction === "change"}
+					className="h-11 rounded-md bg-accent px-5 font-semibold text-accent-foreground hover:bg-primary-strong disabled:opacity-60"
+				>
+					{pendingAction === "change" ? "Processando…" : "Trocar plano"}
+				</Button>
+				<Button
+					type="button"
+					variant="outline"
+					data-testid="subscription-cancel"
+					disabled={disabled}
+					onClick={onCancel}
+					aria-busy={pendingAction === "cancel"}
+					className="h-11 rounded-md px-5 font-semibold"
+				>
+					{pendingAction === "cancel" ? "Processando…" : "Cancelar assinatura"}
+				</Button>
+			</div>
+			<DemoBanner className="border-border" />
+		</div>
+	)
+}
+
+interface CancellationNoticeProps {
+	endDate: string
+}
+
+function CancellationNotice({ endDate }: CancellationNoticeProps) {
+	return (
+		<p
+			role="status"
+			data-testid="subscription-cancellation-notice"
+			className="rounded-[12px] border border-border bg-card px-4 py-3 text-sm text-foreground"
+		>
+			Seu cancelamento está agendado. Você mantém o acesso até {endDate}.
+		</p>
+	)
+}
+
 interface UseSubscriptionFlow {
 	groupName: string
+	mode: PageMode
 	selectedPlan: Plan | undefined
 	selectedPlanId: string
+	currentPlanId: string | null
+	pendingAction: PendingAction
 	isPending: boolean
 	errorMessage: string | null
 	data: ReturnType<typeof useCreateSubscription>["data"]
 	handleSelectPlan: (plan: Plan) => void
 	handleSubscribe: () => Promise<void>
+	handleChangePlan: () => Promise<void>
+	handleCancel: () => Promise<void>
 }
 
-function useSubscriptionFlow(plans: ReadonlyArray<Plan>): UseSubscriptionFlow {
+function useSubscriptionFlow(
+	plans: ReadonlyArray<Plan>,
+	subscription: MySubscription | null,
+): UseSubscriptionFlow {
 	const groupName = useId()
+	const currentPlanId = subscription?.plan?.id ?? null
 	const [selectedPlanId, setSelectedPlanId] = useState<string>(
-		plans[0]?.id ?? "",
+		currentPlanId ?? plans[0]?.id ?? "",
 	)
-	const { mutateAsync, isPending, error, data, reset } = useCreateSubscription()
+	const createMutation = useCreateSubscription()
+	const changeMutation = useChangePlan()
+	const cancelMutation = useCancelSubscription()
 	const selectedPlan =
 		plans.find((plan) => plan.id === selectedPlanId) ?? plans[0]
+	const pendingAction = pendingActionOf({
+		create: createMutation.isPending,
+		change: changeMutation.isPending,
+		cancel: cancelMutation.isPending,
+	})
 
 	async function handleSubscribe() {
 		if (!selectedPlan) return
 		try {
-			await mutateAsync({
+			await createMutation.mutateAsync({
 				priceId: selectedPlan.priceId,
 				paymentMethodId: DEMO_PAYMENT_METHOD_ID,
 			})
@@ -308,29 +516,105 @@ function useSubscriptionFlow(plans: ReadonlyArray<Plan>): UseSubscriptionFlow {
 		}
 	}
 
+	async function handleChangePlan() {
+		if (!selectedPlan) return
+		try {
+			await changeMutation.mutateAsync({ priceId: selectedPlan.priceId })
+		} catch {
+			// erro é exposto via `error` do useMutation; renderizado por <ErrorAlert />.
+		}
+	}
+
+	async function handleCancel() {
+		try {
+			await cancelMutation.mutateAsync()
+		} catch {
+			// erro é exposto via `error` do useMutation; renderizado por <ErrorAlert />.
+		}
+	}
+
 	function handleSelectPlan(plan: Plan) {
 		setSelectedPlanId(plan.id)
-		if (data || error) reset()
+		createMutation.reset()
+		changeMutation.reset()
+		cancelMutation.reset()
 	}
 
 	return {
 		groupName,
+		mode: modeOf(subscription),
 		selectedPlan,
 		selectedPlanId,
-		isPending,
-		errorMessage: error ? subscriptionErrorMessage(error) : null,
-		data,
+		currentPlanId,
+		pendingAction,
+		isPending: pendingAction !== null,
+		errorMessage: resolveErrorMessage({
+			create: createMutation.error,
+			change: changeMutation.error,
+			cancel: cancelMutation.error,
+		}),
+		data: createMutation.data,
 		handleSelectPlan,
 		handleSubscribe,
+		handleChangePlan,
+		handleCancel,
 	}
 }
 
 interface SubscriptionPageContentProps {
 	plans: ReadonlyArray<Plan>
+	subscription: MySubscription | null
 }
 
-function SubscriptionPageContent({ plans }: SubscriptionPageContentProps) {
-	const flow = useSubscriptionFlow(plans)
+function canChangePlan(
+	selectedPlan: Plan | undefined,
+	currentPlanId: string | null,
+): boolean {
+	return selectedPlan !== undefined && selectedPlan.id !== currentPlanId
+}
+
+interface SubscriptionStateSectionProps {
+	flow: UseSubscriptionFlow
+	subscription: MySubscription | null
+}
+
+function SubscriptionStateSection({
+	flow,
+	subscription,
+}: SubscriptionStateSectionProps) {
+	if (flow.mode === "subscribe") {
+		return (
+			<SubscribeActions
+				isPending={flow.pendingAction === "create"}
+				disabled={flow.isPending || !flow.selectedPlan}
+				onSubscribe={flow.handleSubscribe}
+			/>
+		)
+	}
+	if (flow.mode === "manage") {
+		return (
+			<ManageActions
+				pendingAction={flow.pendingAction}
+				disabled={flow.isPending}
+				canChange={canChangePlan(flow.selectedPlan, flow.currentPlanId)}
+				onChange={flow.handleChangePlan}
+				onCancel={flow.handleCancel}
+			/>
+		)
+	}
+	if (subscription) {
+		return (
+			<CancellationNotice endDate={formatDay(subscription.currentPeriodEnd)} />
+		)
+	}
+	return null
+}
+
+function SubscriptionPageContent({
+	plans,
+	subscription,
+}: SubscriptionPageContentProps) {
+	const flow = useSubscriptionFlow(plans, subscription)
 
 	return (
 		<PageContainer as="section" width="default">
@@ -343,12 +627,17 @@ function SubscriptionPageContent({ plans }: SubscriptionPageContentProps) {
 				</p>
 			</header>
 
-			<BillingBanner plan={flow.selectedPlan} />
+			<BillingBanner
+				subscription={subscription}
+				plans={plans}
+				selectedPlan={flow.selectedPlan}
+			/>
 
 			<PlansList
 				plans={plans}
 				selectedPlanId={flow.selectedPlan?.id ?? ""}
-				disabled={flow.isPending}
+				currentPlanId={flow.currentPlanId}
+				disabled={flow.isPending || flow.mode === "cancel-scheduled"}
 				groupName={flow.groupName}
 				onSelect={flow.handleSelectPlan}
 			/>
@@ -359,10 +648,48 @@ function SubscriptionPageContent({ plans }: SubscriptionPageContentProps) {
 				<Confirmation plan={flow.selectedPlan} subscription={flow.data} />
 			) : null}
 
-			<SubscribeActions
-				isPending={flow.isPending}
-				disabled={flow.isPending || !flow.selectedPlan}
-				onSubscribe={flow.handleSubscribe}
+			<SubscriptionStateSection flow={flow} subscription={subscription} />
+		</PageContainer>
+	)
+}
+
+function activeSubscriptionOf(
+	subscription: MySubscription | null | undefined,
+): MySubscription | null {
+	if (!subscription || subscription.state === "expired") return null
+	return subscription
+}
+
+function SubscriptionLoadingState() {
+	return (
+		<PageContainer as="section" width="default">
+			<Skeleton className="h-10 w-2/3" />
+			<Skeleton className="h-64 w-full" />
+		</PageContainer>
+	)
+}
+
+interface SubscriptionQueryErrorStateProps {
+	title: string
+	description?: string
+	onRetry: () => void
+}
+
+function SubscriptionQueryErrorState({
+	title,
+	description,
+	onRetry,
+}: SubscriptionQueryErrorStateProps) {
+	return (
+		<PageContainer as="section" width="default">
+			<EmptyState
+				title={title}
+				description={description ?? "Tente novamente."}
+				action={
+					<Button variant="outline" onClick={onRetry}>
+						Tentar novamente
+					</Button>
+				}
 			/>
 		</PageContainer>
 	)
@@ -370,31 +697,36 @@ function SubscriptionPageContent({ plans }: SubscriptionPageContentProps) {
 
 export default function SubscriptionPage() {
 	const plansQuery = usePlans()
+	const subscriptionQuery = useMySubscription()
 
-	if (plansQuery.isLoading) {
-		return (
-			<PageContainer as="section" width="default">
-				<Skeleton className="h-10 w-2/3" />
-				<Skeleton className="h-64 w-full" />
-			</PageContainer>
-		)
+	if (plansQuery.isLoading || subscriptionQuery.isLoading) {
+		return <SubscriptionLoadingState />
 	}
 
 	if (plansQuery.isError || !plansQuery.data) {
 		return (
-			<PageContainer as="section" width="default">
-				<EmptyState
-					title="Não foi possível carregar os planos"
-					description={plansQuery.error?.userMessage ?? "Tente novamente."}
-					action={
-						<Button variant="outline" onClick={() => plansQuery.refetch()}>
-							Tentar novamente
-						</Button>
-					}
-				/>
-			</PageContainer>
+			<SubscriptionQueryErrorState
+				title="Não foi possível carregar os planos"
+				description={plansQuery.error?.userMessage}
+				onRetry={() => plansQuery.refetch()}
+			/>
 		)
 	}
 
-	return <SubscriptionPageContent plans={plansQuery.data} />
+	if (subscriptionQuery.isError) {
+		return (
+			<SubscriptionQueryErrorState
+				title="Não foi possível carregar sua assinatura"
+				description={subscriptionQuery.error?.userMessage}
+				onRetry={() => subscriptionQuery.refetch()}
+			/>
+		)
+	}
+
+	return (
+		<SubscriptionPageContent
+			plans={plansQuery.data}
+			subscription={activeSubscriptionOf(subscriptionQuery.data)}
+		/>
+	)
 }
