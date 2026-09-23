@@ -57,7 +57,6 @@ function ErrorState({
 
 interface PlansContentProps {
 	plansQuery: UseQueryResult<PlanAdmin[], ApiError>
-	isFormOpen: boolean
 	onAdd: () => void
 	onEdit: (plan: PlanAdmin) => void
 	onToggleStatus: (plan: PlanAdmin) => void
@@ -65,7 +64,6 @@ interface PlansContentProps {
 
 function PlansContent({
 	plansQuery,
-	isFormOpen,
 	onAdd,
 	onEdit,
 	onToggleStatus,
@@ -103,7 +101,6 @@ function PlansContent({
 				type="button"
 				data-testid="plan-card-add"
 				onClick={onAdd}
-				aria-expanded={isFormOpen}
 				className="flex min-h-[16rem] flex-col items-center justify-center gap-2 rounded-[12px] border border-dashed border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
 			>
 				<Plus className="h-6 w-6" aria-hidden="true" />
@@ -128,7 +125,9 @@ export default function AdminPlansPage() {
 	const inactivatePlan = useInactivatePlan()
 	const reactivatePlan = useReactivatePlan()
 	const [toggleState, setToggleState] = useState<ToggleState | null>(null)
+	// biome-ignore lint/correctness/noUnusedVariables: lido pelo PlanFormDialog da task-11
 	const [isFormOpen, setIsFormOpen] = useState(false)
+	// biome-ignore lint/correctness/noUnusedVariables: lido pelo PlanFormDialog da task-11
 	const [editingPlan, setEditingPlan] = useState<PlanAdmin | null>(null)
 
 	const toggleMutations: Record<
@@ -171,12 +170,12 @@ export default function AdminPlansPage() {
 	}
 
 	return (
-		<PageContainer width="wide" data-editing-plan-id={editingPlan?.id}>
+		<PageContainer width="wide">
 			<PageHeader
 				title="Planos"
 				subtitle="Cadastre, edite e gerencie a disponibilidade dos planos de assinatura."
 				action={
-					<Button onClick={openCreateDialog} aria-expanded={isFormOpen}>
+					<Button onClick={openCreateDialog}>
 						<Plus className="h-4 w-4" aria-hidden="true" />
 						Novo plano
 					</Button>
@@ -185,7 +184,6 @@ export default function AdminPlansPage() {
 
 			<PlansContent
 				plansQuery={plansQuery}
-				isFormOpen={isFormOpen}
 				onAdd={openCreateDialog}
 				onEdit={openEditDialog}
 				onToggleStatus={handleToggleStatus}
