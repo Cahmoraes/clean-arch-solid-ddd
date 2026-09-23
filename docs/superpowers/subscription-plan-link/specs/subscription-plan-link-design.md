@@ -38,7 +38,7 @@ Esta feature persiste o vínculo usuário -> assinatura -> plano e entrega o cic
 Regras:
 - No máximo uma assinatura ativa por usuário (guarda no use case + índice único parcial em `user_id` onde a assinatura está ativa).
 - `currentPeriodEnd` = `currentPeriodStart` + 1 mês (`Plan.billing_period = MONTHLY`) ou + 1 ano (`YEARLY`), calculado localmente (decisão "só escrita local").
-- Estado "expirada" é derivado na leitura, nunca gravado (ver diagrama).
+- Estado "expirada" é derivado na leitura (ver diagrama). Como o status no banco continua ativo, o `CreateSubscriptionUseCase` fecha a linha expirada (status cancelada, `canceled_at` = `currentPeriodEnd`) na mesma transação antes de criar a nova; sem isso o índice único parcial bloquearia reassinar. A guarda "já possui assinatura ativa" (409) considera apenas linhas não expiradas.
 - Uma `Subscription` pode apontar para plano inativo (herdado de D4); a leitura retorna o plano mesmo inativo.
 
 ### Ciclo de vida
@@ -141,6 +141,6 @@ Contrato: endpoints registrados via `zod-openapi`; `pnpm generate:types` atualiz
 | Risco | Mitigação |
 |---|---|
 | Estado local diverge do Stripe (D2) | Aceito e documentado; webhooks ficam como feature futura |
-| Linhas legadas com `plan_id` nulo | `GET me` retorna o plano como `null` para essas; frontend trata como "plano não identificado" e permite nova escolha (troca só é possível com plano vinculado, então a via é criar nova após expirar) |
+| Linhas legadas com `plan_id` nulo | `GET me` devolve `plan: null` para elas; o frontend mostra "plano não identificado" e oferece cancelar. `ChangeSubscriptionPlan` aceita `plan_id` nulo (grava o novo plano), então o usuário legado consegue regularizar sem intervenção manual |
 | Índice único parcial mal definido bloqueia assinaturas válidas | Teste de integração Prisma cobre ativa+expirada do mesmo usuário |
 | Alterar `CreateSubscriptionUseCase` quebra testes existentes | Rodar suíte completa do contexto; ajustar fakes do gateway |
