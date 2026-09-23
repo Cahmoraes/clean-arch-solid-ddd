@@ -3,6 +3,7 @@ import { injectable } from "inversify"
 import type Stripe from "stripe"
 import type {
 	AttachPaymentMethodInput,
+	ChangeSubscriptionPriceInput,
 	CreateCustomerInput,
 	CreateCustomerResponse,
 	CreateSubscriptionInput,
@@ -14,6 +15,8 @@ import type {
 export class TestingSubscriptionGateway implements SubscriptionGateway {
 	private _customers: ExtendedSet<CreateCustomerResponse> = new ExtendedSet()
 	private customerIdCounter = 1
+	public changedPrices: ChangeSubscriptionPriceInput[] = []
+	private priceChangeError: Error | null = null
 
 	public async createCustomer(
 		data: CreateCustomerInput,
@@ -68,6 +71,17 @@ export class TestingSubscriptionGateway implements SubscriptionGateway {
 			customerId: data.customerId,
 			status: "active",
 		}
+	}
+
+	public failPriceChangeWith(error: Error): void {
+		this.priceChangeError = error
+	}
+
+	public async changeSubscriptionPrice(
+		data: ChangeSubscriptionPriceInput,
+	): Promise<void> {
+		if (this.priceChangeError) throw this.priceChangeError
+		this.changedPrices.push(data)
 	}
 
 	public async createPaymentMethod(): Promise<string> {

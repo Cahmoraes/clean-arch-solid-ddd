@@ -34,12 +34,18 @@ export interface CreateSubscriptionResponse {
 	status: SubscriptionStatusTypes
 }
 
+export interface ChangeSubscriptionPriceInput {
+	billingSubscriptionId: string
+	priceId: string
+}
+
 export interface SubscriptionGateway {
 	createCustomer(data: CreateCustomerInput): Promise<CreateCustomerResponse>
 	attachPaymentMethodToCustomer(data: AttachPaymentMethodInput): Promise<void>
 	createSubscription(
 		data: CreateSubscriptionInput,
 	): Promise<CreateSubscriptionResponse>
+	changeSubscriptionPrice(data: ChangeSubscriptionPriceInput): Promise<void>
 	createEventWebhook(
 		rawBody: string | Buffer,
 		signature: string,

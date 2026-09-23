@@ -3,6 +3,7 @@ import Stripe from "stripe"
 import { requires } from "@/shared/domain/requires"
 import type {
 	AttachPaymentMethodInput,
+	ChangeSubscriptionPriceInput,
 	CreateCustomerInput,
 	CreateCustomerResponse,
 	CreateSubscriptionInput,
@@ -65,6 +66,23 @@ export class StripeSubscriptionGateway implements SubscriptionGateway {
 			subscriptionId: subscriptionResponse.id,
 			status: subscriptionResponse.status,
 		}
+	}
+
+	public async changeSubscriptionPrice(
+		data: ChangeSubscriptionPriceInput,
+	): Promise<void> {
+		const current = await this.stripe.subscriptions.retrieve(
+			data.billingSubscriptionId,
+		)
+		const item = current.items.data[0]
+		requires(
+			item,
+			`Item da assinatura ${data.billingSubscriptionId} não encontrado`,
+		)
+		await this.stripe.subscriptions.update(data.billingSubscriptionId, {
+			items: [{ id: item.id, price: data.priceId }],
+			proration_behavior: "none",
+		})
 	}
 
 	private buildSubscriptionParams(
