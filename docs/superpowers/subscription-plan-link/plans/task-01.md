@@ -1,6 +1,6 @@
 # Task 1: Domínio: campos do plano/período em Subscription, transições e erros [FR-003, FR-010, FR-012, FR-013, FR-014, FR-017]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

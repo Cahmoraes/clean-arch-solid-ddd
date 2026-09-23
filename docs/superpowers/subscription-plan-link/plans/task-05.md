@@ -1,6 +1,6 @@
 # Task 5: GET /subscriptions/me [FR-005, FR-006, FR-008, FR-017, FR-019]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

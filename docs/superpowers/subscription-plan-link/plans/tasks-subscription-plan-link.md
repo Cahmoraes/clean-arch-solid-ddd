@@ -9,16 +9,16 @@
 
 ## Tarefas
 
-- [ ] 1. Domínio: campos do plano/período em Subscription, transições e erros [FR-003, FR-010, FR-012, FR-013, FR-014, FR-017] → `task-01.md`
-- [ ] 2. Persistência: migration, repositórios e lookups [FR-001, FR-004] → `task-02.md`
-- [ ] 3. Gateway: alteração de price da assinatura [FR-009] → `task-03.md`
-- [ ] 4. CreateSubscription grava plano e período, encerra vencida [FR-001, FR-002, FR-004, FR-018] → `task-04.md`
-- [ ] 5. GET /subscriptions/me [FR-005, FR-006, FR-008, FR-017, FR-019] → `task-05.md`
-- [ ] 6. PATCH /subscriptions/me/plan [FR-009, FR-010, FR-012] → `task-06.md`
-- [ ] 7. POST /subscriptions/me/cancel [FR-013, FR-014, FR-016] → `task-07.md`
-- [ ] 8. Regenerar tipos da API em @repo/api-types → `task-08.md`
-- [ ] 9. Frontend: hooks e handlers MSW da assinatura [FR-005, FR-006] → `task-09.md`
-- [ ] 10. Frontend: tela /assinatura com plano vigente, troca e cancelamento [FR-007, FR-010, FR-011, FR-015, FR-019] → `task-10.md`
+- [x] 1. Domínio: campos do plano/período em Subscription, transições e erros [FR-003, FR-010, FR-012, FR-013, FR-014, FR-017] → `task-01.md`
+- [x] 2. Persistência: migration, repositórios e lookups [FR-001, FR-004] → `task-02.md`
+- [x] 3. Gateway: alteração de price da assinatura [FR-009] → `task-03.md`
+- [x] 4. CreateSubscription grava plano e período, encerra vencida [FR-001, FR-002, FR-004, FR-018] → `task-04.md`
+- [x] 5. GET /subscriptions/me [FR-005, FR-006, FR-008, FR-017, FR-019] → `task-05.md`
+- [x] 6. PATCH /subscriptions/me/plan [FR-009, FR-010, FR-012] → `task-06.md`
+- [x] 7. POST /subscriptions/me/cancel [FR-013, FR-014, FR-016] → `task-07.md`
+- [x] 8. Regenerar tipos da API em @repo/api-types → `task-08.md`
+- [x] 9. Frontend: hooks e handlers MSW da assinatura [FR-005, FR-006] → `task-09.md`
+- [x] 10. Frontend: tela /assinatura com plano vigente, troca e cancelamento [FR-007, FR-010, FR-011, FR-015, FR-019] → `task-10.md`
 
 ## Restrições Globais
 

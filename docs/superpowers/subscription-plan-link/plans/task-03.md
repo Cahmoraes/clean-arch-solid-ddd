@@ -1,6 +1,6 @@
 # Task 3: Gateway: alteração de price da assinatura [FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

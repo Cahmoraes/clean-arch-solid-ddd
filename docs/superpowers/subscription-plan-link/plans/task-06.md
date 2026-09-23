@@ -1,6 +1,6 @@
 # Task 6: PATCH /subscriptions/me/plan [FR-009, FR-010, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

@@ -1,6 +1,6 @@
 # Task 8: Regenerar tipos da API em @repo/api-types
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

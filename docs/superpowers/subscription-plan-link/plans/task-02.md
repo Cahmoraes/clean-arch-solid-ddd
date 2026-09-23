@@ -1,6 +1,6 @@
 # Task 2: Persistência: migration, repositórios e lookups [FR-001, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

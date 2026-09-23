@@ -1,6 +1,6 @@
 # Task 9: Frontend: hooks e handlers MSW da assinatura [FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

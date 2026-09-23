@@ -1,6 +1,6 @@
 # Task 7: POST /subscriptions/me/cancel [FR-013, FR-014, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

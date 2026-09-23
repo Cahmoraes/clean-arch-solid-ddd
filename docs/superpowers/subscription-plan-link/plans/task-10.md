@@ -1,6 +1,6 @@
 # Task 10: Frontend: tela /assinatura com plano vigente, troca e cancelamento [FR-007, FR-010, FR-011, FR-015, FR-019]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 

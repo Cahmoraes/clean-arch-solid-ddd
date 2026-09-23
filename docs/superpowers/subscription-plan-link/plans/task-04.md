@@ -1,6 +1,6 @@
 # Task 4: CreateSubscription grava plano e período, encerra vencida [FR-001, FR-002, FR-004, FR-018]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-subscription-plan-link.md`
 
