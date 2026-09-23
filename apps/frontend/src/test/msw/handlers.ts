@@ -6,7 +6,34 @@ export function endpoint(path: string): string {
 	return `${apiBaseUrl}${path}`
 }
 
+const STUB_ADMIN_PLAN = {
+	id: "plan-stub",
+	name: "Stub Plan",
+	priceCents: 4990,
+	billingPeriod: "monthly",
+	tagline: "Stub tagline.",
+	features: ["Stub feature"],
+	isActive: true,
+	stripePriceId: "",
+}
+
 export const handlers = [
+	http.get(endpoint("/plans"), () => HttpResponse.json([], { status: 200 })),
+	http.get(endpoint("/admin/plans"), () =>
+		HttpResponse.json([], { status: 200 }),
+	),
+	http.post(endpoint("/admin/plans"), () =>
+		HttpResponse.json(STUB_ADMIN_PLAN, { status: 201 }),
+	),
+	http.put(endpoint("/admin/plans/:id"), () =>
+		HttpResponse.json(STUB_ADMIN_PLAN, { status: 200 }),
+	),
+	http.patch(endpoint("/admin/plans/:id/inactivate"), () =>
+		HttpResponse.json({ ...STUB_ADMIN_PLAN, isActive: false }, { status: 200 }),
+	),
+	http.patch(endpoint("/admin/plans/:id/reactivate"), () =>
+		HttpResponse.json({ ...STUB_ADMIN_PLAN, isActive: true }, { status: 200 }),
+	),
 	http.post(endpoint("/users"), () => HttpResponse.json({}, { status: 201 })),
 	http.patch(endpoint("/users/activate"), () =>
 		HttpResponse.json({}, { status: 204 }),
