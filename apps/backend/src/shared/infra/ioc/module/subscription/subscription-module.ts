@@ -3,9 +3,11 @@ import { SubscriptionLifecycleServiceImpl } from "@/subscription/application/ser
 import { ActivateSubscriptionUseCase } from "@/subscription/application/use-case/activate-subscription.usecase"
 import { CancelSubscriptionUseCase } from "@/subscription/application/use-case/cancel-subscription.usecase"
 import { CreateCustomer } from "@/subscription/application/use-case/create-customer.usecase"
+import { CreatePlanUseCase } from "@/subscription/application/use-case/create-plan.usecase"
 import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/create-subscription.usecase"
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
 import { ListPlansUseCase } from "@/subscription/application/use-case/list-plans.usecase"
+import { CreatePlanController } from "@/subscription/infra/controller/admin/create-plan.controller"
 import { CreateCustomerController } from "@/subscription/infra/controller/create-customer-controller"
 import { CreateSubscriptionController } from "@/subscription/infra/controller/create-subscription.controller"
 import { ListPlansController } from "@/subscription/infra/controller/list-plans.controller"
@@ -55,6 +57,8 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.StripeWebhook).to(StripeWebhookController)
 	bind(SUBSCRIPTION_TYPES.USE_CASES.ListPlans).to(ListPlansUseCase)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ListPlans).to(ListPlansController)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.CreatePlan).to(CreatePlanUseCase)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreatePlan).to(CreatePlanController)
 	bind(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)
 		.to(StripeWebhookWorker)
 		.inSingletonScope()

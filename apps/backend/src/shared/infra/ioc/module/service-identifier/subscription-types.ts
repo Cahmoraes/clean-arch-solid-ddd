@@ -9,12 +9,14 @@ export const SUBSCRIPTION_TYPES = {
 		CancelSubscription: Symbol.for("CancelSubscriptionUseCase"),
 		HandlePaymentFailed: Symbol.for("HandlePaymentFailedUseCase"),
 		ListPlans: Symbol.for("ListPlansUseCase"),
+		CreatePlan: Symbol.for("CreatePlanUseCase"),
 	},
 	CONTROLLERS: {
 		CreateCustomer: Symbol.for("CreateCustomerController"),
 		CreateSubscription: Symbol.for("CreateSubscriptionController"),
 		StripeWebhook: Symbol.for("StripeWebhookController"),
 		ListPlans: Symbol.for("ListPlansController"),
+		CreatePlan: Symbol.for("CreatePlanController"),
 	},
 	REPOSITORIES: {
 		Subscription: Symbol.for("SubscriptionRepository"),

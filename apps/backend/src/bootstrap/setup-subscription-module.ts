@@ -8,6 +8,7 @@ export function setupSubscriptionModule(): ModuleControllers {
 		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.CreateSubscription),
 		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.StripeWebhook),
 		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.ListPlans),
+		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.CreatePlan),
 	]
 	const workers = [resolve(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)]
 	return { controllers, workers }
