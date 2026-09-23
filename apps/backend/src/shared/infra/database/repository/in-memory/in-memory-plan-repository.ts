@@ -36,4 +36,9 @@ export class InMemoryPlanRepository implements PlanRepository {
 	public async fetchActivePlans(): Promise<Plan[]> {
 		return this.plans.filter((plan) => plan.isActive).toArray()
 	}
+
+	public async planOfStripePriceId(priceId: string): Promise<Plan | null> {
+		if (!priceId) return null
+		return this.plans.find((plan) => plan.stripePriceId === priceId) ?? null
+	}
 }

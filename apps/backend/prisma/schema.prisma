@@ -92,10 +92,16 @@ model Subscription {
   canceled_at             DateTime?
   created_at              DateTime           @default(now())
   updated_at              DateTime           @updatedAt
+  plan_id                 String?  @db.Uuid
+  current_period_start    DateTime @default(now())
+  current_period_end      DateTime @default(now())
+  cancel_at_period_end    Boolean  @default(false)
 
   user User @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  plan Plan? @relation(fields: [plan_id], references: [id], onDelete: Restrict)
 
   @@index([customer_id])
+  @@index([plan_id])
   @@map("subscriptions")
 }
 
@@ -121,6 +127,8 @@ model Plan {
   stripe_price_id String?       @default("")
   created_at      DateTime      @default(now())
   updated_at      DateTime      @updatedAt
+
+  subscriptions Subscription[]
 
   @@map("plans")
 }

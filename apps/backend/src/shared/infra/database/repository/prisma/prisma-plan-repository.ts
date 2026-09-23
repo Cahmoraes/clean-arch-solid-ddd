@@ -87,6 +87,15 @@ export class PrismaPlanRepository implements PlanRepository {
 		return rows.map((row) => this.createPlan(row))
 	}
 
+	public async planOfStripePriceId(priceId: string): Promise<Plan | null> {
+		if (!priceId) return null
+		const row = await this.prismaClient.plan.findFirst({
+			where: { stripe_price_id: priceId },
+		})
+		if (!row) return null
+		return this.createPlan(row)
+	}
+
 	private createPlan(row: PlanRow): Plan {
 		return Plan.restore({
 			id: row.id,

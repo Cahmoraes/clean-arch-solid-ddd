@@ -94,4 +94,34 @@ describe("InMemorySubscriptionRepository", () => {
 			expect(result).toBe(sut)
 		})
 	})
+
+	describe("ofUserId", () => {
+		it("retorna a assinatura com status active do usuário", async () => {
+			await sut.save(makeSubscription({ id: "s-1", userId: "user-a" }))
+
+			const result = await sut.ofUserId("user-a")
+
+			expect(result?.id).toBe("s-1")
+		})
+
+		it("ignora assinaturas canceladas e de outros usuários", async () => {
+			await sut.save(
+				makeSubscription({
+					id: "s-old",
+					userId: "user-a",
+					billingSubscriptionId: "stripe-old",
+					status: "canceled",
+				}),
+			)
+			await sut.save(
+				makeSubscription({
+					id: "s-other",
+					userId: "user-b",
+					billingSubscriptionId: "stripe-other",
+				}),
+			)
+
+			expect(await sut.ofUserId("user-a")).toBeNull()
+		})
+	})
 })

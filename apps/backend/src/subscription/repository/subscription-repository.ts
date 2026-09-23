@@ -7,5 +7,6 @@ export interface SubscriptionRepository {
 		billingSubscriptionId: string,
 	): Promise<Subscription | null>
 	ofCustomerId(customerId: string): Promise<Subscription | null>
+	ofUserId(userId: string): Promise<Subscription | null>
 	withTransaction<TX extends object>(tx: TX): SubscriptionRepository
 }

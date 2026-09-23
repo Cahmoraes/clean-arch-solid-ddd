@@ -60,3 +60,39 @@ describe("InMemoryPlanRepository", () => {
 		expect(result).toHaveLength(2)
 	})
 })
+
+describe("InMemoryPlanRepository.planOfStripePriceId", () => {
+	function makePlan(
+		overrides: Partial<Parameters<typeof Plan.restore>[0]> = {},
+	) {
+		return Plan.restore({
+			id: "plan-1",
+			name: "Premium Mensal",
+			priceCents: 4990,
+			billingPeriod: "monthly",
+			tagline: "Tagline",
+			features: [],
+			isActive: true,
+			stripePriceId: "price_monthly",
+			...overrides,
+		})
+	}
+
+	it("encontra o plano pelo stripePriceId, inclusive inativo", async () => {
+		const sut = new InMemoryPlanRepository()
+		await sut.save(makePlan({ isActive: false }))
+
+		const result = await sut.planOfStripePriceId("price_monthly")
+
+		expect(result?.id).toBe("plan-1")
+		expect(result?.isActive).toBe(false)
+	})
+
+	it("devolve null para price desconhecido e para priceId vazio", async () => {
+		const sut = new InMemoryPlanRepository()
+		await sut.save(makePlan({ stripePriceId: "" }))
+
+		expect(await sut.planOfStripePriceId("price_unknown")).toBeNull()
+		expect(await sut.planOfStripePriceId("")).toBeNull()
+	})
+})

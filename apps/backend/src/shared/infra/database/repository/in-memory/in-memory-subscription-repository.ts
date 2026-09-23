@@ -33,4 +33,13 @@ export class InMemorySubscriptionRepository implements SubscriptionRepository {
 			(subscription) => subscription.customerId === customerId,
 		)
 	}
+
+	public async ofUserId(userId: string): Promise<Subscription | null> {
+		return (
+			this.data.find(
+				(subscription) =>
+					subscription.userId === userId && subscription.status === "active",
+			) ?? null
+		)
+	}
 }
