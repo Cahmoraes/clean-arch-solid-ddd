@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> NONE
+    NONE --> ACTIVE : create subscription with plan
+    ACTIVE --> ACTIVE : change plan (same row, new plan_id and Stripe price)
+    ACTIVE --> ACTIVE_CANCEL_SCHEDULED : cancel (cancelAtPeriodEnd=true)
+    ACTIVE_CANCEL_SCHEDULED --> EXPIRED : currentPeriodEnd reached (derived on read)
+    EXPIRED --> ACTIVE : subscribe again (new period)
+
+    note right of ACTIVE_CANCEL_SCHEDULED
+        Still active until currentPeriodEnd.
+        Change plan NOT allowed.
+    end note
+    note right of EXPIRED
+        Derived on read: currentPeriodEnd passed
+        and cancelAtPeriodEnd=true
+    end note
