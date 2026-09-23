@@ -16,6 +16,7 @@ import {
 	useReactivatePlan,
 } from "@/features/plans-admin/api"
 import { PlanCard } from "@/features/plans-admin/components/plan-card"
+import { PlanFormDialog } from "@/features/plans-admin/components/plan-form-dialog"
 import {
 	type PlanStatusAction,
 	PlanStatusConfirmationDialog,
@@ -125,9 +126,7 @@ export default function AdminPlansPage() {
 	const inactivatePlan = useInactivatePlan()
 	const reactivatePlan = useReactivatePlan()
 	const [toggleState, setToggleState] = useState<ToggleState | null>(null)
-	// biome-ignore lint/correctness/noUnusedVariables: lido pelo PlanFormDialog da task-11
 	const [isFormOpen, setIsFormOpen] = useState(false)
-	// biome-ignore lint/correctness/noUnusedVariables: lido pelo PlanFormDialog da task-11
 	const [editingPlan, setEditingPlan] = useState<PlanAdmin | null>(null)
 
 	const toggleMutations: Record<
@@ -200,7 +199,12 @@ export default function AdminPlansPage() {
 				onConfirm={handleConfirmToggle}
 			/>
 
-			{/* PlanFormDialog é conectado a isFormOpen/editingPlan pela task-11 */}
+			<PlanFormDialog
+				open={isFormOpen}
+				plan={editingPlan}
+				onOpenChange={setIsFormOpen}
+				onSuccess={() => setEditingPlan(null)}
+			/>
 		</PageContainer>
 	)
 }
