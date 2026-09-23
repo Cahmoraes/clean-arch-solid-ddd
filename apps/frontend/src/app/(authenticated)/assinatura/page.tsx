@@ -3,6 +3,16 @@
 import { AlertTriangle, BadgeCheck, Check } from "lucide-react"
 import { useId, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -468,6 +478,52 @@ function CancellationNotice({ endDate }: CancellationNoticeProps) {
 	)
 }
 
+interface CancelSubscriptionDialogProps {
+	open: boolean
+	isPending: boolean
+	endDate: string
+	onOpenChange: (open: boolean) => void
+	onConfirm: () => void
+}
+
+function CancelSubscriptionDialog({
+	open,
+	isPending,
+	endDate,
+	onOpenChange,
+	onConfirm,
+}: CancelSubscriptionDialogProps) {
+	return (
+		<AlertDialog open={open} onOpenChange={onOpenChange}>
+			<AlertDialogContent>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Cancelar assinatura?</AlertDialogTitle>
+					<AlertDialogDescription>
+						Você mantém acesso até {endDate}. Essa ação não pode ser desfeita.
+					</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel disabled={isPending}>
+						Manter assinatura
+					</AlertDialogCancel>
+					<AlertDialogAction asChild>
+						<Button
+							type="button"
+							variant="destructive"
+							data-testid="subscription-cancel-confirm"
+							onClick={onConfirm}
+							disabled={isPending}
+							aria-busy={isPending}
+						>
+							{isPending ? "Cancelando…" : "Confirmar cancelamento"}
+						</Button>
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
+	)
+}
+
 interface UseSubscriptionFlow {
 	groupName: string
 	mode: PageMode
@@ -478,10 +534,13 @@ interface UseSubscriptionFlow {
 	isPending: boolean
 	errorMessage: string | null
 	data: ReturnType<typeof useCreateSubscription>["data"]
+	cancelDialogOpen: boolean
 	handleSelectPlan: (plan: Plan) => void
 	handleSubscribe: () => Promise<void>
 	handleChangePlan: () => Promise<void>
-	handleCancel: () => Promise<void>
+	requestCancel: () => void
+	setCancelDialogOpen: (open: boolean) => void
+	confirmCancel: () => Promise<void>
 }
 
 function useSubscriptionFlow(
@@ -493,6 +552,7 @@ function useSubscriptionFlow(
 	const [selectedPlanId, setSelectedPlanId] = useState<string>(
 		currentPlanId ?? plans[0]?.id ?? "",
 	)
+	const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
 	const createMutation = useCreateSubscription()
 	const changeMutation = useChangePlan()
 	const cancelMutation = useCancelSubscription()
@@ -525,7 +585,12 @@ function useSubscriptionFlow(
 		}
 	}
 
-	async function handleCancel() {
+	function requestCancel() {
+		setCancelDialogOpen(true)
+	}
+
+	async function confirmCancel() {
+		setCancelDialogOpen(false)
 		try {
 			await cancelMutation.mutateAsync()
 		} catch {
@@ -554,10 +619,13 @@ function useSubscriptionFlow(
 			cancel: cancelMutation.error,
 		}),
 		data: createMutation.data,
+		cancelDialogOpen,
 		handleSelectPlan,
 		handleSubscribe,
 		handleChangePlan,
-		handleCancel,
+		requestCancel,
+		setCancelDialogOpen,
+		confirmCancel,
 	}
 }
 
@@ -571,6 +639,34 @@ function canChangePlan(
 	currentPlanId: string | null,
 ): boolean {
 	return selectedPlan !== undefined && selectedPlan.id !== currentPlanId
+}
+
+interface ManageSectionProps {
+	flow: UseSubscriptionFlow
+	subscription: MySubscription | null
+}
+
+function ManageSection({ flow, subscription }: ManageSectionProps) {
+	return (
+		<>
+			<ManageActions
+				pendingAction={flow.pendingAction}
+				disabled={flow.isPending}
+				canChange={canChangePlan(flow.selectedPlan, flow.currentPlanId)}
+				onChange={flow.handleChangePlan}
+				onCancel={flow.requestCancel}
+			/>
+			{subscription ? (
+				<CancelSubscriptionDialog
+					open={flow.cancelDialogOpen}
+					isPending={flow.pendingAction === "cancel"}
+					endDate={formatDay(subscription.currentPeriodEnd)}
+					onOpenChange={flow.setCancelDialogOpen}
+					onConfirm={flow.confirmCancel}
+				/>
+			) : null}
+		</>
+	)
 }
 
 interface SubscriptionStateSectionProps {
@@ -592,15 +688,7 @@ function SubscriptionStateSection({
 		)
 	}
 	if (flow.mode === "manage") {
-		return (
-			<ManageActions
-				pendingAction={flow.pendingAction}
-				disabled={flow.isPending}
-				canChange={canChangePlan(flow.selectedPlan, flow.currentPlanId)}
-				onChange={flow.handleChangePlan}
-				onCancel={flow.handleCancel}
-			/>
-		)
+		return <ManageSection flow={flow} subscription={subscription} />
 	}
 	if (subscription) {
 		return (

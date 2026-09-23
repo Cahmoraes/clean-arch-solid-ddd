@@ -260,6 +260,9 @@ describe("SubscriptionPage com assinatura", () => {
 		await user.click(
 			await screen.findByRole("button", { name: "Cancelar assinatura" }),
 		)
+		await user.click(
+			await screen.findByRole("button", { name: "Confirmar cancelamento" }),
+		)
 
 		const notice = await screen.findByTestId("subscription-cancellation-notice")
 		expect(notice).toHaveTextContent("15/11/2026")
@@ -272,6 +275,69 @@ describe("SubscriptionPage com assinatura", () => {
 		expect(
 			screen.queryByRole("button", { name: "Cancelar assinatura" }),
 		).not.toBeInTheDocument()
+	})
+
+	it("abre a confirmação ao clicar em Cancelar assinatura e não envia requisição antes de confirmar", async () => {
+		const state = serveSubscription(makeSubscription())
+		let cancelCalls = 0
+		server.use(
+			http.post(`${apiBaseUrl}/subscriptions/me/cancel`, () => {
+				cancelCalls += 1
+				state.current = makeSubscription({
+					state: "cancel_scheduled",
+					cancelAtPeriodEnd: true,
+				})
+				return HttpResponse.json(state.current)
+			}),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<SubscriptionPage />)
+
+		await user.click(
+			await screen.findByRole("button", { name: "Cancelar assinatura" }),
+		)
+
+		expect(
+			await screen.findByRole("alertdialog", { name: "Cancelar assinatura?" }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByText("Você mantém acesso até 15/11/2026", { exact: false }),
+		).toBeInTheDocument()
+		expect(cancelCalls).toBe(0)
+	})
+
+	it("dispensa a confirmação sem enviar requisição de cancelamento", async () => {
+		const state = serveSubscription(makeSubscription())
+		let cancelCalls = 0
+		server.use(
+			http.post(`${apiBaseUrl}/subscriptions/me/cancel`, () => {
+				cancelCalls += 1
+				state.current = makeSubscription({
+					state: "cancel_scheduled",
+					cancelAtPeriodEnd: true,
+				})
+				return HttpResponse.json(state.current)
+			}),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<SubscriptionPage />)
+
+		await user.click(
+			await screen.findByRole("button", { name: "Cancelar assinatura" }),
+		)
+		await user.click(
+			await screen.findByRole("button", { name: "Manter assinatura" }),
+		)
+
+		await waitFor(() => {
+			expect(
+				screen.queryByRole("alertdialog", { name: "Cancelar assinatura?" }),
+			).not.toBeInTheDocument()
+		})
+		expect(cancelCalls).toBe(0)
+		expect(
+			screen.getByRole("button", { name: "Cancelar assinatura" }),
+		).toBeInTheDocument()
 	})
 
 	it("com cancelamento já agendado ao abrir, mostra a data de fim e não oferece troca", async () => {
@@ -341,6 +407,9 @@ describe("SubscriptionPage com assinatura", () => {
 
 		await user.click(
 			await screen.findByRole("button", { name: "Cancelar assinatura" }),
+		)
+		await user.click(
+			await screen.findByRole("button", { name: "Confirmar cancelamento" }),
 		)
 
 		const alert = await screen.findByTestId("subscription-error")
