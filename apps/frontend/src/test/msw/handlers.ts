@@ -17,8 +17,33 @@ const STUB_ADMIN_PLAN = {
 	stripePriceId: "",
 }
 
+const STUB_MY_SUBSCRIPTION = {
+	id: "sub-stub",
+	state: "active",
+	plan: { id: "plan-stub", name: "Stub Plan", priceId: "price_stub" },
+	currentPeriodStart: "2026-10-15T12:00:00.000Z",
+	currentPeriodEnd: "2026-11-15T12:00:00.000Z",
+	cancelAtPeriodEnd: false,
+}
+
 export const handlers = [
 	http.get(endpoint("/plans"), () => HttpResponse.json([], { status: 200 })),
+	http.get(endpoint("/subscriptions/me"), () =>
+		HttpResponse.json(null, { status: 200 }),
+	),
+	http.patch(endpoint("/subscriptions/me/plan"), () =>
+		HttpResponse.json(STUB_MY_SUBSCRIPTION, { status: 200 }),
+	),
+	http.post(endpoint("/subscriptions/me/cancel"), () =>
+		HttpResponse.json(
+			{
+				...STUB_MY_SUBSCRIPTION,
+				state: "cancel_scheduled",
+				cancelAtPeriodEnd: true,
+			},
+			{ status: 200 },
+		),
+	),
 	http.get(endpoint("/admin/plans"), () =>
 		HttpResponse.json([], { status: 200 }),
 	),

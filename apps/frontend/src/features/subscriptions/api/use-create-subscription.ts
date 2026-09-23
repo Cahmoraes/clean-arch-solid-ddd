@@ -1,6 +1,10 @@
 "use client"
 
-import { type UseMutationResult, useMutation } from "@tanstack/react-query"
+import {
+	type UseMutationResult,
+	useMutation,
+	useQueryClient,
+} from "@tanstack/react-query"
 import {
 	type CreateSubscriptionInput,
 	type CreateSubscriptionResponse,
@@ -8,6 +12,7 @@ import {
 } from "@/features/subscriptions/schemas"
 import { api } from "@/lib/api"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
+import { MY_SUBSCRIPTION_QUERY_KEY } from "./use-my-subscription"
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {
 	if (error instanceof ApiError) return error
@@ -27,6 +32,7 @@ export function useCreateSubscription(): UseMutationResult<
 	ApiError,
 	CreateSubscriptionInput
 > {
+	const queryClient = useQueryClient()
 	return useMutation<
 		CreateSubscriptionResponse,
 		ApiError,
@@ -49,6 +55,11 @@ export function useCreateSubscription(): UseMutationResult<
 				)
 			}
 			return parsed.data
+		},
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: MY_SUBSCRIPTION_QUERY_KEY,
+			})
 		},
 	})
 }

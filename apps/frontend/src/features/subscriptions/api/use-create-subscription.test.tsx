@@ -8,6 +8,7 @@ import {
 	SUBSCRIPTIONS_MUTATION_KEY,
 	useCreateSubscription,
 } from "./use-create-subscription"
+import { useMySubscription } from "./use-my-subscription"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
@@ -103,5 +104,36 @@ describe("useCreateSubscription", () => {
 
 	it("expõe mutationKey estável para coordenação de cache", () => {
 		expect(SUBSCRIPTIONS_MUTATION_KEY).toEqual(["subscriptions", "create"])
+	})
+})
+
+describe("useCreateSubscription e a consulta da assinatura", () => {
+	it("invalida a consulta da assinatura após criar (a consulta é buscada de novo)", async () => {
+		let getCalls = 0
+		server.use(
+			http.get(`${apiBaseUrl}/subscriptions/me`, () => {
+				getCalls += 1
+				return HttpResponse.json(null)
+			}),
+			http.post(`${apiBaseUrl}/subscriptions`, () =>
+				HttpResponse.json(
+					{ subscriptionId: "sub_demo_42", status: "active" },
+					{ status: 201 },
+				),
+			),
+		)
+		const { result } = renderHook(
+			() => ({ query: useMySubscription(), create: useCreateSubscription() }),
+			{ wrapper: wrapper() },
+		)
+		await waitFor(() => expect(result.current.query.isSuccess).toBe(true))
+		expect(getCalls).toBe(1)
+
+		await result.current.create.mutateAsync({
+			priceId: "price_demo_monthly",
+			paymentMethodId: "pm_demo_card_visa",
+		})
+
+		await waitFor(() => expect(getCalls).toBe(2))
 	})
 })
