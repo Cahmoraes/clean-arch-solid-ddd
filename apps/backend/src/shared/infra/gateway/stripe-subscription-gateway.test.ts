@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect, it, vi, afterEach } from "vitest"
-import Stripe from "stripe"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 describe("StripeSubscriptionGateway.changeSubscriptionPrice", () => {
 	let stripeMockInstance: ReturnType<typeof createStripeMock>
@@ -17,7 +16,9 @@ describe("StripeSubscriptionGateway.changeSubscriptionPrice", () => {
 			id: "sub_1",
 			items: { data: [{ id: "si_1" }] },
 		} as any)
-		stripeMockInstance.subscriptions.update.mockResolvedValue({ id: "sub_1" } as any)
+		stripeMockInstance.subscriptions.update.mockResolvedValue({
+			id: "sub_1",
+		} as any)
 
 		const { StripeSubscriptionGateway } = await import(
 			"./stripe-subscription-gateway.js"
@@ -25,18 +26,23 @@ describe("StripeSubscriptionGateway.changeSubscriptionPrice", () => {
 
 		// Create a test instance with mocked stripe
 		const gateway = new StripeSubscriptionGateway()
-		gateway["stripe"] = stripeMockInstance
+		gateway["stripe"] = stripeMockInstance as any
 
 		await gateway.changeSubscriptionPrice({
 			billingSubscriptionId: "sub_1",
 			priceId: "price_yearly",
 		})
 
-		expect(stripeMockInstance.subscriptions.retrieve).toHaveBeenCalledWith("sub_1")
-		expect(stripeMockInstance.subscriptions.update).toHaveBeenCalledWith("sub_1", {
-			items: [{ id: "si_1", price: "price_yearly" }],
-			proration_behavior: "none",
-		})
+		expect(stripeMockInstance.subscriptions.retrieve).toHaveBeenCalledWith(
+			"sub_1",
+		)
+		expect(stripeMockInstance.subscriptions.update).toHaveBeenCalledWith(
+			"sub_1",
+			{
+				items: [{ id: "si_1", price: "price_yearly" }],
+				proration_behavior: "none",
+			},
+		)
 	})
 
 	it("propaga o erro do SDK sem engolir", async () => {
@@ -48,7 +54,7 @@ describe("StripeSubscriptionGateway.changeSubscriptionPrice", () => {
 		)
 
 		const gateway = new StripeSubscriptionGateway()
-		gateway["stripe"] = stripeMockInstance
+		gateway["stripe"] = stripeMockInstance as any
 
 		await expect(
 			gateway.changeSubscriptionPrice({
