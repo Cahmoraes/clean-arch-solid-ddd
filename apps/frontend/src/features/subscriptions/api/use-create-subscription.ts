@@ -11,15 +11,9 @@ import {
 	createSubscriptionResponseSchema,
 } from "@/features/subscriptions/schemas"
 import { api } from "@/lib/api"
-import { ApiError, mapStatusToMessage } from "@/lib/errors"
+import { ApiError } from "@/lib/errors"
+import { toApiError } from "./to-api-error"
 import { MY_SUBSCRIPTION_QUERY_KEY } from "./use-my-subscription"
-
-function toApiError(error: unknown, fallbackStatus = 500): ApiError {
-	if (error instanceof ApiError) return error
-	const message =
-		error instanceof Error ? error.message : mapStatusToMessage(fallbackStatus)
-	return new ApiError(fallbackStatus, "network_error", message)
-}
 
 export const SUBSCRIPTIONS_MUTATION_KEY = ["subscriptions", "create"] as const
 
