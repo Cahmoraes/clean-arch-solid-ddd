@@ -14,6 +14,7 @@ export function setupSubscriptionModule(): ModuleControllers {
 		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.ReactivatePlan),
 		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.ListPlansAdmin),
 		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.GetMySubscription),
+		resolve(SUBSCRIPTION_TYPES.CONTROLLERS.ChangeSubscriptionPlan),
 	]
 	const workers = [resolve(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)]
 	return { controllers, workers }
