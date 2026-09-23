@@ -1,10 +1,25 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { StripeSubscriptionGateway } from "./stripe-subscription-gateway"
+
+type MockSubscriptionsResource = {
+	retrieve: ReturnType<typeof vi.fn>
+	update: ReturnType<typeof vi.fn>
+}
+
+type MockStripe = {
+	subscriptions: MockSubscriptionsResource
+}
 
 describe("StripeSubscriptionGateway.changeSubscriptionPrice", () => {
-	let stripeMockInstance: ReturnType<typeof createStripeMock>
+	let stripeMockInstance: MockStripe
 
 	beforeEach(() => {
-		stripeMockInstance = createStripeMock()
+		stripeMockInstance = {
+			subscriptions: {
+				retrieve: vi.fn(),
+				update: vi.fn(),
+			},
+		}
 	})
 
 	afterEach(() => {
@@ -15,18 +30,17 @@ describe("StripeSubscriptionGateway.changeSubscriptionPrice", () => {
 		stripeMockInstance.subscriptions.retrieve.mockResolvedValue({
 			id: "sub_1",
 			items: { data: [{ id: "si_1" }] },
-		} as any)
+		} as Parameters<
+			(typeof stripeMockInstance.subscriptions.retrieve)["mockResolvedValue"]
+		>[0])
 		stripeMockInstance.subscriptions.update.mockResolvedValue({
 			id: "sub_1",
-		} as any)
+		} as Parameters<
+			(typeof stripeMockInstance.subscriptions.update)["mockResolvedValue"]
+		>[0])
 
-		const { StripeSubscriptionGateway } = await import(
-			"./stripe-subscription-gateway.js"
-		)
-
-		// Create a test instance with mocked stripe
 		const gateway = new StripeSubscriptionGateway()
-		gateway["stripe"] = stripeMockInstance as any
+		;(gateway as unknown as { stripe: MockStripe }).stripe = stripeMockInstance
 
 		await gateway.changeSubscriptionPrice({
 			billingSubscriptionId: "sub_1",
@@ -49,12 +63,8 @@ describe("StripeSubscriptionGateway.changeSubscriptionPrice", () => {
 		const error = new Error("stripe down")
 		stripeMockInstance.subscriptions.retrieve.mockRejectedValue(error)
 
-		const { StripeSubscriptionGateway } = await import(
-			"./stripe-subscription-gateway.js"
-		)
-
 		const gateway = new StripeSubscriptionGateway()
-		gateway["stripe"] = stripeMockInstance as any
+		;(gateway as unknown as { stripe: MockStripe }).stripe = stripeMockInstance
 
 		await expect(
 			gateway.changeSubscriptionPrice({
@@ -65,12 +75,3 @@ describe("StripeSubscriptionGateway.changeSubscriptionPrice", () => {
 		expect(stripeMockInstance.subscriptions.update).not.toHaveBeenCalled()
 	})
 })
-
-function createStripeMock() {
-	return {
-		subscriptions: {
-			retrieve: vi.fn(),
-			update: vi.fn(),
-		},
-	}
-}
