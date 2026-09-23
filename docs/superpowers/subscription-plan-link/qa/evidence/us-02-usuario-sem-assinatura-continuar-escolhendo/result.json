@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como usuário sem assinatura, eu quero continuar escolhendo e assinando um plano na tela de assinatura para que eu comece a usar o serviço",
+  "requirements": ["FR-001", "FR-002", "FR-003", "FR-004"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Backend unit (create-subscription.usecase.test.ts): 10 passed, 0 failed — cobre gravação de planId/período/vínculo ao usuário (FR-001), resolução do plano pelo priceId com PlanNotFoundError quando não corresponde (FR-002), cálculo do fim do período mensal/anual (FR-003) e bloqueio de assinatura ativa duplicada com ActiveSubscriptionAlreadyExistsError (FR-004). Backend business-flow (create-subscription.controller.business-flow-test.ts): 7 passed, 0 failed — valida os mesmos fluxos via HTTP (201 ao criar, 409 em conflito). Frontend (use-create-subscription.test.tsx, plans-section-hero.test.tsx, plan-card-hero.test.tsx, plan-card-secondary.test.tsx): 15 passed, 0 failed — cobre seleção e exibição dos planos disponíveis na tela.",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Relatório de Independent Verification não faz parte deste pipeline (workflow.independent_verification: false); testes localizados e mapeados manualmente às FR-001..FR-004. Evidência de UI capturada via playwright-cli: usuário recém-criado (sem assinatura) autenticado, redirecionado para /assinatura, tela exibe seletor de planos com 'Plano selecionado: Premium Mensal' e preço, confirmando que o fluxo de escolha/assinatura permanece disponível (FR-002/FR-004) para quem não tem assinatura ativa."
+}

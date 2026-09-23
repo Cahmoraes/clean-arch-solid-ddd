@@ -1,0 +1,12 @@
+{
+  "us_id": "us-03",
+  "user_story": "Como usuário com assinatura ativa, eu quero trocar para outro plano para que minha assinatura reflita o que quero pagar",
+  "requirements": ["FR-003", "FR-009", "FR-010", "FR-011", "FR-012"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Backend unit (app-domain): subscription-plan-lifecycle.test.ts + change-subscription-plan.usecase.test.ts — 20 passed, 0 failed (cobre troca de plano mantendo a mesma assinatura FR-009, cálculo de período FR-003, aceitação de assinatura legada sem planId FR-012, recusa por cancelamento agendado FR-010, recusa sem assinatura ativa FR-010). Backend HTTP (business-flow): change-subscription-plan.controller.business-flow-test.ts — 6 passed, 0 failed (200 na troca, 401 sem JWT, 400 sem priceId, 404 priceId/sem assinatura, 409 com cancelamento agendado — FR-010). Frontend: assinatura/page.test.tsx + use-change-plan.test.tsx — 21 passed, 0 failed (botão 'Trocar plano' no lugar de 'Assinar' FR-011, habilitação só com outro plano selecionado, reload do estado após recusa por cancelamento agendado FR-010). Total: 47 testes, 0 falhas.",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "Verificado end-to-end via UI real (playwright-cli, sessão default): cadastro de novo usuário (qa.trocarplano.us03@example.com) via /cadastro para garantir billing_customer_id provisionado (usuários seed diretos no banco, como admin@admin.com, não passam pelo evento de provisionamento e retornam 409 ao assinar). Login, POST /subscriptions (assinar plano demo) criou assinatura ativa Premium Mensal — tela então trocou o botão de 'Assinar plano demo' para 'Trocar plano' (FR-011), inicialmente desabilitado. Selecionado Premium Anual: botão habilitou (regra de habilitação só com outro plano selecionado). Screenshot capturado nesse estado. Em seguida cliquei em 'Trocar plano': PATCH /subscriptions/me/plan retornou 200, GET /subscriptions/me subsequente confirmou o novo plano persistido na MESMA assinatura (FR-009 observável em runtime, não só em teste). FR-003 e FR-012 permanecem verificados apenas pelos testes automatizados (cálculo de período e assinatura legada sem plano não são triviais de reproduzir manualmente via UI). Usuário de teste e assinatura permanecem no banco de dev (ambiente local, sem impacto em outros agentes)."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "us-05",
+  "user_story": "Como usuário com assinatura vencida após cancelamento, eu quero assinar novamente um plano para que eu retome o serviço",
+  "requirements": ["FR-004", "FR-017", "FR-018"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Backend unit (create-subscription.usecase.test.ts, vite.config.app-domain.ts): 10 passed, 0 failed. Cobre FR-004 ('Deve falhar com ActiveSubscriptionAlreadyExistsError quando já existe assinatura ativa não vencida', 'Deve tratar cancelamento agendado ainda dentro do período como ativa e recusar') e FR-017/FR-018 ('Deve encerrar a assinatura vencida e criar a nova com novo período' — valida fechamento da assinatura vencida com canceledAt = currentPeriodEnd e criação de nova assinatura com novo período, sem job/evento externo). Backend business-flow (create-subscription.controller.business-flow-test.ts, vite.config.business-flow.ts): 7 passed, 0 failed, incluindo 409 para assinatura ativa. Lógica de domínio (Subscription.isExpired: cancelAtPeriodEnd && now >= currentPeriodEnd; Subscription.closeExpired) confirma que o estado 'vencida' é derivado na leitura, sem job externo, conforme FR-017.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Independent Verification report não faz parte deste pipeline (workflow.independent_verification: false) — cobertura mapeada diretamente do código: FR-004/FR-017/FR-018 batem com mecanismo literal (bloqueio de assinatura ativa não vencida; expiração derivada na leitura sem job/evento; encerramento da vencida + criação de nova no mesmo fluxo). Não achei divergência de mecanismo. Screenshot não capturado: reproduzir o estado 'assinatura vencida' na UI exige um usuário no banco com subscription cujo currentPeriodEnd já passou e cancelAtPeriodEnd=true — não há seed/fixture de e2e para esse estado, e não dá pra alcançar via fluxo normal de navegador sem manipular o banco diretamente (fora do escopo de captura de tela via playwright-cli). Aspecto de screenshot fica não verificado; resto da história (regra de negócio ponta a ponta) verificado via testes existentes."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como usuário autenticado, eu quero que o plano que assinei fique salvo para que eu o veja ao voltar à tela de assinatura sem selecionar de novo",
+  "requirements": ["FR-001", "FR-005", "FR-006", "FR-007", "FR-008", "FR-019"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Backend unit (vite.config.app-domain.ts): get-my-subscription.usecase.test.ts + my-subscription-view.test.ts + subscription.test.ts — 17 testes passaram, 0 falharam. Backend HTTP (vite.config.business-flow.ts): get-my-subscription.controller.business-flow-test.ts + create-subscription.controller.business-flow-test.ts — 12 testes passaram, 0 falharam. Frontend: use-my-subscription.test.tsx + assinatura/page.test.tsx — 21 testes passaram, 0 falharam. Total: 50 testes, 0 falhas.",
+  "screenshot_path": "screenshot.png",
+  "failure_details": null,
+  "notes": "IV report não faz parte deste pipeline (workflow.independent_verification: false), então localizei e rodei os testes diretamente. Independent Verification report: não faz parte deste pipeline. Testes existentes cobrem: gravação do plano+período ao criar assinatura (FR-001, create-subscription.controller.business-flow-test.ts), consulta da assinatura vigente com plano/status/período/cancelamento agendado (FR-005) e ausência de assinatura como resultado normal (FR-006, get-my-subscription.usecase.test.ts e .controller.business-flow-test.ts), pré-seleção do plano vigente marcado como 'Plano atual' ao abrir /assinatura (FR-007) e exibição mesmo se plano estiver inativado no catálogo (FR-008), e mensagem 'plano não identificado' para assinaturas legadas sem plano vinculado (FR-019) — todos em assinatura/page.test.tsx e use-my-subscription.test.tsx. Verificação end-to-end no navegador real (playwright-cli): criei usuário via API, logei via UI, assinei o plano 'Premium Mensal' pela tela /assinatura, e após reload da página o plano permaneceu pré-selecionado e marcado 'Plano atual' com o botão 'Trocar plano' desabilitado — sem precisar selecionar de novo, confirmando o comportamento observável da US-01. Screenshot capturado após o reload, mostrando o estado persistido."
+}

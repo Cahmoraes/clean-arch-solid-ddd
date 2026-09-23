@@ -1,0 +1,12 @@
+{
+  "us_id": "us-06",
+  "user_story": "Como sistema cliente da API, eu quero consultar a assinatura vigente do usuário autenticado para que a interface exiba seu estado atual",
+  "requirements": ["FR-005", "FR-006"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Unit (get-my-subscription.usecase.test.ts): 7 passed, 0 failed. Business-flow (get-my-subscription.controller.business-flow-test.ts): 5 passed, 0 failed. Total: 12 passed, 0 failed.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Nenhum relatório de Independent Verification foi nomeado (fora do pipeline); testes localizados e mapeados manualmente. GET /subscriptions/me (GetMySubscriptionUseCase + GetMySubscriptionController) cobre FR-005 (plano, status/state, currentPeriodStart/End, cancelAtPeriodEnd embutidos na resposta) e FR-006 (sem assinatura retorna 200 com corpo null, não erro). Testes de unidade cobrem states active/cancel_scheduled/expired, plano inativado e assinatura legada sem plano; testes business-flow cobrem 401 sem JWT, 200 null, 200 com assinatura completa e state expired. Story marcada 'UI: não' na spec (linha 23) — é um endpoint consumido pelo frontend, sem tela própria; captura de screenshot não se aplica e não afeta o status."
+}
