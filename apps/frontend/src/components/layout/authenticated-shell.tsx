@@ -13,6 +13,7 @@ import {
 	PanelLeftOpen,
 	User,
 	Users,
+	Wallet,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -49,6 +50,7 @@ const ADMIN_NAV_ITEMS: ReadonlyArray<NavItem> = [
 	{ href: "/admin/usuarios", label: "Usuários", icon: Users },
 	{ href: "/admin/check-ins", label: "Check-ins", icon: CheckCircle },
 	{ href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+	{ href: "/admin/planos", label: "Planos", icon: Wallet },
 	{ href: "/admin/avisos/novo", label: "Novo aviso", icon: Megaphone },
 ]
 

@@ -8,6 +8,7 @@ import {
 	LayoutDashboard,
 	User,
 	Users,
+	Wallet,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import type { ElementType } from "react"
@@ -36,6 +37,12 @@ const NAV_ITEMS: ReadonlyArray<NavItem> = [
 		href: "/admin/check-ins",
 		label: "Check-ins (admin)",
 		icon: CheckCircle,
+		adminOnly: true,
+	},
+	{
+		href: "/admin/planos",
+		label: "Planos (admin)",
+		icon: Wallet,
 		adminOnly: true,
 	},
 ]
