@@ -12,6 +12,7 @@ import { ListPlansController } from "@/subscription/infra/controller/list-plans.
 import { StripeWebhookController } from "@/subscription/infra/controller/stripe-webhook.controller"
 import { StripeWebhookWorker } from "@/subscription/infra/worker/stripe-webhook-worker"
 import { SUBSCRIPTION_TYPES } from "../service-identifier/subscription-types"
+import { PlanRepositoryProvider } from "./plan-repository-provider"
 import { StripeWebhookEventRepositoryProvider } from "./stripe-webhook-event-repository-provider"
 import { SubscriptionGatewayProvider } from "./subscription-gateway-provider"
 import { SubscriptionRepositoryProvider } from "./subscription-repository-provider"
@@ -25,6 +26,9 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 		.inSingletonScope()
 	bind(SUBSCRIPTION_TYPES.REPOSITORIES.StripeWebhookEvent)
 		.toDynamicValue(StripeWebhookEventRepositoryProvider.provide)
+		.inSingletonScope()
+	bind(SUBSCRIPTION_TYPES.REPOSITORIES.Plan)
+		.toDynamicValue(PlanRepositoryProvider.provide)
 		.inSingletonScope()
 	bind(SUBSCRIPTION_TYPES.SERVICES.Lifecycle)
 		.to(SubscriptionLifecycleServiceImpl)
