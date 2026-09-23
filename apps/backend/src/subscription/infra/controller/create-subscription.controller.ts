@@ -114,8 +114,13 @@ function makeSwaggerSchema(): Schema {
 			},
 			400: { description: "Invalid body", schema: errorResponseSchema },
 			401: { description: "Unauthorized", schema: errorResponseSchema },
+			404: {
+				description: "Plan not found for the given priceId",
+				schema: errorResponseSchema,
+			},
 			409: {
-				description: "Billing customer not provisioned",
+				description:
+					"Billing customer not provisioned or user already has an active subscription",
 				schema: errorResponseSchema,
 			},
 		},
