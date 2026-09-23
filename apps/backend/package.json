@@ -27,6 +27,7 @@
 		"prisma:reset": "npx prisma migrate reset --force",
 		"prisma:deploy": "npx prisma migrate deploy",
 		"prisma:db:pull": "npx prisma db pull",
+		"prisma:seed": "npx tsx prisma/seed.ts",
 		"tsc:check": "npx tsc --noEmit",
 		"biome:fix": "biome check --write .",
 		"promise-like": "npx tsx --watch ./test/proxy-like/index-2.ts",
@@ -128,5 +129,8 @@
 		"commitizen": {
 			"path": "./node_modules/cz-conventional-changelog"
 		}
+	},
+	"prisma": {
+		"seed": "npx tsx prisma/seed.ts"
 	}
 }
