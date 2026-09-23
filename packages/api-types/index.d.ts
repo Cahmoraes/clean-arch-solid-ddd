@@ -4005,7 +4005,19 @@ export interface paths {
                         };
                     };
                 };
-                /** @description Billing customer not provisioned */
+                /** @description Plan not found for the given priceId */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Billing customer not provisioned or user already has an active subscription */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -4495,6 +4507,307 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/subscriptions/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the authenticated user's current subscription
+         * @description Returns the current subscription with its plan, or null when the user has none.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Current subscription or null */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Subscription ID */
+                            id: string;
+                            /**
+                             * @description Derived state: expired only when the cancellation was scheduled and the period ended
+                             * @example active
+                             * @enum {string}
+                             */
+                            state: "active" | "cancel_scheduled" | "expired";
+                            /** @description Current plan, null for legacy subscriptions */
+                            plan: {
+                                /** @description Plan ID */
+                                id: string;
+                                /** @description Plan name */
+                                name: string;
+                                /** @description Stripe Price ID of the plan */
+                                priceId: string;
+                            } | null;
+                            /**
+                             * @description Start of the paid period (ISO 8601 UTC)
+                             * @example 2026-10-15T12:00:00.000Z
+                             */
+                            currentPeriodStart: string;
+                            /**
+                             * @description End of the paid period (ISO 8601 UTC)
+                             * @example 2026-11-15T12:00:00.000Z
+                             */
+                            currentPeriodEnd: string;
+                            /** @description True when the cancellation is scheduled */
+                            cancelAtPeriodEnd: boolean;
+                        } | null;
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/subscriptions/me/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Change the plan of the authenticated user's subscription
+         * @description Switches the current subscription to another plan, keeping the same subscription.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Stripe Price ID of the new plan
+                         * @example price_1abc123
+                         */
+                        priceId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Subscription with the new plan */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Subscription ID */
+                            id: string;
+                            /**
+                             * @description Derived state: expired only when the cancellation was scheduled and the period ended
+                             * @example active
+                             * @enum {string}
+                             */
+                            state: "active" | "cancel_scheduled" | "expired";
+                            /** @description Current plan, null for legacy subscriptions */
+                            plan: {
+                                /** @description Plan ID */
+                                id: string;
+                                /** @description Plan name */
+                                name: string;
+                                /** @description Stripe Price ID of the plan */
+                                priceId: string;
+                            } | null;
+                            /**
+                             * @description Start of the paid period (ISO 8601 UTC)
+                             * @example 2026-10-15T12:00:00.000Z
+                             */
+                            currentPeriodStart: string;
+                            /**
+                             * @description End of the paid period (ISO 8601 UTC)
+                             * @example 2026-11-15T12:00:00.000Z
+                             */
+                            currentPeriodEnd: string;
+                            /** @description True when the cancellation is scheduled */
+                            cancelAtPeriodEnd: boolean;
+                        };
+                    };
+                };
+                /** @description Invalid body */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Plan not found or no active subscription */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Cancellation already scheduled */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/subscriptions/me/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Schedule the cancellation of the authenticated user's subscription
+         * @description Marks the subscription to be canceled at the end of the paid period. Calling it again keeps the scheduled state.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Subscription with the cancellation scheduled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Subscription ID */
+                            id: string;
+                            /**
+                             * @description Derived state: expired only when the cancellation was scheduled and the period ended
+                             * @example active
+                             * @enum {string}
+                             */
+                            state: "active" | "cancel_scheduled" | "expired";
+                            /** @description Current plan, null for legacy subscriptions */
+                            plan: {
+                                /** @description Plan ID */
+                                id: string;
+                                /** @description Plan name */
+                                name: string;
+                                /** @description Stripe Price ID of the plan */
+                                priceId: string;
+                            } | null;
+                            /**
+                             * @description Start of the paid period (ISO 8601 UTC)
+                             * @example 2026-10-15T12:00:00.000Z
+                             */
+                            currentPeriodStart: string;
+                            /**
+                             * @description End of the paid period (ISO 8601 UTC)
+                             * @example 2026-11-15T12:00:00.000Z
+                             */
+                            currentPeriodEnd: string;
+                            /** @description True when the cancellation is scheduled */
+                            cancelAtPeriodEnd: boolean;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description No active subscription */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/notifications": {
