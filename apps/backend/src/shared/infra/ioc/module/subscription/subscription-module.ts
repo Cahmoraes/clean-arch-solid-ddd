@@ -8,10 +8,12 @@ import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/c
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
 import { InactivatePlanUseCase } from "@/subscription/application/use-case/inactivate-plan.usecase"
 import { ListPlansUseCase } from "@/subscription/application/use-case/list-plans.usecase"
+import { ListPlansAdminUseCase } from "@/subscription/application/use-case/list-plans-admin.usecase"
 import { ReactivatePlanUseCase } from "@/subscription/application/use-case/reactivate-plan.usecase"
 import { UpdatePlanUseCase } from "@/subscription/application/use-case/update-plan.usecase"
 import { CreatePlanController } from "@/subscription/infra/controller/admin/create-plan.controller"
 import { InactivatePlanController } from "@/subscription/infra/controller/admin/inactivate-plan.controller"
+import { ListPlansAdminController } from "@/subscription/infra/controller/admin/list-plans-admin.controller"
 import { ReactivatePlanController } from "@/subscription/infra/controller/admin/reactivate-plan.controller"
 import { UpdatePlanController } from "@/subscription/infra/controller/admin/update-plan.controller"
 import { CreateCustomerController } from "@/subscription/infra/controller/create-customer-controller"
@@ -74,6 +76,10 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 	bind(SUBSCRIPTION_TYPES.USE_CASES.ReactivatePlan).to(ReactivatePlanUseCase)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ReactivatePlan).to(
 		ReactivatePlanController,
+	)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.ListPlansAdmin).to(ListPlansAdminUseCase)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ListPlansAdmin).to(
+		ListPlansAdminController,
 	)
 	bind(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)
 		.to(StripeWebhookWorker)
