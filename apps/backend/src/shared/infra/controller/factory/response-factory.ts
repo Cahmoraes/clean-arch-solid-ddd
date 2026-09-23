@@ -22,7 +22,7 @@ export class ResponseFactory {
 	}
 
 	private static extractBody(rest: any) {
-		return rest.body ? rest.body : rest
+		return rest.body === undefined ? rest : rest.body
 	}
 
 	public static OK(input?: OmitWithoutStatus) {

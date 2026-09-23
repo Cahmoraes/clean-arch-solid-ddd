@@ -5,6 +5,7 @@ const ADMIN_PLANS_PREFIX = "/admin/plans"
 export const SubscriptionRoutes = {
 	STRIPE_WEBHOOK: `${WEBHOOK_PREFIX}/stripe`,
 	CREATE: SUBSCRIPTION_PREFIX,
+	ME: `${SUBSCRIPTION_PREFIX}/me`,
 	PLANS: "/plans",
 	ADMIN_PLANS: ADMIN_PLANS_PREFIX,
 	ADMIN_PLAN_BY_ID: `${ADMIN_PLANS_PREFIX}/:id`,

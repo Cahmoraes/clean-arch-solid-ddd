@@ -5,6 +5,7 @@ import { CancelSubscriptionUseCase } from "@/subscription/application/use-case/c
 import { CreateCustomer } from "@/subscription/application/use-case/create-customer.usecase"
 import { CreatePlanUseCase } from "@/subscription/application/use-case/create-plan.usecase"
 import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/create-subscription.usecase"
+import { GetMySubscriptionUseCase } from "@/subscription/application/use-case/get-my-subscription.usecase"
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
 import { InactivatePlanUseCase } from "@/subscription/application/use-case/inactivate-plan.usecase"
 import { ListActivePlansUseCase } from "@/subscription/application/use-case/list-active-plans.usecase"
@@ -18,6 +19,7 @@ import { ReactivatePlanController } from "@/subscription/infra/controller/admin/
 import { UpdatePlanController } from "@/subscription/infra/controller/admin/update-plan.controller"
 import { CreateCustomerController } from "@/subscription/infra/controller/create-customer-controller"
 import { CreateSubscriptionController } from "@/subscription/infra/controller/create-subscription.controller"
+import { GetMySubscriptionController } from "@/subscription/infra/controller/get-my-subscription.controller"
 import { ListPlansController } from "@/subscription/infra/controller/list-plans.controller"
 import { StripeWebhookController } from "@/subscription/infra/controller/stripe-webhook.controller"
 import { StripeWebhookWorker } from "@/subscription/infra/worker/stripe-webhook-worker"
@@ -80,6 +82,12 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 	bind(SUBSCRIPTION_TYPES.USE_CASES.ListPlansAdmin).to(ListPlansAdminUseCase)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ListPlansAdmin).to(
 		ListPlansAdminController,
+	)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.GetMySubscription).to(
+		GetMySubscriptionUseCase,
+	)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.GetMySubscription).to(
+		GetMySubscriptionController,
 	)
 	bind(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)
 		.to(StripeWebhookWorker)
