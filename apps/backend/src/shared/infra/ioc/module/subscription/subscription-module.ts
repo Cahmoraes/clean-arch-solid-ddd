@@ -7,7 +7,7 @@ import { CreatePlanUseCase } from "@/subscription/application/use-case/create-pl
 import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/create-subscription.usecase"
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
 import { InactivatePlanUseCase } from "@/subscription/application/use-case/inactivate-plan.usecase"
-import { ListPlansUseCase } from "@/subscription/application/use-case/list-plans.usecase"
+import { ListActivePlansUseCase } from "@/subscription/application/use-case/list-active-plans.usecase"
 import { ListPlansAdminUseCase } from "@/subscription/application/use-case/list-plans-admin.usecase"
 import { ReactivatePlanUseCase } from "@/subscription/application/use-case/reactivate-plan.usecase"
 import { UpdatePlanUseCase } from "@/subscription/application/use-case/update-plan.usecase"
@@ -63,7 +63,7 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 		HandlePaymentFailedUseCase,
 	)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.StripeWebhook).to(StripeWebhookController)
-	bind(SUBSCRIPTION_TYPES.USE_CASES.ListPlans).to(ListPlansUseCase)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.ListActivePlans).to(ListActivePlansUseCase)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ListPlans).to(ListPlansController)
 	bind(SUBSCRIPTION_TYPES.USE_CASES.CreatePlan).to(CreatePlanUseCase)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreatePlan).to(CreatePlanController)

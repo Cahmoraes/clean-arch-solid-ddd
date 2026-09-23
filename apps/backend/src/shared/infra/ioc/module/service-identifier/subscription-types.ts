@@ -8,7 +8,7 @@ export const SUBSCRIPTION_TYPES = {
 		ActivateSubscription: Symbol.for("ActivateSubscriptionUseCase"),
 		CancelSubscription: Symbol.for("CancelSubscriptionUseCase"),
 		HandlePaymentFailed: Symbol.for("HandlePaymentFailedUseCase"),
-		ListPlans: Symbol.for("ListPlansUseCase"),
+		ListActivePlans: Symbol.for("ListActivePlansUseCase"),
 		CreatePlan: Symbol.for("CreatePlanUseCase"),
 		UpdatePlan: Symbol.for("UpdatePlanUseCase"),
 		InactivatePlan: Symbol.for("InactivatePlanUseCase"),
