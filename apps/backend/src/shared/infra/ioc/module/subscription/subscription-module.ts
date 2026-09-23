@@ -7,7 +7,9 @@ import { CreatePlanUseCase } from "@/subscription/application/use-case/create-pl
 import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/create-subscription.usecase"
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
 import { ListPlansUseCase } from "@/subscription/application/use-case/list-plans.usecase"
+import { UpdatePlanUseCase } from "@/subscription/application/use-case/update-plan.usecase"
 import { CreatePlanController } from "@/subscription/infra/controller/admin/create-plan.controller"
+import { UpdatePlanController } from "@/subscription/infra/controller/admin/update-plan.controller"
 import { CreateCustomerController } from "@/subscription/infra/controller/create-customer-controller"
 import { CreateSubscriptionController } from "@/subscription/infra/controller/create-subscription.controller"
 import { ListPlansController } from "@/subscription/infra/controller/list-plans.controller"
@@ -59,6 +61,8 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ListPlans).to(ListPlansController)
 	bind(SUBSCRIPTION_TYPES.USE_CASES.CreatePlan).to(CreatePlanUseCase)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreatePlan).to(CreatePlanController)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.UpdatePlan).to(UpdatePlanUseCase)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.UpdatePlan).to(UpdatePlanController)
 	bind(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)
 		.to(StripeWebhookWorker)
 		.inSingletonScope()

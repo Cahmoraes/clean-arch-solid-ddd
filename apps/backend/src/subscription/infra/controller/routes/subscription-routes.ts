@@ -7,6 +7,7 @@ export const SubscriptionRoutes = {
 	CREATE: SUBSCRIPTION_PREFIX,
 	PLANS: "/plans",
 	ADMIN_PLANS: ADMIN_PLANS_PREFIX,
+	ADMIN_PLAN_BY_ID: `${ADMIN_PLANS_PREFIX}/:id`,
 } as const
 
 export type SubscriptionRoutesType =
