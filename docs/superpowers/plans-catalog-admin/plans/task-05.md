@@ -1,6 +1,6 @@
 # Task 5: Editar plano — use case + `PUT /admin/plans/:id` [FR-004, FR-005, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

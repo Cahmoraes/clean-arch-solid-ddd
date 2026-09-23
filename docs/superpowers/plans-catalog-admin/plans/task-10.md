@@ -1,6 +1,6 @@
 # Task 10: Frontend — página `/admin/planos` (grid de cards, ações editar/inativar/reativar) [FR-009, FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

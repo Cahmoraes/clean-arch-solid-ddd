@@ -1,8 +1,8 @@
 import Link from "next/link"
-import type { DemoPlan } from "@/features/subscriptions/schemas"
+import type { Plan } from "@/features/subscriptions/api/use-plans"
 
 interface PlanCardSecondaryProps {
-	plan: DemoPlan
+	plan: Plan
 }
 
 export function PlanCardSecondary({ plan }: PlanCardSecondaryProps) {

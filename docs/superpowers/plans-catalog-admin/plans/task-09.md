@@ -1,6 +1,6 @@
 # Task 9: Frontend — schema zod + hooks TanStack Query + mocks MSW de planos [FR-001, FR-002, FR-003, FR-004, FR-006, FR-007, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

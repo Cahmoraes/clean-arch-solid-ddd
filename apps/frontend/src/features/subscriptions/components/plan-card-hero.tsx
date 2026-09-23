@@ -1,9 +1,9 @@
 import { Check } from "lucide-react"
 import Link from "next/link"
-import type { DemoPlan } from "@/features/subscriptions/schemas"
+import type { Plan } from "@/features/subscriptions/api/use-plans"
 
 interface PlanCardHeroProps {
-	plan: DemoPlan
+	plan: Plan
 	badgeLabel?: string
 }
 

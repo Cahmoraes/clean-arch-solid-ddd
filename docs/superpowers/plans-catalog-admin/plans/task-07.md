@@ -1,6 +1,6 @@
 # Task 7: Listar todos os planos (admin) — use case + `GET /admin/plans` [FR-009, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

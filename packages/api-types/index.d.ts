@@ -4084,6 +4084,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * List active plans
+         * @description Public listing of active subscription plans
+         */
         get: {
             parameters: {
                 query?: never;
@@ -4093,12 +4097,21 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Default Response */
+                /** @description Plans listed successfully */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": {
+                            id: string;
+                            name: string;
+                            priceId: string;
+                            priceLabel: string;
+                            tagline: string;
+                            features: string[];
+                        }[];
+                    };
                 };
             };
         };
@@ -4108,6 +4121,380 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/admin/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all plans
+         * @description List every plan, active and inactive. Requires ADMIN role
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Plans listed successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: string;
+                            name: string;
+                            priceCents: number;
+                            /** @enum {string} */
+                            billingPeriod: "monthly" | "yearly";
+                            tagline: string;
+                            features: string[];
+                            isActive: boolean;
+                            stripePriceId: string;
+                        }[];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a plan
+         * @description Create a new subscription plan. Requires ADMIN role
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Plan name
+                         * @example Premium Mensal
+                         */
+                        name: string;
+                        /**
+                         * @description Price in cents, never negative
+                         * @example 4990
+                         */
+                        priceCents: number;
+                        /**
+                         * @description Billing period
+                         * @example monthly
+                         * @enum {string}
+                         */
+                        billingPeriod: "monthly" | "yearly";
+                        /**
+                         * @description Short plan description
+                         * @example Acesso ilimitado a todas as academias parceiras.
+                         */
+                        tagline: string;
+                        /**
+                         * @description Plan benefits
+                         * @example [
+                         *       "Check-ins ilimitados"
+                         *     ]
+                         */
+                        features: string[];
+                        /** @description Optional external Stripe price id */
+                        stripePriceId?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Plan created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: string;
+                            name: string;
+                            priceCents: number;
+                            /** @enum {string} */
+                            billingPeriod: "monthly" | "yearly";
+                            tagline: string;
+                            features: string[];
+                            isActive: boolean;
+                            stripePriceId: string;
+                        };
+                    };
+                };
+                /** @description Forbidden — requires ADMIN role */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Invalid request */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/plans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update a plan
+         * @description Update an existing plan's content fields. Never changes isActive. Requires ADMIN role
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Plan ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Plan name
+                         * @example Premium Mensal
+                         */
+                        name: string;
+                        /**
+                         * @description Price in cents, never negative
+                         * @example 4990
+                         */
+                        priceCents: number;
+                        /**
+                         * @description Billing period
+                         * @example monthly
+                         * @enum {string}
+                         */
+                        billingPeriod: "monthly" | "yearly";
+                        /**
+                         * @description Short plan description
+                         * @example Acesso ilimitado a todas as academias parceiras.
+                         */
+                        tagline: string;
+                        /**
+                         * @description Plan benefits
+                         * @example [
+                         *       "Check-ins ilimitados"
+                         *     ]
+                         */
+                        features: string[];
+                        /** @description Optional external Stripe price id */
+                        stripePriceId?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Plan updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: string;
+                            name: string;
+                            priceCents: number;
+                            /** @enum {string} */
+                            billingPeriod: "monthly" | "yearly";
+                            tagline: string;
+                            features: string[];
+                            isActive: boolean;
+                            stripePriceId: string;
+                        };
+                    };
+                };
+                /** @description Plan not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Invalid request */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/plans/{id}/inactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Inactivate a plan
+         * @description Marks a plan as inactive (soft delete). Requires ADMIN role
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Plan ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Plan inactivated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: string;
+                            name: string;
+                            priceCents: number;
+                            /** @enum {string} */
+                            billingPeriod: "monthly" | "yearly";
+                            tagline: string;
+                            features: string[];
+                            isActive: boolean;
+                            stripePriceId: string;
+                        };
+                    };
+                };
+                /** @description Plan not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/admin/plans/{id}/reactivate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Reactivate a plan
+         * @description Marks a previously inactivated plan as active. Requires ADMIN role
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Plan ID */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Plan reactivated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            id: string;
+                            name: string;
+                            priceCents: number;
+                            /** @enum {string} */
+                            billingPeriod: "monthly" | "yearly";
+                            tagline: string;
+                            features: string[];
+                            isActive: boolean;
+                            stripePriceId: string;
+                        };
+                    };
+                };
+                /** @description Plan not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/v1/notifications": {

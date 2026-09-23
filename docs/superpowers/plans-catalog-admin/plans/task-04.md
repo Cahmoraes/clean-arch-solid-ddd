@@ -1,6 +1,6 @@
 # Task 4: Criar plano — use case + `POST /admin/plans` [FR-001, FR-003, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

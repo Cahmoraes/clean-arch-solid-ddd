@@ -1,6 +1,6 @@
 # Task 1: Entidade de domínio `Plan` [FR-001, FR-002, FR-003, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

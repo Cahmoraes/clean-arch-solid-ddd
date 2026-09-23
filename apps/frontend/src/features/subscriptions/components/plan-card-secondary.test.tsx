@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
-import type { DemoPlan } from "@/features/subscriptions/schemas"
+import type { Plan } from "@/features/subscriptions/api/use-plans"
 import { PlanCardSecondary } from "./plan-card-secondary"
 
-const planMensal: DemoPlan = {
+const planMensal: Plan = {
 	id: "premium-mensal",
 	name: "Premium Mensal",
 	priceId: "price_demo_monthly",

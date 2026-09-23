@@ -1,6 +1,6 @@
 # Task 3: `PlanRepository` (interface, Prisma, InMemory) [FR-001, FR-004, FR-006, FR-007, FR-009, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard
