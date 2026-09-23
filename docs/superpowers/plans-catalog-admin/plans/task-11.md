@@ -1,6 +1,6 @@
 # Task 11: Frontend — formulário de criação/edição de plano (dialog) [FR-001, FR-002, FR-003, FR-004, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

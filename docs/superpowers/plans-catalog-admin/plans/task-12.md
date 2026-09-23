@@ -1,6 +1,6 @@
 # Task 12: Frontend — remover `DEMO_PLANS` e conectar `/assinatura` e a home a `GET /plans` [FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

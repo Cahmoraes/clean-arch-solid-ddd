@@ -1,6 +1,6 @@
 # Task 2: Schema Prisma `Plan` + migration + seed [FR-001]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard

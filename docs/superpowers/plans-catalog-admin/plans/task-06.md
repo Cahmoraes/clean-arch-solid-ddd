@@ -1,6 +1,6 @@
 # Task 6: Inativar/reativar plano — use cases + `PATCH /admin/plans/:id/inactivate` e `/reactivate` [FR-006, FR-007, FR-008, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 **PRD:** `../prd/prd-plans-catalog-admin.md`
 **Spec:** `../specs/plans-catalog-admin-design.md`
 **Tier:** standard
