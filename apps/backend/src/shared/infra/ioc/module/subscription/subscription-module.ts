@@ -12,6 +12,7 @@ import { InactivatePlanUseCase } from "@/subscription/application/use-case/inact
 import { ListActivePlansUseCase } from "@/subscription/application/use-case/list-active-plans.usecase"
 import { ListPlansAdminUseCase } from "@/subscription/application/use-case/list-plans-admin.usecase"
 import { ReactivatePlanUseCase } from "@/subscription/application/use-case/reactivate-plan.usecase"
+import { ScheduleSubscriptionCancellationUseCase } from "@/subscription/application/use-case/schedule-subscription-cancellation.usecase"
 import { UpdatePlanUseCase } from "@/subscription/application/use-case/update-plan.usecase"
 import { CreatePlanController } from "@/subscription/infra/controller/admin/create-plan.controller"
 import { InactivatePlanController } from "@/subscription/infra/controller/admin/inactivate-plan.controller"
@@ -23,6 +24,7 @@ import { CreateCustomerController } from "@/subscription/infra/controller/create
 import { CreateSubscriptionController } from "@/subscription/infra/controller/create-subscription.controller"
 import { GetMySubscriptionController } from "@/subscription/infra/controller/get-my-subscription.controller"
 import { ListPlansController } from "@/subscription/infra/controller/list-plans.controller"
+import { ScheduleSubscriptionCancellationController } from "@/subscription/infra/controller/schedule-subscription-cancellation.controller"
 import { StripeWebhookController } from "@/subscription/infra/controller/stripe-webhook.controller"
 import { StripeWebhookWorker } from "@/subscription/infra/worker/stripe-webhook-worker"
 import { SUBSCRIPTION_TYPES } from "../service-identifier/subscription-types"
@@ -96,6 +98,12 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 	)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ChangeSubscriptionPlan).to(
 		ChangeSubscriptionPlanController,
+	)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.ScheduleSubscriptionCancellation).to(
+		ScheduleSubscriptionCancellationUseCase,
+	)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ScheduleSubscriptionCancellation).to(
+		ScheduleSubscriptionCancellationController,
 	)
 	bind(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)
 		.to(StripeWebhookWorker)

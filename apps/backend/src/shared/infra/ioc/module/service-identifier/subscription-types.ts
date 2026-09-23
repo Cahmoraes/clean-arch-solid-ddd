@@ -16,6 +16,9 @@ export const SUBSCRIPTION_TYPES = {
 		ListPlansAdmin: Symbol.for("ListPlansAdminUseCase"),
 		GetMySubscription: Symbol.for("GetMySubscriptionUseCase"),
 		ChangeSubscriptionPlan: Symbol.for("ChangeSubscriptionPlanUseCase"),
+		ScheduleSubscriptionCancellation: Symbol.for(
+			"ScheduleSubscriptionCancellationUseCase",
+		),
 	},
 	CONTROLLERS: {
 		CreateCustomer: Symbol.for("CreateCustomerController"),
@@ -29,6 +32,9 @@ export const SUBSCRIPTION_TYPES = {
 		ListPlansAdmin: Symbol.for("ListPlansAdminController"),
 		GetMySubscription: Symbol.for("GetMySubscriptionController"),
 		ChangeSubscriptionPlan: Symbol.for("ChangeSubscriptionPlanController"),
+		ScheduleSubscriptionCancellation: Symbol.for(
+			"ScheduleSubscriptionCancellationController",
+		),
 	},
 	REPOSITORIES: {
 		Subscription: Symbol.for("SubscriptionRepository"),
