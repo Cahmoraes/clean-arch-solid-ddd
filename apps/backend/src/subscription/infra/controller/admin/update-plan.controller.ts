@@ -60,7 +60,7 @@ export class UpdatePlanController extends BaseController {
 
 	@Logger({ message: "✅" })
 	public async init(): Promise<void> {
-		this.server.register(
+		await this.server.register(
 			"put",
 			SubscriptionRoutes.ADMIN_PLAN_BY_ID,
 			{ callback: this.callback, isProtected: true, onlyAdmin: true },
