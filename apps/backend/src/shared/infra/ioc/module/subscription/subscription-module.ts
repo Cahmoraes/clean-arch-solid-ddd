@@ -6,9 +6,13 @@ import { CreateCustomer } from "@/subscription/application/use-case/create-custo
 import { CreatePlanUseCase } from "@/subscription/application/use-case/create-plan.usecase"
 import { CreateSubscriptionUseCase } from "@/subscription/application/use-case/create-subscription.usecase"
 import { HandlePaymentFailedUseCase } from "@/subscription/application/use-case/handle-payment-failed.usecase"
+import { InactivatePlanUseCase } from "@/subscription/application/use-case/inactivate-plan.usecase"
 import { ListPlansUseCase } from "@/subscription/application/use-case/list-plans.usecase"
+import { ReactivatePlanUseCase } from "@/subscription/application/use-case/reactivate-plan.usecase"
 import { UpdatePlanUseCase } from "@/subscription/application/use-case/update-plan.usecase"
 import { CreatePlanController } from "@/subscription/infra/controller/admin/create-plan.controller"
+import { InactivatePlanController } from "@/subscription/infra/controller/admin/inactivate-plan.controller"
+import { ReactivatePlanController } from "@/subscription/infra/controller/admin/reactivate-plan.controller"
 import { UpdatePlanController } from "@/subscription/infra/controller/admin/update-plan.controller"
 import { CreateCustomerController } from "@/subscription/infra/controller/create-customer-controller"
 import { CreateSubscriptionController } from "@/subscription/infra/controller/create-subscription.controller"
@@ -63,6 +67,14 @@ export const subscriptionModule = new ContainerModule(({ bind }): void => {
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.CreatePlan).to(CreatePlanController)
 	bind(SUBSCRIPTION_TYPES.USE_CASES.UpdatePlan).to(UpdatePlanUseCase)
 	bind(SUBSCRIPTION_TYPES.CONTROLLERS.UpdatePlan).to(UpdatePlanController)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.InactivatePlan).to(InactivatePlanUseCase)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.InactivatePlan).to(
+		InactivatePlanController,
+	)
+	bind(SUBSCRIPTION_TYPES.USE_CASES.ReactivatePlan).to(ReactivatePlanUseCase)
+	bind(SUBSCRIPTION_TYPES.CONTROLLERS.ReactivatePlan).to(
+		ReactivatePlanController,
+	)
 	bind(SUBSCRIPTION_TYPES.WORKERS.StripeWebhook)
 		.to(StripeWebhookWorker)
 		.inSingletonScope()
