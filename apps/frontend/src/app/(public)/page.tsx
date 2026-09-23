@@ -1,19 +1,19 @@
 import Link from "next/link"
 
 import { ContactSection } from "@/features/contact/components/contact-section"
+import type { Plan } from "@/features/subscriptions/api/use-plans"
 import { PlansSectionHero } from "@/features/subscriptions/components/plans-section-hero"
-import { DEMO_PLANS, type DemoPlan } from "@/features/subscriptions/schemas"
 import { SERVER_API_URL } from "@/lib/server-api-url"
 
-async function fetchPlans(): Promise<ReadonlyArray<DemoPlan>> {
+async function fetchPlans(): Promise<ReadonlyArray<Plan>> {
 	try {
 		const res = await fetch(`${SERVER_API_URL}/plans`, {
 			next: { revalidate: 3600 },
 		})
-		if (!res.ok) return DEMO_PLANS
-		return (await res.json()) as ReadonlyArray<DemoPlan>
+		if (!res.ok) return []
+		return (await res.json()) as ReadonlyArray<Plan>
 	} catch {
-		return DEMO_PLANS
+		return []
 	}
 }
 

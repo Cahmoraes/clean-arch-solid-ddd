@@ -4,12 +4,13 @@ import { AlertTriangle, BadgeCheck, Check } from "lucide-react"
 import { useId, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useCreateSubscription } from "@/features/subscriptions/api/use-create-subscription"
+import { type Plan, usePlans } from "@/features/subscriptions/api/use-plans"
 import {
 	type CreateSubscriptionResponse,
 	DEMO_PAYMENT_METHOD_ID,
-	DEMO_PLANS,
-	type DemoPlan,
 } from "@/features/subscriptions/schemas"
 import { cn } from "@/lib/cn"
 import { ApiError } from "@/lib/errors"
@@ -49,7 +50,7 @@ function DemoBanner({ className }: DemoBannerProps) {
 }
 
 interface BillingBannerProps {
-	plan: DemoPlan | undefined
+	plan: Plan | undefined
 }
 
 function BillingBanner({ plan }: BillingBannerProps) {
@@ -79,10 +80,10 @@ function BillingBanner({ plan }: BillingBannerProps) {
 }
 
 interface PlanCardProps {
-	plan: DemoPlan
+	plan: Plan
 	selected: boolean
 	disabled: boolean
-	onSelect: (plan: DemoPlan) => void
+	onSelect: (plan: Plan) => void
 	groupName: string
 }
 
@@ -148,7 +149,7 @@ function PlanCard({
 }
 
 interface ConfirmationProps {
-	plan: DemoPlan
+	plan: Plan
 	subscription: CreateSubscriptionResponse
 }
 
@@ -196,13 +197,15 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 }
 
 interface PlansListProps {
+	plans: ReadonlyArray<Plan>
 	selectedPlanId: string
 	disabled: boolean
 	groupName: string
-	onSelect: (plan: DemoPlan) => void
+	onSelect: (plan: Plan) => void
 }
 
 function PlansList({
+	plans,
 	selectedPlanId,
 	disabled,
 	groupName,
@@ -214,7 +217,7 @@ function PlansList({
 			data-testid="plan-grid"
 			className="grid grid-cols-1 gap-4 border-0 p-0 md:grid-cols-2"
 		>
-			{DEMO_PLANS.map((plan) => (
+			{plans.map((plan) => (
 				<PlanCard
 					key={plan.id}
 					plan={plan}
@@ -275,23 +278,23 @@ function SubscribeActions({
 
 interface UseSubscriptionFlow {
 	groupName: string
-	selectedPlan: DemoPlan | undefined
+	selectedPlan: Plan | undefined
 	selectedPlanId: string
 	isPending: boolean
 	errorMessage: string | null
 	data: ReturnType<typeof useCreateSubscription>["data"]
-	handleSelectPlan: (plan: DemoPlan) => void
+	handleSelectPlan: (plan: Plan) => void
 	handleSubscribe: () => Promise<void>
 }
 
-function useSubscriptionFlow(): UseSubscriptionFlow {
+function useSubscriptionFlow(plans: ReadonlyArray<Plan>): UseSubscriptionFlow {
 	const groupName = useId()
 	const [selectedPlanId, setSelectedPlanId] = useState<string>(
-		DEMO_PLANS[0]?.id ?? "",
+		plans[0]?.id ?? "",
 	)
 	const { mutateAsync, isPending, error, data, reset } = useCreateSubscription()
 	const selectedPlan =
-		DEMO_PLANS.find((plan) => plan.id === selectedPlanId) ?? DEMO_PLANS[0]
+		plans.find((plan) => plan.id === selectedPlanId) ?? plans[0]
 
 	async function handleSubscribe() {
 		if (!selectedPlan) return
@@ -305,7 +308,7 @@ function useSubscriptionFlow(): UseSubscriptionFlow {
 		}
 	}
 
-	function handleSelectPlan(plan: DemoPlan) {
+	function handleSelectPlan(plan: Plan) {
 		setSelectedPlanId(plan.id)
 		if (data || error) reset()
 	}
@@ -322,8 +325,12 @@ function useSubscriptionFlow(): UseSubscriptionFlow {
 	}
 }
 
-export default function SubscriptionPage() {
-	const flow = useSubscriptionFlow()
+interface SubscriptionPageContentProps {
+	plans: ReadonlyArray<Plan>
+}
+
+function SubscriptionPageContent({ plans }: SubscriptionPageContentProps) {
+	const flow = useSubscriptionFlow(plans)
 
 	return (
 		<PageContainer as="section" width="default">
@@ -339,6 +346,7 @@ export default function SubscriptionPage() {
 			<BillingBanner plan={flow.selectedPlan} />
 
 			<PlansList
+				plans={plans}
 				selectedPlanId={flow.selectedPlan?.id ?? ""}
 				disabled={flow.isPending}
 				groupName={flow.groupName}
@@ -358,4 +366,35 @@ export default function SubscriptionPage() {
 			/>
 		</PageContainer>
 	)
+}
+
+export default function SubscriptionPage() {
+	const plansQuery = usePlans()
+
+	if (plansQuery.isLoading) {
+		return (
+			<PageContainer as="section" width="default">
+				<Skeleton className="h-10 w-2/3" />
+				<Skeleton className="h-64 w-full" />
+			</PageContainer>
+		)
+	}
+
+	if (plansQuery.isError || !plansQuery.data) {
+		return (
+			<PageContainer as="section" width="default">
+				<EmptyState
+					title="Não foi possível carregar os planos"
+					description={plansQuery.error?.userMessage ?? "Tente novamente."}
+					action={
+						<Button variant="outline" onClick={() => plansQuery.refetch()}>
+							Tentar novamente
+						</Button>
+					}
+				/>
+			</PageContainer>
+		)
+	}
+
+	return <SubscriptionPageContent plans={plansQuery.data} />
 }

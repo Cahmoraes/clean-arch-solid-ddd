@@ -12,6 +12,25 @@ vi.mock("@/features/subscriptions/api/use-create-subscription", () => ({
 	}),
 }))
 
+vi.mock("@/features/subscriptions/api/use-plans", () => ({
+	usePlans: () => ({
+		data: [
+			{
+				id: "plan-mensal",
+				name: "Premium Mensal",
+				priceId: "price_demo_monthly",
+				priceLabel: "R$ 49,90/mês",
+				tagline: "Tagline mensal.",
+				features: ["Check-ins ilimitados"],
+			},
+		],
+		isLoading: false,
+		isError: false,
+		error: null,
+		refetch: vi.fn(),
+	}),
+}))
+
 import SubscriptionPage from "./page"
 
 describe("Assinatura VOLT", () => {

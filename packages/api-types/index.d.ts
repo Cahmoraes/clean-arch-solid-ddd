@@ -4084,6 +4084,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * List active plans
+         * @description Public listing of active subscription plans
+         */
         get: {
             parameters: {
                 query?: never;
@@ -4093,12 +4097,21 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Default Response */
+                /** @description Plans listed successfully */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "application/json": {
+                            id: string;
+                            name: string;
+                            priceId: string;
+                            priceLabel: string;
+                            tagline: string;
+                            features: string[];
+                        }[];
+                    };
                 };
             };
         };
