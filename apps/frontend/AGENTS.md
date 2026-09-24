@@ -151,14 +151,16 @@ describe("useLogin", () => {
 - Complexidade cognitiva máxima: 5
 
 ### Design System
-Projeto segue design system cromático inspirado no Superhumon (doc em [`DESIGN.md`](DESIGN.md)):
-- Paleta cromática: indigo navy (`#1b1938`), violet (`#c9b4fa`), teal (`#155555`)
-- Tipografia: Inter Variable via `next/font/google`
-- Escala gradual border-radius: 4px / 6px / 8px / 12px / 16px / 9999px
-- Sombras 3 níveis: flat / sm (1px) / md (8px)
-- Sidebar usa `bg-primary` (indigo) como identidade de marca
-- Dark mode via `next-themes` com tokens derivados da paleta cromática
-- Componentes base em `src/components/ui/` (shadcn/ui customizado)
+
+Paleta "Noite neon" (`replaced-visual-redesign`): tema escuro — `background` `#0a1424`, `card` `#0d1b2e`, `primary` `#ff3ea5`, `accent` `#3ee0ff`; tema claro — `background` `#f3f6fa`, `primary` `#cc0077`, `accent` `#006c85`.
+
+Fontes: `font-display` = VT323 (peso único 400; títulos, eyebrows, rótulos, botões, KPIs e badges; nunca abaixo de 15px); `font-sans` = Inter (texto corrido, campos, tabelas); `font-mono` = JetBrains Mono (código, ids, coordenadas, timestamps).
+
+Forma: `--radius-xs/sm/md/lg/xl` representam o tamanho do chanfro (2/4/6/10/12px), ativado via `corner-shape: bevel` sob `@supports` em `apps/frontend/src/app/globals.css`; sem suporte do navegador, o canto é reto (0px). `rounded-full` e `rounded-[Npx]` são proibidos em `src/` (guarda `src/test/rounded-residue.test.ts`), exceto a allowlist do globo do clima (`features/weather/components/weather-globe.tsx`, `weather-globe-fallback.tsx`).
+
+Textura: a classe `crt-scanlines` desenha linhas horizontais estáticas atrás do conteúdo, só no tema escuro, restrita a 4 superfícies (`PixelScene`, hero do dashboard, cards de KPI, sidebar) e protegida por `src/test/crt-scanlines-scope.test.ts`.
+
+Regras: nenhum componente declara `corner-shape` por conta própria — só `globals.css`; glow nunca é aplicado a texto.
 
 ### Acessibilidade
 
