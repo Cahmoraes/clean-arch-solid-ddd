@@ -1,11 +1,11 @@
 "use client"
 
-import { ArrowLeft } from "@/components/ui/pixel-icons"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { PageContainer } from "@/components/layout/page-container"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eyebrow } from "@/components/ui/eyebrow"
+import { ArrowLeft } from "@/components/ui/pixel-icons"
 import { useUserActivity } from "@/features/activity/api/use-user-activity"
 import { ActivityPaginationCardHeader } from "@/features/activity/components/activity-pagination-card-header"
 import { ActivityTab } from "@/features/activity/components/activity-tab"

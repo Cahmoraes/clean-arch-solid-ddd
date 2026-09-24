@@ -1,7 +1,6 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ArrowLeft } from "@/components/ui/pixel-icons"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useId, useState } from "react"
@@ -11,6 +10,7 @@ import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { FormField } from "@/components/ui/form-field"
+import { ArrowLeft } from "@/components/ui/pixel-icons"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
 	type GymDetail,

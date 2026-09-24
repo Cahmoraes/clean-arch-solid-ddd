@@ -1,10 +1,10 @@
 "use client"
 
-import { CalendarCheck } from "@/components/ui/pixel-icons"
 import { Suspense, useEffect, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
+import { CalendarCheck } from "@/components/ui/pixel-icons"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StaggerList } from "@/components/ui/stagger"
 import {

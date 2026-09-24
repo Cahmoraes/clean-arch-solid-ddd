@@ -1,7 +1,6 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { KeyRound } from "@/components/ui/pixel-icons"
 import { useId, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -9,6 +8,7 @@ import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { FormField } from "@/components/ui/form-field"
+import { KeyRound } from "@/components/ui/pixel-icons"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
 	useChangePassword,

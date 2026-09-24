@@ -1,11 +1,11 @@
 "use client"
 
-import { UserCircle } from "@/components/ui/pixel-icons"
 import Link from "next/link"
 import { use } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
+import { UserCircle } from "@/components/ui/pixel-icons"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useUserById } from "@/features/profile/api"
 import { ApiError } from "@/lib/errors"
