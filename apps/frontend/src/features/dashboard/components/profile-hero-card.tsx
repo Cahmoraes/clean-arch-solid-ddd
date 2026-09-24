@@ -146,7 +146,7 @@ export function ProfileHeroCard({ thisMonth, streak }: ProfileHeroCardProps) {
 	}
 
 	return (
-		<div className="relative isolate flex flex-col gap-4 overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm md:flex-row md:flex-wrap md:items-center">
+		<div className="crt-scanlines relative isolate flex flex-col gap-4 overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm md:flex-row md:flex-wrap md:items-center">
 			<div
 				aria-hidden="true"
 				className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-16 opacity-60"

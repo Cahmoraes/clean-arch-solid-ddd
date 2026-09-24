@@ -189,6 +189,30 @@ describe("Tokens Noite neon (globals.css)", () => {
 	})
 })
 
+describe("Scanlines de CRT e caret de terminal (globals.css)", () => {
+	test("crt-scanlines só desenha o ::before sob .dark, sem animação e atrás do conteúdo", () => {
+		expect(css).toContain("@utility crt-scanlines")
+		const start = css.indexOf(".dark .crt-scanlines::before")
+		expect(start).toBeGreaterThan(-1)
+		const rule = balancedBlockFrom(css, start)
+		expect(rule).toContain("z-index: -1")
+		expect(rule).toContain("pointer-events: none")
+		expect(rule).not.toMatch(/animation/)
+		expect(css).not.toMatch(/^\.crt-scanlines::before/m)
+	})
+
+	test("input e textarea têm caret na cor de acento, em bloco quando suportado", () => {
+		const baseLayer = css.slice(css.indexOf("@layer base"))
+		expect(baseLayer).toMatch(
+			/input,\s*textarea\s*\{[^}]*caret-color:\s*var\(--color-accent\);/,
+		)
+		expect(baseLayer).toContain("@supports (caret-shape: block)")
+		expect(baseLayer).toMatch(
+			/@supports \(caret-shape: block\)\s*\{\s*input,\s*textarea\s*\{\s*caret-shape:\s*block;/,
+		)
+	})
+})
+
 describe("DESIGN.md sincronizado com os tokens", () => {
 	test("documenta os valores novos e não o verde antigo", () => {
 		for (const hex of [

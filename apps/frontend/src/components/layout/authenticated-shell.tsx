@@ -174,7 +174,7 @@ export function AuthenticatedShell({
 			>
 				Pular para o conteúdo principal
 			</a>
-			<aside className="flex flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground max-[860px]:px-3">
+			<aside className="crt-scanlines flex flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground max-[860px]:px-3">
 				<div
 					className={cn(
 						"mb-6 flex items-center gap-2 px-2 max-[860px]:flex-col max-[860px]:gap-3",

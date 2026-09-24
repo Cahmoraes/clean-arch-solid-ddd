@@ -36,7 +36,13 @@ function KpiSlot({ icon, value, label, isLoading, highlight }: KpiSlotProps) {
 		return <KpiSkeleton />
 	}
 	return (
-		<StatCard icon={icon} value={value} label={label} highlight={highlight} />
+		<StatCard
+			icon={icon}
+			value={value}
+			label={label}
+			highlight={highlight}
+			className="crt-scanlines"
+		/>
 	)
 }
 

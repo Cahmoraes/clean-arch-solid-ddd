@@ -148,6 +148,23 @@
 	--color-sidebar-active-foreground: #0a1424;
 }
 
+@utility crt-scanlines {
+	position: relative;
+	isolation: isolate;
+}
+.dark .crt-scanlines::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background: repeating-linear-gradient(
+		to bottom,
+		rgb(0 0 0 / 0.22) 0 1px,
+		transparent 1px 3px
+	);
+}
+
 @utility focus-ring-duplo {
 	&:focus-visible,
 	&:has(:focus-visible) {
@@ -222,6 +239,17 @@
 		box-shadow:
 			0 0 0 2px var(--color-background),
 			0 0 0 4px var(--color-foreground);
+	}
+
+	input,
+	textarea {
+		caret-color: var(--color-accent);
+	}
+	@supports (caret-shape: block) {
+		input,
+		textarea {
+			caret-shape: block;
+		}
 	}
 }
 

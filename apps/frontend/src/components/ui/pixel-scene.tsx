@@ -282,7 +282,7 @@ function SceneArt({
 			data-scene={scene}
 			data-paused={!animated || paused}
 			className={cn(
-				"pixel-scene relative block h-full w-full overflow-hidden",
+				"pixel-scene crt-scanlines relative block h-full w-full overflow-hidden",
 				className,
 			)}
 		>
