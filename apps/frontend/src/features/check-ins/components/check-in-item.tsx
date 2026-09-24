@@ -1,6 +1,6 @@
-import { Check, Clock, X } from "lucide-react"
 import { motion } from "motion/react"
 import type { ComponentType } from "react"
+import { Check, Clock, X } from "@/components/ui/pixel-icons"
 import { staggerItemVariants } from "@/components/ui/stagger"
 import type { CheckIn } from "@/features/check-ins/api"
 import { cn } from "@/lib/cn"

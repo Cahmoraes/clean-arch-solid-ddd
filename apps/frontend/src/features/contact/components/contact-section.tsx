@@ -1,5 +1,5 @@
-import { Clock, Mail } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
+import { Clock, Mail } from "@/components/ui/pixel-icons"
 import { CONTACT_EMAIL } from "../constants"
 import { ContactForm } from "./contact-form"
 

@@ -1,5 +1,5 @@
-import { MapPin, Pencil } from "lucide-react"
 import Link from "next/link"
+import { MapPin, Pencil } from "@/components/ui/pixel-icons"
 import { StatusBadge } from "@/components/ui/status-badge"
 import type { GymSummary } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
@@ -44,7 +44,7 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 						</p>
 					) : null}
 					<p className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
-						<MapPin className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+						<MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
 						<span className="line-clamp-1">{resolveLocation(gym)}</span>
 					</p>
 				</div>

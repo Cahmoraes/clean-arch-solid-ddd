@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp } from "lucide-react"
+import { ArrowDown, ArrowUp } from "@/components/ui/pixel-icons"
 import type { SortOrder } from "../api/extended-paths"
 
 export type { SortOrder }

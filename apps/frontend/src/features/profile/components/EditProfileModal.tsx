@@ -1,6 +1,5 @@
 "use client"
 
-import { ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { type FormEvent, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -15,6 +14,7 @@ import {
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { ArrowRight } from "@/components/ui/pixel-icons"
 import { useUpdateProfile } from "@/features/profile/api"
 import { updateProfileSchema } from "@/features/profile/schemas/update-profile-schema"
 

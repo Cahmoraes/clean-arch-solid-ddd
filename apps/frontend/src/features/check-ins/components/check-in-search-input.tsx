@@ -1,4 +1,4 @@
-import { Search, X } from "lucide-react"
+import { Search, X } from "@/components/ui/pixel-icons"
 import { cn } from "@/lib/cn"
 
 export interface CheckInSearchInputProps {

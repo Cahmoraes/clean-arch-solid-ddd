@@ -218,6 +218,23 @@ describe("CheckInActions", () => {
 			(rejectBtn as HTMLElement).querySelector(".animate-spin"),
 		).not.toBeInTheDocument()
 	})
+
+	test("o ícone de carregamento mantém .animate-spin no próprio svg e gira em passos (steps(8))", () => {
+		vi.mocked(useValidateCheckIn).mockReturnValue(
+			makeMutation({ isPending: true }) as unknown as ReturnType<
+				typeof useValidateCheckIn
+			>,
+		)
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
+		const approveBtn = screen.getByTestId("checkin-approve-ci-1")
+		const spinner = approveBtn.querySelector(".animate-spin")
+
+		expect(spinner).not.toBeNull()
+		expect(spinner?.tagName.toLowerCase()).toBe("svg")
+		expect(spinner).toHaveClass("[animation-timing-function:steps(8)]")
+		expect(spinner).toHaveAttribute("shape-rendering", "crispEdges")
+		expect(approveBtn).toHaveAttribute("aria-busy", "true")
+	})
 })
 
 describe("CheckInActions — direção Noite neon", () => {

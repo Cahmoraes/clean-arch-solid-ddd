@@ -1,6 +1,5 @@
 "use client"
 
-import { Pencil } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import Cropper from "react-easy-crop"
 import { toast } from "sonner"
@@ -12,6 +11,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog"
+import { Pencil } from "@/components/ui/pixel-icons"
 import { useSetGymImage } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
 import { type CropArea, getCroppedBlob } from "@/features/gyms/lib/crop-image"

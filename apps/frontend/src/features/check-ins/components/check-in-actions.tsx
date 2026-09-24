@@ -1,8 +1,8 @@
 "use client"
 
-import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { Loader2 } from "@/components/ui/pixel-icons"
 import { ACTION_ICON } from "@/components/ui/status-icon"
 import {
 	Tooltip,
@@ -53,7 +53,10 @@ function RejectButton({
 					className="bg-destructive-soft text-destructive hover:bg-destructive hover:text-destructive-foreground"
 				>
 					{isPending ? (
-						<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+						<Loader2
+							className="h-4 w-4 animate-spin [animation-timing-function:steps(8)]"
+							aria-hidden="true"
+						/>
 					) : (
 						<RejectIcon className="h-4 w-4" aria-hidden="true" />
 					)}
@@ -92,7 +95,10 @@ function ApproveButton({
 					className="bg-primary text-primary-foreground hover:bg-primary-strong"
 				>
 					{isPending ? (
-						<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+						<Loader2
+							className="h-4 w-4 animate-spin [animation-timing-function:steps(8)]"
+							aria-hidden="true"
+						/>
 					) : (
 						<ApproveIcon className="h-4 w-4" aria-hidden="true" />
 					)}

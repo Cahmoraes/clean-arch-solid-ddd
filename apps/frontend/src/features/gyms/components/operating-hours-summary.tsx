@@ -1,7 +1,7 @@
 "use client"
 
-import { Clock } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
+import { Clock } from "@/components/ui/pixel-icons"
 import { useIsGymOpen } from "@/features/gyms/hooks/use-is-gym-open"
 import { toCompactString } from "@/features/gyms/lib/operating-hours"
 import type { DayScheduleDTO } from "@/features/gyms/schemas/operating-hours-schema"
@@ -163,7 +163,7 @@ export function OperatingHoursSummary({
 			className="mt-3 overflow-hidden rounded-md border border-border bg-surface-2"
 		>
 			<div className="flex items-center gap-1.5 border-border border-b px-2.5 py-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-[.05em]">
-				<Clock className="h-3.5 w-3.5" aria-hidden="true" />
+				<Clock className="h-4 w-4" aria-hidden="true" />
 				Horário de funcionamento
 			</div>
 

@@ -1,9 +1,9 @@
 "use client"
 
-import { Search } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Search } from "@/components/ui/pixel-icons"
 import {
 	staggerItemVariants,
 	staggerListVariants,
