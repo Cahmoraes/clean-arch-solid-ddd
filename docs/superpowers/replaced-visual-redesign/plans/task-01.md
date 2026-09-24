@@ -1,6 +1,6 @@
 # Task 1: Tokens Noite neon nos temas escuro e claro [FR-001, FR-002, FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

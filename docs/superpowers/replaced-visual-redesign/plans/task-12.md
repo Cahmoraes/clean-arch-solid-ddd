@@ -1,6 +1,6 @@
 # Task 12: Tela de Usuários na direção Noite neon [FR-017, FR-020]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

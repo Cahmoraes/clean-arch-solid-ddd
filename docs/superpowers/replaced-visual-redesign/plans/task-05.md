@@ -1,6 +1,6 @@
 # Task 5: Hook useSceneMotion com pausa, movimento reduzido e visibilidade [FR-013, FR-014, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

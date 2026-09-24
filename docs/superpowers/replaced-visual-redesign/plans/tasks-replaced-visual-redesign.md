@@ -1,30 +1,31 @@
 # Tarefas: Replaced Visual Redesign
 
 **Spec:** `../specs/replaced-visual-redesign-design.md`
+
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 
 ---
 
 ## Tarefas
 
-- [ ] 1. Tokens Noite neon nos temas escuro e claro → `task-01.md`
-- [ ] 2. Contraste calculado dos tokens nos dois temas → `task-02.md`
-- [ ] 3. BrandMark em pixel e sidebar escura nos dois temas → `task-03.md`
-- [ ] 4. Trocar cores literais por tokens semânticos → `task-04.md`
-- [ ] 5. Hook useSceneMotion com pausa, movimento reduzido e visibilidade → `task-05.md`
-- [ ] 6. MotionToggle nos dois shells → `task-06.md`
-- [ ] 7. Componente PixelScene estático com fallback de erro → `task-07.md`
-- [ ] 8. Animação das cenas com transform e opacity → `task-08.md`
-- [ ] 9. Cenas no login e no hero do dashboard → `task-09.md`
-- [ ] 10. Cena no estado vazio → `task-10.md`
-- [ ] 11. Capa de academia sem imagem usa cena → `task-11.md`
-- [ ] 12. Tela de Usuários na direção Noite neon → `task-12.md`
-- [ ] 13. Tela de Check-ins na direção Noite neon → `task-13.md`
-- [ ] 14. Tela de Academias na direção Noite neon → `task-14.md`
-- [ ] 15. Passada de paleta nas demais telas → `task-15.md`
-- [ ] 16. Acessibilidade axe nos dois temas no Playwright → `task-16.md`
-- [ ] 17. Medição de paint das cenas no Playwright → `task-17.md`
-- [ ] 18. Gate final e entrega por ondas → `task-18.md`
+- [x] 1. Tokens Noite neon nos temas escuro e claro → `task-01.md`
+- [x] 2. Contraste calculado dos tokens nos dois temas → `task-02.md`
+- [x] 3. BrandMark em pixel e sidebar escura nos dois temas → `task-03.md`
+- [x] 4. Trocar cores literais por tokens semânticos → `task-04.md`
+- [x] 5. Hook useSceneMotion com pausa, movimento reduzido e visibilidade → `task-05.md`
+- [x] 6. MotionToggle nos dois shells → `task-06.md`
+- [x] 7. Componente PixelScene estático com fallback de erro → `task-07.md`
+- [x] 8. Animação das cenas com transform e opacity → `task-08.md`
+- [x] 9. Cenas no login e no hero do dashboard → `task-09.md`
+- [x] 10. Cena no estado vazio → `task-10.md`
+- [x] 11. Capa de academia sem imagem usa cena → `task-11.md`
+- [x] 12. Tela de Usuários na direção Noite neon → `task-12.md`
+- [x] 13. Tela de Check-ins na direção Noite neon → `task-13.md`
+- [x] 14. Tela de Academias na direção Noite neon → `task-14.md`
+- [x] 15. Passada de paleta nas demais telas → `task-15.md`
+- [x] 16. Acessibilidade axe nos dois temas no Playwright → `task-16.md`
+- [x] 17. Medição de paint das cenas no Playwright → `task-17.md`
+- [x] 18. Gate final e entrega por ondas → `task-18.md`
 
 ## Restrições Globais
 

@@ -1,6 +1,6 @@
 # Task 16: Acessibilidade axe nos dois temas no Playwright [FR-022]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

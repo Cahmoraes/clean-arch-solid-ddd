@@ -1,6 +1,6 @@
 # Task 15: Passada de paleta nas demais telas [FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

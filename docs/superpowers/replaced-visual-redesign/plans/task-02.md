@@ -1,6 +1,6 @@
 # Task 2: Contraste calculado dos tokens nos dois temas [FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

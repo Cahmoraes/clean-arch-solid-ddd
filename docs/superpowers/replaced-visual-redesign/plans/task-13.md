@@ -1,6 +1,6 @@
 # Task 13: Tela de Check-ins na direção Noite neon [FR-018, FR-020]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

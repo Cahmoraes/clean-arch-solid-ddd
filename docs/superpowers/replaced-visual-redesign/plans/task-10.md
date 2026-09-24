@@ -1,6 +1,6 @@
 # Task 10: Cena no estado vazio [FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

@@ -1,6 +1,6 @@
 # Task 8: Animação das cenas com transform e opacity [FR-012, FR-014, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

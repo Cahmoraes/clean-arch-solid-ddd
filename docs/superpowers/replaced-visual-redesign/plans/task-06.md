@@ -1,6 +1,6 @@
 # Task 6: MotionToggle nos dois shells [FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

@@ -1,6 +1,6 @@
 # Task 14: Tela de Academias na direção Noite neon [FR-019]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

@@ -1,6 +1,6 @@
 # Task 9: Cenas no login e no hero do dashboard [FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

@@ -1,6 +1,6 @@
 # Task 11: Capa de academia sem imagem usa cena [FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

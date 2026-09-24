@@ -1,6 +1,6 @@
 # Task 3: BrandMark em pixel e sidebar escura nos dois temas [FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

@@ -1,6 +1,6 @@
 # Task 4: Trocar cores literais por tokens semânticos [FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

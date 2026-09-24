@@ -1,6 +1,6 @@
 # Task 7: Componente PixelScene estático com fallback de erro [FR-010, FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

@@ -1,6 +1,6 @@
 # Task 18: Gate final e entrega por ondas [FR-021, FR-024]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 

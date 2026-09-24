@@ -1,6 +1,6 @@
 # Task 17: Medição de paint das cenas no Playwright [FR-023]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-visual-redesign.md`
 
