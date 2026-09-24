@@ -27,7 +27,7 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 					<GymImage
 						imageKey={gym.imageKey}
 						alt={gym.title}
-						className="h-full w-full rounded-[8px]"
+						className="h-full w-full rounded-sm"
 						hoverEffect={false}
 					/>
 				</div>

@@ -53,7 +53,7 @@ export function CheckInItem({ checkIn, action }: CheckInItemProps) {
 			<span
 				data-status={checkIn.status}
 				className={cn(
-					"inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[13px]",
+					"inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-md",
 					chip.cls,
 				)}
 			>

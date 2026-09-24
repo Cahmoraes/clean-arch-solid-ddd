@@ -82,7 +82,7 @@ export function UserFilterBar({
 					Filtros
 				</Button>
 				{activeFilter !== "all" && (
-					<span className="inline-flex items-center rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">
+					<span className="inline-flex items-center rounded-sm bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">
 						{FILTER_LABEL[activeFilter]}
 					</span>
 				)}

@@ -60,7 +60,7 @@ export function HolidayList({
 			: `${list.length} feriado(s) no mês`
 
 	return (
-		<Card className="rounded-[22px]">
+		<Card className="rounded-xl">
 			<CardHeader>
 				<CardTitle as="h2">Feriados de {monthLabelLower}</CardTitle>
 				<CardDescription>{subtitle}</CardDescription>
@@ -78,11 +78,11 @@ export function HolidayList({
 										{feriadosDaSemana.map((feriado) => (
 											<li
 												key={`${feriado.date}-${feriado.name}`}
-												className="flex items-center gap-3 rounded-[14px] bg-muted p-3"
+												className="flex items-center gap-3 rounded-md bg-muted p-3"
 											>
 												<time
 													dateTime={feriado.date}
-													className="rounded-[10px] bg-card px-2 py-1 font-mono text-xs font-medium"
+													className="rounded-md bg-card px-2 py-1 font-mono text-xs font-medium"
 												>
 													{formatDateBR(feriado.date)}
 												</time>

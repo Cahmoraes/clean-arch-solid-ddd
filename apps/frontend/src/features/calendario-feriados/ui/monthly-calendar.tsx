@@ -176,7 +176,7 @@ export function MonthlyCalendar({
 	const monthNameLower = MONTH_NAMES_LOWER[monthIndex] ?? ""
 
 	return (
-		<Card className="rounded-[22px] transition-[transform,opacity] duration-[180ms] motion-reduce:transition-none">
+		<Card className="rounded-xl transition-[transform,opacity] duration-[180ms] motion-reduce:transition-none">
 			<CardHeader className="flex flex-row items-center justify-between">
 				<div>
 					<CardTitle as="h2" aria-live="polite">

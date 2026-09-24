@@ -122,7 +122,7 @@ function ActivityEventIcon({ type }: { type: UserActivityEventType }) {
 			role="img"
 			aria-label={config.categoryLabel}
 			className={cn(
-				"flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full",
+				"flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-sm",
 				config.badgeClassName,
 			)}
 		>
@@ -159,7 +159,7 @@ function ActivityTabError() {
 	return (
 		<p
 			role="alert"
-			className="rounded-[12px] bg-destructive-soft px-4 py-3 text-sm text-destructive"
+			className="rounded-md bg-destructive-soft px-4 py-3 text-sm text-destructive"
 		>
 			Não foi possível carregar o histórico de atividade.
 		</p>

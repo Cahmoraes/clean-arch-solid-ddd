@@ -30,7 +30,7 @@ export default async function LandingPage() {
 				aria-labelledby="hero-title"
 				className="flex flex-col items-start gap-8"
 			>
-				<span className="rounded-full border border-border bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">
+				<span className="rounded-sm border border-border bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">
 					Demo monocromática
 				</span>
 				<h1
@@ -72,7 +72,7 @@ export default async function LandingPage() {
 					Pensado para o essencial.
 				</h2>
 				<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-					<li className="rounded-[12px] border border-border bg-card p-6">
+					<li className="rounded-md border border-border bg-card p-6">
 						<h3 className="font-display text-xl font-medium text-foreground">
 							Check-in em segundos
 						</h3>
@@ -80,7 +80,7 @@ export default async function LandingPage() {
 							Encontre a academia, confirme presença, siga seu treino.
 						</p>
 					</li>
-					<li className="rounded-[12px] border border-border bg-card p-6">
+					<li className="rounded-md border border-border bg-card p-6">
 						<h3 className="font-display text-xl font-medium text-foreground">
 							Histórico transparente
 						</h3>
@@ -88,7 +88,7 @@ export default async function LandingPage() {
 							Veja sua frequência, métricas e evolução em um único lugar.
 						</p>
 					</li>
-					<li className="rounded-[12px] border border-border bg-card p-6">
+					<li className="rounded-md border border-border bg-card p-6">
 						<h3 className="font-display text-xl font-medium text-foreground">
 							Administração simples
 						</h3>

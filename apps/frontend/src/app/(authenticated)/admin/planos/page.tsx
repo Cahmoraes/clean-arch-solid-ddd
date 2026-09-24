@@ -102,7 +102,7 @@ function PlansContent({
 				type="button"
 				data-testid="plan-card-add"
 				onClick={onAdd}
-				className="flex min-h-[16rem] flex-col items-center justify-center gap-2 rounded-[12px] border border-dashed border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+				className="flex min-h-[16rem] flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
 			>
 				<Plus className="h-6 w-6" aria-hidden="true" />
 				Adicionar novo plano

@@ -240,13 +240,13 @@ function DetailCard({ gym, adminEditHref }: DetailCardProps) {
 	return (
 		<article
 			data-testid="gym-detail-card"
-			className="flex flex-col gap-6 rounded-[12px] border border-border bg-card p-6"
+			className="flex flex-col gap-6 rounded-md border border-border bg-card p-6"
 		>
 			<div className="relative h-48 w-full">
 				<GymImage
 					imageKey={gym.imageKey}
 					alt={gym.title}
-					className="h-full w-full rounded-[8px]"
+					className="h-full w-full rounded-sm"
 					loading="eager"
 				/>
 				{adminEditHref ? (

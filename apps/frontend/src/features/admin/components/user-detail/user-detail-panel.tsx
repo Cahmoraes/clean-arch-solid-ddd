@@ -39,7 +39,7 @@ function InlineError({ message }: { message: string | null }) {
 	return (
 		<p
 			role="alert"
-			className="rounded-[12px] border border-transparent bg-destructive-soft px-4 py-3 text-sm text-destructive"
+			className="rounded-md border border-transparent bg-destructive-soft px-4 py-3 text-sm text-destructive"
 		>
 			{message}
 		</p>

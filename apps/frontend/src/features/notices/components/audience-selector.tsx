@@ -67,7 +67,7 @@ function AudienceCard({
 			<span
 				aria-hidden="true"
 				className={cn(
-					"absolute right-3 top-3 size-3.5 rounded-full border",
+					"absolute right-3 top-3 size-3.5 rounded-sm border",
 					selected ? "border-primary bg-primary" : "border-border-strong",
 				)}
 			/>

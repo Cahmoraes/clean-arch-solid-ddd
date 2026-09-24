@@ -68,7 +68,7 @@ function ErrorState({ error }: { error: ApiError | null }) {
 		<div
 			data-testid="admin-users-error"
 			role="alert"
-			className="rounded-[12px] border border-transparent bg-destructive-soft px-4 py-6 text-sm text-destructive"
+			className="rounded-md border border-transparent bg-destructive-soft px-4 py-6 text-sm text-destructive"
 		>
 			{error?.userMessage ??
 				"Não foi possível carregar a lista de usuários. Tente novamente."}

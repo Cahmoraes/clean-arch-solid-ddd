@@ -14,13 +14,13 @@ export function PlanCardHero({
 	return (
 		<div
 			data-testid={`plan-card-hero-${plan.id}`}
-			className="relative overflow-hidden rounded-[22px] border border-accent/20 bg-card p-8 sm:p-10"
+			className="relative overflow-hidden rounded-xl border border-accent/20 bg-card p-8 sm:p-10"
 		>
 			<div
 				aria-hidden
-				className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-accent/10 blur-2xl"
+				className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-none bg-accent/10 blur-2xl"
 			/>
-			<span className="mb-4 inline-block rounded-full bg-accent px-3 py-1 font-display text-xs font-black uppercase tracking-widest text-accent-foreground">
+			<span className="mb-4 inline-block rounded-sm bg-accent px-3 py-1 font-display text-xs font-black uppercase tracking-widest text-accent-foreground">
 				{badgeLabel}
 			</span>
 			<h3 className="mb-1 font-display text-xl font-bold text-foreground">
@@ -36,7 +36,7 @@ export function PlanCardHero({
 						key={feature}
 						className="flex items-center gap-2.5 text-sm text-muted-foreground"
 					>
-						<span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/20">
+						<span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-xs bg-success/20">
 							<Check className="h-3 w-3 text-success" aria-hidden />
 						</span>
 						{feature}

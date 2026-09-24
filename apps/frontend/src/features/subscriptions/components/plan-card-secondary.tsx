@@ -9,7 +9,7 @@ export function PlanCardSecondary({ plan }: PlanCardSecondaryProps) {
 	return (
 		<div
 			data-testid={`plan-card-secondary-${plan.id}`}
-			className="flex items-center justify-between gap-4 rounded-[14px] border border-border bg-card px-6 py-5"
+			className="flex items-center justify-between gap-4 rounded-md border border-border bg-card px-6 py-5"
 		>
 			<div className="min-w-0">
 				<p className="font-display text-sm font-semibold text-foreground">

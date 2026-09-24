@@ -77,4 +77,11 @@ describe("ProfileHeroCard", () => {
 		)
 		expect(screen.getByText("Conta ativa")).not.toHaveClass("bg-accent")
 	})
+
+	test("avatar, badge e dot de status do hero não usam rounded-full", () => {
+		render(<ProfileHeroCard thisMonth={4} streak={2} />)
+		expect(screen.getByTestId("hero-avatar")).not.toHaveClass("rounded-full")
+		expect(screen.getByTestId("hero-badge")).not.toHaveClass("rounded-full")
+		expect(screen.getByTestId("hero-status-dot")).toHaveClass("rounded-none")
+	})
 })

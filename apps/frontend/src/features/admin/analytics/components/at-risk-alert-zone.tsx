@@ -21,8 +21,8 @@ interface AtRiskAlertZoneProps {
 function MemberRow({ member }: { member: AtRiskMember }) {
 	const isCritical = member.daysSinceLastCheckIn >= AT_RISK_CRITICAL_THRESHOLD
 	return (
-		<li className="flex items-center gap-3 rounded-[6px] bg-surface-2 px-3 py-2">
-			<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-3 text-xs font-semibold uppercase">
+		<li className="flex items-center gap-3 rounded-sm bg-surface-2 px-3 py-2">
+			<div className="flex size-8 shrink-0 items-center justify-center rounded-sm bg-surface-3 text-xs font-semibold uppercase">
 				{member.name.slice(0, 2)}
 			</div>
 			<span className="text-sm font-medium">{member.name}</span>
@@ -53,12 +53,12 @@ export function AtRiskAlertZone({ members, isLoading }: AtRiskAlertZoneProps) {
 	)
 
 	if (isLoading) {
-		return <Skeleton className="h-16 w-full rounded" />
+		return <Skeleton className="h-16 w-full rounded-xs" />
 	}
 
 	if (members.length === 0) {
 		return (
-			<div className="flex items-center gap-3 rounded border border-success/25 bg-success-soft px-5 py-3">
+			<div className="flex items-center gap-3 rounded-xs border border-success/25 bg-success-soft px-5 py-3">
 				<CheckCircle2
 					aria-hidden="true"
 					className="size-4 shrink-0 text-primary"
@@ -77,7 +77,7 @@ export function AtRiskAlertZone({ members, isLoading }: AtRiskAlertZoneProps) {
 	const hasMore = members.length > 3
 
 	return (
-		<div className="rounded border border-warning/25 bg-warning-soft px-5 py-4">
+		<div className="rounded-xs border border-warning/25 bg-warning-soft px-5 py-4">
 			<div className="flex items-center gap-2">
 				<AlertTriangle
 					aria-hidden="true"

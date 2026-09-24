@@ -59,12 +59,12 @@ export function CheckinsTimeline({
 				{Array.from({ length: 4 }).map((_, i) => (
 					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton
 					<div key={i} className="mb-3 flex items-start gap-3">
-						<Skeleton className="mt-1 h-2 w-2 rounded-full" />
+						<Skeleton className="mt-1 h-2 w-2 rounded-none" />
 						<div className="flex-1">
 							<Skeleton className="mb-1 h-4 w-40" />
 							<Skeleton className="h-3 w-24" />
 						</div>
-						<Skeleton className="h-5 w-16 rounded-full" />
+						<Skeleton className="h-5 w-16 rounded-sm" />
 					</div>
 				))}
 			</div>
@@ -92,7 +92,7 @@ export function CheckinsTimeline({
 						>
 							<span
 								className={cn(
-									"h-2 w-2 flex-shrink-0 rounded-full",
+									"h-2 w-2 flex-shrink-0 rounded-none",
 									STATUS_DOT_CLASS[ci.status],
 								)}
 								aria-hidden="true"
@@ -107,7 +107,7 @@ export function CheckinsTimeline({
 							</div>
 							<span
 								className={cn(
-									"flex-shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium",
+									"flex-shrink-0 rounded-sm border px-2 py-0.5 text-xs font-medium",
 									STATUS_BADGE_CLASS[ci.status],
 								)}
 							>

@@ -34,7 +34,7 @@ export function PlanCard({ plan, onEdit, onToggleStatus }: PlanCardProps) {
 		<article
 			data-testid={`plan-card-${plan.id}`}
 			className={cn(
-				"flex flex-col gap-4 rounded-[12px] border border-border bg-card p-6",
+				"flex flex-col gap-4 rounded-md border border-border bg-card p-6",
 				!plan.isActive && "opacity-[0.55]",
 			)}
 		>

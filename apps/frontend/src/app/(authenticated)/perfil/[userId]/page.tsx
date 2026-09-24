@@ -149,7 +149,7 @@ export function PublicProfileView({ userId }: PublicProfileViewProps) {
 
 			<section
 				aria-labelledby="public-profile-section-title"
-				className="flex flex-col gap-4 rounded-[12px] border border-border bg-card p-6"
+				className="flex flex-col gap-4 rounded-md border border-border bg-card p-6"
 			>
 				<h2 id="public-profile-section-title" className="sr-only">
 					Dados públicos

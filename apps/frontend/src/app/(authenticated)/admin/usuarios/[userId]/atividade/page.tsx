@@ -52,7 +52,7 @@ export function AdminUserActivityView({ userId }: { userId: string }) {
 				</h1>
 			</header>
 
-			<Card className="w-full gap-0 rounded-[22px]">
+			<Card className="w-full gap-0 rounded-xl">
 				<ActivityPaginationCardHeader
 					pagination={activityData?.pagination}
 					isTransitioning={isActivityFetching || isActivityPlaceholderData}

@@ -35,7 +35,7 @@ export function ActivityPaginationCardHeader({
 		<CardHeader className="flex flex-row flex-wrap items-center justify-between gap-4 border-b border-border">
 			<CardTitle as="h2">Histórico de atividades</CardTitle>
 			<div className="flex flex-wrap items-center gap-3">
-				<label className="inline-flex items-center gap-2 rounded-full border bg-muted/40 px-2.5 py-1 font-mono text-[11px] font-medium tracking-wide text-muted-foreground">
+				<label className="inline-flex items-center gap-2 rounded-sm border bg-muted/40 px-2.5 py-1 font-mono text-[11px] font-medium tracking-wide text-muted-foreground">
 					<span>Itens por página</span>
 					<select
 						aria-label="Itens por página"
@@ -46,7 +46,7 @@ export function ActivityPaginationCardHeader({
 								onPageSizeChange?.(nextPageSize)
 							}
 						}}
-						className="rounded border border-border bg-background px-1.5 py-0.5 text-[11px] font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						className="rounded-xs border border-border bg-background px-1.5 py-0.5 text-[11px] font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
 					>
 						{ACTIVITY_PAGE_SIZE_OPTIONS.map((option) => (
 							<option key={option} value={String(option)}>

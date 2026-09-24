@@ -172,7 +172,7 @@ function LoginForm() {
 								<p
 									role="alert"
 									data-testid="login-submit-error"
-									className="rounded-[12px] border border-transparent bg-destructive-soft px-4 py-3 text-sm text-destructive"
+									className="rounded-md border border-transparent bg-destructive-soft px-4 py-3 text-sm text-destructive"
 								>
 									{submissionMessage}
 								</p>

@@ -141,7 +141,7 @@ export function OperatingHoursSummary({
 		return (
 			<div
 				data-testid="operating-hours-empty"
-				className="mt-3 rounded-[10px] border border-dashed border-border p-2.5 text-xs text-muted-foreground"
+				className="mt-3 rounded-md border border-dashed border-border p-2.5 text-xs text-muted-foreground"
 			>
 				Horário não informado
 			</div>
@@ -160,7 +160,7 @@ export function OperatingHoursSummary({
 	return (
 		<div
 			data-testid="operating-hours-summary"
-			className="mt-3 overflow-hidden rounded-[10px] border border-border bg-surface-2"
+			className="mt-3 overflow-hidden rounded-md border border-border bg-surface-2"
 		>
 			<div className="flex items-center gap-1.5 border-border border-b px-2.5 py-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-[.05em]">
 				<Clock className="h-3.5 w-3.5" aria-hidden="true" />
@@ -178,7 +178,7 @@ export function OperatingHoursSummary({
 				{badgeLabel ? (
 					<span
 						data-testid="operating-hours-badge-time"
-						className={`rounded-full border px-2 py-1 font-bold text-[11px] ${isOpen ? "border-success/30 bg-success-soft text-success" : "border-destructive/30 bg-destructive-soft text-destructive"}`}
+						className={`rounded-sm border px-2 py-1 font-bold text-[11px] ${isOpen ? "border-success/30 bg-success-soft text-success" : "border-destructive/30 bg-destructive-soft text-destructive"}`}
 					>
 						{badgeLabel}
 					</span>

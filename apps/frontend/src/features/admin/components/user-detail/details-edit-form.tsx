@@ -25,7 +25,7 @@ function InlineFormError({ message }: { message: string | null }) {
 	return (
 		<p
 			role="alert"
-			className="rounded-[8px] border border-transparent bg-destructive-soft px-3 py-2 text-sm text-destructive"
+			className="rounded-sm border border-transparent bg-destructive-soft px-3 py-2 text-sm text-destructive"
 		>
 			{message}
 		</p>

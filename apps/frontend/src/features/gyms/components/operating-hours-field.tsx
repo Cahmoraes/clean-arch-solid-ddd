@@ -213,7 +213,7 @@ export function OperatingHoursField({
 									aria-label={`${label} Fechado`}
 									aria-invalid={Boolean(dayError)}
 									aria-describedby={dayError ? dayErrorId : undefined}
-									className="h-4 w-4 rounded border-input accent-primary"
+									className="h-4 w-4 rounded-xs border-input accent-primary"
 								/>
 								Fechado
 							</Label>

@@ -41,7 +41,7 @@ function LoadingState() {
 		>
 			{SKELETON_KEYS.map((key) => (
 				<li key={key}>
-					<Skeleton className="h-16 w-full rounded-[12px]" />
+					<Skeleton className="h-16 w-full rounded-md" />
 				</li>
 			))}
 		</ul>

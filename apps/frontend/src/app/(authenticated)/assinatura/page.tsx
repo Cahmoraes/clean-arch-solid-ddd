@@ -112,7 +112,7 @@ function DemoBanner({ className }: DemoBannerProps) {
 			aria-label="Aviso de demonstração"
 			data-testid="subscription-demo-banner"
 			className={cn(
-				"flex items-start gap-3 rounded-[12px] border border-warning bg-warning-soft px-4 py-3 text-sm text-foreground",
+				"flex items-start gap-3 rounded-md border border-warning bg-warning-soft px-4 py-3 text-sm text-foreground",
 				className,
 			)}
 		>
@@ -261,7 +261,7 @@ function PlanCard({
 				className="sr-only"
 			/>
 			{current ? (
-				<span className="absolute right-4.5 top-4.5 rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
+				<span className="absolute right-4.5 top-4.5 rounded-sm bg-accent px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
 					Plano atual
 				</span>
 			) : null}
@@ -278,7 +278,7 @@ function PlanCard({
 						key={feature}
 						className="flex items-center gap-2.5 text-sm text-muted-foreground"
 					>
-						<span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-accent text-accent-foreground">
+						<span className="inline-flex h-5 w-5 items-center justify-center rounded-xs bg-accent text-accent-foreground">
 							<Check className="h-3 w-3" aria-hidden="true" />
 						</span>
 						{feature}
@@ -299,7 +299,7 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 		<section
 			data-testid="subscription-confirmation"
 			aria-live="polite"
-			className="flex flex-col gap-3 rounded-2xl border border-primary bg-card p-5"
+			className="flex flex-col gap-3 rounded-xl border border-primary bg-card p-5"
 		>
 			<div className="flex items-center gap-2">
 				<BadgeCheck className="h-5 w-5 text-foreground" aria-hidden="true" />
@@ -385,7 +385,7 @@ function ErrorAlert({ message }: ErrorAlertProps) {
 		<p
 			role="alert"
 			data-testid="subscription-error"
-			className="rounded-[12px] bg-destructive-soft px-4 py-3 text-sm text-destructive"
+			className="rounded-md bg-destructive-soft px-4 py-3 text-sm text-destructive"
 		>
 			{message}
 		</p>
@@ -474,7 +474,7 @@ function CancellationNotice({ endDate }: CancellationNoticeProps) {
 		<p
 			role="status"
 			data-testid="subscription-cancellation-notice"
-			className="rounded-[12px] border border-border bg-card px-4 py-3 text-sm text-foreground"
+			className="rounded-md border border-border bg-card px-4 py-3 text-sm text-foreground"
 		>
 			Seu cancelamento está agendado. Você mantém o acesso até {endDate}.
 		</p>

@@ -68,7 +68,7 @@ export function StatusDonutCard({
 			<div className="rounded-xl border border-border bg-card p-4">
 				<Skeleton className="mb-4 h-4 w-40" />
 				<div className="flex flex-col items-center gap-4 md:flex-row md:justify-center md:gap-6">
-					<Skeleton className="h-20 w-20 rounded-full" />
+					<Skeleton className="h-20 w-20 rounded-md" />
 					<div className="flex flex-row flex-wrap justify-center gap-x-3 gap-y-2 md:flex-col md:gap-2">
 						<Skeleton className="h-4 w-28" />
 						<Skeleton className="h-4 w-24" />
@@ -142,7 +142,7 @@ export function StatusDonutCard({
 					].map(({ label, count, color }) => (
 						<li key={label} className="flex items-center gap-2 text-sm">
 							<span
-								className="h-2 w-2 flex-shrink-0 rounded-full"
+								className="h-2 w-2 flex-shrink-0 rounded-none"
 								style={{ background: color }}
 								aria-hidden="true"
 							/>

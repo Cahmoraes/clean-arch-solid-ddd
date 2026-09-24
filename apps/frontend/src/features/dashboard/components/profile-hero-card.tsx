@@ -25,7 +25,10 @@ function formatMemberSince(createdAt: string): string {
 
 function Avatar({ name }: { name?: string }) {
 	return (
-		<div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground text-lg font-bold">
+		<div
+			data-testid="hero-avatar"
+			className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground text-lg font-bold"
+		>
 			{name ? (
 				getInitials(name)
 			) : (
@@ -41,14 +44,16 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
 		: "border-transparent bg-muted text-muted-foreground"
 	return (
 		<span
+			data-testid="hero-badge"
 			className={cn(
-				"mt-1 inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
+				"mt-1 inline-flex w-fit items-center gap-1.5 rounded-sm border px-2.5 py-0.5 text-xs font-medium",
 				statusClass,
 			)}
 		>
 			<span
+				data-testid="hero-status-dot"
 				className={cn(
-					"h-1.5 w-1.5 rounded-full",
+					"h-1.5 w-1.5 rounded-none",
 					isActive ? "bg-success" : "bg-muted-foreground/70",
 				)}
 				aria-hidden="true"
@@ -111,7 +116,7 @@ function ProfileHeroCardSkeleton() {
 	return (
 		<div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 md:flex-row md:flex-wrap md:items-center">
 			<div className="flex items-center gap-4">
-				<Skeleton className="h-14 w-14 rounded-full" />
+				<Skeleton className="h-14 w-14 rounded-md" />
 				<div className="flex flex-col gap-2">
 					<Skeleton className="h-5 w-40" />
 					<Skeleton className="h-4 w-56" />

@@ -141,7 +141,8 @@ export function GymLocationPicker({
 			<div className="grid grid-cols-2 gap-3">
 				<div className="flex flex-col gap-1">
 					<span className="text-xs font-medium text-muted-foreground">
-						Latitude <span className="rounded bg-muted px-1 text-xs">auto</span>
+						Latitude{" "}
+						<span className="rounded-xs bg-muted px-1 text-xs">auto</span>
 					</span>
 					<div
 						data-testid="gym-location-lat-display"
@@ -153,7 +154,7 @@ export function GymLocationPicker({
 				<div className="flex flex-col gap-1">
 					<span className="text-xs font-medium text-muted-foreground">
 						Longitude{" "}
-						<span className="rounded bg-muted px-1 text-xs">auto</span>
+						<span className="rounded-xs bg-muted px-1 text-xs">auto</span>
 					</span>
 					<div
 						data-testid="gym-location-lng-display"

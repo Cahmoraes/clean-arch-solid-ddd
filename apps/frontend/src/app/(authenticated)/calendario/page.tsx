@@ -55,7 +55,7 @@ function YearNavigation({
 				<ChevronLeft aria-hidden="true" className="size-4" />
 				{selectedYear - 1}
 			</Button>
-			<span className="rounded-full border border-border bg-card px-4 py-2 text-center font-mono text-sm font-semibold text-foreground">
+			<span className="rounded-sm border border-border bg-card px-4 py-2 text-center font-mono text-sm font-semibold text-foreground">
 				{selectedYear}
 			</span>
 			<Button
@@ -89,7 +89,7 @@ function CalendarLoadingState() {
 	return (
 		<div role="status" aria-live="polite" className="flex flex-col gap-4">
 			<span className="sr-only">Carregando feriados</span>
-			<Skeleton className="h-56 w-full rounded-[22px]" />
+			<Skeleton className="h-56 w-full rounded-xl" />
 		</div>
 	)
 }
@@ -104,7 +104,7 @@ function CalendarErrorState({
 	return (
 		<div
 			role="alert"
-			className="flex flex-col items-center justify-center gap-3 rounded-[12px] border border-border bg-card px-6 py-12 text-center"
+			className="flex flex-col items-center justify-center gap-3 rounded-md border border-border bg-card px-6 py-12 text-center"
 		>
 			<div className="flex flex-col gap-1">
 				<h2 className="font-display text-xl font-medium text-foreground">

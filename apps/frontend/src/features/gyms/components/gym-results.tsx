@@ -135,7 +135,7 @@ function ResultsList({
 			className={cn(
 				view === "cards"
 					? "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[18px]"
-					: "flex flex-col overflow-hidden rounded-[22px] border border-border",
+					: "flex flex-col overflow-hidden rounded-xl border border-border",
 			)}
 		>
 			<AnimatePresence>

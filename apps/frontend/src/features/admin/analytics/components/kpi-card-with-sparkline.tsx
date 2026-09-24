@@ -39,12 +39,12 @@ export function KpiCardWithSparkline({
 	const gradientId = useId()
 
 	if (isLoading) {
-		return <Skeleton className="h-28 w-full rounded" />
+		return <Skeleton className="h-28 w-full rounded-xs" />
 	}
 
 	if (isError) {
 		return (
-			<div className="flex h-28 items-center justify-center rounded border border-destructive/30 bg-destructive/5 p-4">
+			<div className="flex h-28 items-center justify-center rounded-xs border border-destructive/30 bg-destructive/5 p-4">
 				<p className="text-sm text-destructive">Erro ao carregar dados</p>
 			</div>
 		)
@@ -56,7 +56,7 @@ export function KpiCardWithSparkline({
 	return (
 		<div
 			className={cn(
-				"relative overflow-hidden rounded border px-5 pb-3.5 pt-4.5",
+				"relative overflow-hidden rounded-xs border px-5 pb-3.5 pt-4.5",
 				highlight ? "border-primary/35 bg-primary/4" : "border-border bg-card",
 			)}
 		>

@@ -16,11 +16,11 @@ export function CurrentWeatherDisplay({
 				{temperature.current}°C
 			</p>
 			<div className="grid grid-cols-2 gap-2.5">
-				<div className="rounded-[10px] border border-border p-3">
+				<div className="rounded-md border border-border p-3">
 					<p className="text-[11px] text-muted-foreground">Mínima</p>
 					<p className="font-mono text-xl font-semibold">{temperature.min}°C</p>
 				</div>
-				<div className="rounded-[10px] border border-border p-3">
+				<div className="rounded-md border border-border p-3">
 					<p className="text-[11px] text-muted-foreground">Máxima</p>
 					<p className="font-mono text-xl font-semibold">{temperature.max}°C</p>
 				</div>
