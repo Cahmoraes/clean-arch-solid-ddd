@@ -1,6 +1,6 @@
 # Task 5: Features admin, atividade, dashboard, planos e assinatura
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

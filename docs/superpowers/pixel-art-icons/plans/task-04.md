@@ -1,6 +1,6 @@
 # Task 4: Componentes de ui compartilhados
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

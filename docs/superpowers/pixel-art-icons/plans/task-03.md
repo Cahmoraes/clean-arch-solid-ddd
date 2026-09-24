@@ -1,6 +1,6 @@
 # Task 3: Paleta de comandos e notificações
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

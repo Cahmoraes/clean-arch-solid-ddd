@@ -1,6 +1,6 @@
 # Task 6: Features check-ins, academias, perfil e contato
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

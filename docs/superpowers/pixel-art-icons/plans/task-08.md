@@ -1,6 +1,6 @@
 # Task 8: Remoção do lucide-react, guardas e documentação
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

@@ -1,6 +1,6 @@
 # Task 1: Módulo pixel-icons, gerador e testes
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

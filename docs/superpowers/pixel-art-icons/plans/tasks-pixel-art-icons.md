@@ -8,14 +8,14 @@
 
 ## Tarefas
 
-- [ ] 1. Módulo pixel-icons, gerador e testes → `task-01.md`
-- [ ] 2. Menu lateral com ícones pixel-art → `task-02.md`
-- [ ] 3. Paleta de comandos e notificações → `task-03.md`
-- [ ] 4. Componentes de ui compartilhados → `task-04.md`
-- [ ] 5. Features admin, atividade, dashboard, planos e assinatura → `task-05.md`
-- [ ] 6. Features check-ins, academias, perfil e contato → `task-06.md`
-- [ ] 7. Páginas autenticadas → `task-07.md`
-- [ ] 8. Remoção do lucide-react, guardas e documentação → `task-08.md`
+- [x] 1. Módulo pixel-icons, gerador e testes → `task-01.md`
+- [x] 2. Menu lateral com ícones pixel-art → `task-02.md`
+- [x] 3. Paleta de comandos e notificações → `task-03.md`
+- [x] 4. Componentes de ui compartilhados → `task-04.md`
+- [x] 5. Features admin, atividade, dashboard, planos e assinatura → `task-05.md`
+- [x] 6. Features check-ins, academias, perfil e contato → `task-06.md`
+- [x] 7. Páginas autenticadas → `task-07.md`
+- [x] 8. Remoção do lucide-react, guardas e documentação → `task-08.md`
 
 ## Restrições Globais
 

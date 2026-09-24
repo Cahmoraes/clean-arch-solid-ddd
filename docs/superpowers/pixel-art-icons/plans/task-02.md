@@ -1,6 +1,6 @@
 # Task 2: Menu lateral com ícones pixel-art
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

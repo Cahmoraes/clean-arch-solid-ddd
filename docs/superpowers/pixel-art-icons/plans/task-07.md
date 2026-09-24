@@ -1,6 +1,6 @@
 # Task 7: Páginas autenticadas
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 
