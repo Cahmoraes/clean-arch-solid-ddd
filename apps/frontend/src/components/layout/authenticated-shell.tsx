@@ -1,5 +1,13 @@
 "use client"
 
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { type ReactNode, useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
+import { CommandPalette } from "@/components/command-palette/command-palette"
+import { NotificationBell } from "@/components/notification/notification-bell"
+import { Avatar } from "@/components/ui/avatar"
+import { BrandMark } from "@/components/ui/brand-mark"
 import {
 	BarChart3,
 	Building2,
@@ -14,15 +22,7 @@ import {
 	User,
 	Users,
 	Wallet,
-} from "lucide-react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { type ReactNode, useEffect, useRef, useState } from "react"
-import { toast } from "sonner"
-import { CommandPalette } from "@/components/command-palette/command-palette"
-import { NotificationBell } from "@/components/notification/notification-bell"
-import { Avatar } from "@/components/ui/avatar"
-import { BrandMark } from "@/components/ui/brand-mark"
+} from "@/components/ui/pixel-icons"
 import { SearchBar } from "@/components/ui/search-bar"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useLogout } from "@/features/auth/api"
@@ -105,7 +105,7 @@ function SidebarNavItem({
 					: "text-sidebar-muted hover:bg-white/5 hover:text-sidebar-foreground",
 			)}
 		>
-			<Icon className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
+			<Icon className="h-6 w-6 shrink-0" aria-hidden="true" />
 			<span className={cn("flex-1 max-[860px]:hidden", collapsed && "hidden")}>
 				{item.label}
 			</span>
@@ -198,9 +198,9 @@ export function AuthenticatedShell({
 						className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-white/5 hover:text-sidebar-foreground"
 					>
 						{collapsed ? (
-							<PanelLeftOpen className="h-4.5 w-4.5" aria-hidden="true" />
+							<PanelLeftOpen className="h-6 w-6" aria-hidden="true" />
 						) : (
-							<PanelLeftClose className="h-4.5 w-4.5" aria-hidden="true" />
+							<PanelLeftClose className="h-6 w-6" aria-hidden="true" />
 						)}
 					</button>
 				</div>
@@ -258,7 +258,7 @@ export function AuthenticatedShell({
 								collapsed && "justify-center",
 							)}
 						>
-							<LogOut className="h-4.5 w-4.5 shrink-0" aria-hidden="true" />
+							<LogOut className="h-6 w-6 shrink-0" aria-hidden="true" />
 							<span className={cn("max-[860px]:hidden", collapsed && "hidden")}>
 								Sair
 							</span>

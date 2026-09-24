@@ -134,6 +134,31 @@ describe("AuthenticatedShell — VOLT", () => {
 			"page",
 		)
 	})
+
+	test("ícones do menu lateral têm 24px (h-6 w-6), são decorativos e nítidos", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		const navIcon = screen
+			.getByRole("link", { name: /Dashboard/ })
+			.querySelector("svg")
+		const logoutIcon = screen
+			.getByRole("button", { name: /sair/i })
+			.querySelector("svg")
+		const toggleIcon = screen
+			.getByRole("button", { name: "Recolher menu" })
+			.querySelector("svg")
+
+		for (const icon of [navIcon, logoutIcon, toggleIcon]) {
+			expect(icon).not.toBeNull()
+			expect(icon).toHaveClass("h-6", "w-6")
+			expect(icon).toHaveAttribute("aria-hidden", "true")
+			expect(icon).toHaveAttribute("shape-rendering", "crispEdges")
+		}
+	})
 })
 
 describe("AuthenticatedShell — recolher/expandir", () => {
