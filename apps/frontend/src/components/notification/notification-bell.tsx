@@ -71,7 +71,7 @@ export function NotificationBell() {
 			>
 				<Bell className="h-4 w-4" aria-hidden="true" />
 				{unreadCount > 0 ? (
-					<span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-[10px] font-bold text-accent-foreground">
+					<span className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-sm bg-accent px-1.5 text-[10px] font-bold text-accent-foreground">
 						{formatUnreadCount(unreadCount)}
 					</span>
 				) : null}

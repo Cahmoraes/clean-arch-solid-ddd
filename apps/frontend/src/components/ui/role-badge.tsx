@@ -11,7 +11,7 @@ export function RoleBadge({ role, className }: RoleBadgeProps) {
 	return (
 		<span
 			className={cn(
-				"inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold",
+				"inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-xs font-semibold",
 				isAdmin
 					? "border-primary/40 bg-primary/15 text-foreground"
 					: "border-border bg-surface-2 text-muted-foreground",

@@ -44,7 +44,7 @@ export function FieldShell({
 						<span className="sr-only">(obrigatório)</span>
 						<span
 							aria-hidden="true"
-							className="h-0.5 w-3.5 rounded-full bg-primary"
+							className="h-0.5 w-3.5 rounded-none bg-primary"
 						/>
 					</>
 				) : null}

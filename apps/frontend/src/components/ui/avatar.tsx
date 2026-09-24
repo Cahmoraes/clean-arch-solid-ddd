@@ -6,6 +6,12 @@ const SIZE_CLASSES = {
 	lg: "h-[88px] w-[88px] text-3xl",
 } as const
 
+const RADIUS_CLASSES: Record<keyof typeof SIZE_CLASSES, string> = {
+	sm: "rounded-sm",
+	md: "rounded-sm",
+	lg: "rounded-md",
+} as const
+
 export interface AvatarProps {
 	name?: string
 	size?: keyof typeof SIZE_CLASSES
@@ -28,8 +34,9 @@ export function Avatar({ name, size = "md", className }: AvatarProps) {
 		<span
 			aria-hidden="true"
 			className={cn(
-				"inline-flex flex-shrink-0 items-center justify-center rounded-full bg-accent font-display font-bold text-accent-foreground",
+				"inline-flex flex-shrink-0 items-center justify-center bg-accent font-display font-bold text-accent-foreground",
 				SIZE_CLASSES[size],
+				RADIUS_CLASSES[size],
 				className,
 			)}
 		>

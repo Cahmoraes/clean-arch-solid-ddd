@@ -12,7 +12,7 @@ export function Toaster(props: ToasterProps) {
 			toastOptions={{
 				classNames: {
 					toast:
-						"rounded-[12px] border border-border bg-card text-card-foreground shadow-none",
+						"rounded-md border border-border bg-card text-card-foreground shadow-none",
 					title: "text-card-foreground font-medium",
 					description: "text-muted-foreground",
 					actionButton:

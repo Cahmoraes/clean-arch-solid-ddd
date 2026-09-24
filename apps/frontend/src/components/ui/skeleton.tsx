@@ -2,7 +2,7 @@ import type { HTMLAttributes } from "react"
 import { cn } from "@/lib/cn"
 
 /**
- * Skeleton — animated pulse placeholder. Container radius (12px) by default.
+ * Skeleton — animated pulse placeholder. Container radius (rounded-md) by default.
  */
 export function Skeleton({
 	className,
@@ -11,7 +11,7 @@ export function Skeleton({
 	return (
 		<div
 			data-testid="skeleton"
-			className={cn("animate-pulse rounded-[12px] bg-muted", className)}
+			className={cn("animate-pulse rounded-md bg-muted", className)}
 			{...props}
 		/>
 	)

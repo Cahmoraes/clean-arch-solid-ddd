@@ -91,7 +91,7 @@ export function NotificationItem({
 			>
 				<span
 					className={cn(
-						"inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full",
+						"inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-sm",
 						notificationTypeStyle.iconClassName,
 					)}
 				>
@@ -114,7 +114,8 @@ export function NotificationItem({
 
 				{isUnread ? (
 					<span
-						className="mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-accent"
+						data-testid="unread-dot"
+						className="mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-none bg-accent"
 						aria-hidden="true"
 					/>
 				) : null}

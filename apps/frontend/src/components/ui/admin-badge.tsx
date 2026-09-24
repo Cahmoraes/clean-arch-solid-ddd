@@ -5,7 +5,7 @@ export function AdminBadge({ className }: { className?: string }) {
 	return (
 		<span
 			className={cn(
-				"inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-bold uppercase tracking-wide text-primary-foreground",
+				"inline-flex items-center gap-1 rounded-sm bg-primary px-3 py-0.5 text-xs font-bold uppercase tracking-wide text-primary-foreground",
 				className,
 			)}
 		>

@@ -48,7 +48,7 @@ export function ThemeToggle({ className, compact }: ThemeToggleProps) {
 				aria-label={ariaLabel}
 				aria-pressed={isDark}
 				className={cn(
-					"inline-flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground",
+					"inline-flex h-9 w-9 items-center justify-center rounded-sm bg-accent text-accent-foreground",
 					className,
 				)}
 			>
@@ -68,13 +68,13 @@ export function ThemeToggle({ className, compact }: ThemeToggleProps) {
 			aria-label={ariaLabel}
 			aria-pressed={isDark}
 			className={cn(
-				"relative inline-flex h-[38px] w-16 items-center rounded-full border border-border bg-surface-2 p-1.5",
+				"relative inline-flex h-[38px] w-16 items-center rounded-xs border border-border bg-surface-2 p-1.5",
 				className,
 			)}
 		>
 			<span
 				className={cn(
-					"absolute top-[5px] z-[2] inline-flex h-[28px] w-[28px] items-center justify-center rounded-full bg-accent text-accent-foreground transition-[left] duration-300",
+					"absolute top-[5px] z-[2] inline-flex h-[28px] w-[28px] items-center justify-center rounded-xs bg-accent text-accent-foreground transition-[left] duration-300",
 					pillLeft,
 				)}
 			>

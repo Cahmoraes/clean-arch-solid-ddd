@@ -80,7 +80,7 @@ function NotificationDropdownContent({
 	if (notifications.length === 0 && !hasNextPage) {
 		return (
 			<div className="flex flex-col items-center gap-3 px-4 py-10 text-center">
-				<span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-surface-2 text-muted-foreground">
+				<span className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-surface-2 text-muted-foreground">
 					<BellOff className="h-5 w-5" aria-hidden="true" />
 				</span>
 				<p className="text-sm font-medium text-foreground">

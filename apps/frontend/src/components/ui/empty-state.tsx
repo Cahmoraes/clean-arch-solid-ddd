@@ -12,7 +12,7 @@ export interface EmptyStateProps {
 }
 
 /**
- * EmptyState — container radius (12px), no shadows.
+ * EmptyState — container radius (rounded-md), no shadows.
  * Used when a list/section has no data to render.
  * `scene` opcional adiciona a cena pixel decorativa ao lado do texto.
  */
@@ -29,7 +29,7 @@ export function EmptyState({
 			role="status"
 			aria-live="polite"
 			className={cn(
-				"flex flex-col items-center justify-center text-center gap-3 px-6 py-12 rounded-[12px] border border-border bg-card",
+				"flex flex-col items-center justify-center text-center gap-3 px-6 py-12 rounded-md border border-border bg-card",
 				scene && "sm:flex-row sm:gap-8 sm:text-left",
 				className,
 			)}
@@ -43,7 +43,7 @@ export function EmptyState({
 				</div>
 			) : null}
 			{Icon ? (
-				<div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+				<div className="flex h-12 w-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
 					<Icon className="h-6 w-6" />
 				</div>
 			) : null}

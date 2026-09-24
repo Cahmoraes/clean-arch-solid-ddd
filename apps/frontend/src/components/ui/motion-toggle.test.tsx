@@ -53,16 +53,18 @@ describe("MotionToggle", () => {
 		expect(screen.getByTestId("shared")).toHaveTextContent("true")
 	})
 
-	test("compact: botão redondo de 36px como o ThemeToggle compacto", () => {
+	test("compact: botão quadrado de 36px como o ThemeToggle compacto", () => {
 		render(<MotionToggle compact />)
 		const button = screen.getByRole("button", { name: "Pausar animações" })
-		expect(button).toHaveClass("h-9", "w-9", "rounded-full")
+		expect(button).toHaveClass("h-9", "w-9", "rounded-sm")
+		expect(button).not.toHaveClass("rounded-full")
 	})
 
-	test("completo: botão redondo com borda, sem texto visível", () => {
+	test("completo: botão quadrado com borda, sem texto visível", () => {
 		render(<MotionToggle />)
 		const button = screen.getByRole("button", { name: "Pausar animações" })
-		expect(button).toHaveClass("rounded-full", "border")
+		expect(button).toHaveClass("rounded-sm", "border")
+		expect(button).not.toHaveClass("rounded-full")
 		expect(button.textContent).toBe("")
 	})
 

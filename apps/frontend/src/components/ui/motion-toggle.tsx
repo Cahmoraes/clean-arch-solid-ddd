@@ -30,7 +30,7 @@ export function MotionToggle({ className, compact }: MotionToggleProps) {
 			aria-label={label}
 			aria-pressed={userPaused}
 			className={cn(
-				"focus-ring-duplo inline-flex items-center justify-center rounded-full",
+				"focus-ring-duplo inline-flex items-center justify-center rounded-sm",
 				compact
 					? "h-9 w-9 bg-accent text-accent-foreground"
 					: "h-[38px] w-[38px] border border-border bg-surface-2 text-foreground",

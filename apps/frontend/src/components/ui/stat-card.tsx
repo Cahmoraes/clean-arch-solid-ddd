@@ -45,7 +45,7 @@ export function StatCard({
 				{delta && (
 					<span
 						className={cn(
-							"inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[12.5px] font-bold",
+							"inline-flex items-center gap-1 rounded-sm px-2 py-0.5 font-mono text-[12.5px] font-bold",
 							delta.direction === "up"
 								? "bg-success-soft text-success"
 								: "bg-destructive-soft text-destructive",

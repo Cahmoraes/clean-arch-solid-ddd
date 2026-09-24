@@ -42,13 +42,24 @@ describe("ThemeToggle", () => {
 		expect(button.className).not.toContain("max-[860px]")
 	})
 
-	test("compact: renderiza botão redondo (~36px) sem trilho/pill deslizante", () => {
+	test("compact: renderiza botão quadrado (~36px) sem trilho/pill deslizante", () => {
 		render(<ThemeToggle compact />)
 		const button = screen.getByRole("button", { name: /modo/i })
-		expect(button.className).toContain("rounded-full")
+		expect(button.className).not.toContain("rounded-full")
+		expect(button.className).toContain("rounded-sm")
 		expect(button.className).toContain("h-9")
 		expect(button.className).toContain("w-9")
 		expect(button.className).not.toContain("w-16")
+	})
+
+	test("botão, trilho e thumb do theme-toggle não usam mais rounded-full", () => {
+		render(<ThemeToggle />)
+		const button = screen.getByRole("button", { name: /modo/i })
+		const thumb = button.querySelector("span")
+		expect(button).not.toHaveClass("rounded-full")
+		expect(button).toHaveClass("rounded-xs")
+		expect(thumb).not.toHaveClass("rounded-full")
+		expect(thumb).toHaveClass("rounded-xs")
 	})
 
 	test("compact: alterna tema no clique", () => {

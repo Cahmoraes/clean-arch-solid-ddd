@@ -44,6 +44,15 @@ function getDeleteButton(): HTMLElement {
 	return screen.getByRole("button", { name: "Excluir notificação" })
 }
 
+describe("NotificationItem: dot de não lido", () => {
+	test("o dot não lido tem menos de 12px de lado e usa rounded-none, nunca rounded-full", () => {
+		renderItem(makeNotification())
+		const dot = screen.getByTestId("unread-dot")
+		expect(dot).toHaveClass("rounded-none")
+		expect(dot).not.toHaveClass("rounded-full")
+	})
+})
+
 describe("NotificationItem com tipo NOTICE", () => {
 	test("renderiza o título e a mensagem do aviso", () => {
 		renderItem(makeNotification())
