@@ -1,17 +1,17 @@
-import type { LucideIcon } from "lucide-react"
 import {
 	Check,
 	CircleCheck,
 	CircleSlash,
 	MoreHorizontal,
 	Pencil,
+	type PixelIcon,
 	TriangleAlert,
 	X,
-} from "lucide-react"
+} from "@/components/ui/pixel-icons"
 
 export type StatusIconTone = "success" | "warning" | "danger"
 
-export const STATUS_ICON: Record<StatusIconTone, LucideIcon> = {
+export const STATUS_ICON: Record<StatusIconTone, PixelIcon> = {
 	success: CircleCheck,
 	warning: TriangleAlert,
 	danger: CircleSlash,
@@ -19,7 +19,7 @@ export const STATUS_ICON: Record<StatusIconTone, LucideIcon> = {
 
 export type ActionIconName = "edit" | "moreActions" | "approve" | "reject"
 
-export const ACTION_ICON: Record<ActionIconName, LucideIcon> = {
+export const ACTION_ICON: Record<ActionIconName, PixelIcon> = {
 	edit: Pencil,
 	moreActions: MoreHorizontal,
 	approve: Check,

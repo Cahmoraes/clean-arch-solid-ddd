@@ -1,8 +1,8 @@
 "use client"
 
-import { XIcon } from "lucide-react"
 import { Dialog as SheetPrimitive } from "radix-ui"
 import type * as React from "react"
+import { XIcon } from "@/components/ui/pixel-icons"
 
 import { cn } from "@/lib/cn"
 

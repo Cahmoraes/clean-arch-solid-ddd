@@ -1,4 +1,4 @@
-import { Shield } from "lucide-react"
+import { Shield } from "@/components/ui/pixel-icons"
 import { cn } from "@/lib/cn"
 
 export function AdminBadge({ className }: { className?: string }) {

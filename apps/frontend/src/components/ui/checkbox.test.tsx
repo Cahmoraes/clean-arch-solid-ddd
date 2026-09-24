@@ -18,6 +18,16 @@ describe("Checkbox", () => {
 		expect(icon).toHaveAttribute("aria-hidden", "true")
 	})
 
+	test("o ícone de check marcado é pixel-art nítido e tem 16px (size-4)", () => {
+		const { container } = render(
+			<Checkbox aria-label="Aceitar termos" defaultChecked />,
+		)
+		const icon = container.querySelector("svg")
+		expect(icon).toHaveClass("size-4")
+		expect(icon).not.toHaveClass("size-3.5")
+		expect(icon).toHaveAttribute("shape-rendering", "crispEdges")
+	})
+
 	test("garante alvo de toque mínimo de 24x24px ao redor do checkbox", () => {
 		render(<Checkbox aria-label="Aceitar termos" />)
 		const wrapper = screen.getByRole("checkbox").parentElement

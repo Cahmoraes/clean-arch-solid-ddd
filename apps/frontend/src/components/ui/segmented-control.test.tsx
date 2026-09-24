@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react"
-import { LayoutGrid } from "lucide-react"
 import { describe, expect, test, vi } from "vitest"
+import { LayoutGrid } from "@/components/ui/pixel-icons"
 import { SegmentedControl } from "./segmented-control"
 
 const ITEMS = [

@@ -1,7 +1,7 @@
 "use client"
 
-import { Search } from "lucide-react"
 import type { InputHTMLAttributes } from "react"
+import { Search } from "@/components/ui/pixel-icons"
 import { cn } from "@/lib/cn"
 
 export interface SearchBarProps

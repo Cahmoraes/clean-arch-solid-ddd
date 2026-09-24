@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react"
+import type { PixelIcon } from "@/components/ui/pixel-icons"
 import { cn } from "@/lib/cn"
 
 export interface StatDelta {
@@ -7,7 +7,7 @@ export interface StatDelta {
 }
 
 export interface StatCardProps {
-	icon: LucideIcon
+	icon: PixelIcon
 	value: string
 	label: string
 	delta?: StatDelta

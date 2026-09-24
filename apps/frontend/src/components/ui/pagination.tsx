@@ -1,12 +1,16 @@
 "use client"
 
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import {
 	type AnchorHTMLAttributes,
 	type ComponentProps,
 	forwardRef,
 } from "react"
 import { type ButtonProps, buttonVariants } from "@/components/ui/button"
+import {
+	ChevronLeft,
+	ChevronRight,
+	MoreHorizontal,
+} from "@/components/ui/pixel-icons"
 import { cn } from "@/lib/cn"
 
 /**

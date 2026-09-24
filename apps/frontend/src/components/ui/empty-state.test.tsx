@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
-import { Bell } from "lucide-react"
 import { describe, expect, it, test, vi } from "vitest"
+import { Bell } from "@/components/ui/pixel-icons"
 import { Button } from "./button"
 import { EmptyState } from "./empty-state"
 

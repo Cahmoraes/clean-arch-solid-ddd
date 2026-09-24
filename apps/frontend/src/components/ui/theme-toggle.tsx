@@ -1,8 +1,8 @@
 "use client"
 
-import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
+import { Moon, Sun } from "@/components/ui/pixel-icons"
 import { cn } from "@/lib/cn"
 
 const THEME_CONFIG = {
@@ -80,7 +80,7 @@ export function ThemeToggle({ className, compact }: ThemeToggleProps) {
 			>
 				<Icon
 					key={iconKey}
-					className="theme-toggle-icon h-3.5 w-3.5 flex-shrink-0"
+					className="theme-toggle-icon h-4 w-4 flex-shrink-0"
 					aria-hidden="true"
 				/>
 			</span>

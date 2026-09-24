@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
-import { Users } from "lucide-react"
 import { describe, expect, test } from "vitest"
+import { Users } from "@/components/ui/pixel-icons"
 import { StatCard } from "./stat-card"
 
 describe("StatCard", () => {
