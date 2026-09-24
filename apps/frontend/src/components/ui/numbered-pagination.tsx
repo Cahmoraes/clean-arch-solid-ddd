@@ -44,10 +44,10 @@ function pageLinkClassName(
 	variant: NumberedPaginationVariant,
 	isActive: boolean,
 ): string {
-	if (variant !== "accent") return "h-8 w-8 text-sm"
 	if (isActive) {
-		return "h-8 w-8 rounded-sm border-transparent bg-accent text-sm font-semibold text-accent-foreground hover:bg-accent"
+		return "h-8 w-8 rounded-sm border-accent bg-accent/10 text-sm font-semibold text-foreground hover:bg-accent/15"
 	}
+	if (variant !== "accent") return "h-8 w-8 text-sm"
 	return "h-8 w-8 rounded-sm text-sm text-muted-foreground hover:text-foreground"
 }
 

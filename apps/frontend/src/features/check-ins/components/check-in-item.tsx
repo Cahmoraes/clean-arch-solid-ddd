@@ -25,6 +25,16 @@ function formatDate(iso: string): string {
 	}
 }
 
+function formatTime(iso: string): string {
+	try {
+		return new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" }).format(
+			new Date(iso),
+		)
+	} catch {
+		return iso
+	}
+}
+
 export interface CheckInItemProps {
 	checkIn: CheckIn
 	action?: React.ReactNode
@@ -57,8 +67,11 @@ export function CheckInItem({ checkIn, action }: CheckInItemProps) {
 					Realizado em {formatDate(checkIn.createdAt)}
 				</p>
 			</div>
-			<time className="font-mono text-xs text-subtle tabular max-[560px]:hidden">
-				{formatDate(checkIn.createdAt)}
+			<time
+				dateTime={checkIn.createdAt}
+				className="font-mono text-sm text-muted-foreground tabular max-[560px]:hidden"
+			>
+				{formatTime(checkIn.createdAt)}
 			</time>
 			{action}
 		</motion.li>

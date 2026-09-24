@@ -119,3 +119,19 @@ describe("CheckInFilterBar — mobile sheet", () => {
 		expect(onStatusChange).toHaveBeenCalledWith(undefined)
 	})
 })
+
+describe("CheckInFilterBar — direção Noite neon", () => {
+	test("o filtro ativo tem contorno ciano e os demais borda transparente", () => {
+		render(
+			<CheckInFilterBar
+				status="pending"
+				onStatusChange={vi.fn()}
+				stats={{ total: 10, pending: 4, validated: 5, rejected: 1 }}
+			/>,
+		)
+		const active = screen.getAllByRole("button", { name: /Pendentes/ })[0]
+		const inactive = screen.getAllByRole("button", { name: /Aprovados/ })[0]
+		expect(active).toHaveClass("border-accent", "bg-accent/10")
+		expect(inactive).toHaveClass("border-transparent")
+	})
+})

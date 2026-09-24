@@ -219,3 +219,29 @@ describe("CheckInActions", () => {
 		).not.toBeInTheDocument()
 	})
 })
+
+describe("CheckInActions — direção Noite neon", () => {
+	beforeEach(() => {
+		vi.mocked(useValidateCheckIn).mockReturnValue(
+			makeMutation() as unknown as ReturnType<typeof useValidateCheckIn>,
+		)
+		vi.mocked(useRejectCheckIn).mockReturnValue(
+			makeMutation() as unknown as ReturnType<typeof useRejectCheckIn>,
+		)
+	})
+
+	test("Aprovar é a ação primária em magenta e Rejeitar é vermelho suave", () => {
+		renderWithProviders(<CheckInActions checkIn={pendingCheckIn} />)
+		expect(screen.getByTestId("checkin-approve-ci-1")).toHaveClass(
+			"bg-primary",
+			"text-primary-foreground",
+		)
+		expect(screen.getByTestId("checkin-approve-ci-1")).not.toHaveClass(
+			"bg-accent",
+		)
+		expect(screen.getByTestId("checkin-reject-ci-1")).toHaveClass(
+			"bg-destructive-soft",
+			"text-destructive",
+		)
+	})
+})

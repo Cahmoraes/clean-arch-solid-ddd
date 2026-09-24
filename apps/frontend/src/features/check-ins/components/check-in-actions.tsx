@@ -89,7 +89,7 @@ function ApproveButton({
 					aria-busy={isPending}
 					aria-label={label}
 					data-testid={`checkin-approve-${checkInId}`}
-					className="bg-accent text-accent-foreground hover:bg-primary-strong"
+					className="bg-primary text-primary-foreground hover:bg-primary-strong"
 				>
 					{isPending ? (
 						<Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

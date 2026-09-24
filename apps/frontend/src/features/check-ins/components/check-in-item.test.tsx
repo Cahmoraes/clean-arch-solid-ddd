@@ -59,3 +59,36 @@ describe("CheckInItem VOLT", () => {
 		expect(screen.getByTestId("checkin-item-c1")).toBeInTheDocument()
 	})
 })
+
+describe("CheckInItem — direção Noite neon", () => {
+	test("o chip de status usa fundo suave semântico: verde, âmbar e vermelho", () => {
+		const { container, rerender } = render(<CheckInItem checkIn={checkIn} />)
+		expect(container.querySelector('[data-status="pending"]')).toHaveClass(
+			"bg-warning-soft",
+			"text-warning",
+		)
+		rerender(<CheckInItem checkIn={{ ...checkIn, status: "validated" }} />)
+		expect(container.querySelector('[data-status="validated"]')).toHaveClass(
+			"bg-success-soft",
+			"text-success",
+		)
+		rerender(<CheckInItem checkIn={{ ...checkIn, status: "rejected" }} />)
+		expect(container.querySelector('[data-status="rejected"]')).toHaveClass(
+			"bg-destructive-soft",
+			"text-destructive",
+		)
+	})
+
+	test("o horário aparece em mono à direita, só com hora e minuto, ligado ao instante do check-in", () => {
+		const { container } = render(<CheckInItem checkIn={checkIn} />)
+		const time = container.querySelector("time")
+		expect(time).toHaveClass("font-mono")
+		expect(time).toHaveAttribute("dateTime", checkIn.createdAt)
+		expect(time?.textContent).toMatch(/^\d{2}:\d{2}$/)
+	})
+
+	test("mantém o texto Realizado em com data e hora", () => {
+		render(<CheckInItem checkIn={checkIn} />)
+		expect(screen.getByText(/Realizado em .+\d{2}:\d{2}/)).toBeInTheDocument()
+	})
+})

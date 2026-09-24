@@ -197,3 +197,24 @@ describe("NumberedPagination", () => {
 		expect(screen.queryByTestId("test-page-10")).not.toBeInTheDocument()
 	})
 })
+
+describe("NumberedPagination — página ativa em ciano", () => {
+	for (const variant of ["default", "accent"] as const) {
+		test(`variante ${variant}: a página ativa tem contorno e fundo suave em ciano`, () => {
+			render(
+				<NumberedPagination
+					page={2}
+					totalPages={5}
+					onChange={vi.fn()}
+					testIdPrefix="t"
+					variant={variant}
+				/>,
+			)
+			expect(screen.getByTestId("t-page-2")).toHaveClass(
+				"border-accent",
+				"bg-accent/10",
+			)
+			expect(screen.getByTestId("t-page-3")).not.toHaveClass("border-accent")
+		})
+	}
+})
