@@ -85,6 +85,12 @@ describe("SubscriptionPage", () => {
 			within(confirmation).getByTestId("subscription-confirmation-id"),
 		).toHaveTextContent("sub_demo_xyz")
 		expect(
+			within(confirmation).getByTestId("subscription-confirmation-id"),
+		).toHaveClass("font-mono")
+		expect(
+			within(confirmation).getByTestId("subscription-confirmation-id"),
+		).not.toHaveClass("font-display")
+		expect(
 			within(confirmation).getByTestId("subscription-confirmation-status"),
 		).toHaveTextContent("active")
 	})

@@ -155,6 +155,8 @@ describe("ProfilePage", () => {
 			"admin@email.com",
 		)
 		expect(screen.getByTestId("profile-id")).toHaveTextContent("user-1")
+		expect(screen.getByTestId("profile-id")).toHaveClass("font-mono")
+		expect(screen.getByTestId("profile-id")).not.toHaveClass("font-display")
 		expect(screen.getByTestId("profile-created-at")).toHaveTextContent(
 			formatCreatedAt("2024-01-15T12:00:00.000Z"),
 		)

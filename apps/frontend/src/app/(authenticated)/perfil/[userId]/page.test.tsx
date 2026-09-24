@@ -35,6 +35,10 @@ describe("PublicProfileView", () => {
 			"carla@example.com",
 		)
 		expect(screen.getByTestId("public-profile-id")).toHaveTextContent("user-99")
+		expect(screen.getByTestId("public-profile-id")).toHaveClass("font-mono")
+		expect(screen.getByTestId("public-profile-id")).not.toHaveClass(
+			"font-display",
+		)
 		expect(screen.getByTestId("public-profile-role")).toHaveTextContent(
 			"Membro",
 		)

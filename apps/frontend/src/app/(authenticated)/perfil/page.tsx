@@ -178,7 +178,7 @@ function ProfileFactsGrid({
 				<Eyebrow className="mb-2 block">ID</Eyebrow>
 				<p
 					data-testid="profile-id"
-					className="truncate font-display text-base text-foreground"
+					className="truncate font-mono text-[13px] font-semibold text-foreground"
 				>
 					{me.id}
 				</p>

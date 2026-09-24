@@ -315,7 +315,7 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 					<dt className="text-muted-foreground">ID da subscription</dt>
 					<dd
 						data-testid="subscription-confirmation-id"
-						className="font-display text-lg text-foreground"
+						className="font-mono text-foreground"
 					>
 						{subscription.subscriptionId}
 					</dd>

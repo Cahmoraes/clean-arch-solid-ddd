@@ -114,7 +114,7 @@ function PublicProfileBody({
 				<dt className="text-sm text-muted-foreground">ID</dt>
 				<dd
 					data-testid="public-profile-id"
-					className="font-display text-xl text-foreground"
+					className="text-base font-mono text-foreground"
 				>
 					{data.id}
 				</dd>
