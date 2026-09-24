@@ -157,7 +157,8 @@ describe("GymResults — alternância de view", () => {
 			"border",
 			"border-border",
 		)
-		expect(list).not.toHaveClass("grid", "rounded-[22px]")
+		expect(list).not.toHaveClass("grid")
+		expect(list).not.toHaveClass("rounded-[22px]")
 	})
 
 	test("na visão de cards, cada academia é um cartão com badge verde de status", () => {
