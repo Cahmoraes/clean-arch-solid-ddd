@@ -164,15 +164,25 @@ describe("NoticePreview", () => {
 		expect(screen.queryByText(/Público:/)).not.toBeInTheDocument()
 	})
 
-	test("a linha de público destaca-se em mono, maiúsculas e cor primary", () => {
+	test("a linha de público destaca-se em display, maiúsculas e cor primary", () => {
 		render(
 			<NoticePreview title="Aviso" message="Mensagem" audience="MEMBERS" />,
 		)
 
 		expect(screen.getByText("Público: Alunos")).toHaveClass(
-			"font-mono",
+			"font-display",
 			"uppercase",
 			"text-primary",
 		)
+	})
+
+	test("eyebrow e label do preview usam font-display, não font-mono", () => {
+		render(
+			<NoticePreview title="Aviso" message="Mensagem" audience="MEMBERS" />,
+		)
+
+		expect(screen.getByTestId("notice-eyebrow")).toHaveClass("font-display")
+		expect(screen.getByTestId("notice-eyebrow")).not.toHaveClass("font-mono")
+		expect(screen.getByText("Público: Alunos")).not.toHaveClass("font-mono")
 	})
 })

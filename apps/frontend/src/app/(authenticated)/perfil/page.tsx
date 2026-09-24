@@ -153,7 +153,7 @@ function CheckInsValue({
 	return (
 		<span
 			data-testid="profile-checkins"
-			className="tabular font-mono text-[15px] font-semibold text-foreground"
+			className="tabular font-display text-lg text-foreground"
 		>
 			{checkInsCount ?? 0}
 		</span>
@@ -178,7 +178,7 @@ function ProfileFactsGrid({
 				<Eyebrow className="mb-2 block">ID</Eyebrow>
 				<p
 					data-testid="profile-id"
-					className="truncate font-mono text-[13px] font-semibold text-foreground"
+					className="truncate font-display text-base text-foreground"
 				>
 					{me.id}
 				</p>
@@ -231,7 +231,7 @@ function MetricCard({
 				) : (
 					<span
 						data-testid="metric-checkins"
-						className="tabular font-mono text-[68px] font-bold leading-[0.9] tracking-tight text-accent"
+						className="tabular font-display text-[85px] leading-[0.9] tracking-tight text-accent"
 					>
 						{checkInsCount ?? 0}
 					</span>
@@ -300,7 +300,7 @@ function ProfileCard({
 					</h1>
 					<p
 						data-testid="profile-email"
-						className="font-mono text-[13px] text-subtle"
+						className="font-display text-base text-subtle"
 					>
 						{me.email}
 					</p>

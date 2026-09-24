@@ -35,7 +35,7 @@ export function ActivityPaginationCardHeader({
 		<CardHeader className="flex flex-row flex-wrap items-center justify-between gap-4 border-b border-border">
 			<CardTitle as="h2">Histórico de atividades</CardTitle>
 			<div className="flex flex-wrap items-center gap-3">
-				<label className="inline-flex items-center gap-2 rounded-sm border bg-muted/40 px-2.5 py-1 font-mono text-[11px] font-medium tracking-wide text-muted-foreground">
+				<label className="inline-flex items-center gap-2 rounded-sm border bg-muted/40 px-2.5 py-1 font-display text-[15px] tracking-wide text-muted-foreground">
 					<span>Itens por página</span>
 					<select
 						aria-label="Itens por página"

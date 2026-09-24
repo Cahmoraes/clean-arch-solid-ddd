@@ -199,7 +199,7 @@ function BillingBanner({
 			className="mb-5 flex flex-wrap items-center justify-between gap-6 rounded-lg border border-border bg-card p-7 shadow-sm"
 		>
 			<div>
-				<p className="font-mono text-[10.5px] uppercase tracking-wider text-subtle">
+				<p className="font-display text-[15px] uppercase tracking-wider text-subtle">
 					{summary.label}
 				</p>
 				<p className="mt-1 font-display text-xl font-semibold">
@@ -210,7 +210,7 @@ function BillingBanner({
 				) : null}
 			</div>
 			<div className="flex flex-col items-end gap-2">
-				<span className="tabular font-mono text-[28px] font-bold leading-none">
+				<span className="tabular font-display text-4xl leading-none">
 					{summary.priceLabel}
 				</span>
 			</div>
@@ -261,7 +261,7 @@ function PlanCard({
 				className="sr-only"
 			/>
 			{current ? (
-				<span className="absolute right-4.5 top-4.5 rounded-sm bg-accent px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-accent-foreground">
+				<span className="absolute right-4.5 top-4.5 rounded-sm bg-accent px-2.5 py-1 font-display text-[15px] uppercase tracking-wider text-accent-foreground">
 					Plano atual
 				</span>
 			) : null}
@@ -315,7 +315,7 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 					<dt className="text-muted-foreground">ID da subscription</dt>
 					<dd
 						data-testid="subscription-confirmation-id"
-						className="font-mono text-foreground"
+						className="font-display text-lg text-foreground"
 					>
 						{subscription.subscriptionId}
 					</dd>
@@ -324,7 +324,7 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 					<dt className="text-muted-foreground">Status</dt>
 					<dd
 						data-testid="subscription-confirmation-status"
-						className="font-mono text-foreground"
+						className="font-display text-lg text-foreground"
 					>
 						{subscription.status}
 					</dd>

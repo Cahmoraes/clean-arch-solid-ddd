@@ -82,7 +82,7 @@ export function HolidayList({
 											>
 												<time
 													dateTime={feriado.date}
-													className="rounded-md bg-card px-2 py-1 font-mono text-xs font-medium"
+													className="rounded-md bg-card px-2 py-1 font-display text-[15px]"
 												>
 													{formatDateBR(feriado.date)}
 												</time>

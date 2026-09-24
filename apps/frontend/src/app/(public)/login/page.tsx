@@ -97,7 +97,7 @@ function LoginForm() {
 					<div className="flex flex-wrap gap-9">
 						{LOGIN_STATS.map((stat) => (
 							<div key={stat.label} className="flex flex-col gap-0.5">
-								<span className="font-mono text-3xl font-bold text-accent tabular-nums">
+								<span className="font-display text-4xl text-accent tabular-nums">
 									{stat.value}
 								</span>
 								<span className="max-w-[110px] text-xs text-muted-foreground dark:text-white/55">
@@ -120,7 +120,7 @@ function LoginForm() {
 							<div className="flex flex-wrap gap-6">
 								{LOGIN_STATS.map((stat) => (
 									<div key={stat.label} className="flex flex-col gap-0.5">
-										<span className="font-mono text-2xl font-bold text-accent tabular-nums">
+										<span className="font-display text-3xl text-accent tabular-nums">
 											{stat.value}
 										</span>
 										<span className="text-xs text-muted-foreground dark:text-white/55">

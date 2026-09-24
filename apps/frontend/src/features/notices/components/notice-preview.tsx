@@ -45,7 +45,8 @@ export function NoticePreview({
 		>
 			<p
 				id={labelId}
-				className="font-mono text-xs uppercase tracking-wide text-muted-foreground"
+				data-testid="notice-eyebrow"
+				className="font-display text-[15px] uppercase tracking-wide text-muted-foreground"
 			>
 				Como o usuário verá
 			</p>
@@ -63,7 +64,7 @@ export function NoticePreview({
 							onDelete={ignoreDelete}
 						/>
 					</ul>
-					<p className="font-mono text-xs uppercase tracking-wide text-primary">
+					<p className="font-display text-[15px] uppercase tracking-wide text-primary">
 						{`Público: ${noticeAudienceLabel(audience)}`}
 					</p>
 				</>

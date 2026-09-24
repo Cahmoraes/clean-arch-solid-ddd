@@ -12,17 +12,17 @@ export function CurrentWeatherDisplay({
 	return (
 		<Card className="flex flex-col gap-5 p-5">
 			<p className="text-sm text-muted-foreground">{city}</p>
-			<p className="font-mono text-5xl font-semibold leading-none">
+			<p className="font-display text-6xl leading-none">
 				{temperature.current}°C
 			</p>
 			<div className="grid grid-cols-2 gap-2.5">
 				<div className="rounded-md border border-border p-3">
 					<p className="text-[11px] text-muted-foreground">Mínima</p>
-					<p className="font-mono text-xl font-semibold">{temperature.min}°C</p>
+					<p className="font-display text-2xl">{temperature.min}°C</p>
 				</div>
 				<div className="rounded-md border border-border p-3">
 					<p className="text-[11px] text-muted-foreground">Máxima</p>
-					<p className="font-mono text-xl font-semibold">{temperature.max}°C</p>
+					<p className="font-display text-2xl">{temperature.max}°C</p>
 				</div>
 			</div>
 		</Card>

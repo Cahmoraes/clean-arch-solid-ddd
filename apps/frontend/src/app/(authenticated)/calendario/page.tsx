@@ -55,7 +55,7 @@ function YearNavigation({
 				<ChevronLeft aria-hidden="true" className="size-4" />
 				{selectedYear - 1}
 			</Button>
-			<span className="rounded-sm border border-border bg-card px-4 py-2 text-center font-mono text-sm font-semibold text-foreground">
+			<span className="rounded-sm border border-border bg-card px-4 py-2 text-center font-display text-lg text-foreground">
 				{selectedYear}
 			</span>
 			<Button

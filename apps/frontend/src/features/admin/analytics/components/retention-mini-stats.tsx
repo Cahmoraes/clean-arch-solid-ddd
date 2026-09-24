@@ -20,7 +20,7 @@ function StatPill({ label, value, destructive = false }: StatPillProps) {
 			<span className="text-xs text-muted-foreground">{label}</span>
 			<span
 				className={cn(
-					"font-mono text-sm font-bold",
+					"font-display text-lg",
 					destructive && "text-destructive",
 				)}
 			>
