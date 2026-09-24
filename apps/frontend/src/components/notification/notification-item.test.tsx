@@ -222,3 +222,39 @@ describe("NotificationItem: botão de excluir", () => {
 		)
 	})
 })
+
+describe("NotificationItem: ícone por tipo", () => {
+	const TYPES: ReadonlyArray<NotificationItemData["type"]> = [
+		"CHECK_IN_APPROVED",
+		"CHECK_IN_REJECTED",
+		"SECURITY_ALERT",
+		"PROMOTION",
+		"NOTICE",
+	]
+
+	function readIcon(type: NotificationItemData["type"]) {
+		const { unmount } = renderItem(makeNotification({ id: type, type }))
+		const svg = getMainButton().querySelector("svg")
+		if (!svg) throw new Error(`sem svg para ${type}`)
+		const reading = {
+			markup: svg.innerHTML,
+			shapeRendering: svg.getAttribute("shape-rendering"),
+			ariaHidden: svg.getAttribute("aria-hidden"),
+		}
+		unmount()
+		return reading
+	}
+
+	test("os 5 tipos renderizam ícone pixel-art nítido e decorativo", () => {
+		for (const type of TYPES) {
+			const icon = readIcon(type)
+			expect(icon.shapeRendering).toBe("crispEdges")
+			expect(icon.ariaHidden).toBe("true")
+		}
+	})
+
+	test("cada tipo de notificação tem um ícone com markup distinto dos demais", () => {
+		const markups = TYPES.map((type) => readIcon(type).markup)
+		expect(new Set(markups).size).toBe(TYPES.length)
+	})
+})

@@ -1,7 +1,7 @@
 "use client"
 
-import { BellOff } from "lucide-react"
 import { type RefObject, useEffect, useRef } from "react"
+import { BellOff } from "@/components/ui/pixel-icons"
 import type { NotificationItem as NotificationItemData } from "@/lib/notifications/use-notifications"
 import { NotificationItem } from "./notification-item"
 

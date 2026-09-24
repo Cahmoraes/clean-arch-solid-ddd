@@ -3,11 +3,12 @@
 import {
 	CheckCircle,
 	Megaphone,
+	type PixelIcon,
 	ShieldAlert,
 	Tag,
 	Trash2,
 	XCircle,
-} from "lucide-react"
+} from "@/components/ui/pixel-icons"
 import { cn } from "@/lib/cn"
 import type { NotificationItem as NotificationItemData } from "@/lib/notifications/use-notifications"
 
@@ -17,7 +18,7 @@ interface NotificationItemProps {
 	onDelete: (id: string) => void
 }
 
-type NotificationIcon = typeof CheckCircle
+type NotificationIcon = PixelIcon
 
 const NOTIFICATION_TYPE_STYLE: Record<
 	NotificationItemData["type"],

@@ -1,7 +1,7 @@
 "use client"
 
-import { Bell } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
+import { Bell } from "@/components/ui/pixel-icons"
 import { useNotifications } from "@/lib/notifications/use-notifications"
 import { NotificationDropdown } from "./notification-dropdown"
 

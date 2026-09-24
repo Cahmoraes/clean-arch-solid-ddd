@@ -1,8 +1,8 @@
 "use client"
 
 import { Command } from "cmdk"
-import { Building2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Building2 } from "@/components/ui/pixel-icons"
 import { useGymsByName } from "@/features/gyms/api"
 
 interface GymGroupProps {

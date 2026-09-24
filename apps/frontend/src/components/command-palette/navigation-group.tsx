@@ -1,6 +1,8 @@
 "use client"
 
 import { Command } from "cmdk"
+import { useRouter } from "next/navigation"
+import type { ElementType } from "react"
 import {
 	Building2,
 	CheckCircle,
@@ -9,9 +11,7 @@ import {
 	User,
 	Users,
 	Wallet,
-} from "lucide-react"
-import { useRouter } from "next/navigation"
-import type { ElementType } from "react"
+} from "@/components/ui/pixel-icons"
 import { useAuthStore } from "@/lib/auth/auth-store"
 
 interface NavItem {

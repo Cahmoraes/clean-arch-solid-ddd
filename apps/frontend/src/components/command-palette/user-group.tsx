@@ -1,8 +1,8 @@
 "use client"
 
 import { Command } from "cmdk"
-import { User } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { User } from "@/components/ui/pixel-icons"
 import type { AdminUser } from "@/features/admin/api/use-users"
 import { useUsers } from "@/features/admin/api/use-users"
 

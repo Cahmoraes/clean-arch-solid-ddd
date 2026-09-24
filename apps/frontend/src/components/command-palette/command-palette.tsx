@@ -2,8 +2,8 @@
 
 import { Content, Overlay, Portal, Root, Title } from "@radix-ui/react-dialog"
 import { Command } from "cmdk"
-import { Search } from "lucide-react"
 import { useState } from "react"
+import { Search } from "@/components/ui/pixel-icons"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { GymGroup } from "./gym-group"
 import { NavigationGroup } from "./navigation-group"
