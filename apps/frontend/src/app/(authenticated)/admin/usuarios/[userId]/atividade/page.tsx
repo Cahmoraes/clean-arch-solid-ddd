@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "@/components/ui/pixel-icons"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { PageContainer } from "@/components/layout/page-container"

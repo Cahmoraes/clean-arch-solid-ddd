@@ -1,6 +1,6 @@
 "use client"
 
-import { AlertTriangle, BadgeCheck, Check } from "lucide-react"
+import { AlertTriangle, BadgeCheck, Check } from "@/components/ui/pixel-icons"
 import { useId, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import {

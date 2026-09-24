@@ -1,6 +1,6 @@
 "use client"
 
-import { LayoutGrid, List, Plus, Search } from "lucide-react"
+import { LayoutGrid, List, Plus, Search } from "@/components/ui/pixel-icons"
 import { MotionConfig } from "motion/react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"

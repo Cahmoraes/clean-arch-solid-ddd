@@ -5,9 +5,10 @@ import {
 	MapPin,
 	Pencil,
 	Phone,
+	type PixelIcon,
 	Power,
 	RotateCcw,
-} from "lucide-react"
+} from "@/components/ui/pixel-icons"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useState } from "react"
@@ -152,7 +153,7 @@ interface StatusConfig {
 	errorMsg: string
 	ariaLabel: string
 	buttonClass: string
-	icon: typeof Power | typeof RotateCcw
+	icon: PixelIcon
 }
 
 function getStatusConfig(

@@ -1,6 +1,6 @@
 "use client"
 
-import { UserCircle } from "lucide-react"
+import { UserCircle } from "@/components/ui/pixel-icons"
 import Link from "next/link"
 import { use } from "react"
 import { PageContainer } from "@/components/layout/page-container"

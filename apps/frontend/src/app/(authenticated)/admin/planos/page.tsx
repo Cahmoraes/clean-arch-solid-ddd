@@ -1,7 +1,7 @@
 "use client"
 
 import type { UseQueryResult } from "@tanstack/react-query"
-import { Plus } from "lucide-react"
+import { Plus } from "@/components/ui/pixel-icons"
 import { useState } from "react"
 import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/page-container"

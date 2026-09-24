@@ -1,6 +1,6 @@
 "use client"
 
-import { Users } from "lucide-react"
+import { Users } from "@/components/ui/pixel-icons"
 import { useSearchParams } from "next/navigation"
 import type { KeyboardEvent } from "react"
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"

@@ -5,7 +5,7 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	RefreshCcw,
-} from "lucide-react"
+} from "@/components/ui/pixel-icons"
 import { useCallback, useEffect, useRef } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"

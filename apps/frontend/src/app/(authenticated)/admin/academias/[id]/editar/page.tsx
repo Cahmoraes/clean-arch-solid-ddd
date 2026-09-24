@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "@/components/ui/pixel-icons"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useId, useState } from "react"

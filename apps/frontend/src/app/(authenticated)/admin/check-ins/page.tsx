@@ -1,6 +1,6 @@
 "use client"
 
-import { ShieldCheck } from "lucide-react"
+import { ShieldCheck } from "@/components/ui/pixel-icons"
 import { Suspense, useEffect, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"

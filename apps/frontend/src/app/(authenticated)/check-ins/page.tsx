@@ -1,6 +1,6 @@
 "use client"
 
-import { CalendarCheck } from "lucide-react"
+import { CalendarCheck } from "@/components/ui/pixel-icons"
 import { Suspense, useEffect, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"

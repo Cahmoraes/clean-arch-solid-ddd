@@ -544,4 +544,29 @@ describe("CalendarPage", () => {
 			await screen.findByRole("heading", { name: /Setembro 2026/ }),
 		).toBeInTheDocument()
 	})
+
+	test("os ícones de navegação de ano são pixel-art nítidos e têm 16px (size-4)", async () => {
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2025`, () => HttpResponse.json([])),
+			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () => HttpResponse.json([])),
+			http.get(`${BRASIL_API_FERIADOS_URL}/2027`, () => HttpResponse.json([])),
+		)
+
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
+
+		const previous = screen
+			.getByLabelText("Ir para 2025 (ano anterior)")
+			.querySelector("svg")
+		const next = screen
+			.getByLabelText("Ir para 2027 (ano seguinte)")
+			.querySelector("svg")
+
+		for (const icon of [previous, next]) {
+			expect(icon).not.toBeNull()
+			expect(icon).toHaveClass("size-4")
+			expect(icon).toHaveAttribute("aria-hidden", "true")
+			expect(icon).toHaveAttribute("shape-rendering", "crispEdges")
+		}
+		await screen.findByText("Nenhum feriado encontrado")
+	})
 })
