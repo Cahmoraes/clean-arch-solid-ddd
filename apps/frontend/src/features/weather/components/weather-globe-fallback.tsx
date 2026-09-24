@@ -15,7 +15,7 @@ export function WeatherGlobeFallback() {
 		<div
 			aria-hidden="true"
 			data-testid="weather-globe-fallback"
-			className="mx-auto rounded-full"
+			className="mx-auto rounded-full corner-round"
 			style={{
 				...GLOBE_BACKGROUND_STYLE,
 				height: GLOBE_SIZE_PX,

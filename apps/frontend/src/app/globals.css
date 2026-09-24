@@ -93,10 +93,15 @@
 		--radius-lg: 10px;
 		--radius-xl: 12px;
 	}
-	*,
-	::before,
-	::after {
-		corner-shape: bevel;
+	/* Em @layer base para que utilities do Tailwind (ex.: corner-round no globo do
+	   clima) consigam sobrescrever o bevel: regra sem layer vence @layer utilities,
+	   e com rounded-full o bevel vira losango. */
+	@layer base {
+		*,
+		::before,
+		::after {
+			corner-shape: bevel;
+		}
 	}
 }
 

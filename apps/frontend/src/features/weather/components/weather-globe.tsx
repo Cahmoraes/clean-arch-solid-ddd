@@ -124,7 +124,7 @@ export function WeatherGlobe({ latitude, longitude }: WeatherGlobeProps) {
 		<div
 			aria-hidden="true"
 			data-testid="weather-globe-canvas"
-			className="mx-auto overflow-hidden rounded-full"
+			className="mx-auto overflow-hidden rounded-full corner-round"
 			style={{
 				...GLOBE_BACKGROUND_STYLE,
 				height: GLOBE_SIZE_PX,

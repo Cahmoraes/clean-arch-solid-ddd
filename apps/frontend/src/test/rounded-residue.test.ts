@@ -34,4 +34,20 @@ describe("nenhum resíduo de arredondamento ou corner-shape fora dos tokens", ()
 			.map((file) => file.path)
 		expect(stillViolating.sort()).toEqual([...ALLOWED_FILES].sort())
 	})
+	test("o globo do clima anula o chanfro global com corner-round, senão rounded-full vira losango", () => {
+		const missing = listSourceFiles([".tsx"])
+			.filter((file) => ALLOWED_FILES.includes(file.path))
+			.filter((file) => !/\bcorner-round\b/.test(file.content))
+			.map((file) => file.path)
+		expect(missing).toEqual([])
+	})
+
+	test("o corner-shape: bevel global fica em @layer base, senão utilities como corner-round não o sobrescrevem", () => {
+		const css = listSourceFiles([".css"]).find(
+			(file) => file.path === "app/globals.css",
+		)
+		expect(css?.content).toMatch(
+			/@layer base\s*\{\s*\*,\s*::before,\s*::after\s*\{\s*corner-shape:\s*bevel/,
+		)
+	})
 })
