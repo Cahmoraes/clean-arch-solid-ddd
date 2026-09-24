@@ -73,3 +73,30 @@ describe("PublicShell — acessibilidade", () => {
 		expect(container.querySelector("#main-content")).toBeInTheDocument()
 	})
 })
+
+describe("PublicShell — controle de animações", () => {
+	test("exibe o MotionToggle no nav, antes dos links", () => {
+		render(
+			<PublicShell>
+				<p>conteúdo</p>
+			</PublicShell>,
+		)
+		const nav = screen.getByRole("navigation", { name: /navegação principal/i })
+		const toggle = screen.getByRole("button", { name: "Pausar animações" })
+		const firstLink = screen.getByRole("link", { name: /clima/i })
+		expect(nav).toContainElement(toggle)
+		expect(
+			toggle.compareDocumentPosition(firstLink) &
+				Node.DOCUMENT_POSITION_FOLLOWING,
+		).toBeTruthy()
+	})
+
+	test("não adiciona ThemeToggle ao shell público", () => {
+		render(
+			<PublicShell>
+				<p>conteúdo</p>
+			</PublicShell>,
+		)
+		expect(screen.queryByRole("button", { name: /modo/i })).toBeNull()
+	})
+})
