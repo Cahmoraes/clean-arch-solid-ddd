@@ -73,6 +73,19 @@ Um módulo único, `components/ui/pixel-icons.tsx`, exporta um componente por í
 | Ícone sem par exato | revisão desta tabela | usa o mais próximo | ícone aproximado |
 | `Loader2` estático | teste visual | rotação em passos (`steps(8)`) para manter o aspecto pixel | spinner em passos |
 
+## Especificação Visual
+
+**Artefato curado:** `mockups/pixel-art-icons-visual.md`
+
+**Fonte de design original:** nenhuma; layout definido pela prévia do companion sobre `pixelarticons` 2.4.1.
+
+**Decisões visuais (norte, não pixel-final):**
+- Menu lateral: ícones 24px (`h-6 w-6`), `currentColor`; ativo em `sidebar-active`, inativo em `sidebar-muted`, hover `bg-white/5`.
+- Ícones pequenos (paleta, KPIs, badges, notificações) em 16px; badges de papel em 12px.
+- Renderização com `crispEdges`, sem `stroke`.
+
+**Fidelidade:** o mockup é um norte; a conferência final é visual, nas telas reais, nos temas claro e escuro.
+
 ## Decisões Arquiteturais
 
 ### D1. Vamos vendorizar os paths de `pixelarticons` 2.4.1 num módulo próprio, com componentes nomeados no espelho do lucide
