@@ -12,15 +12,15 @@ const STATUS_LABEL: Record<CheckInStatus, string> = {
 }
 
 const STATUS_DOT_CLASS: Record<CheckInStatus, string> = {
-	validated: "bg-accent-foreground dark:bg-accent",
+	validated: "bg-success",
 	pending: "bg-warning",
 	rejected: "bg-destructive",
 }
 
 const STATUS_BADGE_CLASS: Record<CheckInStatus, string> = {
-	validated: "border-transparent bg-accent text-accent-foreground",
+	validated: "border-transparent bg-success-soft text-success",
 	pending: "border-transparent bg-warning-soft text-warning",
-	rejected: "border-transparent bg-destructive/10 text-destructive",
+	rejected: "border-transparent bg-destructive-soft text-destructive",
 }
 
 function formatRelativeDate(iso: string): string {

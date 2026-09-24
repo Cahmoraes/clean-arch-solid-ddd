@@ -47,7 +47,7 @@ export function UserActionsFooter({
 							onClick={onEdit}
 							disabled={flags.isPending}
 							aria-label="Editar dados"
-							className="bg-accent text-accent-foreground hover:bg-accent/90"
+							className="bg-primary text-primary-foreground hover:bg-primary/90"
 						>
 							<EditIcon className="h-4 w-4" aria-hidden="true" />
 						</Button>

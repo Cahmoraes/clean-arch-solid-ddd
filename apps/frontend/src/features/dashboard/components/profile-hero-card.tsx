@@ -37,7 +37,7 @@ function Avatar({ name }: { name?: string }) {
 
 function StatusBadge({ isActive }: { isActive: boolean }) {
 	const statusClass = isActive
-		? "border-transparent bg-accent text-accent-foreground dark:bg-accent/15 dark:text-accent dark:border-accent/30"
+		? "border-transparent bg-success-soft text-success"
 		: "border-transparent bg-muted text-muted-foreground"
 	return (
 		<span
@@ -49,9 +49,7 @@ function StatusBadge({ isActive }: { isActive: boolean }) {
 			<span
 				className={cn(
 					"h-1.5 w-1.5 rounded-full",
-					isActive
-						? "bg-accent-foreground/70 dark:bg-accent"
-						: "bg-muted-foreground/70",
+					isActive ? "bg-success" : "bg-muted-foreground/70",
 				)}
 				aria-hidden="true"
 			/>

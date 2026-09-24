@@ -35,7 +35,7 @@ function PermissionsActions({
 				<Button
 					onClick={onPromote}
 					disabled={isPending}
-					className="h-11 rounded-md bg-accent px-4 font-semibold text-accent-foreground hover:bg-primary-strong"
+					className="h-11 rounded-md bg-primary px-4 font-semibold text-primary-foreground hover:bg-primary-strong"
 				>
 					Tornar Administrador
 				</Button>

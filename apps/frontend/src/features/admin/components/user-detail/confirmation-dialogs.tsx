@@ -90,7 +90,7 @@ export function PromoteConfirmationDialog({
 							onClick={onConfirm}
 							disabled={isPending}
 							aria-busy={isPromoting}
-							className="bg-accent text-accent-foreground hover:bg-primary-strong"
+							className="bg-primary text-primary-foreground hover:bg-primary-strong"
 						>
 							{isPromoting ? "Promovendo..." : "Confirmar"}
 						</Button>

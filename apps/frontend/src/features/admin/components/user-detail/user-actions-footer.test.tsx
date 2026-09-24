@@ -118,10 +118,10 @@ describe("UserActionsFooter", () => {
 		expect(props.onOpenPromote).toHaveBeenCalledTimes(1)
 	})
 
-	test("botão Editar dados tem classe bg-accent", () => {
+	test("botão Editar dados usa o primary como ação primária", () => {
 		renderWithProviders(<UserActionsFooter {...baseProps()} />)
 		const btn = screen.getByRole("button", { name: /editar dados/i })
-		expect(btn.classList.contains("bg-accent")).toBe(true)
+		expect(btn).toHaveClass("bg-primary", "text-primary-foreground")
 	})
 
 	test("botão Editar dados fica desabilitado quando isPending = true", () => {

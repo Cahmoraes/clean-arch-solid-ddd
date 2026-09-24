@@ -112,7 +112,7 @@ function DemoBanner({ className }: DemoBannerProps) {
 			aria-label="Aviso de demonstração"
 			data-testid="subscription-demo-banner"
 			className={cn(
-				"flex items-start gap-3 rounded-[12px] border border-primary bg-accent px-4 py-3 text-sm text-accent-foreground",
+				"flex items-start gap-3 rounded-[12px] border border-warning bg-warning-soft px-4 py-3 text-sm text-foreground",
 				className,
 			)}
 		>
@@ -121,7 +121,7 @@ function DemoBanner({ className }: DemoBannerProps) {
 				<strong className="font-medium">
 					Demonstração — sem cobrança real.
 				</strong>
-				<span className="text-accent-foreground/70">
+				<span className="text-muted-foreground">
 					Esta tela simula o fluxo de assinatura. Nenhum pagamento será
 					processado e nenhum cartão será cobrado.
 				</span>
@@ -408,7 +408,7 @@ function SubscribeActions({
 				disabled={disabled}
 				onClick={onSubscribe}
 				aria-busy={isPending}
-				className="h-11 rounded-md bg-accent px-5 font-semibold text-accent-foreground hover:bg-primary-strong disabled:opacity-60"
+				className="h-11 rounded-md bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary-strong disabled:opacity-60"
 			>
 				{isPending ? "Processando…" : "Assinar plano demo"}
 			</Button>
@@ -441,7 +441,7 @@ function ManageActions({
 					disabled={disabled || !canChange}
 					onClick={onChange}
 					aria-busy={pendingAction === "change"}
-					className="h-11 rounded-md bg-accent px-5 font-semibold text-accent-foreground hover:bg-primary-strong disabled:opacity-60"
+					className="h-11 rounded-md bg-primary px-5 font-semibold text-primary-foreground hover:bg-primary-strong disabled:opacity-60"
 				>
 					{pendingAction === "change" ? "Processando…" : "Trocar plano"}
 				</Button>
@@ -710,7 +710,7 @@ function SubscriptionPageContent({
 				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
 					Assinatura Premium
 				</h1>
-				<p className="text-sm text-accent-foreground/70">
+				<p className="text-sm text-muted-foreground">
 					Escolha um plano para experimentar o fluxo de assinatura.
 				</p>
 			</header>

@@ -163,7 +163,7 @@ function SignupForm() {
 					<p
 						role="alert"
 						data-testid="signup-submit-error"
-						className="rounded-[12px] border border-border bg-accent px-4 py-3 text-sm text-foreground"
+						className="rounded-[12px] border border-transparent bg-destructive-soft px-4 py-3 text-sm text-destructive"
 					>
 						{submissionMessage}
 					</p>

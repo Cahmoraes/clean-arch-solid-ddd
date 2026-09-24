@@ -100,3 +100,16 @@ describe("PublicShell — controle de animações", () => {
 		expect(screen.queryByRole("button", { name: /modo/i })).toBeNull()
 	})
 })
+
+describe("PublicShell — ação primária", () => {
+	test("o CTA Criar conta usa o primary (magenta) e não o acento", () => {
+		render(
+			<PublicShell>
+				<p>conteúdo</p>
+			</PublicShell>,
+		)
+		const cta = screen.getByRole("link", { name: /criar conta/i })
+		expect(cta).toHaveClass("bg-primary", "text-primary-foreground")
+		expect(cta).not.toHaveClass("bg-accent")
+	})
+})

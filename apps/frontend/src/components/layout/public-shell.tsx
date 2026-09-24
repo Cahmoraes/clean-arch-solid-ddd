@@ -48,7 +48,7 @@ export function PublicShell({ children, className }: PublicShellProps) {
 						</Link>
 						<Link
 							href="/cadastro"
-							className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-primary-strong"
+							className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-strong"
 						>
 							Criar conta
 						</Link>

@@ -45,7 +45,7 @@ export function PlanCardHero({
 			</ul>
 			<Link
 				href="/cadastro"
-				className="block w-full rounded-md bg-accent py-3 text-center font-display text-sm font-bold text-accent-foreground transition-colors hover:bg-primary-strong"
+				className="block w-full rounded-md bg-primary py-3 text-center font-display text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-strong"
 			>
 				Assinar agora
 			</Link>

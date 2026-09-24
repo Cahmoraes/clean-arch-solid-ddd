@@ -84,7 +84,7 @@ export function BulkStatusConfirmationDialog({
 							variant={action === "deactivate" ? "destructive" : undefined}
 							className={
 								action === "activate"
-									? "bg-accent text-accent-foreground hover:bg-primary-strong"
+									? "bg-primary text-primary-foreground hover:bg-primary-strong"
 									: undefined
 							}
 							onClick={(event) => {

@@ -68,4 +68,13 @@ describe("ProfileHeroCard", () => {
 		const { container } = render(<ProfileHeroCard thisMonth={0} streak={0} />)
 		expect(container.querySelector("[data-scene]")).toBeNull()
 	})
+
+	test("a conta ativa usa o verde semântico de sucesso, não o acento ciano", () => {
+		render(<ProfileHeroCard thisMonth={4} streak={2} />)
+		expect(screen.getByText("Conta ativa")).toHaveClass(
+			"bg-success-soft",
+			"text-success",
+		)
+		expect(screen.getByText("Conta ativa")).not.toHaveClass("bg-accent")
+	})
 })
