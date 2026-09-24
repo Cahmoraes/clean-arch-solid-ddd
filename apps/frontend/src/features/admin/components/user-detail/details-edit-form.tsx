@@ -1,9 +1,9 @@
 "use client"
 
-import { ChevronDown } from "@/components/ui/pixel-icons"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { ChevronDown } from "@/components/ui/pixel-icons"
 import { useActivateUser } from "@/features/admin/api/use-activate-user"
 import { useDemoteFromAdmin } from "@/features/admin/api/use-demote-from-admin"
 import { usePromoteToAdmin } from "@/features/admin/api/use-promote-to-admin"

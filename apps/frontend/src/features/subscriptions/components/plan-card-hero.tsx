@@ -1,5 +1,5 @@
-import { Check } from "@/components/ui/pixel-icons"
 import Link from "next/link"
+import { Check } from "@/components/ui/pixel-icons"
 import type { Plan } from "@/features/subscriptions/api/use-plans"
 
 interface PlanCardHeroProps {

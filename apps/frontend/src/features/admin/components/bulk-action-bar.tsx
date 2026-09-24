@@ -1,7 +1,7 @@
 "use client"
 
-import { X } from "@/components/ui/pixel-icons"
 import { Button } from "@/components/ui/button"
+import { X } from "@/components/ui/pixel-icons"
 import { cn } from "@/lib/cn"
 
 export interface BulkActionBarProps {

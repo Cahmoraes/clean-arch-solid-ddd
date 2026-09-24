@@ -1,5 +1,5 @@
-import { Check } from "@/components/ui/pixel-icons"
 import { Button } from "@/components/ui/button"
+import { Check } from "@/components/ui/pixel-icons"
 import { StatusBadge } from "@/components/ui/status-badge"
 import type { PlanAdmin } from "@/features/plans-admin/api"
 import { resolvePlanStatusBadge } from "@/features/plans-admin/lib/resolve-plan-status-badge"
