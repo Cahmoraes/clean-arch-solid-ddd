@@ -3,10 +3,13 @@ import { listSourceFiles } from "./source-files"
 
 // Idiomas do verde antigo, quando accent e primary eram o mesmo verde.
 // Com accent ciano e primary magenta, cada um muda de significado.
+// Pílula decorativa da landing: ciano é o acento pretendido, sem significado de alerta.
+const DECORATIVE_PILL_PATH = "app/(public)/page.tsx"
+
 const FORBIDDEN_IDIOMS: ReadonlyArray<{ name: string; pattern: RegExp }> = [
 	{
 		name: "alerta de erro pintado com accent",
-		pattern: /border border-border bg-accent px-4 py-/,
+		pattern: /border border-border bg-accent/,
 	},
 	{
 		name: "banner de aviso pintado com accent",
@@ -24,11 +27,13 @@ const FORBIDDEN_IDIOMS: ReadonlyArray<{ name: string; pattern: RegExp }> = [
 
 describe("Premissas do verde antigo", () => {
 	test("nenhum arquivo de produção usa accent com o significado do verde antigo", () => {
-		const violations = listSourceFiles([".ts", ".tsx"]).flatMap((file) =>
-			FORBIDDEN_IDIOMS.filter(({ pattern }) => pattern.test(file.content)).map(
-				({ name }) => `${file.path}: ${name}`,
-			),
-		)
+		const violations = listSourceFiles([".ts", ".tsx"])
+			.filter((file) => file.path !== DECORATIVE_PILL_PATH)
+			.flatMap((file) =>
+				FORBIDDEN_IDIOMS.filter(({ pattern }) =>
+					pattern.test(file.content),
+				).map(({ name }) => `${file.path}: ${name}`),
+			)
 		expect(violations).toEqual([])
 	})
 })

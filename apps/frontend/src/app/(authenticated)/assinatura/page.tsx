@@ -116,7 +116,10 @@ function DemoBanner({ className }: DemoBannerProps) {
 				className,
 			)}
 		>
-			<AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+			<AlertTriangle
+				className="mt-0.5 h-4 w-4 shrink-0 text-warning"
+				aria-hidden="true"
+			/>
 			<div className="flex flex-col gap-1">
 				<strong className="font-medium">
 					Demonstração — sem cobrança real.

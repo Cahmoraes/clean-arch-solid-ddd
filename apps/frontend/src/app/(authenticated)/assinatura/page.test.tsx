@@ -45,6 +45,13 @@ describe("SubscriptionPage", () => {
 		}
 	})
 
+	it("o ícone do aviso de demonstração usa o âmbar semântico", async () => {
+		renderWithProviders(<SubscriptionPage />)
+
+		const [banner] = await screen.findAllByTestId("subscription-demo-banner")
+		expect(banner.querySelector("svg")).toHaveClass("text-warning")
+	})
+
 	it("envia priceId do plano selecionado e exibe confirmação com id retornado", async () => {
 		const captured: {
 			body: { priceId: string; paymentMethodId: string } | null
