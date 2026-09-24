@@ -72,6 +72,21 @@ async function runningAnimations(page: Page): Promise<number> {
 	)
 }
 
+// Estabiliza a página antes do trace, para que layout tardio (troca de fonte,
+// compilação/hidratação do dev server no primeiro carregamento) caia fora da
+// janela medida: rede ociosa, fontes carregadas e alguns quadros consecutivos.
+async function settlePage(page: Page): Promise<void> {
+	await page.waitForLoadState("networkidle")
+	await page.evaluate(async () => {
+		await document.fonts.ready
+		for (let frame = 0; frame < 5; frame += 1) {
+			await new Promise<void>((resolve) =>
+				requestAnimationFrame(() => resolve()),
+			)
+		}
+	})
+}
+
 test.describe("Desempenho das cenas no login", () => {
 	test.skip(
 		({ browserName }) => browserName !== "chromium",
@@ -90,6 +105,7 @@ test.describe("Desempenho das cenas no login", () => {
 		await page
 			.locator('[data-scene="login"]')
 			.waitFor({ state: "visible", timeout: 10_000 })
+		await settlePage(page)
 		await page.waitForTimeout(WARMUP_MS)
 	})
 

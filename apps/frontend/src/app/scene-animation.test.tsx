@@ -81,6 +81,19 @@ describe("Animação das cenas (globals.css)", () => {
 		)
 	})
 
+	test("will-change só existe em cena animando (data-paused false)", () => {
+		const rules = Array.from(
+			css.matchAll(/([^{}]+)\{([^{}]*will-change:[^{}]*)\}/g),
+			(match) => (match[1] ?? "").trim(),
+		)
+		expect(rules.length, "regras com will-change").toBeGreaterThan(0)
+		for (const selector of rules.filter((rule) =>
+			rule.includes("pixel-scene"),
+		)) {
+			expect(selector).toContain('[data-paused="false"]')
+		}
+	})
+
 	test("movimento reduzido desliga as animações das cenas", () => {
 		const block = reducedMotionBlock()
 		expect(block).toContain(".pixel-scene-beam")

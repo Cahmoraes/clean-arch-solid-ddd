@@ -310,11 +310,18 @@
 @media (prefers-reduced-motion: no-preference) {
 	.pixel-scene .pixel-scene-beam {
 		animation: sceneBeamDrift 12s ease-in-out infinite alternate;
-		will-change: transform;
 	}
 
 	.pixel-scene .pixel-scene-window {
 		animation: sceneWindowTwinkle 5s ease-in-out infinite;
+	}
+
+	/* Camada promovida só enquanto a cena anima; estática/pausada não paga GPU. */
+	.pixel-scene[data-paused="false"] .pixel-scene-beam {
+		will-change: transform;
+	}
+
+	.pixel-scene[data-paused="false"] .pixel-scene-window {
 		will-change: opacity;
 	}
 }
