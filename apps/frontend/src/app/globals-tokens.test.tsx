@@ -110,7 +110,7 @@ describe("Tokens Noite neon (globals.css)", () => {
 	test("tema claro dia de neblina: fundo frio claro com magenta e ciano escurecidos", () => {
 		expect(tokenOf(lightBlock, "background")).toBe("#f3f6fa")
 		expect(tokenOf(lightBlock, "primary")).toBe("#cc0077")
-		expect(tokenOf(lightBlock, "accent")).toBe("#00708a")
+		expect(tokenOf(lightBlock, "accent")).toBe("#006c85")
 	})
 
 	test("a barra lateral é escura nos dois temas", () => {
@@ -147,7 +147,7 @@ describe("DESIGN.md sincronizado com os tokens", () => {
 			"#3ee0ff",
 			"#f3f6fa",
 			"#cc0077",
-			"#00708a",
+			"#006c85",
 		]) {
 			expect(designDoc).toContain(hex)
 		}

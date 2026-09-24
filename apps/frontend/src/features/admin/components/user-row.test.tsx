@@ -312,11 +312,10 @@ describe("cor de destaque vs. marcado e contraste do e-mail", () => {
 		)
 	})
 
-	// Regressão do finding de contraste (code review task-02): --color-muted-foreground
-	// dark (#a3a39c) sobre o card com destaque (bg-accent/10 em #161616) dava 2.60:1,
-	// abaixo do AA 4.5:1 (WCAG 1.4.1/1.4.3). --color-highlight-foreground dark
-	// (#d7d7ce) foi calibrado para >=4.5:1 nesse mesmo fundo, sem alterar o token
-	// --color-muted-foreground global (usado em ~75 outros arquivos do app).
+	// Regressão do finding de contraste (code review task-02): o e-mail em destaque usa
+	// --color-highlight-foreground (calibrado para >=4.5:1 sobre o card selecionado) em vez de
+	// alterar o token --color-muted-foreground global (usado em ~75 outros arquivos do app).
+	// Os valores reais de contraste são verificados em src/app/contrast-tokens.test.tsx.
 	test("FR-005: e-mail em destaque não usa mais o token antigo de contraste insuficiente no dark", () => {
 		const user = buildUser({ status: "activated", role: "MEMBER" })
 		render(<UserRow user={user} isSelected checked={false} />)

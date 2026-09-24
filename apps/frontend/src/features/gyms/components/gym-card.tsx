@@ -17,6 +17,12 @@ const cardMotionVariants = {
 	hover: { y: -3, scale: 1.015 },
 }
 
+// O glow (box-shadow) fica numa camada sobreposta e só a opacity é animada.
+const glowMotionVariants = {
+	rest: { opacity: 0 },
+	hover: { opacity: 1 },
+}
+
 export function GymCard({ gym, adminEditHref }: GymCardProps) {
 	const { tone: statusTone, label: statusLabel } = resolveGymStatusBadge(
 		gym,
@@ -25,7 +31,7 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 	return (
 		<motion.div
 			data-testid="gym-card-wrapper"
-			className="relative flex h-full flex-col rounded-lg transition-shadow duration-300 hover:shadow-glow"
+			className="relative flex h-full flex-col rounded-lg"
 			variants={cardMotionVariants}
 			initial="rest"
 			animate="rest"
@@ -77,6 +83,13 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 					</div>
 				</div>
 			</Link>
+			<motion.span
+				aria-hidden="true"
+				data-testid="gym-card-glow"
+				className="pointer-events-none absolute inset-0 rounded-lg shadow-glow"
+				variants={glowMotionVariants}
+				transition={{ duration: 0.3 }}
+			/>
 			{adminEditHref ? (
 				<Link
 					href={adminEditHref}

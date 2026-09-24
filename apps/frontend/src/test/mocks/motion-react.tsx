@@ -23,6 +23,10 @@ export const motion = {
 		const { children, rest } = stripMotionProps(props)
 		return <div {...rest}>{children as ReactNode}</div>
 	},
+	span: (props: Record<string, unknown>) => {
+		const { children, rest } = stripMotionProps(props)
+		return <span {...rest}>{children as ReactNode}</span>
+	},
 	ul: (props: Record<string, unknown>) => {
 		const { children, rest } = stripMotionProps(props)
 		return <ul {...rest}>{children as ReactNode}</ul>

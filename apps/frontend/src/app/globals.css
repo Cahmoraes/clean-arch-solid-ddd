@@ -35,8 +35,8 @@
 	--color-muted: #e8eef5;
 	--color-muted-foreground: #4a5f78;
 	--color-highlight-foreground: #33485f;
-	--color-subtle: #576b83;
-	--color-accent: #00708a;
+	--color-subtle: #50647c;
+	--color-accent: #006c85;
 	--color-accent-foreground: #ffffff;
 
 	--color-surface: #ffffff;
@@ -55,7 +55,7 @@
 	--color-border: #d5dfea;
 	--color-border-strong: #6f849b;
 	--color-input: #d5dfea;
-	--color-ring: #00708a;
+	--color-ring: #006c85;
 
 	--color-sidebar: #0b1626;
 	--color-sidebar-foreground: #dbe9f7;
@@ -93,7 +93,7 @@
 	--color-popover-foreground: #dbe9f7;
 
 	--color-primary: #ff3ea5;
-	--color-primary-strong: #e0288f;
+	--color-primary-strong: #ee3299;
 	--color-primary-foreground: #0a1424;
 
 	--color-secondary: #101f36;
@@ -103,7 +103,7 @@
 	/* Token dedicado para e-mail em destaque sobre o card selecionado (contraste, tarefa 2),
 	   sem alterar --color-muted-foreground global. */
 	--color-highlight-foreground: #c4d6e8;
-	--color-subtle: #6f88a3;
+	--color-subtle: #7d95af;
 	--color-accent: #3ee0ff;
 	--color-accent-foreground: #0a1424;
 

@@ -132,11 +132,16 @@ describe("GymCard VOLT", () => {
 		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
 	})
 
-	test("o realce de hover do cartão vem do token de glow, sem cor literal", () => {
+	test("o realce de hover vem do token de glow numa camada sobreposta animada só por opacity", () => {
 		renderWithProviders(<GymCard gym={gym} />)
-		expect(screen.getByTestId("gym-card-wrapper")).toHaveClass(
-			"hover:shadow-glow",
-		)
+		const wrapper = screen.getByTestId("gym-card-wrapper")
+		const glow = screen.getByTestId("gym-card-glow")
+		expect(wrapper).not.toHaveClass("transition-shadow")
+		expect(wrapper).not.toHaveClass("hover:shadow-glow")
+		expect(glow).toHaveClass("shadow-glow", "pointer-events-none")
+		expect(glow).toHaveAttribute("aria-hidden", "true")
+		expect(glow).not.toHaveClass("transition-shadow")
+		expect(glow).toBeEmptyDOMElement()
 	})
 
 	test("a pílula Check-in usa o acento (ciano) e o hover vem do token de glow", () => {
@@ -145,9 +150,7 @@ describe("GymCard VOLT", () => {
 			"bg-accent",
 			"text-accent-foreground",
 		)
-		expect(screen.getByTestId("gym-card-wrapper")).toHaveClass(
-			"hover:shadow-glow",
-		)
+		expect(screen.getByTestId("gym-card-glow")).toHaveClass("shadow-glow")
 	})
 
 	test("o badge é verde (Disponível) e, para admin, vermelho (Desativada)", () => {

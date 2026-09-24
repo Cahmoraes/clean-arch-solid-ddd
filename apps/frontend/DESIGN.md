@@ -470,7 +470,7 @@ Os tokens semânticos reais do app vivem em `src/app/globals.css` e prevalecem s
 | surface-2 / muted | `#101f36` | `#e8eef5` |
 | surface-3 | `#152a47` | `#dbe4ee` |
 | primary (magenta, ação primária) | `#ff3ea5` (texto `#0a1424`) | `#cc0077` (texto `#ffffff`) |
-| accent (ciano, foco e seleção) | `#3ee0ff` (texto `#0a1424`) | `#00708a` (texto `#ffffff`) |
+| accent (ciano, foco e seleção) | `#3ee0ff` (texto `#0a1424`) | `#006c85` (texto `#ffffff`) |
 | border / border-strong | `#16304d` / `#4a6d94` | `#d5dfea` / `#6f849b` |
 | sidebar (escura nos dois temas) | `#0b1626` | `#0b1626` |
 
