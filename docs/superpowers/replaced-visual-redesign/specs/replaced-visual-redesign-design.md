@@ -70,7 +70,7 @@ Entrega por ondas: (1) tokens, shell, `BrandMark` e testes acoplados; (2) `Pixel
 - **Interface:** hook devolve `{ paused }`; `MotionToggle` é um botão com rótulo acessível "Pausar animações".
 - **Oculta:** leitura de `matchMedia`, IntersectionObserver, persistência da escolha no navegador e falha de leitura do armazenamento (cai no padrão animado).
 - **Local:** `apps/frontend/src/lib` e `components/ui`.
-- **Depende de / usado por:** APIs do navegador / `PixelScene` e o shell (posição do toggle no shell).
+- **Depende de / usado por:** APIs do navegador / `PixelScene` (o hook) e os dois shells, onde o `MotionToggle` fica ao lado do `ThemeToggle`. Esse é o único acréscimo ao shell; a estrutura dele não muda.
 
 **`BrandMark` (existente)**
 - **Responsabilidade:** marca VOLT. **Oculta:** o desenho pixel do raio. Interface inalterada.
@@ -162,4 +162,4 @@ Cenários:
 - `useSceneMotion`: movimento reduzido, toggle manual e cena fora da tela pausam; armazenamento indisponível cai em "animar"; `matchMedia` e IntersectionObserver mockados.
 - Tokens: nenhuma cor literal nova em componentes; `text-shadow` ausente em tokens de texto.
 - Playwright/axe: contraste AA nos dois temas nas telas da onda; trace confirmando ausência de quadros de layout/paint por quadro nas cenas.
-- Gate final: `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` (backend) / `pnpm --filter frontend test -- --run`, `pnpm build` sem problemas.
+- Gate final (AGENTS.md): `pnpm biome:fix`, `pnpm tsc:check`, `pnpm test:run` e `pnpm build` sem problemas. No frontend, os testes rodam com `pnpm --filter frontend test -- --run`, pois `test:run` não existe lá.
