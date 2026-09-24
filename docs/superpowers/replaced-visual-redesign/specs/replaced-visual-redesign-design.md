@@ -1,6 +1,7 @@
 # Replaced Visual Redesign: Design
 
-Pesquisa base: `../research/research-replaced-visual-redesign.md`. Norte visual: `mockups/replaced-visual-redesign-visual.md`.
+- **Pesquisa base:** `../research/research-replaced-visual-redesign.md`
+- **Norte visual:** `mockups/replaced-visual-redesign-visual.md`
 
 ## Visão Geral
 
