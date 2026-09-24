@@ -316,7 +316,7 @@ describe("AuthenticatedShell — sidebar escura por tokens", () => {
 })
 
 describe("AuthenticatedShell — controle de animações", () => {
-	test("exibe o MotionToggle nas duas variantes ao lado do ThemeToggle", () => {
+	test("não exibe controle de pausa de animações no header", () => {
 		setRole("MEMBER")
 		renderWithProviders(
 			<AuthenticatedShell>
@@ -324,27 +324,6 @@ describe("AuthenticatedShell — controle de animações", () => {
 			</AuthenticatedShell>,
 		)
 		const header = within(screen.getByRole("banner"))
-		const motionButtons = header.getAllByRole("button", {
-			name: "Pausar animações",
-		})
-		const themeButtons = header.getAllByRole("button", { name: /modo/i })
-		expect(motionButtons).toHaveLength(2)
-		expect(themeButtons).toHaveLength(2)
-		expect(motionButtons[0]?.parentElement).toBe(themeButtons[0]?.parentElement)
-	})
-
-	test("as variantes completa e compacta seguem as mesmas classes de visibilidade do ThemeToggle", () => {
-		setRole("MEMBER")
-		renderWithProviders(
-			<AuthenticatedShell>
-				<p>conteúdo</p>
-			</AuthenticatedShell>,
-		)
-		const [full, compact] = within(screen.getByRole("banner")).getAllByRole(
-			"button",
-			{ name: "Pausar animações" },
-		)
-		expect(full).toHaveClass("max-[560px]:hidden")
-		expect(compact).toHaveClass("hidden", "max-[560px]:flex")
+		expect(header.queryByRole("button", { name: /animações/i })).toBeNull()
 	})
 })

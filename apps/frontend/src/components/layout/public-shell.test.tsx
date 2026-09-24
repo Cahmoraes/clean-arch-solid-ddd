@@ -75,20 +75,13 @@ describe("PublicShell — acessibilidade", () => {
 })
 
 describe("PublicShell — controle de animações", () => {
-	test("exibe o MotionToggle no nav, antes dos links", () => {
+	test("não exibe controle de pausa de animações", () => {
 		render(
 			<PublicShell>
 				<p>conteúdo</p>
 			</PublicShell>,
 		)
-		const nav = screen.getByRole("navigation", { name: /navegação principal/i })
-		const toggle = screen.getByRole("button", { name: "Pausar animações" })
-		const firstLink = screen.getByRole("link", { name: /clima/i })
-		expect(nav).toContainElement(toggle)
-		expect(
-			toggle.compareDocumentPosition(firstLink) &
-				Node.DOCUMENT_POSITION_FOLLOWING,
-		).toBeTruthy()
+		expect(screen.queryByRole("button", { name: /animações/i })).toBeNull()
 	})
 
 	test("não adiciona ThemeToggle ao shell público", () => {

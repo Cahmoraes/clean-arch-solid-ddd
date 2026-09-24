@@ -42,7 +42,7 @@ export function PlanCard({ plan, onEdit, onToggleStatus }: PlanCardProps) {
 				<h3 className="font-display text-lg text-foreground">{plan.name}</h3>
 				<StatusBadge tone={badge.tone}>{badge.label}</StatusBadge>
 			</div>
-			<p className="font-display text-2xl text-foreground">
+			<p className="font-sans text-2xl font-semibold tabular-nums text-foreground">
 				{formatPriceLabel(plan)}
 			</p>
 			<p className="text-sm text-muted-foreground">{plan.tagline}</p>

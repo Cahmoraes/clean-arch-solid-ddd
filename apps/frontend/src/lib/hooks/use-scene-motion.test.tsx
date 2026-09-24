@@ -1,15 +1,7 @@
 import { act, renderHook } from "@testing-library/react"
 import { afterEach, describe, expect, test, vi } from "vitest"
-import {
-	mockBlockedLocalStorage,
-	mockIntersectionObserver,
-	mockMatchMedia,
-} from "@/test/browser-mocks"
-import {
-	SCENE_MOTION_STORAGE_KEY,
-	setUserPause,
-	useSceneMotion,
-} from "./use-scene-motion"
+import { mockIntersectionObserver, mockMatchMedia } from "@/test/browser-mocks"
+import { useSceneMotion } from "./use-scene-motion"
 
 function renderMotion() {
 	const element = document.createElement("div")
@@ -20,17 +12,14 @@ function renderMotion() {
 
 afterEach(() => {
 	vi.unstubAllGlobals()
-	window.localStorage.clear()
-	act(() => setUserPause(false))
 })
 
 describe("useSceneMotion", () => {
-	test("anima por padrão: sem pausa manual, sem movimento reduzido, cena visível", () => {
+	test("anima por padrão: sem movimento reduzido, cena visível", () => {
 		mockMatchMedia(false)
 		mockIntersectionObserver()
 		const { result } = renderMotion()
 		expect(result.current.paused).toBe(false)
-		expect(result.current.userPaused).toBe(false)
 	})
 
 	test("pausa quando o sistema pede movimento reduzido e retoma quando deixa de pedir", () => {
@@ -52,37 +41,6 @@ describe("useSceneMotion", () => {
 		expect(result.current.paused).toBe(false)
 	})
 
-	test("toggleUserPause pausa, grava no navegador e alterna de volta", () => {
-		mockMatchMedia(false)
-		mockIntersectionObserver()
-		const { result } = renderMotion()
-		act(() => result.current.toggleUserPause())
-		expect(result.current.paused).toBe(true)
-		expect(result.current.userPaused).toBe(true)
-		expect(window.localStorage.getItem(SCENE_MOTION_STORAGE_KEY)).toBe("true")
-		act(() => result.current.toggleUserPause())
-		expect(result.current.paused).toBe(false)
-		expect(window.localStorage.getItem(SCENE_MOTION_STORAGE_KEY)).toBe("false")
-	})
-
-	test("lê a escolha guardada ao montar", () => {
-		mockMatchMedia(false)
-		mockIntersectionObserver()
-		window.localStorage.setItem(SCENE_MOTION_STORAGE_KEY, "true")
-		const { result } = renderMotion()
-		expect(result.current.userPaused).toBe(true)
-		expect(result.current.paused).toBe(true)
-	})
-
-	test("duas instâncias compartilham a mesma escolha manual", () => {
-		mockMatchMedia(false)
-		mockIntersectionObserver()
-		const first = renderMotion()
-		const second = renderMotion()
-		act(() => first.result.current.toggleUserPause())
-		expect(second.result.current.userPaused).toBe(true)
-	})
-
 	test("desconecta o observador de visibilidade e o listener de matchMedia ao desmontar", () => {
 		const media = mockMatchMedia(false)
 		const observer = mockIntersectionObserver()
@@ -92,19 +50,6 @@ describe("useSceneMotion", () => {
 		unmount()
 		expect(observer.activeObservers()).toBe(0)
 		expect(media.hasListeners()).toBe(false)
-	})
-
-	test("armazenamento bloqueado na leitura e na escrita: anima, não lança e o toggle funciona na sessão", () => {
-		mockMatchMedia(false)
-		mockIntersectionObserver()
-		mockBlockedLocalStorage()
-		const { result } = renderMotion()
-		expect(result.current.paused).toBe(false)
-		expect(() => act(() => result.current.toggleUserPause())).not.toThrow()
-		expect(result.current.userPaused).toBe(true)
-		expect(result.current.paused).toBe(true)
-		act(() => result.current.toggleUserPause())
-		expect(result.current.paused).toBe(false)
 	})
 
 	test("matchMedia ausente: trata como sem movimento reduzido e não lança", () => {

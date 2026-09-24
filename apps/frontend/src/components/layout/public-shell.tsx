@@ -1,7 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
 import { BrandMark } from "@/components/ui/brand-mark"
-import { MotionToggle } from "@/components/ui/motion-toggle"
 import { cn } from "@/lib/cn"
 
 export interface PublicShellProps {
@@ -33,7 +32,6 @@ export function PublicShell({ children, className }: PublicShellProps) {
 						aria-label="Navegação principal"
 						className="flex items-center gap-2"
 					>
-						<MotionToggle />
 						<Link
 							href="/clima"
 							className="rounded-md border border-border-strong px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-surface-2"

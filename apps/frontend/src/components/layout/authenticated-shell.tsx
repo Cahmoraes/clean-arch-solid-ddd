@@ -23,7 +23,6 @@ import { CommandPalette } from "@/components/command-palette/command-palette"
 import { NotificationBell } from "@/components/notification/notification-bell"
 import { Avatar } from "@/components/ui/avatar"
 import { BrandMark } from "@/components/ui/brand-mark"
-import { MotionToggle } from "@/components/ui/motion-toggle"
 import { SearchBar } from "@/components/ui/search-bar"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useLogout } from "@/features/auth/api"
@@ -311,8 +310,6 @@ export function AuthenticatedShell({
 					<div className="ml-auto flex items-center gap-3">
 						<ThemeToggle className="max-[560px]:hidden" />
 						<ThemeToggle compact className="hidden max-[560px]:flex" />
-						<MotionToggle className="max-[560px]:hidden" />
-						<MotionToggle compact className="hidden max-[560px]:flex" />
 						<NotificationBell />
 						<Link href="/perfil" aria-label="Ir para perfil">
 							<Avatar name={meData?.name} size="sm" />

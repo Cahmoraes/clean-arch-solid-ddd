@@ -10,7 +10,7 @@ vi.mock("@/lib/hooks/use-scene-motion", () => ({
 const SCENES: ReadonlyArray<PixelSceneName> = ["login", "hero", "empty"]
 
 function motion(paused: boolean) {
-	return { paused, userPaused: false, toggleUserPause: vi.fn() }
+	return { paused }
 }
 
 function expectIntegerRects(container: HTMLElement) {

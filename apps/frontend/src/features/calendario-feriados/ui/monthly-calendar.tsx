@@ -106,7 +106,7 @@ function DayCell({
 			<span className="block font-display text-lg leading-none">{day}</span>
 			{holiday ? (
 				<span
-					className="mt-1 line-clamp-2 block text-center text-[7px] leading-tight"
+					className="mt-1 line-clamp-2 block font-sans text-center text-[10px] font-medium leading-tight"
 					data-name={holiday.name}
 				>
 					{holiday.name}
