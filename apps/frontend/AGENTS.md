@@ -162,6 +162,8 @@ Textura: a classe `crt-scanlines` desenha linhas horizontais estáticas atrás d
 
 Regras: nenhum componente declara `corner-shape` por conta própria — só `globals.css`; glow nunca é aplicado a texto.
 
+Ícones: pixel-art vendorizados de `pixelarticons` 2.4.1 (MIT) em `src/components/ui/pixel-icons.tsx`, com os mesmos nomes do antigo `lucide-react` (`import { Users } from "@/components/ui/pixel-icons"`; tipo `PixelIcon` no lugar de `LucideIcon`). Tamanhos só 12, 16, 20 ou 24px (`h-3`, `h-4`, `h-5`, `h-6`); `h-3.5` e `h-4.5` (e `w-`/`size-`) são proibidos em arquivo que importa ícone. Para atualizar a versão ou adicionar ícone, edite o mapa de `scripts/generate-pixel-icons.mjs` e rode `node scripts/generate-pixel-icons.mjs` em `apps/frontend`; nunca edite o `.tsx` gerado à mão. `lucide-react` é proibido em `src/` e no `package.json` (guarda `src/test/no-lucide.test.ts`); `components.json` mantém `iconLibrary: "lucide"` porque só afeta o CLI do shadcn.
+
 ### Acessibilidade
 
 - **Botão ícone-only:** `Button size="icon"` sem filho textual exige `aria-label`/`aria-labelledby` — não há enforcement de tipo (decisão consciente, ver PRD `acessibilidade-frontend`).
