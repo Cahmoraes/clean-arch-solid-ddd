@@ -163,4 +163,10 @@ describe("GymResults — alternância de view", () => {
 		)
 		expect(list).not.toHaveClass("grid")
 	})
+
+	test("na visão de cards, cada academia é um cartão com badge verde de status", () => {
+		renderWithProviders(<GymResults {...baseProps()} />)
+		expect(screen.getAllByText("Disponível")).toHaveLength(2)
+		expect(screen.getByTestId("gym-card-g1")).toBeInTheDocument()
+	})
 })

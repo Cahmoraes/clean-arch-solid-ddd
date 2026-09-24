@@ -138,4 +138,42 @@ describe("GymCard VOLT", () => {
 			"hover:shadow-glow",
 		)
 	})
+
+	test("a pílula Check-in usa o acento (ciano) e o hover vem do token de glow", () => {
+		renderWithProviders(<GymCard gym={gym} />)
+		expect(screen.getByText("Check-in")).toHaveClass(
+			"bg-accent",
+			"text-accent-foreground",
+		)
+		expect(screen.getByTestId("gym-card-wrapper")).toHaveClass(
+			"hover:shadow-glow",
+		)
+	})
+
+	test("o badge é verde (Disponível) e, para admin, vermelho (Desativada)", () => {
+		const { rerender } = renderWithProviders(<GymCard gym={gym} />)
+		expect(screen.getByText("Disponível")).toHaveClass(
+			"bg-success-soft",
+			"text-success",
+		)
+		rerender(
+			<GymCard
+				gym={{ ...gym, status: "deactivated" }}
+				adminEditHref="/admin/academias/g1/editar"
+			/>,
+		)
+		expect(screen.getByText("Desativada")).toHaveClass(
+			"bg-destructive-soft",
+			"text-destructive",
+		)
+	})
+
+	test("o botão de editar do admin destaca em ciano no hover, não em magenta", () => {
+		renderWithProviders(
+			<GymCard gym={gym} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		const edit = screen.getByTestId("gym-edit-g1")
+		expect(edit).toHaveClass("hover:text-accent")
+		expect(edit).not.toHaveClass("hover:text-primary")
+	})
 })

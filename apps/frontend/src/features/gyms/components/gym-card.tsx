@@ -82,7 +82,7 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 					href={adminEditHref}
 					data-testid={`gym-edit-${gym.id}`}
 					aria-label={`Editar academia ${gym.title}`}
-					className="absolute right-3 top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background/80 text-foreground backdrop-blur transition-colors hover:bg-background hover:text-primary"
+					className="absolute right-3 top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background/80 text-foreground backdrop-blur transition-colors hover:bg-background hover:text-accent"
 				>
 					<Pencil className="h-4 w-4" aria-hidden="true" />
 				</Link>

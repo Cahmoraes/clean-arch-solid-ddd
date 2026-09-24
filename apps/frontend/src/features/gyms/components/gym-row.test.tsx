@@ -97,4 +97,22 @@ describe("GymRow VOLT", () => {
 		expect(badge).not.toBeNull()
 		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
 	})
+
+	test("a linha realça no hover por token e a pílula Check-in é ciano", () => {
+		renderWithProviders(<GymRow gym={gym} />)
+		expect(screen.getByTestId("gym-row-g1")).toHaveClass("hover:bg-surface-2")
+		expect(screen.getByText("Check-in")).toHaveClass(
+			"bg-accent",
+			"text-accent-foreground",
+		)
+	})
+
+	test("o botão de editar do admin destaca em ciano no hover", () => {
+		renderWithProviders(
+			<GymRow gym={gym} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		const edit = screen.getByTestId("gym-row-edit-g1")
+		expect(edit).toHaveClass("hover:text-accent")
+		expect(edit).not.toHaveClass("hover:text-primary")
+	})
 })
