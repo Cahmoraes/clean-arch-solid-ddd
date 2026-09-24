@@ -1,6 +1,6 @@
 # Task 7: Scanlines de CRT e caret de terminal [FR-009, FR-010, FR-011, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-retro-shapes.md`
 

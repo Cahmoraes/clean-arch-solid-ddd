@@ -1,6 +1,6 @@
 # Task 6: Tipografia de terminal em features e páginas [FR-005, FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-retro-shapes.md`
 

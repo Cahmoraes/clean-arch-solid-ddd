@@ -8,14 +8,14 @@
 
 ## Tarefas
 
-- [ ] 1. Tokens de chanfro com corner-shape e validação do anel de foco → `task-01.md`
-- [ ] 2. VT323 como fonte de display → `task-02.md`
-- [ ] 3. Forma retrô nos componentes compartilhados → `task-03.md`
-- [ ] 4. Tipografia de terminal nos componentes compartilhados → `task-04.md`
-- [ ] 5. Forma retrô em features e páginas → `task-05.md`
-- [ ] 6. Tipografia de terminal em features e páginas → `task-06.md`
-- [ ] 7. Scanlines de CRT e caret de terminal → `task-07.md`
-- [ ] 8. Guarda de resíduo, documentação e conferência de acessibilidade → `task-08.md`
+- [x] 1. Tokens de chanfro com corner-shape e validação do anel de foco → `task-01.md`
+- [x] 2. VT323 como fonte de display → `task-02.md`
+- [x] 3. Forma retrô nos componentes compartilhados → `task-03.md`
+- [x] 4. Tipografia de terminal nos componentes compartilhados → `task-04.md`
+- [x] 5. Forma retrô em features e páginas → `task-05.md`
+- [x] 6. Tipografia de terminal em features e páginas → `task-06.md`
+- [x] 7. Scanlines de CRT e caret de terminal → `task-07.md`
+- [x] 8. Guarda de resíduo, documentação e conferência de acessibilidade → `task-08.md`
 
 ## Restrições Globais
 

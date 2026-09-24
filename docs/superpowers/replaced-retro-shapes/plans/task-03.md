@@ -1,6 +1,6 @@
 # Task 3: Forma retrô nos componentes compartilhados [FR-003, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-retro-shapes.md`
 

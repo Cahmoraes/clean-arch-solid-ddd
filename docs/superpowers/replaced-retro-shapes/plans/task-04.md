@@ -1,6 +1,6 @@
 # Task 4: Tipografia de terminal nos componentes compartilhados [FR-005, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-retro-shapes.md`
 

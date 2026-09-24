@@ -1,6 +1,6 @@
 # Task 8: Guarda de resíduo, documentação e conferência de acessibilidade [FR-013, FR-014, FR-015, FR-018]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-retro-shapes.md`
 

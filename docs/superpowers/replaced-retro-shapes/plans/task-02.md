@@ -1,6 +1,6 @@
 # Task 2: VT323 como fonte de display [FR-005, FR-006, FR-007, FR-008, FR-017]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-retro-shapes.md`
 

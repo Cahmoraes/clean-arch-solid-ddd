@@ -1,6 +1,6 @@
 # Task 1: Tokens de chanfro com corner-shape e validação do anel de foco [FR-001, FR-002, FR-012, FR-017]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-retro-shapes.md`
 

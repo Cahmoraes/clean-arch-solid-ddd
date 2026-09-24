@@ -1,6 +1,6 @@
 # Task 5: Forma retrô em features e páginas [FR-003, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-replaced-retro-shapes.md`
 
