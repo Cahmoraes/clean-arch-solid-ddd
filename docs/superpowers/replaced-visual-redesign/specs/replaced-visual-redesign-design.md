@@ -20,7 +20,8 @@ Pesquisa base: `../research/research-replaced-visual-redesign.md`. Norte visual:
 - Troca de paleta, glow e superfícies em `globals.css` (dark e light).
 - `PixelScene` e controle de movimento (novo).
 - `BrandMark` redesenhado em pixel (nome VOLT mantido).
-- Aplicação em login, hero do dashboard e estados vazios (`EmptyState`).
+- Aplicação da arte em login, hero do dashboard, estados vazios (`EmptyState`) e como fallback de capa de card de academia sem imagem (a imagem, quando existe, prevalece).
+- Telas internas de Usuários, Check-ins e Academias na direção aprovada (mockups em `specs/mockups/`).
 - Passada nas demais telas para consistência e contraste, admin incluído.
 - Ajuste dos testes acoplados a tokens.
 
@@ -103,7 +104,7 @@ Entrega por ondas: (1) tokens, shell, `BrandMark` e testes acoplados; (2) `Pixel
 
 ## Especificação Visual
 
-**Artefato curado:** `mockups/replaced-visual-redesign-visual.md`
+**Artefatos curados:** `mockups/replaced-visual-redesign-visual.md` (tokens, cena e dashboard), `mockups/replaced-visual-redesign-usuarios-visual.md`, `mockups/replaced-visual-redesign-checkins-visual.md` e `mockups/replaced-visual-redesign-academias-visual.md` (telas internas, aprovadas pelo usuário).
 
 **Fonte de design original:** Nenhuma; layout definido apenas via mockup do companion.
 
