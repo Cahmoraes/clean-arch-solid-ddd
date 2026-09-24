@@ -22,6 +22,9 @@ async function applyTheme(page: Page, theme: Theme): Promise<void> {
 // deles e anima via WAAPI ou via JS. Espera então todo elemento animado (inline
 // ou com animação finita) chegar a opacidade computada 1, e que isso siga
 // valendo depois de um respiro (itens remontados por refetch reiniciam o fade).
+// Elementos dentro de aria-hidden="true" são decorativos (o axe não os avalia como
+// conteúdo) e podem repousar em opacidade 0 de propósito (ex.: glow do gym-card),
+// então não contam como entrada pendente.
 // Antes disso, espera os skeletons sumirem: com dados carregando, a lista nem montou.
 async function waitForEntranceAnimations(page: Page): Promise<void> {
 	await expect(page.getByTestId("skeleton")).toHaveCount(0)
@@ -29,19 +32,20 @@ async function waitForEntranceAnimations(page: Page): Promise<void> {
 		.poll(() =>
 			page.evaluate(async () => {
 				const countPending = () =>
-					Array.from(document.querySelectorAll<HTMLElement>("body *")).filter(
-						(el) => {
-							const animated =
-								el.style.opacity !== "" ||
-								el
-									.getAnimations()
-									.some(
-										(a) =>
-											a.effect?.getComputedTiming().iterations !== Infinity,
-									)
-							return animated && window.getComputedStyle(el).opacity !== "1"
-						},
-					).length
+					Array.from(
+						document.querySelectorAll<HTMLElement>(
+							'body *:not([aria-hidden="true"], [aria-hidden="true"] *)',
+						),
+					).filter((el) => {
+						const animated =
+							el.style.opacity !== "" ||
+							el
+								.getAnimations()
+								.some(
+									(a) => a.effect?.getComputedTiming().iterations !== Infinity,
+								)
+						return animated && window.getComputedStyle(el).opacity !== "1"
+					}).length
 				const before = countPending()
 				await new Promise((resolve) => setTimeout(resolve, 400))
 				return before + countPending()
