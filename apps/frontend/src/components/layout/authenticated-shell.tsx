@@ -184,7 +184,7 @@ export function AuthenticatedShell({
 						<BrandMark
 							wordmark
 							className={cn(
-								"text-white max-[860px]:[&>span:last-child]:hidden",
+								"text-sidebar-foreground max-[860px]:[&>span:last-child]:hidden",
 								collapsed && "[&>span:last-child]:hidden",
 							)}
 						/>

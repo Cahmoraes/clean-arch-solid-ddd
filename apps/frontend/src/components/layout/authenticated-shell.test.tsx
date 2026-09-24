@@ -284,3 +284,33 @@ describe("AuthenticatedShell — item Novo aviso", () => {
 		).not.toBeInTheDocument()
 	})
 })
+
+describe("AuthenticatedShell — sidebar escura por tokens", () => {
+	test("a barra lateral usa só tokens sidebar-* nos dois temas", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		const aside = screen.getByRole("complementary")
+		expect(aside).toHaveClass(
+			"bg-sidebar",
+			"text-sidebar-foreground",
+			"border-sidebar-border",
+		)
+	})
+
+	test("o texto da marca na barra lateral usa o token de texto da sidebar", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		const aside = screen.getByRole("complementary")
+		const mark = aside.querySelector("a[href='/inicio'] > span")
+		expect(mark).toHaveClass("text-sidebar-foreground")
+		expect(mark).not.toHaveClass("text-white")
+	})
+})
