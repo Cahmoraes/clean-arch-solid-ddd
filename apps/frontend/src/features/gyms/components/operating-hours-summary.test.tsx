@@ -81,7 +81,7 @@ describe("OperatingHoursSummary", () => {
 		}
 		// today highlight: segunda (weekday 1) deve ter fundo destaque
 		const mondayRow = screen.getByTestId("operating-hours-row-1")
-		expect(mondayRow.className).toContain("bg-[rgba(57,229,140,.10)]")
+		expect(mondayRow.className).toContain("bg-accent/10")
 		// Dom fechado
 		expect(screen.getByTestId("operating-hours-row-0")).toHaveTextContent(
 			"Fechado",

@@ -59,15 +59,15 @@ function WeekRow({
 	return (
 		<tr
 			data-testid={`operating-hours-row-${weekday}`}
-			className={`border-[#ecece6] border-b last:border-0 ${isToday ? "bg-[rgba(57,229,140,.10)]" : ""}`}
+			className={`border-border border-b last:border-0 ${isToday ? "bg-accent/10" : ""}`}
 		>
 			<td
-				className={`px-2.5 py-1.5 ${isToday ? "font-medium text-[#0a7a3a]" : ""}`}
+				className={`px-2.5 py-1.5 ${isToday ? "font-medium text-success" : ""}`}
 			>
 				{WEEKDAY_FULL[weekday]}
 			</td>
 			<td
-				className={`px-2.5 py-1.5 text-right ${isClosed ? "text-[#b0b0a6] italic" : "text-muted-foreground"}`}
+				className={`px-2.5 py-1.5 text-right ${isClosed ? "text-subtle italic" : "text-muted-foreground"}`}
 			>
 				{display}
 			</td>
@@ -160,7 +160,7 @@ export function OperatingHoursSummary({
 	return (
 		<div
 			data-testid="operating-hours-summary"
-			className="mt-3 overflow-hidden rounded-[10px] border border-border bg-[#fcfcf9]"
+			className="mt-3 overflow-hidden rounded-[10px] border border-border bg-surface-2"
 		>
 			<div className="flex items-center gap-1.5 border-border border-b px-2.5 py-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-[.05em]">
 				<Clock className="h-3.5 w-3.5" aria-hidden="true" />
@@ -171,14 +171,14 @@ export function OperatingHoursSummary({
 				<span
 					data-testid="operating-hours-badge"
 					aria-live="polite"
-					className={`font-semibold text-xs ${isOpen ? "text-[#0a7a3a]" : "text-[#b42318]"}`}
+					className={`font-semibold text-xs ${isOpen ? "text-success" : "text-destructive"}`}
 				>
 					{isOpen ? "● Aberto agora" : "● Fechado"}
 				</span>
 				{badgeLabel ? (
 					<span
 						data-testid="operating-hours-badge-time"
-						className={`rounded-full border px-2 py-1 font-bold text-[11px] ${isOpen ? "border-[#b6e8c8] bg-[#e6f9ee] text-[#0a7a3a]" : "border-[#ffd0cc] bg-[#fff1f0] text-[#b42318]"}`}
+						className={`rounded-full border px-2 py-1 font-bold text-[11px] ${isOpen ? "border-success/30 bg-success-soft text-success" : "border-destructive/30 bg-destructive-soft text-destructive"}`}
 					>
 						{badgeLabel}
 					</span>

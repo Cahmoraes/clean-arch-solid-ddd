@@ -4,6 +4,12 @@ import type { StatusDistribution } from "@/features/dashboard/hooks/use-dashboar
 const RADIUS = 28
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS // ≈ 175.93
 
+const STATUS_COLORS = {
+	validated: "var(--color-success)",
+	pending: "var(--color-warning)",
+	rejected: "var(--color-destructive)",
+} as const
+
 interface DonutSegment {
 	label: string
 	count: number
@@ -27,21 +33,21 @@ function buildSegments(dist: StatusDistribution): DonutSegment[] {
 		{
 			label: "Validado",
 			count: dist.validated,
-			color: "#4ade80",
+			color: STATUS_COLORS.validated,
 			length: validatedLen,
 			offset: startOffset,
 		},
 		{
 			label: "Pendente",
 			count: dist.pending,
-			color: "#facc15",
+			color: STATUS_COLORS.pending,
 			length: pendingLen,
 			offset: startOffset - validatedLen,
 		},
 		{
 			label: "Rejeitado",
 			count: dist.rejected,
-			color: "#f87171",
+			color: STATUS_COLORS.rejected,
 			length: rejectedLen,
 			offset: startOffset - validatedLen - pendingLen,
 		},
@@ -96,7 +102,7 @@ export function StatusDonutCard({
 						cy="40"
 						r={RADIUS}
 						fill="none"
-						stroke="hsl(var(--muted))"
+						stroke="var(--color-muted)"
 						strokeWidth="14"
 					/>
 					{total === 0
@@ -121,17 +127,17 @@ export function StatusDonutCard({
 						{
 							label: "Validado",
 							count: distribution.validated,
-							color: "#4ade80",
+							color: STATUS_COLORS.validated,
 						},
 						{
 							label: "Pendente",
 							count: distribution.pending,
-							color: "#facc15",
+							color: STATUS_COLORS.pending,
 						},
 						{
 							label: "Rejeitado",
 							count: distribution.rejected,
-							color: "#f87171",
+							color: STATUS_COLORS.rejected,
 						},
 					].map(({ label, count, color }) => (
 						<li key={label} className="flex items-center gap-2 text-sm">

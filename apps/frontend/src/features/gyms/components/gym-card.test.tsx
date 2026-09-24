@@ -121,4 +121,11 @@ describe("GymCard VOLT", () => {
 		expect(badge).not.toBeNull()
 		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
 	})
+
+	test("o realce de hover do cartão vem do token de glow, sem cor literal", () => {
+		renderWithProviders(<GymCard gym={gym} />)
+		expect(screen.getByTestId("gym-card-wrapper")).toHaveClass(
+			"hover:shadow-glow",
+		)
+	})
 })

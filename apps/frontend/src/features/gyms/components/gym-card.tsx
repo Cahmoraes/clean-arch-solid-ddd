@@ -13,17 +13,8 @@ export interface GymCardProps {
 }
 
 const cardMotionVariants = {
-	rest: {
-		y: 0,
-		scale: 1,
-		boxShadow: "0 0 0 0px rgba(57,229,140,0), 0 0px 0px 0px rgba(0,0,0,0)",
-	},
-	hover: {
-		y: -3,
-		scale: 1.015,
-		boxShadow:
-			"0 0 0 1px rgba(57,229,140,0.45), 0 10px 30px -12px rgba(0,0,0,0.5)",
-	},
+	rest: { y: 0, scale: 1 },
+	hover: { y: -3, scale: 1.015 },
 }
 
 export function GymCard({ gym, adminEditHref }: GymCardProps) {
@@ -34,7 +25,7 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 	return (
 		<motion.div
 			data-testid="gym-card-wrapper"
-			className="relative flex h-full flex-col rounded-lg"
+			className="relative flex h-full flex-col rounded-lg transition-shadow duration-300 hover:shadow-glow"
 			variants={cardMotionVariants}
 			initial="rest"
 			animate="rest"

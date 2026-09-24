@@ -81,7 +81,7 @@ function LoginForm() {
 			data-testid="login-content-container"
 		>
 			<div className="grid min-h-[calc(100vh-8rem)] grid-cols-[1.05fr_1fr] max-[860px]:grid-cols-1">
-				<aside className="relative flex flex-col justify-between overflow-hidden bg-surface-3 p-12 dark:bg-[#0a0a0a] max-[860px]:hidden">
+				<aside className="relative flex flex-col justify-between overflow-hidden bg-surface-3 p-12 dark:bg-background max-[860px]:hidden">
 					<h2 className="font-display text-[clamp(48px,7vw,92px)] font-bold leading-[0.92] tracking-[-0.03em]">
 						Treine onde
 						<br />
