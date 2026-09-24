@@ -1,6 +1,7 @@
 "use client"
 
 import { User } from "lucide-react"
+import { PixelScene } from "@/components/ui/pixel-scene"
 import { Skeleton } from "@/components/ui/skeleton"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"
 import { cn } from "@/lib/cn"
@@ -142,7 +143,13 @@ export function ProfileHeroCard({ thisMonth, streak }: ProfileHeroCardProps) {
 	}
 
 	return (
-		<div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm md:flex-row md:flex-wrap md:items-center">
+		<div className="relative isolate flex flex-col gap-4 overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm md:flex-row md:flex-wrap md:items-center">
+			<div
+				aria-hidden="true"
+				className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-16 opacity-60"
+			>
+				<PixelScene scene="hero" animated />
+			</div>
 			<div className="flex items-center gap-4">
 				<Avatar name={me?.name} />
 				<UserInfo me={me} />

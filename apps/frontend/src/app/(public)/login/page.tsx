@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { FormField } from "@/components/ui/form-field"
+import { PixelScene } from "@/components/ui/pixel-scene"
 import { useLogin, useLoginWithGoogle } from "@/features/auth/api"
 import { GoogleSignInButton } from "@/features/auth/components/google-sign-in-button"
 import { type LoginInput, loginSchema } from "@/features/auth/schemas"
@@ -81,7 +82,13 @@ function LoginForm() {
 			data-testid="login-content-container"
 		>
 			<div className="grid min-h-[calc(100vh-8rem)] grid-cols-[1.05fr_1fr] max-[860px]:grid-cols-1">
-				<aside className="relative flex flex-col justify-between overflow-hidden bg-surface-3 p-12 dark:bg-background max-[860px]:hidden">
+				<aside className="relative isolate flex flex-col justify-between overflow-hidden bg-surface-3 p-12 dark:bg-background max-[860px]:hidden">
+					<div
+						aria-hidden="true"
+						className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-1/2"
+					>
+						<PixelScene scene="login" animated />
+					</div>
 					<h2 className="font-display text-[clamp(48px,7vw,92px)] font-bold leading-[0.92] tracking-[-0.03em]">
 						Treine onde
 						<br />

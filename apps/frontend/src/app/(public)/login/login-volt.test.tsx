@@ -53,4 +53,23 @@ describe("Login VOLT", () => {
 		expect(screen.getByLabelText(/Senha/i)).toBeInTheDocument()
 		expect(screen.getByTestId("login-submit")).toBeInTheDocument()
 	})
+
+	test("exibe a cena pixel decorativa na coluna de marca sem alterar o formulário", () => {
+		const { container } = renderWithProviders(<LoginPage />)
+		const scene = container.querySelector('svg[data-scene="login"]')
+		expect(scene).toBeInTheDocument()
+		expect(scene).toHaveAttribute("aria-hidden", "true")
+		expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument()
+		expect(screen.getByLabelText(/Senha/i)).toBeInTheDocument()
+		expect(screen.getByTestId("login-submit")).toBeInTheDocument()
+		expect(screen.getAllByText(/Treine onde/i)).toHaveLength(2)
+	})
+
+	test("a cena de login anima (data-paused false) quando nada a pausa", () => {
+		const { container } = renderWithProviders(<LoginPage />)
+		expect(container.querySelector('svg[data-scene="login"]')).toHaveAttribute(
+			"data-paused",
+			"false",
+		)
+	})
 })
