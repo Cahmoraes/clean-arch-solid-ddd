@@ -267,7 +267,7 @@ function DetailCard({ gym, adminEditHref }: DetailCardProps) {
 				<h1
 					id="gym-detail-title"
 					data-testid="gym-detail-title"
-					className="font-display text-3xl font-medium text-foreground"
+					className="font-display text-3xl text-foreground"
 				>
 					{gym.title}
 				</h1>

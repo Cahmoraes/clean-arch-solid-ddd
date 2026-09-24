@@ -12,7 +12,7 @@ export function ContactSection() {
 			<div className="flex flex-col items-center text-center">
 				<h2
 					id="contact-heading"
-					className="mb-2 font-display text-3xl font-bold tracking-tight text-foreground"
+					className="mb-2 font-display text-3xl tracking-tight text-foreground"
 				>
 					Fale conosco
 				</h2>

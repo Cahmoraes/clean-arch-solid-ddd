@@ -47,7 +47,7 @@ export function AdminUserActivityView({ userId }: { userId: string }) {
 				<Eyebrow>
 					admin / usuários / {targetUser?.name ?? userId} / atividade
 				</Eyebrow>
-				<h1 className="font-display text-3xl font-semibold text-foreground">
+				<h1 className="font-display text-3xl text-foreground">
 					Histórico de atividades
 				</h1>
 			</header>

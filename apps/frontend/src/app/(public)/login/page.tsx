@@ -89,7 +89,7 @@ function LoginForm() {
 					>
 						<PixelScene scene="login" animated />
 					</div>
-					<h2 className="font-display text-[clamp(48px,7vw,92px)] font-bold leading-[0.92] tracking-[-0.03em]">
+					<h2 className="font-display text-[clamp(48px,7vw,92px)] leading-[0.92] tracking-[-0.03em]">
 						Treine onde
 						<br />
 						<span className="text-accent">você</span> estiver.
@@ -114,7 +114,7 @@ function LoginForm() {
 							data-testid="login-hero-mobile"
 							className="hidden flex-col gap-4 border-b border-border pb-6 max-[860px]:flex"
 						>
-							<h2 className="font-display text-3xl font-bold leading-[0.95] tracking-[-0.03em]">
+							<h2 className="font-display text-3xl leading-[0.95] tracking-[-0.03em]">
 								Treine onde <span className="text-accent">você</span> estiver.
 							</h2>
 							<div className="flex flex-wrap gap-6">
@@ -132,7 +132,7 @@ function LoginForm() {
 						</div>
 						<header className="flex flex-col gap-2">
 							<Eyebrow>Acesse sua conta</Eyebrow>
-							<h1 className="font-display text-[30px] font-semibold tracking-tight text-foreground">
+							<h1 className="font-display text-[30px] tracking-tight text-foreground">
 								Entrar
 							</h1>
 						</header>

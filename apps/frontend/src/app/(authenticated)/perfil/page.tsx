@@ -294,7 +294,7 @@ function ProfileCard({
 				<div className="px-7 pt-2">
 					<h1
 						data-testid="profile-name"
-						className="font-display text-2xl font-semibold text-foreground"
+						className="font-display text-2xl text-foreground"
 					>
 						{me.name}
 					</h1>
@@ -460,9 +460,7 @@ function ProfilePageContent() {
 		<PageContainer width="default" className="gap-6">
 			<header className="flex flex-col gap-1">
 				<Eyebrow>Conta</Eyebrow>
-				<h1 className="font-display text-3xl font-semibold text-foreground">
-					Meu perfil
-				</h1>
+				<h1 className="font-display text-3xl text-foreground">Meu perfil</h1>
 				<p className="text-sm text-muted-foreground">
 					Visualize e mantenha seus dados de acesso e acompanhe suas métricas.
 				</p>

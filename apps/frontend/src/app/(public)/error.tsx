@@ -26,7 +26,7 @@ export default function PublicError({ error, reset }: PublicErrorProps) {
 		>
 			<h1
 				id="public-error-title"
-				className="font-display text-2xl font-medium text-foreground"
+				className="font-display text-2xl text-foreground"
 			>
 				Algo deu errado
 			</h1>

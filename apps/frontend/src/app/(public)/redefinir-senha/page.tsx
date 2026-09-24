@@ -31,7 +31,7 @@ function StatusSection({
 			data-testid={testId}
 			className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-16 sm:px-6"
 		>
-			<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
+			<h1 className="font-display text-3xl tracking-tight text-foreground">
 				{title}
 			</h1>
 			<p className="text-base text-muted-foreground">{description}</p>
@@ -110,7 +110,7 @@ function ResetPasswordForm() {
 	return (
 		<section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
+				<h1 className="font-display text-3xl tracking-tight text-foreground">
 					Redefinir senha
 				</h1>
 				<p className="text-sm text-muted-foreground">

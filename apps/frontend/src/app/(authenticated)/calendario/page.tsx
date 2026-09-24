@@ -107,7 +107,7 @@ function CalendarErrorState({
 			className="flex flex-col items-center justify-center gap-3 rounded-md border border-border bg-card px-6 py-12 text-center"
 		>
 			<div className="flex flex-col gap-1">
-				<h2 className="font-display text-xl font-medium text-foreground">
+				<h2 className="font-display text-xl text-foreground">
 					Não foi possível carregar os feriados
 				</h2>
 				<p className="max-w-sm text-sm text-muted-foreground">

@@ -29,7 +29,7 @@ export default function AuthenticatedError({
 		>
 			<h1
 				id="auth-error-title"
-				className="font-display text-2xl font-medium text-foreground"
+				className="font-display text-2xl text-foreground"
 			>
 				Não foi possível carregar esta página
 			</h1>

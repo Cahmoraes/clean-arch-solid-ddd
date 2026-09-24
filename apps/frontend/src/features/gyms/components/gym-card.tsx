@@ -59,7 +59,7 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 					</StatusBadge>
 				</div>
 				<div className="flex flex-1 flex-col gap-2.5 p-[18px]">
-					<p className="font-display text-base font-semibold text-card-foreground">
+					<p className="font-display text-base text-card-foreground">
 						{gym.title}
 					</p>
 					{gym.description ? (

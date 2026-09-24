@@ -30,7 +30,7 @@ export function PlansSectionHero({ plans }: PlansSectionHeroProps) {
 		>
 			<h2
 				id="plans-heading"
-				className="mb-2 font-display text-3xl font-bold tracking-tight text-foreground"
+				className="mb-2 font-display text-3xl tracking-tight text-foreground"
 			>
 				Escolha seu plano
 			</h2>

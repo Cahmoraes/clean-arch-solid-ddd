@@ -45,7 +45,7 @@ function WeatherPageContent() {
 	return (
 		<section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
+				<h1 className="font-display text-3xl tracking-tight text-foreground">
 					Consulta de clima
 				</h1>
 				<p className="text-sm text-muted-foreground">

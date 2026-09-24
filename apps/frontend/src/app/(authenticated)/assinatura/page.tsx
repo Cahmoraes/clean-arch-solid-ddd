@@ -202,9 +202,7 @@ function BillingBanner({
 				<p className="font-display text-[15px] uppercase tracking-wider text-subtle">
 					{summary.label}
 				</p>
-				<p className="mt-1 font-display text-xl font-semibold">
-					{summary.name}
-				</p>
+				<p className="mt-1 font-display text-xl">{summary.name}</p>
 				{summary.note ? (
 					<p className="text-sm text-muted-foreground">{summary.note}</p>
 				) : null}
@@ -265,11 +263,9 @@ function PlanCard({
 					Plano atual
 				</span>
 			) : null}
-			<p className="mb-3.5 font-display text-lg font-bold text-foreground">
-				{plan.name}
-			</p>
+			<p className="mb-3.5 font-display text-lg text-foreground">{plan.name}</p>
 			<p className="mb-3.5 text-sm text-muted-foreground">{plan.tagline}</p>
-			<p className="tabular font-display text-2xl font-semibold text-foreground">
+			<p className="tabular font-display text-2xl text-foreground">
 				{plan.priceLabel}
 			</p>
 			<ul className="mt-5 flex flex-1 flex-col gap-3">
@@ -303,7 +299,7 @@ function Confirmation({ plan, subscription }: ConfirmationProps) {
 		>
 			<div className="flex items-center gap-2">
 				<BadgeCheck className="h-5 w-5 text-foreground" aria-hidden="true" />
-				<h2 className="font-display text-xl font-medium text-foreground">
+				<h2 className="font-display text-xl text-foreground">
 					Assinatura demonstrativa criada
 				</h2>
 			</div>
@@ -710,7 +706,7 @@ function SubscriptionPageContent({
 	return (
 		<PageContainer as="section" width="default">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
+				<h1 className="font-display text-3xl tracking-tight text-foreground">
 					Assinatura Premium
 				</h1>
 				<p className="text-sm text-muted-foreground">

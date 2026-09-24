@@ -244,7 +244,7 @@ function LoadingPasswordPage() {
 	return (
 		<PageContainer as="section" width="narrow">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
+				<h1 className="font-display text-3xl tracking-tight text-foreground">
 					Senha
 				</h1>
 				<p className="text-sm text-muted-foreground">
@@ -269,7 +269,7 @@ function PasswordErrorPage({ isFetching, onRetry }: PasswordErrorPageProps) {
 	return (
 		<PageContainer as="section" width="narrow">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
+				<h1 className="font-display text-3xl tracking-tight text-foreground">
 					Senha
 				</h1>
 				<p className="text-sm text-muted-foreground">
@@ -314,7 +314,7 @@ function PasswordContentPage({
 	return (
 		<PageContainer as="section" width="narrow">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl font-medium tracking-tight text-foreground">
+				<h1 className="font-display text-3xl tracking-tight text-foreground">
 					{title}
 				</h1>
 				<p className="text-sm text-muted-foreground">{description}</p>

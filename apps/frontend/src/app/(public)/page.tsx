@@ -35,7 +35,7 @@ export default async function LandingPage() {
 				</span>
 				<h1
 					id="hero-title"
-					className="font-display text-4xl font-medium leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl"
+					className="font-display text-4xl leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl"
 				>
 					Acesso a academias,
 					<br />
@@ -67,13 +67,13 @@ export default async function LandingPage() {
 			<section aria-labelledby="features-title" className="flex flex-col gap-8">
 				<h2
 					id="features-title"
-					className="font-display text-3xl font-medium tracking-tight text-foreground"
+					className="font-display text-3xl tracking-tight text-foreground"
 				>
 					Pensado para o essencial.
 				</h2>
 				<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					<li className="rounded-md border border-border bg-card p-6">
-						<h3 className="font-display text-xl font-medium text-foreground">
+						<h3 className="font-display text-xl text-foreground">
 							Check-in em segundos
 						</h3>
 						<p className="mt-2 text-sm text-muted-foreground">
@@ -81,7 +81,7 @@ export default async function LandingPage() {
 						</p>
 					</li>
 					<li className="rounded-md border border-border bg-card p-6">
-						<h3 className="font-display text-xl font-medium text-foreground">
+						<h3 className="font-display text-xl text-foreground">
 							Histórico transparente
 						</h3>
 						<p className="mt-2 text-sm text-muted-foreground">
@@ -89,7 +89,7 @@ export default async function LandingPage() {
 						</p>
 					</li>
 					<li className="rounded-md border border-border bg-card p-6">
-						<h3 className="font-display text-xl font-medium text-foreground">
+						<h3 className="font-display text-xl text-foreground">
 							Administração simples
 						</h3>
 						<p className="mt-2 text-sm text-muted-foreground">

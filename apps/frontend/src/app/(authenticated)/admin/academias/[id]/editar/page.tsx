@@ -262,7 +262,7 @@ export default function AdminEditarAcademiaPage() {
 			<header className="flex flex-col gap-2">
 				<h1
 					id="editar-academia-title"
-					className="font-display text-3xl font-medium text-foreground"
+					className="font-display text-3xl text-foreground"
 				>
 					Editar academia
 				</h1>

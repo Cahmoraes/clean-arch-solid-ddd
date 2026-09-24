@@ -48,9 +48,7 @@ export function EmptyState({
 				</div>
 			) : null}
 			<div className="flex flex-col gap-1">
-				<h3 className="text-xl font-medium text-foreground font-display">
-					{title}
-				</h3>
+				<h3 className="text-xl text-foreground font-display">{title}</h3>
 				{description ? (
 					<p className="text-sm text-muted-foreground max-w-sm">
 						{description}

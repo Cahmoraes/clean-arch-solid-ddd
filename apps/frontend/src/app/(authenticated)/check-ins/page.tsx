@@ -168,7 +168,7 @@ function CheckInsPageContent() {
 			<header className="flex flex-col gap-1">
 				<h1
 					id="checkins-title"
-					className="font-display text-3xl font-medium text-foreground"
+					className="font-display text-3xl text-foreground"
 				>
 					Histórico de check-ins
 				</h1>

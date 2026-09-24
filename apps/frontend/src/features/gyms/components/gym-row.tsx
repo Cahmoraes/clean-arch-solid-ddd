@@ -33,7 +33,7 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 				</div>
 				<div className="flex min-w-0 flex-1 flex-col gap-1">
 					<div className="flex items-center gap-2">
-						<p className="font-display text-sm font-semibold text-card-foreground">
+						<p className="font-display text-[15px] text-card-foreground">
 							{gym.title}
 						</p>
 						<StatusBadge tone={statusTone}>{statusLabel}</StatusBadge>

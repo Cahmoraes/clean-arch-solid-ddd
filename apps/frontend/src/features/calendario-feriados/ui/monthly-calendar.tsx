@@ -103,7 +103,7 @@ function DayCell({
 				getDayCellStateClass(Boolean(holiday), isToday),
 			)}
 		>
-			<span className="block font-display text-[15px] leading-none">{day}</span>
+			<span className="block font-display text-lg leading-none">{day}</span>
 			{holiday ? (
 				<span
 					className="mt-1 line-clamp-2 block text-center text-[7px] leading-tight"

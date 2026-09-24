@@ -139,7 +139,7 @@ export function PublicProfileView({ userId }: PublicProfileViewProps) {
 				>
 					← Voltar ao meu perfil
 				</Link>
-				<h1 className="font-display text-3xl font-semibold text-foreground">
+				<h1 className="font-display text-3xl text-foreground">
 					Perfil público
 				</h1>
 				<p className="text-sm text-muted-foreground">

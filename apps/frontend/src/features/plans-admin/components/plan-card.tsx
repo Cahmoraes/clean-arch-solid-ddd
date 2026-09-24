@@ -39,12 +39,10 @@ export function PlanCard({ plan, onEdit, onToggleStatus }: PlanCardProps) {
 			)}
 		>
 			<div className="flex items-start justify-between gap-2">
-				<h3 className="font-display text-lg font-semibold text-foreground">
-					{plan.name}
-				</h3>
+				<h3 className="font-display text-lg text-foreground">{plan.name}</h3>
 				<StatusBadge tone={badge.tone}>{badge.label}</StatusBadge>
 			</div>
-			<p className="font-display text-2xl font-bold text-foreground">
+			<p className="font-display text-2xl text-foreground">
 				{formatPriceLabel(plan)}
 			</p>
 			<p className="text-sm text-muted-foreground">{plan.tagline}</p>

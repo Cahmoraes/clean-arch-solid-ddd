@@ -20,13 +20,11 @@ export function PlanCardHero({
 				aria-hidden
 				className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-none bg-accent/10 blur-2xl"
 			/>
-			<span className="mb-4 inline-block rounded-sm bg-accent px-3 py-1 font-display text-xs font-black uppercase tracking-widest text-accent-foreground">
+			<span className="mb-4 inline-block rounded-sm bg-accent px-3 py-1 font-display text-[15px] uppercase tracking-widest text-accent-foreground">
 				{badgeLabel}
 			</span>
-			<h3 className="mb-1 font-display text-xl font-bold text-foreground">
-				{plan.name}
-			</h3>
-			<p className="mb-1 font-display text-3xl font-bold text-foreground">
+			<h3 className="mb-1 font-display text-xl text-foreground">{plan.name}</h3>
+			<p className="mb-1 font-display text-3xl text-foreground">
 				{plan.priceLabel}
 			</p>
 			<p className="mb-6 text-sm text-muted-foreground">{plan.tagline}</p>
@@ -45,7 +43,7 @@ export function PlanCardHero({
 			</ul>
 			<Link
 				href="/cadastro"
-				className="block w-full rounded-md bg-primary py-3 text-center font-display text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-strong"
+				className="block w-full rounded-md bg-primary py-3 text-center font-display text-[15px] text-primary-foreground transition-colors hover:bg-primary-strong"
 			>
 				Assinar agora
 			</Link>
