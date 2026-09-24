@@ -35,5 +35,17 @@
 			"cssModules": true,
 			"tailwindDirectives": true
 		}
+	},
+	"linter": {
+		"rules": {
+			"correctness": {
+				"noUnknownProperty": {
+					"level": "error",
+					"options": {
+						"ignore": ["corner-shape"]
+					}
+				}
+			}
+		}
 	}
 }

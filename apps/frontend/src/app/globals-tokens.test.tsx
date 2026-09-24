@@ -46,6 +46,20 @@ const REQUIRED_COLOR_TOKENS = [
 	"sidebar-active-foreground",
 ] as const
 
+function balancedBlockFrom(source: string, start: number): string {
+	const openIndex = source.indexOf("{", start)
+	let depth = 0
+	const closeOffset = [...source.slice(openIndex)].findIndex((char) => {
+		if (char === "{") depth++
+		if (char === "}") depth--
+		return depth === 0
+	})
+	if (closeOffset === -1) {
+		throw new Error(`Bloco balanceado não fechado a partir de ${start}`)
+	}
+	return source.slice(start, openIndex + closeOffset + 1)
+}
+
 function blockOf(selectorSource: string): string {
 	const body = css.match(new RegExp(`${selectorSource}\\s*\\{([^}]*)\\}`))?.[1]
 	if (body === undefined) {
@@ -136,6 +150,31 @@ describe("Tokens Noite neon (globals.css)", () => {
 	test("não restou o verde VOLT antigo em globals.css", () => {
 		expect(css).not.toContain("#39e58c")
 		expect(css).not.toContain("verde-esmeralda")
+	})
+
+	test("os cinco tokens de chanfro valem 0px no @theme e --radius-full não existe (fallback reto)", () => {
+		expect(lightBlock).toMatch(/--radius-xs:\s*0px;/)
+		expect(lightBlock).toMatch(/--radius-sm:\s*0px;/)
+		expect(lightBlock).toMatch(/--radius-md:\s*0px;/)
+		expect(lightBlock).toMatch(/--radius-lg:\s*0px;/)
+		expect(lightBlock).toMatch(/--radius-xl:\s*0px;/)
+		expect(lightBlock).not.toContain("--radius-full")
+	})
+
+	test("o bloco @supports (corner-shape: bevel) existe com os cinco tamanhos, e o anel de foco duplo continua sem recorte", () => {
+		expect(css).toContain("@utility focus-ring-duplo")
+		expect(css).not.toMatch(/clip-path/)
+		const start = css.indexOf("@supports (corner-shape: bevel)")
+		expect(start).toBeGreaterThan(-1)
+		const supportsBlock = balancedBlockFrom(css, start)
+		expect(supportsBlock).toContain("--radius-xs: 2px;")
+		expect(supportsBlock).toContain("--radius-sm: 4px;")
+		expect(supportsBlock).toContain("--radius-md: 6px;")
+		expect(supportsBlock).toContain("--radius-lg: 10px;")
+		expect(supportsBlock).toContain("--radius-xl: 12px;")
+		expect(supportsBlock).toMatch(
+			/\*,\s*::before,\s*::after\s*\{\s*corner-shape:\s*bevel;/,
+		)
 	})
 })
 

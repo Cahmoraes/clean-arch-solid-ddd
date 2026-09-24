@@ -64,13 +64,13 @@
 	--color-sidebar-active: #3ee0ff;
 	--color-sidebar-active-foreground: #0a1424;
 
-	/* Radius */
-	--radius-xs: 6px;
-	--radius-sm: 8px;
-	--radius-md: 14px;
-	--radius-lg: 22px;
-	--radius-xl: 22px;
-	--radius-full: 9999px;
+	/* Radius — tamanho do chanfro (corner-shape: bevel), não raio de arredondamento.
+	   0px é o fallback reto; @supports abaixo sobrescreve com os tamanhos do chanfro. */
+	--radius-xs: 0px;
+	--radius-sm: 0px;
+	--radius-md: 0px;
+	--radius-lg: 0px;
+	--radius-xl: 0px;
 
 	/* Sombras */
 	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -80,6 +80,23 @@
 	--shadow-glow:
 		0 0 0 1px var(--color-accent),
 		0 0 14px -2px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+/* Chanfro (corner-shape: bevel) só onde o navegador suporta a propriedade.
+   Sem suporte (Firefox, Safari), os tokens ficam em 0px (fallback reto, variante A). */
+@supports (corner-shape: bevel) {
+	:root {
+		--radius-xs: 2px;
+		--radius-sm: 4px;
+		--radius-md: 6px;
+		--radius-lg: 10px;
+		--radius-xl: 12px;
+	}
+	*,
+	::before,
+	::after {
+		corner-shape: bevel;
+	}
 }
 
 /* DARK (tema padrão) */
