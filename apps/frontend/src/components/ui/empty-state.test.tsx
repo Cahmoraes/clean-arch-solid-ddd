@@ -58,7 +58,7 @@ describe("EmptyState com cena", () => {
 				description="Tente outro termo."
 			/>,
 		)
-		const scene = container.querySelector('svg[data-scene="empty"]')
+		const scene = container.querySelector('[data-scene="empty"]')
 		expect(scene).toBeInTheDocument()
 		expect(scene).toHaveAttribute("aria-hidden", "true")
 		expect(

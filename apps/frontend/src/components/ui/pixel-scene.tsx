@@ -149,30 +149,112 @@ function Skyline({
 	)
 }
 
-function Windows({
-	points,
-	fill,
-	delayOffset,
-}: {
-	points: ReadonlyArray<Point>
+interface WindowDot {
+	x: number
+	y: number
 	fill: string
-	delayOffset: number
+}
+
+interface WindowGroup {
+	delaySeconds: number
+	dots: WindowDot[]
+}
+
+const WINDOW_DELAY_BUCKETS = 5
+const WINDOW_DELAY_STEP_SECONDS = 0.8
+
+// Agrupa as janelas por atraso de cintilar: cada grupo vira uma camada HTML
+// própria, que o navegador anima por opacity sem repintar o SVG.
+function groupWindowsByDelay(
+	accent: ReadonlyArray<Point>,
+	primary: ReadonlyArray<Point>,
+): ReadonlyArray<WindowGroup> {
+	const buckets: WindowGroup[] = Array.from(
+		{ length: WINDOW_DELAY_BUCKETS },
+		(_, bucket) => ({
+			delaySeconds: bucket * WINDOW_DELAY_STEP_SECONDS,
+			dots: [],
+		}),
+	)
+	const place = (
+		points: ReadonlyArray<Point>,
+		fill: string,
+		offset: number,
+	) => {
+		points.forEach(([x, y], index) => {
+			buckets[(index + offset) % WINDOW_DELAY_BUCKETS]?.dots.push({
+				x,
+				y,
+				fill,
+			})
+		})
+	}
+	place(accent, TONE_FILL.accent, 0)
+	place(primary, TONE_FILL.primary, 2)
+	return buckets
+}
+
+// Camada de arte: um <svg> estático por camada, todos com o mesmo viewBox.
+function SceneLayer({ children }: { children: ReactNode }) {
+	return (
+		<svg
+			viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+			preserveAspectRatio="xMidYMax slice"
+			shapeRendering="crispEdges"
+			aria-hidden="true"
+			focusable="false"
+			className="absolute inset-0 block h-full w-full"
+		>
+			{children}
+		</svg>
+	)
+}
+
+// Só camadas HTML (div) animam: transform e opacity em elementos filhos de SVG
+// são resolvidos na thread principal com layout e paint por quadro no Chrome.
+function BeamLayer({ beam }: { beam: Beam }) {
+	return (
+		<div className="pixel-scene-beam absolute inset-0">
+			<SceneLayer>
+				<rect
+					x={beam.x}
+					y={0}
+					width={beam.width}
+					height={VIEWBOX_HEIGHT}
+					fill={TONE_FILL[beam.tone]}
+					fillOpacity={0.18}
+					transform="skewX(-20)"
+				/>
+			</SceneLayer>
+		</div>
+	)
+}
+
+function WindowLayer({
+	dots,
+	delaySeconds,
+}: {
+	dots: ReadonlyArray<WindowDot>
+	delaySeconds: number
 }) {
 	return (
-		<>
-			{points.map(([x, y], index) => (
-				<rect
-					key={`${x}-${y}`}
-					className="pixel-scene-window"
-					x={x}
-					y={y}
-					width={1}
-					height={1}
-					fill={fill}
-					style={{ animationDelay: `${((index + delayOffset) % 5) * 0.8}s` }}
-				/>
-			))}
-		</>
+		<div
+			className="pixel-scene-window absolute inset-0"
+			style={{ animationDelay: `${delaySeconds}s` }}
+		>
+			<SceneLayer>
+				{dots.map(({ x, y, fill }) => (
+					<rect
+						key={`${x}-${y}`}
+						x={x}
+						y={y}
+						width={1}
+						height={1}
+						fill={fill}
+					/>
+				))}
+			</SceneLayer>
+		</div>
 	)
 }
 
@@ -185,56 +267,58 @@ function SceneArt({
 	animated: boolean
 	className?: string
 }) {
-	const ref = useRef<SVGSVGElement>(null)
+	const ref = useRef<HTMLDivElement>(null)
 	const { paused } = useSceneMotion(ref)
 	const definition = SCENES[scene]
+	const windowLayers = groupWindowsByDelay(
+		definition.windowsAccent,
+		definition.windowsPrimary,
+	)
 
 	return (
-		<svg
+		<div
 			ref={ref}
-			viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
-			preserveAspectRatio="xMidYMax slice"
-			shapeRendering="crispEdges"
 			aria-hidden="true"
-			focusable="false"
 			data-scene={scene}
 			data-paused={!animated || paused}
-			className={cn("pixel-scene block h-full w-full", className)}
+			className={cn(
+				"pixel-scene relative block h-full w-full overflow-hidden",
+				className,
+			)}
 		>
-			<rect
-				x={0}
-				y={0}
-				width={VIEWBOX_WIDTH}
-				height={VIEWBOX_HEIGHT}
-				fill="var(--color-surface)"
-			/>
+			<SceneLayer>
+				<rect
+					x={0}
+					y={0}
+					width={VIEWBOX_WIDTH}
+					height={VIEWBOX_HEIGHT}
+					fill="var(--color-surface)"
+				/>
+			</SceneLayer>
 			{definition.beams.map((beam) => (
-				<g key={`${beam.tone}-${beam.x}`} className="pixel-scene-beam">
-					<rect
-						x={beam.x}
-						y={0}
-						width={beam.width}
-						height={VIEWBOX_HEIGHT}
-						fill={TONE_FILL[beam.tone]}
-						fillOpacity={0.18}
-						transform="skewX(-20)"
-					/>
-				</g>
+				<BeamLayer key={`${beam.tone}-${beam.x}`} beam={beam} />
 			))}
-			<Skyline buildings={definition.far} fill="var(--color-surface-3)" />
-			<Skyline buildings={definition.near} fill="var(--color-surface-2)" />
-			<Windows
-				points={definition.windowsAccent}
-				fill="var(--color-accent)"
-				delayOffset={0}
-			/>
-			<Windows
-				points={definition.windowsPrimary}
-				fill="var(--color-primary)"
-				delayOffset={2}
-			/>
-			<path d={DITHER_PATH} fill="var(--color-background)" fillOpacity={0.5} />
-		</svg>
+			<SceneLayer>
+				<Skyline buildings={definition.far} fill="var(--color-surface-3)" />
+				<Skyline buildings={definition.near} fill="var(--color-surface-2)" />
+			</SceneLayer>
+			{windowLayers
+				.filter((group) => group.dots.length > 0)
+				.map((group) => (
+					<WindowLayer
+						key={group.delaySeconds}
+						dots={group.dots}
+						delaySeconds={group.delaySeconds}
+					/>
+				))}
+			<SceneLayer>
+				<path
+					d={DITHER_PATH}
+					fill="var(--color-background)"
+					fillOpacity={0.5}
+				/>
+			</SceneLayer>
+		</div>
 	)
 }
 

@@ -293,7 +293,7 @@
 		transform: translateX(0);
 	}
 	to {
-		transform: translateX(3px);
+		transform: translateX(4.6875%);
 	}
 }
 
@@ -310,10 +310,12 @@
 @media (prefers-reduced-motion: no-preference) {
 	.pixel-scene .pixel-scene-beam {
 		animation: sceneBeamDrift 12s ease-in-out infinite alternate;
+		will-change: transform;
 	}
 
 	.pixel-scene .pixel-scene-window {
 		animation: sceneWindowTwinkle 5s ease-in-out infinite;
+		will-change: opacity;
 	}
 }
 

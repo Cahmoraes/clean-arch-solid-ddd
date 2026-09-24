@@ -96,9 +96,7 @@ describe("GymResults", () => {
 			/>,
 		)
 		expect(screen.getByText("Nenhuma academia encontrada")).toBeInTheDocument()
-		expect(
-			container.querySelector('svg[data-scene="empty"]'),
-		).toBeInTheDocument()
+		expect(container.querySelector('[data-scene="empty"]')).toBeInTheDocument()
 	})
 
 	test("lista vazia no modo navegação mostra a cena pixel de estado vazio", () => {
@@ -106,9 +104,7 @@ describe("GymResults", () => {
 			<GymResults {...baseProps()} items={[]} />,
 		)
 		expect(screen.getByText("Nenhuma academia cadastrada")).toBeInTheDocument()
-		expect(
-			container.querySelector('svg[data-scene="empty"]'),
-		).toBeInTheDocument()
+		expect(container.querySelector('[data-scene="empty"]')).toBeInTheDocument()
 	})
 
 	test("o estado de erro não usa a cena", () => {

@@ -43,7 +43,7 @@ describe("GymCard VOLT", () => {
 		const { container } = renderWithProviders(
 			<GymCard gym={{ ...gym, imageKey: null }} />,
 		)
-		expect(container.querySelector('svg[data-scene="hero"]')).toHaveAttribute(
+		expect(container.querySelector('[data-scene="hero"]')).toHaveAttribute(
 			"data-paused",
 			"false",
 		)

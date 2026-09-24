@@ -56,7 +56,7 @@ describe("Login VOLT", () => {
 
 	test("exibe a cena pixel decorativa na coluna de marca sem alterar o formulário", () => {
 		const { container } = renderWithProviders(<LoginPage />)
-		const scene = container.querySelector('svg[data-scene="login"]')
+		const scene = container.querySelector('[data-scene="login"]')
 		expect(scene).toBeInTheDocument()
 		expect(scene).toHaveAttribute("aria-hidden", "true")
 		expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument()
@@ -67,7 +67,7 @@ describe("Login VOLT", () => {
 
 	test("a cena de login anima (data-paused false) quando nada a pausa", () => {
 		const { container } = renderWithProviders(<LoginPage />)
-		expect(container.querySelector('svg[data-scene="login"]')).toHaveAttribute(
+		expect(container.querySelector('[data-scene="login"]')).toHaveAttribute(
 			"data-paused",
 			"false",
 		)

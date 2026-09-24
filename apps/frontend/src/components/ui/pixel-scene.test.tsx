@@ -35,14 +35,17 @@ afterEach(() => {
 
 describe("PixelScene", () => {
 	for (const scene of SCENES) {
-		test(`cena ${scene}: renderiza um svg decorativo com skyline, janelas e feixes`, () => {
+		test(`cena ${scene}: renderiza camadas decorativas com skyline, janelas e feixes`, () => {
 			vi.mocked(useSceneMotion).mockReturnValue(motion(false))
 			const { container } = render(<PixelScene scene={scene} animated />)
-			const svg = container.querySelector("svg")
-			expect(svg).toHaveAttribute("aria-hidden", "true")
-			expect(svg).toHaveAttribute("focusable", "false")
-			expect(svg).toHaveAttribute("shape-rendering", "crispEdges")
-			expect(svg).toHaveAttribute("data-scene", scene)
+			const root = container.querySelector("[data-scene]")
+			expect(root).toHaveAttribute("aria-hidden", "true")
+			expect(root).toHaveAttribute("data-scene", scene)
+			for (const svg of Array.from(container.querySelectorAll("svg"))) {
+				expect(svg).toHaveAttribute("aria-hidden", "true")
+				expect(svg).toHaveAttribute("focusable", "false")
+				expect(svg).toHaveAttribute("shape-rendering", "crispEdges")
+			}
 			expect(
 				container.querySelectorAll(".pixel-scene-beam").length,
 			).toBeGreaterThan(0)
@@ -77,7 +80,7 @@ describe("PixelScene", () => {
 	test("animated com hook livre: data-paused é false", () => {
 		vi.mocked(useSceneMotion).mockReturnValue(motion(false))
 		const { container } = render(<PixelScene scene="hero" animated />)
-		expect(container.querySelector("svg")).toHaveAttribute(
+		expect(container.querySelector("[data-scene]")).toHaveAttribute(
 			"data-paused",
 			"false",
 		)
@@ -86,7 +89,7 @@ describe("PixelScene", () => {
 	test("animated com o hook pausado: data-paused é true", () => {
 		vi.mocked(useSceneMotion).mockReturnValue(motion(true))
 		const { container } = render(<PixelScene scene="hero" animated />)
-		expect(container.querySelector("svg")).toHaveAttribute(
+		expect(container.querySelector("[data-scene]")).toHaveAttribute(
 			"data-paused",
 			"true",
 		)
@@ -95,18 +98,30 @@ describe("PixelScene", () => {
 	test("sem animated a cena é estática mesmo com o hook livre", () => {
 		vi.mocked(useSceneMotion).mockReturnValue(motion(false))
 		const { container } = render(<PixelScene scene="hero" />)
-		expect(container.querySelector("svg")).toHaveAttribute(
+		expect(container.querySelector("[data-scene]")).toHaveAttribute(
 			"data-paused",
 			"true",
 		)
 	})
 
-	test("repassa className ao svg", () => {
+	test("as camadas animadas são elementos HTML, não filhos de SVG", () => {
+		vi.mocked(useSceneMotion).mockReturnValue(motion(false))
+		const { container } = render(<PixelScene scene="login" animated />)
+		const animated = container.querySelectorAll(
+			".pixel-scene-beam, .pixel-scene-window",
+		)
+		expect(animated.length).toBeGreaterThan(0)
+		for (const layer of Array.from(animated)) {
+			expect(layer.tagName).toBe("DIV")
+		}
+	})
+
+	test("repassa className à raiz da cena", () => {
 		vi.mocked(useSceneMotion).mockReturnValue(motion(false))
 		const { container } = render(
 			<PixelScene scene="empty" className="opacity-60" />,
 		)
-		expect(container.querySelector("svg")).toHaveClass(
+		expect(container.querySelector("[data-scene]")).toHaveClass(
 			"pixel-scene",
 			"opacity-60",
 		)

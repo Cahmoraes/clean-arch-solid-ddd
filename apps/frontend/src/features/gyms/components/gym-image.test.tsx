@@ -20,20 +20,18 @@ describe("GymImage", () => {
 		)
 		const placeholder = screen.getByTestId("gym-image-placeholder")
 		expect(placeholder).toBeInTheDocument()
-		expect(placeholder.querySelector('svg[data-scene="hero"]')).toHaveAttribute(
+		expect(placeholder.querySelector('[data-scene="hero"]')).toHaveAttribute(
 			"aria-hidden",
 			"true",
 		)
 		expect(screen.queryByTestId("gym-image")).not.toBeInTheDocument()
-		expect(container.querySelectorAll("svg[data-scene]")).toHaveLength(1)
+		expect(container.querySelectorAll("[data-scene]")).toHaveLength(1)
 	})
 
 	test("a cena de fallback é estática por padrão (miniatura da linha)", () => {
 		renderWithProviders(<GymImage imageKey={null} alt="Academia Volt" />)
 		expect(
-			screen
-				.getByTestId("gym-image-placeholder")
-				.querySelector("svg[data-scene]"),
+			screen.getByTestId("gym-image-placeholder").querySelector("[data-scene]"),
 		).toHaveAttribute("data-paused", "true")
 	})
 
@@ -42,9 +40,7 @@ describe("GymImage", () => {
 			<GymImage imageKey={null} alt="Academia Volt" sceneAnimated />,
 		)
 		expect(
-			screen
-				.getByTestId("gym-image-placeholder")
-				.querySelector("svg[data-scene]"),
+			screen.getByTestId("gym-image-placeholder").querySelector("[data-scene]"),
 		).toHaveAttribute("data-paused", "false")
 	})
 
@@ -112,9 +108,7 @@ describe("GymImage — chave de imagem vazia ou só com espaços", () => {
 				<GymImage imageKey={emptyKey} alt="Academia Volt" />,
 			)
 			expect(screen.getByTestId("gym-image-placeholder")).toBeInTheDocument()
-			expect(
-				container.querySelector('svg[data-scene="hero"]'),
-			).toBeInTheDocument()
+			expect(container.querySelector('[data-scene="hero"]')).toBeInTheDocument()
 			expect(screen.queryByTestId("gym-image")).not.toBeInTheDocument()
 			unmount()
 		}

@@ -45,7 +45,7 @@ describe("ProfileHeroCard", () => {
 		mockMatchMedia(false)
 		mockIntersectionObserver()
 		const { container } = render(<ProfileHeroCard thisMonth={4} streak={2} />)
-		const scene = container.querySelector('svg[data-scene="hero"]')
+		const scene = container.querySelector('[data-scene="hero"]')
 		expect(scene).toBeInTheDocument()
 		expect(scene).toHaveAttribute("aria-hidden", "true")
 		expect(scene).toHaveAttribute("data-paused", "false")
