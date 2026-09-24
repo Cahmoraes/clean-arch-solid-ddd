@@ -5,8 +5,8 @@ import {
 	CalendarDays,
 	CheckCircle,
 	Flame,
-	type LucideIcon,
-} from "lucide-react"
+	type PixelIcon,
+} from "@/components/ui/pixel-icons"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatCard } from "@/components/ui/stat-card"
 import { useMetrics } from "@/features/profile/api"
@@ -24,7 +24,7 @@ function KpiSkeleton() {
 }
 
 interface KpiSlotProps {
-	icon: LucideIcon
+	icon: PixelIcon
 	value: string
 	label: string
 	isLoading?: boolean

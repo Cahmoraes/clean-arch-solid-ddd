@@ -135,6 +135,44 @@ describe("ActivityTab", () => {
 		expect(svgClasses.every((cls) => cls.includes("text-warning"))).toBe(true)
 	})
 
+	test("o svg de cada evento é pixel-art nítido e mantém a classe de tom repassada", () => {
+		const events: UserActivityEvent[] = [
+			buildEvent({
+				id: "e1",
+				type: "CHECK_IN",
+				description: "Check-in — Academia Central",
+			}),
+			buildEvent({
+				id: "e2",
+				type: "PASSWORD_CHANGED",
+				description: "Senha alterada",
+			}),
+		]
+		render(<ActivityTab events={events} />)
+
+		const checkInSvg = screen
+			.getByRole("img", { name: "Check-in" })
+			.querySelector("svg")
+		const securitySvg = screen
+			.getByRole("img", { name: "Segurança" })
+			.querySelector("svg")
+
+		expect(checkInSvg).toHaveAttribute("shape-rendering", "crispEdges")
+		expect(checkInSvg).toHaveClass("text-accent")
+		expect(securitySvg).toHaveAttribute("shape-rendering", "crispEdges")
+		expect(securitySvg).toHaveClass("text-warning")
+	})
+
+	test("o svg do evento de login mantém text-muted-foreground e é pixel-art nítido", () => {
+		const { container } = render(
+			<ActivityTab events={[buildEvent({ id: "e1", type: "LOGIN" })]} />,
+		)
+		const loginSvg = container.querySelector("svg")
+
+		expect(loginSvg).toHaveAttribute("shape-rendering", "crispEdges")
+		expect(loginSvg).toHaveClass("text-muted-foreground")
+	})
+
 	test("exibe ícone com cor de conta/perfil/administrativo para eventos de conta, perfil, role e status", () => {
 		const events: UserActivityEvent[] = [
 			buildEvent({

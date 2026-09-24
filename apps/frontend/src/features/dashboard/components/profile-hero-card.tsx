@@ -1,6 +1,6 @@
 "use client"
 
-import { User } from "lucide-react"
+import { User } from "@/components/ui/pixel-icons"
 import { PixelScene } from "@/components/ui/pixel-scene"
 import { Skeleton } from "@/components/ui/skeleton"
 import { type Me, useMe, useMetrics } from "@/features/profile/api"

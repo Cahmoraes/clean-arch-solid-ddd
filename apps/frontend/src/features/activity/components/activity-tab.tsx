@@ -5,7 +5,7 @@ import {
 	ShieldAlert,
 	ShieldCheck,
 	UserCircle,
-} from "lucide-react"
+} from "@/components/ui/pixel-icons"
 import type { ComponentType } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Skeleton } from "@/components/ui/skeleton"

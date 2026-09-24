@@ -1,4 +1,4 @@
-import { Check } from "lucide-react"
+import { Check } from "@/components/ui/pixel-icons"
 import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/ui/status-badge"
 import type { PlanAdmin } from "@/features/plans-admin/api"
@@ -52,7 +52,7 @@ export function PlanCard({ plan, onEdit, onToggleStatus }: PlanCardProps) {
 						key={feature}
 						className="flex items-center gap-2 text-sm text-muted-foreground"
 					>
-						<Check className="h-3.5 w-3.5 text-success" aria-hidden="true" />
+						<Check className="h-4 w-4 text-success" aria-hidden="true" />
 						{feature}
 					</li>
 				))}

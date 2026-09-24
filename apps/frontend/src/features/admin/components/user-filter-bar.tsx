@@ -1,6 +1,6 @@
 "use client"
 
-import { Filter } from "lucide-react"
+import { Filter } from "@/components/ui/pixel-icons"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {

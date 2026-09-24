@@ -1,6 +1,6 @@
 "use client"
 
-import { UserRound } from "lucide-react"
+import { UserRound } from "@/components/ui/pixel-icons"
 import { useEffect, useRef } from "react"
 import { AnimatedPanel } from "@/components/ui/animated-panel"
 import { EmptyState } from "@/components/ui/empty-state"

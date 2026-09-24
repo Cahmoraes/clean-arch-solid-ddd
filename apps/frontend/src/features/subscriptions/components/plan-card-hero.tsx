@@ -1,4 +1,4 @@
-import { Check } from "lucide-react"
+import { Check } from "@/components/ui/pixel-icons"
 import Link from "next/link"
 import type { Plan } from "@/features/subscriptions/api/use-plans"
 
