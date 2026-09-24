@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 /*
- * VOLT — design tokens (Tailwind v4 @theme)
- * Accent verde-esmeralda #39e58c. Dark é o tema padrão (classe .dark via next-themes).
+ * VOLT — design tokens "Noite neon" (Tailwind v4 @theme)
+ * Escuro (padrão, classe dark via next-themes): azul-petróleo, primary magenta, acento ciano.
+ * Claro "dia de neblina": fundo frio claro, acentos escurecidos para passar AA.
+ * primary = ação primária (magenta); accent = foco, seleção e rótulos (ciano).
+ * Glow só em bordas e formas (--shadow-glow), nunca em texto.
  * Nomes semânticos --color-* consumidos pelos componentes shadcn + tokens estendidos
  * (surface-*, border-strong, primary-strong, success/warning + soft, sidebar-*).
  */
@@ -15,51 +18,51 @@
 	--font-mono:
 		var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-	/* Cores semânticas — LIGHT */
-	--color-background: #f1f1ec;
-	--color-foreground: #111110;
+	/* Cores semânticas — LIGHT (dia de neblina) */
+	--color-background: #f3f6fa;
+	--color-foreground: #0a1424;
 	--color-card: #ffffff;
-	--color-card-foreground: #111110;
+	--color-card-foreground: #0a1424;
 	--color-popover: #ffffff;
-	--color-popover-foreground: #111110;
+	--color-popover-foreground: #0a1424;
 
-	--color-primary: #39e58c;
-	--color-primary-strong: #22c976;
-	--color-primary-foreground: #0a0a0a;
+	--color-primary: #cc0077;
+	--color-primary-strong: #a8005f;
+	--color-primary-foreground: #ffffff;
 
-	--color-secondary: #f7f7f3;
-	--color-secondary-foreground: #111110;
-	--color-muted: #f7f7f3;
-	--color-muted-foreground: #57574f;
-	--color-highlight-foreground: #57574f;
-	--color-subtle: #8a8a80;
-	--color-accent: #39e58c;
-	--color-accent-foreground: #0a0a0a;
+	--color-secondary: #e8eef5;
+	--color-secondary-foreground: #0a1424;
+	--color-muted: #e8eef5;
+	--color-muted-foreground: #4a5f78;
+	--color-highlight-foreground: #33485f;
+	--color-subtle: #5d7189;
+	--color-accent: #00708a;
+	--color-accent-foreground: #ffffff;
 
 	--color-surface: #ffffff;
-	--color-surface-2: #f7f7f3;
-	--color-selected-tint: #f7f7f3;
-	--color-surface-3: #efefe9;
+	--color-surface-2: #e8eef5;
+	--color-selected-tint: #e3f1f6;
+	--color-surface-3: #dbe4ee;
 
-	--color-success: #2fcf80;
+	--color-success: #0d7a45;
 	--color-success-soft: rgba(47, 207, 128, 0.14);
-	--color-warning: #ffb443;
+	--color-warning: #9a5b00;
 	--color-warning-soft: rgba(255, 180, 67, 0.16);
-	--color-destructive: #ff5a4d;
+	--color-destructive: #c4281c;
 	--color-destructive-foreground: #ffffff;
 	--color-destructive-soft: rgba(255, 90, 77, 0.14);
 
-	--color-border: #e4e4dc;
-	--color-border-strong: #d3d3c9;
-	--color-input: #e4e4dc;
-	--color-ring: #39e58c;
+	--color-border: #d5dfea;
+	--color-border-strong: #6f849b;
+	--color-input: #d5dfea;
+	--color-ring: #00708a;
 
-	--color-sidebar: #111110;
-	--color-sidebar-foreground: #f3f3ee;
-	--color-sidebar-muted: #8d8d84;
-	--color-sidebar-border: #262622;
-	--color-sidebar-active: #ffffff;
-	--color-sidebar-active-foreground: #111110;
+	--color-sidebar: #0b1626;
+	--color-sidebar-foreground: #dbe9f7;
+	--color-sidebar-muted: #8aa3bd;
+	--color-sidebar-border: #16304d;
+	--color-sidebar-active: #3ee0ff;
+	--color-sidebar-active-foreground: #0a1424;
 
 	/* Radius */
 	--radius-xs: 6px;
@@ -73,55 +76,58 @@
 	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
 	--shadow-md: 0 10px 30px -12px rgba(0, 0, 0, 0.18);
 	--shadow-pop: 0 24px 60px -20px rgba(0, 0, 0, 0.35);
+
+	--shadow-glow:
+		0 0 0 1px var(--color-accent),
+		0 0 14px -2px color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
 /* DARK (tema padrão) */
 .dark {
 	color-scheme: dark;
-	--color-background: #080808;
-	--color-foreground: #f6f6f4;
-	--color-card: #161616;
-	--color-card-foreground: #f6f6f4;
-	--color-popover: #161616;
-	--color-popover-foreground: #f6f6f4;
+	--color-background: #0a1424;
+	--color-foreground: #dbe9f7;
+	--color-card: #0d1b2e;
+	--color-card-foreground: #dbe9f7;
+	--color-popover: #0d1b2e;
+	--color-popover-foreground: #dbe9f7;
 
-	--color-primary: #39e58c;
-	--color-primary-strong: #22c976;
-	--color-primary-foreground: #0a0a0a;
+	--color-primary: #ff3ea5;
+	--color-primary-strong: #e0288f;
+	--color-primary-foreground: #0a1424;
 
-	--color-secondary: #1d1d1d;
-	--color-secondary-foreground: #f6f6f4;
-	--color-muted: #1d1d1d;
-	--color-muted-foreground: #a3a39c;
-	/* #a3a39c não passa 4.5:1 do WCAG AA sobre bg-accent/40 no card escuro
-	   (2.60:1). Token dedicado só p/ e-mail em destaque (FR-005), sem alterar
-	   --color-muted-foreground global (75 usos fora deste contexto). */
-	--color-highlight-foreground: #d7d7ce;
-	--color-subtle: #6f6f68;
-	--color-accent: #39e58c;
-	--color-accent-foreground: #0a0a0a;
+	--color-secondary: #101f36;
+	--color-secondary-foreground: #dbe9f7;
+	--color-muted: #101f36;
+	--color-muted-foreground: #9db4cc;
+	/* Token dedicado para e-mail em destaque sobre o card selecionado (contraste, tarefa 2),
+	   sem alterar --color-muted-foreground global. */
+	--color-highlight-foreground: #c4d6e8;
+	--color-subtle: #6f88a3;
+	--color-accent: #3ee0ff;
+	--color-accent-foreground: #0a1424;
 
-	--color-surface: #161616;
-	--color-surface-2: #1d1d1d;
-	--color-selected-tint: #1d1d1d;
-	--color-surface-3: #242424;
+	--color-surface: #0d1b2e;
+	--color-surface-2: #101f36;
+	--color-selected-tint: #101f36;
+	--color-surface-3: #152a47;
 
 	--color-success: #2fcf80;
 	--color-warning: #ffb443;
 	--color-destructive: #ff5a4d;
-	--color-destructive-foreground: #0a0a0a;
+	--color-destructive-foreground: #0a1424;
 
-	--color-border: #2a2a2a;
-	--color-border-strong: #3a3a3a;
-	--color-input: #2a2a2a;
-	--color-ring: #39e58c;
+	--color-border: #16304d;
+	--color-border-strong: #4a6d94;
+	--color-input: #16304d;
+	--color-ring: #3ee0ff;
 
-	--color-sidebar: #0f0f0f;
-	--color-sidebar-foreground: #f3f3ee;
-	--color-sidebar-muted: #79796f;
-	--color-sidebar-border: #232323;
-	--color-sidebar-active: #39e58c;
-	--color-sidebar-active-foreground: #0a0a0a;
+	--color-sidebar: #0b1626;
+	--color-sidebar-foreground: #dbe9f7;
+	--color-sidebar-muted: #8aa3bd;
+	--color-sidebar-border: #16304d;
+	--color-sidebar-active: #3ee0ff;
+	--color-sidebar-active-foreground: #0a1424;
 }
 
 @utility focus-ring-duplo {

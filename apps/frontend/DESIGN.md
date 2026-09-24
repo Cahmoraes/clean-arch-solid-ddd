@@ -457,3 +457,21 @@ Hero portrait uses `srcset` with desktop / mobile crops — desktop favors the f
 4. Default body to `{typography.body-md}`; reserve `{typography.body-lg}` for marketing leads.
 5. Keep the three-canvas rhythm (indigo / white / teal) — adding a fourth canvas color breaks the system.
 6. The closing teal band is non-negotiable — every marketing page resolves there.
+
+## Tokens VOLT "Noite neon" (app autenticado e público)
+
+Os tokens semânticos reais do app vivem em `src/app/globals.css` e prevalecem sobre a paleta de referência acima. Direção: escuro azul-petróleo (padrão), claro "dia de neblina".
+
+| Token | Escuro | Claro |
+|---|---|---|
+| background | `#0a1424` | `#f3f6fa` |
+| foreground | `#dbe9f7` | `#0a1424` |
+| card / surface | `#0d1b2e` | `#ffffff` |
+| surface-2 / muted | `#101f36` | `#e8eef5` |
+| surface-3 | `#152a47` | `#dbe4ee` |
+| primary (magenta, ação primária) | `#ff3ea5` (texto `#0a1424`) | `#cc0077` (texto `#ffffff`) |
+| accent (ciano, foco e seleção) | `#3ee0ff` (texto `#0a1424`) | `#00708a` (texto `#ffffff`) |
+| border / border-strong | `#16304d` / `#4a6d94` | `#d5dfea` / `#6f849b` |
+| sidebar (escura nos dois temas) | `#0b1626` | `#0b1626` |
+
+Regras: glow só em bordas e formas (`--shadow-glow`), nunca em texto; status usa verde, âmbar e vermelho semânticos, sem neon; texto >= 4.5:1 e componentes >= 3:1 nos dois temas.
