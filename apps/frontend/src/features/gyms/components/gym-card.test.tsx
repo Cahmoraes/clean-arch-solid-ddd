@@ -39,6 +39,16 @@ describe("GymCard VOLT", () => {
 		expect(screen.getByTestId("gym-image")).toBeInTheDocument()
 	})
 
+	test("sem imagem, a capa do card exibe a cena pixel animada", () => {
+		const { container } = renderWithProviders(
+			<GymCard gym={{ ...gym, imageKey: null }} />,
+		)
+		expect(container.querySelector('svg[data-scene="hero"]')).toHaveAttribute(
+			"data-paused",
+			"false",
+		)
+	})
+
 	test("não exibe o botão de edição quando adminEditHref não é informado", () => {
 		renderWithProviders(<GymCard gym={gym} />)
 		expect(screen.queryByTestId("gym-edit-g1")).not.toBeInTheDocument()

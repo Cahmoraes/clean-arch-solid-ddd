@@ -43,6 +43,7 @@ export function GymCard({ gym, adminEditHref }: GymCardProps) {
 						alt={gym.title}
 						className="h-full w-full"
 						hoverEffect={false}
+						sceneAnimated
 					/>
 					<StatusBadge
 						tone={statusTone}

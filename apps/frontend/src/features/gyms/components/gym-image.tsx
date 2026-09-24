@@ -1,8 +1,8 @@
 "use client"
 
-import { ImageIcon } from "lucide-react"
 import { motion } from "motion/react"
 import { useEffect, useRef, useState } from "react"
+import { PixelScene } from "@/components/ui/pixel-scene"
 import { gymImageUrl } from "@/features/gyms/lib/gym-image-url"
 import { cn } from "@/lib/cn"
 
@@ -12,6 +12,7 @@ export interface GymImageProps {
 	className?: string
 	loading?: "lazy" | "eager"
 	hoverEffect?: boolean
+	sceneAnimated?: boolean
 }
 
 const imageHoverVariants = {
@@ -27,6 +28,7 @@ export function GymImage({
 	className,
 	loading = "lazy",
 	hoverEffect = true,
+	sceneAnimated = false,
 }: GymImageProps) {
 	const containerReference = useRef<HTMLDivElement>(null)
 	const [loadedImageUrl, setLoadedImageUrl] = useState<string | null>(null)
@@ -73,11 +75,8 @@ export function GymImage({
 					onError={() => setLoadedImageUrl(url)}
 				/>
 			) : (
-				<div
-					data-testid="gym-image-placeholder"
-					className="flex h-full w-full items-center justify-center"
-				>
-					<ImageIcon className="h-6 w-6 text-subtle" aria-hidden="true" />
+				<div data-testid="gym-image-placeholder" className="h-full w-full">
+					<PixelScene scene="hero" animated={sceneAnimated} />
 				</div>
 			)}
 			<div

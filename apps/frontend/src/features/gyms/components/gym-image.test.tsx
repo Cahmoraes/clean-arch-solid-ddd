@@ -14,10 +14,38 @@ describe("GymImage", () => {
 		expect(img).toHaveAttribute("alt", "Academia Volt")
 	})
 
-	test("renderiza o placeholder quando não há imageKey", () => {
-		renderWithProviders(<GymImage imageKey={null} alt="Academia Volt" />)
-		expect(screen.getByTestId("gym-image-placeholder")).toBeInTheDocument()
+	test("renderiza o placeholder com a cena pixel quando não há imageKey", () => {
+		const { container } = renderWithProviders(
+			<GymImage imageKey={null} alt="Academia Volt" />,
+		)
+		const placeholder = screen.getByTestId("gym-image-placeholder")
+		expect(placeholder).toBeInTheDocument()
+		expect(placeholder.querySelector('svg[data-scene="hero"]')).toHaveAttribute(
+			"aria-hidden",
+			"true",
+		)
 		expect(screen.queryByTestId("gym-image")).not.toBeInTheDocument()
+		expect(container.querySelectorAll("svg[data-scene]")).toHaveLength(1)
+	})
+
+	test("a cena de fallback é estática por padrão (miniatura da linha)", () => {
+		renderWithProviders(<GymImage imageKey={null} alt="Academia Volt" />)
+		expect(
+			screen
+				.getByTestId("gym-image-placeholder")
+				.querySelector("svg[data-scene]"),
+		).toHaveAttribute("data-paused", "true")
+	})
+
+	test("com sceneAnimated a cena de fallback anima", () => {
+		renderWithProviders(
+			<GymImage imageKey={null} alt="Academia Volt" sceneAnimated />,
+		)
+		expect(
+			screen
+				.getByTestId("gym-image-placeholder")
+				.querySelector("svg[data-scene]"),
+		).toHaveAttribute("data-paused", "false")
 	})
 
 	test("imagem não possui classes Tailwind de hover/transição legadas", () => {
@@ -74,5 +102,30 @@ describe("GymImage", () => {
 			"data-loaded",
 			"true",
 		)
+	})
+})
+
+describe("GymImage — chave de imagem vazia ou só com espaços", () => {
+	test("chave vazia ou só com espaços usa a cena; chave válida faz a imagem prevalecer", () => {
+		for (const emptyKey of ["", "   ", "\t\n", undefined, null]) {
+			const { container, unmount } = renderWithProviders(
+				<GymImage imageKey={emptyKey} alt="Academia Volt" />,
+			)
+			expect(screen.getByTestId("gym-image-placeholder")).toBeInTheDocument()
+			expect(
+				container.querySelector('svg[data-scene="hero"]'),
+			).toBeInTheDocument()
+			expect(screen.queryByTestId("gym-image")).not.toBeInTheDocument()
+			unmount()
+		}
+
+		const { container } = renderWithProviders(
+			<GymImage imageKey="gyms/foto.webp" alt="Academia Volt" />,
+		)
+		expect(screen.getByTestId("gym-image")).toBeInTheDocument()
+		expect(
+			screen.queryByTestId("gym-image-placeholder"),
+		).not.toBeInTheDocument()
+		expect(container.querySelector("[data-scene]")).toBeNull()
 	})
 })
