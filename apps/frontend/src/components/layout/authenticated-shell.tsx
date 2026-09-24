@@ -213,7 +213,7 @@ export function AuthenticatedShell({
 				>
 					<p
 						className={cn(
-							"px-3 pb-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden",
+							"px-3 pb-2 font-display text-[15px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden",
 							collapsed && "hidden",
 						)}
 					>
@@ -232,7 +232,7 @@ export function AuthenticatedShell({
 						<>
 							<p
 								className={cn(
-									"mt-4 px-3 pb-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden",
+									"mt-4 px-3 pb-2 font-display text-[15px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden",
 									collapsed && "hidden",
 								)}
 							>

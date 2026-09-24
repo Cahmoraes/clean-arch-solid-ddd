@@ -41,7 +41,7 @@ export function BrandMark({ wordmark = true, className }: BrandMarkProps) {
 				<PixelBolt />
 			</span>
 			{wordmark && (
-				<span className="font-display text-xl font-bold tracking-wide">
+				<span className="font-display text-xl font-normal tracking-wide">
 					VOLT
 				</span>
 			)}

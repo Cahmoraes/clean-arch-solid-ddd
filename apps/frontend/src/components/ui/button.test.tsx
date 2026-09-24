@@ -73,4 +73,13 @@ describe("Button", () => {
 			"focus-ring-duplo",
 		)
 	})
+
+	test("Button base usa font-display uppercase, nunca font-medium/font-mono", () => {
+		render(<Button>Salvar</Button>)
+		const btn = screen.getByRole("button", { name: "Salvar" })
+		expect(btn).toHaveClass("font-display")
+		expect(btn).toHaveClass("uppercase")
+		expect(btn).toHaveClass("tracking-[0.06em]")
+		expect(btn).not.toHaveClass("font-medium")
+	})
 })

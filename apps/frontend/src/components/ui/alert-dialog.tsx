@@ -81,7 +81,7 @@ const AlertDialogTitle = forwardRef<
 	<AlertDialogPrimitive.Title
 		ref={ref}
 		className={cn(
-			"text-xl font-medium leading-none tracking-tight font-display text-card-foreground",
+			"text-[30px] font-normal leading-none tracking-tight font-display text-card-foreground",
 			className,
 		)}
 		{...props}

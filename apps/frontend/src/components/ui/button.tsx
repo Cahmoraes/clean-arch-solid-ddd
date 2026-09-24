@@ -9,7 +9,7 @@ const buttonVariants = cva(
 	[
 		"inline-flex items-center justify-center gap-2",
 		"rounded-md",
-		"font-medium leading-none",
+		"font-display uppercase tracking-[0.06em] font-normal leading-none",
 		"cursor-pointer transition-colors",
 		"disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed",
 		"focus-ring-duplo",
@@ -34,9 +34,9 @@ const buttonVariants = cva(
 					"bg-destructive text-destructive-foreground border border-destructive hover:bg-destructive/90",
 			},
 			size: {
-				sm: "h-8 px-4 text-sm",
-				md: "h-10 px-6 text-base",
-				lg: "h-12 px-8 text-lg",
+				sm: "h-8 px-4 text-[16px]",
+				md: "h-10 px-6 text-[18px]",
+				lg: "h-12 px-8 text-[20px]",
 				icon: "h-10 w-10 p-0",
 			},
 		},

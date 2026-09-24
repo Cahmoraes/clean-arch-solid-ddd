@@ -37,7 +37,10 @@ function CardTitle({ as, className, ...props }: CardTitleProps) {
 	const Component = as ?? "h3"
 	return createElement(Component, {
 		"data-slot": "card-title",
-		className: cn("leading-none font-semibold", className),
+		className: cn(
+			"font-display text-[26px] font-normal leading-none",
+			className,
+		),
 		...props,
 	})
 }

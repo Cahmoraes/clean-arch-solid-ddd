@@ -45,7 +45,7 @@ export function StatCard({
 				{delta && (
 					<span
 						className={cn(
-							"inline-flex items-center gap-1 rounded-sm px-2 py-0.5 font-mono text-[12.5px] font-bold",
+							"inline-flex items-center gap-1 rounded-sm px-2 py-0.5 font-display text-[15px] font-normal",
 							delta.direction === "up"
 								? "bg-success-soft text-success"
 								: "bg-destructive-soft text-destructive",
@@ -55,7 +55,7 @@ export function StatCard({
 					</span>
 				)}
 			</div>
-			<p className="font-mono text-3xl font-bold leading-none tracking-tight tabular md:text-[38px]">
+			<p className="font-display text-[38px] font-normal leading-none tracking-tight tabular md:text-[48px]">
 				{value}
 			</p>
 			<p className="mt-2 text-sm text-muted-foreground">{label}</p>

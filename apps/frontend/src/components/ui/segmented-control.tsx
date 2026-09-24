@@ -21,7 +21,7 @@ function InlineBadge({ count, active }: { count: number; active: boolean }) {
 	return (
 		<span
 			className={cn(
-				"rounded-sm px-1.5 py-0.5 font-mono text-[11.5px]",
+				"rounded-sm px-1.5 py-0.5 font-display text-[15px] font-normal",
 				active ? "bg-accent/20 text-foreground" : "bg-foreground/10",
 			)}
 		>
@@ -32,7 +32,7 @@ function InlineBadge({ count, active }: { count: number; active: boolean }) {
 
 function FloatBadge({ count }: { count: number }) {
 	return (
-		<span className="pointer-events-none absolute -right-1 -top-2 min-w-4.5 rounded-sm border border-background bg-accent px-1 py-0 text-center font-mono text-[10px] font-bold leading-4.5 text-accent-foreground">
+		<span className="pointer-events-none absolute -right-2 -top-3 min-w-4.5 rounded-sm border border-background bg-accent px-1 py-0 text-center font-display text-[15px] font-normal leading-5 text-accent-foreground">
 			{count}
 		</span>
 	)
