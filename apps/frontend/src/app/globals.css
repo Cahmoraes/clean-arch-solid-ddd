@@ -284,3 +284,47 @@
 		animation: themeToggleIconIn 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 }
+
+/* Cenas pixel: só transform e opacity (compostas pelo navegador).
+   Frame inicial igual ao estado estático; nenhum flash acima de 3 por segundo
+   (cintilar de 5s por ciclo). */
+@keyframes sceneBeamDrift {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(3px);
+	}
+}
+
+@keyframes sceneWindowTwinkle {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.55;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.pixel-scene .pixel-scene-beam {
+		animation: sceneBeamDrift 12s ease-in-out infinite alternate;
+	}
+
+	.pixel-scene .pixel-scene-window {
+		animation: sceneWindowTwinkle 5s ease-in-out infinite;
+	}
+}
+
+.pixel-scene[data-paused="true"] .pixel-scene-beam,
+.pixel-scene[data-paused="true"] .pixel-scene-window {
+	animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pixel-scene .pixel-scene-beam,
+	.pixel-scene .pixel-scene-window {
+		animation: none;
+	}
+}
