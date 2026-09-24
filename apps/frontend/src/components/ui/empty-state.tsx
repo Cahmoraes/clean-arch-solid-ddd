@@ -1,4 +1,5 @@
 import type { ComponentType, ReactNode } from "react"
+import { PixelScene, type PixelSceneName } from "@/components/ui/pixel-scene"
 import { cn } from "@/lib/cn"
 
 export interface EmptyStateProps {
@@ -6,18 +7,21 @@ export interface EmptyStateProps {
 	title: string
 	description?: string
 	action?: ReactNode
+	scene?: Extract<PixelSceneName, "empty">
 	className?: string
 }
 
 /**
- * EmptyState — monochrome, container radius (12px), no shadows.
+ * EmptyState — container radius (12px), no shadows.
  * Used when a list/section has no data to render.
+ * `scene` opcional adiciona a cena pixel decorativa ao lado do texto.
  */
 export function EmptyState({
 	icon: Icon,
 	title,
 	description,
 	action,
+	scene,
 	className,
 }: EmptyStateProps) {
 	return (
@@ -26,9 +30,18 @@ export function EmptyState({
 			aria-live="polite"
 			className={cn(
 				"flex flex-col items-center justify-center text-center gap-3 px-6 py-12 rounded-[12px] border border-border bg-card",
+				scene && "sm:flex-row sm:gap-8 sm:text-left",
 				className,
 			)}
 		>
+			{scene ? (
+				<div
+					aria-hidden="true"
+					className="h-28 w-56 shrink-0 overflow-hidden rounded-md border border-border"
+				>
+					<PixelScene scene={scene} animated />
+				</div>
+			) : null}
 			{Icon ? (
 				<div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
 					<Icon className="h-6 w-6" />

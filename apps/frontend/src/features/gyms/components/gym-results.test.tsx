@@ -85,6 +85,39 @@ describe("GymResults", () => {
 		const listItems = list.querySelectorAll("li")
 		expect(listItems.length).toBe(2)
 	})
+
+	test("lista vazia com busca mostra a cena pixel de estado vazio", () => {
+		const { container } = renderWithProviders(
+			<GymResults
+				{...baseProps()}
+				isBrowseMode={false}
+				query="xyz"
+				items={[]}
+			/>,
+		)
+		expect(screen.getByText("Nenhuma academia encontrada")).toBeInTheDocument()
+		expect(
+			container.querySelector('svg[data-scene="empty"]'),
+		).toBeInTheDocument()
+	})
+
+	test("lista vazia no modo navegação mostra a cena pixel de estado vazio", () => {
+		const { container } = renderWithProviders(
+			<GymResults {...baseProps()} items={[]} />,
+		)
+		expect(screen.getByText("Nenhuma academia cadastrada")).toBeInTheDocument()
+		expect(
+			container.querySelector('svg[data-scene="empty"]'),
+		).toBeInTheDocument()
+	})
+
+	test("o estado de erro não usa a cena", () => {
+		const { container } = renderWithProviders(
+			<GymResults {...baseProps()} isError items={[]} />,
+		)
+		expect(screen.getByTestId("gym-results-retry")).toBeInTheDocument()
+		expect(container.querySelector("[data-scene]")).toBeNull()
+	})
 })
 
 describe("GymResults — alternância de view", () => {

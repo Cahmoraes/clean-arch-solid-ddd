@@ -70,6 +70,7 @@ function ResultsError({
 function ResultsEmpty({ query }: { query: string }) {
 	return (
 		<EmptyState
+			scene="empty"
 			icon={Search}
 			title="Nenhuma academia encontrada"
 			description={`Não encontramos resultados para "${query}". Tente outro termo.`}
@@ -80,6 +81,7 @@ function ResultsEmpty({ query }: { query: string }) {
 function ResultsEmptyBrowse() {
 	return (
 		<EmptyState
+			scene="empty"
 			icon={Search}
 			title="Nenhuma academia cadastrada"
 			description="Ainda não há academias disponíveis no sistema."

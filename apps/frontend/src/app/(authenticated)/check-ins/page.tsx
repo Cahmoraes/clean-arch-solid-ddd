@@ -80,6 +80,7 @@ function HistoryEmpty({ status }: { status: CheckInFilterStatus }) {
 	if (!status) {
 		return (
 			<EmptyState
+				scene="empty"
 				icon={CalendarCheck}
 				title="Você ainda não fez check-in"
 				description="Procure uma academia próxima e registre sua presença."
@@ -88,6 +89,7 @@ function HistoryEmpty({ status }: { status: CheckInFilterStatus }) {
 	}
 	return (
 		<EmptyState
+			scene="empty"
 			icon={CalendarCheck}
 			title={`Nenhum check-in ${CHECK_IN_STATUS_LABELS[status]} encontrado`}
 			description="Tente selecionar outro filtro."

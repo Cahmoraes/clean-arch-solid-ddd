@@ -52,6 +52,7 @@ function AdminCheckInsEmpty({ status }: { status: CheckInFilterStatus }) {
 	if (!status) {
 		return (
 			<EmptyState
+				scene="empty"
 				icon={ShieldCheck}
 				title="Nenhum check-in encontrado"
 				description="Ainda não há check-ins registrados."
@@ -60,6 +61,7 @@ function AdminCheckInsEmpty({ status }: { status: CheckInFilterStatus }) {
 	}
 	return (
 		<EmptyState
+			scene="empty"
 			icon={ShieldCheck}
 			title={`Nenhum check-in ${CHECK_IN_STATUS_LABELS[status]} encontrado`}
 			description="Tente selecionar outro filtro."

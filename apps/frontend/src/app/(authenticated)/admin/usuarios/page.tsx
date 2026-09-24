@@ -79,6 +79,7 @@ function ErrorState({ error }: { error: ApiError | null }) {
 function UsersEmpty() {
 	return (
 		<EmptyState
+			scene="empty"
 			icon={Users}
 			title="Nenhum usuário cadastrado"
 			description="Quando novas contas forem criadas, elas aparecerão aqui."
