@@ -15,3 +15,21 @@ describe("RoleBadge", () => {
 		expect(screen.getByText("Membro")).toBeInTheDocument()
 	})
 })
+
+describe("RoleBadge — direção Noite neon", () => {
+	test("Admin usa magenta suave (primary translúcido)", () => {
+		render(<RoleBadge role={ADMIN} />)
+		expect(screen.getByText("Admin")).toHaveClass(
+			"border-primary/40",
+			"bg-primary/15",
+		)
+	})
+
+	test("Membro permanece neutro", () => {
+		render(<RoleBadge role={MEMBER} />)
+		expect(screen.getByText("Membro")).toHaveClass(
+			"bg-surface-2",
+			"border-border",
+		)
+	})
+})

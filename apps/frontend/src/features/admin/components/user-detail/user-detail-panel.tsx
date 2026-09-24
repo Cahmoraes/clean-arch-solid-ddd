@@ -49,7 +49,11 @@ function InlineError({ message }: { message: string | null }) {
 function UserIdentityHeader({ user }: { user: AdminUser }) {
 	return (
 		<header className="flex items-start gap-3">
-			<Avatar name={user.name} size="lg" />
+			<Avatar
+				name={user.name}
+				size="lg"
+				className="bg-primary text-primary-foreground"
+			/>
 			<div className="flex min-w-0 flex-1 flex-col gap-1">
 				<span className="text-lg font-semibold text-foreground">
 					{user.name}

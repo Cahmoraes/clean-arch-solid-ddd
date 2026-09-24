@@ -76,3 +76,34 @@ describe("SegmentedControl", () => {
 		).toBeInTheDocument()
 	})
 })
+
+describe("SegmentedControl — direção Noite neon", () => {
+	test("item ativo tem contorno e fundo suave em ciano; inativo tem borda transparente", () => {
+		render(
+			<SegmentedControl items={ITEMS} value="todos" onValueChange={vi.fn()} />,
+		)
+		const active = screen.getByRole("button", { name: /Todos/ })
+		const inactive = screen.getByRole("button", { name: /Ativos/ })
+		expect(active).toHaveClass(
+			"border-accent",
+			"bg-accent/10",
+			"text-foreground",
+		)
+		expect(inactive).toHaveClass("border-transparent")
+		expect(inactive).not.toHaveClass("border-accent")
+	})
+
+	test("badge flutuante de contagem usa o acento (ciano), não o primary", () => {
+		render(
+			<SegmentedControl
+				items={ITEMS}
+				value="todos"
+				onValueChange={vi.fn()}
+				countFloat
+			/>,
+		)
+		const badge = screen.getByText("12")
+		expect(badge).toHaveClass("bg-accent", "text-accent-foreground")
+		expect(badge).not.toHaveClass("bg-primary")
+	})
+})

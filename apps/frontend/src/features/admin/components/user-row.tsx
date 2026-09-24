@@ -84,7 +84,7 @@ function rowClassName(
 		isInteractive &&
 			!hasNestedCheckbox &&
 			"cursor-pointer hover:border-border-strong",
-		isSelected && "border-accent bg-accent/40",
+		isSelected && "border-accent bg-accent/10",
 		isMarkedOnly && "bg-selected-tint border-border-strong",
 		// A faixa de status nunca é descartada, nem em destaque (isSelected)
 		// nem em marcado (isMarkedOnly) — sem ela, o status fica invisível

@@ -22,9 +22,7 @@ function InlineBadge({ count, active }: { count: number; active: boolean }) {
 		<span
 			className={cn(
 				"rounded-full px-1.5 py-0.5 font-mono text-[11.5px]",
-				active
-					? "bg-background/20 dark:bg-accent-foreground/20"
-					: "bg-foreground/10",
+				active ? "bg-accent/20 text-foreground" : "bg-foreground/10",
 			)}
 		>
 			{count}
@@ -34,7 +32,7 @@ function InlineBadge({ count, active }: { count: number; active: boolean }) {
 
 function FloatBadge({ count }: { count: number }) {
 	return (
-		<span className="pointer-events-none absolute -right-1 -top-2 min-w-4.5 rounded-full border border-background bg-primary px-1 py-0 text-center font-mono text-[10px] font-bold leading-4.5 text-primary-foreground">
+		<span className="pointer-events-none absolute -right-1 -top-2 min-w-4.5 rounded-full border border-background bg-accent px-1 py-0 text-center font-mono text-[10px] font-bold leading-4.5 text-accent-foreground">
 			{count}
 		</span>
 	)
@@ -66,10 +64,10 @@ export function SegmentedControl<T extends string = string>({
 						aria-label={item.ariaLabel}
 						onClick={() => onValueChange(item.value)}
 						className={cn(
-							"inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+							"inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
 							active
-								? "bg-foreground text-background dark:bg-accent dark:text-accent-foreground"
-								: "text-muted-foreground hover:text-foreground",
+								? "border-accent bg-accent/10 text-foreground"
+								: "border-transparent text-muted-foreground hover:text-foreground",
 							countFloat && "relative",
 						)}
 					>

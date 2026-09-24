@@ -13,7 +13,7 @@ export function RoleBadge({ role, className }: RoleBadgeProps) {
 			className={cn(
 				"inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold",
 				isAdmin
-					? "border-accent/45 bg-accent/20 text-foreground"
+					? "border-primary/40 bg-primary/15 text-foreground"
 					: "border-border bg-surface-2 text-muted-foreground",
 				className,
 			)}

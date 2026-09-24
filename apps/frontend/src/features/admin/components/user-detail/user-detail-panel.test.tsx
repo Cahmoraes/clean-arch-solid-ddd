@@ -294,3 +294,24 @@ describe("UserDetailPanel", () => {
 		).toBeInTheDocument()
 	})
 })
+
+describe("UserDetailPanel — direção Noite neon", () => {
+	test("o avatar do cabeçalho usa iniciais em magenta", () => {
+		renderPanel(buildUser())
+		const avatar = screen
+			.getByRole("banner")
+			.querySelector('span[aria-hidden="true"]')
+		expect(avatar).toHaveClass("bg-primary", "text-primary-foreground")
+		expect(avatar).not.toHaveClass("bg-accent")
+	})
+
+	test("mantém as três abas, com Detalhes ativa", () => {
+		renderPanel(buildUser())
+		expect(screen.getByRole("tab", { name: "Detalhes" })).toHaveAttribute(
+			"data-state",
+			"active",
+		)
+		expect(screen.getByRole("tab", { name: "Permissões" })).toBeInTheDocument()
+		expect(screen.getByRole("tab", { name: "Atividade" })).toBeInTheDocument()
+	})
+})

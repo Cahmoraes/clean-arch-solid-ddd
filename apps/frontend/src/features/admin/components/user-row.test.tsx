@@ -241,7 +241,7 @@ describe("seleção em massa", () => {
 
 		expect(row.className).toContain("bg-selected-tint")
 		expect(row.className).not.toContain("border-accent")
-		expect(row.className).not.toContain("bg-accent/40")
+		expect(row.className).not.toContain("bg-accent/10")
 	})
 
 	// Regressão do finding de review (rodada final): checked/isMarkedOnly
@@ -286,13 +286,13 @@ describe("cor de destaque vs. marcado e contraste do e-mail", () => {
 			<UserRow user={user} isSelected checked={false} />,
 		)
 		const highlightedRow = screen.getByText(user.name).closest("li")
-		expect(highlightedRow).toHaveClass("bg-accent/40")
+		expect(highlightedRow).toHaveClass("bg-accent/10")
 		expect(highlightedRow).not.toHaveClass("bg-selected-tint")
 
 		rerender(<UserRow user={user} isSelected={false} checked />)
 		const markedRow = screen.getByText(user.name).closest("li")
 		expect(markedRow).toHaveClass("bg-selected-tint")
-		expect(markedRow).not.toHaveClass("bg-accent/40")
+		expect(markedRow).not.toHaveClass("bg-accent/10")
 	})
 
 	test("FR-005: e-mail sobe para highlight-foreground só no destaque", () => {
@@ -313,7 +313,7 @@ describe("cor de destaque vs. marcado e contraste do e-mail", () => {
 	})
 
 	// Regressão do finding de contraste (code review task-02): --color-muted-foreground
-	// dark (#a3a39c) sobre o card com destaque (bg-accent/40 em #161616) dava 2.60:1,
+	// dark (#a3a39c) sobre o card com destaque (bg-accent/10 em #161616) dava 2.60:1,
 	// abaixo do AA 4.5:1 (WCAG 1.4.1/1.4.3). --color-highlight-foreground dark
 	// (#d7d7ce) foi calibrado para >=4.5:1 nesse mesmo fundo, sem alterar o token
 	// --color-muted-foreground global (usado em ~75 outros arquivos do app).
@@ -323,6 +323,31 @@ describe("cor de destaque vs. marcado e contraste do e-mail", () => {
 
 		expect(screen.getByText(user.email)).not.toHaveClass(
 			"text-muted-foreground",
+		)
+	})
+})
+
+describe("UserRow — direção Noite neon", () => {
+	test("linha selecionada usa contorno e fundo suave em ciano e mantém a faixa de status de 3px", () => {
+		const user = buildUser({ status: "activated" })
+		render(<UserRow user={user} isSelected />)
+		const row = screen.getByTestId(`user-row-${user.id}`)
+		expect(row).toHaveClass("border-accent", "bg-accent/10", "border-l-[3px]")
+		expect(row).toHaveClass("border-l-success")
+	})
+
+	test("a faixa lateral acompanha o status: bloqueado em âmbar e inativo em vermelho", () => {
+		const locked = buildUser({ id: "u2", status: "locked" })
+		const suspended = buildUser({ id: "u3", status: "suspended" })
+		render(
+			<ul>
+				<UserRow user={locked} />
+				<UserRow user={suspended} />
+			</ul>,
+		)
+		expect(screen.getByTestId("user-row-u2")).toHaveClass("border-l-warning")
+		expect(screen.getByTestId("user-row-u3")).toHaveClass(
+			"border-l-destructive",
 		)
 	})
 })
