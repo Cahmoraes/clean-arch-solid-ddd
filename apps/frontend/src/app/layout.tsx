@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google"
+import { Inter, JetBrains_Mono, VT323 } from "next/font/google"
 import { ThemeProvider } from "next-themes"
 import type { ReactNode } from "react"
 import { Toaster } from "@/components/ui/toaster"
@@ -13,9 +13,10 @@ const inter = Inter({
 	display: "swap",
 })
 
-const spaceGrotesk = Space_Grotesk({
+const vt323 = VT323({
+	weight: "400",
 	subsets: ["latin"],
-	variable: "--font-space-grotesk",
+	variable: "--font-vt323",
 	display: "swap",
 })
 
@@ -40,7 +41,7 @@ export default function RootLayout({
 		<html
 			lang="pt-BR"
 			suppressHydrationWarning
-			className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+			className={`${inter.variable} ${vt323.variable} ${jetbrainsMono.variable}`}
 		>
 			<body className="font-sans antialiased bg-background text-foreground">
 				<ThemeProvider

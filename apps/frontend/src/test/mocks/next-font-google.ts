@@ -20,7 +20,7 @@ function makeFontMock(fallbackVar: string) {
 	}
 }
 export const Inter = makeFontMock("--font-inter")
-export const Space_Grotesk = makeFontMock("--font-space-grotesk")
+export const VT323 = makeFontMock("--font-vt323")
 export const JetBrains_Mono = makeFontMock("--font-jetbrains-mono")
 export const Roboto = makeFontMock("--font-roboto")
 export const Open_Sans = makeFontMock("--font-open-sans")

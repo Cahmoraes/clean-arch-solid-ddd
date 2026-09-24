@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { render } from "@testing-library/react"
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google"
+import { Inter, JetBrains_Mono, VT323 } from "next/font/google"
 import { describe, expect, test } from "vitest"
 
 // vitest roda a partir de apps/frontend; import.meta.url não é file: neste ambiente
@@ -78,25 +78,27 @@ const darkBlock = blockOf("\\.dark")
 describe("Fontes VOLT (mock next/font/google)", () => {
 	test("expõe as três variáveis de fonte VOLT", () => {
 		const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
-		const grotesk = Space_Grotesk({
+		const vt323 = VT323({
+			weight: "400",
 			subsets: ["latin"],
-			variable: "--font-space-grotesk",
+			variable: "--font-vt323",
 		})
 		const mono = JetBrains_Mono({
 			subsets: ["latin"],
 			variable: "--font-jetbrains-mono",
 		})
 		expect(inter.variable).toBe("--font-inter")
-		expect(grotesk.variable).toBe("--font-space-grotesk")
+		expect(vt323.variable).toBe("--font-vt323")
 		expect(mono.variable).toBe("--font-jetbrains-mono")
 	})
 	test("aplica as três variáveis de fonte juntas em um elemento", () => {
-		const grotesk = Space_Grotesk({
+		const vt323 = VT323({
+			weight: "400",
 			subsets: ["latin"],
-			variable: "--font-space-grotesk",
+			variable: "--font-vt323",
 		})
-		const { container } = render(<div className={grotesk.variable}>volt</div>)
-		expect(container.firstChild).toHaveClass("--font-space-grotesk")
+		const { container } = render(<div className={vt323.variable}>volt</div>)
+		expect(container.firstChild).toHaveClass("--font-vt323")
 	})
 })
 
@@ -145,6 +147,15 @@ describe("Tokens Noite neon (globals.css)", () => {
 		expect(lightBlock).toContain("--font-display:")
 		expect(lightBlock).toContain("--font-sans:")
 		expect(lightBlock).toContain("--font-mono:")
+	})
+
+	test("--font-display referencia VT323 com fallback monoespaçado, e --font-space-grotesk não existe mais no CSS", () => {
+		expect(lightBlock).toMatch(
+			/--font-display:\s*var\(--font-vt323\),\s*ui-monospace,\s*SFMono-Regular,\s*Menlo,\s*monospace;/,
+		)
+		expect(lightBlock).toContain("--font-sans:")
+		expect(lightBlock).toContain("var(--font-inter)")
+		expect(css).not.toContain("--font-space-grotesk")
 	})
 
 	test("não restou o verde VOLT antigo em globals.css", () => {

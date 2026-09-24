@@ -13,7 +13,8 @@
 
 @theme {
 	/* Fontes — carregadas via next/font/google em layout.tsx */
-	--font-display: var(--font-space-grotesk), system-ui, sans-serif;
+	--font-display:
+		var(--font-vt323), ui-monospace, SFMono-Regular, Menlo, monospace;
 	--font-sans: var(--font-inter), system-ui, sans-serif;
 	--font-mono:
 		var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -190,9 +191,9 @@
 	h5,
 	h6 {
 		font-family: var(--font-display);
-		font-weight: 600;
-		letter-spacing: -0.02em;
-		line-height: 1.05;
+		font-weight: 400;
+		letter-spacing: 0.02em;
+		line-height: 1.1;
 		color: var(--color-foreground);
 	}
 
