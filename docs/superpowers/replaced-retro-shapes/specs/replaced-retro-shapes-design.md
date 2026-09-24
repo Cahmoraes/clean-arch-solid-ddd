@@ -51,8 +51,8 @@ O redesign Replaced trocou paleta e trouxe a arte em pixel, mas manteve a lingua
 
 Toda a mudança é CSS dirigido por tokens em `apps/frontend/src/app/globals.css` (Tailwind v4 `@theme`) e pelo carregamento de fontes em `layout.tsx` (`next/font/google`).
 
-1. `--radius-*` passa a significar o **tamanho do chanfro**. Fora do `@supports`, uma regra zera todos os raios, então o fallback é o canto reto.
-2. Dentro de `@supports (corner-shape: bevel)`, os raios recebem os tamanhos da tabela abaixo e `corner-shape: bevel` é aplicado globalmente, então todo `rounded-*` vira chanfro. Borda, fundo, sombra e contorno seguem a forma do elemento (a validar no spike, D1).
+1. `--radius-*` passa a significar o **tamanho do chanfro**. O `@theme` declara os cinco tokens com valor 0, então o fallback é o canto reto.
+2. Um bloco `@supports (corner-shape: bevel)` sobrescreve os tokens com os tamanhos da tabela abaixo e `corner-shape: bevel` é aplicado globalmente, então todo `rounded-*` vira chanfro. Borda, fundo, sombra e contorno seguem a forma do elemento (a validar no spike, D1).
 3. As classes utilitárias dos componentes continuam `rounded-sm/md/lg/xl`; o que muda é o valor do token.
 4. `--font-display` passa a apontar para VT323. Os papéis que hoje usam `font-mono` para rótulos passam a `font-display`; `--font-mono` (JetBrains Mono) fica para código e números tabulares em tabelas.
 

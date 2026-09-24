@@ -18,18 +18,19 @@ background `#0a1424`, card `#0d1b2e`, surface-2 `#101f36`, border `#16304d`, bor
 ```html
 <div class="card crt-scanlines">            <!-- rounded-xl: chanfro 12px -->
   <p class="eyebrow">// Painel</p>          <!-- VT323 15px, maiúsculas, accent -->
-  <h3 class="title">Check-ins da semana</h3><!-- VT323 30px -->
+  <h3 class="title">Check-ins da semana</h3><!-- VT323 26px -->
   <p class="desc">Acompanhe sua frequência nas academias.</p> <!-- Inter 13px -->
-  <span class="kpi">42</span><span class="badge">Ativo</span> <!-- VT323 44px / badge rounded-sm -->
+  <span class="kpi">42</span><span class="badge">Ativo</span> <!-- VT323 ~1,25x do KPI atual / badge rounded-sm -->
   <label class="label">Buscar academia</label>               <!-- VT323 15px -->
   <input class="input" value="Iron Gym" />   <!-- rounded-md, caret bloco ciano -->
-  <button class="btn primary">Salvar</button><!-- rounded-md, VT323 20px maiúsculas -->
+  <button class="btn primary">Salvar</button><!-- rounded-md, VT323 18px maiúsculas -->
 </div>
 ```
 
 ```css
+/* Tamanhos de fonte: a escala da spec prevalece (o mockup usou 30/20px só para comparar fontes). */
 .crt-scanlines { position: relative; isolation: isolate; }
-.crt-scanlines::before {
+.dark .crt-scanlines::before {  /* só tema escuro */
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: repeating-linear-gradient(to bottom, rgb(0 0 0 / .22) 0 1px, transparent 1px 3px);
 }
