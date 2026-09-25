@@ -28,34 +28,67 @@ describe("GymRow VOLT", () => {
 		expect(link).toHaveAttribute("href", "/academias/g1")
 	})
 
-	test("usa a localização disponível como meta", () => {
+	test("exibe imagem, nome, descrição e endereço da academia", () => {
 		renderWithProviders(<GymRow gym={gym} />)
+		expect(screen.getByText("VOLT Centro")).toBeInTheDocument()
+		expect(screen.getByText("Academia completa")).toBeInTheDocument()
 		expect(screen.getByText("Rua A, 100")).toBeInTheDocument()
 	})
 
-	test("exibe a descrição quando presente", () => {
-		renderWithProviders(<GymRow gym={gym} />)
-		expect(screen.getByText("Academia completa")).toBeInTheDocument()
+	test("não exibe telefone nem 'Ver detalhes', com ou sem telefone", () => {
+		const { unmount } = renderWithProviders(
+			<GymRow gym={{ ...gym, phone: "(11) 99999-0000" }} />,
+		)
+		expect(screen.queryByText("(11) 99999-0000")).not.toBeInTheDocument()
+		expect(screen.queryByText("Ver detalhes")).not.toBeInTheDocument()
+		unmount()
+		renderWithProviders(<GymRow gym={{ ...gym, phone: null }} />)
+		expect(screen.queryByText("Ver detalhes")).not.toBeInTheDocument()
 	})
 
-	test('exibe "Ver detalhes" quando o telefone está ausente', () => {
+	test("não exibe selo de texto de status nem a pílula Check-in", () => {
 		renderWithProviders(<GymRow gym={gym} />)
-		expect(screen.getByText("Ver detalhes")).toBeInTheDocument()
+		expect(screen.queryByText("Disponível")).not.toBeInTheDocument()
+		expect(screen.queryByText("Check-in")).not.toBeInTheDocument()
 	})
 
-	test("exibe o telefone quando presente", () => {
-		renderWithProviders(<GymRow gym={{ ...gym, phone: "(11) 99999-0000" }} />)
-		expect(screen.getByText("(11) 99999-0000")).toBeInTheDocument()
+	test("indica disponibilidade com ponto verde nomeado, antes do nome", () => {
+		renderWithProviders(<GymRow gym={gym} />)
+		const dot = screen.getByRole("img", { name: "Disponível" })
+		expect(dot).toHaveAttribute("title", "Disponível")
+		expect(dot).toHaveClass("bg-success")
+		expect(screen.getByText("VOLT Centro")).toContainElement(dot)
 	})
 
-	test("exibe o pill de disponibilidade", () => {
-		renderWithProviders(<GymRow gym={gym} />)
-		expect(screen.getByText("Disponível")).toBeInTheDocument()
+	test("indica 'Desativada' com ponto vermelho quando admin e status desativado", () => {
+		const deactivatedGym: Gym = { ...gym, status: "deactivated" }
+		renderWithProviders(
+			<GymRow
+				gym={deactivatedGym}
+				adminEditHref="/admin/academias/g1/editar"
+			/>,
+		)
+		const dot = screen.getByRole("img", { name: "Desativada" })
+		expect(dot).toHaveClass("bg-destructive")
+		expect(
+			screen.queryByRole("img", { name: "Disponível" }),
+		).not.toBeInTheDocument()
 	})
 
-	test("exibe o CTA de check-in", () => {
+	test("sem adminEditHref, mesmo desativada, indica 'Disponível'", () => {
+		const deactivatedGym: Gym = { ...gym, status: "deactivated" }
+		renderWithProviders(<GymRow gym={deactivatedGym} />)
+		expect(screen.getByRole("img", { name: "Disponível" })).toHaveClass(
+			"bg-success",
+		)
+		expect(
+			screen.queryByRole("img", { name: "Desativada" }),
+		).not.toBeInTheDocument()
+	})
+
+	test("a linha realça no hover por token", () => {
 		renderWithProviders(<GymRow gym={gym} />)
-		expect(screen.getByText("Check-in")).toBeInTheDocument()
+		expect(screen.getByTestId("gym-row-g1")).toHaveClass("hover:bg-surface-2")
 	})
 
 	test("não exibe o botão de edição quando adminEditHref não é informado", () => {
@@ -70,53 +103,6 @@ describe("GymRow VOLT", () => {
 		const editLink = screen.getByTestId("gym-row-edit-g1")
 		expect(editLink).toBeInTheDocument()
 		expect(editLink).toHaveAttribute("href", "/admin/academias/g1/editar")
-	})
-
-	test("mostra o selo 'Desativada' quando a academia está desativada e adminEditHref é informado", () => {
-		const deactivatedGym: Gym = { ...gym, status: "deactivated" }
-		renderWithProviders(
-			<GymRow
-				gym={deactivatedGym}
-				adminEditHref="/admin/academias/g1/editar"
-			/>,
-		)
-		expect(screen.getByText("Desativada")).toBeInTheDocument()
-		expect(screen.queryByText("Disponível")).not.toBeInTheDocument()
-	})
-
-	test("não mostra o selo 'Desativada' sem adminEditHref, mesmo com status desativado", () => {
-		const deactivatedGym: Gym = { ...gym, status: "deactivated" }
-		renderWithProviders(<GymRow gym={deactivatedGym} />)
-		expect(screen.queryByText("Desativada")).not.toBeInTheDocument()
-		expect(screen.getByText("Disponível")).toBeInTheDocument()
-	})
-
-	test("o selo de status usa o StatusBadge compartilhado (com ícone semântico)", () => {
-		renderWithProviders(<GymRow gym={gym} />)
-		const badge = screen.getByText("Disponível").closest("span")
-		expect(badge).not.toBeNull()
-		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
-	})
-
-	test("o selo de status fica no canto superior direito da linha, sem ocupar coluna", () => {
-		const longName: Gym = {
-			...gym,
-			title: "Schmeler, Runolfsson and Murazik Gym",
-		}
-		renderWithProviders(<GymRow gym={longName} />)
-		const corner = screen.getByTestId("gym-row-status")
-		expect(corner).toHaveClass("absolute", "right-0", "top-0")
-		expect(corner).not.toHaveClass("w-32")
-		expect(corner).toContainElement(screen.getByText("Disponível"))
-	})
-
-	test("a linha realça no hover por token e a pílula Check-in é ciano", () => {
-		renderWithProviders(<GymRow gym={gym} />)
-		expect(screen.getByTestId("gym-row-g1")).toHaveClass("hover:bg-surface-2")
-		expect(screen.getByText("Check-in")).toHaveClass(
-			"bg-accent",
-			"text-accent-foreground",
-		)
 	})
 
 	test("o botão de editar do admin destaca em ciano no hover", () => {

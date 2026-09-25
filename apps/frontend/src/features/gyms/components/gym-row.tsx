@@ -1,10 +1,14 @@
 import Link from "next/link"
 import { MapPin, Pencil } from "@/components/ui/pixel-icons"
-import { StatusBadge } from "@/components/ui/status-badge"
 import type { GymSummary } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
 import { resolveLocation } from "@/features/gyms/lib/resolve-location"
 import { resolveGymStatusBadge } from "@/features/gyms/lib/resolve-status-badge"
+
+const STATUS_DOT_CLASS = {
+	success: "bg-success",
+	danger: "bg-destructive",
+} as const
 
 export interface GymRowProps {
 	gym: GymSummary
@@ -32,7 +36,14 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 					/>
 				</div>
 				<div className="flex min-w-0 flex-1 flex-col gap-1">
-					<p className="font-display text-[15px] text-card-foreground">
+					<p className="flex items-center gap-2 font-display text-[15px] text-card-foreground">
+						<span
+							role="img"
+							aria-label={statusLabel}
+							title={statusLabel}
+							data-testid="gym-row-status"
+							className={`h-2 w-2 flex-shrink-0 ${STATUS_DOT_CLASS[statusTone]}`}
+						/>
 						{gym.title}
 					</p>
 					{gym.description ? (
@@ -44,27 +55,6 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 						<MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
 						<span className="line-clamp-1">{resolveLocation(gym)}</span>
 					</p>
-				</div>
-				<div
-					data-testid="gym-row-status"
-					className="pointer-events-none absolute right-0 top-0"
-				>
-					<StatusBadge
-						tone={statusTone}
-						className="rounded-none px-2 py-0.5 leading-none"
-					>
-						{statusLabel}
-					</StatusBadge>
-				</div>
-				<div className="flex flex-shrink-0 items-center gap-3">
-					{gym.phone ? (
-						<span className="w-32 text-[12.5px] text-subtle">{gym.phone}</span>
-					) : (
-						<span className="w-32 text-[12.5px] text-subtle">Ver detalhes</span>
-					)}
-					<span className="rounded-md bg-accent px-3 py-1.5 text-[13px] font-semibold text-accent-foreground">
-						Check-in
-					</span>
 				</div>
 			</Link>
 			{adminEditHref ? (
