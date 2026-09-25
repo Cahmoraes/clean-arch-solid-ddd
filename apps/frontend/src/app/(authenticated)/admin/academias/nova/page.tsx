@@ -1,6 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useId, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -8,6 +9,7 @@ import { toast } from "sonner"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { ArrowLeft } from "@/components/ui/pixel-icons"
 import { useCreateGym, useSetGymImage } from "@/features/gyms/api"
 import { GymCnpjField } from "@/features/gyms/components/gym-cnpj-field"
 import { GymImageUploader } from "@/features/gyms/components/gym-image-uploader"
@@ -111,6 +113,16 @@ export default function AdminNovaAcademiaPage() {
 			width="narrow"
 			aria-labelledby="nova-academia-title"
 		>
+			<div>
+				<Link
+					href="/academias"
+					data-testid="gym-create-back-link"
+					className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+				>
+					<ArrowLeft aria-hidden className="h-4 w-4" />
+					Voltar para a busca
+				</Link>
+			</div>
 			<header className="flex flex-col gap-2">
 				<h1
 					id="nova-academia-title"

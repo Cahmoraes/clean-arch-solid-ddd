@@ -186,4 +186,12 @@ describe("AdminNovaAcademiaPage", () => {
 		renderWithProviders(<AdminNovaAcademiaPage />)
 		expect(screen.getByTestId("gym-image-input")).toBeInTheDocument()
 	})
+
+	test("exibe link para voltar à busca de academias", () => {
+		renderWithProviders(<AdminNovaAcademiaPage />)
+		expect(screen.getByTestId("gym-create-back-link")).toHaveAttribute(
+			"href",
+			"/academias",
+		)
+	})
 })
