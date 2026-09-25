@@ -47,9 +47,14 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 				</div>
 				<div
 					data-testid="gym-row-status"
-					className="flex w-32 flex-shrink-0 items-center"
+					className="pointer-events-none absolute right-0 top-0"
 				>
-					<StatusBadge tone={statusTone}>{statusLabel}</StatusBadge>
+					<StatusBadge
+						tone={statusTone}
+						className="rounded-none px-2 py-0.5 leading-none"
+					>
+						{statusLabel}
+					</StatusBadge>
 				</div>
 				<div className="flex flex-shrink-0 items-center gap-3">
 					{gym.phone ? (

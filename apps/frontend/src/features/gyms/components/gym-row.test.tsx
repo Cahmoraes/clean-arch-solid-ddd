@@ -98,15 +98,16 @@ describe("GymRow VOLT", () => {
 		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
 	})
 
-	test("o selo de status fica em coluna de largura fixa, independente do nome", () => {
+	test("o selo de status fica no canto superior direito da linha, sem ocupar coluna", () => {
 		const longName: Gym = {
 			...gym,
 			title: "Schmeler, Runolfsson and Murazik Gym",
 		}
 		renderWithProviders(<GymRow gym={longName} />)
-		const column = screen.getByTestId("gym-row-status")
-		expect(column).toHaveClass("w-32", "flex-shrink-0")
-		expect(column).toContainElement(screen.getByText("Disponível"))
+		const corner = screen.getByTestId("gym-row-status")
+		expect(corner).toHaveClass("absolute", "right-0", "top-0")
+		expect(corner).not.toHaveClass("w-32")
+		expect(corner).toContainElement(screen.getByText("Disponível"))
 	})
 
 	test("a linha realça no hover por token e a pílula Check-in é ciano", () => {
