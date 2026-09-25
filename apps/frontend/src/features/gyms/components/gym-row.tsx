@@ -1,9 +1,16 @@
 import Link from "next/link"
-import { MapPin, Pencil } from "@/components/ui/pixel-icons"
+import type { ReactNode } from "react"
+import { CheckCircle, MapPin, Pencil } from "@/components/ui/pixel-icons"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip"
 import type { GymSummary } from "@/features/gyms/api"
 import { GymImage } from "@/features/gyms/components/gym-image"
 import { resolveLocation } from "@/features/gyms/lib/resolve-location"
 import { resolveGymStatusBadge } from "@/features/gyms/lib/resolve-status-badge"
+import { cn } from "@/lib/cn"
 
 const STATUS_DOT_CLASS = {
 	success: "bg-success",
@@ -13,6 +20,41 @@ const STATUS_DOT_CLASS = {
 export interface GymRowProps {
 	gym: GymSummary
 	adminEditHref?: string
+}
+
+const ACTION_CLASS =
+	"inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background/80 text-foreground backdrop-blur transition-colors hover:bg-background hover:text-accent"
+
+interface GymRowActionProps {
+	href: string
+	label: string
+	testId: string
+	className?: string
+	children: ReactNode
+}
+
+function GymRowAction({
+	href,
+	label,
+	testId,
+	className,
+	children,
+}: GymRowActionProps) {
+	return (
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<Link
+					href={href}
+					data-testid={testId}
+					aria-label={label}
+					className={cn(ACTION_CLASS, className)}
+				>
+					{children}
+				</Link>
+			</TooltipTrigger>
+			<TooltipContent>{label}</TooltipContent>
+		</Tooltip>
+	)
 }
 
 export function GymRow({ gym, adminEditHref }: GymRowProps) {
@@ -25,7 +67,10 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 			<Link
 				href={`/academias/${gym.id}`}
 				data-testid={`gym-row-${gym.id}`}
-				className={`flex w-full items-center gap-[14px] bg-card px-4 py-3 transition-colors hover:bg-surface-2 ${adminEditHref ? "pr-14" : ""}`}
+				className={cn(
+					"flex w-full items-center gap-[14px] bg-card px-4 py-3 transition-colors hover:bg-surface-2",
+					adminEditHref ? "pr-24" : "pr-14",
+				)}
 			>
 				<div className="relative h-11 w-11 flex-shrink-0">
 					<GymImage
@@ -57,16 +102,25 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 					</p>
 				</div>
 			</Link>
-			{adminEditHref ? (
-				<Link
-					href={adminEditHref}
-					data-testid={`gym-row-edit-${gym.id}`}
-					aria-label={`Editar academia ${gym.title}`}
-					className="absolute right-3 top-1/2 z-20 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md border border-border bg-background/80 text-foreground backdrop-blur transition-colors hover:bg-background hover:text-accent"
+			<div className="absolute right-3 top-1/2 z-20 flex -translate-y-1/2 items-center gap-2">
+				<GymRowAction
+					href={`/academias/${gym.id}`}
+					label={`Check-in em ${gym.title}`}
+					testId={`gym-row-checkin-${gym.id}`}
+					className="border-accent text-accent"
 				>
-					<Pencil className="h-4 w-4" aria-hidden="true" />
-				</Link>
-			) : null}
+					<CheckCircle className="h-4 w-4" aria-hidden="true" />
+				</GymRowAction>
+				{adminEditHref ? (
+					<GymRowAction
+						href={adminEditHref}
+						label={`Editar academia ${gym.title}`}
+						testId={`gym-row-edit-${gym.id}`}
+					>
+						<Pencil className="h-4 w-4" aria-hidden="true" />
+					</GymRowAction>
+				) : null}
+			</div>
 		</div>
 	)
 }

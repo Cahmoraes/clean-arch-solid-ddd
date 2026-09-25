@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react"
+import { fireEvent, screen } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
 import type { Gym } from "@/features/gyms/api"
 import { renderWithProviders } from "@/test/render"
@@ -112,5 +112,60 @@ describe("GymRow VOLT", () => {
 		const edit = screen.getByTestId("gym-row-edit-g1")
 		expect(edit).toHaveClass("hover:text-accent")
 		expect(edit).not.toHaveClass("hover:text-primary")
+	})
+
+	test("exibe o ícone de Check-in com nome acessível e destino do detalhe", () => {
+		renderWithProviders(<GymRow gym={gym} />)
+		const checkIn = screen.getByTestId("gym-row-checkin-g1")
+		expect(checkIn).toHaveAttribute("aria-label", "Check-in em VOLT Centro")
+		expect(checkIn).toHaveAttribute("href", "/academias/g1")
+		expect(checkIn).toHaveClass("h-8", "w-8", "text-accent")
+	})
+
+	test("os ícones de ação são irmãos do link da linha, nunca aninhados", () => {
+		renderWithProviders(
+			<GymRow gym={gym} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		const row = screen.getByTestId("gym-row-g1")
+		expect(row).not.toContainElement(screen.getByTestId("gym-row-checkin-g1"))
+		expect(row).not.toContainElement(screen.getByTestId("gym-row-edit-g1"))
+	})
+
+	test("o ícone de Check-in mostra o tooltip 'Check-in em VOLT Centro'", async () => {
+		renderWithProviders(<GymRow gym={gym} />)
+		fireEvent.focus(screen.getByTestId("gym-row-checkin-g1"))
+		expect(await screen.findByRole("tooltip")).toHaveTextContent(
+			"Check-in em VOLT Centro",
+		)
+	})
+
+	test("o ícone de editar do admin tem aria-label e alvo de 32px", () => {
+		renderWithProviders(
+			<GymRow gym={gym} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		const edit = screen.getByTestId("gym-row-edit-g1")
+		expect(edit).toHaveAttribute("aria-label", "Editar academia VOLT Centro")
+		expect(edit).toHaveClass("h-8", "w-8")
+	})
+
+	test("sem adminEditHref não há ícone de editar", () => {
+		renderWithProviders(<GymRow gym={gym} />)
+		expect(screen.queryByTestId("gym-row-edit-g1")).not.toBeInTheDocument()
+		expect(screen.getByTestId("gym-row-checkin-g1")).toBeInTheDocument()
+	})
+
+	test("reserva padding à direita para os ícones, com título longo", () => {
+		const longName: Gym = {
+			...gym,
+			title:
+				"Schmeler, Runolfsson and Murazik Gym Academia de Treinamento Funcional",
+		}
+		const { unmount } = renderWithProviders(<GymRow gym={longName} />)
+		expect(screen.getByTestId("gym-row-g1")).toHaveClass("pr-14")
+		unmount()
+		renderWithProviders(
+			<GymRow gym={longName} adminEditHref="/admin/academias/g1/editar" />,
+		)
+		expect(screen.getByTestId("gym-row-g1")).toHaveClass("pr-24")
 	})
 })
