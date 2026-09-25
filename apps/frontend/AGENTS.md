@@ -160,7 +160,7 @@ Forma: `--radius-xs/sm/md/lg/xl` representam o tamanho do chanfro (2/4/6/10/12px
 
 Textura: a classe `crt-scanlines` desenha linhas horizontais estáticas atrás do conteúdo, só no tema escuro, restrita a 4 superfícies (`PixelScene`, hero do dashboard, cards de KPI, sidebar) e protegida por `src/test/crt-scanlines-scope.test.ts`.
 
-Regras: nenhum componente declara `corner-shape` por conta própria — só `globals.css`; glow nunca é aplicado a texto.
+Regras: nenhum componente declara `corner-shape` por conta própria — só `globals.css`; glow nunca é aplicado a texto. Exceção decidida pelo usuário: o boot de terminal aplica `text-shadow` (via `@keyframes bootGlow`) só em `[data-boot="title"]`, transitório enquanto a animação de boot toca (spec `login-home-replaced`); nenhum outro texto do app recebe glow.
 
 Ícones: pixel-art vendorizados de `pixelarticons` 2.4.1 (MIT) em `src/components/ui/pixel-icons.tsx`, com os mesmos nomes do antigo `lucide-react` (`import { Users } from "@/components/ui/pixel-icons"`; tipo `PixelIcon` no lugar de `LucideIcon`). Tamanhos só 12, 16, 20 ou 24px (`h-3`, `h-4`, `h-5`, `h-6`); `h-3.5` e `h-4.5` (e `w-`/`size-`) são proibidos em arquivo que importa ícone. Para atualizar a versão ou adicionar ícone, edite o mapa de `scripts/generate-pixel-icons.mjs` e rode `node scripts/generate-pixel-icons.mjs` em `apps/frontend`; nunca edite o `.tsx` gerado à mão. `lucide-react` é proibido em `src/` e no `package.json` (guarda `src/test/no-lucide.test.ts`); `components.json` mantém `iconLibrary: "lucide"` porque só afeta o CLI do shadcn.
 

@@ -7,7 +7,12 @@ vi.mock("@/lib/hooks/use-scene-motion", () => ({
 	useSceneMotion: vi.fn(),
 }))
 
-const SCENES: ReadonlyArray<PixelSceneName> = ["login", "hero", "empty"]
+const SCENES: ReadonlyArray<PixelSceneName> = [
+	"login",
+	"hero",
+	"empty",
+	"sunset",
+]
 
 function motion(paused: boolean) {
 	return { paused }

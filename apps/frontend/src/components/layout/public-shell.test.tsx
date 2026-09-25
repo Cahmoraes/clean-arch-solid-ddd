@@ -84,6 +84,11 @@ describe("PublicShell — acessibilidade", () => {
 })
 
 describe("PublicShell — controle de animações", () => {
+	beforeEach(() => {
+		localStorage.clear()
+		document.documentElement.removeAttribute("data-motion-paused")
+	})
+
 	test("exibe o controle de pausa de animações no header público", () => {
 		render(
 			<PublicShell>

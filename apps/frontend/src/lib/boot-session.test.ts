@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { mockBlockedLocalStorage, mockMatchMedia } from "@/test/browser-mocks"
 import { BOOT_PLAYED_KEY, bootPrepaintScript } from "./boot-session"
 
@@ -12,6 +12,10 @@ describe("boot-session", () => {
 		localStorage.clear()
 		document.documentElement.removeAttribute("data-boot-played")
 		document.documentElement.removeAttribute("data-motion-paused")
+	})
+
+	afterEach(() => {
+		vi.unstubAllGlobals()
 	})
 
 	test("sem flag de sessão, não marca data-boot-played", () => {

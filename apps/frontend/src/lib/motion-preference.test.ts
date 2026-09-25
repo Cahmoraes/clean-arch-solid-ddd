@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react"
-import { beforeEach, describe, expect, test } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { mockBlockedLocalStorage } from "@/test/browser-mocks"
 import {
 	MOTION_PAUSED_STORAGE_KEY,
@@ -13,6 +13,10 @@ describe("motion-preference", () => {
 		localStorage.clear()
 		document.documentElement.removeAttribute("data-motion-paused")
 		setMotionPaused(false)
+	})
+
+	afterEach(() => {
+		vi.unstubAllGlobals()
 	})
 
 	test("persiste a pausa no localStorage e espelha o atributo data-motion-paused no html", () => {

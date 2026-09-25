@@ -59,6 +59,7 @@ describe("PixelTrail", () => {
 	afterEach(() => {
 		vi.restoreAllMocks()
 		vi.unstubAllGlobals()
+		setMotionPaused(false)
 	})
 
 	test("sem pointermove, nenhum rAF é agendado", () => {
@@ -112,6 +113,5 @@ describe("PixelTrail", () => {
 		const wrapper2 = second.container.firstElementChild as HTMLElement
 		fireEvent.pointerMove(wrapper2, { clientX: 20, clientY: 20 })
 		expect(fakeContext.fillRect).not.toHaveBeenCalled()
-		setMotionPaused(false)
 	})
 })

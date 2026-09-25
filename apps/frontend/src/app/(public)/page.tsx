@@ -30,7 +30,7 @@ export default async function LandingPage() {
 		<div className="mx-auto flex w-full max-w-6xl flex-col gap-24 px-4 py-16 sm:px-6 sm:py-24">
 			<section
 				aria-labelledby="hero-title"
-				className="relative flex flex-col items-start gap-8 overflow-hidden rounded-md p-8 sm:p-12"
+				className="relative isolate flex flex-col items-start gap-8 overflow-hidden rounded-md p-8 sm:p-12"
 			>
 				<PixelScene
 					scene="sunset"

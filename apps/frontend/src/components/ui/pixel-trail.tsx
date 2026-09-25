@@ -23,8 +23,7 @@ function readTrailColors(): string[] {
 	const candidates = [
 		styles.getPropertyValue("--color-primary").trim(),
 		styles.getPropertyValue("--color-accent").trim(),
-		styles.getPropertyValue("--color-scene-sun").trim() ||
-			styles.getPropertyValue("--color-warning").trim(),
+		styles.getPropertyValue("--color-scene-sun").trim(),
 	]
 	return candidates.filter((color) => color.length > 0)
 }

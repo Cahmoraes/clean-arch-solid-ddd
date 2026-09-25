@@ -40,8 +40,18 @@ describe("LandingPage — identidade Replaced", () => {
 		expect(container.querySelector('[data-scene="sunset"]')).not.toBeNull()
 	})
 
-	test("quando a API de planos falha, a seção Escolha seu plano some", async () => {
+	test("quando a API de planos responde erro de rede, a seção Escolha seu plano some", async () => {
 		server.use(http.get(`${SERVER_API_URL}/plans`, () => HttpResponse.error()))
+		const { queryByText } = renderWithProviders(await LandingPage())
+		expect(queryByText("Escolha seu plano")).toBeNull()
+	})
+
+	test("quando a API de planos responde HTTP 500, a seção Escolha seu plano some", async () => {
+		server.use(
+			http.get(`${SERVER_API_URL}/plans`, () =>
+				HttpResponse.json({ message: "erro" }, { status: 500 }),
+			),
+		)
 		const { queryByText } = renderWithProviders(await LandingPage())
 		expect(queryByText("Escolha seu plano")).toBeNull()
 	})
