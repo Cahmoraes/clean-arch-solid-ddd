@@ -208,6 +208,28 @@ describe("AuthenticatedShell — recolher/expandir", () => {
 		expect(screen.getByRole("link", { name: "Calendário" })).toBeInTheDocument()
 	})
 
+	test("exibe tooltip com o título do item ao focar um ícone recolhido", async () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell defaultCollapsed>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		screen.getByRole("link", { name: "Calendário" }).focus()
+		expect(await screen.findByRole("tooltip")).toHaveTextContent("Calendário")
+	})
+
+	test("não exibe tooltip quando o menu está expandido", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		screen.getByRole("link", { name: "Calendário" }).focus()
+		expect(screen.queryByRole("tooltip")).not.toBeInTheDocument()
+	})
+
 	test("Cmd/Ctrl+B alterna o recolhimento (FR-011)", () => {
 		setRole("MEMBER")
 		renderWithProviders(

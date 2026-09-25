@@ -2,7 +2,13 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { type ReactNode, useEffect, useRef, useState } from "react"
+import {
+	type ReactElement,
+	type ReactNode,
+	useEffect,
+	useRef,
+	useState,
+} from "react"
 import { toast } from "sonner"
 import { CommandPalette } from "@/components/command-palette/command-palette"
 import { NotificationBell } from "@/components/notification/notification-bell"
@@ -25,6 +31,12 @@ import {
 } from "@/components/ui/pixel-icons"
 import { SearchBar } from "@/components/ui/search-bar"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { useLogout } from "@/features/auth/api"
 import { useMe } from "@/features/profile/api"
 import { useAuthStore } from "@/lib/auth/auth-store"
@@ -59,14 +71,23 @@ function isPathActive(pathname: string | null, href: string): boolean {
 	return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-function CollapsedTooltip({ label }: { label: string }) {
+function CollapsedTooltip({
+	label,
+	enabled,
+	children,
+}: {
+	label: string
+	enabled: boolean
+	children: ReactElement
+}) {
+	if (!enabled) return children
 	return (
-		<span
-			aria-hidden="true"
-			className="pointer-events-none absolute left-full z-30 ml-3 hidden whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md group-hover/nav:block group-focus-visible/nav:block"
-		>
-			{label}
-		</span>
+		<Tooltip>
+			<TooltipTrigger asChild>{children}</TooltipTrigger>
+			<TooltipContent side="right" sideOffset={12}>
+				{label}
+			</TooltipContent>
+		</Tooltip>
 	)
 }
 
@@ -93,24 +114,27 @@ function SidebarNavItem({
 	const active = isPathActive(pathname, item.href)
 	const Icon = item.icon
 	return (
-		<Link
-			href={item.href}
-			aria-current={active ? "page" : undefined}
-			aria-label={item.label}
-			className={cn(
-				"group/nav relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors max-[860px]:justify-center",
-				collapsed && "justify-center",
-				active
-					? "bg-sidebar-active font-semibold text-sidebar-active-foreground"
-					: "text-sidebar-muted hover:bg-white/5 hover:text-sidebar-foreground",
-			)}
-		>
-			<Icon className="h-6 w-6 shrink-0" aria-hidden="true" />
-			<span className={cn("flex-1 max-[860px]:hidden", collapsed && "hidden")}>
-				{item.label}
-			</span>
-			{collapsed && <CollapsedTooltip label={item.label} />}
-		</Link>
+		<CollapsedTooltip label={item.label} enabled={collapsed}>
+			<Link
+				href={item.href}
+				aria-current={active ? "page" : undefined}
+				aria-label={item.label}
+				className={cn(
+					"relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors max-[860px]:justify-center",
+					collapsed && "justify-center",
+					active
+						? "bg-sidebar-active font-semibold text-sidebar-active-foreground"
+						: "text-sidebar-muted hover:bg-white/5 hover:text-sidebar-foreground",
+				)}
+			>
+				<Icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+				<span
+					className={cn("flex-1 max-[860px]:hidden", collapsed && "hidden")}
+				>
+					{item.label}
+				</span>
+			</Link>
+		</CollapsedTooltip>
 	)
 }
 
@@ -173,124 +197,129 @@ export function AuthenticatedShell({
 			>
 				Pular para o conteúdo principal
 			</a>
-			<aside className="crt-scanlines flex flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground max-[860px]:px-3">
-				<div
-					className={cn(
-						"mb-6 flex items-center gap-2 px-2 max-[860px]:flex-col max-[860px]:gap-3",
-						collapsed ? "flex-col gap-3" : "justify-between",
-					)}
-				>
-					<Link href="/inicio" className="flex items-center">
-						<BrandMark
-							wordmark
-							className={cn(
-								"text-sidebar-foreground max-[860px]:[&>span:last-child]:hidden",
-								collapsed && "[&>span:last-child]:hidden",
-							)}
-						/>
-					</Link>
-					<button
-						type="button"
-						onClick={toggleCollapsed}
-						aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
-						aria-expanded={!collapsed}
-						aria-controls="sidebar-nav"
-						className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-white/5 hover:text-sidebar-foreground"
-					>
-						{collapsed ? (
-							<PanelLeftOpen className="h-6 w-6" aria-hidden="true" />
-						) : (
-							<PanelLeftClose className="h-6 w-6" aria-hidden="true" />
-						)}
-					</button>
-				</div>
-
-				<nav
-					id="sidebar-nav"
-					aria-label="Navegação principal"
-					className="flex flex-1 flex-col gap-1 overflow-y-auto"
-				>
-					<p
-						className={cn(
-							"px-3 pb-2 font-display text-[15px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden",
-							collapsed && "hidden",
-						)}
-					>
-						Principal
-					</p>
-					{MAIN_NAV_ITEMS.map((item) => (
-						<SidebarNavItem
-							key={item.href}
-							item={item}
-							pathname={pathname}
-							collapsed={collapsed}
-						/>
-					))}
-
-					{isAdmin && (
-						<>
-							<p
-								className={cn(
-									"mt-4 px-3 pb-2 font-display text-[15px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden",
-									collapsed && "hidden",
-								)}
-							>
-								Admin
-							</p>
-							{ADMIN_NAV_ITEMS.map((item) => (
-								<SidebarNavItem
-									key={item.href}
-									item={item}
-									pathname={pathname}
-									collapsed={collapsed}
-								/>
-							))}
-						</>
-					)}
-
-					<div className="mt-4 border-t border-sidebar-border pt-3">
-						<button
-							type="button"
-							aria-label="Sair"
-							onClick={handleLogout}
-							className={cn(
-								"group/nav relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-sidebar-muted transition-colors hover:bg-white/5 hover:text-destructive max-[860px]:justify-center",
-								collapsed && "justify-center",
-							)}
-						>
-							<LogOut className="h-6 w-6 shrink-0" aria-hidden="true" />
-							<span className={cn("max-[860px]:hidden", collapsed && "hidden")}>
-								Sair
-							</span>
-							{collapsed && <CollapsedTooltip label="Sair" />}
-						</button>
-					</div>
-				</nav>
-
-				<div className="mt-2 flex items-center gap-2 border-t border-sidebar-border pt-4">
+			<TooltipProvider delayDuration={100}>
+				<aside className="crt-scanlines flex flex-col border-r border-sidebar-border bg-sidebar px-4 py-5 text-sidebar-foreground max-[860px]:px-3">
 					<div
 						className={cn(
-							"flex min-w-0 flex-1 items-center gap-3 max-[860px]:justify-center",
-							collapsed && "justify-center",
+							"mb-6 flex items-center gap-2 px-2 max-[860px]:flex-col max-[860px]:gap-3",
+							collapsed ? "flex-col gap-3" : "justify-between",
 						)}
 					>
-						<Avatar name={meData?.name} size="sm" />
-						<div
+						<Link href="/inicio" className="flex items-center">
+							<BrandMark
+								wordmark
+								className={cn(
+									"text-sidebar-foreground max-[860px]:[&>span:last-child]:hidden",
+									collapsed && "[&>span:last-child]:hidden",
+								)}
+							/>
+						</Link>
+						<button
+							type="button"
+							onClick={toggleCollapsed}
+							aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
+							aria-expanded={!collapsed}
+							aria-controls="sidebar-nav"
+							className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-white/5 hover:text-sidebar-foreground"
+						>
+							{collapsed ? (
+								<PanelLeftOpen className="h-6 w-6" aria-hidden="true" />
+							) : (
+								<PanelLeftClose className="h-6 w-6" aria-hidden="true" />
+							)}
+						</button>
+					</div>
+
+					<nav
+						id="sidebar-nav"
+						aria-label="Navegação principal"
+						className="flex flex-1 flex-col gap-1 overflow-y-auto"
+					>
+						<p
 							className={cn(
-								"min-w-0 max-[860px]:hidden",
+								"px-3 pb-2 font-display text-[15px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden",
 								collapsed && "hidden",
 							)}
 						>
-							<p className="truncate text-sm font-semibold text-sidebar-foreground">
-								{displayName}
-							</p>
-							<p className="text-[10.5px] tracking-wider text-sidebar-muted">
-								{isAdmin ? "ADMIN" : "MEMBRO"}
-							</p>
+							Principal
+						</p>
+						{MAIN_NAV_ITEMS.map((item) => (
+							<SidebarNavItem
+								key={item.href}
+								item={item}
+								pathname={pathname}
+								collapsed={collapsed}
+							/>
+						))}
+
+						{isAdmin && (
+							<>
+								<p
+									className={cn(
+										"mt-4 px-3 pb-2 font-display text-[15px] uppercase tracking-[0.18em] text-sidebar-muted max-[860px]:hidden",
+										collapsed && "hidden",
+									)}
+								>
+									Admin
+								</p>
+								{ADMIN_NAV_ITEMS.map((item) => (
+									<SidebarNavItem
+										key={item.href}
+										item={item}
+										pathname={pathname}
+										collapsed={collapsed}
+									/>
+								))}
+							</>
+						)}
+
+						<div className="mt-4 border-t border-sidebar-border pt-3">
+							<CollapsedTooltip label="Sair" enabled={collapsed}>
+								<button
+									type="button"
+									aria-label="Sair"
+									onClick={handleLogout}
+									className={cn(
+										"relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-sidebar-muted transition-colors hover:bg-white/5 hover:text-destructive max-[860px]:justify-center",
+										collapsed && "justify-center",
+									)}
+								>
+									<LogOut className="h-6 w-6 shrink-0" aria-hidden="true" />
+									<span
+										className={cn("max-[860px]:hidden", collapsed && "hidden")}
+									>
+										Sair
+									</span>
+								</button>
+							</CollapsedTooltip>
+						</div>
+					</nav>
+
+					<div className="mt-2 flex items-center gap-2 border-t border-sidebar-border pt-4">
+						<div
+							className={cn(
+								"flex min-w-0 flex-1 items-center gap-3 max-[860px]:justify-center",
+								collapsed && "justify-center",
+							)}
+						>
+							<Avatar name={meData?.name} size="sm" />
+							<div
+								className={cn(
+									"min-w-0 max-[860px]:hidden",
+									collapsed && "hidden",
+								)}
+							>
+								<p className="truncate text-sm font-semibold text-sidebar-foreground">
+									{displayName}
+								</p>
+								<p className="text-[10.5px] tracking-wider text-sidebar-muted">
+									{isAdmin ? "ADMIN" : "MEMBRO"}
+								</p>
+							</div>
 						</div>
 					</div>
-				</div>
-			</aside>
+				</aside>
+			</TooltipProvider>
 
 			<div className="flex min-h-0 min-w-0 flex-col">
 				<header className="sticky top-0 z-30 flex items-center gap-4 border-b border-border bg-background/80 px-8 py-4 backdrop-blur-md max-[560px]:px-4">
