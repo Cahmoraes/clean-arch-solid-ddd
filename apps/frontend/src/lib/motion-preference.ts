@@ -62,10 +62,14 @@ function handleStorageEvent(event: StorageEvent): void {
 
 function subscribe(listener: Listener): () => void {
 	listeners.add(listener)
-	window.addEventListener("storage", handleStorageEvent)
+	if (listeners.size === 1) {
+		window.addEventListener("storage", handleStorageEvent)
+	}
 	return () => {
 		listeners.delete(listener)
-		window.removeEventListener("storage", handleStorageEvent)
+		if (listeners.size === 0) {
+			window.removeEventListener("storage", handleStorageEvent)
+		}
 	}
 }
 

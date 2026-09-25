@@ -37,6 +37,22 @@ describe("motion-preference", () => {
 		expect(result.current.paused).toBe(true)
 	})
 
+	test("com dois subscribers, desinscrever um mantém o outro recebendo o evento storage", () => {
+		const first = renderHook(() => useMotionPreference())
+		const second = renderHook(() => useMotionPreference())
+		first.unmount()
+		act(() => {
+			localStorage.setItem(MOTION_PAUSED_STORAGE_KEY, "true")
+			window.dispatchEvent(
+				new StorageEvent("storage", {
+					key: MOTION_PAUSED_STORAGE_KEY,
+					newValue: "true",
+				}),
+			)
+		})
+		expect(second.result.current.paused).toBe(true)
+	})
+
 	test("com localStorage bloqueado, a pausa alterna só em memória e não lança exceção", () => {
 		mockBlockedLocalStorage()
 		expect(() => setMotionPaused(true)).not.toThrow()
