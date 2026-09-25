@@ -30,6 +30,25 @@ test("as regras de data-boot só animam sob :not([data-motion-paused]) e prefers
 	expect(css).toContain('[data-boot="stats"]')
 })
 
+test("nenhuma animação boot* anima width ou outra propriedade de layout", () => {
+	const css = readGlobalsCss()
+	for (const name of ["bootType", "bootGlow", "bootRise"]) {
+		const keyframes = extractKeyframes(css, name)
+		expect(keyframes).not.toBe("")
+		expect(keyframes).not.toMatch(
+			/\b(width|height|top|left|right|bottom|margin|padding)\s*:/,
+		)
+	}
+})
+
+test("bootType, bootGlow e bootRise usam steps() em vez de ease-out", () => {
+	const css = readGlobalsCss()
+	for (const name of ["bootType", "bootGlow", "bootRise"]) {
+		const pattern = new RegExp(`animation:\\s*${name}[^;]*steps\\(`)
+		expect(css).toMatch(pattern)
+	}
+})
+
 test("pixel-hover anima em steps() e não se aplica com data-motion-paused ou reduced motion", () => {
 	const css = readGlobalsCss()
 	const utilityIndex = css.indexOf("@utility pixel-hover")

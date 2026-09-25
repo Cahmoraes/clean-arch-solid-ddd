@@ -440,23 +440,30 @@
 }
 
 /* Boot de terminal (D3): eyebrow digitado, pulso de brilho no título, estatísticas
-   escalonadas — uma vez por sessão. Nem bootType, bootGlow nem bootRise usam
-   opacity:0 nem recorte por máscara de forma (a propriedade CSS de recorte é
-   proibida em globals.css, ver o guard de corner-shape/foco duplo), então nada
-   começa oculto (FR-014). O "digitado" usa width + overflow, sem recorte por
-   máscara. O brilho do título é só filtro de brilho, sem sombra sobre o texto
-   (glow não vai em texto). As regras só animam sem data-boot-played (boot já
-   tocou), sem data-motion-paused e sob prefers-reduced-motion: no-preference
+   escalonadas — uma vez por sessão, tudo em steps() (spec: "Boot de terminal
+   (CSS em steps())"). Nem bootType, bootGlow nem bootRise usam opacity:0 nem
+   recorte por máscara de forma (a propriedade CSS de recorte é proibida em
+   globals.css, ver o guard de corner-shape/foco duplo), então nada começa
+   oculto (FR-014). Nenhuma das três anima width/height/inset ou qualquer outra
+   propriedade de layout — só transform, opacity e filter (propriedades de
+   compositor), 0 eventos de Layout (spec "Performance percebida"). O
+   "digitado" cobre o eyebrow com um ::after do tom de fundo e recolhe esse
+   ::after via transform: scaleX(1 → 0), sem recorte por máscara de forma e
+   sem tocar o texto em si; o eyebrow precisa de position: relative + display: inline-block para
+   o ::after ter uma caixa própria para cobrir (span de largura variável). O
+   brilho do título é só filtro de brilho, sem sombra sobre o texto (glow não
+   vai em texto). As regras só animam sem data-boot-played (boot já tocou),
+   sem data-motion-paused e sob prefers-reduced-motion: no-preference
    (FR-016). Sem animation-fill-mode forwards/both (proibido — retenção fora do
    ciclo de vida da cena); o estado final de cada keyframe já é o estado normal
-   do elemento, e "backwards" evita o filter/opacity "pular" durante o delay de
-   title/stats. */
+   do elemento, e "backwards" evita o transform/filter "pular" no início do
+   delay (title/stats) ou antes do primeiro frame pintado (eyebrow). */
 @keyframes bootType {
 	from {
-		width: 0;
+		transform: scaleX(1);
 	}
 	to {
-		width: 100%;
+		transform: scaleX(0);
 	}
 }
 
@@ -482,16 +489,23 @@
 
 @media (prefers-reduced-motion: no-preference) {
 	html:not([data-boot-played]):not([data-motion-paused]) [data-boot="eyebrow"] {
+		position: relative;
 		display: inline-block;
-		overflow: hidden;
-		white-space: nowrap;
-		animation: bootType 300ms steps(12);
+	}
+	html:not([data-boot-played]):not([data-motion-paused])
+		[data-boot="eyebrow"]::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: var(--color-background);
+		transform-origin: right;
+		animation: bootType 300ms steps(12) backwards;
 	}
 	html:not([data-boot-played]):not([data-motion-paused]) [data-boot="title"] {
-		animation: bootGlow 300ms ease-out 150ms backwards;
+		animation: bootGlow 300ms steps(4) 150ms backwards;
 	}
 	html:not([data-boot-played]):not([data-motion-paused]) [data-boot="stats"] {
-		animation: bootRise 300ms ease-out 300ms backwards;
+		animation: bootRise 300ms steps(4) 300ms backwards;
 	}
 }
 
