@@ -1,7 +1,6 @@
-import { screen, within } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { describe, expect, test, vi } from "vitest"
-import { renderWithProviders } from "@/test/render"
 
 vi.mock("@react-oauth/google", () => ({
 	GoogleOAuthProvider: ({ children }: { children: ReactNode }) => children,
@@ -32,44 +31,47 @@ vi.mock("@/features/auth/api", () => ({
 
 import LoginPage from "./page"
 
-describe("Login VOLT", () => {
-	test("exibe o hero no painel-marca desktop e no bloco mobile", () => {
-		renderWithProviders(<LoginPage />)
-		expect(screen.getAllByText(/Treine onde/i)).toHaveLength(2)
-	})
-
-	test("exibe o hero compacto no bloco mobile com as estatísticas", () => {
-		renderWithProviders(<LoginPage />)
+describe("LoginPage — identidade Replaced", () => {
+	test("exibe o novo título do hero no desktop e no mobile", async () => {
+		render(<LoginPage />)
+		const titles = await screen.findAllByText(/Sua cidade inteira/i)
+		expect(titles).toHaveLength(2)
 		const mobileHero = screen.getByTestId("login-hero-mobile")
-		expect(within(mobileHero).getByText(/Treine onde/i)).toBeInTheDocument()
-		expect(within(mobileHero).getByText("312")).toBeInTheDocument()
-		expect(within(mobileHero).getByText("48k")).toBeInTheDocument()
-		expect(within(mobileHero).getByText("4.9")).toBeInTheDocument()
+		expect(
+			within(mobileHero).getByText(/Sua cidade inteira/i),
+		).toBeInTheDocument()
 	})
 
-	test("preserva os campos e o botão de submit", () => {
-		renderWithProviders(<LoginPage />)
-		expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument()
-		expect(screen.getByLabelText(/Senha/i)).toBeInTheDocument()
-		expect(screen.getByTestId("login-submit")).toBeInTheDocument()
+	test("exibe o eyebrow do hero e o eyebrow do formulário novos", async () => {
+		render(<LoginPage />)
+		expect(await screen.findByText("> VOLT // ONLINE")).toBeInTheDocument()
+		expect(screen.getByText("Acesso autorizado")).toBeInTheDocument()
 	})
 
-	test("exibe a cena pixel decorativa na coluna de marca sem alterar o formulário", () => {
-		const { container } = renderWithProviders(<LoginPage />)
+	test("o botão de envio usa o texto novo e pixel-hover", async () => {
+		render(<LoginPage />)
+		const button = await screen.findByTestId("login-submit")
+		expect(button).toHaveTextContent("> Entrar")
+		expect(button).toHaveClass("pixel-hover")
+	})
+
+	test("a cena login roda animada e o rastro de pixels existe na coluna da cena", async () => {
+		const { container } = render(<LoginPage />)
+		await screen.findAllByText(/Sua cidade inteira/i)
 		const scene = container.querySelector('[data-scene="login"]')
-		expect(scene).toBeInTheDocument()
+		expect(scene).not.toBeNull()
 		expect(scene).toHaveAttribute("aria-hidden", "true")
-		expect(screen.getByLabelText(/E-mail/i)).toBeInTheDocument()
-		expect(screen.getByLabelText(/Senha/i)).toBeInTheDocument()
-		expect(screen.getByTestId("login-submit")).toBeInTheDocument()
-		expect(screen.getAllByText(/Treine onde/i)).toHaveLength(2)
+		expect(scene).toHaveAttribute("data-paused", "false")
+		const canvas = container.querySelector("aside canvas")
+		expect(canvas).not.toBeNull()
+		expect(canvas?.closest("[aria-hidden='true']")).not.toBeNull()
 	})
 
-	test("a cena de login anima (data-paused false) quando nada a pausa", () => {
-		const { container } = renderWithProviders(<LoginPage />)
-		expect(container.querySelector('[data-scene="login"]')).toHaveAttribute(
-			"data-paused",
-			"false",
-		)
+	test("o eyebrow e o título carregam data-boot; o formulário não tem nenhum ancestral [data-boot]", async () => {
+		render(<LoginPage />)
+		const emailField = await screen.findByLabelText(/E-mail/i)
+		expect(emailField.closest("[data-boot]")).toBeNull()
+		const submitButton = screen.getByTestId("login-submit")
+		expect(submitButton.closest("[data-boot]")).toBeNull()
 	})
 })

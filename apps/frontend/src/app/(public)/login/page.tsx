@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Eyebrow } from "@/components/ui/eyebrow"
 import { FormField } from "@/components/ui/form-field"
 import { PixelScene } from "@/components/ui/pixel-scene"
+import { PixelTrail } from "@/components/ui/pixel-trail"
 import { useLogin, useLoginWithGoogle } from "@/features/auth/api"
 import { GoogleSignInButton } from "@/features/auth/components/google-sign-in-button"
 import { type LoginInput, loginSchema } from "@/features/auth/schemas"
@@ -89,12 +90,24 @@ function LoginForm() {
 					>
 						<PixelScene scene="login" animated />
 					</div>
-					<h2 className="font-display text-[clamp(48px,7vw,92px)] leading-[0.92] tracking-[-0.03em]">
-						Treine onde
-						<br />
-						<span className="text-accent">você</span> estiver.
-					</h2>
-					<div className="flex flex-wrap gap-9">
+					<PixelTrail />
+					<div className="flex flex-col gap-6">
+						<p
+							data-boot="eyebrow"
+							className="font-display text-base tracking-widest text-accent"
+						>
+							{"> VOLT // ONLINE"}
+						</p>
+						<h2
+							data-boot="title"
+							className="font-display text-[clamp(48px,7vw,92px)] leading-[0.92] tracking-[-0.03em]"
+						>
+							Sua cidade inteira é
+							<br />
+							<span className="text-accent">sua academia</span>.
+						</h2>
+					</div>
+					<div data-boot="stats" className="flex flex-wrap gap-9">
 						{LOGIN_STATS.map((stat) => (
 							<div key={stat.label} className="flex flex-col gap-0.5">
 								<span className="font-display text-4xl text-accent tabular-nums">
@@ -114,10 +127,14 @@ function LoginForm() {
 							data-testid="login-hero-mobile"
 							className="hidden flex-col gap-4 border-b border-border pb-6 max-[860px]:flex"
 						>
-							<h2 className="font-display text-3xl leading-[0.95] tracking-[-0.03em]">
-								Treine onde <span className="text-accent">você</span> estiver.
+							<h2
+								data-boot="title"
+								className="font-display text-3xl leading-[0.95] tracking-[-0.03em]"
+							>
+								Sua cidade inteira é{" "}
+								<span className="text-accent">sua academia</span>.
 							</h2>
-							<div className="flex flex-wrap gap-6">
+							<div data-boot="stats" className="flex flex-wrap gap-6">
 								{LOGIN_STATS.map((stat) => (
 									<div key={stat.label} className="flex flex-col gap-0.5">
 										<span className="font-display text-3xl text-accent tabular-nums">
@@ -131,7 +148,7 @@ function LoginForm() {
 							</div>
 						</div>
 						<header className="flex flex-col gap-2">
-							<Eyebrow>Acesse sua conta</Eyebrow>
+							<Eyebrow>Acesso autorizado</Eyebrow>
 							<h1 className="font-display text-[30px] tracking-tight text-foreground">
 								Entrar
 							</h1>
@@ -182,8 +199,9 @@ function LoginForm() {
 								type="submit"
 								disabled={isPending || isGooglePending}
 								data-testid="login-submit"
+								className="pixel-hover"
 							>
-								{isPending ? "Entrando…" : "Entrar"}
+								{isPending ? "Entrando…" : "> Entrar"}
 							</Button>
 						</form>
 
