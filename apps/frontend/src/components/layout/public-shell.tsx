@@ -1,6 +1,10 @@
+"use client"
+
 import Link from "next/link"
 import type { ReactNode } from "react"
 import { BrandMark } from "@/components/ui/brand-mark"
+import { MotionToggle } from "@/components/ui/motion-toggle"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { cn } from "@/lib/cn"
 
 export interface PublicShellProps {
@@ -50,6 +54,11 @@ export function PublicShell({ children, className }: PublicShellProps) {
 						>
 							Criar conta
 						</Link>
+						<div className="ml-2 flex items-center gap-2 border-l border-border pl-2">
+							<MotionToggle />
+							<ThemeToggle className="max-[560px]:hidden" />
+							<ThemeToggle compact className="hidden max-[560px]:flex" />
+						</div>
 					</nav>
 				</div>
 			</header>

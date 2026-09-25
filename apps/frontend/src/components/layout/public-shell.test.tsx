@@ -1,8 +1,17 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, test } from "vitest"
+import { beforeEach, describe, expect, test, vi } from "vitest"
 import { PublicShell } from "./public-shell"
 
+vi.mock("next-themes", () => ({
+	useTheme: () => ({ resolvedTheme: "dark", setTheme: vi.fn() }),
+}))
+
 describe("PublicShell", () => {
+	beforeEach(() => {
+		localStorage.clear()
+		document.documentElement.removeAttribute("data-motion-paused")
+	})
+
 	test("renderiza header com CTAs de login e cadastro", () => {
 		render(
 			<PublicShell>
@@ -75,22 +84,24 @@ describe("PublicShell — acessibilidade", () => {
 })
 
 describe("PublicShell — controle de animações", () => {
-	test("não exibe controle de pausa de animações", () => {
+	test("exibe o controle de pausa de animações no header público", () => {
 		render(
 			<PublicShell>
-				<p>conteúdo</p>
+				<div />
 			</PublicShell>,
 		)
-		expect(screen.queryByRole("button", { name: /animações/i })).toBeNull()
+		expect(
+			screen.getByRole("button", { name: "Pausar animações" }),
+		).toBeInTheDocument()
 	})
 
-	test("não adiciona ThemeToggle ao shell público", () => {
+	test("exibe o seletor de tema no header público", () => {
 		render(
 			<PublicShell>
-				<p>conteúdo</p>
+				<div />
 			</PublicShell>,
 		)
-		expect(screen.queryByRole("button", { name: /modo/i })).toBeNull()
+		expect(screen.getByRole("radiogroup", { name: "Tema" })).toBeInTheDocument()
 	})
 })
 
