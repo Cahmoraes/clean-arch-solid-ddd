@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como usuário, eu quero reconhecer a disponibilidade da academia por um indicador colorido discreto, para que eu saiba o status sem ler um selo de texto",
+  "requirements": ["FR-003", "FR-004", "FR-005"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "21 testes passaram, 0 falharam (gym-row.test.tsx e resolve-status-badge.test.ts). Cobrem: ausência de selo de texto e da pílula Check-in (FR-003); ponto verde nomeado 'Disponível' antes do nome e ponto vermelho 'Desativada' (FR-004); sem adminEditHref, academia desativada aparece como 'Disponível' (FR-005).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Implementação em gym-row.tsx confere com o PRD: span role=img com aria-label/title, h-2 w-2, bg-success ou bg-destructive, antes do título; resolveGymStatusBadge só retorna 'danger' com adminEditHref e status deactivated. Screenshot não capturado: /academias no app em http://localhost:3000 exibe a página pública (links Entrar/Criar conta), sem sessão autenticada disponível, portanto a linha da academia não foi renderizada no navegador. Não foi verificada a aparência real do ponto no navegador."
+}

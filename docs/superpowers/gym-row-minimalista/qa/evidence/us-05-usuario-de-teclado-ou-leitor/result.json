@@ -1,0 +1,12 @@
+{
+  "us_id": "us-05",
+  "user_story": "Como usuário de teclado ou leitor de tela, eu quero nomes acessíveis nos ícones e no indicador de status, para que eu use a lista sem depender de texto visual",
+  "requirements": ["FR-009", "FR-010"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "1 arquivo (gym-row.test.tsx), 18 testes passaram, 0 falharam. Cobrem nome acessível e tooltip no foco do ícone de Check-in, aria-label do ícone de editar, e ponto de status com role=img, aria-label e title ('Disponível'/'Desativada').",
+  "screenshot_path": "evidence/us-05-usuario-de-teclado-ou-leitor/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificado no app em /academias (visão 'Ver como lista', usuário MEMBER): a árvore de acessibilidade expõe img 'Disponível' em cada linha e link 'Check-in em {título}'. Ao focar o link por teclado (focus()), surge o tooltip 'Check-in em O'Keefe - Kozey Gym'. O ícone de editar (admin) e o estado 'Desativada' foram verificados apenas por testes unitários, pois o usuário QA não é admin. Um usuário QA (qa-us05@example.com) foi criado via API para o login."
+}

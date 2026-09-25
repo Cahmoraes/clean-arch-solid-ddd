@@ -1,0 +1,12 @@
+{
+  "us_id": "us-03",
+  "user_story": "Como usuário, eu quero acionar o Check-in por um ícone na própria linha, para que eu chegue ao detalhe da academia para fazer o check-in",
+  "requirements": ["FR-006", "FR-008"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "apps/frontend/src/features/gyms/components/gym-row.test.tsx: 18 testes passaram, 0 falharam. Cobrem o ícone de Check-in com aria-label 'Check-in em <título>' e href /academias/{id} (FR-006), ícones irmãos do link da linha (não aninhados), tooltip, alvo de 32px (h-8 w-8, acima de 24px) e padding à direita reservado para título longo sem sobreposição (FR-008).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Código verificado em gym-row.tsx: GymRowAction renderiza Link para /academias/{gym.id}, posicionado à direita com absolute, fora do link da linha, com h-8 w-8 e pr-14/pr-24 na linha. Screenshot não capturado: /academias redireciona para /login?redirect=%2Facademias e não há credenciais disponíveis para autenticar; uma tentativa de captura falhou. O comportamento visual em execução real ficou sem verificação, por isso PARTIAL."
+}

@@ -1,0 +1,12 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como usuário, eu quero uma lista de academias limpa, com imagem, nome, descrição e endereço em destaque, para que eu escaneie as opções rapidamente",
+  "requirements": ["FR-001", "FR-002", "FR-003"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "2 arquivos (gym-row.test.tsx, gym-results.test.tsx), 32 testes passaram, 0 falharam. Cobrem imagem/nome/descrição/endereço (FR-001), ausência de telefone e 'Ver detalhes' (FR-002) e ausência de selo de texto de status (FR-003).",
+  "screenshot_path": "evidence/us-01-usuario-uma-lista-de-academias/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificado em /academias na visão 'lista' com usuário MEMBER: cada linha mostra miniatura, nome, descrição e endereço, sem telefone, sem 'Ver detalhes' e sem selo de texto de status (apenas ponto colorido e ícone de check-in). Nenhum teste de aceite novo foi necessário. Um usuário QA (qa-us01@example.com) foi criado via API para o login."
+}

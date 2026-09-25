@@ -1,0 +1,12 @@
+{
+  "us_id": "us-04",
+  "user_story": "Como administrador, eu quero editar uma academia por um ícone na linha, para que eu chegue à edição sem poluir a lista",
+  "requirements": ["FR-007", "FR-008"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "apps/frontend/src/features/gyms/components/gym-row.test.tsx: 18 testes passaram, 0 falharam. Relevantes: botão de edição com href correto (FR-007), ausente sem adminEditHref (FR-007), aria-label e alvo de 32px (FR-008), ícones irmãos do link da linha, padding à direita reservado com título longo (FR-008), destaque ciano no hover.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Testes unitários cobrem FR-007 e FR-008; gym-row.tsx usa h-8 w-8 (32px, acima do mínimo de 24px) e pr-24 quando há adminEditHref. Nenhum teste de aceitação novo foi necessário. Captura de tela não obtida: /academias redireciona para /login e não há credenciais de administrador disponíveis; uma tentativa feita, o comportamento no app rodando não foi verificado visualmente."
+}
