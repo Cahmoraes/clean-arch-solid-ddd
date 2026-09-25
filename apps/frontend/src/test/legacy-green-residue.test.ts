@@ -23,6 +23,7 @@ describe("Resíduo do verde VOLT antigo e escopo da arte", () => {
 	test("PixelScene só aparece nas superfícies de destaque (login, hero, estado vazio, capa de academia)", () => {
 		const SCENE_SURFACES = [
 			"app/(public)/login/page.tsx",
+			"app/(public)/page.tsx",
 			"components/ui/empty-state.tsx",
 			"features/dashboard/components/profile-hero-card.tsx",
 			"features/gyms/components/gym-image.tsx",
