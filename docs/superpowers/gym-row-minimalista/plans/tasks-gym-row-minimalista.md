@@ -8,8 +8,8 @@
 
 ## Tarefas
 
-- [ ] 1. Indicador de status por ponto e limpeza da linha → `task-01.md`
-- [ ] 2. Ícones de ação Check-in e editar com tooltip → `task-02.md`
+- [x] 1. Indicador de status por ponto e limpeza da linha → `task-01.md`
+- [x] 2. Ícones de ação Check-in e editar com tooltip → `task-02.md`
 
 ## Restrições Globais
 

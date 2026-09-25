@@ -1,6 +1,6 @@
 # Task 2: Ícones de ação Check-in e editar com tooltip [FR-006, FR-007, FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-gym-row-minimalista.md`
 

@@ -1,6 +1,6 @@
 # Task 1: Indicador de status por ponto e limpeza da linha [FR-001, FR-002, FR-003, FR-004, FR-005, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-gym-row-minimalista.md`
 
