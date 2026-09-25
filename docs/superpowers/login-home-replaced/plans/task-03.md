@@ -1,6 +1,6 @@
 # Task 3: Preferência de movimento e MotionToggle [FR-015, FR-016, FR-018]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 

@@ -1,6 +1,6 @@
 # Task 9: Home pública: hero sunset, textos e features [FR-007, FR-008, FR-009, FR-010, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 

@@ -1,6 +1,6 @@
 # Task 8: Login imersivo: textos, rastro, boot e hover [FR-005, FR-006, FR-010, FR-012, FR-014]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 

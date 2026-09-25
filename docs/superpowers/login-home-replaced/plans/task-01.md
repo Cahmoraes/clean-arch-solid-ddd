@@ -1,6 +1,6 @@
 # Task 1: Tema Pôr do sol (tokens, provider, variantes dark e chart) [FR-001, FR-003, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 

@@ -1,6 +1,6 @@
 # Task 6: PixelTrail: rastro de pixels em Canvas2D [FR-010, FR-011, FR-016, FR-017]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 

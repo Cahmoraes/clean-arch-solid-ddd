@@ -1,6 +1,6 @@
 # Task 5: Cena pixel sunset e sol em faixas [FR-005, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 

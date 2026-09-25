@@ -1,6 +1,6 @@
 # Task 10: E2E de desempenho, pausa e boot por sessão [FR-013, FR-015, FR-016, FR-017]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 

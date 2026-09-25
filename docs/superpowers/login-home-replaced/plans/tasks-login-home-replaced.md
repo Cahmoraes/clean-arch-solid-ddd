@@ -8,16 +8,16 @@
 
 ## Tarefas
 
-- [ ] 1. Tema Pôr do sol (tokens, provider, variantes dark e chart) → `task-01.md`
-- [ ] 2. ThemeToggle de 3 estados com ícone Sunset → `task-02.md`
-- [ ] 3. Preferência de movimento e MotionToggle → `task-03.md`
-- [ ] 4. Toggles de tema e movimento no header público → `task-04.md`
-- [ ] 5. Cena pixel sunset e sol em faixas → `task-05.md`
-- [ ] 6. PixelTrail: rastro de pixels em Canvas2D → `task-06.md`
-- [ ] 7. Boot de terminal, pixel-hover e script pré-paint → `task-07.md`
-- [ ] 8. Login imersivo: textos, rastro, boot e hover → `task-08.md`
-- [ ] 9. Home pública: hero sunset, textos e features → `task-09.md`
-- [ ] 10. E2E de desempenho, pausa e boot por sessão → `task-10.md`
+- [x] 1. Tema Pôr do sol (tokens, provider, variantes dark e chart) → `task-01.md`
+- [x] 2. ThemeToggle de 3 estados com ícone Sunset → `task-02.md`
+- [x] 3. Preferência de movimento e MotionToggle → `task-03.md`
+- [x] 4. Toggles de tema e movimento no header público → `task-04.md`
+- [x] 5. Cena pixel sunset e sol em faixas → `task-05.md`
+- [x] 6. PixelTrail: rastro de pixels em Canvas2D → `task-06.md`
+- [x] 7. Boot de terminal, pixel-hover e script pré-paint → `task-07.md`
+- [x] 8. Login imersivo: textos, rastro, boot e hover → `task-08.md`
+- [x] 9. Home pública: hero sunset, textos e features → `task-09.md`
+- [x] 10. E2E de desempenho, pausa e boot por sessão → `task-10.md`
 
 ## Restrições Globais
 

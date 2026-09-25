@@ -1,6 +1,6 @@
 # Task 2: ThemeToggle de 3 estados com ícone Sunset [FR-002, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 

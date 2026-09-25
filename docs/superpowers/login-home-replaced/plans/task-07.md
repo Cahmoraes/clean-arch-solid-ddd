@@ -1,6 +1,6 @@
 # Task 7: Boot de terminal, pixel-hover e script pré-paint [FR-012, FR-013, FR-014, FR-016, FR-018]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 
@@ -15,12 +15,12 @@ Implementa a entrada de terminal (eyebrow digitado, pulso de brilho no título, 
 ## Arquivos
 
 - Create: `apps/frontend/src/lib/boot-session.ts`
-- Create: `apps/frontend/src/components/ui/boot-marker.tsx`
 - Modify: `apps/frontend/src/app/globals.css`
 - Modify: `apps/frontend/src/app/(public)/layout.tsx`
 - Test: `apps/frontend/src/lib/boot-session.test.ts`
-- Test: `apps/frontend/src/components/ui/boot-marker.test.tsx`
 - Test: `apps/frontend/src/test/boot-css.test.ts`
+
+> Nota de execução: `boot-marker.tsx` (e seu teste) foi criado nesta task e removido na rodada de fix da task 10 (commit `80b4d5a1`): a flag `volt:boot-played` passou a ser gravada no script pré-paint de `boot-session.ts`, eliminando a corrida com a hidratação.
 
 ## Interfaces
 

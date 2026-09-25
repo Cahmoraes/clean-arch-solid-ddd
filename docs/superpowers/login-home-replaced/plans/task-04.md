@@ -1,6 +1,6 @@
 # Task 4: Toggles de tema e movimento no header público [FR-002, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-login-home-replaced.md`
 
