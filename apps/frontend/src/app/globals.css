@@ -9,7 +9,7 @@
  * Nomes semânticos --color-* consumidos pelos componentes shadcn + tokens estendidos
  * (surface-*, border-strong, primary-strong, success/warning + soft, sidebar-*).
  */
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *, .sunset *));
 
 @theme {
 	/* Fontes — carregadas via next/font/google em layout.tsx */
@@ -153,11 +153,58 @@
 	--color-sidebar-active-foreground: #0a1424;
 }
 
+/* SUNSET (tema quente, mesmos tokens de .dark) */
+.sunset {
+	color-scheme: dark;
+	--color-background: #170b10;
+	--color-foreground: #fbeee2;
+	--color-card: #221019;
+	--color-card-foreground: #fbeee2;
+	--color-popover: #221019;
+	--color-popover-foreground: #fbeee2;
+
+	--color-primary: #ffb454;
+	--color-primary-strong: #f5a03c;
+	--color-primary-foreground: #241004;
+
+	--color-secondary: #2c1420;
+	--color-secondary-foreground: #fbeee2;
+	--color-muted: #2c1420;
+	--color-muted-foreground: #d0aa9a;
+	--color-highlight-foreground: #f0d6c4;
+	--color-subtle: #b58e7d;
+	--color-accent: #ff5e7a;
+	--color-accent-foreground: #170b10;
+
+	--color-surface: #221019;
+	--color-surface-2: #2c1420;
+	--color-selected-tint: #2c1420;
+	--color-surface-3: #3d1d27;
+
+	--color-success: #4fd18b;
+	--color-warning: #ffd166;
+	--color-destructive: #ff6b5a;
+	--color-destructive-foreground: #170b10;
+
+	--color-border: #3d1d27;
+	--color-border-strong: #977183;
+	--color-input: #3d1d27;
+	--color-ring: #ff5e7a;
+
+	--color-sidebar: #140a0e;
+	--color-sidebar-foreground: #fbeee2;
+	--color-sidebar-muted: #c9a292;
+	--color-sidebar-border: #3d1d27;
+	--color-sidebar-active: #ff5e7a;
+	--color-sidebar-active-foreground: #170b10;
+}
+
 @utility crt-scanlines {
 	position: relative;
 	isolation: isolate;
 }
-.dark .crt-scanlines::before {
+.dark .crt-scanlines::before,
+.sunset .crt-scanlines::before {
 	content: "";
 	position: absolute;
 	inset: 0;
