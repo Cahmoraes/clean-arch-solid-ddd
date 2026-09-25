@@ -111,9 +111,11 @@ async function fetchText(url) {
 }
 
 function extractPathData(svg, pixelName) {
-	const match = /<path[^>]*\sd="([^"]+)"/.exec(svg)
-	if (!match) throw new Error(`SVG sem path: ${pixelName}`)
-	return match[1]
+	const paths = [...svg.matchAll(/<path[^>]*\sd="([^"]+)"/g)].map(
+		(match) => match[1],
+	)
+	if (paths.length === 0) throw new Error(`SVG sem path: ${pixelName}`)
+	return paths.join("")
 }
 
 async function loadPathData(pixelName) {

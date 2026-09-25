@@ -81,21 +81,21 @@ export const ArrowDown: PixelIcon = (props) => (
 
 export const ArrowLeft: PixelIcon = (props) => (
 	<PixelSvg
-		d="M20 11v2H4v-2zM8 13v2H6v-2zm2 2v2H8v-2zm2 2v2h-2v-2zm-4-6V9H6v2z"
+		d="M20 11v2H4v-2zM8 13v2H6v-2zm2 2v2H8v-2zm2 2v2h-2v-2zm-4-6V9H6v2zM10 15V7H8v8zm2 2V5h-2v12z"
 		{...props}
 	/>
 )
 
 export const ArrowRight: PixelIcon = (props) => (
 	<PixelSvg
-		d="M4 11v2h16v-2zm12 2v2h2v-2zm-2 2v2h2v-2zm-2 2v2h2v-2zm4-6V9h2v2z"
+		d="M4 11v2h16v-2zm12 2v2h2v-2zm-2 2v2h2v-2zm-2 2v2h2v-2zm4-6V9h2v2zM14 15V7h2v8zm-2 2V5h2v12z"
 		{...props}
 	/>
 )
 
 export const ArrowUp: PixelIcon = (props) => (
 	<PixelSvg
-		d="M11 20h2V4h-2zm2-12h2V6h-2zm2 2h2V8h-2zm2 2h2v-2h-2zm-6-4H9V6h2z"
+		d="M11 20h2V4h-2zm2-12h2V6h-2zm2 2h2V8h-2zm2 2h2v-2h-2zm-6-4H9V6h2zM15 10H7V8h8zm2 2H5v-2h12z"
 		{...props}
 	/>
 )
@@ -116,14 +116,14 @@ export const BarChart3: PixelIcon = (props) => (
 
 export const Bell: PixelIcon = (props) => (
 	<PixelSvg
-		d="M9 2h6v2H9zM7 4h2v2H7zm8 0h2v2h-2zM5 6h2v7H5zm12 0h2v7h-2zM3 13h2v4H3zm16 0h2v4h-2z"
+		d="M9 2h6v2H9zM7 4h2v2H7zm8 0h2v2h-2zM5 6h2v7H5zm12 0h2v7h-2zM3 13h2v4H3zm16 0h2v4h-2zM3 15h18v2H3zm5 3h2v2H8zm6 0h2v2h-2zm-4 2h4v2h-4z"
 		{...props}
 	/>
 )
 
 export const BellOff: PixelIcon = (props) => (
 	<PixelSvg
-		d="M9 2h6v2H9zm6 2h2v2h-2zM5 6h2v7H5zm12 0h2v6h-2zM3 13h2v4H3z"
+		d="M9 2h6v2H9zm6 2h2v2h-2zM5 6h2v7H5zm12 0h2v6h-2zM3 13h2v4H3zM3 15h14v2H3zm5 3h2v2H8zm6 0h2v2h-2zm-4 2h4v2h-4zM5 4h2v2H5zm2 2h2v2H7zm2 2h2v2H9zm2 2h2v2h-2zm2 2h2v2h-2zM15 14h2v2h-2zm2 2h2v2h-2zm2 2h2v2h-2zM3 2h2v2H3z"
 		{...props}
 	/>
 )
@@ -235,7 +235,7 @@ export const Filter: PixelIcon = (props) => (
 
 export const Flame: PixelIcon = (props) => (
 	<PixelSvg
-		d="M9 2h2v4H9zM7 6h2v2H7zM5 8h2v2H5zm8 2h2v2h-2zm2-2h2v2h-2zm2 2h2v2h-2zm2 2h2v6h-2zM3 10h2v8H3zm8-4h2v4h-2zm6 12h2v2h-2zM7 20h10v2H7zm-2-2h2v2H5zm4-2h6v4H9z"
+		d="M9 2h2v4H9zM7 6h2v2H7zM5 8h2v2H5zm8 2h2v2h-2zm2-2h2v2h-2zm2 2h2v2h-2zm2 2h2v6h-2zM3 10h2v8H3zm8-4h2v4h-2zm6 12h2v2h-2zM7 20h10v2H7zm-2-2h2v2H5zm4-2h6v4H9zM11 14h2v3h-2z"
 		{...props}
 	/>
 )
@@ -255,7 +255,10 @@ export const LayoutDashboard: PixelIcon = (props) => (
 )
 
 export const LayoutGrid: PixelIcon = (props) => (
-	<PixelSvg d="M4 2h16v2H4zM2 4h2v16H2zm2 7h16v2H4zm16-7h2v16h-2z" {...props} />
+	<PixelSvg
+		d="M4 2h16v2H4zM2 4h2v16H2zm2 7h16v2H4zm16-7h2v16h-2zM11 4h2v18h-2zM4 20h16v2H4z"
+		{...props}
+	/>
 )
 
 export const List: PixelIcon = (props) => (
@@ -273,7 +276,10 @@ export const Loader2: PixelIcon = (props) => (
 )
 
 export const LogOut: PixelIcon = (props) => (
-	<PixelSvg d="M8 11h12v2H8zm8-2h2v2h-2z" {...props} />
+	<PixelSvg
+		d="M8 11h12v2H8zm8-2h2v2h-2zM14 7h2v10h-2zm2 6h2v2h-2zM6 2h12v2H6zm0 18h12v2H6zM4 4h2v16H4zm14 0h2v3h-2zm0 13h2v3h-2z"
+		{...props}
+	/>
 )
 
 export const Mail: PixelIcon = (props) => (
@@ -351,11 +357,17 @@ export const Power: PixelIcon = (props) => (
 )
 
 export const RefreshCcw: PixelIcon = (props) => (
-	<PixelSvg d="M16 4h2v6h-2zm-2-2h2v2h-2zm0 2h2v8h-2zM4 8H2v5h2z" {...props} />
+	<PixelSvg
+		d="M16 4h2v6h-2zm-2-2h2v2h-2zm0 2h2v8h-2zM4 8H2v5h2zM4 6h16v2H4zm4 14H6v-6h2zm2 2H8v-2h2zm0-2H8v-8h2zm10-4h2v-5h-2zM20 18H4v-2h16z"
+		{...props}
+	/>
 )
 
 export const RotateCcw: PixelIcon = (props) => (
-	<PixelSvg d="M16 4h2v6h-2zm-2-2h2v2h-2zm0 2h2v8h-2zM4 8H2v5h2z" {...props} />
+	<PixelSvg
+		d="M16 4h2v6h-2zm-2-2h2v2h-2zm0 2h2v8h-2zM4 8H2v5h2zM4 6h16v2H4zm4 14H6v-6h2zm2 2H8v-2h2zm0-2H8v-8h2zm10-4h2v-5h-2zM20 18H4v-2h16z"
+		{...props}
+	/>
 )
 
 export const Search: PixelIcon = (props) => (
@@ -444,7 +456,7 @@ export const Users: PixelIcon = (props) => (
 
 export const Wallet: PixelIcon = (props) => (
 	<PixelSvg
-		d="M18 5h2v2h-2zM4 3h14v2H4zM2 5h2v14H2zm2 14h16v2H4zm12-4h6v2h-6zm0-4h6v2h-6zm-2 0h2v6h-2z"
+		d="M18 5h2v2h-2zM4 3h14v2H4zM2 5h2v14H2zm2 14h16v2H4zm12-4h6v2h-6zm0-4h6v2h-6zm-2 0h2v6h-2zM20 7h2v12h-2zM4 7h16v2H4z"
 		{...props}
 	/>
 )

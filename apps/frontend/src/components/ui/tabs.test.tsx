@@ -19,4 +19,18 @@ describe("TabsTrigger", () => {
 			"data-[state=active]:text-foreground",
 		)
 	})
+
+	test("a aba ativa é marcada por sublinhado em ciano, sem fundo", () => {
+		render(
+			<Tabs value="a">
+				<TabsList>
+					<TabsTrigger value="a">Detalhes</TabsTrigger>
+					<TabsTrigger value="b">Permissões</TabsTrigger>
+				</TabsList>
+			</Tabs>,
+		)
+		const active = screen.getByRole("tab", { name: "Detalhes" })
+		expect(active.className).toContain("data-[state=active]:border-accent")
+		expect(active.className).not.toContain("data-[state=active]:bg-background")
+	})
 })
