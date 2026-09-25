@@ -75,6 +75,14 @@ const ICON_MAP = {
 	XIcon: "close",
 }
 
+// Ícones pixel-art desenhados à mão para este projeto (sem equivalente em
+// pixelarticons). Seguir a mesma grade 24x24 e blocos de 2px dos ícones
+// vendorizados ao adicionar um novo.
+const CUSTOM_ICONS = {
+	Sunset:
+		"M10 8h4v2h-4zM8 10h8v2H8zM6 12h12v2H6zM4 14h16v2H4zM2 16h20v2H2zM4 19h16v1H4zM4 21h16v1H4z",
+}
+
 const MODULE_PREAMBLE = `import type { ComponentType, SVGProps } from "react"
 
 export type PixelIcon = ComponentType<SVGProps<SVGSVGElement>>
@@ -153,9 +161,18 @@ function renderIcon(exportName, pathData) {
 }
 
 function renderModule(license, pathsByName) {
-	const icons = Object.entries(ICON_MAP).map(([exportName, pixelName]) =>
-		renderIcon(exportName, pathsByName.get(pixelName)),
-	)
+	const pathsByExportName = {
+		...Object.fromEntries(
+			Object.entries(ICON_MAP).map(([exportName, pixelName]) => [
+				exportName,
+				pathsByName.get(pixelName),
+			]),
+		),
+		...CUSTOM_ICONS,
+	}
+	const icons = Object.keys(pathsByExportName)
+		.sort()
+		.map((exportName) => renderIcon(exportName, pathsByExportName[exportName]))
 	return `${license}\n\n${MODULE_PREAMBLE}\n${icons.join("\n\n")}\n`
 }
 
@@ -174,7 +191,7 @@ async function main() {
 	const source = renderModule(formatLicense(licenseText), pathsByName)
 	await writeFile(OUTPUT_PATH, source)
 	formatWithBiome()
-	const total = Object.keys(ICON_MAP).length
+	const total = Object.keys(ICON_MAP).length + Object.keys(CUSTOM_ICONS).length
 	console.log(`pixel-icons.tsx gerado com ${total} ícones`)
 }
 
