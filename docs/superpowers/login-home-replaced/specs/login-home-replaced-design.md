@@ -61,7 +61,7 @@ O `ThemeProvider` do `next-themes` (0.4.6, `attribute="class"`) passa a declarar
 - as scanlines (`.dark .crt-scanlines::before` passa a incluir `.sunset`);
 - o `THEMES` de `chart.tsx`, que ganha a chave `sunset: ".sunset"`, com cor por série em cada `ChartConfig`.
 
-As cenas já leem só tokens CSS, então mudam de tema sozinhas. O movimento tem uma única fonte: `useSceneMotion` retorna `paused = reducedMotion || !visible || userPaused`. O `userPaused` vem de um store externo em `localStorage` (`volt:scene-motion-paused`), escrito pelo `MotionToggle`. Cenas, rastro e boot obedecem a esse mesmo `paused`.
+As cenas já leem só tokens CSS, então mudam de tema sozinhas. O movimento tem uma única fonte: `useSceneMotion` retorna `paused = reducedMotion || !visible || userPaused`. O `userPaused` vem de um store externo em `localStorage` (`volt:scene-motion-paused`), escrito pelo `MotionToggle`. Cenas e rastro (React) leem o `paused` direto. Os efeitos puramente CSS (boot, `pixel-hover`) precisam de um espelho no DOM: o store mantém `data-motion-paused` no `<html>`, e o script de boot (D3) já o aplica antes do paint. O CSS desliga esses efeitos quando esse atributo existe ou quando `prefers-reduced-motion: reduce` está ativo.
 
 ## Componentes
 
@@ -73,7 +73,7 @@ As cenas já leem só tokens CSS, então mudam de tema sozinhas. O movimento tem
 | `useSceneMotion` | A decisão final de pausar | As três fontes (media query, IntersectionObserver, preferência) | `{ paused }` (sem mudança de assinatura) |
 | `PixelScene` | Cenas `login`, `hero`, `empty` e a nova `sunset` | Geometria SVG, dither e sol em faixas | Prop `scene` ganha `"sunset"` |
 | `PixelTrail` | O rastro de pixels | Grade, decaimento, ciclo de rAF, leitura das cores do tema via `getComputedStyle` (sem literais) | `<PixelTrail />` absoluto dentro de um pai `relative`; `aria-hidden` |
-| Boot (`data-boot` + script de sessão) | Se a entrada já tocou nesta sessão | Flag `sessionStorage` `volt:boot-played` e a classe no `<html>` aplicada antes do paint | Atributo `data-boot` nos blocos do hero |
+| Boot (`data-boot` + script de sessão) | Se a entrada já tocou nesta sessão | Flag `sessionStorage` `volt:boot-played` e os atributos `data-boot-played`/`data-motion-paused` no `<html>`, aplicados antes do paint | Atributo `data-boot` nos blocos do hero |
 | `pixel-hover` (utilitário CSS) | O hover pixelado dos CTAs | Keyframes em `steps(3)` | Classe `pixel-hover` |
 
 ## Especificação Visual
@@ -144,7 +144,7 @@ Os `data-testid` (`cta-signup`, `cta-login`, `login-submit`, `login-hero-mobile`
 ### D3. Vamos marcar o boot antes do paint com um script inline no layout público
 
 - **Contexto:** ler `sessionStorage` depois da hidratação faria o boot tocar sempre no primeiro frame. Tocar o boot em toda visita (alternativa mais simples) foi rejeitado porque o usuário escolheu "uma vez por sessão".
-- **Decisão:** vamos usar um script inline mínimo no layout `(public)` que adiciona `data-boot-played` ao `<html>` quando a flag existe. O CSS só anima `[data-boot]` quando o atributo está ausente. Ao fim da animação (`animationend`), a flag é gravada.
+- **Decisão:** vamos usar um script inline mínimo no layout `(public)` (que envolve login e home no `PublicShell`). Ele adiciona `data-boot-played` ao `<html>` quando a flag de sessão existe, e `data-motion-paused` quando a pausa está salva. O CSS só anima `[data-boot]` quando os dois atributos estão ausentes e não há `prefers-reduced-motion: reduce`. Ao fim da animação (`animationend`), a flag é gravada.
 - **Justificativa:** técnica, sem piscar e sem mismatch de hidratação (atributo no `<html>`, fora da árvore React). De negócio, a entrada impressiona uma vez e depois some.
 - **Consequências:** ganha boot único sem flash. Em troca, é mais um script inline antes do paint, que precisa ser mínimo e defensivo com `try/catch`.
 - **Conformidade:** teste e2e: o primeiro carregamento tem animações `[data-boot]` rodando; o recarregamento na mesma aba tem zero.
