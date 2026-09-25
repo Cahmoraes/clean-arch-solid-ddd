@@ -75,6 +75,21 @@ function tokenOf(block: string, name: string): string | undefined {
 const lightBlock = blockOf("@theme")
 const darkBlock = blockOf("\\.dark")
 
+// Exceção escopada (spec login-home-replaced, D3 "Boot de terminal"): o
+// glow digitado do H1 usa text-shadow e o eyebrow digitado usa clip-path,
+// ambos só dentro do bloco de boot em steps(). Fora dele, glow-em-texto e
+// recorte por máscara de forma continuam proibidos.
+function cssOutsideBoot(source: string): string {
+	const bootStart = source.indexOf("/* Boot de terminal")
+	const bootEnd = source.indexOf("/* pixel-hover:")
+	if (bootStart === -1 || bootEnd === -1) {
+		throw new Error("bloco de boot de terminal não encontrado em globals.css")
+	}
+	return source.slice(0, bootStart) + source.slice(bootEnd)
+}
+
+const cssOutsideBootBlock = cssOutsideBoot(css)
+
 describe("Fontes VOLT (mock next/font/google)", () => {
 	test("expõe as três variáveis de fonte VOLT", () => {
 		const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -134,8 +149,12 @@ describe("Tokens Noite neon (globals.css)", () => {
 		expect(tokenOf(darkBlock, "sidebar")).toBe("#0b1626")
 	})
 
-	test("nenhum text-shadow: glow nunca em texto", () => {
-		expect(css).not.toContain("text-shadow")
+	test("fora do boot de terminal, nenhum text-shadow: glow nunca em texto", () => {
+		expect(cssOutsideBootBlock).not.toContain("text-shadow")
+	})
+
+	test("text-shadow só existe dentro do boot de terminal (glow digitado do H1, spec login-home-replaced D3)", () => {
+		expect(css).toContain("text-shadow")
 	})
 
 	test("glow existe só como sombra de forma (--shadow-glow)", () => {
@@ -172,9 +191,16 @@ describe("Tokens Noite neon (globals.css)", () => {
 		expect(lightBlock).not.toContain("--radius-full")
 	})
 
+	test("fora do boot de terminal, nenhum clip-path: sem recorte por máscara de forma", () => {
+		expect(cssOutsideBootBlock).not.toMatch(/clip-path/)
+	})
+
+	test("clip-path só existe dentro do boot de terminal (eyebrow digitado, spec login-home-replaced D3)", () => {
+		expect(css).toMatch(/clip-path/)
+	})
+
 	test("o bloco @supports (corner-shape: bevel) existe com os cinco tamanhos, e o anel de foco duplo continua sem recorte", () => {
 		expect(css).toContain("@utility focus-ring-duplo")
-		expect(css).not.toMatch(/clip-path/)
 		const start = css.indexOf("@supports (corner-shape: bevel)")
 		expect(start).toBeGreaterThan(-1)
 		const supportsBlock = balancedBlockFrom(css, start)

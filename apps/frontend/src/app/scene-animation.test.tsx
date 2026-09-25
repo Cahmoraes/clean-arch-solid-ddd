@@ -27,6 +27,22 @@ function declaredProperties(body: string): string[] {
 
 const SCENE_KEYFRAMES = ["sceneBeamDrift", "sceneWindowTwinkle"] as const
 
+// Exceção escopada (spec login-home-replaced, D3 "Boot de terminal"): as três
+// animações boot* (bootType/bootGlow/bootRise) usam animation-fill-mode: both
+// para o estado inicial (backwards) nunca ocultar título/formulário e o final
+// (forwards) já ser o estado normal do elemento. Fora do bloco de boot, a
+// retenção fora do ciclo de vida da cena continua proibida.
+function cssOutsideBoot(source: string): string {
+	const bootStart = source.indexOf("/* Boot de terminal")
+	const bootEnd = source.indexOf("/* pixel-hover:")
+	if (bootStart === -1 || bootEnd === -1) {
+		throw new Error("bloco de boot de terminal não encontrado em globals.css")
+	}
+	return source.slice(0, bootStart) + source.slice(bootEnd)
+}
+
+const cssOutsideBootBlock = cssOutsideBoot(css)
+
 function reducedMotionBlock(): string {
 	const start = css.indexOf("@media (prefers-reduced-motion: reduce)")
 	if (start === -1) throw new Error("bloco reduce ausente")
@@ -58,9 +74,19 @@ describe("Animação das cenas (globals.css)", () => {
 		}
 	})
 
-	test("nenhuma regra de cena usa animation-fill-mode persistente", () => {
-		expect(css).not.toMatch(/animation:[^;]*\b(forwards|both)\b/)
-		expect(css).not.toMatch(/animation-fill-mode:\s*(forwards|both)/)
+	test("fora do boot de terminal, nenhuma regra usa animation-fill-mode persistente", () => {
+		expect(cssOutsideBootBlock).not.toMatch(
+			/animation:[^;]*\b(forwards|both)\b/,
+		)
+		expect(cssOutsideBootBlock).not.toMatch(
+			/animation-fill-mode:\s*(forwards|both)/,
+		)
+	})
+
+	test("animation-fill-mode: both só existe no boot de terminal (bootType/bootGlow/bootRise, spec login-home-replaced D3)", () => {
+		expect(css).toMatch(/animation:\s*bootType[^;]*\bboth\b/)
+		expect(css).toMatch(/animation:\s*bootGlow[^;]*\bboth\b/)
+		expect(css).toMatch(/animation:\s*bootRise[^;]*\bboth\b/)
 	})
 
 	test("o cintilar das janelas dura pelo menos 1s por ciclo (no máximo 1 flash por segundo, abaixo do limite de 3)", () => {
