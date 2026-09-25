@@ -1,63 +1,48 @@
-import { screen } from "@testing-library/react"
 import { HttpResponse, http } from "msw"
 import { describe, expect, test } from "vitest"
-import type { Plan } from "@/features/subscriptions/api/use-plans"
 import { SERVER_API_URL } from "@/lib/server-api-url"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import LandingPage from "./page"
 
-const apiBaseUrl = SERVER_API_URL
-
-const STUB_PLANS: Plan[] = [
-	{
-		id: "plan-mensal",
-		name: "Premium Mensal",
-		priceId: "price_demo_monthly",
-		priceLabel: "R$ 49,90/mês",
-		tagline: "Tagline mensal.",
-		features: ["Check-ins ilimitados"],
-	},
-	{
-		id: "plan-anual",
-		name: "Premium Anual",
-		priceId: "price_demo_yearly",
-		priceLabel: "R$ 479,00/ano",
-		tagline: "Tagline anual.",
-		features: ["Tudo do mensal"],
-	},
-]
-
-describe("Landing pública (RSC)", () => {
-	test("renderiza CTAs de cadastro e login", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/plans`, () => HttpResponse.json(STUB_PLANS)),
-		)
-		renderWithProviders(await LandingPage())
-		const signup = screen.getByTestId("cta-signup")
-		const login = screen.getByTestId("cta-login")
+describe("LandingPage — identidade Replaced", () => {
+	test("CTAs levam a cadastro e login, ambos com pixel-hover", async () => {
+		const { getByTestId } = renderWithProviders(await LandingPage())
+		const signup = getByTestId("cta-signup")
+		const login = getByTestId("cta-login")
 		expect(signup).toHaveAttribute("href", "/cadastro")
+		expect(signup).toHaveClass("pixel-hover")
 		expect(login).toHaveAttribute("href", "/login")
+		expect(login).toHaveClass("pixel-hover")
 	})
 
-	test("renderiza título principal e descrição", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/plans`, () => HttpResponse.json(STUB_PLANS)),
+	test("exibe o hero novo e não exibe os textos da identidade antiga", async () => {
+		const { getByRole, getByText, queryByText } = renderWithProviders(
+			await LandingPage(),
 		)
-		renderWithProviders(await LandingPage())
 		expect(
-			screen.getByRole("heading", { level: 1, name: /acesso a academias/i }),
+			getByRole("heading", { level: 1, name: /qualquer academia/i }),
 		).toBeInTheDocument()
-		expect(screen.getByText(/encontre academias próximas/i)).toBeInTheDocument()
+		expect(getByText(/um plano, centenas de academias/i)).toBeInTheDocument()
+		expect(queryByText(/Ollama/i)).toBeNull()
+		expect(queryByText("Demo monocromática")).toBeNull()
 	})
 
-	test("quando GET /plans falha, a seção de planos não é renderizada (sem fallback local)", async () => {
-		server.use(
-			http.get(`${apiBaseUrl}/plans`, () =>
-				HttpResponse.json({ message: "erro" }, { status: 500 }),
-			),
-		)
-		renderWithProviders(await LandingPage())
-		expect(screen.queryByText("Escolha seu plano")).not.toBeInTheDocument()
+	test("exibe os 3 cards de features novos", async () => {
+		const { getByText } = renderWithProviders(await LandingPage())
+		expect(getByText("Encontre")).toBeInTheDocument()
+		expect(getByText("Faça check-in")).toBeInTheDocument()
+		expect(getByText("Mantenha a sequência")).toBeInTheDocument()
+	})
+
+	test("exibe a cena sunset no hero", async () => {
+		const { container } = renderWithProviders(await LandingPage())
+		expect(container.querySelector('[data-scene="sunset"]')).not.toBeNull()
+	})
+
+	test("quando a API de planos falha, a seção Escolha seu plano some", async () => {
+		server.use(http.get(`${SERVER_API_URL}/plans`, () => HttpResponse.error()))
+		const { queryByText } = renderWithProviders(await LandingPage())
+		expect(queryByText("Escolha seu plano")).toBeNull()
 	})
 })

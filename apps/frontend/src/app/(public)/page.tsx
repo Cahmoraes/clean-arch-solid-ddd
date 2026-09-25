@@ -1,5 +1,7 @@
 import Link from "next/link"
 
+import { PixelScene } from "@/components/ui/pixel-scene"
+import { PixelTrail } from "@/components/ui/pixel-trail"
 import { ContactSection } from "@/features/contact/components/contact-section"
 import type { Plan } from "@/features/subscriptions/api/use-plans"
 import { PlansSectionHero } from "@/features/subscriptions/components/plans-section-hero"
@@ -28,38 +30,46 @@ export default async function LandingPage() {
 		<div className="mx-auto flex w-full max-w-6xl flex-col gap-24 px-4 py-16 sm:px-6 sm:py-24">
 			<section
 				aria-labelledby="hero-title"
-				className="flex flex-col items-start gap-8"
+				className="relative flex flex-col items-start gap-8 overflow-hidden rounded-md p-8 sm:p-12"
 			>
-				<span className="rounded-sm border border-border bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">
-					Demo monocromática
+				<PixelScene
+					scene="sunset"
+					animated
+					className="absolute inset-0 -z-10"
+				/>
+				<PixelTrail />
+				<span
+					data-boot="eyebrow"
+					className="font-display text-base tracking-widest text-accent"
+				>
+					&gt; REDE VOLT ONLINE
 				</span>
 				<h1
 					id="hero-title"
+					data-boot="title"
 					className="font-display text-4xl leading-[1.05] tracking-tight text-foreground sm:text-5xl md:text-6xl"
 				>
-					Acesso a academias,
-					<br />
-					sem fricção.
+					Qualquer academia. Um{" "}
+					<em className="text-accent not-italic">check-in</em>.
 				</h1>
 				<p className="max-w-2xl text-lg text-muted-foreground">
-					Encontre academias próximas, faça check-in e acompanhe sua frequência
-					em uma interface despida do supérfluo. Inspirado em Ollama: puro,
-					silencioso, focado.
+					Um plano, centenas de academias parceiras. Chegou, fez check-in,
+					treinou.
 				</p>
 				<div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
 					<Link
 						href="/cadastro"
 						data-testid="cta-signup"
-						className="inline-flex items-center justify-center rounded-md border border-primary bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:bg-primary/90"
+						className="pixel-hover inline-flex items-center justify-center rounded-md border border-primary bg-primary px-6 py-3 text-base font-medium text-primary-foreground hover:bg-primary/90"
 					>
-						Criar conta
+						&gt; Começar agora
 					</Link>
 					<Link
 						href="/login"
 						data-testid="cta-login"
-						className="inline-flex items-center justify-center rounded-md border border-border bg-card px-6 py-3 text-base font-medium text-card-foreground hover:bg-accent hover:text-accent-foreground"
+						className="pixel-hover inline-flex items-center justify-center rounded-md border border-accent px-6 py-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground"
 					>
-						Entrar
+						Já tenho conta
 					</Link>
 				</div>
 			</section>
@@ -73,27 +83,25 @@ export default async function LandingPage() {
 				</h2>
 				<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					<li className="rounded-md border border-border bg-card p-6">
-						<h3 className="font-display text-xl text-foreground">
-							Check-in em segundos
-						</h3>
+						<h3 className="font-display text-xl text-foreground">Encontre</h3>
 						<p className="mt-2 text-sm text-muted-foreground">
-							Encontre a academia, confirme presença, siga seu treino.
+							academias parceiras perto de você, no mapa.
 						</p>
 					</li>
 					<li className="rounded-md border border-border bg-card p-6">
 						<h3 className="font-display text-xl text-foreground">
-							Histórico transparente
+							Faça check-in
 						</h3>
 						<p className="mt-2 text-sm text-muted-foreground">
-							Veja sua frequência, métricas e evolução em um único lugar.
+							validação na hora, sem catraca de papel.
 						</p>
 					</li>
 					<li className="rounded-md border border-border bg-card p-6">
 						<h3 className="font-display text-xl text-foreground">
-							Administração simples
+							Mantenha a sequência
 						</h3>
 						<p className="mt-2 text-sm text-muted-foreground">
-							Operadores validam check-ins e cadastram academias rapidamente.
+							acompanhe dias, semanas e metas.
 						</p>
 					</li>
 				</ul>
