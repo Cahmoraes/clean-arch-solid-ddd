@@ -58,6 +58,7 @@ const EXPECTED_EXPORTS = [
 	"ShieldAlert",
 	"ShieldCheck",
 	"Sun",
+	"Sunset",
 	"Tag",
 	"Trash2",
 	"TriangleAlert",

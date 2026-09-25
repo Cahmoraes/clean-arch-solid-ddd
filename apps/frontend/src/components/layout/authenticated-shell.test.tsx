@@ -85,7 +85,10 @@ describe("AuthenticatedShell — VOLT", () => {
 				<p>conteúdo</p>
 			</AuthenticatedShell>,
 		)
-		expect(screen.getAllByRole("button", { name: /modo/i })).toHaveLength(2)
+		expect(screen.getAllByRole("radiogroup", { name: "Tema" })).toHaveLength(1)
+		expect(
+			screen.getAllByRole("button", { name: /Ativar tema/i }),
+		).toHaveLength(1)
 	})
 
 	test("renderiza duas instâncias de busca (completa e compacta) na topbar", () => {

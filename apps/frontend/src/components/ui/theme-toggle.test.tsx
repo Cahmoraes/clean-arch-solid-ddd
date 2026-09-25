@@ -1,11 +1,11 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 
 const setTheme = vi.fn()
-let currentTheme = "dark"
+let currentResolvedTheme: string | undefined = "dark"
 
 vi.mock("next-themes", () => ({
-	useTheme: () => ({ theme: currentTheme, setTheme }),
+	useTheme: () => ({ resolvedTheme: currentResolvedTheme, setTheme }),
 }))
 
 import { ThemeToggle } from "./theme-toggle"
@@ -13,66 +13,72 @@ import { ThemeToggle } from "./theme-toggle"
 describe("ThemeToggle", () => {
 	beforeEach(() => {
 		setTheme.mockClear()
-		currentTheme = "dark"
+		currentResolvedTheme = "dark"
 	})
 
-	test("alterna para light quando o tema atual é dark", () => {
+	test("versão completa exibe um radiogroup com os 3 temas e marca o atual", () => {
 		render(<ThemeToggle />)
-		fireEvent.click(screen.getByRole("button", { name: /modo/i }))
+		const group = screen.getByRole("radiogroup", { name: "Tema" })
+		const radios = within(group).getAllByRole("radio")
+		expect(radios).toHaveLength(3)
+		expect(screen.getByRole("radio", { name: "Tema Neon" })).toHaveAttribute(
+			"aria-checked",
+			"true",
+		)
+	})
+
+	test("clicar em Pôr do sol chama setTheme com sunset", () => {
+		render(<ThemeToggle />)
+		fireEvent.click(screen.getByRole("radio", { name: "Tema Pôr do sol" }))
+		expect(setTheme).toHaveBeenCalledWith("sunset")
+	})
+
+	test("clicar em Neblina chama setTheme com light", () => {
+		render(<ThemeToggle />)
+		fireEvent.click(screen.getByRole("radio", { name: "Tema Neblina" }))
 		expect(setTheme).toHaveBeenCalledWith("light")
 	})
 
-	test("alterna para dark quando o tema atual é light", () => {
-		currentTheme = "light"
-		render(<ThemeToggle />)
-		fireEvent.click(screen.getByRole("button", { name: /modo/i }))
+	test("compact percorre o ciclo Neon -> Pôr do sol -> Neblina -> Neon", () => {
+		const { rerender } = render(<ThemeToggle compact />)
+		expect(
+			screen.getByRole("button", { name: "Ativar tema Pôr do sol" }),
+		).toBeInTheDocument()
+		fireEvent.click(
+			screen.getByRole("button", { name: "Ativar tema Pôr do sol" }),
+		)
+		expect(setTheme).toHaveBeenCalledWith("sunset")
+
+		currentResolvedTheme = "sunset"
+		rerender(<ThemeToggle compact />)
+		expect(
+			screen.getByRole("button", { name: "Ativar tema Neblina" }),
+		).toBeInTheDocument()
+		fireEvent.click(screen.getByRole("button", { name: "Ativar tema Neblina" }))
+		expect(setTheme).toHaveBeenCalledWith("light")
+
+		currentResolvedTheme = "light"
+		rerender(<ThemeToggle compact />)
+		expect(
+			screen.getByRole("button", { name: "Ativar tema Neon" }),
+		).toBeInTheDocument()
+		fireEvent.click(screen.getByRole("button", { name: "Ativar tema Neon" }))
 		expect(setTheme).toHaveBeenCalledWith("dark")
 	})
 
-	test("não exibe texto visível de Claro/Escuro", () => {
+	test("valor de tema desconhecido é tratado como Neon", () => {
+		currentResolvedTheme = undefined
 		render(<ThemeToggle />)
-		expect(screen.queryByText("Claro")).toBeNull()
-		expect(screen.queryByText("Escuro")).toBeNull()
+		expect(screen.getByRole("radio", { name: "Tema Neon" })).toHaveAttribute(
+			"aria-checked",
+			"true",
+		)
 	})
 
-	test("mantém o mesmo tamanho compacto em qualquer largura, sem breakpoint especial", () => {
-		render(<ThemeToggle />)
-		const button = screen.getByRole("button", { name: /modo/i })
-		expect(button.className).toContain("w-16")
-		expect(button.className).not.toContain("max-[860px]")
-	})
-
-	test("compact: renderiza botão quadrado (~36px) sem trilho/pill deslizante", () => {
-		render(<ThemeToggle compact />)
-		const button = screen.getByRole("button", { name: /modo/i })
-		expect(button.className).not.toContain("rounded-full")
-		expect(button.className).toContain("rounded-sm")
-		expect(button.className).toContain("h-9")
-		expect(button.className).toContain("w-9")
-		expect(button.className).not.toContain("w-16")
-	})
-
-	test("botão, trilho e thumb do theme-toggle não usam mais rounded-full", () => {
-		render(<ThemeToggle />)
-		const button = screen.getByRole("button", { name: /modo/i })
-		const thumb = button.querySelector("span")
-		expect(button).not.toHaveClass("rounded-full")
-		expect(button).toHaveClass("rounded-xs")
-		expect(thumb).not.toHaveClass("rounded-full")
-		expect(thumb).toHaveClass("rounded-xs")
-	})
-
-	test("compact: alterna tema no clique", () => {
-		render(<ThemeToggle compact />)
-		fireEvent.click(screen.getByRole("button", { name: /modo/i }))
-		expect(setTheme).toHaveBeenCalledWith("light")
-	})
-
-	test("compact: aria-label reflete o estado, igual à variante completa", () => {
-		currentTheme = "light"
-		render(<ThemeToggle compact />)
-		expect(
-			screen.getByRole("button", { name: "Ativar modo escuro" }),
-		).toBeInTheDocument()
+	test("sem rounded-full no compact nem no completo", () => {
+		const { container, rerender } = render(<ThemeToggle compact />)
+		expect(container.querySelector(".rounded-full")).toBeNull()
+		rerender(<ThemeToggle />)
+		expect(container.querySelector(".rounded-full")).toBeNull()
 	})
 })

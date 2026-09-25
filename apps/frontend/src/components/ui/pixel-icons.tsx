@@ -405,6 +405,13 @@ export const Sun: PixelIcon = (props) => (
 	/>
 )
 
+export const Sunset: PixelIcon = (props) => (
+	<PixelSvg
+		d="M10 8h4v2h-4zM8 10h8v2H8zM6 12h12v2H6zM4 14h16v2H4zM2 16h20v2H2zM4 19h16v1H4zM4 21h16v1H4z"
+		{...props}
+	/>
+)
+
 export const Tag: PixelIcon = (props) => (
 	<PixelSvg
 		d="M16 22h-4v-2h4v2Zm-4-2h-2v-2h2v2Zm6 0h-2v-2h2v2Zm-8-2H8v-2h2v2Zm10 0h-2v-2h2v2ZM8 16H6v-2h2v2Zm14 0h-2v-4h2v4ZM6 14H4v-2h2v2Zm-2-2H2V4h2v8Zm16 0h-2v-2h2v2Zm-2-2h-2V8h2v2ZM8 8H6V6h2v2Zm8 0h-2V6h2v2Zm-2-2h-2V4h2v2Zm-2-2H4V2h8v2Z"
