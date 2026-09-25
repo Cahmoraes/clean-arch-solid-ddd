@@ -1,5 +1,6 @@
 import { act, renderHook } from "@testing-library/react"
 import { afterEach, describe, expect, test, vi } from "vitest"
+import { setMotionPaused } from "@/lib/motion-preference"
 import { mockIntersectionObserver, mockMatchMedia } from "@/test/browser-mocks"
 import { useSceneMotion } from "./use-scene-motion"
 
@@ -64,5 +65,14 @@ describe("useSceneMotion", () => {
 		vi.stubGlobal("IntersectionObserver", undefined)
 		const { result } = renderMotion()
 		expect(result.current.paused).toBe(false)
+	})
+
+	test("pausa quando a preferência do usuário está ativa, mesmo visível e sem reduced motion", () => {
+		mockMatchMedia(false)
+		mockIntersectionObserver()
+		setMotionPaused(true)
+		const { result } = renderMotion()
+		expect(result.current.paused).toBe(true)
+		setMotionPaused(false)
 	})
 })
