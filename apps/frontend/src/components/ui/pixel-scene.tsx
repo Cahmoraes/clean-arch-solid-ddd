@@ -4,7 +4,7 @@ import { Component, type ReactNode, useRef } from "react"
 import { cn } from "@/lib/cn"
 import { useSceneMotion } from "@/lib/hooks/use-scene-motion"
 
-export type PixelSceneName = "login" | "hero" | "empty"
+export type PixelSceneName = "login" | "hero" | "empty" | "sunset"
 
 export interface PixelSceneProps {
 	scene: PixelSceneName
@@ -28,6 +28,8 @@ interface SceneDefinition {
 	windowsAccent: ReadonlyArray<Point>
 	windowsPrimary: ReadonlyArray<Point>
 	beams: ReadonlyArray<Beam>
+	sun: boolean
+	skylineOpacity: number
 }
 
 const VIEWBOX_WIDTH = 64
@@ -88,6 +90,8 @@ const SCENES: Record<PixelSceneName, SceneDefinition> = {
 			{ x: 12, width: 4, tone: "accent" },
 			{ x: 40, width: 3, tone: "primary" },
 		],
+		sun: true,
+		skylineOpacity: 1,
 	},
 	hero: {
 		far: FAR_SKYLINE,
@@ -98,6 +102,8 @@ const SCENES: Record<PixelSceneName, SceneDefinition> = {
 			{ x: 20, width: 4, tone: "accent" },
 			{ x: 50, width: 3, tone: "primary" },
 		],
+		sun: false,
+		skylineOpacity: 1,
 	},
 	empty: {
 		far: FAR_SKYLINE,
@@ -105,6 +111,17 @@ const SCENES: Record<PixelSceneName, SceneDefinition> = {
 		windowsAccent: WINDOWS_ACCENT.slice(0, 4),
 		windowsPrimary: [],
 		beams: [{ x: 28, width: 5, tone: "accent" }],
+		sun: false,
+		skylineOpacity: 1,
+	},
+	sunset: {
+		far: FAR_SKYLINE,
+		near: NEAR_SKYLINE,
+		windowsAccent: WINDOWS_ACCENT.slice(0, 6),
+		windowsPrimary: WINDOWS_PRIMARY.slice(0, 2),
+		beams: [{ x: 30, width: 5, tone: "primary" }],
+		sun: true,
+		skylineOpacity: 0.6,
 	},
 }
 
@@ -230,6 +247,40 @@ function BeamLayer({ beam }: { beam: Beam }) {
 	)
 }
 
+// Faixas horizontais do disco solar: cada linha do array é [y, height, xInset]
+// medidos no viewBox 64x32, alternando opacidade para simular o efeito pixelado
+// de listras do sol se pondo atrás da skyline.
+const SUN_STRIPES: ReadonlyArray<
+	readonly [y: number, height: number, xInset: number]
+> = [
+	[4, 2, 22],
+	[6, 2, 18],
+	[8, 2, 14],
+	[10, 2, 10],
+	[12, 2, 10],
+	[14, 2, 14],
+]
+
+function SunLayer() {
+	return (
+		<div className="pixel-scene-sun absolute inset-0" data-layer="sun">
+			<SceneLayer>
+				{SUN_STRIPES.map(([y, height, xInset], index) => (
+					<rect
+						key={y}
+						x={xInset}
+						y={y}
+						width={VIEWBOX_WIDTH - xInset * 2}
+						height={height}
+						fill="var(--color-scene-sun)"
+						fillOpacity={index % 2 === 0 ? 1 : 0.85}
+					/>
+				))}
+			</SceneLayer>
+		</div>
+	)
+}
+
 function WindowLayer({
 	dots,
 	delaySeconds,
@@ -295,13 +346,19 @@ function SceneArt({
 					fill="var(--color-surface)"
 				/>
 			</SceneLayer>
+			{definition.sun ? <SunLayer /> : null}
 			{definition.beams.map((beam) => (
 				<BeamLayer key={`${beam.tone}-${beam.x}`} beam={beam} />
 			))}
-			<SceneLayer>
-				<Skyline buildings={definition.far} fill="var(--color-surface-3)" />
-				<Skyline buildings={definition.near} fill="var(--color-surface-2)" />
-			</SceneLayer>
+			<div
+				className="absolute inset-0"
+				style={{ opacity: definition.skylineOpacity }}
+			>
+				<SceneLayer>
+					<Skyline buildings={definition.far} fill="var(--color-surface-3)" />
+					<Skyline buildings={definition.near} fill="var(--color-surface-2)" />
+				</SceneLayer>
+			</div>
 			{windowLayers
 				.filter((group) => group.dots.length > 0)
 				.map((group) => (

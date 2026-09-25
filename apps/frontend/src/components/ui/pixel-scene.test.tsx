@@ -162,3 +162,26 @@ describe("PixelScene", () => {
 		expect(document.querySelector("svg")).toBeNull()
 	})
 })
+
+describe("PixelScene — sunset e sol", () => {
+	test("renderiza data-scene=sunset com aria-hidden e a camada de sol", () => {
+		vi.mocked(useSceneMotion).mockReturnValue(motion(false))
+		const { container } = render(<PixelScene scene="sunset" animated />)
+		const scene = container.querySelector('[data-scene="sunset"]')
+		expect(scene).not.toBeNull()
+		expect(scene).toHaveAttribute("aria-hidden", "true")
+		expect(container.querySelector('[data-layer="sun"]')).not.toBeNull()
+	})
+
+	test("a cena login também exibe a camada de sol", () => {
+		vi.mocked(useSceneMotion).mockReturnValue(motion(false))
+		const { container } = render(<PixelScene scene="login" animated />)
+		expect(container.querySelector('[data-layer="sun"]')).not.toBeNull()
+	})
+
+	test("a cena hero não exibe a camada de sol", () => {
+		vi.mocked(useSceneMotion).mockReturnValue(motion(false))
+		const { container } = render(<PixelScene scene="hero" animated />)
+		expect(container.querySelector('[data-layer="sun"]')).toBeNull()
+	})
+})
