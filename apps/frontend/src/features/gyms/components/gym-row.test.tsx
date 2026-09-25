@@ -98,6 +98,17 @@ describe("GymRow VOLT", () => {
 		expect((badge as HTMLElement).querySelector("svg")).toBeInTheDocument()
 	})
 
+	test("o selo de status fica em coluna de largura fixa, independente do nome", () => {
+		const longName: Gym = {
+			...gym,
+			title: "Schmeler, Runolfsson and Murazik Gym",
+		}
+		renderWithProviders(<GymRow gym={longName} />)
+		const column = screen.getByTestId("gym-row-status")
+		expect(column).toHaveClass("w-32", "flex-shrink-0")
+		expect(column).toContainElement(screen.getByText("Disponível"))
+	})
+
 	test("a linha realça no hover por token e a pílula Check-in é ciano", () => {
 		renderWithProviders(<GymRow gym={gym} />)
 		expect(screen.getByTestId("gym-row-g1")).toHaveClass("hover:bg-surface-2")

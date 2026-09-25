@@ -32,12 +32,9 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 					/>
 				</div>
 				<div className="flex min-w-0 flex-1 flex-col gap-1">
-					<div className="flex items-center gap-2">
-						<p className="font-display text-[15px] text-card-foreground">
-							{gym.title}
-						</p>
-						<StatusBadge tone={statusTone}>{statusLabel}</StatusBadge>
-					</div>
+					<p className="font-display text-[15px] text-card-foreground">
+						{gym.title}
+					</p>
 					{gym.description ? (
 						<p className="line-clamp-1 text-[13px] text-muted-foreground">
 							{gym.description}
@@ -48,11 +45,17 @@ export function GymRow({ gym, adminEditHref }: GymRowProps) {
 						<span className="line-clamp-1">{resolveLocation(gym)}</span>
 					</p>
 				</div>
+				<div
+					data-testid="gym-row-status"
+					className="flex w-32 flex-shrink-0 items-center"
+				>
+					<StatusBadge tone={statusTone}>{statusLabel}</StatusBadge>
+				</div>
 				<div className="flex flex-shrink-0 items-center gap-3">
 					{gym.phone ? (
-						<span className="text-[12.5px] text-subtle">{gym.phone}</span>
+						<span className="w-32 text-[12.5px] text-subtle">{gym.phone}</span>
 					) : (
-						<span className="text-[12.5px] text-subtle">Ver detalhes</span>
+						<span className="w-32 text-[12.5px] text-subtle">Ver detalhes</span>
 					)}
 					<span className="rounded-md bg-accent px-3 py-1.5 text-[13px] font-semibold text-accent-foreground">
 						Check-in
