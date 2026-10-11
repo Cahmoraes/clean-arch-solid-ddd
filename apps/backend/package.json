@@ -18,6 +18,7 @@
 		"test:business-flow": "npx vitest run --config ./test/vite.config.business-flow.ts",
 		"test:contract": "vitest run --config ./test/vite.config.contract.ts",
 		"test:e2e:prisma": "vitest --config ./test/vite.config.integration.ts",
+		"test:repository-contracts": "vitest --run --config ./test/vite.config.app-domain.ts .contract.test.ts && vitest run --config ./test/vite.config.integration.ts .contract.integration-test.ts mongo",
 		"test:e2e:mongo": "vitest run --config ./test/vite.config.integration.ts mongo",
 		"test:fitness": "vitest --config ./test/vite.config.fitness.ts",
 		"build": "pnpm tsup",

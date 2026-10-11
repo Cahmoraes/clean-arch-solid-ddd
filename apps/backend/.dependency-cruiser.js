@@ -9,12 +9,15 @@ const rules = {
 		noDomainToApplicationExceptPermitted(),
 		noDomainToInfraExceptPermitted(),
 		noApplicationToInfraExceptPermitted(),
+		noDomainOrApplicationToMongoDriver(),
 		allowInfraCircularDependency(),
 	],
 	options: {
 		tsConfig: {
 			fileName: "tsconfig.json",
 		},
+		// Count `import type` too: a type-only import of the driver still couples the layer to it.
+		tsPreCompilationDeps: true,
 		doNotFollow: {
 			/* path: an array of regular expressions in strings to match against */
 			path: ["node_modules"],
@@ -174,5 +177,22 @@ function allowInfraCircularDependency() {
 				path: "^src/infra/", // Garante que os ciclos aceitos estão apenas dentro de infra/
 			},
 		},
+	}
+}
+
+/**
+ * Impede que `domain` e `application` de qualquer contexto (src/<contexto>/domain|application,
+ * inclusive src/shared) importem o driver `mongodb`, nem mesmo só pelos tipos.
+ *
+ * @returns {import('dependency-cruiser').IForbiddenRuleType}
+ */
+function noDomainOrApplicationToMongoDriver() {
+	return {
+		name: "no-domain-or-application-to-mongodb-driver",
+		comment:
+			"As camadas 'domain' e 'application' não podem importar o driver 'mongodb'; só 'infra'.",
+		severity: "error",
+		from: { path: "^src/[^/]+/(domain|application)/" },
+		to: { path: "node_modules/mongodb(/|$)" },
 	}
 }
