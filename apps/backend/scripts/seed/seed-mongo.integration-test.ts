@@ -2,11 +2,30 @@ import { randomUUID } from "node:crypto"
 import type { Document } from "mongodb"
 import { createTestMongoConnection } from "test/mongo/create-test-mongo-connection"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
+import { Gym } from "@/gym/domain/gym"
 import {
 	COLLECTIONS,
 	type MongoConnection,
 } from "@/shared/infra/database/connection/mongo/mongo-connection"
+import { MongoGymRepository } from "@/shared/infra/database/repository/mongo/mongo-gym-repository"
+import { generateValidCnpjFromIndex } from "../../prisma/lib/brazilian-cnpj.js"
 import { seedMongo } from "../seed-mongo"
+
+const NOW = new Date("2026-06-15T10:00:00.000Z")
+const THREE_DAYS_LATER = new Date("2026-06-18T10:00:00.000Z")
+
+async function withDisposableDb(
+	run: (connection: MongoConnection) => Promise<void>,
+): Promise<void> {
+	const name = `seed_${randomUUID().replaceAll("-", "")}`
+	const disposable = await createTestMongoConnection(name)
+	try {
+		await run(disposable)
+	} finally {
+		await disposable.client().db(name).dropDatabase()
+		await disposable.disconnect()
+	}
+}
 
 describe("seedMongo", () => {
 	const dbName = `seed_${randomUUID().replaceAll("-", "")}`
@@ -28,7 +47,7 @@ describe("seedMongo", () => {
 
 	beforeAll(async () => {
 		connection = await createTestMongoConnection(dbName)
-		firstRun = await seedMongo(connection)
+		firstRun = await seedMongo(connection, { now: NOW })
 	}, 120_000)
 
 	afterAll(async () => {
@@ -73,26 +92,101 @@ describe("seedMongo", () => {
 		expect(checkIns.every((checkIn) => gymIds.has(checkIn.gym_id))).toBe(true)
 	})
 
-	it("FR-018: running the seed again changes nothing", async () => {
-		const before = {
-			users: await ids(COLLECTIONS.USERS),
+	it("FR-018: running the seed again changes nothing, even on another UTC day", async () => {
+		const snapshot = async () => ({
+			users: await connection
+				.collection<Document>(COLLECTIONS.USERS)
+				.find({})
+				.sort({ _id: 1 })
+				.toArray(),
 			gyms: await ids(COLLECTIONS.GYMS),
-			checkIns: await ids(COLLECTIONS.CHECK_INS),
-		}
+			checkIns: await connection
+				.collection<Document>(COLLECTIONS.CHECK_INS)
+				.find({})
+				.sort({ _id: 1 })
+				.toArray(),
+		})
+		const before = await snapshot()
 
-		const secondRun = await seedMongo(connection)
+		const secondRun = await seedMongo(connection, { now: THREE_DAYS_LATER })
 
 		expect(secondRun.skippedRandomSeeding).toBe(true)
-		expect(await ids(COLLECTIONS.USERS)).toEqual(before.users)
-		expect(await ids(COLLECTIONS.GYMS)).toEqual(before.gyms)
-		expect(await ids(COLLECTIONS.CHECK_INS)).toEqual(before.checkIns)
+		expect(await snapshot()).toEqual(before)
 	}, 60_000)
 
-	it("FR-018: after a partial run the seed completes the missing documents without duplicates", async () => {
-		const partialDb = `seed_${randomUUID().replaceAll("-", "")}`
-		const partial = await createTestMongoConnection(partialDb)
-		try {
-			await seedMongo(partial)
+	it("FR-018: a run that died before the check-ins resumes and recreates them", async () => {
+		await withDisposableDb(async (partial) => {
+			await seedMongo(partial, { now: NOW })
+			const checkIns = partial.collection<Document>(COLLECTIONS.CHECK_INS)
+			const readCheckIns = () =>
+				checkIns
+					.find({}, { projection: { updated_at: 0 } })
+					.sort({ _id: 1 })
+					.toArray()
+			const before = await readCheckIns()
+			await checkIns.deleteMany({})
+
+			const rerun = await seedMongo(partial, { now: THREE_DAYS_LATER })
+
+			expect(rerun.skippedRandomSeeding).toBe(false)
+			expect(rerun.usersCreated).toBe(0)
+			expect(rerun.gymsCreated).toBe(0)
+			expect(rerun.checkInsCreated).toBe(before.length)
+			expect(await readCheckIns()).toEqual(before)
+		})
+	}, 180_000)
+
+	it("FR-018: a run that died before all members were saved resumes and recreates them", async () => {
+		await withDisposableDb(async (partial) => {
+			await seedMongo(partial, { now: NOW })
+			const users = partial.collection<Document>(COLLECTIONS.USERS)
+			const removed = await users
+				.find({ email: /^member/ })
+				.limit(7)
+				.toArray()
+			await users.deleteMany({ _id: { $in: removed.map((user) => user._id) } })
+
+			const rerun = await seedMongo(partial, { now: THREE_DAYS_LATER })
+
+			expect(rerun.skippedRandomSeeding).toBe(false)
+			expect(rerun.usersCreated).toBe(7)
+			expect(rerun.gymsCreated).toBe(0)
+			expect(rerun.checkInsCreated).toBe(0)
+			expect(await users.countDocuments({})).toBe(51)
+		})
+	}, 180_000)
+
+	it("FR-018: gyms created outside the seed do not stop the seed", async () => {
+		await withDisposableDb(async (target) => {
+			await new MongoGymRepository(target).save(
+				Gym.restore({
+					id: randomUUID(),
+					cnpj: generateValidCnpjFromIndex(1000),
+					title: "Outside Gym",
+					description: "created through the API",
+					phone: "11999999999",
+					address: "Rua A, 1",
+					latitude: -23.5,
+					longitude: -46.6,
+					status: "activated",
+					operatingHours: null,
+				}),
+			)
+
+			const run = await seedMongo(target, { now: NOW })
+
+			expect(run.skippedRandomSeeding).toBe(false)
+			expect(run.gymsCreated).toBe(50)
+			expect(run.usersCreated).toBe(50)
+			expect(
+				await target.collection<Document>(COLLECTIONS.GYMS).countDocuments({}),
+			).toBe(51)
+		})
+	}, 180_000)
+
+	it("FR-018: after a partial run the seed completes the missing gyms without duplicates", async () => {
+		await withDisposableDb(async (partial) => {
+			await seedMongo(partial, { now: NOW })
 			const gyms = partial.collection<Document>(COLLECTIONS.GYMS)
 			const removed = await gyms.find({}).limit(10).toArray()
 			await partial.collection<Document>(COLLECTIONS.CHECK_INS).deleteMany({
@@ -100,7 +194,7 @@ describe("seedMongo", () => {
 			})
 			await gyms.deleteMany({ _id: { $in: removed.map((gym) => gym._id) } })
 
-			const rerun = await seedMongo(partial)
+			const rerun = await seedMongo(partial, { now: THREE_DAYS_LATER })
 
 			expect(rerun.skippedRandomSeeding).toBe(false)
 			expect(await gyms.countDocuments({})).toBe(50)
@@ -110,9 +204,6 @@ describe("seedMongo", () => {
 					.collection<Document>(COLLECTIONS.USERS)
 					.countDocuments({}),
 			).toBe(51)
-		} finally {
-			await partial.client().db(partialDb).dropDatabase()
-			await partial.disconnect()
-		}
+		})
 	}, 180_000)
 })

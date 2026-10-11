@@ -8,7 +8,7 @@ import { MongoUserRepository } from "@/shared/infra/database/repository/mongo/mo
 import { env } from "@/shared/infra/env"
 import { User } from "@/user/domain/user"
 import { Password } from "@/user/domain/value-object/password.js"
-import { buildSeedData, GYM_COUNT } from "./seed/seed-data-factory"
+import { buildSeedData } from "./seed/seed-data-factory"
 
 const SUPER_ADMIN_EMAIL =
 	process.env.SEED_SUPER_ADMIN_EMAIL ?? "admin@admin.com"
@@ -33,10 +33,17 @@ async function hashPassword(rawPassword: string): Promise<string> {
 	return passwordResult.value.value
 }
 
-async function seedSuperAdmin(users: MongoUserRepository): Promise<void> {
-	const existing = await users.userOfEmail(SUPER_ADMIN_EMAIL)
-	const now = new Date()
-	const admin = User.restore({
+function isSeededSuperAdmin(user: User): boolean {
+	return (
+		user.role === "ADMIN" && user.status === "activated" && user.isSuperAdmin
+	)
+}
+
+async function buildSuperAdmin(
+	existing: User | null,
+	now: Date,
+): Promise<User> {
+	return User.restore({
 		id: existing?.id ?? randomUUID(),
 		name: existing?.name ?? SUPER_ADMIN_NAME,
 		email: SUPER_ADMIN_EMAIL,
@@ -47,9 +54,19 @@ async function seedSuperAdmin(users: MongoUserRepository): Promise<void> {
 		status: "activated",
 		isSuperAdmin: true,
 	})
+}
+
+async function seedSuperAdmin(
+	users: MongoUserRepository,
+	now: Date,
+): Promise<User> {
+	const existing = await users.userOfEmail(SUPER_ADMIN_EMAIL)
+	if (existing && isSeededSuperAdmin(existing)) return existing
+	const admin = await buildSuperAdmin(existing, now)
 	if (!existing) await users.save(admin)
 	// save() does not write is_super_admin (same as the Prisma repository), so update() sets it.
 	await users.update(admin)
+	return admin
 }
 
 async function saveMissing<T>(
@@ -74,22 +91,12 @@ export async function seedMongo(
 	const gyms = new MongoGymRepository(connection)
 	const checkIns = new MongoCheckInRepository(connection)
 
-	await seedSuperAdmin(users)
-
-	const existingGyms = await gyms.fetchGyms({ page: 1 })
-	if (existingGyms.total >= GYM_COUNT) {
-		return {
-			superAdminEmail: SUPER_ADMIN_EMAIL,
-			usersCreated: 0,
-			gymsCreated: 0,
-			checkInsCreated: 0,
-			skippedRandomSeeding: true,
-		}
-	}
-
+	// The super admin's createdAt is persisted on the first run, so it anchors the
+	// generated dates across runs: a resume on another day regenerates identical data.
+	const superAdmin = await seedSuperAdmin(users, options.now ?? new Date())
 	const data = buildSeedData({
 		memberPasswordHash: await hashPassword(MEMBER_PASSWORD),
-		now: options.now,
+		now: superAdmin.createdAt,
 	})
 	const usersCreated = await saveMissing(
 		data.users,
@@ -111,7 +118,7 @@ export async function seedMongo(
 		usersCreated,
 		gymsCreated,
 		checkInsCreated,
-		skippedRandomSeeding: false,
+		skippedRandomSeeding: usersCreated + gymsCreated + checkInsCreated === 0,
 	}
 }
 
