@@ -6,6 +6,8 @@ export default mergeConfig(
 	defineConfig({
 		test: {
 			include: ["**/**/*.integration-test.ts"],
+			// Os testes de integracao compartilham Postgres/Mongo reais
+			fileParallelism: false,
 		},
 	}),
 )
