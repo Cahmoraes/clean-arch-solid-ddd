@@ -11,6 +11,7 @@ import { Gym } from "@/gym/domain/gym"
 import { GymStatusTypes } from "@/gym/domain/value-object/gym-status"
 import { Coordinate } from "@/shared/domain/value-object/coordinate.js"
 import { env } from "@/shared/infra/env"
+import { GymNotFoundError } from "@/shared/infra/errors/gym-not-found-error"
 
 @injectable()
 export class InMemoryGymRepository implements GymRepository {
@@ -41,7 +42,8 @@ export class InMemoryGymRepository implements GymRepository {
 
 	public async update(gym: Gym): Promise<void> {
 		const existing = this.gyms.find((current) => current.id === gym.id)
-		if (existing) this.gyms.delete(existing)
+		if (!existing) throw new GymNotFoundError(gym.id)
+		this.gyms.delete(existing)
 		this.gyms.add(
 			Gym.restore({
 				id: gym.id,
