@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process"
-import { rm, writeFile } from "node:fs/promises"
+import { glob, rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 import { promisify } from "node:util"
 import { afterEach, describe, expect, it } from "vitest"
@@ -18,10 +18,21 @@ interface DepcruiseViolation {
 	to: string
 }
 
-function parseViolations(stdout: string): DepcruiseViolation[] {
-	const output: { summary: { violations: DepcruiseViolation[] } } =
-		JSON.parse(stdout)
-	return output.summary.violations
+interface Cruise {
+	violations: DepcruiseViolation[]
+	totalCruised: number
+}
+
+function parseCruise(stdout: string): Cruise {
+	const output: {
+		summary: { violations: DepcruiseViolation[]; totalCruised: number }
+	} = JSON.parse(stdout)
+	return {
+		violations: output.summary.violations.filter(
+			(v) => v.rule.name === RULE_NAME,
+		),
+		totalCruised: output.summary.totalCruised,
+	}
 }
 
 function hasStdout(error: unknown): error is Error & { stdout: string } {
@@ -33,9 +44,7 @@ function hasStdout(error: unknown): error is Error & { stdout: string } {
 	)
 }
 
-async function mongoViolations(
-	targets: string[],
-): Promise<DepcruiseViolation[]> {
+async function cruise(targets: string[]): Promise<Cruise> {
 	const args = [
 		"depcruise",
 		"--validate",
@@ -49,16 +58,34 @@ async function mongoViolations(
 			cwd: BACKEND_ROOT,
 			maxBuffer: 256 * 1024 * 1024,
 		})
-		return parseViolations(stdout).filter((v) => v.rule.name === RULE_NAME)
+		return parseCruise(stdout)
 	} catch (error) {
 		// depcruise exits non-zero when it finds error-level violations; the report is still on stdout.
 		if (hasStdout(error)) {
-			return parseViolations(error.stdout).filter(
-				(v) => v.rule.name === RULE_NAME,
-			)
+			return parseCruise(error.stdout)
 		}
 		throw error
 	}
+}
+
+async function mongoViolations(
+	targets: string[],
+): Promise<DepcruiseViolation[]> {
+	return (await cruise(targets)).violations
+}
+
+// depcruise 17.4.3 does not support TypeScript 7, so given a directory it finds no .ts files and
+// reports "0 modules" (a false green). Explicit file paths are analyzed normally.
+async function domainAndApplicationFiles(): Promise<string[]> {
+	const files: string[] = []
+	for (const layer of ["domain", "application"]) {
+		for await (const file of glob(`src/*/${layer}/**/*.ts`, {
+			cwd: BACKEND_ROOT,
+		})) {
+			files.push(file)
+		}
+	}
+	return files.sort()
 }
 
 describe("mongodb driver isolation", () => {
@@ -83,8 +110,33 @@ describe("mongodb driver isolation", () => {
 		)
 	})
 
+	it("guard: depcruise analyzes the files it is given (a directory scan can silently cruise 0 modules)", async () => {
+		const files = await domainAndApplicationFiles()
+
+		const { totalCruised } = await cruise(files)
+
+		expect(files.length).toBeGreaterThan(0)
+		expect(totalCruised).toBeGreaterThan(0)
+	}, 180_000)
+
 	it("AC-11: no domain or application file in src imports the mongodb driver", async () => {
-		expect(await mongoViolations(["src"])).toEqual([])
+		const { violations, totalCruised } = await cruise(
+			await domainAndApplicationFiles(),
+		)
+
+		expect(totalCruised).toBeGreaterThan(0)
+		expect(violations).toEqual([])
+	}, 180_000)
+
+	it("AC-11: the sweep reports a domain file importing mongodb", async () => {
+		const fixture = await writeFixture(
+			"src/gym/domain/mongo-isolation-sweep-fixture.ts",
+			'import { MongoClient } from "mongodb"\nexport const driver = MongoClient\n',
+		)
+
+		const { violations } = await cruise(await domainAndApplicationFiles())
+
+		expect(violations.map((violation) => violation.from)).toEqual([fixture])
 	}, 180_000)
 
 	it("AC-11: a domain file importing mongodb is reported", async () => {
