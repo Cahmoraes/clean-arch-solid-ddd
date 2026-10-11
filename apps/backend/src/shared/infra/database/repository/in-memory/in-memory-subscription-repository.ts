@@ -1,5 +1,6 @@
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
+import { SubscriptionNotFoundError } from "@/shared/infra/errors/subscription-not-found-error"
 import type { Subscription } from "@/subscription/domain/subscription"
 import type { SubscriptionRepository } from "@/subscription/repository/subscription-repository"
 
@@ -16,6 +17,9 @@ export class InMemorySubscriptionRepository implements SubscriptionRepository {
 	}
 
 	public async update(subscription: Subscription): Promise<void> {
+		const existing = this.data.find((current) => current.id === subscription.id)
+		if (!existing) throw new SubscriptionNotFoundError(subscription.id)
+		this.data.delete(existing)
 		this.data.add(subscription)
 	}
 
