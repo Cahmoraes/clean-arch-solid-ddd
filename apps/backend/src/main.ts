@@ -1,5 +1,6 @@
 import "reflect-metadata"
 import { serverBuild } from "@/bootstrap/server-build"
+import { stopDatabase } from "./bootstrap/database-lifecycle"
 import { setupCronJob } from "./bootstrap/setup-cron-job"
 import type { HttpServer } from "./shared/infra/server/http-server"
 
@@ -12,6 +13,7 @@ async function main(): Promise<HttpServer> {
 
 async function setupGracefulShutdown(server: HttpServer): Promise<void> {
 	await server.close()
+	await stopDatabase()
 	process.exit()
 }
 

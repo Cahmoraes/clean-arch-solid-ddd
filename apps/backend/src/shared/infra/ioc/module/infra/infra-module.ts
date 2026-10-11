@@ -4,12 +4,14 @@ import { QueueController } from "@/shared/infra/controller/queue-controller"
 import { CookieAdapter } from "@/shared/infra/cookie/cookie-adapter"
 import { NodeCronAdapter } from "@/shared/infra/cron/node-cron-adapter"
 import { UpdateUserProfileCacheTask } from "@/shared/infra/cron/task/update-user-profile-cache-task"
+import { MongoConnection } from "@/shared/infra/database/connection/mongo/mongo-connection"
 import { PgClient } from "@/shared/infra/database/connection/pg-client"
 import { prismaClient } from "@/shared/infra/database/connection/prisma-client"
 import { SQLiteConnection } from "@/shared/infra/database/connection/sqlite-connection"
+import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { PrismaUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/prisma-unit-of-work"
 import { UnitOfWorkProvider } from "@/shared/infra/database/repository/unit-of-work/unit-of-work-provider"
-import { env, isProduction } from "@/shared/infra/env"
+import { env, isMongoEnabled, isProduction } from "@/shared/infra/env"
 import { MailerGatewayMemory } from "@/shared/infra/gateway/mailer-gateway-memory"
 import { NodeMailerAdapter } from "@/shared/infra/gateway/node-mailer-adapter"
 import { PinoAdapter } from "@/shared/infra/logger/pino-adapter"
@@ -22,9 +24,22 @@ import { MailerProvider } from "./mailer-provider"
 import { QueueProvider } from "./queue-provider"
 import { WorkerProvider } from "./worker-provider"
 
+function createMongoConnection(): MongoConnection {
+	if (!env.DATABASE_URL_MONGO) {
+		throw new Error(
+			"DATABASE_URL_MONGO is required when DATABASE_PROVIDER=mongo",
+		)
+	}
+	return new MongoConnection(env.DATABASE_URL_MONGO)
+}
+
 export const infraModule = new ContainerModule(({ bind }) => {
 	bind(SHARED_TYPES.Prisma.Client).toConstantValue(prismaClient)
 	bind(SHARED_TYPES.Prisma.UnitOfWork).to(PrismaUnitOfWork).inSingletonScope()
+	if (isMongoEnabled()) {
+		bind(SHARED_TYPES.Mongo.Connection).toConstantValue(createMongoConnection())
+		bind(SHARED_TYPES.Mongo.UnitOfWork).to(MongoUnitOfWork).inSingletonScope()
+	}
 	bind(SHARED_TYPES.PG.Client).toConstantValue(new PgClient())
 	if (isProduction() && env.DATABASE_PROVIDER === "sqlite") {
 		bind(SHARED_TYPES.SQLite.Client).toConstantValue(new SQLiteConnection())

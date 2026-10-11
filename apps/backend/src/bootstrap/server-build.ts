@@ -5,6 +5,7 @@ import { EXCHANGES } from "@/shared/infra/queue/exchanges"
 import type { Queue } from "@/shared/infra/queue/queue"
 import type { FastifyAdapter } from "@/shared/infra/server/fastify-adapter"
 
+import { startDatabase } from "./database-lifecycle"
 import { setupAnalyticsModule } from "./setup-analytics-module"
 import { setupCheckInModule } from "./setup-check-in-module"
 import { setupContactModule } from "./setup-contact-module"
@@ -22,6 +23,7 @@ export interface ModuleControllers {
 }
 
 export async function serverBuild() {
+	await startDatabase()
 	const server = resolve<FastifyAdapter>(SHARED_TYPES.Server.Fastify)
 	await server.prepare()
 	const queue = resolve<Queue>(SHARED_TYPES.Queue)

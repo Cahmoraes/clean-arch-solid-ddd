@@ -24,3 +24,7 @@ export function isDevelopment(): boolean {
 export function isProduction(): boolean {
 	return env.NODE_ENV === "production"
 }
+
+export function isMongoEnabled(): boolean {
+	return isProduction() && env.DATABASE_PROVIDER === "mongo"
+}
