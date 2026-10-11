@@ -6,7 +6,7 @@ import { generateValidCnpjFromIndex } from "../../prisma/lib/brazilian-cnpj.js"
 import { generateBrazilianMobilePhone } from "../../prisma/lib/brazilian-phone.js"
 
 export const USER_COUNT = 50
-export const GYM_COUNT = 50
+const GYM_COUNT = 50
 const MAX_CHECK_INS_PER_USER = 8
 const CHECK_IN_DAY_WINDOW = 90
 const SEED = 42

@@ -11,7 +11,7 @@ import {
 import { sessionOptions } from "@/shared/infra/database/repository/unit-of-work/mongo-session"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
-import { SubscriptionNotFoundError } from "@/shared/infra/errors/subscription-not-found-error"
+import { SubscriptionNotPersistedError } from "@/shared/infra/errors/subscription-not-persisted-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import { ActiveSubscriptionAlreadyExistsError } from "@/subscription/domain/error/active-subscription-already-exists-error.js"
 import { Subscription } from "@/subscription/domain/subscription"
@@ -90,7 +90,7 @@ export class MongoSubscriptionRepository implements SubscriptionRepository {
 			sessionOptions(this.session),
 		)
 		if (result.matchedCount === 0) {
-			throw new SubscriptionNotFoundError(subscription.id)
+			throw new SubscriptionNotPersistedError(subscription.id)
 		}
 	}
 

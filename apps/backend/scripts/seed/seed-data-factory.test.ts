@@ -26,7 +26,7 @@ describe("buildSeedData", () => {
 		expect(new Set(data.gyms.map((gym) => gym.cnpj)).size).toBe(50)
 	})
 
-	it("FR-018: gives each member at most 8 check-ins on distinct UTC days within 90 days", () => {
+	it("FR-018: gives members 191 check-ins in total, 8 at most per member, on distinct UTC days between 2 and 90 days back", () => {
 		const data = build()
 
 		const byUser = new Map<string, Date[]>()
@@ -37,14 +37,21 @@ describe("buildSeedData", () => {
 			])
 		}
 		for (const dates of byUser.values()) {
-			expect(dates.length).toBeLessThanOrEqual(8)
 			const days = dates.map((date) => date.toISOString().slice(0, 10))
 			expect(new Set(days).size).toBe(days.length)
 		}
-		const oldest = Math.min(
-			...data.checkIns.map((checkIn) => checkIn.createdAt.getTime()),
+		expect(data.checkIns).toHaveLength(191)
+		expect(byUser.size).toBe(42)
+		expect(Math.max(...[...byUser.values()].map((dates) => dates.length))).toBe(
+			8,
 		)
-		expect(NOW.getTime() - oldest).toBeLessThanOrEqual(91 * 24 * 3_600_000)
+		const times = data.checkIns.map((checkIn) => checkIn.createdAt.getTime())
+		expect(new Date(Math.min(...times)).toISOString()).toBe(
+			"2026-03-17T12:04:00.000Z",
+		)
+		expect(new Date(Math.max(...times)).toISOString()).toBe(
+			"2026-06-13T12:40:00.000Z",
+		)
 		expect(
 			data.checkIns.every((checkIn) =>
 				data.users.some((user) => user.id === checkIn.userId),

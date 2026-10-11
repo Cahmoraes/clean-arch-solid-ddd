@@ -19,7 +19,7 @@ import { escapeRegExp } from "@/shared/infra/database/repository/mongo/escape-re
 import { sessionOptions } from "@/shared/infra/database/repository/unit-of-work/mongo-session"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { env } from "@/shared/infra/env"
-import { GymNotFoundError } from "@/shared/infra/errors/gym-not-found-error"
+import { GymNotPersistedError } from "@/shared/infra/errors/gym-not-persisted-error"
 import { InvalidPersistedGymError } from "@/shared/infra/errors/invalid-persisted-gym-error"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
@@ -99,7 +99,7 @@ export class MongoGymRepository implements GymRepository {
 			},
 			sessionOptions(this.session),
 		)
-		if (result.matchedCount === 0) throw new GymNotFoundError(gym.id)
+		if (result.matchedCount === 0) throw new GymNotPersistedError(gym.id)
 	}
 
 	public async gymOfId(

@@ -7,7 +7,7 @@ import {
 import { sessionOptions } from "@/shared/infra/database/repository/unit-of-work/mongo-session"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
-import { UserNotFoundError } from "@/shared/infra/errors/user-not-found-error"
+import { UserNotPersistedError } from "@/shared/infra/errors/user-not-persisted-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
@@ -40,19 +40,7 @@ const USER_QUERY_COLUMNS = {
 	updatedAt: "updated_at",
 	status: "status",
 	billingCustomerId: "billing_customer_id",
-} as const satisfies Record<string, keyof UserDocument>
-
-function isUserQueryField(
-	field: string,
-): field is keyof typeof USER_QUERY_COLUMNS {
-	return field in USER_QUERY_COLUMNS
-}
-
-class UnsupportedUserQueryFieldError extends Error {
-	constructor(field: string) {
-		super(`UserQuery field "${field}" has no Mongo column`)
-	}
-}
+} as const satisfies Record<keyof UserQuery["fields"], keyof UserDocument>
 
 @injectable()
 export class MongoUserRepository implements UserRepository {
@@ -153,7 +141,7 @@ export class MongoUserRepository implements UserRepository {
 			{ $set: this.updateFields(user) },
 			sessionOptions(this.session),
 		)
-		if (result.matchedCount === 0) throw new UserNotFoundError(user.id)
+		if (result.matchedCount === 0) throw new UserNotPersistedError(user.id)
 	}
 
 	private updateFields(user: User): Partial<UserDocument> {
@@ -177,17 +165,12 @@ export class MongoUserRepository implements UserRepository {
 	}
 
 	private queryFilter(userQuery: UserQuery): Filter<UserDocument> {
-		const conditions = Object.entries(userQuery.fields)
-			.filter(([, value]) => value !== undefined)
-			.map(([field, value]) => [this.columnOf(field), value] as const)
+		const fields = userQuery.fields
+		const keys = Object.keys(fields) as (keyof typeof fields)[]
+		const conditions = keys
+			.filter((field) => fields[field] !== undefined)
+			.map((field) => [USER_QUERY_COLUMNS[field], fields[field]] as const)
 		return { ...Object.fromEntries(conditions), deleted_at: null }
-	}
-
-	private columnOf(field: string): string {
-		if (!isUserQueryField(field)) {
-			throw new UnsupportedUserQueryFieldError(field)
-		}
-		return USER_QUERY_COLUMNS[field]
 	}
 
 	private restoreUser(document: UserDocument): User {

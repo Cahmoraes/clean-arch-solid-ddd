@@ -113,14 +113,20 @@ describe("ETL from the real Postgres into a throwaway MongoDB", () => {
 	}, 180_000)
 
 	afterAll(async () => {
-		await prismaClient.checkIn.deleteMany({ where: { id: checkInId } })
-		await prismaClient.gym.deleteMany({ where: { id: gymId } })
-		await prismaClient.user.deleteMany({
-			where: { id: { in: [userId, deletedUserId] } },
-		})
-		await prismaClient.$disconnect()
-		await connection.client().db(dbName).dropDatabase()
-		await connection.disconnect()
+		// beforeAll may have failed before the Mongo connection existed: clean up whatever was created.
+		try {
+			await prismaClient.checkIn.deleteMany({ where: { id: checkInId } })
+			await prismaClient.gym.deleteMany({ where: { id: gymId } })
+			await prismaClient.user.deleteMany({
+				where: { id: { in: [userId, deletedUserId] } },
+			})
+		} finally {
+			await prismaClient.$disconnect()
+			if (connection) {
+				await connection.client().db(dbName).dropDatabase()
+				await connection.disconnect()
+			}
+		}
 	})
 
 	it("Review Focus: running the ETL again leaves every collection identical", () => {

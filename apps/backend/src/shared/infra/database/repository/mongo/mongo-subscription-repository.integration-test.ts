@@ -17,6 +17,7 @@ import {
 } from "@/shared/infra/database/connection/mongo/mongo-duplicate-key"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
+import { SubscriptionNotPersistedError } from "@/shared/infra/errors/subscription-not-persisted-error"
 import { ActiveSubscriptionAlreadyExistsError } from "@/subscription/domain/error/active-subscription-already-exists-error.js"
 import { Subscription } from "@/subscription/domain/subscription"
 import {
@@ -68,6 +69,7 @@ describe("MongoSubscriptionRepository", () => {
 		return {
 			repository: new MongoSubscriptionRepository(connection),
 			newId: () => contractRecorder.newId(),
+			missingRecordError: SubscriptionNotPersistedError,
 			ensureReferences: async () => {},
 			cleanup: () =>
 				deleteDocumentsReferencing(connection, contractRecorder.ids, [

@@ -18,6 +18,7 @@ import {
 	isDuplicateKeyError,
 } from "@/shared/infra/database/connection/mongo/mongo-duplicate-key"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
+import { GymNotPersistedError } from "@/shared/infra/errors/gym-not-persisted-error"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { type GymDocument, MongoGymRepository } from "./mongo-gym-repository"
 
@@ -88,6 +89,7 @@ describe("MongoGymRepository", () => {
 		return {
 			repository: new MongoGymRepository(connection),
 			newId: () => contractRecorder.newId(),
+			missingRecordError: GymNotPersistedError,
 			cleanup: () =>
 				deleteDocumentsReferencing(connection, contractRecorder.ids, [
 					{ collection: COLLECTIONS.GYMS, fields: ["_id"] },

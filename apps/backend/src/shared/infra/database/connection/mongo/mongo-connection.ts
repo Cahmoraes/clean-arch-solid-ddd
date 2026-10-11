@@ -52,6 +52,9 @@ export class MongoConnection {
 			.db(this.dbName)
 			.admin()
 			.command({ hello: 1 })
+			.catch((error: unknown) => {
+				throw new MongoUnavailableError({ cause: error })
+			})
 		if (!supportsTransactions(hello)) {
 			throw new MongoTransactionsUnsupportedError()
 		}
@@ -116,6 +119,11 @@ export class MongoConnection {
 			]),
 			this.collection(COLLECTIONS.USER_NOTIFICATIONS).createIndexes([
 				{ key: { user_id: 1 }, name: "user_notifications_user_id" },
+				{
+					key: { notification_id: 1, user_id: 1 },
+					name: "user_notifications_notification_user_unique",
+					unique: true,
+				},
 			]),
 			this.collection(COLLECTIONS.USER_ACTIVITY_EVENTS).createIndexes([
 				{

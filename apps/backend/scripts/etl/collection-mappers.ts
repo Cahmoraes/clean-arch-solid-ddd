@@ -23,6 +23,7 @@ import type { StripeWebhookEventDocument } from "@/shared/infra/database/reposit
 import type { SubscriptionDocument } from "@/shared/infra/database/repository/mongo/mongo-subscription-repository"
 import type { UserActivityEventDocument } from "@/shared/infra/database/repository/mongo/mongo-user-activity-repository"
 import type { UserDocument } from "@/shared/infra/database/repository/mongo/mongo-user-repository"
+import { utcDayKey } from "@/shared/infra/database/repository/utc-day-key"
 
 function isJsonObject(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null && !Array.isArray(value)
@@ -109,7 +110,7 @@ export function mapCheckIn(row: CheckIn): CheckInDocument {
 		user_id: row.user_id,
 		gym_id: row.gym_id,
 		updated_at: row.updated_at,
-		dayKey: row.created_at.toISOString().slice(0, 10),
+		dayKey: utcDayKey(row.created_at),
 	}
 }
 

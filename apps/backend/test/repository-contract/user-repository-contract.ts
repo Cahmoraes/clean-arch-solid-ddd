@@ -2,10 +2,12 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
+import type { MissingRecordErrorClass } from "./missing-record-error"
 
 export interface UserRepositoryContractContext {
 	repository: UserRepository
 	newId(): string
+	missingRecordError: MissingRecordErrorClass
 	cleanup(): Promise<void>
 }
 
@@ -99,7 +101,9 @@ export function describeUserRepositoryContract(
 		})
 
 		it("update of a user that does not exist rejects", async () => {
-			await expect(context.repository.update(buildUser())).rejects.toThrow()
+			await expect(
+				context.repository.update(buildUser()),
+			).rejects.toBeInstanceOf(context.missingRecordError)
 		})
 
 		it("usersOfIds returns only the stored, non-deleted users", async () => {
@@ -147,12 +151,22 @@ export function describeUserRepositoryContract(
 		it("updateManyStatus refreshes updatedAt of the changed users", async () => {
 			const user = buildUser({ status: "activated" })
 			await context.repository.save(user)
+			// save() stamps the current time; update() keeps the fixed, old date.
+			const staleUpdatedAt = new Date("2026-01-10T12:00:00.000Z")
+			await context.repository.update(
+				buildUser({
+					id: user.id,
+					status: "activated",
+					updatedAt: staleUpdatedAt,
+				}),
+			)
 			const before = (await context.repository.userOfId(user.id))?.updatedAt
+			expect(before?.toISOString()).toBe(staleUpdatedAt.toISOString())
 
 			await context.repository.updateManyStatus([user.id], "suspended")
 
 			const after = (await context.repository.userOfId(user.id))?.updatedAt
-			expect(after?.getTime()).toBeGreaterThan(before?.getTime() ?? 0)
+			expect(after?.getTime()).toBeGreaterThan(staleUpdatedAt.getTime())
 		})
 
 		it("get finds a user by the fields of a UserQuery", async () => {

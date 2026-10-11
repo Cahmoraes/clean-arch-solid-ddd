@@ -7,6 +7,7 @@ import {
 	expect,
 	it,
 } from "vitest"
+import { DuplicateCheckInError } from "@/check-in/application/error/duplicate-check-in-error"
 import type { CheckInRepository } from "@/check-in/application/repository/check-in-repository"
 import { CheckIn } from "@/check-in/domain/check-in"
 import { pinTimeZone } from "./pin-time-zone"
@@ -23,9 +24,16 @@ export interface CheckInRepositoryContractContext {
 
 type CheckInProps = Parameters<typeof CheckIn.restore>[0]
 
+export interface CheckInRepositoryContractOptions {
+	// Database adapters back the one-check-in-per-day rule with a unique index; the
+	// in-memory adapter leaves it to the use case (onSameDateOfUserId).
+	enforcesDailyUniqueness: boolean
+}
+
 export function describeCheckInRepositoryContract(
 	name: string,
 	factory: () => Promise<CheckInRepositoryContractContext>,
+	options: CheckInRepositoryContractOptions,
 ): void {
 	describe(`CheckInRepository contract (${name})`, () => {
 		let context: CheckInRepositoryContractContext
@@ -76,6 +84,18 @@ export function describeCheckInRepositoryContract(
 			expect(found?.createdAt.toISOString()).toBe("2026-05-10T15:00:00.000Z")
 			expect(found?.status).toBe("pending")
 		})
+
+		if (options.enforcesDailyUniqueness) {
+			it("INV-01: a second check-in of the same user on the same UTC day fails with DuplicateCheckInError", async () => {
+				await context.repository.save(buildCheckIn())
+
+				await expect(
+					context.repository.save(
+						buildCheckIn({ createdAt: new Date("2026-05-10T20:00:00.000Z") }),
+					),
+				).rejects.toBeInstanceOf(DuplicateCheckInError)
+			})
+		}
 
 		it("returns null for an unknown id", async () => {
 			expect(await context.repository.checkOfById(context.newId())).toBeNull()

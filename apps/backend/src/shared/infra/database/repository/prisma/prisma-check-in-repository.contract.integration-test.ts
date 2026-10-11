@@ -9,16 +9,20 @@ afterAll(async () => {
 	await prismaClient.$disconnect()
 })
 
-describeCheckInRepositoryContract("prisma", async () => {
-	const recorder = new IdRecorder()
-	const seeder = new PrismaReferenceSeeder(prismaClient)
-	return {
-		repository: new PrismaCheckInRepository(prismaClient),
-		newId: () => recorder.newId(),
-		ensureReferences: async ({ userIds, gymIds }) => {
-			await seeder.ensureUsers(userIds)
-			await seeder.ensureGyms(gymIds)
-		},
-		cleanup: () => seeder.cleanup(),
-	}
-})
+describeCheckInRepositoryContract(
+	"prisma",
+	async () => {
+		const recorder = new IdRecorder()
+		const seeder = new PrismaReferenceSeeder(prismaClient)
+		return {
+			repository: new PrismaCheckInRepository(prismaClient),
+			newId: () => recorder.newId(),
+			ensureReferences: async ({ userIds, gymIds }) => {
+				await seeder.ensureUsers(userIds)
+				await seeder.ensureGyms(gymIds)
+			},
+			cleanup: () => seeder.cleanup(),
+		}
+	},
+	{ enforcesDailyUniqueness: true },
+)

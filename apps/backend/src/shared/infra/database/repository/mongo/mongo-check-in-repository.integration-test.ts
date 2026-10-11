@@ -61,21 +61,25 @@ describe("MongoCheckInRepository", () => {
 		await connection.disconnect()
 	})
 
-	describeCheckInRepositoryContract("mongo", async () => {
-		const contractRecorder = new IdRecorder()
-		return {
-			repository: new MongoCheckInRepository(connection),
-			newId: () => contractRecorder.newId(),
-			ensureReferences: async () => {},
-			cleanup: () =>
-				deleteDocumentsReferencing(connection, contractRecorder.ids, [
-					{
-						collection: COLLECTIONS.CHECK_INS,
-						fields: ["_id", "user_id", "gym_id"],
-					},
-				]),
-		}
-	})
+	describeCheckInRepositoryContract(
+		"mongo",
+		async () => {
+			const contractRecorder = new IdRecorder()
+			return {
+				repository: new MongoCheckInRepository(connection),
+				newId: () => contractRecorder.newId(),
+				ensureReferences: async () => {},
+				cleanup: () =>
+					deleteDocumentsReferencing(connection, contractRecorder.ids, [
+						{
+							collection: COLLECTIONS.CHECK_INS,
+							fields: ["_id", "user_id", "gym_id"],
+						},
+					]),
+			}
+		},
+		{ enforcesDailyUniqueness: true },
+	)
 
 	describe("mongo specifics", () => {
 		afterEach(cleanup)
@@ -134,6 +138,32 @@ describe("MongoCheckInRepository", () => {
 					}),
 				),
 			).rejects.toBeInstanceOf(DuplicateCheckInError)
+		})
+
+		it("rethrows, untranslated, a duplicate key error on a field other than dayKey", async () => {
+			const checkIns = connection.collection<StringIdDocument>(
+				COLLECTIONS.CHECK_INS,
+			)
+			const indexName = "check_ins_gym_id_test_unique"
+			const gymId = recorder.newId()
+			await checkIns.createIndex(
+				{ gym_id: 1 },
+				{ name: indexName, unique: true },
+			)
+			try {
+				await repository.save(buildCheckIn(recorder.newId(), { gymId }))
+
+				const error = await repository
+					.save(buildCheckIn(recorder.newId(), { gymId }))
+					.catch((caught: unknown) => caught)
+
+				expect(error).not.toBeInstanceOf(DuplicateCheckInError)
+				expect(isDuplicateKeyError(error)).toBe(true)
+				if (!isDuplicateKeyError(error)) return
+				expect(duplicateKeyFields(error)).toEqual(["gym_id"])
+			} finally {
+				await checkIns.dropIndex(indexName)
+			}
 		})
 
 		it("stores dayKey as the UTC date of created_at", async () => {

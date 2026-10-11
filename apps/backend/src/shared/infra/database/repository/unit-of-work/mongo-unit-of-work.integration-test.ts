@@ -18,6 +18,14 @@ interface TestDocument {
 	status?: string
 }
 
+function deferred(): { promise: Promise<void>; resolve: () => void } {
+	let resolve: () => void = () => {}
+	const promise = new Promise<void>((done) => {
+		resolve = done
+	})
+	return { promise, resolve }
+}
+
 describe("MongoUnitOfWork", () => {
 	let connection: MongoConnection
 	let sut: MongoUnitOfWork
@@ -123,30 +131,38 @@ describe("MongoUnitOfWork", () => {
 		const counterId = randomUUID()
 		checkInIds.push(counterId)
 		await checkIns.insertOne({ ...checkInTestDocument(counterId), n: 0 })
-		let attempts = 0
+		const firstHasWritten = deferred()
+		const secondHasRetried = deferred()
+		let secondAttempts = 0
 
-		const increment = (holdMs: number) =>
-			sut.runTransaction(async (tx) => {
-				if (!MongoUnitOfWork.isClientSession(tx)) {
-					throw new Error("expected a Mongo session")
-				}
-				attempts += 1
-				await checkIns.updateOne(
-					{ _id: counterId },
-					{ $inc: { n: 1 } },
-					{ session: tx },
-				)
-				await new Promise((resolve) => setTimeout(resolve, holdMs))
-			})
-
-		const first = increment(300)
-		await new Promise((resolve) => setTimeout(resolve, 50))
-		const second = increment(0)
+		const increment = (session: unknown) => {
+			if (!MongoUnitOfWork.isClientSession(session)) {
+				throw new Error("expected a Mongo session")
+			}
+			return checkIns.updateOne(
+				{ _id: counterId },
+				{ $inc: { n: 1 } },
+				{ session },
+			)
+		}
+		// The first transaction holds the write lock on the counter until the second
+		// one has hit the conflict and started again: the retry is forced, not timed.
+		const first = sut.runTransaction(async (tx) => {
+			await increment(tx)
+			firstHasWritten.resolve()
+			await secondHasRetried.promise
+		})
+		await firstHasWritten.promise
+		const second = sut.runTransaction(async (tx) => {
+			secondAttempts += 1
+			if (secondAttempts > 1) secondHasRetried.resolve()
+			await increment(tx)
+		})
 		await Promise.all([first, second])
 
 		const counter = await checkIns.findOne({ _id: counterId })
 		expect(counter?.n).toBe(2)
-		expect(attempts).toBeGreaterThan(2)
+		expect(secondAttempts).toBeGreaterThan(1)
 	}, 30_000)
 
 	it("isClientSession accepts only sessions created by runTransaction", async () => {

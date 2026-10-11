@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import type { GymRepository } from "@/gym/application/repository/gym-repository"
 import { Gym } from "@/gym/domain/gym"
+import type { MissingRecordErrorClass } from "./missing-record-error"
 
 export interface GymRepositoryContractContext {
 	repository: GymRepository
 	newId(): string
+	missingRecordError: MissingRecordErrorClass
 	cleanup(): Promise<void>
 }
 
@@ -92,7 +94,9 @@ export function describeGymRepositoryContract(
 		})
 
 		it("update of a gym that does not exist rejects", async () => {
-			await expect(context.repository.update(buildGym())).rejects.toThrow()
+			await expect(
+				context.repository.update(buildGym()),
+			).rejects.toBeInstanceOf(context.missingRecordError)
 		})
 
 		it("FR-006: gymOfId hides a deactivated gym only when includeInactive is false", async () => {

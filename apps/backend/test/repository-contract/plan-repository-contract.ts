@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import type { PlanRepository } from "@/subscription/application/repository/plan-repository"
 import { Plan } from "@/subscription/domain/plan"
+import type { MissingRecordErrorClass } from "./missing-record-error"
 
 export interface PlanRepositoryContractContext {
 	repository: PlanRepository
 	newId(): string
+	missingRecordError: MissingRecordErrorClass
 	cleanup(): Promise<void>
 }
 
@@ -80,7 +82,9 @@ export function describePlanRepositoryContract(
 		})
 
 		it("update of a plan that does not exist rejects", async () => {
-			await expect(context.repository.update(buildPlan())).rejects.toThrow()
+			await expect(
+				context.repository.update(buildPlan()),
+			).rejects.toBeInstanceOf(context.missingRecordError)
 		})
 
 		it("fetchPlans lists every plan and fetchActivePlans only the active ones", async () => {

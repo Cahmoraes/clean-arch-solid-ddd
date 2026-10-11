@@ -20,6 +20,7 @@ import {
 import { escapeRegExp } from "@/shared/infra/database/repository/mongo/escape-regexp"
 import { sessionOptions } from "@/shared/infra/database/repository/unit-of-work/mongo-session"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
+import { utcDayKey } from "@/shared/infra/database/repository/utc-day-key"
 import { env } from "@/shared/infra/env"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
@@ -38,10 +39,6 @@ export type CheckInDocument = {
 }
 
 type GymTitleDocument = { _id: string; title: string }
-
-function utcDayKey(date: Date): string {
-	return date.toISOString().slice(0, 10)
-}
 
 @injectable()
 export class MongoCheckInRepository implements CheckInRepository {

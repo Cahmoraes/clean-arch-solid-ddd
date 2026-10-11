@@ -127,6 +127,30 @@ export function describeNotificationRepositoryContract(
 			expect(paged.total).toBe(2)
 		})
 
+		it("FR-012: findManyByUserId orders by creation date, newest first", async () => {
+			const oldest = build({
+				createdAt: new Date("2026-05-10T10:00:00.000Z"),
+			})
+			const newest = build({
+				createdAt: new Date("2026-05-10T12:00:00.000Z"),
+			})
+			const middle = build({
+				createdAt: new Date("2026-05-10T11:00:00.000Z"),
+			})
+			await context.repository.saveMany([oldest, newest, middle])
+
+			const { items } = await context.repository.findManyByUserId({
+				userId,
+				page: 1,
+			})
+
+			expect(items.map((item) => item.id)).toEqual([
+				newest.id,
+				middle.id,
+				oldest.id,
+			])
+		})
+
 		it("countUnreadByUserId and markAllAsReadByUserId", async () => {
 			const first = build()
 			const second = build()

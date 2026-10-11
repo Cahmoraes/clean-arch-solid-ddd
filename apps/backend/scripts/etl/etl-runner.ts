@@ -4,6 +4,7 @@ import {
 	COLLECTIONS,
 	type MongoConnection,
 } from "@/shared/infra/database/connection/mongo/mongo-connection"
+import { utcDayKey } from "@/shared/infra/database/repository/utc-day-key"
 import {
 	mapCheckIn,
 	mapGym,
@@ -59,10 +60,16 @@ interface ParentSets {
 interface EtlContext {
 	parents: ParentSets
 	checkInDays: Map<string, string>
+	userNotificationPairs: Map<string, string>
 }
 
+type ExclusionKind =
+	| "orphan"
+	| "duplicate-check-in"
+	| "duplicate-user-notification"
+
 interface Exclusion {
-	kind: "orphan" | "duplicate-check-in"
+	kind: ExclusionKind
 	reason: string
 }
 
@@ -129,7 +136,7 @@ const checkInSpec: CollectionSpec<"check_ins"> = {
 			missingParent(context.parents.users, "users", row.user_id) ??
 			missingParent(context.parents.gyms, "gyms", row.gym_id)
 		if (orphan) return orphan
-		const dayKey = `${row.user_id}|${row.created_at.toISOString().slice(0, 10)}`
+		const dayKey = `${row.user_id}|${utcDayKey(row.created_at)}`
 		const keptId = context.checkInDays.get(dayKey)
 		if (keptId !== undefined) {
 			return {
@@ -155,9 +162,25 @@ const userNotificationSpec: CollectionSpec<"user_notifications"> = {
 	name: "user_notifications",
 	mongoName: COLLECTIONS.USER_NOTIFICATIONS,
 	map: mapUserNotification,
-	decide: (row, { parents }) =>
-		missingParent(parents.notifications, "notifications", row.notificationId) ??
-		missingParent(parents.users, "users", row.userId),
+	decide: (row, context) => {
+		const orphan =
+			missingParent(
+				context.parents.notifications,
+				"notifications",
+				row.notificationId,
+			) ?? missingParent(context.parents.users, "users", row.userId)
+		if (orphan) return orphan
+		const pair = `${row.notificationId}|${row.userId}`
+		const keptId = context.userNotificationPairs.get(pair)
+		if (keptId !== undefined) {
+			return {
+				kind: "duplicate-user-notification",
+				reason: `same notification and user as user_notification ${keptId}`,
+			}
+		}
+		context.userNotificationPairs.set(pair, row.id)
+		return undefined
+	},
 }
 
 const activityEventSpec: CollectionSpec<"user_activity_events"> = {
@@ -180,8 +203,7 @@ interface CopyDependencies {
 	batchSize: number
 	sampleSize: number
 	context: EtlContext
-	orphans: EtlExclusion[]
-	duplicateCheckIns: EtlExclusion[]
+	exclusions: Record<ExclusionKind, EtlExclusion[]>
 }
 
 interface CopyProgress {
@@ -196,12 +218,11 @@ function recordExclusion(
 	exclusion: Exclusion,
 	dependencies: CopyDependencies,
 ): void {
-	const entry: EtlExclusion = { collection, id, reason: exclusion.reason }
-	const bucket =
-		exclusion.kind === "orphan"
-			? dependencies.orphans
-			: dependencies.duplicateCheckIns
-	bucket.push(entry)
+	dependencies.exclusions[exclusion.kind].push({
+		collection,
+		id,
+		reason: exclusion.reason,
+	})
 }
 
 function toOperation<K extends EtlCollection>(
@@ -236,9 +257,12 @@ function buildOperations<K extends EtlCollection>(
 	dependencies: CopyDependencies,
 	progress: CopyProgress,
 ): AnyBulkWriteOperation<EtlDocument>[] {
-	return rows
-		.map((row) => toOperation(spec, row, dependencies, progress))
-		.filter((operation) => operation !== undefined)
+	const operations: AnyBulkWriteOperation<EtlDocument>[] = []
+	for (const row of rows) {
+		const operation = toOperation(spec, row, dependencies, progress)
+		if (operation) operations.push(operation)
+	}
+	return operations
 }
 
 async function copyBatches<K extends EtlCollection>(
@@ -334,9 +358,13 @@ export async function runEtl(options: EtlOptions): Promise<EtlReport> {
 				notifications: new Set(),
 			},
 			checkInDays: new Map(),
+			userNotificationPairs: new Map(),
 		},
-		orphans: [],
-		duplicateCheckIns: [],
+		exclusions: {
+			orphan: [],
+			"duplicate-check-in": [],
+			"duplicate-user-notification": [],
+		},
 	}
 
 	// One batch operation at a time, in dependency order, without a global transaction.
@@ -374,7 +402,9 @@ export async function runEtl(options: EtlOptions): Promise<EtlReport> {
 		generatedAt: new Date().toISOString(),
 		ok: Object.values(collections).every(isConsistent),
 		collections,
-		orphans: dependencies.orphans,
-		duplicateCheckIns: dependencies.duplicateCheckIns,
+		orphans: dependencies.exclusions.orphan,
+		duplicateCheckIns: dependencies.exclusions["duplicate-check-in"],
+		duplicateUserNotifications:
+			dependencies.exclusions["duplicate-user-notification"],
 	}
 }

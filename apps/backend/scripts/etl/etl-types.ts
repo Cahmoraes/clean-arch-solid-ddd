@@ -67,6 +67,7 @@ export interface EtlReport {
 	collections: Record<EtlCollection, EtlCollectionReport>
 	orphans: EtlExclusion[]
 	duplicateCheckIns: EtlExclusion[]
+	duplicateUserNotifications: EtlExclusion[]
 }
 
 // Every copied document is keyed by the Postgres UUID, never by an ObjectId.

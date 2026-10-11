@@ -8,6 +8,8 @@ import {
 	type MongoConnection,
 } from "@/shared/infra/database/connection/mongo/mongo-connection"
 import { MongoGymRepository } from "@/shared/infra/database/repository/mongo/mongo-gym-repository"
+import { MongoUserRepository } from "@/shared/infra/database/repository/mongo/mongo-user-repository"
+import { User } from "@/user/domain/user"
 import { generateValidCnpjFromIndex } from "../../prisma/lib/brazilian-cnpj.js"
 import { seedMongo } from "../seed-mongo"
 
@@ -72,7 +74,7 @@ describe("seedMongo", () => {
 		})
 	})
 
-	it("FR-018: gives each member at most 8 check-ins that reference existing users and gyms", async () => {
+	it("FR-018: creates 191 check-ins, 8 at most per member, that reference existing users and gyms", async () => {
 		const perUser = await connection
 			.collection<Document>(COLLECTIONS.CHECK_INS)
 			.aggregate<{ _id: string; total: number }>([
@@ -86,8 +88,17 @@ describe("seedMongo", () => {
 			.find({})
 			.toArray()
 
-		expect(firstRun.checkInsCreated).toBe(await count(COLLECTIONS.CHECK_INS))
-		expect(perUser.every((row) => row.total <= 8)).toBe(true)
+		expect(firstRun.checkInsCreated).toBe(191)
+		expect(await count(COLLECTIONS.CHECK_INS)).toBe(191)
+		expect(perUser).toHaveLength(42)
+		expect(Math.max(...perUser.map((row) => row.total))).toBe(8)
+		const dates = checkIns.map((checkIn) => checkIn.created_at.getTime())
+		expect(new Date(Math.min(...dates)).toISOString()).toBe(
+			"2026-03-17T12:04:00.000Z",
+		)
+		expect(new Date(Math.max(...dates)).toISOString()).toBe(
+			"2026-06-13T12:40:00.000Z",
+		)
 		expect(checkIns.every((checkIn) => userIds.has(checkIn.user_id))).toBe(true)
 		expect(checkIns.every((checkIn) => gymIds.has(checkIn.gym_id))).toBe(true)
 	})
@@ -133,6 +144,64 @@ describe("seedMongo", () => {
 			expect(rerun.gymsCreated).toBe(0)
 			expect(rerun.checkInsCreated).toBe(before.length)
 			expect(await readCheckIns()).toEqual(before)
+		})
+	}, 180_000)
+
+	it("FR-018: recreating the super admin does not shift the dates of a resumed run", async () => {
+		await withDisposableDb(async (target) => {
+			await seedMongo(target, { now: NOW })
+			const users = target.collection<Document>(COLLECTIONS.USERS)
+			const checkIns = target.collection<Document>(COLLECTIONS.CHECK_INS)
+			const readCheckIns = () =>
+				checkIns
+					.find({}, { projection: { updated_at: 0 } })
+					.sort({ _id: 1 })
+					.toArray()
+			const before = await readCheckIns()
+			await users.deleteOne({ email: "admin@admin.com" })
+			await checkIns.deleteMany({
+				_id: { $in: before.slice(0, 5).map((checkIn) => checkIn._id) },
+			})
+
+			const rerun = await seedMongo(target, { now: THREE_DAYS_LATER })
+
+			expect(rerun.checkInsCreated).toBe(5)
+			expect(await readCheckIns()).toEqual(before)
+		})
+	}, 180_000)
+
+	it("FR-018: a super admin created long before the seed does not push the check-ins out of the 90-day window", async () => {
+		await withDisposableDb(async (target) => {
+			const longAgo = new Date("2024-01-01T00:00:00.000Z")
+			const admin = User.restore({
+				id: randomUUID(),
+				name: "Old Admin",
+				email: "admin@admin.com",
+				password: "hashed",
+				createdAt: longAgo,
+				updatedAt: longAgo,
+				role: "ADMIN",
+				status: "activated",
+				isSuperAdmin: true,
+			})
+			const repository = new MongoUserRepository(target)
+			await repository.save(admin)
+			// save() does not write is_super_admin, so update() sets it.
+			await repository.update(admin)
+
+			await seedMongo(target, { now: NOW })
+
+			const oldest = await target
+				.collection<Document>(COLLECTIONS.CHECK_INS)
+				.find({})
+				.sort({ created_at: 1 })
+				.limit(1)
+				.next()
+			const ninetyOneDays = 91 * 24 * 3_600_000
+			expect(oldest).not.toBeNull()
+			expect(
+				NOW.getTime() - (oldest?.created_at as Date).getTime(),
+			).toBeLessThanOrEqual(ninetyOneDays)
 		})
 	}, 180_000)
 

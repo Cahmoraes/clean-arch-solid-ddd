@@ -1,6 +1,6 @@
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
-import { PlanNotFoundError } from "@/shared/infra/errors/plan-not-found-error"
+import { PlanNotPersistedError } from "@/shared/infra/errors/plan-not-persisted-error"
 import type {
 	PlanRepository,
 	SavePlanResult,
@@ -22,7 +22,7 @@ export class InMemoryPlanRepository implements PlanRepository {
 
 	public async update(plan: Plan): Promise<void> {
 		const existing = this.plans.find((current) => current.id === plan.id)
-		if (!existing) throw new PlanNotFoundError(plan.id)
+		if (!existing) throw new PlanNotPersistedError(plan.id)
 		this.plans.delete(existing)
 		this.plans.add(plan)
 	}

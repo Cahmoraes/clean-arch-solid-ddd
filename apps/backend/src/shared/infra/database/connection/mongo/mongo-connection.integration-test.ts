@@ -1,8 +1,10 @@
+import { randomUUID } from "node:crypto"
 import { createTestMongoConnection } from "test/mongo/create-test-mongo-connection"
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { MongoTransactionsUnsupportedError } from "@/shared/infra/errors/mongo-transactions-unsupported-error"
 import { MongoUnavailableError } from "@/shared/infra/errors/mongo-unavailable-error"
 import { COLLECTIONS, MongoConnection } from "./mongo-connection"
+import { duplicateKeyFields, isDuplicateKeyError } from "./mongo-duplicate-key"
 
 const STANDALONE_URL =
 	process.env.DATABASE_URL_MONGO_STANDALONE ??
@@ -65,10 +67,39 @@ describe("MongoConnection", () => {
 		)
 		expect(
 			await indexNames(connection, COLLECTIONS.USER_NOTIFICATIONS),
-		).toContain("user_notifications_user_id")
+		).toEqual(
+			expect.arrayContaining([
+				"user_notifications_user_id",
+				"user_notifications_notification_user_unique",
+			]),
+		)
 		expect(
 			await indexNames(connection, COLLECTIONS.USER_ACTIVITY_EVENTS),
 		).toContain("user_activity_events_user_occurred_at")
+	})
+
+	it("refuses a second user_notification for the same (notification_id, user_id)", async () => {
+		const userNotifications = connection.collection<{
+			_id: string
+			notification_id: string
+			user_id: string
+		}>(COLLECTIONS.USER_NOTIFICATIONS)
+		const pair = { notification_id: randomUUID(), user_id: randomUUID() }
+		const ids = [randomUUID(), randomUUID()]
+		try {
+			await userNotifications.insertOne({ _id: ids[0], ...pair })
+			const error = await userNotifications
+				.insertOne({ _id: ids[1], ...pair })
+				.catch((caught: unknown) => caught)
+			expect(isDuplicateKeyError(error)).toBe(true)
+			if (!isDuplicateKeyError(error)) return
+			expect(duplicateKeyFields(error).sort()).toEqual([
+				"notification_id",
+				"user_id",
+			])
+		} finally {
+			await userNotifications.deleteMany({ _id: { $in: ids } })
+		}
 	})
 
 	it("ensureIndexes is idempotent", async () => {
@@ -87,6 +118,19 @@ describe("MongoConnection startup failures", () => {
 		expect(error).toBeInstanceOf(MongoUnavailableError)
 		if (!(error instanceof Error)) throw error
 		expect(error.message).toContain("--replSet")
+	}, 20_000)
+
+	it("AC-05: assertTransactionsSupported wraps a failing hello command in MongoUnavailableError", async () => {
+		const unreachable = new MongoConnection(
+			"mongodb://127.0.0.1:1/test?directConnection=true",
+		)
+		const error = await unreachable
+			.assertTransactionsSupported()
+			.catch((caught: unknown) => caught)
+		await unreachable.disconnect()
+		expect(error).toBeInstanceOf(MongoUnavailableError)
+		if (!(error instanceof Error)) throw error
+		expect(error.cause).toBeInstanceOf(Error)
 	}, 20_000)
 
 	it("AC-05: assertTransactionsSupported rejects citing --replSet on a standalone MongoDB, before any transaction runs", async () => {

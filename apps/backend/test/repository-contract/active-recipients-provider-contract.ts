@@ -33,6 +33,8 @@ export function describeActiveRecipientsProviderContract(
 		let suspendedMember: string
 		let activeAdmin: string
 		let deletedAdmin: string
+		let lockedAdmin: string
+		let lockedMember: string
 		let ours: Set<string>
 
 		beforeEach(async () => {
@@ -41,7 +43,16 @@ export function describeActiveRecipientsProviderContract(
 			suspendedMember = context.newId()
 			activeAdmin = context.newId()
 			deletedAdmin = context.newId()
-			ours = new Set([activeMember, suspendedMember, activeAdmin, deletedAdmin])
+			lockedAdmin = context.newId()
+			lockedMember = context.newId()
+			ours = new Set([
+				activeMember,
+				suspendedMember,
+				activeAdmin,
+				deletedAdmin,
+				lockedAdmin,
+				lockedMember,
+			])
 			await context.seed([
 				{
 					id: activeMember,
@@ -57,6 +68,8 @@ export function describeActiveRecipientsProviderContract(
 				},
 				{ id: activeAdmin, role: "ADMIN", status: "activated", deleted: false },
 				{ id: deletedAdmin, role: "ADMIN", status: "activated", deleted: true },
+				{ id: lockedAdmin, role: "ADMIN", status: "locked", deleted: false },
+				{ id: lockedMember, role: "MEMBER", status: "locked", deleted: false },
 			])
 		})
 
@@ -77,6 +90,14 @@ export function describeActiveRecipientsProviderContract(
 
 		it("ADMINS lists only active, non-deleted admins", async () => {
 			expect(await idsFor("ADMINS")).toEqual([activeAdmin])
+		})
+
+		it("excludes locked users, the status that is neither activated nor suspended, for every audience", async () => {
+			for (const value of ["ALL", "MEMBERS", "ADMINS"] as const) {
+				const ids = await idsFor(value)
+				expect(ids).not.toContain(lockedAdmin)
+				expect(ids).not.toContain(lockedMember)
+			}
 		})
 
 		it("ALL lists every active, non-deleted user regardless of role", async () => {

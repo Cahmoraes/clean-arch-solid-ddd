@@ -16,6 +16,13 @@ const SUPER_ADMIN_PASSWORD =
 	process.env.SEED_SUPER_ADMIN_PASSWORD ?? "admin@admin"
 const SUPER_ADMIN_NAME = "Super Admin"
 const MEMBER_PASSWORD = "Member123!"
+const SEED_STATE_COLLECTION = "seed_state"
+const SEED_ANCHOR_ID = "seed-mongo-anchor"
+
+interface SeedAnchorDocument {
+	_id: string
+	anchor: Date
+}
 
 export interface SeedMongoResult {
 	superAdminEmail: string
@@ -83,6 +90,24 @@ async function saveMissing<T>(
 	return created
 }
 
+// The anchor date of the generated data is stored on the first run and reused afterwards,
+// so it does not depend on the super admin (changing SEED_SUPER_ADMIN_EMAIL, recreating
+// the admin or an older pre-existing admin must not shift the dates of a resumed run).
+async function resolveSeedAnchor(
+	connection: MongoConnection,
+	now: Date,
+): Promise<Date> {
+	const stored = await connection
+		.collection<SeedAnchorDocument>(SEED_STATE_COLLECTION)
+		.findOneAndUpdate(
+			{ _id: SEED_ANCHOR_ID },
+			{ $setOnInsert: { anchor: now } },
+			{ upsert: true, returnDocument: "after" },
+		)
+	if (!stored) throw new Error("Seed anchor was not persisted")
+	return stored.anchor
+}
+
 export async function seedMongo(
 	connection: MongoConnection,
 	options: { now?: Date } = {},
@@ -91,12 +116,11 @@ export async function seedMongo(
 	const gyms = new MongoGymRepository(connection)
 	const checkIns = new MongoCheckInRepository(connection)
 
-	// The super admin's createdAt is persisted on the first run, so it anchors the
-	// generated dates across runs: a resume on another day regenerates identical data.
-	const superAdmin = await seedSuperAdmin(users, options.now ?? new Date())
+	const now = options.now ?? new Date()
+	await seedSuperAdmin(users, now)
 	const data = buildSeedData({
 		memberPasswordHash: await hashPassword(MEMBER_PASSWORD),
-		now: superAdmin.createdAt,
+		now: await resolveSeedAnchor(connection, now),
 	})
 	const usersCreated = await saveMissing(
 		data.users,

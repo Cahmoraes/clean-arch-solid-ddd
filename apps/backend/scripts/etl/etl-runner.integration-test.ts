@@ -371,6 +371,42 @@ describe("runEtl with an in-memory source", () => {
 		expect(report.ok).toBe(true)
 	})
 
+	it("a second user_notification of the same notification and user is reported and excluded, keeping the first by id", async () => {
+		const connection = await freshConnection()
+		const userId = randomUUID()
+		const notificationId = randomUUID()
+		const [firstId, secondId] = [randomUUID(), randomUUID()].sort()
+		const source = new ArrayEtlSource({
+			users: [userRow(userId)],
+			notifications: [notificationRow(notificationId, userId)],
+			user_notifications: [
+				userNotificationRow(firstId, notificationId, userId),
+				userNotificationRow(secondId, notificationId, userId),
+			],
+		})
+
+		const report = await runEtl({ source, connection })
+
+		const stored = await connection
+			.collection(COLLECTIONS.USER_NOTIFICATIONS)
+			.find({})
+			.toArray()
+		expect(stored.map((document) => document._id)).toEqual([firstId])
+		expect(report.duplicateUserNotifications).toEqual([
+			expect.objectContaining({
+				collection: "user_notifications",
+				id: secondId,
+			}),
+		])
+		expect(report.collections.user_notifications).toMatchObject({
+			sourceCount: 2,
+			copied: 1,
+			excluded: 1,
+			mongoCount: 1,
+		})
+		expect(report.ok).toBe(true)
+	})
+
 	it("copies a collection larger than the batch size in id order", async () => {
 		const connection = await freshConnection()
 		const plans = Array.from({ length: 5 }, () => planRow(randomUUID()))

@@ -1,6 +1,6 @@
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
-import { UserNotFoundError } from "@/shared/infra/errors/user-not-found-error"
+import { UserNotPersistedError } from "@/shared/infra/errors/user-not-persisted-error"
 import type { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
@@ -34,19 +34,18 @@ export class InMemoryUserRepository implements UserRepository {
 
 	public async update(user: User): Promise<void> {
 		const userOrNull = this.users.find((u) => u.id === user.id)
-		if (!userOrNull) throw new UserNotFoundError(user.id)
+		if (!userOrNull) throw new UserNotPersistedError(user.id)
 		this.users.delete(userOrNull)
 		this.users.add(user)
 	}
 
 	public async get(objectQuery: UserQuery): Promise<User | null> {
 		const fields = objectQuery.fields
-		return this.users.find((user) => {
-			if (user.isDeleted) return false
-			return Object.keys(fields).every((field) => {
-				return (user as any)[field] === (fields as any)[field]
-			})
-		})
+		const keys = Object.keys(fields) as (keyof typeof fields)[]
+		return this.users.find(
+			(user) =>
+				!user.isDeleted && keys.every((key) => user[key] === fields[key]),
+		)
 	}
 
 	public async userOfEmail(email: string): Promise<User | null> {

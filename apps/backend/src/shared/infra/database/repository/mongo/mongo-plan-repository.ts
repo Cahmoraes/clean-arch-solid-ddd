@@ -7,7 +7,7 @@ import {
 import { sessionOptions } from "@/shared/infra/database/repository/unit-of-work/mongo-session"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
-import { PlanNotFoundError } from "@/shared/infra/errors/plan-not-found-error"
+import { PlanNotPersistedError } from "@/shared/infra/errors/plan-not-persisted-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type {
 	PlanRepository,
@@ -83,7 +83,7 @@ export class MongoPlanRepository implements PlanRepository {
 			},
 			sessionOptions(this.session),
 		)
-		if (result.matchedCount === 0) throw new PlanNotFoundError(plan.id)
+		if (result.matchedCount === 0) throw new PlanNotPersistedError(plan.id)
 	}
 
 	public async planOfId(id: string): Promise<Plan | null> {

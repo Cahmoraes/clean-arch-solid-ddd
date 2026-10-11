@@ -8,6 +8,7 @@ import {
 	type MongoConnection,
 } from "@/shared/infra/database/connection/mongo/mongo-connection"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
+import { PlanNotPersistedError } from "@/shared/infra/errors/plan-not-persisted-error"
 import { Plan } from "@/subscription/domain/plan"
 import { MongoPlanRepository, type PlanDocument } from "./mongo-plan-repository"
 
@@ -30,6 +31,7 @@ describe("MongoPlanRepository", () => {
 		return {
 			repository: new MongoPlanRepository(connection),
 			newId: () => contractRecorder.newId(),
+			missingRecordError: PlanNotPersistedError,
 			cleanup: () =>
 				deleteDocumentsReferencing(connection, contractRecorder.ids, [
 					{ collection: COLLECTIONS.PLANS, fields: ["_id"] },

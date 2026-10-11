@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { Subscription } from "@/subscription/domain/subscription"
 import type { SubscriptionRepository } from "@/subscription/repository/subscription-repository"
+import type { MissingRecordErrorClass } from "./missing-record-error"
 
 export interface SubscriptionRepositoryContractContext {
 	repository: SubscriptionRepository
 	newId(): string
+	missingRecordError: MissingRecordErrorClass
 	ensureReferences(references: { userIds: string[] }): Promise<void>
 	cleanup(): Promise<void>
 }
@@ -126,7 +128,7 @@ export function describeSubscriptionRepositoryContract(
 		it("update of a subscription that does not exist rejects", async () => {
 			await expect(
 				context.repository.update(buildSubscription()),
-			).rejects.toThrow()
+			).rejects.toBeInstanceOf(context.missingRecordError)
 		})
 	})
 }

@@ -3,6 +3,7 @@ import { PrismaReferenceSeeder } from "test/repository-contract/prisma-reference
 import { describeSubscriptionRepositoryContract } from "test/repository-contract/subscription-repository-contract"
 import { afterAll } from "vitest"
 import { prismaClient } from "@/shared/infra/database/connection/prisma-client.js"
+import { Prisma } from "@/shared/infra/database/generated/prisma/client"
 import { PrismaSubscriptionRepository } from "./prisma-subscription-repository"
 
 afterAll(async () => {
@@ -15,6 +16,7 @@ describeSubscriptionRepositoryContract("prisma", async () => {
 	return {
 		repository: new PrismaSubscriptionRepository(prismaClient),
 		newId: () => recorder.newId(),
+		missingRecordError: Prisma.PrismaClientKnownRequestError,
 		ensureReferences: ({ userIds }) => seeder.ensureUsers(userIds),
 		cleanup: () => seeder.cleanup(),
 	}

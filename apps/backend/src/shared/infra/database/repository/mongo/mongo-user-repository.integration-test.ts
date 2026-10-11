@@ -14,6 +14,7 @@ import {
 } from "@/shared/infra/database/connection/mongo/mongo-duplicate-key"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
+import { UserNotPersistedError } from "@/shared/infra/errors/user-not-persisted-error"
 import { UserQuery } from "@/user/application/persistence/repository/user-query"
 import { User } from "@/user/domain/user"
 import { MongoUserRepository, type UserDocument } from "./mongo-user-repository"
@@ -73,6 +74,7 @@ describe("MongoUserRepository", () => {
 		return {
 			repository: new MongoUserRepository(connection),
 			newId: () => contractRecorder.newId(),
+			missingRecordError: UserNotPersistedError,
 			cleanup: () =>
 				deleteDocumentsReferencing(connection, contractRecorder.ids, [
 					{ collection: COLLECTIONS.USERS, fields: ["_id"] },

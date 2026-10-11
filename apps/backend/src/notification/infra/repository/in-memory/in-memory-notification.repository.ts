@@ -41,6 +41,7 @@ export class InMemoryNotificationRepository implements NotificationRepository {
 		let filtered = this.notifications
 			.toArray()
 			.filter((n) => n.userId === input.userId && !n.isDeleted)
+			.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
 		if (input.onlyUnread) {
 			filtered = filtered.filter((n) => !n.isRead)
