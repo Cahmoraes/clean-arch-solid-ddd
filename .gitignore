@@ -29,3 +29,4 @@ __pycache__/
 *.py[cod]
 .claude/settings.local.json
 headroom_memory.db
+apps/backend/etl-report.json
