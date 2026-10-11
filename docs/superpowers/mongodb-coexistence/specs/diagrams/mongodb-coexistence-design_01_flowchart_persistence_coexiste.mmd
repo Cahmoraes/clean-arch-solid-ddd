@@ -1,0 +1,52 @@
+flowchart TB
+    ENV["DATABASE_PROVIDER<br/>prisma | mongo"]
+
+    subgraph APP["Application (depende só de ports)"]
+        UC["Use Cases"]
+    end
+
+    subgraph PORTS["Ports (interfaces)"]
+        P1["UserRepository / GymRepository<br/>CheckInRepository / PlanRepository"]
+        P2["SubscriptionRepository<br/>StripeWebhookEventRepository<br/>UserActivityRepository<br/>NotificationRepository"]
+        P3["Analytics repositories / DAOs<br/>ActiveRecipientsProvider"]
+        P4["UnitOfWork<br/>DatabaseHealthProvider"]
+    end
+
+    subgraph INFRA["Infra"]
+        PROV["*RepositoryProvider.provide()<br/>escolhe por DATABASE_PROVIDER"]
+        subgraph PRISMA["Adapters Prisma (existente)"]
+            AP["Prisma*Repository<br/>PrismaUnitOfWork"]
+        end
+        subgraph MONGO["Adapters Mongo (novo)"]
+            AM["Mongo*Repository<br/>MongoUnitOfWork (ClientSession)"]
+        end
+    end
+
+    PG[("PostgreSQL")]
+    MDB[("MongoDB<br/>single-node replica set")]
+    ETL["Script ETL único e idempotente<br/>preserva UUIDs"]
+
+    UC --> P1
+    UC --> P2
+    UC --> P3
+    UC --> P4
+    P1 --> PROV
+    P2 --> PROV
+    P3 --> PROV
+    P4 --> PROV
+    ENV -.->|"seleciona 1 provider por processo<br/>sem dual-write"| PROV
+    PROV -->|"prisma"| AP
+    PROV -->|"mongo"| AM
+    AP -->|"Prisma Client"| PG
+    AM -->|"driver nativo mongodb"| MDB
+    PG -.->|"lê via Prisma"| ETL
+    ETL -.->|"escreve (upsert)"| MDB
+
+    classDef app fill:#1e3a8a,stroke:#1e40af,color:#ffffff
+    classDef port fill:#065f46,stroke:#047857,color:#ffffff
+    classDef infra fill:#92400e,stroke:#b45309,color:#ffffff
+    classDef db fill:#1f2937,stroke:#111827,color:#ffffff
+    class UC app
+    class P1,P2,P3,P4 port
+    class PROV,AP,AM,ETL infra
+    class PG,MDB db
