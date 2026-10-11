@@ -13,6 +13,10 @@ export const SHARED_TYPES = {
 		Client: Symbol.for("PrismaClient"),
 		UnitOfWork: Symbol.for("PrismaUnitOfWork"),
 	},
+	Mongo: {
+		Connection: Symbol.for("MongoConnection"),
+		UnitOfWork: Symbol.for("MongoUnitOfWork"),
+	},
 	PG: {
 		Client: Symbol.for("PgClient"),
 	},

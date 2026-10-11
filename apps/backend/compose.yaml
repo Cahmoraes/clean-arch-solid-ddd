@@ -33,6 +33,13 @@ services:
       retries: 20
       start_period: 5s
 
+  mongodb-standalone:
+    container_name: "mongodb-standalone-test"
+    image: mongo:8
+    profiles: ["standalone"]
+    ports:
+      - "127.0.0.1:27018:27017"
+
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-management
