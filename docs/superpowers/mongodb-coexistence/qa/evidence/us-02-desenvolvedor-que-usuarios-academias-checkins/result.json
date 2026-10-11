@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como desenvolvedor, eu quero que usuários, academias, check-ins, assinaturas, planos e notificações funcionem sobre o MongoDB para que a API se comporte igual nos dois bancos",
+  "requirements": ["FR-004", "FR-005", "FR-006"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "12 arquivos de teste, 112 testes passaram, 0 falharam (repositórios Mongo de usuário, academia, check-in, assinatura, plano, webhook Stripe, atividade de usuário, notificação, DAOs Mongo e testes de paridade de academia e analytics).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Testes existentes localizados e executados de forma escopada. FR-004: um teste de integração por repositório Mongo mais testes de paridade. FR-005: testes com identificadores UUID em texto nos repositórios. FR-006: includeInactive coberto em mongo-gym-repository.parity e mongo-analytics.parity; deleted_at coberto em mongo-user-repository e check-in. Sem automação de navegador (app base URL não aplicável), então sem screenshot; não afeta o gate. Nenhum teste de aceitação adicional necessário."
+}

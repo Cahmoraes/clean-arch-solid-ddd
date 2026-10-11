@@ -1,0 +1,12 @@
+{
+  "us_id": "us-03",
+  "user_story": "Como desenvolvedor, eu quero copiar o estado atual do PostgreSQL para o MongoDB para que eu compare os dois bancos sobre os mesmos dados",
+  "requirements": ["FR-013", "FR-014", "FR-015"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Integração (scripts/etl/etl-postgres-to-mongo.integration-test.ts e etl-runner.integration-test.ts): 2 arquivos, 9 testes passaram, 0 falharam. Unitário (scripts/etl/collection-mappers.test.ts): 4 testes passaram, 0 falharam.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "FR-013: script unico `pnpm etl:postgres-to-mongo` (scripts/etl-postgres-to-mongo.ts); teste INV-08 compara usuario, academia e check-in do Postgres real com os documentos no Mongo (ids e todos os campos), mais teste de deleted_at, coordenadas decimais e operating_hours. FR-014: rodar o ETL duas vezes produz dump identico das colecoes; teste de falha no meio nomeia a colecao e a reexecucao completa a copia. FR-015: o runner valida contagem por colecao (mongoCount == sourceCount - excluded) e amostra campo a campo (sampleMismatches); check-in repetido no mesmo dia UTC e reportado e excluido mantendo o primeiro por id; orfaos tambem reportados. Sem navegador: nenhuma captura de tela (nao se aplica a um script de CLI). Nenhum teste de aceitacao adicional foi necessario."
+}

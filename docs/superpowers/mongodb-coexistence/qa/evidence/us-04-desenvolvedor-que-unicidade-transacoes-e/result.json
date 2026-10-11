@@ -1,0 +1,12 @@
+{
+  "us_id": "us-04",
+  "user_story": "Como desenvolvedor, eu quero que unicidade, transações e integridade entre registros valham no MongoDB para que as regras de negócio não dependam do banco",
+  "requirements": ["FR-007", "FR-008", "FR-009"],
+  "status": "PARTIAL",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "8 arquivos de teste de integração Mongo, 82 testes passaram, 0 falharam (duplicate-key, unit-of-work, user, plan, check-in, subscription, stripe-webhook-event, notification repository).",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "FR-007 coberto: INV-02 (e-mail, google id, billing customer id, CNPJ, billing subscription id) e INV-07 (event_id de webhook) via índices únicos; INV-01 (check-in no mesmo dia UTC, DuplicateCheckInError, incluindo casos de virada de dia); INV-03 (índice único parcial de assinatura ativa, ActiveSubscriptionAlreadyExistsError). FR-008 coberto: MongoUnitOfWork (commit, rollback, retry em conflito transitório) e INV-04 em check-in, usuário, assinatura (encerrar expirada + criar nova atômico), notificação e webhook (rollback deixa evento desmarcado). FR-009 parcialmente verificado: a gravação atômica de Notification + UserNotification é testada, mas INV-05 (cascata na exclusão) e INV-06 (recusa de exclusão de User/Plan com vínculos) não têm teste de contrato, pois nenhuma porta de repositório expõe exclusão física de Notification, User ou Plan (registrado como [unverified] no plano task-12); o ETL apenas descarta registros órfãos. Sem navegador (App base URL não aplicável), sem screenshot. Nenhum teste de aceitação adicional criado: não há caminho de código para INV-05/INV-06."
+}

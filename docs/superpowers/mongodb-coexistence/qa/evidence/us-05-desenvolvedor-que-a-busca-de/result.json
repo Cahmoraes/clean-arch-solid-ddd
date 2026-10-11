@@ -1,0 +1,12 @@
+{
+  "us_id": "us-05",
+  "user_story": "Como desenvolvedor, eu quero que a busca de academias por proximidade e as analytics devolvam o mesmo resultado nos dois bancos para que o estudo compare comportamento, não aproximações",
+  "requirements": ["FR-010", "FR-011", "FR-012"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Execução com Postgres e Mongo reais: mongo-analytics.parity + mongo-gym-repository.parity = 2 arquivos, 8 testes passados, 0 falhas. Conjunto ampliado (dao/mongo, mongo-gym-repository, mongo-analytics, mongo-check-in, notification/mongo) = 7 arquivos, 66 testes passados, 0 falhas.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "FR-010: mongo-gym-repository.parity compara fetchNearbyCoord do Prisma e do Mongo (academia a ~1,5 km, inativa a ~1,6 km e outra a ~11,1 km fora do raio de 10 km), com includeInactive padrão, false e true. FR-011: mongo-analytics.parity compara check-ins diários e por semana, crescimento diário e semanal (início na segunda) e retenção, com igualdade entre adapters sobre os mesmos dados. FR-012: contratos compartilhados executados sobre o Mongo cobrem paginação e ordenação de usuários (user-dao-contract), atividade (user-activity-dao-contract, incluindo desempate por id), check-ins (ordem asc/desc) e notificações (offset/limit); a equivalência é garantida pelo mesmo contrato rodar nos adapters Prisma e Mongo. Sem interface web (app não aplicável), então sem screenshot. Testes de aceitação novos não foram necessários."
+}

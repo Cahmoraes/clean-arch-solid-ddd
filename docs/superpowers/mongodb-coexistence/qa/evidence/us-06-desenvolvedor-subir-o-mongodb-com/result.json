@@ -1,0 +1,12 @@
+{
+  "us_id": "us-06",
+  "user_story": "Como desenvolvedor, eu quero subir o MongoDB com suporte a transações no ambiente local para que a API e os testes rodem sem passos manuais",
+  "requirements": ["FR-016", "FR-017", "FR-018"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "Integração: 4 arquivos, 16 testes passaram, 0 falharam (initialize-mongo, mongo-connection, mongo-database-health-provider, seed-mongo). Unit: mongo-connection.test.ts, 3 testes passaram. Executados contra os containers reais mongodb-dev (replica set rs0, healthy) e mongodb-standalone-test.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "FR-016: apps/backend/compose.yaml define o servico mongodb (mongo:8, --replSet rs0, healthcheck que roda rs.initiate automaticamente, volume persistente) junto com postgres, redis e rabbitmq; o nginx depende dele. DATABASE_URL_MONGO em .env.example usa replicaSet=rs0. O container mongodb-dev estava ativo e healthy. FR-017: initializeMongo (connect, assertTransactionsSupported, ensureIndexes) e chamado por startDatabase quando o provider e mongo; testes cobrem MongoDB inacessivel (MongoUnavailableError) e servidor standalone (MongoTransactionsUnsupportedError citando --replSet, usando o perfil standalone na porta 27018). FR-018: seed-mongo (7 testes: idempotencia, retomada, contagens) e MongoDatabaseHealthProvider (up com metadados, down com mensagem de erro) passam; script pnpm seed:mongo existe. Nenhum teste de aceitacao adicional foi necessario. Sem automacao de navegador, captura de tela nao se aplica."
+}

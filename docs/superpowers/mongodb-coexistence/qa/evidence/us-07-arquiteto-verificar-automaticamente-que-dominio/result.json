@@ -1,0 +1,12 @@
+{
+  "us_id": "us-07",
+  "user_story": "Como arquiteto, eu quero verificar automaticamente que domínio e aplicação não conhecem o MongoDB e que os dois adapters cumprem o mesmo contrato para que a tese do estudo fique provada",
+  "requirements": ["FR-019", "FR-020", "FR-021"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "mongo-isolation.fit-test.ts: 4 passed, 0 failed (regra no-domain-or-application-to-mongodb-driver: src limpo; import em domain e application, inclusive só de tipos, é reportado; infra pode importar). repository-contract-coverage.test.ts: 11 passed, 0 failed (cada helper de contrato é usado por in-memory, Prisma e Mongo). Integração contra MongoDB real (mongo-gym-repository, mongo-user-dao, mongo-active-recipients) e contrato Prisma do gym: 4 arquivos, 31 testes passaram, 0 falharam.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Verificação por testes existentes, sem teste de aceitação novo. FR-019: o teste de cobertura garante que os mesmos helpers de contrato rodam nos três adapters. FR-020: suites de integração Mongo executadas contra MongoDB real e passando (amostra de repositório, DAO e provider; não foram rodadas todas as suites Mongo). FR-021: regra do dependency-cruiser falha se domain/application importam o driver mongodb; fixtures temporárias provam que a regra dispara. Sem navegador nem URL de app (não aplicável), screenshot omitido sem afetar o status."
+}

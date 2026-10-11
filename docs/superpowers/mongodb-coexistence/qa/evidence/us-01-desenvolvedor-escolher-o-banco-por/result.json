@@ -1,0 +1,12 @@
+{
+  "us_id": "us-001",
+  "user_story": "Como desenvolvedor, eu quero escolher o banco por `DATABASE_PROVIDER=prisma|mongo` para que eu alterne entre PostgreSQL e MongoDB sem mudar código",
+  "requirements": ["FR-001", "FR-002", "FR-003"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "database-provider-selection.integration-test.ts: 21 testes passaram, 0 falharam. env-schema.test.ts e is-mongo-enabled.test.ts: 8 testes passaram, 0 falharam.",
+  "screenshot_path": null,
+  "failure_details": null,
+  "notes": "Testes existentes cobrem as tres FRs. FR-001: env-schema.test.ts aceita prisma e mongo (mongo exige DATABASE_URL_MONGO) e rejeita valor invalido e mongo sem URL. FR-002: a selecao por DATABASE_PROVIDER em producao troca repositorios, unit of work e health provider para um unico banco (integration-test, bloco mongo). FR-003: default prisma no schema e os adapters Prisma permanecem com o valor padrao. Fora de producao permanecem os adapters em memoria. Tarefas 2 e 3 puladas: cobertura existente suficiente e sem automacao de navegador (app base URL nao aplicavel)."
+}
