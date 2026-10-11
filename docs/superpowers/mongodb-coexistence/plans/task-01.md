@@ -1,6 +1,6 @@
 # Task 1: Configuração: dependência mongodb, variáveis de ambiente e serviço Mongo com replica set [FR-001, FR-003, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

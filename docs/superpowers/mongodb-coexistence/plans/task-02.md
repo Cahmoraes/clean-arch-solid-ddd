@@ -1,12 +1,12 @@
 # Task 2: MongoConnection, índices, falha na inicialização e health do banco [FR-017, FR-018]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 
 **Spec:** `../specs/mongodb-coexistence-design.md`
 
-**Tier:** capable
+**Tier:** standard
 
 ## Visão Geral
 

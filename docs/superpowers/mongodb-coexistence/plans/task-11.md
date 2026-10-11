@@ -1,12 +1,12 @@
 # Task 11: Seleção de adapters por DATABASE_PROVIDER nos providers e no IoC [FR-001, FR-002, FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 
 **Spec:** `../specs/mongodb-coexistence-design.md`
 
-**Tier:** capable
+**Tier:** standard
 
 ## Visão Geral
 

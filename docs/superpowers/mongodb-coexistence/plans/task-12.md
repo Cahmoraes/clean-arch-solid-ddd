@@ -1,12 +1,12 @@
 # Task 12: Script ETL Postgres para Mongo [FR-013, FR-014, FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 
 **Spec:** `../specs/mongodb-coexistence-design.md`
 
-**Tier:** capable
+**Tier:** standard
 
 ## Visão Geral
 

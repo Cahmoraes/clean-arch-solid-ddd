@@ -1,6 +1,6 @@
 # Task 8: Repositório de notificação e provider de destinatários ativos no Mongo [FR-004, FR-009, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

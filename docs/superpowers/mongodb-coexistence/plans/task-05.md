@@ -1,6 +1,6 @@
 # Task 5: Repositório de academia no Mongo com busca por proximidade [FR-004, FR-006, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

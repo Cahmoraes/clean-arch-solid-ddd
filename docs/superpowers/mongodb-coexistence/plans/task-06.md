@@ -1,6 +1,6 @@
 # Task 6: Repositório de check-in no Mongo com unicidade por usuário e dia [FR-004, FR-007, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

@@ -1,6 +1,6 @@
 # Task 9: Repositório e DAO de atividade de usuário no Mongo [FR-004, FR-012]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

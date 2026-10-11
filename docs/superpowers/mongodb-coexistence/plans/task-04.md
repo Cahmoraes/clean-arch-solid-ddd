@@ -1,6 +1,6 @@
 # Task 4: Repositório e DAO de usuário no Mongo com suíte de contrato compartilhada [FR-004, FR-005, FR-006, FR-012, FR-019, FR-020]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

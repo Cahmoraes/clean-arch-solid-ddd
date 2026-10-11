@@ -1,6 +1,6 @@
 # Task 13: Seed equivalente para o Mongo [FR-018]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

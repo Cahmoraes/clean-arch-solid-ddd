@@ -1,6 +1,6 @@
 # Task 10: Repositórios de analytics no Mongo com aggregation pipeline [FR-011]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

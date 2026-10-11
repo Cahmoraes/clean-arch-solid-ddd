@@ -1,12 +1,12 @@
 # Task 3: MongoUnitOfWork com sessão transacional [FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 
 **Spec:** `../specs/mongodb-coexistence-design.md`
 
-**Tier:** capable
+**Tier:** standard
 
 ## Visão Geral
 

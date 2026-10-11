@@ -1,6 +1,6 @@
 # Task 14: Regra de isolamento do driver e verificação cruzada dos contratos [FR-019, FR-020, FR-021]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

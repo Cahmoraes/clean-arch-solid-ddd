@@ -1,6 +1,6 @@
 # Task 7: Repositórios de plano, evento de webhook Stripe e assinatura no Mongo [FR-004, FR-007, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-mongodb-coexistence.md`
 

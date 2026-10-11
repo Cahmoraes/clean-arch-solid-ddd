@@ -8,20 +8,20 @@
 
 ## Tarefas
 
-- [ ] 1. Configuração: dependência mongodb, variáveis de ambiente e serviço Mongo com replica set → `task-01.md`
-- [ ] 2. MongoConnection, índices, falha na inicialização e health do banco → `task-02.md`
-- [ ] 3. MongoUnitOfWork com sessão transacional → `task-03.md`
-- [ ] 4. Repositório e DAO de usuário no Mongo com suíte de contrato compartilhada → `task-04.md`
-- [ ] 5. Repositório de academia no Mongo com busca por proximidade → `task-05.md`
-- [ ] 6. Repositório de check-in no Mongo com unicidade por usuário e dia → `task-06.md`
-- [ ] 7. Repositórios de plano, evento de webhook Stripe e assinatura no Mongo → `task-07.md`
-- [ ] 8. Repositório de notificação e provider de destinatários ativos no Mongo → `task-08.md`
-- [ ] 9. Repositório e DAO de atividade de usuário no Mongo → `task-09.md`
-- [ ] 10. Repositórios de analytics no Mongo com aggregation pipeline → `task-10.md`
-- [ ] 11. Seleção de adapters por DATABASE_PROVIDER nos providers e no IoC → `task-11.md`
-- [ ] 12. Script ETL Postgres para Mongo → `task-12.md`
-- [ ] 13. Seed equivalente para o Mongo → `task-13.md`
-- [ ] 14. Regra de isolamento do driver e verificação cruzada dos contratos → `task-14.md`
+- [x] 1. Configuração: dependência mongodb, variáveis de ambiente e serviço Mongo com replica set → `task-01.md`
+- [x] 2. MongoConnection, índices, falha na inicialização e health do banco → `task-02.md`
+- [x] 3. MongoUnitOfWork com sessão transacional → `task-03.md`
+- [x] 4. Repositório e DAO de usuário no Mongo com suíte de contrato compartilhada → `task-04.md`
+- [x] 5. Repositório de academia no Mongo com busca por proximidade → `task-05.md`
+- [x] 6. Repositório de check-in no Mongo com unicidade por usuário e dia → `task-06.md`
+- [x] 7. Repositórios de plano, evento de webhook Stripe e assinatura no Mongo → `task-07.md`
+- [x] 8. Repositório de notificação e provider de destinatários ativos no Mongo → `task-08.md`
+- [x] 9. Repositório e DAO de atividade de usuário no Mongo → `task-09.md`
+- [x] 10. Repositórios de analytics no Mongo com aggregation pipeline → `task-10.md`
+- [x] 11. Seleção de adapters por DATABASE_PROVIDER nos providers e no IoC → `task-11.md`
+- [x] 12. Script ETL Postgres para Mongo → `task-12.md`
+- [x] 13. Seed equivalente para o Mongo → `task-13.md`
+- [x] 14. Regra de isolamento do driver e verificação cruzada dos contratos → `task-14.md`
 
 ## Restrições Globais
 
