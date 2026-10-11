@@ -7,6 +7,7 @@ import {
 import { sessionOptions } from "@/shared/infra/database/repository/unit-of-work/mongo-session"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
+import { UserNotFoundError } from "@/shared/infra/errors/user-not-found-error"
 import { SHARED_TYPES } from "@/shared/infra/ioc/types"
 import type { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
@@ -119,7 +120,7 @@ export class MongoUserRepository implements UserRepository {
 	): Promise<number> {
 		const result = await this.users().updateMany(
 			{ _id: { $in: ids }, status: { $ne: status } },
-			{ $set: { status } },
+			{ $set: { status, updated_at: new Date() } },
 			sessionOptions(this.session),
 		)
 		return result.modifiedCount
@@ -147,25 +148,28 @@ export class MongoUserRepository implements UserRepository {
 	}
 
 	public async update(user: User): Promise<void> {
-		await this.users().updateOne(
+		const result = await this.users().updateOne(
 			{ _id: user.id },
-			{
-				$set: {
-					email: user.email,
-					name: user.name,
-					password_hash: user.password ?? null,
-					google_id: user.googleId ?? null,
-					created_at: user.createdAt,
-					role: user.role,
-					status: user.status,
-					billing_customer_id: user.billingCustomerId ?? null,
-					is_super_admin: user.isSuperAdmin,
-					updated_at: user.updatedAt ? user.updatedAt : new Date(),
-					deleted_at: user.deletedAt ?? null,
-				},
-			},
+			{ $set: this.updateFields(user) },
 			sessionOptions(this.session),
 		)
+		if (result.matchedCount === 0) throw new UserNotFoundError(user.id)
+	}
+
+	private updateFields(user: User): Partial<UserDocument> {
+		return {
+			email: user.email,
+			name: user.name,
+			password_hash: user.password ?? null,
+			google_id: user.googleId ?? null,
+			created_at: user.createdAt,
+			role: user.role,
+			status: user.status,
+			billing_customer_id: user.billingCustomerId ?? null,
+			is_super_admin: user.isSuperAdmin,
+			updated_at: user.updatedAt ? user.updatedAt : new Date(),
+			deleted_at: user.deletedAt ?? null,
+		}
 	}
 
 	private users(): Collection<UserDocument> {
@@ -173,9 +177,9 @@ export class MongoUserRepository implements UserRepository {
 	}
 
 	private queryFilter(userQuery: UserQuery): Filter<UserDocument> {
-		const conditions = Object.entries(userQuery.fields).map(
-			([field, value]) => [this.columnOf(field), value] as const,
-		)
+		const conditions = Object.entries(userQuery.fields)
+			.filter(([, value]) => value !== undefined)
+			.map(([field, value]) => [this.columnOf(field), value] as const)
 		return { ...Object.fromEntries(conditions), deleted_at: null }
 	}
 

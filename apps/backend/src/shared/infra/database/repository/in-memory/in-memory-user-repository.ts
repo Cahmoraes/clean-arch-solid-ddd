@@ -1,5 +1,6 @@
 import ExtendedSet from "@cahmoraes93/extended-set"
 import { injectable } from "inversify"
+import { UserNotFoundError } from "@/shared/infra/errors/user-not-found-error"
 import type { UserQuery } from "@/user/application/persistence/repository/user-query"
 import type { UserRepository } from "@/user/application/persistence/repository/user-repository"
 import { User } from "@/user/domain/user"
@@ -33,7 +34,7 @@ export class InMemoryUserRepository implements UserRepository {
 
 	public async update(user: User): Promise<void> {
 		const userOrNull = this.users.find((u) => u.id === user.id)
-		if (!userOrNull) return
+		if (!userOrNull) throw new UserNotFoundError(user.id)
 		this.users.delete(userOrNull)
 		this.users.add(user)
 	}
@@ -68,6 +69,23 @@ export class InMemoryUserRepository implements UserRepository {
 			.toArray()
 	}
 
+	private touched(user: User): User {
+		return User.restore({
+			id: user.id,
+			email: user.email,
+			name: user.name,
+			password: user.password,
+			googleId: user.googleId,
+			createdAt: user.createdAt,
+			updatedAt: new Date(),
+			role: user.role,
+			status: user.status,
+			billingCustomerId: user.billingCustomerId,
+			isSuperAdmin: user.isSuperAdmin,
+			deletedAt: user.deletedAt,
+		})
+	}
+
 	public async updateManyStatus(
 		ids: string[],
 		status: StatusTypes,
@@ -77,7 +95,7 @@ export class InMemoryUserRepository implements UserRepository {
 			.toArray()
 		for (const user of targets) {
 			applyStatusTransition(user, status)
-			await this.update(user)
+			await this.update(this.touched(user))
 		}
 		return targets.length
 	}

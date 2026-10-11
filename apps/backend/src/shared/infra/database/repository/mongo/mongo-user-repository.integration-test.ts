@@ -14,6 +14,7 @@ import {
 } from "@/shared/infra/database/connection/mongo/mongo-duplicate-key"
 import { MongoUnitOfWork } from "@/shared/infra/database/repository/unit-of-work/mongo-unit-of-work"
 import { InvalidTransactionInstance } from "@/shared/infra/errors/invalid-transaction-instance-error"
+import { UserQuery } from "@/user/application/persistence/repository/user-query"
 import { User } from "@/user/domain/user"
 import { MongoUserRepository, type UserDocument } from "./mongo-user-repository"
 
@@ -165,6 +166,19 @@ describe("MongoUserRepository", () => {
 				deleted_at: null,
 			})
 			expect(document?.created_at).toBeInstanceOf(Date)
+		})
+
+		it("get ignores UserQuery fields whose value is undefined", async () => {
+			const user = buildUser()
+			await repository.save(user)
+
+			const found = await repository.get(
+				UserQuery.from({ email: user.email })
+					.addField("email")
+					.addField("name"),
+			)
+
+			expect(found?.id).toBe(user.id)
 		})
 
 		it("withTransaction rejects an object that is not a unit of work session", () => {

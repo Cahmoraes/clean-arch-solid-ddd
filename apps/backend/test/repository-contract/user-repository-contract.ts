@@ -98,6 +98,10 @@ export function describeUserRepositoryContract(
 			expect(found?.status).toBe("suspended")
 		})
 
+		it("update of a user that does not exist rejects", async () => {
+			await expect(context.repository.update(buildUser())).rejects.toThrow()
+		})
+
 		it("usersOfIds returns only the stored, non-deleted users", async () => {
 			const first = buildUser()
 			const second = buildUser()
@@ -138,6 +142,17 @@ export function describeUserRepositoryContract(
 			expect(
 				(await context.repository.userOfId(alreadySuspended.id))?.status,
 			).toBe("suspended")
+		})
+
+		it("updateManyStatus refreshes updatedAt of the changed users", async () => {
+			const user = buildUser({ status: "activated" })
+			await context.repository.save(user)
+			const before = (await context.repository.userOfId(user.id))?.updatedAt
+
+			await context.repository.updateManyStatus([user.id], "suspended")
+
+			const after = (await context.repository.userOfId(user.id))?.updatedAt
+			expect(after?.getTime()).toBeGreaterThan(before?.getTime() ?? 0)
 		})
 
 		it("get finds a user by the fields of a UserQuery", async () => {
