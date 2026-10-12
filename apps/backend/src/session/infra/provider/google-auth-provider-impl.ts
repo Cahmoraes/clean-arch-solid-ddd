@@ -17,6 +17,7 @@ export class GoogleAuthProviderImpl implements GoogleAuthProvider {
 	private readonly client: OAuth2Client
 	private readonly googleClientId = env.GOOGLE_CLIENT_ID
 	private readonly googleClientSecret = env.GOOGLE_CLIENT_SECRET
+	private readonly googleRedirectUri = env.GOOGLE_REDIRECT_URI
 
 	constructor() {
 		this.client = new OAuth2Client({
@@ -35,6 +36,7 @@ export class GoogleAuthProviderImpl implements GoogleAuthProvider {
 			const { tokens } = await this.client.getToken({
 				code: authCode,
 				client_id: this.googleClientId,
+				redirect_uri: this.googleRedirectUri,
 			})
 			if (!tokens.id_token) {
 				return failure(new InvalidGoogleTokenError())
@@ -50,7 +52,9 @@ export class GoogleAuthProviderImpl implements GoogleAuthProvider {
 	}
 
 	private hasGoogleCredentials(): boolean {
-		return Boolean(this.googleClientId && this.googleClientSecret)
+		return Boolean(
+			this.googleClientId && this.googleClientSecret && this.googleRedirectUri,
+		)
 	}
 }
 

@@ -1,6 +1,7 @@
 interface LoadSutOptions {
 	googleClientId?: string | null
 	googleClientSecret?: string | null
+	googleRedirectUri?: string | null
 	payload?: {
 		sub?: string
 		email?: string
@@ -9,6 +10,7 @@ interface LoadSutOptions {
 	}
 	tokens?: { id_token?: string }
 	getTokenError?: Error
+	verifyIdTokenError?: Error
 }
 
 describe("GoogleAuthProviderImpl", () => {
@@ -34,6 +36,7 @@ describe("GoogleAuthProviderImpl", () => {
 		expect(getTokenSpy).toHaveBeenCalledWith({
 			code: "auth-code-123",
 			client_id: "google-client-id",
+			redirect_uri: "google-redirect-uri",
 		})
 		expect(verifyIdTokenSpy).toHaveBeenCalledWith({
 			idToken: "google-id-token",
@@ -100,6 +103,18 @@ describe("GoogleAuthProviderImpl", () => {
 		expect(verifyIdTokenSpy).not.toHaveBeenCalled()
 	})
 
+	test("AC-07 deve retornar InvalidGoogleTokenError sem chamar o Google quando GOOGLE_REDIRECT_URI não estiver configurado", async () => {
+		const { sut, getTokenSpy, verifyIdTokenSpy, InvalidGoogleTokenError } =
+			await loadSut({ googleRedirectUri: null })
+
+		const result = await sut.verify("auth-code-123")
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.forceFailure().value).toBeInstanceOf(InvalidGoogleTokenError)
+		expect(getTokenSpy).not.toHaveBeenCalled()
+		expect(verifyIdTokenSpy).not.toHaveBeenCalled()
+	})
+
 	test("AC-06 deve retornar InvalidGoogleTokenError quando o authorization code já foi consumido", async () => {
 		const { sut, verifyIdTokenSpy, InvalidGoogleTokenError } = await loadSut({
 			getTokenError: Object.assign(new Error("invalid_grant"), {
@@ -113,6 +128,18 @@ describe("GoogleAuthProviderImpl", () => {
 		expect(result.forceFailure().value).toBeInstanceOf(InvalidGoogleTokenError)
 		expect(result.forceFailure().value.name).toBe("InvalidGoogleTokenError")
 		expect(verifyIdTokenSpy).not.toHaveBeenCalled()
+	})
+
+	test("deve retornar InvalidGoogleTokenError quando a verificação do id_token lançar erro", async () => {
+		const { sut, InvalidGoogleTokenError } = await loadSut({
+			verifyIdTokenError: new Error("Token used too late"),
+		})
+
+		const result = await sut.verify("auth-code-123")
+
+		expect(result.isFailure()).toBe(true)
+		expect(result.forceFailure().value).toBeInstanceOf(InvalidGoogleTokenError)
+		expect(result.forceFailure().value.name).toBe("InvalidGoogleTokenError")
 	})
 
 	test("deve retornar success com emailVerified=false quando e-mail não for verificado", async () => {
@@ -135,9 +162,11 @@ describe("GoogleAuthProviderImpl", () => {
 async function loadSut({
 	googleClientId = "google-client-id",
 	googleClientSecret = "google-client-secret",
+	googleRedirectUri = "google-redirect-uri",
 	payload,
 	tokens = { id_token: "google-id-token" },
 	getTokenError,
+	verifyIdTokenError,
 }: LoadSutOptions = {}) {
 	// O grafo de módulos já foi avaliado por test/setup-test.ts (via container do IoC),
 	// então env e google-auth-library chegam aqui sem mock no primeiro teste do arquivo.
@@ -151,9 +180,13 @@ async function loadSut({
 		return { tokens, res: null }
 	})
 
-	const verifyIdTokenSpy = vi.fn(async (_options: unknown) => ({
-		getPayload: () => payload,
-	}))
+	const verifyIdTokenSpy = vi.fn(async (_options: unknown) => {
+		if (verifyIdTokenError) {
+			throw verifyIdTokenError
+		}
+
+		return { getPayload: () => payload }
+	})
 
 	vi.doMock("google-auth-library", () => ({
 		OAuth2Client: class {
@@ -171,6 +204,7 @@ async function loadSut({
 		env: {
 			GOOGLE_CLIENT_ID: googleClientId,
 			GOOGLE_CLIENT_SECRET: googleClientSecret,
+			GOOGLE_REDIRECT_URI: googleRedirectUri,
 		},
 	}))
 
