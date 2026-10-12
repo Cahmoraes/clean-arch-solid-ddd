@@ -1,6 +1,6 @@
 # Task 1: Provider Google troca authorization code por tokens [FR-003]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-google-custom-signin-button.md`
 
@@ -521,3 +521,9 @@ git commit -m "feat(auth): provider Google troca authorization code por tokens"
 - AC-03 [unit]: WHEN `code` é trocado no backend THEN o `id_token` é verificado com `aud = GOOGLE_CLIENT_ID` e o caso de uso recebe `GoogleUserInfo`
 - AC-06 [unit]: WHEN o code é inválido ou expirado THEN a resposta é `401` e nenhum usuário é criado
 - AC-07 [unit]: WHEN falta `GOOGLE_CLIENT_ID` ou `GOOGLE_CLIENT_SECRET` no backend THEN a verificação falha sem chamada ao Google
+## Review Findings to Address
+
+- **Important — `redirect_uri` ausente na troca do code.** `google-auth-provider-impl.ts` envia apenas `{ code, client_id }` para o endpoint de token. O GIS sempre inclui `redirect_uri` na requisição de autorização, e em `ux_mode: "popup"` a lib `@react-oauth/google` 0.13.5 o ignora como opção (`dist/index.d.ts:306` — "The property will be ignored by the popup UX"), ou seja, quem o define é o GIS, com a origem da app. O endpoint de token do Google exige o valor idêntico quando ele foi usado na autorização; sem isso, `redirect_uri_mismatch` → `InvalidGoogleTokenError` → `401` em todo login. A spec já prevê `GOOGLE_REDIRECT_URI` no backend (D1, Consequências); o plano é que não a implementou.
+  **Fix:** adicionar `GOOGLE_REDIRECT_URI: z.string().optional()` em `apps/backend/src/shared/infra/env/env-schema.ts`, ler `env.GOOGLE_REDIRECT_URI` no provider, incluir `redirect_uri` em `getToken({ code, client_id, redirect_uri })`, e incluir `GOOGLE_REDIRECT_URI` na guarda de env de AC-07 (falha antes de qualquer I/O quando ausente). **Teste (TDD, antes do código):** passo `Review Focus` novo — "quando `GOOGLE_REDIRECT_URI` está ausente, `verify` falha com `InvalidGoogleTokenError` sem chamar `getToken`", e um teste assertando que `getToken` é chamado com `redirect_uri` igual a `GOOGLE_REDIRECT_URI`.
+- **Minor — cobertura perdida no caminho `verifyIdToken` lançando.** O teste antigo "verificação do token lançar erro" foi removido e o `catch` hoje só é exercitado por `getToken` lançando (AC-06). **Fix:** restaurar um teste que faz `verifyIdToken` lançar e afirma `InvalidGoogleTokenError`.
+- **Minor — afirmação falsa no relatório.** `task-1-report.md` diz que `authenticate-with-google.usecase.test.ts` e `create-password-reauth-grant.usecase.test.ts` "não constam do `## Arquivos` de nenhuma task"; ambos estão listados em `task-02.md` (linhas 27-28). **Fix:** corrigir a afirmação no relatório; o código dos dois arquivos está correto e permanece como está.

@@ -22,6 +22,9 @@ O contrato HTTP das duas operações que recebem a prova do Google passa de `{ i
 - Test: `apps/backend/src/user/infra/controller/create-password-reauth-grant.business-flow-test.ts`
 - Test: `apps/backend/src/user/infra/controller/define-password.business-flow-test.ts`
 
+- Modify/Test: `apps/backend/src/session/application/use-case/authenticate-with-google.usecase.test.ts` — as fixtures que montam o provider em memória usam `addValidCode` e o `execute` passa a receber `{ code }` em vez de `{ idToken }`.
+- Modify/Test: `apps/backend/src/user/application/use-case/create-password-reauth-grant.usecase.test.ts` — mesma troca de `addValidCode` e de `{ code }` no input do caso de uso.
+- Modify: `apps/backend/.env.example` — documentar `GOOGLE_CLIENT_SECRET` e `GOOGLE_REDIRECT_URI` ao lado de `GOOGLE_CLIENT_ID` (linha ~27), com comentário de que `GOOGLE_REDIRECT_URI` precisa ser idêntico à origem que o GIS usa na autorização. Sem isso o login por Google falha com `401` em qualquer ambiente novo.
 ## Interfaces
 
 - **Consome:** `GoogleAuthProvider.verify(authCode: string): Promise<Either<InvalidGoogleTokenError, GoogleUserInfo>>` (task-01) e `InMemoryGoogleAuthProvider.addValidCode(code: string, userInfo: GoogleUserInfo): void` (task-01)
