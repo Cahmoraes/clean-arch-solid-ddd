@@ -85,7 +85,7 @@ Rollout: troca direta, sem flag — o componente compartilhado concentra a mudan
 | Operação | Entrada | Saída | Erros |
 |---|---|---|---|
 | `POST /sessions/google` (corpo trocado de `{ idToken }` para `{ code }`) | `{ code: string, min 1 }` — authorization code, consumível uma vez | `200 { token, refreshToken }` + cookie `refresh` httpOnly | `401` token/code inválido; `422` e-mail Google não verificado; `409` `external_account_link_required`; `400` corpo inválido |
-| `POST /users/me/password/reauth` (corpo trocado de `{ provider, idToken }` para `{ provider, code }`) | `{ provider: "google", code: string, min 1 }` | `200 { reauthGrant, expiresInSeconds }` — grant de uso único, `expiresInSeconds` = 300 | `401` code inválido; `400` corpo inválido |
+| `POST /users/me/password/reauth` (corpo trocado de `{ provider, idToken }` para `{ provider, code }`) | `{ provider: "google", code: string, min 1 }` | `200 { reauthGrant, expiresInSeconds }` — `reauthGrant` é de uso único, `expiresInSeconds` = 300 | `401` code inválido; `400` corpo inválido |
 
 O restante do contrato não muda: status, formato de resposta e código de conflito são os de hoje. O `idToken` deixa de ser aceito — corpo com `idToken` cai no `400` de validação (Zod), não em Login por e-mail.
 
