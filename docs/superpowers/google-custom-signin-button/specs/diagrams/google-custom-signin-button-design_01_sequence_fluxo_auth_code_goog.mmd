@@ -1,0 +1,32 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 Usuário
+    participant Button as 🌐 GoogleSignInButton
+    participant GIS as 🔐 Google Identity Services
+    participant UseCase as ⚙️ AuthenticateWithGoogleUseCase
+    participant Provider as 🔐 GoogleAuthProvider<br/>(OAuth2Client)
+
+    User->>Button: Clique em "Continuar com Google"
+    Button->>Button: useGoogleLogin({ flow: 'auth-code', ux_mode: 'popup' })
+    Button->>GIS: Abre popup de autorização<br/>client_id + scope
+    GIS-->>User: Consentimento Google
+    User->>GIS: Autoriza
+    GIS-->>Button: callback: { code }<br/>(authorization code, não id_token)
+
+    Button->>UseCase: POST /sessions/google<br/>{ code }
+    UseCase->>Provider: verify(code)
+    Provider->>GIS: POST https://oauth2.googleapis.com/token<br/>code + client_id + client_secret<br/>grant_type=authorization_code
+
+    alt Troca do code bem-sucedida
+        GIS-->>Provider: { id_token, access_token }
+        Provider->>Provider: verifyIdToken(id_token)<br/>aud === GOOGLE_CLIENT_ID
+        Provider-->>UseCase: Either: GoogleUserInfo<br/>(sub, email, name, emailVerified)
+        UseCase->>UseCase: Resolve/cria usuário e publica eventos
+        UseCase-->>Button: HTTP 200 { token, refreshToken }<br/>+ set-cookie refresh httpOnly
+        Button-->>User: Sessão iniciada
+    else Code inválido, expirado ou já usado
+        GIS-->>Provider: HTTP 400 { error: invalid_grant }
+        Provider-->>UseCase: Either: InvalidGoogleTokenError
+        UseCase-->>Button: HTTP 401 { message }
+        Button-->>User: Toast de erro de login
+    end
