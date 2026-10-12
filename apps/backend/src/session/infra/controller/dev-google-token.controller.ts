@@ -10,7 +10,7 @@ import type { HttpServer } from "@/shared/infra/server/http-server.js"
 import { SessionRoutes } from "./routes/session-routes.js"
 
 const devGoogleTokenBodySchema = z.object({
-	idToken: z.string().min(1),
+	code: z.string().min(1),
 	sub: z.string().min(1),
 	email: z.email(),
 	name: z.string().min(1),
@@ -45,7 +45,7 @@ export class DevGoogleTokenController extends BaseController {
 		if (!(this.googleAuthProvider instanceof InMemoryGoogleAuthProvider)) {
 			return ResponseFactory.NOT_FOUND({ message: "Not Found" })
 		}
-		this.googleAuthProvider.addValidToken(parsedBody.value.idToken, {
+		this.googleAuthProvider.addValidCode(parsedBody.value.code, {
 			sub: parsedBody.value.sub,
 			email: parsedBody.value.email,
 			name: parsedBody.value.name,

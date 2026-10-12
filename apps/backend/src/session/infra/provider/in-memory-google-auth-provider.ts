@@ -12,16 +12,16 @@ import {
 
 @injectable()
 export class InMemoryGoogleAuthProvider implements GoogleAuthProvider {
-	private readonly validTokens = new Map<string, GoogleUserInfo>()
+	private readonly validCodes = new Map<string, GoogleUserInfo>()
 
-	public addValidToken(idToken: string, userInfo: GoogleUserInfo): void {
-		this.validTokens.set(idToken, userInfo)
+	public addValidCode(code: string, userInfo: GoogleUserInfo): void {
+		this.validCodes.set(code, userInfo)
 	}
 
 	public async verify(
-		idToken: string,
+		code: string,
 	): Promise<Either<InvalidGoogleTokenError, GoogleUserInfo>> {
-		const userInfo = this.validTokens.get(idToken)
+		const userInfo = this.validCodes.get(code)
 
 		if (!userInfo) {
 			return failure(new InvalidGoogleTokenError())

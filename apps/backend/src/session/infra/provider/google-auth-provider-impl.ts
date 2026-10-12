@@ -1,4 +1,4 @@
-import { OAuth2Client } from "google-auth-library"
+import { OAuth2Client, type TokenPayload } from "google-auth-library"
 import { injectable } from "inversify"
 import { InvalidGoogleTokenError } from "@/session/application/error/invalid-google-token-error.js"
 import type {
@@ -16,34 +16,55 @@ import { env } from "@/shared/infra/env/index.js"
 export class GoogleAuthProviderImpl implements GoogleAuthProvider {
 	private readonly client: OAuth2Client
 	private readonly googleClientId = env.GOOGLE_CLIENT_ID
+	private readonly googleClientSecret = env.GOOGLE_CLIENT_SECRET
 
 	constructor() {
-		this.client = new OAuth2Client(this.googleClientId)
+		this.client = new OAuth2Client({
+			clientId: this.googleClientId,
+			clientSecret: this.googleClientSecret,
+		})
 	}
 
 	public async verify(
-		idToken: string,
+		authCode: string,
 	): Promise<Either<InvalidGoogleTokenError, GoogleUserInfo>> {
-		if (!this.googleClientId) {
+		if (!this.hasGoogleCredentials()) {
 			return failure(new InvalidGoogleTokenError())
 		}
 		try {
-			const ticket = await this.client.verifyIdToken({
-				idToken,
-				audience: this.googleClientId,
+			const { tokens } = await this.client.getToken({
+				code: authCode,
+				client_id: this.googleClientId,
 			})
-			const payload = ticket.getPayload()
-			if (!payload?.sub || !payload.email || !payload.name) {
+			if (!tokens.id_token) {
 				return failure(new InvalidGoogleTokenError())
 			}
-			return success({
-				sub: payload.sub,
-				email: payload.email,
-				name: payload.name,
-				emailVerified: payload.email_verified ?? false,
+			const ticket = await this.client.verifyIdToken({
+				idToken: tokens.id_token,
+				audience: this.googleClientId,
 			})
+			return toGoogleUserInfo(ticket.getPayload())
 		} catch {
 			return failure(new InvalidGoogleTokenError())
 		}
 	}
+
+	private hasGoogleCredentials(): boolean {
+		return Boolean(this.googleClientId && this.googleClientSecret)
+	}
+}
+
+function toGoogleUserInfo(
+	payload: TokenPayload | undefined,
+): Either<InvalidGoogleTokenError, GoogleUserInfo> {
+	if (!payload?.sub || !payload.email || !payload.name) {
+		return failure(new InvalidGoogleTokenError())
+	}
+
+	return success({
+		sub: payload.sub,
+		email: payload.email,
+		name: payload.name,
+		emailVerified: payload.email_verified ?? false,
+	})
 }

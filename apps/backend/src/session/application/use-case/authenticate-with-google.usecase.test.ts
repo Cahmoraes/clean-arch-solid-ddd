@@ -60,7 +60,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 	})
 
 	test("deve retornar GoogleEmailNotVerifiedError quando o email não for verificado", async () => {
-		googleAuthProvider.addValidToken("unverified-token", {
+		googleAuthProvider.addValidCode("unverified-token", {
 			sub: "google-sub-123",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -81,7 +81,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			googleId: "google-sub-123",
 			email: "john@doe.com",
 		})
-		googleAuthProvider.addValidToken("valid-token", {
+		googleAuthProvider.addValidCode("valid-token", {
 			sub: "google-sub-123",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -104,7 +104,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			name: "John Doe",
 			password: "any_password",
 		})
-		googleAuthProvider.addValidToken("link-token", {
+		googleAuthProvider.addValidCode("link-token", {
 			sub: "google-sub-123",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -122,7 +122,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 	})
 
 	test("deve criar novo usuário via Google e autenticar", async () => {
-		googleAuthProvider.addValidToken("new-user-token", {
+		googleAuthProvider.addValidCode("new-user-token", {
 			sub: "google-sub-123",
 			email: "new@user.com",
 			name: "New User",
@@ -144,7 +144,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			email: "john@doe.com",
 			googleId: "existing-google-sub",
 		})
-		googleAuthProvider.addValidToken("conflict-token", {
+		googleAuthProvider.addValidCode("conflict-token", {
 			sub: "different-google-sub",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -160,7 +160,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 	})
 
 	test("deve autenticar usuário existente quando save falha por race condition (upsert otimista)", async () => {
-		googleAuthProvider.addValidToken("race-token", {
+		googleAuthProvider.addValidCode("race-token", {
 			sub: "google-sub-race",
 			email: "race@user.com",
 			name: "Race User",
@@ -193,7 +193,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			email: "admin@doe.com",
 			role: "ADMIN",
 		})
-		googleAuthProvider.addValidToken("jwt-token", {
+		googleAuthProvider.addValidCode("jwt-token", {
 			sub: "google-sub-123",
 			email: "admin@doe.com",
 			name: user.name,
@@ -225,7 +225,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			googleId: "google-sub-123",
 			email: "john@doe.com",
 		})
-		googleAuthProvider.addValidToken("valid-token", {
+		googleAuthProvider.addValidCode("valid-token", {
 			sub: "google-sub-123",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -259,7 +259,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			name: "John Doe",
 			googleId: "google-sub-999",
 		})
-		googleAuthProvider.addValidToken("relink-token", {
+		googleAuthProvider.addValidCode("relink-token", {
 			sub: "google-sub-999",
 			email: "john@doe.com",
 			name: "John Doe",

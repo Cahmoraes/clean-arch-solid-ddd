@@ -45,7 +45,7 @@ describe("CreatePasswordReauthGrantUseCase", () => {
 			email: "google-only@doe.com",
 			googleId: "google-sub-123",
 		})
-		googleAuthProvider.addValidToken("reauth-token", {
+		googleAuthProvider.addValidCode("reauth-token", {
 			sub: "google-sub-123",
 			email: user.email,
 			name: user.name,
@@ -123,7 +123,7 @@ describe("CreatePasswordReauthGrantUseCase", () => {
 			email: "google-only@doe.com",
 			googleId: "google-sub-real",
 		})
-		googleAuthProvider.addValidToken("bad-token", {
+		googleAuthProvider.addValidCode("bad-token", {
 			sub: "google-sub-diferente",
 			email: user.email,
 			name: user.name,
@@ -148,7 +148,7 @@ describe("CreatePasswordReauthGrantUseCase", () => {
 			email: "google-unverified@doe.com",
 			googleId: "google-sub-123",
 		})
-		googleAuthProvider.addValidToken("unverified-token", {
+		googleAuthProvider.addValidCode("unverified-token", {
 			sub: "google-sub-123",
 			email: user.email,
 			name: user.name,

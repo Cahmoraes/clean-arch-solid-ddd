@@ -4,7 +4,7 @@ import type { GoogleUserInfo } from "@/session/application/provider/google-auth-
 import { InMemoryGoogleAuthProvider } from "./in-memory-google-auth-provider.js"
 
 describe("InMemoryGoogleAuthProvider", () => {
-	test("deve retornar o usuário Google quando o token for válido", async () => {
+	test("deve retornar o usuário Google quando o authorization code for válido", async () => {
 		const sut = new InMemoryGoogleAuthProvider()
 		const userInfo: GoogleUserInfo = {
 			sub: "google-user-1",
@@ -13,18 +13,18 @@ describe("InMemoryGoogleAuthProvider", () => {
 			emailVerified: true,
 		}
 
-		sut.addValidToken("valid-token", userInfo)
+		sut.addValidCode("valid-code", userInfo)
 
-		const result = await sut.verify("valid-token")
+		const result = await sut.verify("valid-code")
 
 		expect(result.isSuccess()).toBe(true)
 		expect(result.forceSuccess().value).toEqual(userInfo)
 	})
 
-	test("deve retornar InvalidGoogleTokenError quando o token for inválido", async () => {
+	test("deve retornar InvalidGoogleTokenError quando o authorization code não for válido", async () => {
 		const sut = new InMemoryGoogleAuthProvider()
 
-		const result = await sut.verify("invalid-token")
+		const result = await sut.verify("invalid-code")
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.forceFailure().value).toBeInstanceOf(InvalidGoogleTokenError)

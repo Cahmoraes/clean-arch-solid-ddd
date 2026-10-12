@@ -27,11 +27,11 @@ describe("DevGoogleTokenController", () => {
 		await fastifyServer.close()
 	})
 
-	test("Deve registrar um token Google válido em ambiente não produtivo", async () => {
+	test("Deve registrar um authorization code Google válido em ambiente não produtivo", async () => {
 		const response = await request(fastifyServer.server)
 			.post(SessionRoutes.DEV_GOOGLE_TOKEN)
 			.send({
-				idToken: "seeded-google-token",
+				code: "seeded-google-code",
 				sub: "google-sub-123",
 				email: "google-only@example.com",
 				name: "Google Only",
@@ -42,11 +42,11 @@ describe("DevGoogleTokenController", () => {
 		expect(response.body).toEqual({ ok: true })
 	})
 
-	test("Deve permitir login com Google usando token previamente registrado", async () => {
+	test("Deve permitir login com Google usando o code previamente registrado", async () => {
 		await request(fastifyServer.server)
 			.post(SessionRoutes.DEV_GOOGLE_TOKEN)
 			.send({
-				idToken: "seeded-token",
+				code: "seeded-token",
 				sub: "google-sub-456",
 				email: "seeded@example.com",
 				name: "Seeded User",
@@ -64,7 +64,7 @@ describe("DevGoogleTokenController", () => {
 	test("Deve retornar 400 quando body inválido", async () => {
 		const response = await request(fastifyServer.server)
 			.post(SessionRoutes.DEV_GOOGLE_TOKEN)
-			.send({ idToken: "" })
+			.send({ code: "" })
 
 		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
 	})

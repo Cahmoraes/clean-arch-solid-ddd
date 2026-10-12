@@ -10,6 +10,6 @@ export interface GoogleUserInfo {
 
 export interface GoogleAuthProvider {
 	verify(
-		idToken: string,
+		authCode: string,
 	): Promise<Either<InvalidGoogleTokenError, GoogleUserInfo>>
 }

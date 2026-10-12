@@ -19,6 +19,7 @@ export const envSchema = z
 		TTL: z.coerce.number().default(60),
 		DIRECT_URL: z.string().optional(),
 		GOOGLE_CLIENT_ID: z.string().optional(),
+		GOOGLE_CLIENT_SECRET: z.string().optional(),
 		CORS_ORIGINS: z.string().optional(),
 		FRONTEND_URL: z.url().default("http://localhost:3000"),
 		UPLOAD_DIR: z.string().default("uploads"),
