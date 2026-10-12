@@ -8,7 +8,7 @@ _Fidelidade:_ norte, não pixel-final. A implementação final usa os tokens do 
 ## Decisões visuais
 
 - **Rótulo único e neutro:** "Continuar com Google" em login, cadastro e confirmação de senha — sem prop de texto por tela.
-- **Logo G oficial:** SVG multicolorido (gradiente padrão do Google) em 18px, alinhado à esquerda, com gap de 10px do rótulo. Sobre o botão, sempre em fundo branco (diretriz de marca).
+- **Logo G oficial:** SVG multicolorido (gradiente padrão do Google) em 20px (`h-5`, escala de ícones do repo), alinhado à esquerda, com gap de 10px do rótulo. Sobre o botão, sempre em fundo branco (diretriz de marca).
 - **Forma:** `rectangular` com chanfro do design system (`rounded-md` → `corner-shape: bevel` de `globals.css`). Proibido `rounded-full`/`pill` (guarda `src/test/rounded-residue.test.ts`).
 - **Dimensões:** altura 40px (igual ao `Button size="md"`), largura total do container com máximo de 400px.
 - **Tipografia:** `font-display` (VT323) em caixa alta com `tracking-[0.06em]`, tamanho ≈19px — mesma classe tipográfica dos demais botões do app, via `Button` (nunca fonte do Google).
@@ -40,7 +40,7 @@ _Fidelidade:_ norte, não pixel-final. A implementação final usa os tokens do 
   disabled={disabled || isPending}
   data-testid="google-sign-in-button"
 >
-  <GoogleGIcon className="h-5 w-5" aria-hidden="true" />
+  <GoogleGIcon className="h-5 w-5 shrink-0" aria-hidden="true" />
   Continuar com Google
 </Button>
 ```

@@ -71,7 +71,8 @@ Rollout: troca direta, sem flag — o componente compartilhado concentra a mudan
 ## Componentes
 
 - **`GoogleSignInButton` (frontend, `features/auth/components/google-sign-in-button.tsx`)** — guarda a interface pública e o disparo do login. O prop `onSuccess` passa a receber o **authorization code** (`(code: string) => void`) em vez do `idToken`; `onError`, `disabled` e `isPending` seguem iguais, e as 3 telas mudam só o nome do parâmetro recebido. **Oculta:** o popup, o tratamento de `onNonOAuthError` e o ciclo de loading, que hoje são detalhe de implementação do `GoogleLogin`.
-- **`useLoginWithGoogle` (frontend, `features/auth/api/index.ts`)** — a mutação troca o corpo `{ idToken }` por `{ code }` na chamada a `POST /sessions/google`; `setSession`, o tratamento de `ApiError` e os mapeamentos de status por tela ficam como estão.
+- **`useLoginWithGoogle` e `useCreatePasswordReauthGrant` (frontend, `features/auth/api/index.ts`)** — as duas mutações trocam o corpo `{ idToken }` por `{ code }` em `POST /sessions/google` e `POST /users/me/password/reauth`; `setSession`, o tratamento de `ApiError` e os mapeamentos de status por tela ficam como estão.
+- **`CreatePasswordReauthGrantUseCase` (backend, `user/application/use-case/`)** — a entrada passa a `{ provider, code }`; as regras do grant de reautenticação e de conta permanecem as de `mixed-login-external-accounts`.
 - **`GoogleAuthProvider` (backend, `session/application/provider/google-auth-provider.ts`)** — contrato da fronteira com o Google. **Oculta:** `OAuth2Client`, o `client_secret`, a URL de token e a forma de verificar o `id_token`. O caso de uso conhece `GoogleUserInfo`, não a lib.
 - **`GoogleAuthProviderImpl` (backend, `session/infra/provider/`)** — troca o code, verifica o `id_token`, devolve `Either<InvalidGoogleTokenError, GoogleUserInfo>`. **Oculta:** `google-auth-library` e a forma da falha.
 - **`AuthenticateWithGoogleUseCase` (backend)** — **inalterado.** Regra de resolução de usuário, eventos e emissão de JWT continuam os de `google-social-login`.
@@ -84,6 +85,7 @@ Rollout: troca direta, sem flag — o componente compartilhado concentra a mudan
 | Operação | Entrada | Saída | Erros |
 |---|---|---|---|
 | `POST /sessions/google` (corpo trocado de `{ idToken }` para `{ code }`) | `{ code: string, min 1 }` — authorization code, consumível uma vez | `200 { token, refreshToken }` + cookie `refresh` httpOnly | `401` token/code inválido; `422` e-mail Google não verificado; `409` `external_account_link_required`; `400` corpo inválido |
+| `POST /users/me/password/reauth` (corpo trocado de `{ provider, idToken }` para `{ provider, code }`) | `{ provider: "google", code: string, min 1 }` | `200 { reauthGrant, expiresInSeconds }` — grant de uso único, `expiresInSeconds` = 300 | `401` code inválido; `400` corpo inválido |
 
 O restante do contrato não muda: status, formato de resposta e código de conflito são os de hoje. O `idToken` deixa de ser aceito — corpo com `idToken` cai no `400` de validação (Zod), não em Login por e-mail.
 
@@ -122,7 +124,7 @@ O consumidor vivo de `POST /sessions/google` é este frontend (login, cadastro e
 
 **Fonte de design original:** nenhuma — comparativo aprovado no preview local contra o botão oficial, nos dois temas.
 
-**Decisões visuais (norte, não pixel-final):** rótulo "Continuar com Google", o mesmo nas 3 telas; logo G oficial multicolorido 18px à esquerda com gap de 10px; forma retangular com chanfro do tema (pill está fora, por guarda do repo); altura 40px igual ao `Button size="md"`, largura total com máximo de 400px; `font-display` (VT323) em caixa alta com `tracking-[0.06em]`; cores por tema via `Button variant="outline"` (`bg-card`/`card-foreground`/`border`); estados disabled pendentes herdados do `Button`.
+**Decisões visuais (norte, não pixel-final):** rótulo "Continuar com Google", o mesmo nas 3 telas; logo G oficial multicolorido em 20px (`h-5`, escala de ícones do repo) à esquerda com gap de 10px; forma retangular com chanfro do tema (pill está fora, por guarda do repo); altura 40px igual ao `Button size="md"`, largura total com máximo de 400px; `font-display` (VT323) em caixa alta com `tracking-[0.06em]`; cores por tema via `Button variant="outline"` (`bg-card`/`card-foreground`/`border`); estados disabled pendentes herdados do `Button`.
 
 **Fidelidade:** o artefato é um norte; a fidelidade final sai dos tokens do tema real na implementação.
 
@@ -134,7 +136,8 @@ O consumidor vivo de `POST /sessions/google` é este frontend (login, cadastro e
 - **Decisão:** auth-code com `ux_mode: "popup"`; o `GoogleAuthProvider` troca o code com o client secret e verifica o `id_token` com `audience = GOOGLE_CLIENT_ID`.
 - **Justificativa:** técnica — `verifyIdToken` amarra a audiência ao nosso client, o mesmo nível de garantia do fluxo atual, e nenhum token de Google passa pelo browser. De negócio — mantém o botão Google visualmente alinhado ao app sem abrir mão da verificação da conta Google no app.
 - **Consequências:** ganha a customização total do botão e a impossibilidade de replay entre apps; aceita `GOOGLE_CLIENT_SECRET` e `GOOGLE_REDIRECT_URI` no ambiente do backend, dependência de popup (com fallback no login por e-mail) e ~200ms a mais no caminho do login.
-- **Conformidade:** teste unitário do provider rejeita code inválido (AC-06); business-flow test cobre `POST /sessions/google` com code; nenhum teste aceita ID token cru no controller.
+- **Conformidade:** teste unitário do provider rejeita code inválido (AC-06); business-flow tests cobrem `POST /sessions/google` e `POST /users/me/password/reauth` com code; nenhum teste aceita ID token cru nos controllers.
+- **Guarda de marca do repo:** `src/test/no-literal-colors.test.ts` proíbe cores literais fora de uma allowlist; o logo G oficial precisa das 4 cores de marca do Google, então seu arquivo entra na allowlist existente dessa guarda, com comentário dizendo que é asset oficial e não token do tema.
 
 **Decisões locais (reversíveis):**
 
