@@ -70,7 +70,8 @@ Rollout: troca direta, sem flag — o componente compartilhado concentra a mudan
 
 ## Componentes
 
-- **`GoogleSignInButton` (frontend, `features/auth/components/google-sign-in-button.tsx`)** — guarda a interface pública (`onSuccess(idToken)`, `onError`, `disabled`, `isPending`) e o disparo do login. **Oculta:** o popup, o tratamento de `onNonOAuthError` e o ciclo de loading, que hoje são detalhe de implementação do `GoogleLogin`. As 3 telas não mudam.
+- **`GoogleSignInButton` (frontend, `features/auth/components/google-sign-in-button.tsx`)** — guarda a interface pública e o disparo do login. O prop `onSuccess` passa a receber o **authorization code** (`(code: string) => void`) em vez do `idToken`; `onError`, `disabled` e `isPending` seguem iguais, e as 3 telas mudam só o nome do parâmetro recebido. **Oculta:** o popup, o tratamento de `onNonOAuthError` e o ciclo de loading, que hoje são detalhe de implementação do `GoogleLogin`.
+- **`useLoginWithGoogle` (frontend, `features/auth/api/index.ts`)** — a mutação troca o corpo `{ idToken }` por `{ code }` na chamada a `POST /sessions/google`; `setSession`, o tratamento de `ApiError` e os mapeamentos de status por tela ficam como estão.
 - **`GoogleAuthProvider` (backend, `session/application/provider/google-auth-provider.ts`)** — contrato da fronteira com o Google. **Oculta:** `OAuth2Client`, o `client_secret`, a URL de token e a forma de verificar o `id_token`. O caso de uso conhece `GoogleUserInfo`, não a lib.
 - **`GoogleAuthProviderImpl` (backend, `session/infra/provider/`)** — troca o code, verifica o `id_token`, devolve `Either<InvalidGoogleTokenError, GoogleUserInfo>`. **Oculta:** `google-auth-library` e a forma da falha.
 - **`AuthenticateWithGoogleUseCase` (backend)** — **inalterado.** Regra de resolução de usuário, eventos e emissão de JWT continuam os de `google-social-login`.
@@ -156,7 +157,7 @@ O consumidor vivo de `POST /sessions/google` é este frontend (login, cadastro e
 **Runner:** `pnpm --filter backend test:run` e `pnpm --filter frontend test -- --run`.
 **Níveis:** unitário nos dois apps; `pnpm --filter backend test:business-flow` para o contrato HTTP; nenhum critério exige banco real — a feature não muda schema.
 
-- AC-01 · WHEN o usuário clica em "Continuar com Google" THEN o popup de autorização abre e o callback entrega `{ code }` ao `onSuccess` (origem: D1)
+- AC-01 · WHEN o usuário clica em "Continuar com Google" THEN o popup de autorização abre e o callback entrega `{ code }` ao `onSuccess(code)` (origem: D1)
 - AC-02 · WHEN o botão é renderizado THEN usa `Button` do design system com `variant="outline"`, `font-display` e o logo G oficial (origem: fato do usuário ("a fonte e as cores devem seguir os botões do app"))
 - AC-03 · WHEN `code` é trocado no backend THEN o `id_token` é verificado com `aud = GOOGLE_CLIENT_ID` e o caso de uso recebe `GoogleUserInfo` (origem: D1)
 - AC-04 · WHEN o navegador bloqueia o popup THEN `isPending` termina e o usuário vê o toast de pop-up bloqueado (origem: Falhas: Popup bloqueado)
