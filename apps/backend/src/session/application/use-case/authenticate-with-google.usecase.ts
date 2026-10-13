@@ -27,7 +27,7 @@ import { User } from "@/user/domain/user"
 import { GoogleId } from "@/user/domain/value-object/google-id.js"
 
 export interface AuthenticateWithGoogleUseCaseInput {
-	idToken: string
+	code: string
 }
 
 export type AuthenticateWithGoogleUseCaseOutput = Either<
@@ -60,7 +60,7 @@ export class AuthenticateWithGoogleUseCase {
 		input: AuthenticateWithGoogleUseCaseInput,
 	): Promise<AuthenticateWithGoogleUseCaseOutput> {
 		const googleUserInfoResult = await this.googleAuthProvider.verify(
-			input.idToken,
+			input.code,
 		)
 		if (googleUserInfoResult.isFailure()) {
 			return failure(googleUserInfoResult.value)

@@ -39,14 +39,14 @@ describe("Autenticar com Google", () => {
 		await fastifyServer.close()
 	})
 
-	test("Deve autenticar usuário existente com googleId", async () => {
+	test("AC-03 Deve autenticar usuário existente com googleId", async () => {
 		await createAndSaveUser({
 			userRepository,
 			email: "john@doe.com",
 			googleId: "google-sub-123",
 			name: "John Doe",
 		})
-		googleAuthProvider.addValidToken("valid-token", {
+		googleAuthProvider.addValidCode("valid-code", {
 			sub: "google-sub-123",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -55,7 +55,7 @@ describe("Autenticar com Google", () => {
 
 		const response = await request(fastifyServer.server)
 			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
-			.send({ idToken: "valid-token" })
+			.send({ code: "valid-code" })
 
 		const parsedCookie = parseSetCookie(response.headers["set-cookie"], {
 			map: true,
@@ -73,17 +73,17 @@ describe("Autenticar com Google", () => {
 		expect(parsedCookie.refreshToken?.path).toBe("/")
 	})
 
-	test("Deve retornar 401 quando token Google for inválido", async () => {
+	test("AC-06 Deve retornar 401 quando code Google for inválido", async () => {
 		const response = await request(fastifyServer.server)
 			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
-			.send({ idToken: "invalid-token" })
+			.send({ code: "invalid-code" })
 
 		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
 		expect(response.body).toEqual({ message: "Invalid Google token" })
 	})
 
-	test("Deve retornar 422 quando email Google não for verificado", async () => {
-		googleAuthProvider.addValidToken("unverified-token", {
+	test("AC-08 Deve retornar 422 quando email Google não for verificado", async () => {
+		googleAuthProvider.addValidCode("unverified-code", {
 			sub: "google-sub-123",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -92,7 +92,7 @@ describe("Autenticar com Google", () => {
 
 		const response = await request(fastifyServer.server)
 			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
-			.send({ idToken: "unverified-token" })
+			.send({ code: "unverified-code" })
 
 		expect(response.status).toBe(HTTP_STATUS.UNPROCESSABLE_ENTITY)
 		expect(response.body).toEqual({
@@ -101,7 +101,7 @@ describe("Autenticar com Google", () => {
 	})
 
 	test("Deve criar novo usuário e autenticar via Google", async () => {
-		googleAuthProvider.addValidToken("new-user-token", {
+		googleAuthProvider.addValidCode("new-user-code", {
 			sub: "google-sub-new",
 			email: "new@user.com",
 			name: "New User",
@@ -110,7 +110,7 @@ describe("Autenticar com Google", () => {
 
 		const response = await request(fastifyServer.server)
 			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
-			.send({ idToken: "new-user-token" })
+			.send({ code: "new-user-code" })
 
 		const createdUser = await userRepository.userOfEmail("new@user.com")
 
@@ -124,14 +124,14 @@ describe("Autenticar com Google", () => {
 		expect(createdUser?.googleId).toBe("google-sub-new")
 	})
 
-	test("Deve retornar 409 com code external_account_link_required quando o email já existir sem googleId", async () => {
+	test("AC-09 Deve retornar 409 com code external_account_link_required quando o email já existir sem googleId", async () => {
 		await createAndSaveUser({
 			userRepository,
 			email: "john@doe.com",
 			name: "John Doe",
 			password: "any_password",
 		})
-		googleAuthProvider.addValidToken("link-token", {
+		googleAuthProvider.addValidCode("link-code", {
 			sub: "google-sub-123",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -140,7 +140,7 @@ describe("Autenticar com Google", () => {
 
 		const response = await request(fastifyServer.server)
 			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
-			.send({ idToken: "link-token" })
+			.send({ code: "link-code" })
 
 		expect(response.status).toBe(HTTP_STATUS.CONFLICT)
 		expect(response.body).toEqual({
@@ -155,7 +155,7 @@ describe("Autenticar com Google", () => {
 			email: "john@doe.com",
 			googleId: "existing-google-sub",
 		})
-		googleAuthProvider.addValidToken("conflict-token", {
+		googleAuthProvider.addValidCode("conflict-code", {
 			sub: "different-google-sub",
 			email: "john@doe.com",
 			name: "John Doe",
@@ -164,11 +164,33 @@ describe("Autenticar com Google", () => {
 
 		const response = await request(fastifyServer.server)
 			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
-			.send({ idToken: "conflict-token" })
+			.send({ code: "conflict-code" })
 
 		expect(response.status).toBe(HTTP_STATUS.CONFLICT)
 		expect(response.body).toMatchObject({
 			message: expect.stringContaining("already linked"),
 		})
+	})
+
+	test("AC-10 Deve retornar 400 quando o corpo trouxer idToken em vez de code", async () => {
+		await createAndSaveUser({
+			userRepository,
+			email: "john@doe.com",
+			googleId: "google-sub-123",
+			name: "John Doe",
+		})
+		googleAuthProvider.addValidCode("valid-code", {
+			sub: "google-sub-123",
+			email: "john@doe.com",
+			name: "John Doe",
+			emailVerified: true,
+		})
+
+		const response = await request(fastifyServer.server)
+			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
+			.send({ idToken: "valid-token" })
+
+		expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST)
+		expect(response.body).toHaveProperty("message")
 	})
 })

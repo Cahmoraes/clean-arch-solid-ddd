@@ -55,7 +55,7 @@ describe("CreatePasswordReauthGrantUseCase", () => {
 		const input: CreatePasswordReauthGrantUseCaseInput = {
 			userId: user.id,
 			provider: "google",
-			idToken: "reauth-token",
+			code: "reauth-token",
 		}
 
 		const result = await sut.execute(input)
@@ -87,7 +87,7 @@ describe("CreatePasswordReauthGrantUseCase", () => {
 		const result = await sut.execute({
 			userId: user.id,
 			provider: "google",
-			idToken: "any-token",
+			code: "any-token",
 		})
 
 		expect(result.isFailure()).toBe(true)
@@ -108,7 +108,7 @@ describe("CreatePasswordReauthGrantUseCase", () => {
 		const result = await sut.execute({
 			userId: user.id,
 			provider: "google",
-			idToken: "any-token",
+			code: "any-token",
 		})
 
 		expect(result.isFailure()).toBe(true)
@@ -133,7 +133,7 @@ describe("CreatePasswordReauthGrantUseCase", () => {
 		const result = await sut.execute({
 			userId: user.id,
 			provider: "google",
-			idToken: "bad-token",
+			code: "bad-token",
 		})
 
 		expect(result.isFailure()).toBe(true)
@@ -158,7 +158,7 @@ describe("CreatePasswordReauthGrantUseCase", () => {
 		const result = await sut.execute({
 			userId: user.id,
 			provider: "google",
-			idToken: "unverified-token",
+			code: "unverified-token",
 		})
 
 		expect(result.isFailure()).toBe(true)

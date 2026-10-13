@@ -53,7 +53,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 	})
 
 	test("deve retornar InvalidGoogleTokenError quando o token for inválido", async () => {
-		const result = await sut.execute({ idToken: "invalid" })
+		const result = await sut.execute({ code: "invalid" })
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.forceFailure().value).toBeInstanceOf(InvalidGoogleTokenError)
@@ -67,7 +67,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			emailVerified: false,
 		})
 
-		const result = await sut.execute({ idToken: "unverified-token" })
+		const result = await sut.execute({ code: "unverified-token" })
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.forceFailure().value).toBeInstanceOf(
@@ -88,7 +88,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			emailVerified: true,
 		})
 
-		const result = await sut.execute({ idToken: "valid-token" })
+		const result = await sut.execute({ code: "valid-token" })
 
 		expect(result.isSuccess()).toBe(true)
 		expect(result.forceSuccess().value).toEqual({
@@ -111,7 +111,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			emailVerified: true,
 		})
 
-		const result = await sut.execute({ idToken: "link-token" })
+		const result = await sut.execute({ code: "link-token" })
 		const linkedUser = await userRepository.userOfGoogleId("google-sub-123")
 
 		expect(result.isFailure()).toBe(true)
@@ -129,7 +129,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			emailVerified: true,
 		})
 
-		const result = await sut.execute({ idToken: "new-user-token" })
+		const result = await sut.execute({ code: "new-user-token" })
 		const createdUser = await userRepository.userOfEmail("new@user.com")
 
 		expect(result.isSuccess()).toBe(true)
@@ -151,7 +151,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			emailVerified: true,
 		})
 
-		const result = await sut.execute({ idToken: "conflict-token" })
+		const result = await sut.execute({ code: "conflict-token" })
 
 		expect(result.isFailure()).toBe(true)
 		expect(result.forceFailure().value).toBeInstanceOf(
@@ -176,7 +176,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			new Error("Unique constraint violation"),
 		)
 
-		const result = await sut.execute({ idToken: "race-token" })
+		const result = await sut.execute({ code: "race-token" })
 
 		expect(result.isSuccess()).toBe(true)
 		const { token } = result.forceSuccess().value
@@ -200,7 +200,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 			emailVerified: true,
 		})
 
-		const result = await sut.execute({ idToken: "jwt-token" })
+		const result = await sut.execute({ code: "jwt-token" })
 		const { token, refreshToken } = result.forceSuccess().value
 		const decoded = authToken
 			.verify<JWTResponse>(token, env.PRIVATE_KEY)
@@ -239,7 +239,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 		DomainEventPublisher.instance.subscribe("loginSucceeded", subscriber)
 
 		try {
-			await sut.execute({ idToken: "valid-token" })
+			await sut.execute({ code: "valid-token" })
 		} finally {
 			DomainEventPublisher.instance.unsubscribe("loginSucceeded", subscriber)
 		}
@@ -284,7 +284,7 @@ describe("AuthenticateWithGoogleUseCase", () => {
 		DomainEventPublisher.instance.subscribe("loginSucceeded", loginSubscriber)
 
 		try {
-			const result = await sut.execute({ idToken: "relink-token" })
+			const result = await sut.execute({ code: "relink-token" })
 			expect(result.isSuccess()).toBe(true)
 		} finally {
 			DomainEventPublisher.instance.unsubscribe(

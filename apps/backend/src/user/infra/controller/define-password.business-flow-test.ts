@@ -45,19 +45,19 @@ describe("Definir primeira senha", () => {
 			email: "google-only@doe.com",
 			googleId: "google-sub-123",
 		})
-		googleAuthProvider.addValidToken("reauth-token", {
+		googleAuthProvider.addValidCode("reauth-code", {
 			sub: "google-sub-123",
 			email: user.email,
 			name: user.name,
 			emailVerified: true,
 		})
 		const googleToken = (
-			await authenticateWithGoogle.execute({ idToken: "reauth-token" })
+			await authenticateWithGoogle.execute({ code: "reauth-code" })
 		).force.success().value.token
 		const reauthResponse = await request(fastifyServer.server)
 			.post(UserRoutes.PASSWORD_REAUTH)
 			.set("Authorization", `Bearer ${googleToken}`)
-			.send({ provider: "google", idToken: "reauth-token" })
+			.send({ provider: "google", code: "reauth-code" })
 
 		const defineResponse = await request(fastifyServer.server)
 			.post(UserRoutes.PASSWORD)

@@ -21,7 +21,7 @@ const PASSWORD_REAUTH_CACHE_PREFIX = "password-reauth"
 export interface CreatePasswordReauthGrantUseCaseInput {
 	userId: string
 	provider: "google"
-	idToken: string
+	code: string
 }
 
 export interface CreatePasswordReauthGrantUseCaseOutputDTO {
@@ -116,7 +116,7 @@ export class CreatePasswordReauthGrantUseCase {
 	}
 
 	private async validateGoogleReauth(
-		input: Pick<CreatePasswordReauthGrantUseCaseInput, "idToken">,
+		input: Pick<CreatePasswordReauthGrantUseCaseInput, "code">,
 		googleId: string,
 	): Promise<
 		Either<
@@ -127,7 +127,7 @@ export class CreatePasswordReauthGrantUseCase {
 		>
 	> {
 		const googleUserInfoResult = await this.googleAuthProvider.verify(
-			input.idToken,
+			input.code,
 		)
 		if (googleUserInfoResult.isFailure()) {
 			return failure(googleUserInfoResult.value)

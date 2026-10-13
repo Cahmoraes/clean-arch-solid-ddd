@@ -19,9 +19,10 @@ const createPasswordReauthGrantSchema = z.object({
 		description: "External provider linked to the account",
 		example: "google",
 	}),
-	idToken: z.string().min(1).meta({
-		description: "Fresh provider id token used for recent reauthentication",
-		example: "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...",
+	code: z.string().min(1).meta({
+		description:
+			"Fresh provider authorization code used for recent reauthentication",
+		example: "4/0AVMBsJi8_example-authorization-code",
 	}),
 })
 
@@ -124,7 +125,7 @@ export class CreatePasswordReauthGrantController extends BaseController {
 		const result = await this.createPasswordReauthGrant.execute({
 			userId: req.user.sub.id,
 			provider: parsedBodyOrError.value.provider,
-			idToken: parsedBodyOrError.value.idToken,
+			code: parsedBodyOrError.value.code,
 		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)

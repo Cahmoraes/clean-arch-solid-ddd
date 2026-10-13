@@ -55,7 +55,7 @@ describe("DevGoogleTokenController", () => {
 
 		const loginResponse = await request(fastifyServer.server)
 			.post(SessionRoutes.AUTHENTICATE_GOOGLE)
-			.send({ idToken: "seeded-token" })
+			.send({ code: "seeded-token" })
 
 		expect(loginResponse.status).toBe(HTTP_STATUS.OK)
 		expect(loginResponse.body).toHaveProperty("token")

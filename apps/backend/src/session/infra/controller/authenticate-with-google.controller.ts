@@ -18,9 +18,9 @@ import { RATE_LIMIT_CONFIG } from "@/shared/infra/server/plugins/rate-limit-conf
 import { SessionRoutes } from "./routes/session-routes.js"
 
 const authenticateWithGoogleRequestSchema = z.object({
-	idToken: z.string().min(1).meta({
-		description: "Google ID token",
-		example: "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...",
+	code: z.string().min(1).meta({
+		description: "Google authorization code (single use, ~2 min validity)",
+		example: "4/0AVMBsJi8_example-authorization-code",
 	}),
 })
 
@@ -105,7 +105,7 @@ export class AuthenticateWithGoogleController extends BaseController {
 		}
 
 		const result = await this.authenticateWithGoogleUseCase.execute({
-			idToken: parsedBodyResult.value.idToken,
+			code: parsedBodyResult.value.code,
 		})
 		if (result.isFailure()) {
 			return this.createResponseError(result)
@@ -136,7 +136,7 @@ function makeAuthenticateWithGoogleSwaggerSchema(): Schema {
 		tags: ["sessions"],
 		summary: "Authenticate user with Google",
 		description:
-			"Authenticate with a Google ID token to obtain JWT token and refresh token cookie",
+			"Exchange a Google authorization code for tokens on the server and return a JWT token plus the refresh token cookie",
 		body: authenticateWithGoogleRequestSchema,
 		responses: {
 			200: {
