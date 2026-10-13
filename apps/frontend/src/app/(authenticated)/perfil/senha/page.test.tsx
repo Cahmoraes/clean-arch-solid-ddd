@@ -88,6 +88,7 @@ describe("ChangePasswordPage", () => {
 	})
 
 	test("renderiza o fluxo de definir senha sem campo de senha atual", async () => {
+		let receivedReauth: unknown = null
 		server.use(
 			http.get(`${apiBaseUrl}/users/me`, () =>
 				HttpResponse.json(
@@ -102,11 +103,15 @@ describe("ChangePasswordPage", () => {
 					{ status: 200 },
 				),
 			),
-			http.post(`${apiBaseUrl}/users/me/password/reauth`, () =>
-				HttpResponse.json(
-					{ reauthGrant: "grant-123", expiresInSeconds: 300 },
-					{ status: 200 },
-				),
+			http.post(
+				`${apiBaseUrl}/users/me/password/reauth`,
+				async ({ request }) => {
+					receivedReauth = await request.json()
+					return HttpResponse.json(
+						{ reauthGrant: "grant-123", expiresInSeconds: 300 },
+						{ status: 200 },
+					)
+				},
 			),
 			http.post(`${apiBaseUrl}/users/me/password`, async ({ request }) => {
 				const body = (await request.json()) as {
@@ -144,5 +149,9 @@ describe("ChangePasswordPage", () => {
 		expect(
 			await screen.findByText(/reautenticação confirmada/i),
 		).toBeInTheDocument()
+		expect(receivedReauth).toEqual({
+			provider: "google",
+			code: "auth-code-123",
+		})
 	})
 })
