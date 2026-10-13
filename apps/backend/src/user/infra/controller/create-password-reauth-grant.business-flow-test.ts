@@ -66,7 +66,7 @@ describe("Criar grant de reautenticação para primeira senha", () => {
 		})
 	})
 
-	test("Deve recusar o reuso do grant de reautenticação", async () => {
+	test("Deve recusar com 409 password_already_set a segunda definição de senha com o mesmo grant", async () => {
 		const user = await createAndSaveUser({
 			userRepository,
 			email: "google-reuse@doe.com",
@@ -110,10 +110,40 @@ describe("Criar grant de reautenticação para primeira senha", () => {
 			expiresInSeconds: 300,
 		})
 		expect(firstUse.status).toBe(HTTP_STATUS.NO_CONTENT)
-		// A segunda apresentação é recusada com 409. Em DefinePasswordUseCase o
-		// guard de senha já definida (PasswordAlreadySetError) roda antes do consumo
-		// do grant, então é ele — não ReauthGrantInvalidError — que responde.
+		// Em DefinePasswordUseCase o guard de senha já definida roda antes do
+		// consumo do grant; por isso a segunda apresentação responde 409. O
+		// descarte do grant após o primeiro uso é coberto em
+		// define-password.usecase.test.ts.
 		expect(secondUse.status).toBe(HTTP_STATUS.CONFLICT)
 		expect(secondUse.body).toMatchObject({ code: "password_already_set" })
+	})
+
+	test("Deve recusar com 401 reauth_grant_invalid um grant desconhecido", async () => {
+		const user = await createAndSaveUser({
+			userRepository,
+			email: "google-invalid-grant@doe.com",
+			googleId: "google-sub-invalid-grant",
+		})
+		googleAuthProvider.addValidCode("invalid-grant-code", {
+			sub: "google-sub-invalid-grant",
+			email: user.email,
+			name: user.name,
+			emailVerified: true,
+		})
+		const token = (
+			await authenticateWithGoogle.execute({ code: "invalid-grant-code" })
+		).force.success().value.token
+
+		const response = await request(fastifyServer.server)
+			.post(UserRoutes.PASSWORD)
+			.set("Authorization", `Bearer ${token}`)
+			.send({
+				provider: "google",
+				reauthGrant: "grant-que-nunca-foi-emitido",
+				newRawPassword: "Senha123!",
+			})
+
+		expect(response.status).toBe(HTTP_STATUS.UNAUTHORIZED)
+		expect(response.body).toMatchObject({ code: "reauth_grant_invalid" })
 	})
 })
