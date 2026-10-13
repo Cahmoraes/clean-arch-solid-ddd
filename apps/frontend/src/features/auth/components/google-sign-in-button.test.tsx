@@ -8,7 +8,7 @@ type GoogleScenario =
 	| "no_code"
 	| "popup_blocked"
 	| "popup_closed"
-	| "popup_error"
+	| "access_denied"
 
 const { scenario, lastUseGoogleLoginOptions } = vi.hoisted(() => ({
 	scenario: { current: "code" as GoogleScenario },
@@ -43,8 +43,8 @@ vi.mock("@react-oauth/google", () => ({
 				case "popup_closed":
 					onNonOAuthError?.({ type: "popup_closed" })
 					break
-				case "popup_error":
-					onError?.({ error: "popup_error" })
+				case "access_denied":
+					onError?.({ error: "access_denied" })
 					break
 			}
 		}
@@ -116,6 +116,23 @@ describe("GoogleSignInButton", () => {
 
 		expect(onError).not.toHaveBeenCalled()
 		expect(onSuccess).not.toHaveBeenCalled()
+		expect(screen.getByTestId("google-sign-in-button")).toBeEnabled()
+	})
+
+	test("mapeia erro OAuth que não é de popup para onError e mantém o botão habilitado", async () => {
+		scenario.current = "access_denied"
+		const onError = vi.fn()
+		const onSuccess = vi.fn()
+		const user = userEvent.setup()
+
+		render(<GoogleSignInButton onSuccess={onSuccess} onError={onError} />)
+		await user.click(screen.getByTestId("google-sign-in-button"))
+
+		expect(onSuccess).not.toHaveBeenCalled()
+		expect(onError).toHaveBeenCalledTimes(1)
+		expect(onError.mock.calls[0][0].message).toBe(
+			"Não foi possível iniciar o login com Google.",
+		)
 		expect(screen.getByTestId("google-sign-in-button")).toBeEnabled()
 	})
 

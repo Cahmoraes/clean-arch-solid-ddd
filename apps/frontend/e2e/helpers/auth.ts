@@ -184,8 +184,8 @@ function escapeSql(value: string): string {
 
 export async function seedGoogleToken(
 	request: APIRequestContext,
-	input: { idToken: string; sub: string; email: string; name: string },
-): Promise<{ idToken: string }> {
+	input: { code: string; sub: string; email: string; name: string },
+): Promise<{ code: string }> {
 	const response = await request.post(
 		`${BACKEND_URL}/sessions/google/dev-token`,
 		{ data: { ...input, emailVerified: true } },
@@ -194,16 +194,16 @@ export async function seedGoogleToken(
 		response.ok(),
 		`seedGoogleToken failed: ${response.status()} ${await response.text()}`,
 	).toBeTruthy()
-	return { idToken: input.idToken }
+	return { code: input.code }
 }
 
 export async function loginViaSeededGoogleApi(
 	request: APIRequestContext,
 	page: Page,
-	idToken: string,
+	code: string,
 ): Promise<{ accessToken: string }> {
 	const response = await request.post(`${BACKEND_URL}/sessions/google`, {
-		data: { idToken },
+		data: { code },
 	})
 	expect(
 		response.ok(),
@@ -230,13 +230,13 @@ export async function loginViaSeededGoogleApi(
 export async function requestFirstPasswordGrant(
 	request: APIRequestContext,
 	accessToken: string,
-	idToken: string,
+	code: string,
 ): Promise<{ reauthGrant: string }> {
 	const response = await request.post(
 		`${BACKEND_URL}/users/me/password/reauth`,
 		{
 			headers: { Authorization: `Bearer ${accessToken}` },
-			data: { provider: "google", idToken },
+			data: { provider: "google", code },
 		},
 	)
 	expect(

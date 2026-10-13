@@ -16,15 +16,15 @@ test.describe("Login misto para contas externas", () => {
 	}) => {
 		const user = makeUser({ password: "Senha123!" })
 		const googleSub = randomUUID()
-		const idToken = `seeded-${googleSub}`
+		const code = `seeded-${googleSub}`
 		const seeded = await seedGoogleToken(request, {
-			idToken,
+			code,
 			sub: googleSub,
 			email: user.email,
 			name: user.name,
 		})
 
-		const session = await loginViaSeededGoogleApi(request, page, seeded.idToken)
+		const session = await loginViaSeededGoogleApi(request, page, seeded.code)
 
 		await page.goto("/perfil")
 		// O link de senha vive dentro do modal de edição de perfil.
@@ -36,7 +36,7 @@ test.describe("Login misto para contas externas", () => {
 		const { reauthGrant } = await requestFirstPasswordGrant(
 			request,
 			session.accessToken,
-			seeded.idToken,
+			seeded.code,
 		)
 
 		await defineFirstPasswordViaApi(
