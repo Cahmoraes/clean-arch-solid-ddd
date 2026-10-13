@@ -1,11 +1,13 @@
 import { describe, expect, test } from "vitest"
 import { listSourceFiles } from "./source-files"
 
-// Exceções justificadas (ver task-04): WebGL do globo e seletores de saída do Recharts.
+// Exceções justificadas: WebGL do globo, seletores de saída do Recharts e o
+// logo G oficial (asset de marca do Google — as 4 cores não são tokens do tema).
 const ALLOWED_LITERAL_FILES: ReadonlyArray<string> = [
 	"features/weather/components/weather-globe.tsx",
 	"features/weather/components/weather-globe-constants.ts",
 	"components/ui/chart.tsx",
+	"components/ui/google-g-icon.tsx",
 ]
 
 const LITERAL_COLOR = /#[0-9a-fA-F]{3,8}\b|\brgba?\(/
