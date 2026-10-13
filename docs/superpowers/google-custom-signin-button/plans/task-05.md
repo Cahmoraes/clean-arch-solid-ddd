@@ -1,6 +1,6 @@
 # Task 5: Mutações e telas passam a enviar o authorization code [FR-002, FR-003, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-google-custom-signin-button.md`
 

@@ -1,6 +1,6 @@
 # Task 3: Componente de ícone do logo G oficial [FR-001]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-google-custom-signin-button.md`
 

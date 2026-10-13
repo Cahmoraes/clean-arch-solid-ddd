@@ -1,6 +1,6 @@
 # Task 4: Botão "Continuar com Google" customizado com design system [FR-001, FR-002, FR-004, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-google-custom-signin-button.md`
 

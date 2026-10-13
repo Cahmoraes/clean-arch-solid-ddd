@@ -9,10 +9,10 @@
 ## Tarefas
 
 - [x] 1. Provider Google troca authorization code por tokens → `task-01.md`
-- [ ] 2. Controllers de sessão e reautenticação aceitam `{ code }` → `task-02.md`
-- [ ] 3. Componente de ícone do logo G oficial → `task-03.md`
-- [ ] 4. Botão "Continuar com Google" customizado com design system → `task-04.md`
-- [ ] 5. Mutações e telas passam a enviar o authorization code → `task-05.md`
+- [x] 2. Controllers de sessão e reautenticação aceitam `{ code }` → `task-02.md`
+- [x] 3. Componente de ícone do logo G oficial → `task-03.md`
+- [x] 4. Botão "Continuar com Google" customizado com design system → `task-04.md`
+- [x] 5. Mutações e telas passam a enviar o authorization code → `task-05.md`
 
 ## Restrições Globais
 

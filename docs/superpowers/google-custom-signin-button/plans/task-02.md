@@ -1,6 +1,6 @@
 # Task 2: Controllers de sessão e reautenticação aceitam `{ code }` [FR-002, FR-003, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-google-custom-signin-button.md`
 
@@ -263,7 +263,7 @@ git commit -m "feat(auth): endpoints de sessão e reautenticação aceitam { cod
 - `AuthenticateWithGoogleUseCaseInput` e `CreatePasswordReauthGrantUseCaseInput` aceitam `code`; nenhum campo `idToken` permanece nos dois caminhos
 - Nenhum teste, controller ou use case aceita um ID token cru: `POST /sessions/google` com `{ idToken }` responde `400`
 - `AuthenticateWithGoogleUseCase` mantém a resolução por `googleId`, por e-mail, criando a conta, os eventos de domínio e o `AuthTokenOutputDTO` — a task não altera nenhuma dessas regras
-- `CreatePasswordReauthGrantUseCase` continua devolvendo `expiresInSeconds: 300` e um grant recusado na segunda apresentação com `409 reauth_grant_invalid`
+- `CreatePasswordReauthGrantUseCase` continua devolvendo `expiresInSeconds: 300` e um grant desconhecido recusado com `401 reauth_grant_invalid` (reuso após sucesso responde `409 password_already_set`)
 - `mapResponseError` dos dois controllers está inalterado: `InvalidGoogleTokenError → 401`, `GoogleEmailNotVerifiedError → 422`, `ExternalProviderLinkRequiredError → 409 external_account_link_required`, `GoogleAccountAlreadyLinkedError → 409`
 - Os schemas OpenAPI de `POST /sessions/google` e `POST /users/me/password/reauth` descrevem e exemplificam `code`, e a descrição do primeiro não diz mais "Google ID token"
 - Nenhum segredo do Google aparece na resposta HTTP nem no log do controller
