@@ -58,9 +58,9 @@ export function useLoginWithGoogle(): UseMutationResult<
 	string
 > {
 	return useMutation<LoginWithGoogleResult, ApiError, string>({
-		mutationFn: async (idToken) => {
+		mutationFn: async (code) => {
 			const { data, error } = await api.POST("/sessions/google", {
-				body: { idToken },
+				body: { code },
 			})
 			if (error || !data) throw toApiError(error)
 			useAuthStore.getState().setSession(data.token)
@@ -150,12 +150,12 @@ export function useLogout(): UseMutationResult<void, ApiError, void> {
 export function useCreatePasswordReauthGrant(): UseMutationResult<
 	{ reauthGrant: string; expiresInSeconds: number },
 	ApiError,
-	{ provider: "google"; idToken: string }
+	{ provider: "google"; code: string }
 > {
 	return useMutation({
-		mutationFn: async (input) => {
+		mutationFn: async ({ provider, code }) => {
 			const { data, error } = await api.POST("/users/me/password/reauth", {
-				body: input,
+				body: { provider, code },
 			})
 			if (error || !data) throw toApiError(error)
 			return data

@@ -4,19 +4,11 @@ import { describe, expect, test, vi } from "vitest"
 
 vi.mock("@react-oauth/google", () => ({
 	GoogleOAuthProvider: ({ children }: { children: ReactNode }) => children,
-	GoogleLogin: ({
-		onSuccess,
-	}: {
-		onSuccess: (resp: { credential?: string }) => void
-	}) => (
-		<button
-			type="button"
-			data-testid="google-login-mock"
-			onClick={() => onSuccess({ credential: "fake-google-token" })}
-		>
-			Google
-		</button>
-	),
+	useGoogleLogin: (options: Record<string, unknown>) => () => {
+		;(
+			options.onSuccess as (response: { code?: string; scope?: string }) => void
+		)({ code: "auth-code-123", scope: "openid email" })
+	},
 }))
 
 vi.mock("next/navigation", () => ({

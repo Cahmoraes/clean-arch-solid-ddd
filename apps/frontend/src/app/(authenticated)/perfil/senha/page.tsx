@@ -184,9 +184,9 @@ function DefinePasswordForm({ provider }: DefinePasswordFormProps) {
 			</p>
 
 			<GoogleSignInButton
-				onSuccess={async (idToken) => {
+				onSuccess={async (code) => {
 					try {
-						const response = await requestReauth({ provider, idToken })
+						const response = await requestReauth({ provider, code })
 						setReauthGrant(response.reauthGrant)
 						toast.success(
 							"Reautenticação confirmada. Agora você já pode definir sua senha.",

@@ -82,45 +82,46 @@ describe("useLogin", () => {
 })
 
 describe("useLoginWithGoogle", () => {
-	test("deve popular o auth-store com token ao autenticar via Google", async () => {
+	test("AC-10 envia o authorization code e popula o auth-store ao autenticar via Google", async () => {
 		const token = makeTestJwt({ sub: "google-user-1", role: "MEMBER" })
+		let received: unknown = null
 		server.use(
-			http.post(`${apiBaseUrl}/sessions/google`, () =>
-				HttpResponse.json(
+			http.post(`${apiBaseUrl}/sessions/google`, async ({ request }) => {
+				received = await request.json()
+				return HttpResponse.json(
 					{ token, refreshToken: "google-refresh-stub" },
 					{ status: 200 },
-				),
-			),
+				)
+			}),
 		)
 
 		const { wrapper } = createWrapper()
 		const { result } = renderHook(() => useLoginWithGoogle(), { wrapper })
-		await result.current.mutateAsync("fake-id-token")
+		await result.current.mutateAsync("auth-code-123")
 
+		expect(received).toEqual({ code: "auth-code-123" })
 		await waitFor(() => {
 			expect(useAuthStore.getState().accessToken).toBe(token)
 		})
 	})
 
-	test("deve lançar ApiError 401 quando token Google for inválido", async () => {
+	test("deve lançar ApiError 401 quando o authorization code for inválido", async () => {
 		server.use(
 			http.post(`${apiBaseUrl}/sessions/google`, () =>
-				HttpResponse.json({ message: "invalid token" }, { status: 401 }),
+				HttpResponse.json({ message: "invalid" }, { status: 401 }),
 			),
 		)
 
 		const { wrapper } = createWrapper()
 		const { result } = renderHook(() => useLoginWithGoogle(), { wrapper })
 
-		await expect(result.current.mutateAsync("bad-token")).rejects.toMatchObject(
-			{
-				status: 401,
-			},
-		)
+		await expect(result.current.mutateAsync("bad-code")).rejects.toMatchObject({
+			status: 401,
+		})
 		expect(useAuthStore.getState().accessToken).toBeNull()
 	})
 
-	test("deve lançar ApiError 422 quando email Google não estiver verificado", async () => {
+	test("AC-08 deve lançar ApiError 422 quando email Google não estiver verificado", async () => {
 		server.use(
 			http.post(`${apiBaseUrl}/sessions/google`, () =>
 				HttpResponse.json({ message: "email not verified" }, { status: 422 }),
@@ -131,13 +132,13 @@ describe("useLoginWithGoogle", () => {
 		const { result } = renderHook(() => useLoginWithGoogle(), { wrapper })
 
 		await expect(
-			result.current.mutateAsync("unverified-token"),
+			result.current.mutateAsync("unverified-code"),
 		).rejects.toMatchObject({ status: 422 })
 	})
 })
 
 describe("useCreatePasswordReauthGrant", () => {
-	test("envia provider e idToken para solicitar grant de reautenticação", async () => {
+	test("envia provider e code para solicitar grant de reautenticação", async () => {
 		let received: unknown = null
 		server.use(
 			http.post(
@@ -160,12 +161,12 @@ describe("useCreatePasswordReauthGrant", () => {
 		await expect(
 			result.current.mutateAsync({
 				provider: "google",
-				idToken: "google-id-token",
+				code: "auth-code-123",
 			}),
 		).resolves.toEqual({ reauthGrant: "grant-123", expiresInSeconds: 300 })
 		expect(received).toEqual({
 			provider: "google",
-			idToken: "google-id-token",
+			code: "auth-code-123",
 		})
 	})
 })

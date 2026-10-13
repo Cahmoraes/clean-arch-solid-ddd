@@ -8,19 +8,11 @@ const replace = vi.fn()
 
 vi.mock("@react-oauth/google", () => ({
 	GoogleOAuthProvider: ({ children }: { children: ReactNode }) => children,
-	GoogleLogin: ({
-		onSuccess,
-	}: {
-		onSuccess: (resp: { credential?: string }) => void
-	}) => (
-		<button
-			type="button"
-			data-testid="google-login-mock"
-			onClick={() => onSuccess({ credential: "fake-google-token" })}
-		>
-			Google
-		</button>
-	),
+	useGoogleLogin: (options: Record<string, unknown>) => () => {
+		;(
+			options.onSuccess as (response: { code?: string; scope?: string }) => void
+		)({ code: "auth-code-123", scope: "openid email" })
+	},
 }))
 
 vi.mock("next/navigation", () => ({
@@ -88,21 +80,24 @@ describe("SignupPage", () => {
 
 	it("redireciona para /academias após cadastro Google bem-sucedido", async () => {
 		const token = makeTestJwt({ sub: "google-signup-user", role: "MEMBER" })
+		let received: unknown = null
 		server.use(
-			http.post(`${apiBaseUrl}/sessions/google`, () =>
-				HttpResponse.json(
+			http.post(`${apiBaseUrl}/sessions/google`, async ({ request }) => {
+				received = await request.json()
+				return HttpResponse.json(
 					{ token, refreshToken: "google-refresh" },
 					{ status: 200 },
-				),
-			),
+				)
+			}),
 		)
 		const user = userEvent.setup()
 		renderWithProviders(<SignupPage />)
 
-		await user.click(screen.getByTestId("google-login-mock"))
+		await user.click(screen.getByTestId("google-sign-in-button"))
 
 		await waitFor(() => {
 			expect(replace).toHaveBeenCalledWith("/academias")
 		})
+		expect(received).toEqual({ code: "auth-code-123" })
 	})
 })

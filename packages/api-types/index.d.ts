@@ -910,10 +910,10 @@ export interface paths {
                          */
                         provider: "google";
                         /**
-                         * @description Fresh provider id token used for recent reauthentication
-                         * @example eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...
+                         * @description Fresh provider authorization code used for recent reauthentication
+                         * @example 4/0AVMBsJi8_example-authorization-code
                          */
-                        idToken: string;
+                        code: string;
                     };
                 };
             };
@@ -3732,7 +3732,7 @@ export interface paths {
         put?: never;
         /**
          * Authenticate user with Google
-         * @description Authenticate with a Google ID token to obtain JWT token and refresh token cookie
+         * @description Exchange a Google authorization code for tokens on the server and return a JWT token plus the refresh token cookie
          */
         post: {
             parameters: {
@@ -3745,10 +3745,10 @@ export interface paths {
                 content: {
                     "application/json": {
                         /**
-                         * @description Google ID token
-                         * @example eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...
+                         * @description Google authorization code (single use, ~2 min validity)
+                         * @example 4/0AVMBsJi8_example-authorization-code
                          */
-                        idToken: string;
+                        code: string;
                     };
                 };
             };

@@ -38,6 +38,7 @@ function loginErrorMessage(error: unknown): string {
 const googleLoginStatusMessages: Record<number, string> = {
 	401: "Token Google inválido ou expirado.",
 	422: "O e-mail da conta Google não está verificado.",
+	409: "Vincular sua conta a este provedor exige uma sessão ativa primeiro.",
 }
 
 function googleLoginErrorMessage(error: unknown): string {
@@ -212,9 +213,9 @@ function LoginForm() {
 						</div>
 
 						<GoogleSignInButton
-							onSuccess={async (idToken) => {
+							onSuccess={async (code) => {
 								try {
-									await mutateAsyncGoogle(idToken)
+									await mutateAsyncGoogle(code)
 									const redirect =
 										searchParams?.get("redirect") ?? DEFAULT_REDIRECT
 									router.replace(redirect)

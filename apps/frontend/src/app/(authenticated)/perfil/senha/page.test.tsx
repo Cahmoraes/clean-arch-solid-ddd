@@ -8,19 +8,11 @@ import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 
 vi.mock("@react-oauth/google", () => ({
-	GoogleLogin: ({
-		onSuccess,
-	}: {
-		onSuccess: (resp: { credential?: string }) => void
-	}) => (
-		<button
-			type="button"
-			data-testid="google-login-mock"
-			onClick={() => onSuccess({ credential: "fake-google-token" })}
-		>
-			Google
-		</button>
-	),
+	useGoogleLogin: (options: Record<string, unknown>) => () => {
+		;(
+			options.onSuccess as (response: { code?: string; scope?: string }) => void
+		)({ code: "auth-code-123", scope: "openid email" })
+	},
 	GoogleOAuthProvider: ({ children }: { children: ReactNode }) => children,
 }))
 
@@ -146,7 +138,7 @@ describe("ChangePasswordPage", () => {
 			screen.getByLabelText(/confirmar nova senha/i),
 			"SenhaNova123!",
 		)
-		await user.click(screen.getByTestId("google-login-mock"))
+		await user.click(screen.getByTestId("google-sign-in-button"))
 		await user.click(screen.getByTestId("change-password-submit"))
 
 		expect(

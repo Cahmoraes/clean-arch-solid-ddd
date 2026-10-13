@@ -98,8 +98,8 @@ function SignupForm() {
 		}
 	}
 
-	function onGoogleSuccess(idToken: string) {
-		mutateAsyncGoogle(idToken)
+	function onGoogleSuccess(code: string) {
+		mutateAsyncGoogle(code)
 			.then(() => router.replace("/academias"))
 			.catch((err: unknown) => toast.error(googleSignupErrorMessage(err)))
 	}

@@ -9,19 +9,11 @@ const searchParamsGet = vi.fn<(key: string) => string | null>(() => null)
 
 vi.mock("@react-oauth/google", () => ({
 	GoogleOAuthProvider: ({ children }: { children: ReactNode }) => children,
-	GoogleLogin: ({
-		onSuccess,
-	}: {
-		onSuccess: (resp: { credential?: string }) => void
-	}) => (
-		<button
-			type="button"
-			data-testid="google-login-mock"
-			onClick={() => onSuccess({ credential: "fake-google-token" })}
-		>
-			Google
-		</button>
-	),
+	useGoogleLogin: (options: Record<string, unknown>) => () => {
+		;(
+			options.onSuccess as (response: { code?: string; scope?: string }) => void
+		)({ code: "auth-code-123", scope: "openid email" })
+	},
 }))
 
 vi.mock("next/navigation", () => ({
@@ -38,6 +30,7 @@ vi.mock("next/navigation", () => ({
 	}),
 }))
 
+import { Toaster } from "@/components/ui/toaster"
 import { useAuthStore } from "@/lib/auth/auth-store"
 import { server } from "@/test/msw/server"
 import { makeTestJwt, renderWithProviders } from "@/test/render"
@@ -150,31 +143,63 @@ describe("LoginPage", () => {
 		expect(replace).not.toHaveBeenCalled()
 	})
 
-	test("exibe botão Entrar com Google", () => {
+	test("AC-02 exibe o botão Continuar com Google do design system", () => {
 		renderWithProviders(<LoginPage />)
 
-		expect(screen.getByTestId("google-sign-in-button")).toBeInTheDocument()
+		const button = screen.getByTestId("google-sign-in-button")
+
+		expect(button).toHaveTextContent("Continuar com Google")
+		expect(button).toHaveClass("bg-card", "font-display")
 	})
 
-	test("redireciona para /inicio após login Google bem-sucedido", async () => {
+	test("AC-01 redireciona para /inicio após login Google bem-sucedido", async () => {
 		const token = makeTestJwt({ sub: "google-user", role: "MEMBER" })
+		let received: unknown = null
 		server.use(
-			http.post(`${apiBaseUrl}/sessions/google`, () =>
-				HttpResponse.json(
+			http.post(`${apiBaseUrl}/sessions/google`, async ({ request }) => {
+				received = await request.json()
+				return HttpResponse.json(
 					{ token, refreshToken: "google-refresh" },
 					{ status: 200 },
-				),
-			),
+				)
+			}),
 		)
 		const user = userEvent.setup()
 		renderWithProviders(<LoginPage />)
 
-		await user.click(screen.getByTestId("google-login-mock"))
+		await user.click(screen.getByTestId("google-sign-in-button"))
 
 		await waitFor(() => {
 			expect(replace).toHaveBeenCalledWith("/inicio")
 		})
+		expect(received).toEqual({ code: "auth-code-123" })
 		expect(useAuthStore.getState().accessToken).toBe(token)
+	})
+
+	test("AC-09 exibe a mensagem de vínculo pendente quando a conta Google exige link externo", async () => {
+		server.use(
+			http.post(`${apiBaseUrl}/sessions/google`, () =>
+				HttpResponse.json(
+					{
+						code: "external_account_link_required",
+						message: "Link this external account first",
+					},
+					{ status: 409 },
+				),
+			),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(
+			<>
+				<LoginPage />
+				<Toaster />
+			</>,
+		)
+
+		await user.click(screen.getByTestId("google-sign-in-button"))
+
+		expect(await screen.findByText(/vincular sua conta/i)).toBeInTheDocument()
+		expect(replace).not.toHaveBeenCalled()
 	})
 
 	test("renderiza container de largura máxima centralizado", () => {
