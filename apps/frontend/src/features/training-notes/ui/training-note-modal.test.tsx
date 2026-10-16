@@ -2,6 +2,12 @@ import { screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import { describe, expect, test, vi } from "vitest"
+
+vi.mock("sonner", () => ({
+	toast: { success: vi.fn(), error: vi.fn() },
+}))
+
+import { toast } from "sonner"
 import CalendarPage from "@/app/(authenticated)/calendario/page"
 import { endpoint } from "@/test/msw/handlers"
 import { server } from "@/test/msw/server"
@@ -82,6 +88,33 @@ describe("Modal da nota de treino", () => {
 		await user.click(screen.getByRole("button", { name: /repetir/i }))
 		await waitFor(() =>
 			expect(screen.queryByTestId("nota-bar-2026-10-17")).toBeInTheDocument(),
+		)
+	})
+
+	test("excluir nota inexistente (404) avisa para recarregar o mês", async () => {
+		instalarNotasMock({
+			semente: [criarNotaMock("2026-10-16", "Peito + tríceps 4x12")],
+		})
+		server.use(
+			http.delete(endpoint("/training-notes/:date"), () =>
+				HttpResponse.json(
+					{ message: "Nota não encontrada — recarregue o mês" },
+					{ status: 404 },
+				),
+			),
+		)
+		vi.mocked(toast.error).mockClear()
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+
+		await user.click(await screen.findByTestId("nota-bar-2026-10-16"))
+		await user.click(screen.getByRole("button", { name: /excluir/i }))
+		await user.click(screen.getByRole("button", { name: /confirmar/i }))
+
+		await waitFor(() =>
+			expect(toast.error).toHaveBeenCalledWith(
+				"Nota não encontrada — recarregue o mês",
+			),
 		)
 	})
 })

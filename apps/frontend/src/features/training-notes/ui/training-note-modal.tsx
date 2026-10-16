@@ -327,8 +327,8 @@ function ModalBody({
 			toast.success("Nota excluída.")
 			setConfirmandoExclusao(false)
 			onOpenChange(false)
-		} catch {
-			toast.error("Não foi possível excluir. Tente de novo.")
+		} catch (error) {
+			toast.error(mensagemDeFalha(error))
 		}
 	}
 
