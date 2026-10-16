@@ -1,0 +1,3 @@
+docs/superpowers/notas-treino-calendario/qa/evidence/us-02-usuario-logado-editar-a-nota/us-02-usuario-logado-editar-a-nota-editar-nota.acceptance.test.tsx
+- FR-002 abre em modo edição e salvar atualiza a barrinha e a lista (fluxo de edição via modal não coberto pelos testes existentes, que só exerciam PUT no nível do hook)
+- FR-009 editar nota inexistente (PUT 404) avisa sem efeito colateral (testes existentes só cobriam o 404 do DELETE)
