@@ -26,6 +26,14 @@ const STUB_MY_SUBSCRIPTION = {
 	cancelAtPeriodEnd: false,
 }
 
+const TRAINING_NOTES_STUB = [
+	{
+		data: "2026-10-16",
+		texto: "Peito + tríceps 4x12",
+		atualizadoEm: "2026-10-16T12:00:00.000Z",
+	},
+]
+
 export const handlers = [
 	http.get(endpoint("/plans"), () => HttpResponse.json([], { status: 200 })),
 	http.get(endpoint("/subscriptions/me"), () =>
@@ -251,4 +259,68 @@ export const handlers = [
 	http.post(endpoint("/api/v1/notifications/broadcast"), () =>
 		HttpResponse.json({ recipients: 3 }, { status: 201 }),
 	),
+	http.get(endpoint("/training-notes"), ({ request }) => {
+		const url = new URL(request.url)
+		const de = url.searchParams.get("de") ?? ""
+		const ate = url.searchParams.get("ate") ?? ""
+		const notas = TRAINING_NOTES_STUB.filter(
+			(n) => n.data >= de && n.data <= ate,
+		)
+		return HttpResponse.json(notas, { status: 200 })
+	}),
+	http.post(endpoint("/training-notes"), async ({ request }) => {
+		const body = (await request.json().catch(() => ({}))) as {
+			data?: string
+			texto?: string
+		}
+		if (TRAINING_NOTES_STUB.some((n) => n.data === body.data)) {
+			return HttpResponse.json(
+				{
+					code: "NOTA_JA_EXISTE",
+					message: "Esse dia já tem nota — edite a atual",
+				},
+				{ status: 409 },
+			)
+		}
+		return HttpResponse.json(
+			{
+				id: "nota-stub",
+				data: body.data ?? "",
+				texto: body.texto ?? "",
+				atualizadoEm: new Date().toISOString(),
+			},
+			{ status: 201 },
+		)
+	}),
+	http.put(endpoint("/training-notes/:date"), async ({ params, request }) => {
+		const date = String(params.date ?? "")
+		const body = (await request.json().catch(() => ({}))) as {
+			texto?: string
+		}
+		const existente = TRAINING_NOTES_STUB.find((n) => n.data === date)
+		if (!existente) {
+			return HttpResponse.json(
+				{ message: "Nota não encontrada — recarregue o mês" },
+				{ status: 404 },
+			)
+		}
+		return HttpResponse.json(
+			{
+				...existente,
+				texto: body.texto ?? existente.texto,
+				atualizadoEm: new Date().toISOString(),
+			},
+			{ status: 200 },
+		)
+	}),
+	http.delete(endpoint("/training-notes/:date"), ({ params }) => {
+		const date = String(params.date ?? "")
+		if (!TRAINING_NOTES_STUB.some((n) => n.data === date)) {
+			return HttpResponse.json(
+				{ message: "Nota não encontrada — recarregue o mês" },
+				{ status: 404 },
+			)
+		}
+		return new HttpResponse(null, { status: 204 })
+	}),
 ]
