@@ -32,16 +32,16 @@ Usuários logados anotam o treino do dia direto no calendário existente da rota
 
 ## Arquitetura e Fluxo
 
-O frontend mantém a leitura de feriados como hoje e adiciona um hook `useTrainingNotesQuery(year, month)` com chave mensal, mais mutations de criação, atualização e exclusão com invalidação do mês exibido. A célula do dia (`DayCell`) passa a renderizar a barrinha ciano com ellipsis e o losango quando há nota, mantendo os destaques de hoje e feriado; clique em dia vazio abre o modal em modo criar, clique na nota abre em modo editar com Excluir pedindo confirmação em seguida. O backend ganha um contexto novo `training-notes` em `domain/application/infra`, com regras puras no domínio, casos de uso retornando `Either`, injeção via Inversify, rotas registradas como constantes e repositório Prisma restrito à infra. O controller extrai o autor do JWT e o repassa aos casos de uso, de modo que o cliente informe data e texto, sem informar quem é o dono.
+O frontend mantém a leitura de feriados como hoje e adiciona um hook `useTrainingNotesQuery(year, month)` com chave mensal, mais mutations de criação, atualização e exclusão com invalidação do mês exibido. A célula do dia (`DayCell`) passa a renderizar a barrinha ciano com ellipsis e o losango quando há nota, mantendo os destaques de hoje e feriado; clique em dia vazio abre o modal em modo criar, clique na nota abre em modo editar com Excluir pedindo confirmação em seguida. O backend ganha um contexto novo `training-notes` em `domain/application/infra`, com regras puras no domínio, casos de uso retornando `Either`, injeção via Inversify, rotas registradas como constantes e repositório Prisma restrito à infra. O controller extrai o autor do JWT e o repassa aos casos de uso, de modo que o cliente informe data e texto, sem informar quem é o dono. O painel de notas tem loading e erro próprios, independentes do painel de feriados: falha da BrasilAPI ou ano sem feriados não esconde as notas (decisão minha). A sidebar lista os dias com nota do mês exibido, agrupados por semana com o mesmo `getSemanaDoMes` da `HolidayList`, filtrados no cliente a partir do cache mensal, sem fetch próprio (decisão minha). O frontend envia o primeiro e o último dia do mês; o caso de uso confia no `sub` do JWT sem consultar o contexto user, seguindo o padrão dos controllers existentes (decisão minha).
 
 ## Componentes
 
 | Componente | Responsabilidade | Oculta | Depende de | Usado por |
 |---|---|---|---|---|
 | `TrainingNote` | Entidade de domínio: data como dia de calendário, texto normalizado, vínculo com o autor | Normalização (trim + rejeição de vazio) e o formato de data residem aqui, não no controller | tipos de `shared`, relógio para `atualizadoEm` | casos de uso do contexto |
-| Casos de uso de notas | Criar, atualizar, excluir e listar o intervalo do mês com as regras de posse | Posse é verificada por par autor+data em cada operação; criação duplicada vira erro de domínio | `TrainingNote`, porta do repositório, `Either` | controllers das rotas |
+| Casos de uso de notas | Criar, atualizar, excluir e listar o intervalo do mês com as regras de posse | Posse verificada por par autor+data em cada operação; criação duplicada vira erro de domínio, com a concorrência resolvida pela UNIQUE e conversão de `P2002` no repositório | `TrainingNote`, porta do repositório, `Either` | controllers das rotas |
 | `PrismaTrainingNotesRepository` | Persistir e ler notas no Postgres, incluindo a restrição por autor+data | SQL e mapeamento Prisma ficam isolados aqui; camadas acima enxergam a porta | Prisma, `schema.prisma` | casos de uso |
-| UI de notas no calendário | Hook mensal, célula com barrinha, modal criar/editar/excluir e lista da semana | Cache mensal, rascunho em falha e textos de acessibilidade ficam no frontend | `openapi-fetch`, TanStack Query, `DayCell` atual | rota `calendario` |
+| UI de notas no calendário | Hook mensal, célula com barrinha, modal criar/editar/excluir e lista da semana | Cache mensal por ano+mês, sidebar derivada do cache e agrupada por semana, rascunho em falha e painel independente dos feriados ficam no frontend | `openapi-fetch`, TanStack Query, `DayCell` atual | rota `calendario` |
 
 Nomes acima são os reais; evitam sufixos genéricos Manager/Handler/Controller.
 
@@ -52,7 +52,7 @@ Nomes acima são os reais; evitam sufixos genéricos Manager/Handler/Controller.
 | Operação | Entrada | Saída | Erros |
 |---|---|---|---|
 | POST /training-notes | `{data: YYYY-MM-DD, texto: string 1..500 após trim}` | `201 {id, data, texto, atualizadoEm: ISO-8601 UTC}` | `NOTA_JA_EXISTE → 409; VALIDACAO → 400; NAO_AUTENTICADO → 401` |
-| GET /training-notes | `query de: YYYY-MM-DD, ate: YYYY-MM-DD` | `200 [{data, texto, atualizadoEm: ISO-8601 UTC}]` do autor, ordem crescente de data | `VALIDACAO → 400; NAO_AUTENTICADO → 401` |
+| GET /training-notes | `query de: YYYY-MM-DD, ate: YYYY-MM-DD` (obrigatórios, `de<=ate`, intervalo até 62 dias; ver Significados) | `200 [{data, texto, atualizadoEm: ISO-8601 UTC}]` do autor, ordem crescente de data | `VALIDACAO → 400; NAO_AUTENTICADO → 401` |
 | PUT /training-notes/:date | `{texto: string 1..500 após trim}` | `200 {id, data, texto, atualizadoEm: ISO-8601 UTC}` | `NOTA_INEXISTENTE → 404; VALIDACAO → 400; NAO_AUTENTICADO → 401` |
 | DELETE /training-notes/:date | — | `204` sem corpo | `NOTA_INEXISTENTE → 404; NAO_AUTENTICADO → 401` |
 
@@ -64,7 +64,7 @@ Nomes acima são os reais; evitam sufixos genéricos Manager/Handler/Controller.
 | training-notes → Postgres | escrita e leitura via Prisma, restritas ao autor |
 | Calendário → BrasilAPI | leitura anual de feriados, inalterada, direto do frontend |
 
-**Significados:** `data` = dia de calendário `YYYY-MM-DD` em America/Sao_Paulo, exibido como está, sem conversão de fuso; `texto` = UTF-8 com 1 a 500 caracteres após trim (decisão minha); autor = `sub` do JWT extraído no backend, o cliente não o informa; `atualizadoEm` = instante ISO-8601 em UTC; falha visível = texto PT-BR definido na tabela de Falhas.
+**Significados:** `data` = dia de calendário `YYYY-MM-DD` em America/Sao_Paulo, exibido como está, sem conversão de fuso; o backend valida data real (ex. 2026-02-30 → 400, inclusive em path param) e os dois lados limitam anos a 1900–2199 (decisão minha); `texto` = UTF-8 com 1 a 500 caracteres após trim (decisão minha); contagem = `texto.trim().length` nas três camadas, trim no sentido de `String.trim`, quebras internas preservadas, o que impede estouro do `varchar(500)` (decisão minha); `de`/`ate` = dias de calendário com `de<=ate` e intervalo até 62 dias (decisão minha); autor = `sub` do JWT extraído no backend, o cliente não o informa; `atualizadoEm` = instante ISO-8601 em UTC; corpos de erro = `{message}` via ResponseFactory, e o frontend diferencia os casos pelo status HTTP (409 = dia já tem nota), seguindo `lib/api.ts` e `lib/errors`; falha visível = texto PT-BR definido na tabela de Falhas.
 
 ## Dados e Consistência
 
@@ -79,13 +79,13 @@ Nomes acima são os reais; evitam sufixos genéricos Manager/Handler/Controller.
 | Coluna | Tipo | Nulo | Restrição |
 |---|---|---|---|
 | `id` | uuid | não | PK, gerado pela aplicação |
-| `user_id` | uuid | não | FK `users.id`, compõe UNIQUE · INV-01 |
+| `user_id` | uuid | não | FK `users.id` com `onDelete Restrict` (convenção do schema para linhas de User), compõe UNIQUE · INV-01 |
 | `data` | date | não | compõe UNIQUE(`user_id`, `data`) · INV-01 |
 | `texto` | varchar(500) | não | trimado em app, vazio rejeitado · INV-02 |
 | `created_at` | timestamptz | não | preenchido na criação |
 | `updated_at` | timestamptz | não | preenchido a cada escrita |
 
-Sem dados legados: a tabela nasce vazia e o código antigo não a referencia.
+Sem dados legados: a tabela nasce vazia e o código antigo não a referencia. Concorrência na criação resolve-se no banco: o repositório converte `P2002` em erro de domínio, no padrão de `prisma-check-in-repository` (decisão minha).
 
 ## Falhas e Erros
 
@@ -96,6 +96,7 @@ Sem dados legados: a tabela nasce vazia e o código antigo não a referencia.
 | Editar ou excluir nota inexistente | leitura por autor+data retorna vazio | operação recusada sem efeito colateral | "Nota não encontrada — recarregue o mês" | AC-08 |
 | Rede falha ao salvar | timeout/erro da mutation | rascunho mantido no modal com retry | "Sem conexão — tente de novo" com botão Repetir | AC-06 |
 | Sem sessão válida | JWT ausente ou expirado | backend recusa; frontend redireciona ao login | tela de login | AC-05 |
+| Leitura de feriados falha ou volta vazia | query de feriados em erro ou lista vazia | painel de feriados mostra retry ou estado vazio; painel de notas opera normalmente | notas do mês seguem visíveis | AC-09 |
 
 ## Rollout e Compatibilidade
 
@@ -164,7 +165,7 @@ Consumidor hoje: a rota `calendario` autenticada; nenhum contrato existente muda
 
 **Runner:** backend `pnpm --filter backend test:run` (vitest app-domain) mais `test:business-flow` e `test:e2e:prisma`; frontend `pnpm --filter frontend test -- --run` (vitest).
 **Banco de teste:** Postgres real via `apps/backend/test/vite.config.integration.ts` (suite `test:e2e:prisma`) para INV-01.
-**Níveis:** unitário AC-01, AC-03, AC-04, AC-06, AC-07, AC-08; banco real INV-01, INV-03, AC-02, AC-05.
+**Níveis:** unitário AC-01, AC-03, AC-04, AC-06, AC-07, AC-08, AC-09; banco real INV-01, INV-03, AC-02, AC-05.
 
 - AC-01 · WHEN o usuário salva a nota do dia THEN a célula exibe a barrinha e a lista da semana inclui o dia (origem: fato do usuário ("informações sobre treino, qual treino irei realizar"))
 - AC-02 · WHEN o dia com nota também é feriado THEN a célula mostra o nome do feriado mais a nota (origem: fato do usuário ("sim, aparece junto com o nome do feriado"))
@@ -174,3 +175,4 @@ Consumidor hoje: a rota `calendario` autenticada; nenhum contrato existente muda
 - AC-06 · WHEN a rede falha ao salvar THEN o rascunho é mantido com retry visível (origem: Falhas: Rede falha ao salvar)
 - AC-07 · WHEN o usuário cria nota para dia que já tem nota THEN a criação é recusada com orientação de editar (origem: D2)
 - AC-08 · WHEN o usuário edita nota inexistente THEN recebe aviso sem efeito colateral (origem: Falhas: Editar ou excluir nota inexistente)
+- AC-09 · WHEN a leitura de feriados falha ou volta vazia THEN as notas do mês seguem visíveis com retry no painel de feriados (origem: Falhas: Leitura de feriados falha ou volta vazia)
