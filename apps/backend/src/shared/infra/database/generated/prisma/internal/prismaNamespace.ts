@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  TrainingNote: 'TrainingNote',
   UserActivityEvent: 'UserActivityEvent',
   CheckIn: 'CheckIn',
   Gym: 'Gym',
@@ -408,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userActivityEvent" | "checkIn" | "gym" | "subscription" | "stripeWebhookEvent" | "plan" | "notification" | "userNotification"
+    modelProps: "user" | "trainingNote" | "userActivityEvent" | "checkIn" | "gym" | "subscription" | "stripeWebhookEvent" | "plan" | "notification" | "userNotification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -483,6 +484,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    TrainingNote: {
+      payload: Prisma.$TrainingNotePayload<ExtArgs>
+      fields: Prisma.TrainingNoteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TrainingNoteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TrainingNoteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>
+        }
+        findFirst: {
+          args: Prisma.TrainingNoteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TrainingNoteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>
+        }
+        findMany: {
+          args: Prisma.TrainingNoteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>[]
+        }
+        create: {
+          args: Prisma.TrainingNoteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>
+        }
+        createMany: {
+          args: Prisma.TrainingNoteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TrainingNoteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>[]
+        }
+        delete: {
+          args: Prisma.TrainingNoteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>
+        }
+        update: {
+          args: Prisma.TrainingNoteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>
+        }
+        deleteMany: {
+          args: Prisma.TrainingNoteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TrainingNoteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TrainingNoteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>[]
+        }
+        upsert: {
+          args: Prisma.TrainingNoteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TrainingNotePayload>
+        }
+        aggregate: {
+          args: Prisma.TrainingNoteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTrainingNote>
+        }
+        groupBy: {
+          args: Prisma.TrainingNoteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TrainingNoteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TrainingNoteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TrainingNoteCountAggregateOutputType> | number
         }
       }
     }
@@ -1135,6 +1210,18 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const TrainingNoteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  data: 'data',
+  texto: 'texto',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TrainingNoteScalarFieldEnum = (typeof TrainingNoteScalarFieldEnum)[keyof typeof TrainingNoteScalarFieldEnum]
+
+
 export const UserActivityEventScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -1586,6 +1673,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  trainingNote?: Prisma.TrainingNoteOmit
   userActivityEvent?: Prisma.UserActivityEventOmit
   checkIn?: Prisma.CheckInOmit
   gym?: Prisma.GymOmit

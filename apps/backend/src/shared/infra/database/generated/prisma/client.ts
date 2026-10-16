@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model TrainingNote
+ * 
+ */
+export type TrainingNote = Prisma.TrainingNoteModel
+/**
  * Model UserActivityEvent
  * 
  */

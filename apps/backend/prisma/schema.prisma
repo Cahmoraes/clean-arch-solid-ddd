@@ -26,9 +26,24 @@ model User {
   userNotifications UserNotification[]
   notifications     Notification[]
   activityEvents    UserActivityEvent[]
+  trainingNotes     TrainingNote[]
 
   @@index([created_at])
   @@map("users")
+}
+
+model TrainingNote {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  data      DateTime @db.Date
+  texto     String   @db.VarChar(500)
+  createdAt DateTime @map("created_at") @db.Timestamptz
+  updatedAt DateTime @map("updated_at") @db.Timestamptz
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, data])
+  @@index([userId, data])
+  @@map("training_notes")
 }
 
 model UserActivityEvent {

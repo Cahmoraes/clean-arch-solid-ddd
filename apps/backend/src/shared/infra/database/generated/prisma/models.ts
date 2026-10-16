@@ -9,6 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/TrainingNote'
 export type * from './models/UserActivityEvent'
 export type * from './models/CheckIn'
 export type * from './models/Gym'
