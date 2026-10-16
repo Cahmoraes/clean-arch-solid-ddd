@@ -8,6 +8,7 @@ import { infraModule } from "./module/infra/infra-module"
 import { notificationModule } from "./module/notification/notification-module"
 import { sessionModule } from "./module/session/session-module"
 import { subscriptionModule } from "./module/subscription/subscription-module"
+import { trainingNoteModule } from "./module/training-note-module"
 import { userModule } from "./module/user/user-module"
 import { weatherModule } from "./module/weather/weather-module"
 
@@ -20,6 +21,7 @@ container.load(
 	sessionModule,
 	healthCheckModule,
 	subscriptionModule,
+	trainingNoteModule,
 	notificationModule,
 	analyticsModule,
 	contactModule,

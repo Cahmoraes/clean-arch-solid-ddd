@@ -14,6 +14,7 @@ import { setupHealthCheckModule } from "./setup-health-check-module"
 import { setupNotificationModule } from "./setup-notification-module"
 import { setupSessionModule } from "./setup-session-module"
 import { setupSubscriptionModule } from "./setup-subscription-module"
+import { setupTrainingNotesModule } from "./setup-training-notes-module"
 import { setupUserModule } from "./setup-user-module"
 import { setupWeatherModule } from "./setup-weather-module"
 
@@ -38,6 +39,7 @@ export async function serverBuild() {
 		await setupSessionModule(),
 		await setupHealthCheckModule(),
 		await setupSubscriptionModule(),
+		await setupTrainingNotesModule(),
 		await setupNotificationModule(),
 		await setupAnalyticsModule(),
 		setupContactModule(),

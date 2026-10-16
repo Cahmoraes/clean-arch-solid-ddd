@@ -4810,6 +4810,332 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/training-notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List training notes
+         * @description Lists training notes of the authenticated user in a date range, ascending.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Primeiro dia do intervalo (inclusive) */
+                    de: string;
+                    /** @description Último dia do intervalo (inclusive) */
+                    ate: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Training notes retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Dia de calendário em America/Sao_Paulo */
+                            data: string;
+                            /** @description Training note text */
+                            texto: string;
+                            /**
+                             * Format: date-time
+                             * @description Last update instant (ISO-8601 UTC)
+                             */
+                            atualizadoEm: string;
+                        }[];
+                    };
+                };
+                /** @description Invalid query params */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a training note
+         * @description Creates one training note for a calendar day of the authenticated user.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Dia de calendário em America/Sao_Paulo
+                         * @example 2026-10-16
+                         */
+                        data: string;
+                        /**
+                         * @description Texto do treino
+                         * @example Peito + tríceps 4x12
+                         */
+                        texto: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Training note created successfully */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Training note ID */
+                            id: string;
+                            /**
+                             * @description Dia de calendário em America/Sao_Paulo
+                             * @example 2026-10-16
+                             */
+                            data: string;
+                            /** @description Training note text */
+                            texto: string;
+                            /**
+                             * Format: date-time
+                             * @description Last update instant (ISO-8601 UTC)
+                             */
+                            atualizadoEm: string;
+                        };
+                    };
+                };
+                /** @description Invalid request body */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Conflict - day already has a note */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/training-notes/{date}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update a training note
+         * @description Updates the training note of a calendar day of the authenticated user.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Dia de calendário em America/Sao_Paulo */
+                    date: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * @description Texto do treino
+                         * @example Peito + tríceps 4x12
+                         */
+                        texto: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Training note updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Training note ID */
+                            id: string;
+                            /**
+                             * @description Dia de calendário em America/Sao_Paulo
+                             * @example 2026-10-16
+                             */
+                            data: string;
+                            /** @description Training note text */
+                            texto: string;
+                            /**
+                             * Format: date-time
+                             * @description Last update instant (ISO-8601 UTC)
+                             */
+                            atualizadoEm: string;
+                        };
+                    };
+                };
+                /** @description Invalid params or body */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Training note not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Delete a training note
+         * @description Deletes the training note of a calendar day of the authenticated user.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Dia de calendário em America/Sao_Paulo */
+                    date: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Training note deleted successfully */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Invalid params */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            [key: string]: unknown;
+                        };
+                    };
+                };
+                /** @description Training note not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @description Error message */
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications": {
         parameters: {
             query?: never;
