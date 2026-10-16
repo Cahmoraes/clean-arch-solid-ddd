@@ -39,7 +39,7 @@ O frontend mantém a leitura de feriados como hoje e adiciona um hook `useTraini
 | Componente | Responsabilidade | Oculta | Depende de | Usado por |
 |---|---|---|---|---|
 | `TrainingNote` | Entidade de domínio: data como dia de calendário, texto normalizado, vínculo com o autor | Normalização (trim + rejeição de vazio) e o formato de data residem aqui, não no controller | tipos de `shared`, relógio para `atualizadoEm` | casos de uso do contexto |
-| Casos de uso de notas | Criar, atualizar, excluir e listar o intervalo do mês com as regras de posse | Posse verificada por par autor+data em cada operação; criação duplicada vira erro de domínio, com a concorrência resolvida pela UNIQUE e conversão de `P2002` no repositório | `TrainingNote`, porta do repositório, `Either` | controllers das rotas |
+| Casos de uso de notas | Criar, atualizar, excluir e listar o intervalo do mês com as regras de posse | Posse verificada por par autor+data em cada operação; criação duplicada vira erro de domínio, com a concorrência resolvida pela UNIQUE de INV-01 com conversão de `P2002` no repositório | `TrainingNote`, porta do repositório, `Either` | controllers das rotas |
 | `PrismaTrainingNotesRepository` | Persistir e ler notas no Postgres, incluindo a restrição por autor+data | SQL e mapeamento Prisma ficam isolados aqui; camadas acima enxergam a porta | Prisma, `schema.prisma` | casos de uso |
 | UI de notas no calendário | Hook mensal, célula com barrinha, modal criar/editar/excluir e lista da semana | Cache mensal por ano+mês, sidebar derivada do cache e agrupada por semana, rascunho em falha e painel independente dos feriados ficam no frontend | `openapi-fetch`, TanStack Query, `DayCell` atual | rota `calendario` |
 
