@@ -51,6 +51,12 @@ export interface MonthlyCalendarProps {
 	onNextMonth: () => void
 	prevBtnRef?: RefObject<HTMLButtonElement | null>
 	nextBtnRef?: RefObject<HTMLButtonElement | null>
+	/**
+	 * Notas do mês exibido (data `YYYY-MM-DD` → texto). Quando ausente, a
+	 * célula renderiza só feriado/hoje, como antes.
+	 */
+	notas?: Readonly<Record<string, string>>
+	onSelectDay?: (date: string) => void
 }
 
 function getDaysInMonth(year: number, monthIndex: number): number {
@@ -76,30 +82,45 @@ function getDayCellStateClass(isHoliday: boolean, isToday: boolean): string {
 	return "border-transparent"
 }
 
+function formatDayAriaLabel(
+	day: number,
+	monthNameLower: string,
+	holiday: Feriado | undefined,
+	notaTexto: string | undefined,
+): string {
+	const base = holiday
+		? formatHolidayAriaLabel(holiday)
+		: `${day} de ${monthNameLower}`
+	if (!notaTexto) return base
+	return `${base}, nota: ${notaTexto}`
+}
+
 function DayCell({
 	day,
+	dateStr,
 	holiday,
+	notaTexto,
 	isToday,
 	monthNameLower,
+	onSelectDay,
 }: {
 	day: number
+	dateStr: string
 	holiday?: Feriado
+	notaTexto?: string
 	isToday: boolean
 	monthNameLower: string
+	onSelectDay?: (date: string) => void
 }) {
 	const cell = (
-		// biome-ignore lint/a11y/useSemanticElements: gridcell semantics required
-		<div
-			role="gridcell"
-			tabIndex={-1}
+		<button
+			type="button"
+			data-date={dateStr}
 			aria-current={isToday ? "date" : undefined}
-			aria-label={
-				holiday
-					? formatHolidayAriaLabel(holiday)
-					: `${day} de ${monthNameLower}`
-			}
+			aria-label={formatDayAriaLabel(day, monthNameLower, holiday, notaTexto)}
+			onClick={() => onSelectDay?.(dateStr)}
 			className={cn(
-				"flex min-h-14 flex-col items-center justify-center rounded-md border p-1 text-sm",
+				"relative flex min-h-14 w-full cursor-pointer flex-col items-center justify-center rounded-md border p-1 text-sm focus-ring-duplo",
 				getDayCellStateClass(Boolean(holiday), isToday),
 			)}
 		>
@@ -112,7 +133,22 @@ function DayCell({
 					{holiday.name}
 				</span>
 			) : null}
-		</div>
+			{notaTexto ? (
+				<>
+					<span
+						aria-hidden="true"
+						data-testid={`nota-dot-${dateStr}`}
+						className="absolute right-1 top-1 size-2 rotate-45 bg-accent"
+					/>
+					<span
+						data-testid={`nota-bar-${dateStr}`}
+						className="mt-1 block w-full truncate rounded-md bg-accent px-1 text-center font-sans text-[10px] font-medium leading-tight text-accent-foreground"
+					>
+						{notaTexto}
+					</span>
+				</>
+			) : null}
+		</button>
 	)
 
 	if (!holiday) return cell
@@ -130,6 +166,8 @@ function renderDayCells(
 	monthIndex: number,
 	holidaysByDate: Map<string, Feriado>,
 	monthNameLower: string,
+	notas: Readonly<Record<string, string>>,
+	onSelectDay: ((date: string) => void) | undefined,
 ) {
 	const daysInMonth = getDaysInMonth(year, monthIndex)
 	const todayStr = getTodayDateStr()
@@ -141,9 +179,12 @@ function renderDayCells(
 			<DayCell
 				key={dateStr}
 				day={day}
+				dateStr={dateStr}
 				holiday={holiday}
+				notaTexto={notas[dateStr]}
 				isToday={dateStr === todayStr}
 				monthNameLower={monthNameLower}
+				onSelectDay={onSelectDay}
 			/>
 		)
 	})
@@ -167,6 +208,8 @@ export function MonthlyCalendar({
 	onNextMonth,
 	prevBtnRef,
 	nextBtnRef,
+	notas = {},
+	onSelectDay,
 }: MonthlyCalendarProps) {
 	const prevLabel = getPrevLabel(monthIndex, year)
 	const nextLabel = getNextLabel(monthIndex, year)
@@ -224,7 +267,14 @@ export function MonthlyCalendar({
 							className="min-h-10"
 						/>
 					))}
-					{renderDayCells(year, monthIndex, holidaysByDate, monthNameLower)}
+					{renderDayCells(
+						year,
+						monthIndex,
+						holidaysByDate,
+						monthNameLower,
+						notas,
+						onSelectDay,
+					)}
 				</div>
 			</CardContent>
 		</Card>

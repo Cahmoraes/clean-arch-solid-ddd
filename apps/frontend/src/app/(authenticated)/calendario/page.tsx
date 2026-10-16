@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -17,6 +17,9 @@ import { useCalendarNavigation } from "@/features/calendario-feriados/hooks/use-
 import { getFeriadosDoMes } from "@/features/calendario-feriados/lib/get-feriados-do-mes"
 import { HolidayList } from "@/features/calendario-feriados/ui/holiday-list"
 import { MonthlyCalendar } from "@/features/calendario-feriados/ui/monthly-calendar"
+import { useTrainingNotesQuery } from "@/features/training-notes/api/use-training-notes"
+import { TrainingNoteModal } from "@/features/training-notes/ui/training-note-modal"
+import { TrainingNotesList } from "@/features/training-notes/ui/training-notes-list"
 
 type CalendarPageProps = {
 	initialYear?: number
@@ -144,9 +147,11 @@ function isMobileViewport(): boolean {
 	return window.matchMedia("(max-width: 767px)").matches
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: view branches for loading/error/empty/content
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: painéis independentes de feriados e notas
 function CalendarContent({
 	query,
+	notesQuery,
+	notas,
 	selectedYear,
 	selectedMonth,
 	feriadosDoMes,
@@ -156,8 +161,11 @@ function CalendarContent({
 	nextBtnRef,
 	onTouchStart,
 	onTouchEnd,
+	onSelectDay,
 }: {
 	query: ReturnType<typeof useFeriadosQuery>
+	notesQuery: ReturnType<typeof useTrainingNotesQuery>
+	notas: Readonly<Record<string, string>>
 	selectedYear: number
 	selectedMonth: number
 	feriadosDoMes: ReturnType<typeof getFeriadosDoMes>
@@ -167,18 +175,11 @@ function CalendarContent({
 	nextBtnRef: React.RefObject<HTMLButtonElement | null>
 	onTouchStart: (e: React.TouchEvent) => void
 	onTouchEnd: (e: React.TouchEvent) => void
+	onSelectDay: (date: string) => void
 }) {
-	if (query.isPending && !query.data) return <CalendarLoadingState />
-	if (query.isError)
-		return (
-			<CalendarErrorState
-				errorMessage={query.error.userMessage}
-				onRetry={() => {
-					void query.refetch()
-				}}
-			/>
-		)
-	if (query.data && query.data.length === 0) return <CalendarEmptyState />
+	const feriadosVazios = (query.data?.length ?? 0) === 0
+	const carregandoFeriados = query.isPending && !query.data
+	if (carregandoFeriados) return <CalendarLoadingState />
 	return (
 		<div
 			className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]"
@@ -189,19 +190,45 @@ function CalendarContent({
 				monthIndex={selectedMonth}
 				year={selectedYear}
 				feriados={feriadosDoMes}
+				notas={notas}
+				onSelectDay={onSelectDay}
 				onPrevMonth={handlePrevMonth}
 				onNextMonth={handleNextMonth}
 				prevBtnRef={prevBtnRef}
 				nextBtnRef={nextBtnRef}
 			/>
 			{/* biome-ignore lint/a11y/noRedundantRoles: spec exige role="complementary" explícito em aside */}
-			<aside role="complementary" aria-label="Feriados do mês">
-				<HolidayList
-					feriados={feriadosDoMes}
-					monthIndex={selectedMonth}
-					year={selectedYear}
-					total={query.data?.length ?? 0}
-				/>
+			<aside role="complementary" aria-label="Resumo do mês">
+				<div className="flex flex-col gap-6">
+					<TrainingNotesList
+						notas={notesQuery.data ?? []}
+						monthIndex={selectedMonth}
+						year={selectedYear}
+						isPending={notesQuery.isPending && !notesQuery.data}
+						isError={notesQuery.isError}
+						onRetry={() => {
+							void notesQuery.refetch()
+						}}
+						onSelectDay={onSelectDay}
+					/>
+					{query.isError ? (
+						<CalendarErrorState
+							errorMessage={query.error.userMessage}
+							onRetry={() => {
+								void query.refetch()
+							}}
+						/>
+					) : feriadosVazios ? (
+						<CalendarEmptyState />
+					) : (
+						<HolidayList
+							feriados={feriadosDoMes}
+							monthIndex={selectedMonth}
+							year={selectedYear}
+							total={query.data?.length ?? 0}
+						/>
+					)}
+				</div>
 			</aside>
 			{query.isFetching ? (
 				<span role="status" className="sr-only">
@@ -229,6 +256,35 @@ export default function CalendarPage({
 	const feriadosDoMes = query.data
 		? getFeriadosDoMes(query.data, selectedMonth)
 		: []
+	const notesQuery = useTrainingNotesQuery(selectedYear, selectedMonth + 1)
+	const notas = useMemo(() => {
+		const mapa: Record<string, string> = {}
+		for (const nota of notesQuery.data ?? []) {
+			mapa[nota.data] = nota.texto
+		}
+		return mapa
+	}, [notesQuery.data])
+	const [modalOpen, setModalOpen] = useState(false)
+	const [selectedDate, setSelectedDate] = useState<string | null>(null)
+	const lastDayRef = useRef<string | null>(null)
+
+	const handleSelectDay = useCallback((date: string) => {
+		lastDayRef.current = date
+		setSelectedDate(date)
+		setModalOpen(true)
+	}, [])
+
+	const handleModalOpenChange = useCallback((open: boolean) => {
+		setModalOpen(open)
+		if (!open && lastDayRef.current) {
+			const date = lastDayRef.current
+			queueMicrotask(() => {
+				document
+					.querySelector<HTMLButtonElement>(`button[data-date="${date}"]`)
+					?.focus()
+			})
+		}
+	}, [])
 	const now = new Date()
 	const isToday =
 		selectedYear === now.getFullYear() && selectedMonth === now.getMonth()
@@ -307,6 +363,8 @@ export default function CalendarPage({
 			/>
 			<CalendarContent
 				query={query}
+				notesQuery={notesQuery}
+				notas={notas}
 				selectedYear={selectedYear}
 				selectedMonth={selectedMonth}
 				feriadosDoMes={feriadosDoMes}
@@ -316,6 +374,13 @@ export default function CalendarPage({
 				nextBtnRef={nextBtnRef}
 				onTouchStart={onTouchStart}
 				onTouchEnd={onTouchEnd}
+				onSelectDay={handleSelectDay}
+			/>
+			<TrainingNoteModal
+				open={modalOpen}
+				date={selectedDate}
+				initialTexto={selectedDate ? notas[selectedDate] : undefined}
+				onOpenChange={handleModalOpenChange}
 			/>
 		</PageContainer>
 	)
