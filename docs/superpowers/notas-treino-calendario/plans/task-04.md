@@ -1,6 +1,6 @@
 # Task 4: Casos de uso criar, atualizar, excluir e listar [FR-001, FR-002, FR-003, FR-005, FR-006, FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-notas-treino-calendario.md`
 

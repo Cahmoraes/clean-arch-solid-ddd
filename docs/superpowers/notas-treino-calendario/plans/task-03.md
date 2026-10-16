@@ -1,6 +1,6 @@
 # Task 3: Repositórios port, Prisma e InMemory [FR-001, FR-006, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-notas-treino-calendario.md`
 

@@ -1,6 +1,6 @@
 # Task 7: UI do calendário com notas e fidelidade visual [FR-001, FR-002, FR-003, FR-004, FR-005, FR-007, FR-009, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-notas-treino-calendario.md`
 
@@ -16,8 +16,8 @@ Conecta a camada de dados ao calendário: célula com barrinha e losango, modal 
 
 - Create: `apps/frontend/src/features/training-notes/ui/training-note-modal.tsx`
 - Create: `apps/frontend/src/features/training-notes/ui/training-notes-list.tsx`
-- Modify: `apps/frontend/src/features/calendario/ui/monthly-calendar.tsx`
-- Modify: `apps/frontend/src/app/calendario/page.tsx` (confirmar path: é o `page.tsx` da rota `calendario` existente)
+- Modify: `apps/frontend/src/features/calendario-feriados/ui/monthly-calendar.tsx`
+- Modify: `apps/frontend/src/app/(authenticated)/calendario/page.tsx`
 - Test: `apps/frontend/src/features/training-notes/ui/training-note-modal.test.tsx`
 - Test: `apps/frontend/src/features/training-notes/ui/training-notes-calendar.test.tsx`
 

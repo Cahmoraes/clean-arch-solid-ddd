@@ -1,6 +1,6 @@
 # Task 6: Camada de dados frontend com TanStack Query [FR-001, FR-002, FR-003, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-notas-treino-calendario.md`
 

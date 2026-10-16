@@ -8,13 +8,13 @@
 
 ## Tarefas
 
-- [ ] 1. Migration e model Prisma de training_notes → `task-01.md`
-- [ ] 2. Entidade TrainingNote e erros de domínio → `task-02.md`
-- [ ] 3. Repositórios port, Prisma e InMemory → `task-03.md`
-- [ ] 4. Casos de uso criar, atualizar, excluir e listar → `task-04.md`
-- [ ] 5. Controllers, rotas, IoC e tipos OpenAPI → `task-05.md`
-- [ ] 6. Camada de dados frontend com TanStack Query → `task-06.md`
-- [ ] 7. UI do calendário com notas e fidelidade visual → `task-07.md`
+- [x] 1. Migration e model Prisma de training_notes → `task-01.md`
+- [x] 2. Entidade TrainingNote e erros de domínio → `task-02.md`
+- [x] 3. Repositórios port, Prisma e InMemory → `task-03.md`
+- [x] 4. Casos de uso criar, atualizar, excluir e listar → `task-04.md`
+- [x] 5. Controllers, rotas, IoC e tipos OpenAPI → `task-05.md`
+- [x] 6. Camada de dados frontend com TanStack Query → `task-06.md`
+- [x] 7. UI do calendário com notas e fidelidade visual → `task-07.md`
 
 ## Restrições Globais
 

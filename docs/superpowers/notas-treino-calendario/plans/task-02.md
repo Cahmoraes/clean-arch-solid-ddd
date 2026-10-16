@@ -1,6 +1,6 @@
 # Task 2: Entidade TrainingNote e erros de domínio [FR-001, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-notas-treino-calendario.md`
 

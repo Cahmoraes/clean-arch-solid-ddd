@@ -1,6 +1,6 @@
 # Task 5: Controllers, rotas, IoC e tipos OpenAPI [FR-001, FR-002, FR-003, FR-005, FR-006, FR-008, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-notas-treino-calendario.md`
 

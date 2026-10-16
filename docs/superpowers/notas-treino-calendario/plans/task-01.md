@@ -1,6 +1,6 @@
 # Task 1: Migration e model Prisma de training_notes [FR-001, FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-notas-treino-calendario.md`
 
