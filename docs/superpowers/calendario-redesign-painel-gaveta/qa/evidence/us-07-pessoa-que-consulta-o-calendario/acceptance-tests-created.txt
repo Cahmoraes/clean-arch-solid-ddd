@@ -1,0 +1,1 @@
+docs/superpowers/calendario-redesign-painel-gaveta/qa/evidence/us-07-pessoa-que-consulta-o-calendario/us-07-pessoa-que-consulta-o-calendario-fontes-independentes.acceptance.test.tsx

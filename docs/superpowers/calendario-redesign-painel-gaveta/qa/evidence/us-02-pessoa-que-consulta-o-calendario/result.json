@@ -1,0 +1,12 @@
+{
+  "us_id": "us-02",
+  "user_story": "Como pessoa que consulta o calendário, eu quero selecionar um dia e ver o feriado e a nota dele num painel para que eu leia o detalhe sem abrir um formulário",
+  "requirements": ["FR-003", "FR-004", "FR-005", "FR-009"],
+  "status": "PASSED",
+  "existing_tests_found": true,
+  "acceptance_tests_created": [],
+  "test_output_summary": "4 arquivos, 64 testes passaram, 0 falharam (day-detail-panel.test.tsx, month-agenda.test.tsx, monthly-calendar.test.tsx, calendario/page.test.tsx). Cobertura relevante: AC-02 (page.test.tsx: clicar no dia so o seleciona, sem abrir a gaveta; monthly-calendar.test.tsx: aria-pressed no dia selecionado), AC-04 (day-detail-panel.test.tsx: feriado e nota com Editar e Excluir), AC-05 (day-detail-panel.test.tsx: 'Nenhuma nota neste dia.' e Adicionar nota, sem Editar/Excluir), AC-11 (month-agenda.test.tsx: clicar na linha seleciona o dia).",
+  "screenshot_path": "evidence/us-02-pessoa-que-consulta-o-calendario/screenshot.png",
+  "failure_details": null,
+  "notes": "Verificacao no app real (http://localhost:3000/calendario, usuario MEMBER criado via POST /users, playwright-cli com Chrome do sistema e sessao isolada us02). FR-003: clicar em 12 e 21 de outubro marcou o dia (aria-pressed, selo 'selecionado' no painel) e nenhum dialog abriu. FR-004: dia 12 mostra 'Feriado nacional: Nossa Senhora Aparecida' e, apos criar uma nota pela gaveta (necessario para preparar o estado), 'Nota do dia' com botoes Editar e Excluir. FR-005: dias sem nota (17 e 21) mostram 'Nenhuma nota neste dia.' e 'Adicionar nota'. FR-009: clicar na linha 'Selecionar 12 de outubro (nota)' da lista do mes, estando o dia 21 selecionado, selecionou o dia 12 e atualizou o painel, sem abrir a gaveta. Nenhum FR cita mecanismo concreto divergente da implementacao. Screenshots: screenshot.png (dia 12 com feriado e nota) e screenshot-selecao-por-linha.png. Observacao: o Chromium do playwright nao estava instalado; usado --browser=chrome. Nenhum teste de aceitacao novo foi necessario."
+}

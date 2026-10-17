@@ -1,0 +1,1 @@
+docs/superpowers/calendario-redesign-painel-gaveta/qa/evidence/us-04-pessoa-que-registra-notas-de/us-04-pessoa-que-registra-notas-de-editar-nota.acceptance.test.tsx
