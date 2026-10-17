@@ -176,14 +176,13 @@ interface CalendarContentProps {
 
 // A partir de 1280px o painel não contribui com altura própria (h-0) e
 // estica até a altura da grade (min-h-full); a lista rola por dentro.
-const PAINEL_NA_ALTURA_DA_GRADE =
-	"xl:[&>[role=complementary]]:h-0 xl:[&>[role=complementary]]:min-h-full"
+const PAINEL_NA_ALTURA_DA_GRADE = "xl:h-0 xl:min-h-full"
 
 function CalendarContent(props: CalendarContentProps) {
 	const { sources, selectedDate } = props
 	return (
 		<div
-			className={`grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] ${PAINEL_NA_ALTURA_DA_GRADE}`}
+			className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]"
 			onTouchStart={props.onTouchStart}
 			onTouchEnd={props.onTouchEnd}
 		>
@@ -200,6 +199,7 @@ function CalendarContent(props: CalendarContentProps) {
 				nextBtnRef={props.nextBtnRef}
 			/>
 			<DayDetailPanel
+				className={PAINEL_NA_ALTURA_DA_GRADE}
 				date={selectedDate}
 				feriado={sources.feriadosDoMes.find((f) => f.date === selectedDate)}
 				nota={sources.notasDoMes.find((n) => n.data === selectedDate)}

@@ -19,6 +19,7 @@ import {
 	diaDaSemana,
 	formatarDataCurta,
 } from "@/features/training-notes/lib/note-messages"
+import { cn } from "@/lib/cn"
 
 export interface DayDetailPanelProps {
 	date: string
@@ -31,6 +32,7 @@ export interface DayDetailPanelProps {
 	onRetryNotas: () => void
 	onRetryFeriados: () => void
 	children?: ReactNode
+	className?: string
 }
 
 const ROTULO_CLASSE =
@@ -175,7 +177,7 @@ export function DayDetailPanel(props: DayDetailPanelProps) {
 		<Card
 			role="complementary"
 			aria-label="Resumo do mês"
-			className="min-h-0 gap-4"
+			className={cn("min-h-0 gap-4", props.className)}
 		>
 			<CardHeader>
 				<CardTitle as="h2">{formatarDataCurta(props.date)}</CardTitle>

@@ -132,4 +132,10 @@ describe("DayDetailPanel", () => {
 		renderPainel({ children: <p>lista do mês</p> })
 		expect(screen.getByText("lista do mês")).toBeInTheDocument()
 	})
+
+	test("className recebido é aplicado na raiz complementary sem perder o landmark", () => {
+		renderPainel({ className: "xl:h-0 xl:min-h-full" })
+		const painel = screen.getByRole("complementary", { name: "Resumo do mês" })
+		expect(painel).toHaveClass("gap-4", "xl:h-0", "xl:min-h-full")
+	})
 })
