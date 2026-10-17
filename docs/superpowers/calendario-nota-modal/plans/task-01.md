@@ -1,6 +1,6 @@
 # Task 1: Adicionar o ícone Save ao conjunto de ícones do projeto
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

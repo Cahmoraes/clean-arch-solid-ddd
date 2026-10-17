@@ -1,6 +1,6 @@
 # Task 4: Mostrar a nota como trecho no painel e conter a lista do mês
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

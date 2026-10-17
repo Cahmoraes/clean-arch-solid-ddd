@@ -1,6 +1,6 @@
 # Task 2: Criar o NoteModal com ações só com ícone
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

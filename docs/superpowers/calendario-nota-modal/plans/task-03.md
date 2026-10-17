@@ -1,6 +1,6 @@
 # Task 3: Trocar o NoteDrawer pelo NoteModal na página do calendário
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** N/A
 

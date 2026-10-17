@@ -8,10 +8,10 @@
 
 ## Tarefas
 
-- [ ] 1. Adicionar o ícone Save ao conjunto de ícones do projeto → `task-01.md`
-- [ ] 2. Criar o NoteModal com ações só com ícone → `task-02.md`
-- [ ] 3. Trocar o NoteDrawer pelo NoteModal na página do calendário → `task-03.md`
-- [ ] 4. Mostrar a nota como trecho no painel e conter a lista do mês → `task-04.md`
+- [x] 1. Adicionar o ícone Save ao conjunto de ícones do projeto → `task-01.md`
+- [x] 2. Criar o NoteModal com ações só com ícone → `task-02.md`
+- [x] 3. Trocar o NoteDrawer pelo NoteModal na página do calendário → `task-03.md`
+- [x] 4. Mostrar a nota como trecho no painel e conter a lista do mês → `task-04.md`
 
 ## Restrições Globais
 
