@@ -33,6 +33,13 @@ import {
 	useDeleteNote,
 	useUpdateNote,
 } from "../api/use-training-notes"
+import {
+	AVISO_CONFLITO,
+	DESCRICAO_POR_MODO,
+	ERRO_TEXTO_INVALIDO,
+	formatarDataCurta,
+	mensagemDeFalha,
+} from "../lib/note-messages"
 
 export interface TrainingNoteModalProps {
 	open: boolean
@@ -40,11 +47,6 @@ export interface TrainingNoteModalProps {
 	initialTexto?: string
 	onOpenChange: (open: boolean) => void
 }
-
-const ERRO_TEXTO_INVALIDO = "Escreva de 1 a 500 caracteres"
-const AVISO_CONFLITO = "Esse dia já tem nota — edite a atual"
-const ERRO_REDE = "Sem conexão — tente de novo"
-const ERRO_NAO_ENCONTRADA = "Nota não encontrada — recarregue o mês"
 
 const notaSchema = z.object({
 	texto: z
@@ -56,41 +58,11 @@ const notaSchema = z.object({
 
 type NotaForm = z.infer<typeof notaSchema>
 
-const MESES_LOWER = [
-	"janeiro",
-	"fevereiro",
-	"março",
-	"abril",
-	"maio",
-	"junho",
-	"julho",
-	"agosto",
-	"setembro",
-	"outubro",
-	"novembro",
-	"dezembro",
-] as const
-
-function formatarDataCurta(date: string): string {
-	const dia = Number(date.slice(8, 10))
-	const mes = MESES_LOWER[Number(date.slice(5, 7)) - 1] ?? ""
-	return `${dia} de ${mes}`
-}
-
 function isNotaJaExiste(error: unknown): boolean {
 	return (
 		error instanceof ApiError &&
 		(error.status === 409 || error.code === NOTA_JA_EXISTE_CODE)
 	)
-}
-
-function isNotaInexistente(error: unknown): boolean {
-	return error instanceof ApiError && error.status === 404
-}
-
-function mensagemDeFalha(error: unknown): string {
-	if (isNotaInexistente(error)) return ERRO_NAO_ENCONTRADA
-	return ERRO_REDE
 }
 
 function tratarErroSalvar(
@@ -161,11 +133,6 @@ function inferirModo(textoInicial: string): "criar" | "editar" {
 function ouPendente(a: boolean, b: boolean): boolean {
 	return a || b
 }
-
-const DESCRICAO_POR_MODO = {
-	criar: "Descreva o treino do dia em até 500 caracteres.",
-	editar: "Edite o texto da nota ou exclua o treino do dia.",
-} as const
 
 interface GravadorNota {
 	mutateAsync: (input: UpsertNoteInput) => Promise<unknown>
