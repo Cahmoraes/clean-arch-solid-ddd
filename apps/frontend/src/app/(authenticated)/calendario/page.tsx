@@ -239,6 +239,14 @@ function focusDay(date: string): void {
 	})
 }
 
+/** Dia (botão da grade) ou elemento exato que deve receber o foco. */
+type FocusTarget = string | HTMLElement
+
+function applyFocus(target: FocusTarget): void {
+	if (typeof target === "string") focusDay(target)
+	else target.focus()
+}
+
 export default function CalendarPage({
 	initialYear,
 	initialMonth,
@@ -256,10 +264,14 @@ export default function CalendarPage({
 	const [clickedDate, setClickedDate] = useState<string | null>(null)
 	const [drawerOpen, setDrawerOpen] = useState(false)
 	const [deleteDate, setDeleteDate] = useState<string | null>(null)
-	// Dia a receber o foco depois que a exclusão for confirmada: o diálogo ainda
-	// prende o foco enquanto montado, então o foco só vai depois do commit que o
-	// desmonta.
-	const [focusAfterDelete, setFocusAfterDelete] = useState<string | null>(null)
+	// Quem abriu o diálogo de exclusão (botão Excluir do painel ou da gaveta).
+	const deleteOpenerRef = useRef<HTMLElement | null>(null)
+	// Alvo do foco depois que o diálogo fecha: o diálogo ainda prende o foco
+	// enquanto montado, então o foco só vai depois do commit que o desmonta.
+	// Cancelar e Esc voltam a quem abriu; excluir leva ao botão do dia.
+	const [focusAfterDialog, setFocusAfterDialog] = useState<FocusTarget | null>(
+		null,
+	)
 	const selectedDate = resolveSelectedDay({
 		clicked: clickedDate,
 		year: selectedYear,
@@ -267,10 +279,10 @@ export default function CalendarPage({
 		today: new Date(),
 	})
 	useEffect(() => {
-		if (focusAfterDelete === null) return
-		focusDay(focusAfterDelete)
-		setFocusAfterDelete(null)
-	}, [focusAfterDelete])
+		if (focusAfterDialog === null) return
+		applyFocus(focusAfterDialog)
+		setFocusAfterDialog(null)
+	}, [focusAfterDialog])
 	const feriadoDoDia = sources.feriadosDoMes.find(
 		(feriado) => feriado.date === selectedDate,
 	)
@@ -286,6 +298,12 @@ export default function CalendarPage({
 	const nextBtnRef = useRef<HTMLButtonElement>(null)
 	const prevYearBtnRef = useRef<HTMLButtonElement>(null)
 	const touchRef = useRef<{ x: number; y: number } | null>(null)
+
+	const requestDelete = useCallback((date: string) => {
+		const ativo = document.activeElement
+		deleteOpenerRef.current = ativo instanceof HTMLElement ? ativo : null
+		setDeleteDate(date)
+	}, [])
 
 	const handlePrevMonth = useCallback(() => {
 		goPrevMonth()
@@ -382,7 +400,7 @@ export default function CalendarPage({
 				onTouchEnd={onTouchEnd}
 				onSelectDay={setClickedDate}
 				onEdit={() => setDrawerOpen(true)}
-				onDelete={() => setDeleteDate(selectedDate)}
+				onDelete={() => requestDelete(selectedDate)}
 			/>
 			<NoteDrawer
 				open={drawerOpen}
@@ -390,7 +408,7 @@ export default function CalendarPage({
 				feriadoNome={feriadoDoDia?.name}
 				initialTexto={notaDoDia?.texto}
 				onOpenChange={setDrawerOpen}
-				onRequestDelete={setDeleteDate}
+				onRequestDelete={requestDelete}
 				onCloseAutoFocus={(event) => {
 					event.preventDefault()
 					focusDay(selectedDate)
@@ -400,11 +418,14 @@ export default function CalendarPage({
 				open={deleteDate !== null}
 				date={deleteDate}
 				onOpenChange={(aberto) => {
-					if (!aberto) setDeleteDate(null)
+					if (aberto) return
+					setDeleteDate(null)
+					// Exclusão confirmada sobrescreve este alvo em onDeleted.
+					setFocusAfterDialog(deleteOpenerRef.current)
 				}}
 				onDeleted={() => {
 					setDrawerOpen(false)
-					setFocusAfterDelete(selectedDate)
+					setFocusAfterDialog(selectedDate)
 				}}
 			/>
 		</PageContainer>

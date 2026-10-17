@@ -109,7 +109,9 @@ function BlocoDeNotaComTexto({
 	return (
 		<div className="flex flex-col gap-1 rounded-md border-l-[3px] border-accent bg-muted px-3 py-2">
 			<small className={ROTULO_CLASSE}>Nota do dia</small>
-			<p className="text-sm">{nota.texto}</p>
+			<p className="max-h-40 overflow-y-auto whitespace-pre-line break-words text-sm">
+				{nota.texto}
+			</p>
 			<div className="mt-1 flex gap-2">
 				<Button type="button" variant="outline" size="sm" onClick={onEdit}>
 					Editar

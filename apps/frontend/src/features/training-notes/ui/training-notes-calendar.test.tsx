@@ -177,6 +177,65 @@ describe("Calendário com notas de treino", () => {
 		expect(botaoDoDia()).toHaveFocus() // asserção feita depois que o botão Excluir já sumiu
 	})
 
+	test.each([
+		[
+			"Cancelar",
+			(user: UserEvent) =>
+				user.click(screen.getByRole("button", { name: "Cancelar" })),
+		],
+		["Esc", (user: UserEvent) => user.keyboard("{Escape}")],
+	])("AC-09 dispensar a exclusão por %s a partir do painel devolve o foco ao botão Excluir do painel", async (_nome, dispensar) => {
+		instalarNotasMock({ semente: SEMENTE })
+		const user = userEvent.setup()
+		renderPagina()
+		await user.click(
+			await screen.findByRole("button", { name: /^16 de outubro/ }),
+		)
+		const excluir = await within(painel()).findByRole("button", {
+			name: "Excluir",
+		})
+		await user.click(excluir)
+		await screen.findByRole("alertdialog", { name: "Excluir a nota?" })
+		await dispensar(user)
+		await waitFor(() =>
+			expect(
+				screen.queryByRole("alertdialog", { name: "Excluir a nota?" }),
+			).not.toBeInTheDocument(),
+		)
+		await waitFor(() => expect(excluir).toHaveFocus())
+	})
+
+	test.each([
+		[
+			"Cancelar",
+			(user: UserEvent) =>
+				user.click(screen.getByRole("button", { name: "Cancelar" })),
+		],
+		["Esc", (user: UserEvent) => user.keyboard("{Escape}")],
+	])("AC-09 dispensar a exclusão por %s a partir da gaveta devolve o foco ao botão Excluir da gaveta", async (_nome, dispensar) => {
+		instalarNotasMock({ semente: SEMENTE })
+		const user = userEvent.setup()
+		renderPagina()
+		await user.click(
+			await screen.findByRole("button", { name: /^16 de outubro/ }),
+		)
+		await user.click(
+			await within(painel()).findByRole("button", { name: "Editar" }),
+		)
+		const gaveta = await screen.findByRole("dialog")
+		const excluir = within(gaveta).getByRole("button", { name: "Excluir" })
+		await user.click(excluir)
+		await screen.findByRole("alertdialog", { name: "Excluir a nota?" })
+		await dispensar(user)
+		await waitFor(() =>
+			expect(
+				screen.queryByRole("alertdialog", { name: "Excluir a nota?" }),
+			).not.toBeInTheDocument(),
+		)
+		expect(screen.getByLabelText("Nota do treino")).toBeInTheDocument()
+		await waitFor(() => expect(excluir).toHaveFocus())
+	})
+
 	test("Review Focus: refetch de notas que falha com dados em cache mantém Editar, Adicionar e Excluir e não mostra erro", async () => {
 		instalarNotasMock({ semente: SEMENTE })
 		const queryClient = new QueryClient({

@@ -84,7 +84,7 @@ describe("MonthAgenda", () => {
 		).toHaveAccessibleDescription("Pernas")
 	})
 
-	test("AC-10 com 30 notas a lista rola por dentro (contêiner com overflow-y-auto e min-h-0)", () => {
+	test("AC-10 com 30 notas a lista rola por dentro (contêiner com overflow-y-auto e altura mínima que impede o colapso)", () => {
 		const notas = Array.from({ length: 30 }, (_, i) =>
 			criarNotaMock(
 				`2026-10-${String(i + 1).padStart(2, "0")}`,
@@ -93,7 +93,8 @@ describe("MonthAgenda", () => {
 		)
 		renderAgenda({ notas })
 		const lista = screen.getByTestId("month-agenda-lista")
-		expect(lista).toHaveClass("overflow-y-auto", "min-h-0", "flex-1")
+		expect(lista).toHaveClass("overflow-y-auto", "min-h-32", "flex-1")
+		expect(lista).not.toHaveClass("min-h-0")
 		expect(within(lista).getAllByRole("button")).toHaveLength(30)
 	})
 

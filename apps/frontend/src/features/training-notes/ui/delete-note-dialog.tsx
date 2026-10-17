@@ -1,6 +1,5 @@
 "use client"
 
-import { useRef } from "react"
 import { toast } from "sonner"
 import {
 	AlertDialog,
@@ -29,7 +28,6 @@ export function DeleteNoteDialog({
 	onDeleted,
 }: DeleteNoteDialogProps) {
 	const deleteNote = useDeleteNote()
-	const excluiu = useRef(false)
 
 	async function excluir(dia: string): Promise<void> {
 		try {
@@ -38,7 +36,6 @@ export function DeleteNoteDialog({
 			toast.error(mensagemDeFalha(error))
 			return
 		}
-		excluiu.current = true
 		toast.success("Nota excluída.")
 		onOpenChange(false)
 		onDeleted()
@@ -47,14 +44,7 @@ export function DeleteNoteDialog({
 	return (
 		<AlertDialog open={open} onOpenChange={onOpenChange}>
 			{date ? (
-				<AlertDialogContent
-					onCloseAutoFocus={(event) => {
-						// Depois de excluir, quem leva o foco ao dia é onDeleted (página).
-						if (!excluiu.current) return
-						excluiu.current = false
-						event.preventDefault()
-					}}
-				>
+				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Excluir a nota?</AlertDialogTitle>
 						<AlertDialogDescription>

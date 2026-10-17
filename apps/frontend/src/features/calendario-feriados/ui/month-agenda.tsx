@@ -161,7 +161,7 @@ function ListaDoMes({
 		<div className="relative flex min-h-0 flex-1 flex-col">
 			<div
 				data-testid="month-agenda-lista"
-				className="min-h-0 flex-1 overflow-y-auto max-h-80 xl:max-h-none"
+				className="min-h-32 flex-1 overflow-y-auto max-h-80 xl:max-h-none"
 			>
 				<ul className="flex flex-col gap-2 pb-6">
 					{entradas.map((entrada) => (

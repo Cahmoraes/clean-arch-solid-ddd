@@ -29,6 +29,20 @@ function renderPainel(props: Partial<DayDetailPanelProps> = {}) {
 }
 
 describe("DayDetailPanel", () => {
+	test("o texto da nota quebra linhas e palavras longas e tem altura limitada com rolagem", () => {
+		const texto = `${"a".repeat(500)}\nsegunda linha`
+		renderPainel({ nota: criarNotaMock("2026-10-12", texto) })
+		const elemento = screen.getByText(
+			(_conteudo, el) => el?.tagName === "P" && el.textContent === texto,
+		)
+		expect(elemento).toHaveClass(
+			"break-words",
+			"whitespace-pre-line",
+			"max-h-40",
+			"overflow-y-auto",
+		)
+	})
+
 	test("AC-04 dia com feriado e nota mostra os dois blocos com Editar e Excluir", () => {
 		renderPainel({ feriado: FERIADO, nota: NOTA })
 		const painel = screen.getByRole("complementary", { name: "Resumo do mês" })
