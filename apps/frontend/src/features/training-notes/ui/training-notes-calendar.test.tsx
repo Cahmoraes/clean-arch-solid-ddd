@@ -86,24 +86,52 @@ describe("Calendário com notas de treino", () => {
 		).not.toBeInTheDocument()
 	})
 
-	test("AC-08 excluir pelo painel pede confirmação e só remove ao confirmar", async () => {
-		instalarNotasMock({ semente: SEMENTE })
+	test("AC-02 clicar no trecho da nota abre o modal com o texto completo e o foco no campo", async () => {
+		const longo = "Peito + tríceps 4x12 ".repeat(20).trim()
+		instalarNotasMock({ semente: [criarNotaMock("2026-10-16", longo)] })
 		const user = userEvent.setup()
 		renderPagina()
 		await user.click(
 			await screen.findByRole("button", { name: /^16 de outubro/ }),
 		)
 		await user.click(
-			await within(painel()).findByRole("button", { name: "Excluir" }),
+			await within(painel()).findByRole("button", {
+				name: /Ver nota completa/,
+			}),
 		)
+		expect(await screen.findByRole("dialog")).toBeInTheDocument()
+		const campo = screen.getByLabelText("Nota do treino")
+		expect(campo).toHaveValue(longo)
+		await waitFor(() => expect(campo).toHaveFocus())
+	})
+
+	test("AC-05 o painel não tem Excluir: excluir pelo modal pede confirmação e só remove ao confirmar", async () => {
+		instalarNotasMock({ semente: SEMENTE })
+		const user = userEvent.setup()
+		renderPagina()
+		await user.click(
+			await screen.findByRole("button", { name: /^16 de outubro/ }),
+		)
+		expect(
+			within(painel()).queryByRole("button", { name: "Excluir" }),
+		).not.toBeInTheDocument()
+		await user.click(
+			await within(painel()).findByRole("button", {
+				name: /Ver nota completa/,
+			}),
+		)
+		await user.click(await screen.findByRole("button", { name: "Excluir" }))
 		expect(
 			await screen.findByRole("alertdialog", { name: "Excluir a nota?" }),
 		).toBeInTheDocument()
 		await user.click(screen.getByRole("button", { name: "Cancelar" }))
-		expect(
-			await within(painel()).findByRole("button", { name: "Editar" }),
-		).toBeInTheDocument()
-		await user.click(within(painel()).getByRole("button", { name: "Excluir" }))
+		await waitFor(() =>
+			expect(
+				screen.queryByRole("alertdialog", { name: "Excluir a nota?" }),
+			).not.toBeInTheDocument(),
+		)
+		expect(screen.getByLabelText("Nota do treino")).toBeInTheDocument()
+		await user.click(screen.getByRole("button", { name: "Excluir" }))
 		await user.click(await screen.findByRole("button", { name: "Confirmar" }))
 		expect(
 			await within(painel()).findByText("Nenhuma nota neste dia."),
@@ -121,7 +149,9 @@ describe("Calendário com notas de treino", () => {
 			await screen.findByRole("button", { name: /^16 de outubro/ }),
 		)
 		await user.click(
-			await within(painel()).findByRole("button", { name: "Editar" }),
+			await within(painel()).findByRole("button", {
+				name: /Ver nota completa/,
+			}),
 		)
 		await user.click(await screen.findByRole("button", { name: "Excluir" }))
 		expect(
@@ -179,7 +209,9 @@ describe("Calendário com notas de treino", () => {
 			await screen.findByRole("button", { name: /^16 de outubro/ }),
 		)
 		await user.click(
-			await within(painel()).findByRole("button", { name: "Editar" }),
+			await within(painel()).findByRole("button", {
+				name: /Ver nota completa/,
+			}),
 		)
 		await user.click(await screen.findByRole("button", { name: "Excluir" }))
 		await user.click(await screen.findByRole("button", { name: "Confirmar" }))
@@ -188,56 +220,6 @@ describe("Calendário com notas de treino", () => {
 		)
 		expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
 		await waitFor(() => expect(botaoDoDia()).toHaveFocus())
-	})
-
-	test("AC-09 excluir pelo painel devolve o foco ao botão do dia mesmo com o botão Excluir desmontado", async () => {
-		instalarNotasMock({ semente: SEMENTE })
-		const user = userEvent.setup()
-		renderPagina()
-		await user.click(
-			await screen.findByRole("button", { name: /^16 de outubro/ }),
-		)
-		await user.click(
-			await within(painel()).findByRole("button", { name: "Excluir" }),
-		)
-		await user.click(await screen.findByRole("button", { name: "Confirmar" }))
-		await waitFor(() =>
-			expect(
-				within(painel()).queryByRole("button", { name: "Excluir" }),
-			).not.toBeInTheDocument(),
-		)
-		expect(
-			within(painel()).getByText("Nenhuma nota neste dia."),
-		).toBeInTheDocument()
-		expect(botaoDoDia()).toHaveFocus() // asserção feita depois que o botão Excluir já sumiu
-	})
-
-	test.each([
-		[
-			"Cancelar",
-			(user: UserEvent) =>
-				user.click(screen.getByRole("button", { name: "Cancelar" })),
-		],
-		["Esc", (user: UserEvent) => user.keyboard("{Escape}")],
-	])("AC-09 dispensar a exclusão por %s a partir do painel devolve o foco ao botão Excluir do painel", async (_nome, dispensar) => {
-		instalarNotasMock({ semente: SEMENTE })
-		const user = userEvent.setup()
-		renderPagina()
-		await user.click(
-			await screen.findByRole("button", { name: /^16 de outubro/ }),
-		)
-		const excluir = await within(painel()).findByRole("button", {
-			name: "Excluir",
-		})
-		await user.click(excluir)
-		await screen.findByRole("alertdialog", { name: "Excluir a nota?" })
-		await dispensar(user)
-		await waitFor(() =>
-			expect(
-				screen.queryByRole("alertdialog", { name: "Excluir a nota?" }),
-			).not.toBeInTheDocument(),
-		)
-		await waitFor(() => expect(excluir).toHaveFocus())
 	})
 
 	test.each([
@@ -255,7 +237,9 @@ describe("Calendário com notas de treino", () => {
 			await screen.findByRole("button", { name: /^16 de outubro/ }),
 		)
 		await user.click(
-			await within(painel()).findByRole("button", { name: "Editar" }),
+			await within(painel()).findByRole("button", {
+				name: /Ver nota completa/,
+			}),
 		)
 		const modal = await screen.findByRole("dialog")
 		const excluir = within(modal).getByRole("button", { name: "Excluir" })
@@ -271,7 +255,7 @@ describe("Calendário com notas de treino", () => {
 		await waitFor(() => expect(excluir).toHaveFocus())
 	})
 
-	test("Review Focus: refetch de notas que falha com dados em cache mantém Editar, Adicionar e Excluir e não mostra erro", async () => {
+	test("Review Focus: refetch de notas que falha com dados em cache mantém o trecho da nota e Adicionar e não mostra erro", async () => {
 		instalarNotasMock({ semente: SEMENTE })
 		const queryClient = new QueryClient({
 			defaultOptions: { queries: { retry: false } },
@@ -284,7 +268,9 @@ describe("Calendário com notas de treino", () => {
 			await screen.findByRole("button", { name: /^16 de outubro/ }),
 		)
 		expect(
-			await within(painel()).findByRole("button", { name: "Excluir" }),
+			await within(painel()).findByRole("button", {
+				name: /Ver nota completa/,
+			}),
 		).toBeInTheDocument()
 
 		server.use(
@@ -302,10 +288,7 @@ describe("Calendário com notas de treino", () => {
 		)
 
 		expect(
-			within(painel()).getByRole("button", { name: "Editar" }),
-		).toBeInTheDocument()
-		expect(
-			within(painel()).getByRole("button", { name: "Excluir" }),
+			within(painel()).getByRole("button", { name: /Ver nota completa/ }),
 		).toBeInTheDocument()
 		expect(
 			screen.queryByText("Não foi possível carregar as notas"),

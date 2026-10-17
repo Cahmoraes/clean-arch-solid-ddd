@@ -702,8 +702,11 @@ describe("CalendarPage: atalho de setas", () => {
 			await screen.findByRole("button", { name: /^16 de outubro/ }),
 		)
 		await user.click(
-			await within(painel()).findByRole("button", { name: "Excluir" }),
+			await within(painel()).findByRole("button", {
+				name: /Ver nota completa/,
+			}),
 		)
+		await user.click(await screen.findByRole("button", { name: "Excluir" }))
 		await screen.findByRole("alertdialog", { name: "Excluir a nota?" })
 		await user.keyboard("{ArrowRight}{ArrowLeft}{ArrowLeft}")
 		expect(dia16()).toBeInTheDocument()
@@ -762,7 +765,7 @@ describe("CalendarPage: fontes independentes", () => {
 		).toBeInTheDocument()
 	})
 
-	test("AC-13 notas falham sem esconder a grade nem os feriados, e sem Editar nem Adicionar nota", async () => {
+	test("AC-13 notas falham sem esconder a grade nem os feriados, e sem o trecho da nota nem Adicionar nota", async () => {
 		instalarNotasMock({ feriados: [FERIADO_12] })
 		server.use(
 			http.get(endpoint("/training-notes"), () =>
@@ -785,7 +788,7 @@ describe("CalendarPage: fontes independentes", () => {
 		).not.toBeInTheDocument()
 		expect(
 			screen.queryByRole("button", {
-				name: /^(Editar|Excluir|Adicionar nota)$/,
+				name: /^(Ver nota completa|Adicionar nota)/,
 			}),
 		).not.toBeInTheDocument()
 		server.use(

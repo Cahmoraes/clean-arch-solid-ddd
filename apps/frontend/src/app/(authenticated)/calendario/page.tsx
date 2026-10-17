@@ -171,8 +171,7 @@ interface CalendarContentProps {
 	onTouchStart: (e: React.TouchEvent) => void
 	onTouchEnd: (e: React.TouchEvent) => void
 	onSelectDay: (date: string) => void
-	onEdit: () => void
-	onDelete: () => void
+	onOpenNote: () => void
 }
 
 // A partir de 1280px o painel não contribui com altura própria (h-0) e
@@ -206,8 +205,7 @@ function CalendarContent(props: CalendarContentProps) {
 				nota={sources.notasDoMes.find((n) => n.data === selectedDate)}
 				notasStatus={sources.notasStatus}
 				feriadosStatus={sources.feriadosStatus}
-				onEdit={props.onEdit}
-				onDelete={props.onDelete}
+				onOpenNote={props.onOpenNote}
 				onRetryNotas={sources.refetchNotas}
 				onRetryFeriados={sources.refetchFeriados}
 			>
@@ -264,7 +262,7 @@ export default function CalendarPage({
 	const [clickedDate, setClickedDate] = useState<string | null>(null)
 	const [modalOpen, setModalOpen] = useState(false)
 	const [deleteDate, setDeleteDate] = useState<string | null>(null)
-	// Quem abriu o diálogo de exclusão (botão Excluir do painel ou do modal).
+	// Quem abriu o diálogo de exclusão (botão Excluir do modal).
 	const deleteOpenerRef = useRef<HTMLElement | null>(null)
 	// Alvo do foco depois que o diálogo fecha: o diálogo ainda prende o foco
 	// enquanto montado, então o foco só vai depois do commit que o desmonta.
@@ -399,8 +397,7 @@ export default function CalendarPage({
 				onTouchStart={onTouchStart}
 				onTouchEnd={onTouchEnd}
 				onSelectDay={setClickedDate}
-				onEdit={() => setModalOpen(true)}
-				onDelete={() => requestDelete(selectedDate)}
+				onOpenNote={() => setModalOpen(true)}
 			/>
 			<NoteModal
 				open={modalOpen}

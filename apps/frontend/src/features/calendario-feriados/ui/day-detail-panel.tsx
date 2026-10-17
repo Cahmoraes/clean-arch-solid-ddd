@@ -27,8 +27,7 @@ export interface DayDetailPanelProps {
 	nota?: TrainingNoteDTO
 	notasStatus: FonteStatus
 	feriadosStatus: FonteStatus
-	onEdit: () => void
-	onDelete: () => void
+	onOpenNote: () => void
 	onRetryNotas: () => void
 	onRetryFeriados: () => void
 	children?: ReactNode
@@ -99,32 +98,26 @@ function BlocoDeFeriado({
 
 function BlocoDeNotaComTexto({
 	nota,
-	onEdit,
-	onDelete,
+	onOpenNote,
 }: {
 	nota: TrainingNoteDTO
-	onEdit: () => void
-	onDelete: () => void
+	onOpenNote: () => void
 }) {
 	return (
 		<div className="flex flex-col gap-1 rounded-md border-l-[3px] border-accent bg-muted px-3 py-2">
 			<small className={ROTULO_CLASSE}>Nota do dia</small>
-			<p className="max-h-40 overflow-y-auto whitespace-pre-line break-words text-sm">
-				{nota.texto}
-			</p>
-			<div className="mt-1 flex gap-2">
-				<Button type="button" variant="outline" size="sm" onClick={onEdit}>
-					Editar
-				</Button>
-				<Button
-					type="button"
-					variant="destructive"
-					size="sm"
-					onClick={onDelete}
-				>
-					Excluir
-				</Button>
-			</div>
+			<button
+				type="button"
+				onClick={onOpenNote}
+				className="w-full cursor-pointer text-left focus-ring-duplo"
+			>
+				<span className="line-clamp-3 whitespace-pre-line break-words text-sm">
+					{nota.texto}
+				</span>
+				<span className="mt-1 block text-xs text-accent">
+					Ver nota completa
+				</span>
+			</button>
 		</div>
 	)
 }
@@ -144,14 +137,12 @@ function BlocoSemNota({ onAdd }: { onAdd: () => void }) {
 function BlocoDeNota({
 	status,
 	nota,
-	onEdit,
-	onDelete,
+	onOpenNote,
 	onRetry,
 }: {
 	status: FonteStatus
 	nota?: TrainingNoteDTO
-	onEdit: () => void
-	onDelete: () => void
+	onOpenNote: () => void
 	onRetry: () => void
 }) {
 	if (status === "carregando") {
@@ -170,8 +161,8 @@ function BlocoDeNota({
 			/>
 		)
 	}
-	if (!nota) return <BlocoSemNota onAdd={onEdit} />
-	return <BlocoDeNotaComTexto nota={nota} onEdit={onEdit} onDelete={onDelete} />
+	if (!nota) return <BlocoSemNota onAdd={onOpenNote} />
+	return <BlocoDeNotaComTexto nota={nota} onOpenNote={onOpenNote} />
 }
 
 export function DayDetailPanel(props: DayDetailPanelProps) {
@@ -179,7 +170,7 @@ export function DayDetailPanel(props: DayDetailPanelProps) {
 		<Card
 			role="complementary"
 			aria-label="Resumo do mês"
-			className={cn("min-h-0 gap-4", props.className)}
+			className={cn("min-h-0 gap-4 overflow-hidden", props.className)}
 		>
 			<CardHeader>
 				<CardTitle as="h2">{formatarDataCurta(props.date)}</CardTitle>
@@ -201,8 +192,7 @@ export function DayDetailPanel(props: DayDetailPanelProps) {
 				<BlocoDeNota
 					status={props.notasStatus}
 					nota={props.nota}
-					onEdit={props.onEdit}
-					onDelete={props.onDelete}
+					onOpenNote={props.onOpenNote}
 					onRetry={props.onRetryNotas}
 				/>
 				<div className="flex min-h-0 flex-1 flex-col">{props.children}</div>

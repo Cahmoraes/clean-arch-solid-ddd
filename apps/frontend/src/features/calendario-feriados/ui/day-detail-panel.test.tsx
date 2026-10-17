@@ -19,8 +19,7 @@ function renderPainel(props: Partial<DayDetailPanelProps> = {}) {
 			date="2026-10-12"
 			notasStatus="ok"
 			feriadosStatus="ok"
-			onEdit={vi.fn()}
-			onDelete={vi.fn()}
+			onOpenNote={vi.fn()}
 			onRetryNotas={vi.fn()}
 			onRetryFeriados={vi.fn()}
 			{...props}
@@ -29,21 +28,56 @@ function renderPainel(props: Partial<DayDetailPanelProps> = {}) {
 }
 
 describe("DayDetailPanel", () => {
-	test("o texto da nota quebra linhas e palavras longas e tem altura limitada com rolagem", () => {
+	test("o texto da nota quebra linhas e palavras longas, sem altura limitada nem rolagem", () => {
 		const texto = `${"a".repeat(500)}\nsegunda linha`
 		renderPainel({ nota: criarNotaMock("2026-10-12", texto) })
 		const elemento = screen.getByText(
-			(_conteudo, el) => el?.tagName === "P" && el.textContent === texto,
+			(_conteudo, el) => el?.tagName === "SPAN" && el.textContent === texto,
 		)
-		expect(elemento).toHaveClass(
-			"break-words",
-			"whitespace-pre-line",
-			"max-h-40",
-			"overflow-y-auto",
-		)
+		expect(elemento).toHaveClass("break-words", "whitespace-pre-line")
+		expect(elemento).not.toHaveClass("max-h-40")
+		expect(elemento).not.toHaveClass("overflow-y-auto")
 	})
 
-	test("AC-04 dia com feriado e nota mostra os dois blocos com Editar e Excluir", () => {
+	test("AC-01 a nota longa é cortada em 3 linhas sem rolagem e o texto completo segue no DOM", () => {
+		const longo = "treino com os irmãos ".repeat(30).trim()
+		renderPainel({ nota: criarNotaMock("2026-10-12", longo) })
+		const trecho = screen.getByText(longo)
+		expect(trecho).toHaveClass("line-clamp-3")
+		expect(trecho).not.toHaveClass("overflow-y-auto")
+		expect(trecho).not.toHaveClass("max-h-40")
+	})
+
+	test("Review Focus: palavra única longa sem espaços fica em 3 linhas e quebra no cartão", () => {
+		const palavra = "a".repeat(300)
+		renderPainel({ nota: criarNotaMock("2026-10-12", palavra) })
+		expect(screen.getByText(palavra)).toHaveClass("line-clamp-3", "break-words")
+	})
+
+	test("AC-02 o painel não tem os botões Editar nem Excluir e o trecho abre a nota", async () => {
+		const onOpenNote = vi.fn()
+		const user = userEvent.setup()
+		renderPainel({ nota: NOTA, onOpenNote })
+		expect(
+			screen.queryByRole("button", { name: "Editar" }),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByRole("button", { name: "Excluir" }),
+		).not.toBeInTheDocument()
+		await user.click(screen.getByRole("button", { name: /Ver nota completa/ }))
+		expect(onOpenNote).toHaveBeenCalledTimes(1)
+	})
+
+	test("o trecho da nota é um botão cujo nome acessível é o texto da nota e 'Ver nota completa'", () => {
+		renderPainel({ nota: NOTA })
+		expect(
+			screen.getByRole("button", {
+				name: "treino com os irmãos Ver nota completa",
+			}),
+		).toBeInTheDocument()
+	})
+
+	test("AC-04 dia com feriado e nota mostra os dois blocos, sem Editar nem Excluir", () => {
 		renderPainel({ feriado: FERIADO, nota: NOTA })
 		const painel = screen.getByRole("complementary", { name: "Resumo do mês" })
 		expect(
@@ -56,11 +90,14 @@ describe("DayDetailPanel", () => {
 		).toBeInTheDocument()
 		expect(within(painel).getByText("treino com os irmãos")).toBeInTheDocument()
 		expect(
-			within(painel).getByRole("button", { name: "Editar" }),
+			within(painel).getByRole("button", { name: /Ver nota completa/ }),
 		).toBeInTheDocument()
 		expect(
-			within(painel).getByRole("button", { name: "Excluir" }),
-		).toBeInTheDocument()
+			within(painel).queryByRole("button", { name: "Editar" }),
+		).not.toBeInTheDocument()
+		expect(
+			within(painel).queryByRole("button", { name: "Excluir" }),
+		).not.toBeInTheDocument()
 	})
 
 	test("AC-05 dia sem nota mostra 'Nenhuma nota neste dia.' e Adicionar nota, sem Editar nem Excluir", () => {
@@ -78,20 +115,13 @@ describe("DayDetailPanel", () => {
 		expect(screen.queryByText(/feriado nacional/i)).not.toBeInTheDocument()
 	})
 
-	test("Editar, Excluir e Adicionar nota chamam os callbacks", async () => {
-		const onEdit = vi.fn()
-		const onDelete = vi.fn()
+	test("Adicionar nota chama onOpenNote", async () => {
+		const onOpenNote = vi.fn()
 		const user = userEvent.setup()
-		const { unmount } = renderPainel({ nota: NOTA, onEdit, onDelete })
-		await user.click(screen.getByRole("button", { name: "Editar" }))
-		await user.click(screen.getByRole("button", { name: "Excluir" }))
-		expect(onEdit).toHaveBeenCalledTimes(1)
-		expect(onDelete).toHaveBeenCalledTimes(1)
-		unmount()
-		const onAdd = vi.fn()
-		renderPainel({ onEdit: onAdd })
+		renderPainel({ onOpenNote })
+		expect(screen.getByText("Nenhuma nota neste dia.")).toBeInTheDocument()
 		await user.click(screen.getByRole("button", { name: "Adicionar nota" }))
-		expect(onAdd).toHaveBeenCalledTimes(1)
+		expect(onOpenNote).toHaveBeenCalledTimes(1)
 	})
 
 	test("erro de notas mostra a mensagem com retry, esconde as ações e mantém o feriado", async () => {
@@ -121,7 +151,7 @@ describe("DayDetailPanel", () => {
 		).not.toBeInTheDocument()
 	})
 
-	test("erro de feriados mostra a mensagem com retry e mantém a nota editável", async () => {
+	test("erro de feriados mostra a mensagem com retry e mantém o trecho da nota acessível", async () => {
 		const onRetryFeriados = vi.fn()
 		const user = userEvent.setup()
 		renderPainel({ nota: NOTA, feriadosStatus: "erro", onRetryFeriados })
@@ -129,7 +159,9 @@ describe("DayDetailPanel", () => {
 			"Não foi possível carregar os feriados",
 		)
 		expect(screen.getByText("treino com os irmãos")).toBeInTheDocument()
-		expect(screen.getByRole("button", { name: "Editar" })).toBeInTheDocument()
+		expect(
+			screen.getByRole("button", { name: /Ver nota completa/ }),
+		).toBeInTheDocument()
 		await user.click(
 			screen.getByRole("button", { name: "Tentar de novo (feriados)" }),
 		)
@@ -151,5 +183,11 @@ describe("DayDetailPanel", () => {
 		renderPainel({ className: "xl:h-0 xl:min-h-full" })
 		const painel = screen.getByRole("complementary", { name: "Resumo do mês" })
 		expect(painel).toHaveClass("gap-4", "xl:h-0", "xl:min-h-full")
+	})
+
+	test("AC-07 o cartão contém o que transborda: raiz com min-h-0 e overflow-hidden", () => {
+		renderPainel()
+		const painel = screen.getByRole("complementary", { name: "Resumo do mês" })
+		expect(painel).toHaveClass("min-h-0", "overflow-hidden")
 	})
 })
