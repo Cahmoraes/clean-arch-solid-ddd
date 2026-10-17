@@ -3,23 +3,30 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { PageContainer } from "@/components/layout/page-container"
 import { Button } from "@/components/ui/button"
-import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
 import {
 	CalendarDays,
 	ChevronLeft,
 	ChevronRight,
-	RefreshCcw,
 } from "@/components/ui/pixel-icons"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useFeriadosQuery } from "@/features/calendario-feriados/api/use-feriados-query"
 import { useCalendarNavigation } from "@/features/calendario-feriados/hooks/use-calendar-navigation"
 import { getFeriadosDoMes } from "@/features/calendario-feriados/lib/get-feriados-do-mes"
-import { HolidayList } from "@/features/calendario-feriados/ui/holiday-list"
+import { resolveSelectedDay } from "@/features/calendario-feriados/lib/resolve-selected-day"
+import type { Feriado } from "@/features/calendario-feriados/model/feriado"
+import {
+	type FonteStatus,
+	statusDaFonte,
+} from "@/features/calendario-feriados/model/fonte-status"
+import { DayDetailPanel } from "@/features/calendario-feriados/ui/day-detail-panel"
+import { MonthAgenda } from "@/features/calendario-feriados/ui/month-agenda"
 import { MonthlyCalendar } from "@/features/calendario-feriados/ui/monthly-calendar"
-import { useTrainingNotesQuery } from "@/features/training-notes/api/use-training-notes"
-import { TrainingNoteModal } from "@/features/training-notes/ui/training-note-modal"
-import { TrainingNotesList } from "@/features/training-notes/ui/training-notes-list"
+import {
+	type TrainingNoteDTO,
+	useTrainingNotesQuery,
+} from "@/features/training-notes/api/use-training-notes"
+import { DeleteNoteDialog } from "@/features/training-notes/ui/delete-note-dialog"
+import { NoteDrawer } from "@/features/training-notes/ui/training-note-drawer"
 
 type CalendarPageProps = {
 	initialYear?: number
@@ -88,53 +95,6 @@ function YearNavigation({
 	)
 }
 
-function CalendarLoadingState() {
-	return (
-		<div role="status" aria-live="polite" className="flex flex-col gap-4">
-			<span className="sr-only">Carregando feriados</span>
-			<Skeleton className="h-56 w-full rounded-xl" />
-		</div>
-	)
-}
-
-function CalendarErrorState({
-	errorMessage,
-	onRetry,
-}: {
-	errorMessage?: string
-	onRetry: () => void
-}) {
-	return (
-		<div
-			role="alert"
-			className="flex flex-col items-center justify-center gap-3 rounded-md border border-border bg-card px-6 py-12 text-center"
-		>
-			<div className="flex flex-col gap-1">
-				<h2 className="font-display text-xl text-foreground">
-					Não foi possível carregar os feriados
-				</h2>
-				<p className="max-w-sm text-sm text-muted-foreground">
-					{errorMessage ??
-						"A BrasilAPI não respondeu agora. Tente novamente em instantes."}
-				</p>
-			</div>
-			<Button type="button" variant="outline" onClick={onRetry}>
-				<RefreshCcw aria-hidden="true" className="size-4" />
-				Tentar novamente
-			</Button>
-		</div>
-	)
-}
-
-function CalendarEmptyState() {
-	return (
-		<EmptyState
-			title="Nenhum feriado encontrado"
-			description="Tente consultar outro ano."
-		/>
-	)
-}
-
 function getSwipeDirection(dx: number, dy: number): "prev" | "next" | null {
 	if (dy > 30) return null
 	if (Math.abs(dx) <= 40) return null
@@ -147,28 +107,62 @@ function isMobileViewport(): boolean {
 	return window.matchMedia("(max-width: 767px)").matches
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: painéis independentes de feriados e notas
-function CalendarContent({
-	query,
-	notesQuery,
-	notas,
-	selectedYear,
-	selectedMonth,
-	feriadosDoMes,
-	handlePrevMonth,
-	handleNextMonth,
-	prevBtnRef,
-	nextBtnRef,
-	onTouchStart,
-	onTouchEnd,
-	onSelectDay,
-}: {
-	query: ReturnType<typeof useFeriadosQuery>
-	notesQuery: ReturnType<typeof useTrainingNotesQuery>
-	notas: Readonly<Record<string, string>>
-	selectedYear: number
-	selectedMonth: number
-	feriadosDoMes: ReturnType<typeof getFeriadosDoMes>
+interface CalendarSources {
+	feriadosDoMes: Feriado[]
+	notasDoMes: TrainingNoteDTO[]
+	notasPorData: Readonly<Record<string, string>>
+	feriadosStatus: FonteStatus
+	notasStatus: FonteStatus
+	feriadosFetching: boolean
+	refetchFeriados: () => void
+	refetchNotas: () => void
+}
+
+function statusDaQuery(query: {
+	isPending: boolean
+	isError: boolean
+	data: unknown
+}): FonteStatus {
+	return statusDaFonte({
+		isPending: query.isPending,
+		isError: query.isError,
+		hasData: query.data !== undefined,
+	})
+}
+
+/** Feriados (ano) e notas (mês) carregam e falham de forma independente. */
+function useCalendarSources(year: number, monthIndex: number): CalendarSources {
+	const feriadosQuery = useFeriadosQuery(year)
+	const notasQuery = useTrainingNotesQuery(year, monthIndex + 1)
+	const notasDoMes = notasQuery.data ?? []
+	const notasPorData = useMemo(() => {
+		const mapa: Record<string, string> = {}
+		for (const nota of notasQuery.data ?? []) {
+			mapa[nota.data] = nota.texto
+		}
+		return mapa
+	}, [notasQuery.data])
+	return {
+		feriadosDoMes: getFeriadosDoMes(feriadosQuery.data ?? [], monthIndex),
+		notasDoMes,
+		notasPorData,
+		feriadosStatus: statusDaQuery(feriadosQuery),
+		notasStatus: statusDaQuery(notasQuery),
+		feriadosFetching: feriadosQuery.isFetching,
+		refetchFeriados: () => {
+			void feriadosQuery.refetch()
+		},
+		refetchNotas: () => {
+			void notasQuery.refetch()
+		},
+	}
+}
+
+interface CalendarContentProps {
+	year: number
+	monthIndex: number
+	selectedDate: string
+	sources: CalendarSources
 	handlePrevMonth: () => void
 	handleNextMonth: () => void
 	prevBtnRef: React.RefObject<HTMLButtonElement | null>
@@ -176,67 +170,72 @@ function CalendarContent({
 	onTouchStart: (e: React.TouchEvent) => void
 	onTouchEnd: (e: React.TouchEvent) => void
 	onSelectDay: (date: string) => void
-}) {
-	const feriadosVazios = (query.data?.length ?? 0) === 0
-	const carregandoFeriados = query.isPending && !query.data
-	if (carregandoFeriados) return <CalendarLoadingState />
+	onEdit: () => void
+	onDelete: () => void
+}
+
+// A partir de 1280px o painel não contribui com altura própria (h-0) e
+// estica até a altura da grade (min-h-full); a lista rola por dentro.
+const PAINEL_NA_ALTURA_DA_GRADE =
+	"xl:[&>[role=complementary]]:h-0 xl:[&>[role=complementary]]:min-h-full"
+
+function CalendarContent(props: CalendarContentProps) {
+	const { sources, selectedDate } = props
 	return (
 		<div
-			className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]"
-			onTouchStart={onTouchStart}
-			onTouchEnd={onTouchEnd}
+			className={`grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] ${PAINEL_NA_ALTURA_DA_GRADE}`}
+			onTouchStart={props.onTouchStart}
+			onTouchEnd={props.onTouchEnd}
 		>
 			<MonthlyCalendar
-				monthIndex={selectedMonth}
-				year={selectedYear}
-				feriados={feriadosDoMes}
-				notas={notas}
-				onSelectDay={onSelectDay}
-				onPrevMonth={handlePrevMonth}
-				onNextMonth={handleNextMonth}
-				prevBtnRef={prevBtnRef}
-				nextBtnRef={nextBtnRef}
+				monthIndex={props.monthIndex}
+				year={props.year}
+				feriados={sources.feriadosDoMes}
+				notas={sources.notasPorData}
+				selectedDate={selectedDate}
+				onSelectDay={props.onSelectDay}
+				onPrevMonth={props.handlePrevMonth}
+				onNextMonth={props.handleNextMonth}
+				prevBtnRef={props.prevBtnRef}
+				nextBtnRef={props.nextBtnRef}
 			/>
-			{/* biome-ignore lint/a11y/noRedundantRoles: spec exige role="complementary" explícito em aside */}
-			<aside role="complementary" aria-label="Resumo do mês">
-				<div className="flex flex-col gap-6">
-					<TrainingNotesList
-						notas={notesQuery.data ?? []}
-						monthIndex={selectedMonth}
-						year={selectedYear}
-						isPending={notesQuery.isPending && !notesQuery.data}
-						isError={notesQuery.isError}
-						onRetry={() => {
-							void notesQuery.refetch()
-						}}
-						onSelectDay={onSelectDay}
-					/>
-					{query.isError ? (
-						<CalendarErrorState
-							errorMessage={query.error.userMessage}
-							onRetry={() => {
-								void query.refetch()
-							}}
-						/>
-					) : feriadosVazios ? (
-						<CalendarEmptyState />
-					) : (
-						<HolidayList
-							feriados={feriadosDoMes}
-							monthIndex={selectedMonth}
-							year={selectedYear}
-							total={query.data?.length ?? 0}
-						/>
-					)}
-				</div>
-			</aside>
-			{query.isFetching ? (
+			<DayDetailPanel
+				date={selectedDate}
+				feriado={sources.feriadosDoMes.find((f) => f.date === selectedDate)}
+				nota={sources.notasDoMes.find((n) => n.data === selectedDate)}
+				notasStatus={sources.notasStatus}
+				feriadosStatus={sources.feriadosStatus}
+				onEdit={props.onEdit}
+				onDelete={props.onDelete}
+				onRetryNotas={sources.refetchNotas}
+				onRetryFeriados={sources.refetchFeriados}
+			>
+				<MonthAgenda
+					feriados={sources.feriadosDoMes}
+					notas={sources.notasDoMes}
+					selectedDate={selectedDate}
+					onSelectDay={props.onSelectDay}
+					notasStatus={sources.notasStatus}
+					feriadosStatus={sources.feriadosStatus}
+					onRetryNotas={sources.refetchNotas}
+					onRetryFeriados={sources.refetchFeriados}
+				/>
+			</DayDetailPanel>
+			{sources.feriadosFetching && sources.feriadosStatus === "ok" ? (
 				<span role="status" className="sr-only">
-					Carregando feriados de {selectedYear}
+					Carregando feriados de {props.year}
 				</span>
 			) : null}
 		</div>
 	)
+}
+
+function focusDay(date: string): void {
+	queueMicrotask(() => {
+		document
+			.querySelector<HTMLButtonElement>(`button[data-date="${date}"]`)
+			?.focus()
+	})
 }
 
 export default function CalendarPage({
@@ -252,39 +251,32 @@ export default function CalendarPage({
 		goNextYear,
 		goToToday,
 	} = useCalendarNavigation(initialYear, initialMonth)
-	const query = useFeriadosQuery(selectedYear)
-	const feriadosDoMes = query.data
-		? getFeriadosDoMes(query.data, selectedMonth)
-		: []
-	const notesQuery = useTrainingNotesQuery(selectedYear, selectedMonth + 1)
-	const notas = useMemo(() => {
-		const mapa: Record<string, string> = {}
-		for (const nota of notesQuery.data ?? []) {
-			mapa[nota.data] = nota.texto
-		}
-		return mapa
-	}, [notesQuery.data])
-	const [modalOpen, setModalOpen] = useState(false)
-	const [selectedDate, setSelectedDate] = useState<string | null>(null)
-	const lastDayRef = useRef<string | null>(null)
+	const sources = useCalendarSources(selectedYear, selectedMonth)
+	const [clickedDate, setClickedDate] = useState<string | null>(null)
+	const [drawerOpen, setDrawerOpen] = useState(false)
+	const [deleteDate, setDeleteDate] = useState<string | null>(null)
+	// Dia a receber o foco depois que a exclusão for confirmada: o diálogo ainda
+	// prende o foco enquanto montado, então o foco só vai depois do commit que o
+	// desmonta.
+	const [focusAfterDelete, setFocusAfterDelete] = useState<string | null>(null)
+	const selectedDate = resolveSelectedDay({
+		clicked: clickedDate,
+		year: selectedYear,
+		monthIndex: selectedMonth,
+		today: new Date(),
+	})
+	useEffect(() => {
+		if (focusAfterDelete === null) return
+		focusDay(focusAfterDelete)
+		setFocusAfterDelete(null)
+	}, [focusAfterDelete])
+	const feriadoDoDia = sources.feriadosDoMes.find(
+		(feriado) => feriado.date === selectedDate,
+	)
+	const notaDoDia = sources.notasDoMes.find(
+		(nota) => nota.data === selectedDate,
+	)
 
-	const handleSelectDay = useCallback((date: string) => {
-		lastDayRef.current = date
-		setSelectedDate(date)
-		setModalOpen(true)
-	}, [])
-
-	const handleModalOpenChange = useCallback((open: boolean) => {
-		setModalOpen(open)
-		if (!open && lastDayRef.current) {
-			const date = lastDayRef.current
-			queueMicrotask(() => {
-				document
-					.querySelector<HTMLButtonElement>(`button[data-date="${date}"]`)
-					?.focus()
-			})
-		}
-	}, [])
 	const now = new Date()
 	const isToday =
 		selectedYear === now.getFullYear() && selectedMonth === now.getMonth()
@@ -296,16 +288,29 @@ export default function CalendarPage({
 
 	const handlePrevMonth = useCallback(() => {
 		goPrevMonth()
+		setClickedDate(null)
 		queueMicrotask(() => prevBtnRef.current?.focus())
 	}, [goPrevMonth])
 
 	const handleNextMonth = useCallback(() => {
 		goNextMonth()
+		setClickedDate(null)
 		queueMicrotask(() => nextBtnRef.current?.focus())
 	}, [goNextMonth])
 
+	const handlePrevYear = useCallback(() => {
+		goPrevYear()
+		setClickedDate(null)
+	}, [goPrevYear])
+
+	const handleNextYear = useCallback(() => {
+		goNextYear()
+		setClickedDate(null)
+	}, [goNextYear])
+
 	const handleToday = useCallback(() => {
 		goToToday()
+		setClickedDate(null)
 		// o próprio botão "Hoje" fica disabled após a ação; move o foco para
 		// o botão de ano anterior (sempre habilitado) em vez de perdê-lo
 		queueMicrotask(() => prevYearBtnRef.current?.focus())
@@ -353,8 +358,8 @@ export default function CalendarPage({
 				action={
 					<YearNavigation
 						selectedYear={selectedYear}
-						onPreviousYear={goPrevYear}
-						onNextYear={goNextYear}
+						onPreviousYear={handlePrevYear}
+						onNextYear={handleNextYear}
 						onToday={handleToday}
 						isToday={isToday}
 						prevYearBtnRef={prevYearBtnRef}
@@ -362,25 +367,42 @@ export default function CalendarPage({
 				}
 			/>
 			<CalendarContent
-				query={query}
-				notesQuery={notesQuery}
-				notas={notas}
-				selectedYear={selectedYear}
-				selectedMonth={selectedMonth}
-				feriadosDoMes={feriadosDoMes}
+				year={selectedYear}
+				monthIndex={selectedMonth}
+				selectedDate={selectedDate}
+				sources={sources}
 				handlePrevMonth={handlePrevMonth}
 				handleNextMonth={handleNextMonth}
 				prevBtnRef={prevBtnRef}
 				nextBtnRef={nextBtnRef}
 				onTouchStart={onTouchStart}
 				onTouchEnd={onTouchEnd}
-				onSelectDay={handleSelectDay}
+				onSelectDay={setClickedDate}
+				onEdit={() => setDrawerOpen(true)}
+				onDelete={() => setDeleteDate(selectedDate)}
 			/>
-			<TrainingNoteModal
-				open={modalOpen}
+			<NoteDrawer
+				open={drawerOpen}
 				date={selectedDate}
-				initialTexto={selectedDate ? notas[selectedDate] : undefined}
-				onOpenChange={handleModalOpenChange}
+				feriadoNome={feriadoDoDia?.name}
+				initialTexto={notaDoDia?.texto}
+				onOpenChange={setDrawerOpen}
+				onRequestDelete={setDeleteDate}
+				onCloseAutoFocus={(event) => {
+					event.preventDefault()
+					focusDay(selectedDate)
+				}}
+			/>
+			<DeleteNoteDialog
+				open={deleteDate !== null}
+				date={deleteDate}
+				onOpenChange={(aberto) => {
+					if (!aberto) setDeleteDate(null)
+				}}
+				onDeleted={() => {
+					setDrawerOpen(false)
+					setFocusAfterDelete(selectedDate)
+				}}
 			/>
 		</PageContainer>
 	)

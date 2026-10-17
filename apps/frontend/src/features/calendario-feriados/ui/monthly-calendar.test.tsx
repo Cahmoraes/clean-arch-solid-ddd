@@ -190,4 +190,23 @@ describe("MonthlyCalendar", () => {
 
 		expect(screen.queryByRole("tooltip")).not.toBeInTheDocument()
 	})
+
+	test("AC-02 o dia selecionado tem aria-pressed e os demais não", () => {
+		const { container } = renderWithProviders(
+			<MonthlyCalendar
+				monthIndex={9}
+				year={2026}
+				feriados={[]}
+				onPrevMonth={vi.fn()}
+				onNextMonth={vi.fn()}
+				selectedDate="2026-10-12"
+			/>,
+		)
+		const selecionado = container.querySelector(
+			'button[data-date="2026-10-12"]',
+		)
+		const outro = container.querySelector('button[data-date="2026-10-13"]')
+		expect(selecionado).toHaveAttribute("aria-pressed", "true")
+		expect(outro).toHaveAttribute("aria-pressed", "false")
+	})
 })

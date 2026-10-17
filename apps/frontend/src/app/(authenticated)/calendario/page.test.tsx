@@ -1,8 +1,13 @@
 import { fireEvent, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { HttpResponse, http } from "msw"
-import { describe, expect, test, vi } from "vitest"
+import { delay, HttpResponse, http } from "msw"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import { endpoint } from "@/test/msw/handlers"
 import { server } from "@/test/msw/server"
+import {
+	criarNotaMock,
+	instalarNotasMock,
+} from "@/test/msw/training-notes-mock"
 import { renderWithProviders } from "@/test/render"
 import CalendarPage from "./page"
 
@@ -20,6 +25,16 @@ function createDeferred(): Deferred {
 	})
 	return { promise, resolve }
 }
+
+const FERIADO_12 = {
+	date: "2026-10-12",
+	name: "Nossa Senhora Aparecida",
+	type: "national",
+}
+
+const painel = () =>
+	screen.getByRole("complementary", { name: "Resumo do mês" })
+const tituloDoPainel = () => within(painel()).getByRole("heading", { level: 2 })
 
 describe("CalendarPage", () => {
 	test("renderiza feriados nacionais e permite navegar para ano anterior e seguinte", async () => {
@@ -190,22 +205,13 @@ describe("CalendarPage", () => {
 
 		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
-		expect(await screen.findByRole("status")).toHaveTextContent(
-			"Carregando feriados",
-		)
-		expect(
-			screen.queryByRole("heading", { name: "Feriados de 2026" }),
-		).not.toBeInTheDocument()
-		expect(
-			screen.queryByText("Nenhum feriado encontrado"),
-		).not.toBeInTheDocument()
+		expect(await screen.findByRole("grid")).toBeInTheDocument()
+		expect(screen.getAllByText("Carregando feriados").length).toBeGreaterThan(0)
 
 		deferred.resolve()
 
 		await waitFor(() => {
-			expect(
-				screen.queryByRole("status", { name: "Carregando feriados" }),
-			).not.toBeInTheDocument()
+			expect(screen.queryByText("Carregando feriados")).not.toBeInTheDocument()
 		})
 	})
 
@@ -219,17 +225,18 @@ describe("CalendarPage", () => {
 		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
 		expect(
-			await screen.findByRole("alert", undefined, { timeout: 3_000 }),
-		).toHaveTextContent("Não foi possível carregar os feriados")
+			(
+				await screen.findAllByText(
+					"Não foi possível carregar os feriados",
+					undefined,
+					{ timeout: 3_000 },
+				)
+			).length,
+		).toBeGreaterThan(0)
 		expect(
-			screen.getByRole("button", { name: "Tentar novamente" }),
+			screen.getAllByRole("button", { name: "Tentar de novo (feriados)" })[0],
 		).toBeEnabled()
-		expect(
-			screen.queryByRole("heading", { name: "Feriados de 2026" }),
-		).not.toBeInTheDocument()
-		expect(
-			screen.queryByText("Nenhum feriado encontrado"),
-		).not.toBeInTheDocument()
+		expect(screen.getByRole("grid")).toBeInTheDocument()
 	})
 
 	test("refaz consulta ao acionar retry após erro", async () => {
@@ -253,8 +260,14 @@ describe("CalendarPage", () => {
 
 		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
-		await screen.findByRole("alert", undefined, { timeout: 3_000 })
-		await user.click(screen.getByRole("button", { name: "Tentar novamente" }))
+		await screen.findAllByText(
+			"Não foi possível carregar os feriados",
+			undefined,
+			{ timeout: 3_000 },
+		)
+		await user.click(
+			screen.getAllByRole("button", { name: "Tentar de novo (feriados)" })[0],
+		)
 
 		expect((await screen.findAllByText("Natal")).length).toBeGreaterThan(0)
 		expect(requestCount).toBe(3)
@@ -268,12 +281,8 @@ describe("CalendarPage", () => {
 		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={8} />)
 
 		expect(
-			await screen.findByText("Nenhum feriado encontrado"),
+			await screen.findByText("Nenhuma nota ou feriado neste mês."),
 		).toBeInTheDocument()
-		expect(screen.getByText("Tente consultar outro ano.")).toBeInTheDocument()
-		expect(
-			screen.queryByRole("heading", { name: "Feriados de 2026" }),
-		).not.toBeInTheDocument()
 	})
 
 	test("renderiza feriado destacado no mês correspondente", async () => {
@@ -294,7 +303,9 @@ describe("CalendarPage", () => {
 		expect(
 			await screen.findByRole("heading", { name: /Abril 2026/ }),
 		).toBeInTheDocument()
-		expect(screen.getByLabelText(/21 de abril: Tiradentes/)).toBeInTheDocument()
+		expect(
+			await screen.findByLabelText(/21 de abril: Tiradentes/),
+		).toBeInTheDocument()
 		// garante mês único
 		expect(
 			screen.queryByRole("heading", { name: /Maio 2026/ }),
@@ -333,7 +344,9 @@ describe("CalendarPage", () => {
 			await screen.findByRole("heading", { name: /Setembro 2026/ }),
 		).toBeInTheDocument()
 		expect(
-			within(screen.getByRole("complementary")).getByText(/Independência/),
+			await within(await screen.findByTestId("month-agenda-lista")).findByText(
+				/Independência/,
+			),
 		).toBeInTheDocument()
 		await user.click(
 			screen.getByRole("button", { name: /Próximo mês, outubro 2026/ }),
@@ -342,7 +355,9 @@ describe("CalendarPage", () => {
 			await screen.findByRole("heading", { name: /Outubro 2026/ }),
 		).toBeInTheDocument()
 		expect(
-			within(screen.getByRole("complementary")).getByText(/Aparecida/),
+			await within(await screen.findByTestId("month-agenda-lista")).findByText(
+				/Aparecida/,
+			),
 		).toBeInTheDocument()
 	})
 
@@ -399,7 +414,9 @@ describe("CalendarPage", () => {
 			await screen.findByRole("heading", { name: /Dezembro 2026/ }),
 		).toBeInTheDocument()
 		expect(
-			within(screen.getByRole("complementary")).getByText(/Natal/),
+			await within(await screen.findByTestId("month-agenda-lista")).findByText(
+				/Natal/,
+			),
 		).toBeInTheDocument()
 
 		await user.click(
@@ -413,7 +430,9 @@ describe("CalendarPage", () => {
 			screen.getByRole("heading", { name: "Calendário 2027" }),
 		).toBeInTheDocument()
 		expect(
-			within(screen.getByRole("complementary")).getByText(/Confraternização/),
+			await within(await screen.findByTestId("month-agenda-lista")).findByText(
+				/Confraternização/,
+			),
 		).toBeInTheDocument()
 	})
 
@@ -452,7 +471,9 @@ describe("CalendarPage", () => {
 			screen.getByRole("heading", { name: "Calendário 2025" }),
 		).toBeInTheDocument()
 		expect(
-			within(screen.getByRole("complementary")).getByText(/Natal/),
+			await within(await screen.findByTestId("month-agenda-lista")).findByText(
+				/Natal/,
+			),
 		).toBeInTheDocument()
 	})
 
@@ -567,6 +588,175 @@ describe("CalendarPage", () => {
 			expect(icon).toHaveAttribute("aria-hidden", "true")
 			expect(icon).toHaveAttribute("shape-rendering", "crispEdges")
 		}
-		await screen.findByText("Nenhum feriado encontrado")
+		await screen.findByText("Nenhuma nota ou feriado neste mês.")
+	})
+})
+
+describe("CalendarPage: seleção do dia", () => {
+	beforeEach(() => {
+		vi.useFakeTimers({ toFake: ["Date"] })
+		vi.setSystemTime(new Date(2026, 9, 17))
+	})
+	afterEach(() => vi.useRealTimers())
+
+	test("AC-02 clicar no dia só o seleciona e o painel mostra o dia, sem abrir a gaveta", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		const dia20 = await screen.findByRole("button", { name: /^20 de outubro/ })
+		expect(dia20).toHaveAttribute("aria-pressed", "false")
+		await user.click(dia20)
+		expect(dia20).toHaveAttribute("aria-pressed", "true")
+		expect(tituloDoPainel()).toHaveTextContent("20 de outubro")
+		expect(screen.queryByLabelText("Nota do treino")).not.toBeInTheDocument()
+		await user.click(dia20) // não é alternância
+		expect(dia20).toHaveAttribute("aria-pressed", "true")
+	})
+
+	test("AC-03 hoje é o padrão ao abrir e o dia 1 num mês sem hoje", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		await screen.findByRole("button", { name: /^17 de outubro/ })
+		expect(tituloDoPainel()).toHaveTextContent("17 de outubro")
+		await user.click(screen.getByRole("button", { name: /próximo mês/i }))
+		expect(tituloDoPainel()).toHaveTextContent("1 de novembro")
+	})
+
+	test("AC-03 trocar de mês zera o dia clicado", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		await user.click(
+			await screen.findByRole("button", { name: /^20 de outubro/ }),
+		)
+		await user.click(screen.getByRole("button", { name: /próximo mês/i }))
+		await user.click(screen.getByRole("button", { name: /mês anterior/i }))
+		expect(tituloDoPainel()).toHaveTextContent("17 de outubro")
+	})
+
+	test("AC-03 trocar de ano e usar Hoje zeram o dia clicado", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		await user.click(
+			await screen.findByRole("button", { name: /^20 de outubro/ }),
+		)
+		await user.click(
+			screen.getByRole("button", { name: "Ir para 2025 (ano anterior)" }),
+		)
+		expect(tituloDoPainel()).toHaveTextContent(/^1 de /)
+		await user.click(
+			screen.getByRole("button", { name: "Ir para 2026 (ano seguinte)" }),
+		)
+		expect(tituloDoPainel()).toHaveTextContent("17 de outubro")
+		await user.click(screen.getByRole("button", { name: /próximo mês/i }))
+		await user.click(
+			await screen.findByRole("button", { name: /^20 de novembro/ }),
+		)
+		await user.click(screen.getByRole("button", { name: "Ir para hoje" }))
+		expect(tituloDoPainel()).toHaveTextContent("17 de outubro")
+	})
+})
+
+describe("CalendarPage: fontes independentes", () => {
+	test("AC-13 feriados falham sem esconder a grade nem as notas, e o retry é só dos feriados", async () => {
+		instalarNotasMock({
+			semente: [criarNotaMock("2026-10-16", "Peito + tríceps 4x12")],
+			feriadosComErro: true,
+		})
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		expect(await screen.findByRole("grid")).toBeInTheDocument()
+		expect(
+			(
+				await screen.findAllByText(
+					"Não foi possível carregar os feriados",
+					undefined,
+					{ timeout: 3_000 },
+				)
+			).length,
+		).toBeGreaterThan(0)
+		expect(
+			await screen.findByRole("button", {
+				name: "Selecionar 16 de outubro (nota)",
+			}),
+		).toBeInTheDocument()
+		expect(
+			screen.queryByText("Não foi possível carregar as notas"),
+		).not.toBeInTheDocument()
+		server.use(
+			http.get(`${BRASIL_API_FERIADOS_URL}/2026`, () =>
+				HttpResponse.json([FERIADO_12]),
+			),
+		)
+		await user.click(
+			screen.getAllByRole("button", { name: "Tentar de novo (feriados)" })[0],
+		)
+		expect(
+			await screen.findByRole("button", {
+				name: "Selecionar 12 de outubro (feriado)",
+			}),
+		).toBeInTheDocument()
+	})
+
+	test("AC-13 notas falham sem esconder a grade nem os feriados, e sem Editar nem Adicionar nota", async () => {
+		instalarNotasMock({ feriados: [FERIADO_12] })
+		server.use(
+			http.get(endpoint("/training-notes"), () =>
+				HttpResponse.json({ message: "falha" }, { status: 500 }),
+			),
+		)
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		expect(
+			(await screen.findAllByText("Não foi possível carregar as notas")).length,
+		).toBeGreaterThan(0)
+		expect(screen.getByRole("grid")).toBeInTheDocument()
+		expect(
+			await screen.findByRole("button", {
+				name: "Selecionar 12 de outubro (feriado)",
+			}),
+		).toBeInTheDocument()
+		expect(
+			screen.queryByText("Não foi possível carregar os feriados"),
+		).not.toBeInTheDocument()
+		expect(
+			screen.queryByRole("button", {
+				name: /^(Editar|Excluir|Adicionar nota)$/,
+			}),
+		).not.toBeInTheDocument()
+		server.use(
+			http.get(endpoint("/training-notes"), () => HttpResponse.json([])),
+		)
+		await user.click(
+			screen.getAllByRole("button", { name: "Tentar de novo (notas)" })[0],
+		)
+		expect(
+			await within(painel()).findByRole("button", { name: "Adicionar nota" }),
+		).toBeInTheDocument()
+	})
+
+	test("AC-13 notas carregando mostram 'Carregando notas' com a grade e os feriados visíveis", async () => {
+		instalarNotasMock({ feriados: [FERIADO_12] })
+		server.use(
+			http.get(endpoint("/training-notes"), async () => {
+				await delay("infinite")
+				return HttpResponse.json([])
+			}),
+		)
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		expect(await screen.findByRole("grid")).toBeInTheDocument()
+		expect(
+			(await screen.findAllByText("Carregando notas")).length,
+		).toBeGreaterThan(0)
+		expect(
+			await screen.findByRole("button", {
+				name: "Selecionar 12 de outubro (feriado)",
+			}),
+		).toBeInTheDocument()
+		expect(
+			screen.queryByRole("button", { name: "Adicionar nota" }),
+		).not.toBeInTheDocument()
 	})
 })

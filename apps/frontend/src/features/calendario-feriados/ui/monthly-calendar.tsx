@@ -57,7 +57,13 @@ export interface MonthlyCalendarProps {
 	 */
 	notas?: Readonly<Record<string, string>>
 	onSelectDay?: (date: string) => void
+	/** Dia selecionado (`YYYY-MM-DD`); quando informado, cada dia expõe `aria-pressed`. */
+	selectedDate?: string
 }
+
+// Anel duplo ciano do dia selecionado, distinto do anel de foco de teclado.
+const SELECTED_RING_CLASS =
+	"shadow-[0_0_0_2px_var(--color-background),0_0_0_4px_var(--color-accent)]"
 
 function getDaysInMonth(year: number, monthIndex: number): number {
 	return new Date(year, monthIndex + 1, 0).getDate()
@@ -82,6 +88,10 @@ function getDayCellStateClass(isHoliday: boolean, isToday: boolean): string {
 	return "border-transparent"
 }
 
+function getSelectedRingClass(isSelected: boolean | undefined): string {
+	return isSelected ? SELECTED_RING_CLASS : ""
+}
+
 function formatDayAriaLabel(
 	day: number,
 	monthNameLower: string,
@@ -101,6 +111,7 @@ function DayCell({
 	holiday,
 	notaTexto,
 	isToday,
+	isSelected,
 	monthNameLower,
 	onSelectDay,
 }: {
@@ -109,6 +120,8 @@ function DayCell({
 	holiday?: Feriado
 	notaTexto?: string
 	isToday: boolean
+	/** `undefined` quando a grade não controla seleção (sem `aria-pressed`). */
+	isSelected?: boolean
 	monthNameLower: string
 	onSelectDay?: (date: string) => void
 }) {
@@ -117,11 +130,13 @@ function DayCell({
 			type="button"
 			data-date={dateStr}
 			aria-current={isToday ? "date" : undefined}
+			aria-pressed={isSelected}
 			aria-label={formatDayAriaLabel(day, monthNameLower, holiday, notaTexto)}
 			onClick={() => onSelectDay?.(dateStr)}
 			className={cn(
 				"relative flex min-h-14 w-full cursor-pointer flex-col items-center justify-center rounded-md border p-1 text-sm focus-ring-duplo",
 				getDayCellStateClass(Boolean(holiday), isToday),
+				getSelectedRingClass(isSelected),
 			)}
 		>
 			<span className="block font-display text-lg leading-none">{day}</span>
@@ -168,6 +183,7 @@ function renderDayCells(
 	monthNameLower: string,
 	notas: Readonly<Record<string, string>>,
 	onSelectDay: ((date: string) => void) | undefined,
+	selectedDate: string | undefined,
 ) {
 	const daysInMonth = getDaysInMonth(year, monthIndex)
 	const todayStr = getTodayDateStr()
@@ -183,6 +199,9 @@ function renderDayCells(
 				holiday={holiday}
 				notaTexto={notas[dateStr]}
 				isToday={dateStr === todayStr}
+				isSelected={
+					selectedDate === undefined ? undefined : dateStr === selectedDate
+				}
 				monthNameLower={monthNameLower}
 				onSelectDay={onSelectDay}
 			/>
@@ -210,6 +229,7 @@ export function MonthlyCalendar({
 	nextBtnRef,
 	notas = {},
 	onSelectDay,
+	selectedDate,
 }: MonthlyCalendarProps) {
 	const prevLabel = getPrevLabel(monthIndex, year)
 	const nextLabel = getNextLabel(monthIndex, year)
@@ -274,6 +294,7 @@ export function MonthlyCalendar({
 						monthNameLower,
 						notas,
 						onSelectDay,
+						selectedDate,
 					)}
 				</div>
 			</CardContent>
