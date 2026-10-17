@@ -599,7 +599,7 @@ describe("CalendarPage: seleção do dia", () => {
 	})
 	afterEach(() => vi.useRealTimers())
 
-	test("AC-02 clicar no dia só o seleciona e o painel mostra o dia, sem abrir a gaveta", async () => {
+	test("AC-02 clicar no dia só o seleciona e o painel mostra o dia, sem abrir o modal", async () => {
 		instalarNotasMock()
 		const user = userEvent.setup()
 		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
@@ -660,7 +660,7 @@ describe("CalendarPage: seleção do dia", () => {
 })
 
 describe("CalendarPage: atalho de setas", () => {
-	async function abrirGaveta(user: ReturnType<typeof userEvent.setup>) {
+	async function abrirModal(user: ReturnType<typeof userEvent.setup>) {
 		await user.click(
 			await screen.findByRole("button", { name: /^16 de outubro/ }),
 		)
@@ -670,21 +670,21 @@ describe("CalendarPage: atalho de setas", () => {
 	}
 	const dia16 = () => document.querySelector('button[data-date="2026-10-16"]')
 
-	test("AC-14 setas no textarea da gaveta não trocam o mês", async () => {
+	test("AC-14 setas no textarea do modal não trocam o mês", async () => {
 		instalarNotasMock()
 		const user = userEvent.setup()
 		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
-		await abrirGaveta(user)
+		await abrirModal(user)
 		await user.click(await screen.findByLabelText("Nota do treino"))
 		await user.keyboard("{ArrowLeft}{ArrowRight}{ArrowRight}")
 		expect(dia16()).toBeInTheDocument()
 	})
 
-	test("AC-14 setas com a gaveta aberta e o foco fora do campo não trocam o mês", async () => {
+	test("AC-14 setas com o modal aberto e o foco fora do campo não trocam o mês", async () => {
 		instalarNotasMock()
 		const user = userEvent.setup()
 		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
-		await abrirGaveta(user)
+		await abrirModal(user)
 		await user.click(await screen.findByLabelText("Nota do treino"))
 		await user.tab()
 		expect(document.activeElement?.tagName).toBe("BUTTON")
@@ -692,11 +692,28 @@ describe("CalendarPage: atalho de setas", () => {
 		expect(dia16()).toBeInTheDocument()
 	})
 
-	test("Review Focus: seta esquerda ou direita digitada no textarea da gaveta aberta move o cursor e não troca o mês", async () => {
+	test("AC-09 setas com a confirmação de exclusão aberta não trocam o mês", async () => {
+		instalarNotasMock({
+			semente: [criarNotaMock("2026-10-16", "Peito + tríceps 4x12")],
+		})
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		await user.click(
+			await screen.findByRole("button", { name: /^16 de outubro/ }),
+		)
+		await user.click(
+			await within(painel()).findByRole("button", { name: "Excluir" }),
+		)
+		await screen.findByRole("alertdialog", { name: "Excluir a nota?" })
+		await user.keyboard("{ArrowRight}{ArrowLeft}{ArrowLeft}")
+		expect(dia16()).toBeInTheDocument()
+	})
+
+	test("Review Focus: seta esquerda ou direita digitada no textarea do modal aberto move o cursor e não troca o mês", async () => {
 		instalarNotasMock()
 		const user = userEvent.setup()
 		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
-		await abrirGaveta(user)
+		await abrirModal(user)
 		const campo = await screen.findByLabelText("Nota do treino")
 		await user.type(campo, "abc{ArrowLeft}{ArrowLeft}X")
 		expect(campo).toHaveValue("aXbc")

@@ -27,7 +27,7 @@ import {
 	useTrainingNotesQuery,
 } from "@/features/training-notes/api/use-training-notes"
 import { DeleteNoteDialog } from "@/features/training-notes/ui/delete-note-dialog"
-import { NoteDrawer } from "@/features/training-notes/ui/training-note-drawer"
+import { NoteModal } from "@/features/training-notes/ui/training-note-modal"
 
 type CalendarPageProps = {
 	initialYear?: number
@@ -262,9 +262,9 @@ export default function CalendarPage({
 	} = useCalendarNavigation(initialYear, initialMonth)
 	const sources = useCalendarSources(selectedYear, selectedMonth)
 	const [clickedDate, setClickedDate] = useState<string | null>(null)
-	const [drawerOpen, setDrawerOpen] = useState(false)
+	const [modalOpen, setModalOpen] = useState(false)
 	const [deleteDate, setDeleteDate] = useState<string | null>(null)
-	// Quem abriu o diálogo de exclusão (botão Excluir do painel ou da gaveta).
+	// Quem abriu o diálogo de exclusão (botão Excluir do painel ou do modal).
 	const deleteOpenerRef = useRef<HTMLElement | null>(null)
 	// Alvo do foco depois que o diálogo fecha: o diálogo ainda prende o foco
 	// enquanto montado, então o foco só vai depois do commit que o desmonta.
@@ -358,7 +358,7 @@ export default function CalendarPage({
 		[handleNextMonth, handlePrevMonth],
 	)
 
-	const overlayOpen = drawerOpen || deleteDate !== null
+	const overlayOpen = modalOpen || deleteDate !== null
 	useEffect(() => {
 		// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard handler
 		const handler = (e: KeyboardEvent) => {
@@ -399,15 +399,15 @@ export default function CalendarPage({
 				onTouchStart={onTouchStart}
 				onTouchEnd={onTouchEnd}
 				onSelectDay={setClickedDate}
-				onEdit={() => setDrawerOpen(true)}
+				onEdit={() => setModalOpen(true)}
 				onDelete={() => requestDelete(selectedDate)}
 			/>
-			<NoteDrawer
-				open={drawerOpen}
+			<NoteModal
+				open={modalOpen}
 				date={selectedDate}
 				feriadoNome={feriadoDoDia?.name}
 				initialTexto={notaDoDia?.texto}
-				onOpenChange={setDrawerOpen}
+				onOpenChange={setModalOpen}
 				onRequestDelete={requestDelete}
 				onCloseAutoFocus={(event) => {
 					event.preventDefault()
@@ -424,7 +424,7 @@ export default function CalendarPage({
 					setFocusAfterDialog(deleteOpenerRef.current)
 				}}
 				onDeleted={() => {
-					setDrawerOpen(false)
+					setModalOpen(false)
 					setFocusAfterDialog(selectedDate)
 				}}
 			/>

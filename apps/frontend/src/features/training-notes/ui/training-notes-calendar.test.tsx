@@ -25,7 +25,7 @@ const botaoDoDia = () =>
 	document.querySelector('button[data-date="2026-10-16"]')
 
 describe("Calendário com notas de treino", () => {
-	test("salvar pela gaveta mostra a nota no painel e na lista do mês", async () => {
+	test("salvar pelo modal mostra a nota no painel e na lista do mês", async () => {
 		instalarNotasMock()
 		const user = userEvent.setup()
 		renderPagina()
@@ -50,6 +50,40 @@ describe("Calendário com notas de treino", () => {
 		expect(
 			screen.getByRole("button", { name: "Selecionar 16 de outubro (nota)" }),
 		).toBeInTheDocument()
+	})
+
+	test("AC-06 pelo calendário o modal da nota tem ações só com ícone", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderPagina()
+		await user.click(
+			await screen.findByRole("button", { name: /^20 de outubro/ }),
+		)
+		await user.click(
+			await within(painel()).findByRole("button", { name: "Adicionar nota" }),
+		)
+		await screen.findByRole("dialog")
+		expect(screen.getByRole("button", { name: "Salvar" }).textContent).toBe("")
+		expect(screen.getByRole("button", { name: "Cancelar" }).textContent).toBe(
+			"",
+		)
+	})
+
+	test("AC-03 Adicionar nota abre o modal vazio, sem o botão Excluir", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderPagina()
+		await user.click(
+			await screen.findByRole("button", { name: /^20 de outubro/ }),
+		)
+		await user.click(
+			await within(painel()).findByRole("button", { name: "Adicionar nota" }),
+		)
+		const modal = await screen.findByRole("dialog")
+		expect(within(modal).getByLabelText("Nota do treino")).toHaveValue("")
+		expect(
+			within(modal).queryByRole("button", { name: "Excluir" }),
+		).not.toBeInTheDocument()
 	})
 
 	test("AC-08 excluir pelo painel pede confirmação e só remove ao confirmar", async () => {
@@ -79,7 +113,7 @@ describe("Calendário com notas de treino", () => {
 		).not.toBeInTheDocument()
 	})
 
-	test("AC-08 excluir pela gaveta pede confirmação, fecha a gaveta e o painel fica sem nota", async () => {
+	test("AC-08 excluir pelo modal pede confirmação, fecha o modal e o painel fica sem nota", async () => {
 		instalarNotasMock({ semente: SEMENTE })
 		const user = userEvent.setup()
 		renderPagina()
@@ -93,7 +127,7 @@ describe("Calendário com notas de treino", () => {
 		expect(
 			await screen.findByRole("alertdialog", { name: "Excluir a nota?" }),
 		).toBeInTheDocument()
-		expect(screen.getByLabelText("Nota do treino")).toBeInTheDocument() // a gaveta segue aberta por baixo
+		expect(screen.getByLabelText("Nota do treino")).toBeInTheDocument() // o modal segue aberto por baixo
 		await user.click(screen.getByRole("button", { name: "Confirmar" }))
 		await waitFor(() =>
 			expect(screen.queryByLabelText("Nota do treino")).not.toBeInTheDocument(),
@@ -122,7 +156,7 @@ describe("Calendário com notas de treino", () => {
 				await user.click(screen.getByRole("button", { name: "Salvar" }))
 			},
 		],
-	])("AC-09 o foco volta ao botão do dia ao fechar a gaveta por %s", async (_nome, fechar) => {
+	])("AC-04 o foco volta ao botão do dia ao fechar o modal por %s", async (_nome, fechar) => {
 		instalarNotasMock()
 		const user = userEvent.setup()
 		renderPagina()
@@ -137,7 +171,7 @@ describe("Calendário com notas de treino", () => {
 		await waitFor(() => expect(botaoDoDia()).toHaveFocus())
 	})
 
-	test("AC-09 o foco volta ao botão do dia ao excluir pela gaveta", async () => {
+	test("Review Focus: confirmar a exclusão feita pelo modal fecha tudo e devolve o foco ao botão do dia", async () => {
 		instalarNotasMock({ semente: SEMENTE })
 		const user = userEvent.setup()
 		renderPagina()
@@ -150,8 +184,9 @@ describe("Calendário com notas de treino", () => {
 		await user.click(await screen.findByRole("button", { name: "Excluir" }))
 		await user.click(await screen.findByRole("button", { name: "Confirmar" }))
 		await waitFor(() =>
-			expect(screen.queryByLabelText("Nota do treino")).not.toBeInTheDocument(),
+			expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
 		)
+		expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument()
 		await waitFor(() => expect(botaoDoDia()).toHaveFocus())
 	})
 
@@ -212,7 +247,7 @@ describe("Calendário com notas de treino", () => {
 				user.click(screen.getByRole("button", { name: "Cancelar" })),
 		],
 		["Esc", (user: UserEvent) => user.keyboard("{Escape}")],
-	])("AC-09 dispensar a exclusão por %s a partir da gaveta devolve o foco ao botão Excluir da gaveta", async (_nome, dispensar) => {
+	])("AC-05 dispensar a exclusão por %s a partir do modal devolve o foco ao botão Excluir do modal", async (_nome, dispensar) => {
 		instalarNotasMock({ semente: SEMENTE })
 		const user = userEvent.setup()
 		renderPagina()
@@ -222,8 +257,8 @@ describe("Calendário com notas de treino", () => {
 		await user.click(
 			await within(painel()).findByRole("button", { name: "Editar" }),
 		)
-		const gaveta = await screen.findByRole("dialog")
-		const excluir = within(gaveta).getByRole("button", { name: "Excluir" })
+		const modal = await screen.findByRole("dialog")
+		const excluir = within(modal).getByRole("button", { name: "Excluir" })
 		await user.click(excluir)
 		await screen.findByRole("alertdialog", { name: "Excluir a nota?" })
 		await dispensar(user)

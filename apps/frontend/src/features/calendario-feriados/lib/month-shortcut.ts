@@ -5,7 +5,7 @@ function alvoEditavel(target: EventTarget | null): boolean {
 	return target instanceof Element && target.closest(SELETOR_EDITAVEL) !== null
 }
 
-/** As setas só trocam de mês fora de campos editáveis e sem gaveta ou diálogo aberto. */
+/** As setas só trocam de mês fora de campos editáveis e sem modal ou diálogo aberto. */
 export function isMonthShortcutBlocked(
 	event: KeyboardEvent,
 	overlayOpen: boolean,
