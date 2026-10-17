@@ -36,7 +36,7 @@ Esta feature **substitui** as decisões D2 (gaveta), D4 (confirmação de exclus
 **Anti-objetivos** (seria falha mesmo que tudo funcione)
 - Reintroduzir qualquer rolagem aninhada na nota do painel.
 - Deixar o painel crescer sem limite com texto longo (era o anti-objetivo do redesign anterior: "o texto espremido da célula não pode reaparecer num painel que também cresce sem limite").
-- Botão de ícone sem nome acessível, ou com nome diferente de "Salvar", "Cancelar" e "Excluir".
+- Botão de ação (Salvar, Cancelar, Excluir) sem nome acessível, ou com nome diferente de "Salvar", "Cancelar" e "Excluir".
 - A gaveta continuar existindo escondida em alguma largura (por exemplo abaixo de 768 px).
 
 **Restrições**
@@ -75,12 +75,14 @@ O painel passa a só sinalizar "abrir a nota do dia" para a página; ele não co
 
 **`NoteModal`** (novo; substitui `NoteDrawer`)
 - **Responsabilidade:** criar, editar e excluir a nota de um dia, num modal centralizado.
-- **Interface:** `open`, `onOpenChange`, a data e o feriado do dia (para o cabeçalho), a nota existente (ou nenhuma) e os callbacks de salvar e excluir que a página já usa hoje. O chamador não conhece validação nem mapeamento de erros.
+- **Interface:** as mesmas props que o `NoteDrawer` recebe hoje da página: `open`, `onOpenChange`, o dia e o feriado (para o cabeçalho), a nota existente (ou nenhuma), `onRequestDelete` e `onCloseAutoFocus`. Criar e atualizar a nota continuam sendo chamados pelo próprio modal (`useCreateNote`, `useUpdateNote`), como na gaveta; a página não faz a mutação. O chamador não conhece validação nem mapeamento de erros.
 - **Oculta:** validação 1 a 500 caracteres com contador, mapeamento dos erros (409, rede, 404, inválida) para as mensagens e o modo (criação ou edição); a regra de que os três botões de ação são ícones com `aria-label` e tooltip.
 - **Local:** `apps/frontend/src/features/training-notes/ui/training-note-modal.tsx` (novo), reaproveitando o `Dialog` de `src/components/ui/dialog.tsx`; `training-note-drawer.tsx` é removido. (decisão minha: o nome e o diretório seguem o modal que existiu antes do redesign)
-- **Depende de:** `Dialog`, `Tooltip`, `Button` (`size="icon"`), `pixel-icons`, `DeleteNoteDialog`.
+- **Depende de:** `Dialog`, `Tooltip`, `Button` (`size="icon"`), `pixel-icons`, `useCreateNote`, `useUpdateNote`. O modal não renderiza a confirmação de exclusão; só a pede por `onRequestDelete`.
 
-**`DeleteNoteDialog`** (inalterado): confirmação "Excluir a nota?", agora acionada só pelo modal.
+**`calendario/page.tsx`** (alterado, estrutura mantida): renderiza o `NoteModal` no lugar do `NoteDrawer` e deixa de passar `onDelete` ao painel. Continua dona do `DeleteNoteDialog`, de `deleteOpenerRef`, `focusAfterDialog` e `overlayOpen` (a guarda das setas) e do retorno de foco ao botão do dia. A exclusão passa a ter um único ponto de partida, o botão Excluir do modal. (resposta do código atual; decisão minha manter a estrutura e só trocar o componente)
+
+**`DeleteNoteDialog`** (inalterado): confirmação "Excluir a nota?", renderizada pela página e acionada só a partir do modal.
 
 **`pixel-icons.tsx`** (regenerado): ganha o export `Save`.
 
@@ -144,10 +146,13 @@ Os comportamentos abaixo já existem na gaveta e passam inalterados para o modal
 | Botões de ação sem texto | `aria-label` com o nome atual e tooltip com o mesmo texto (decisão minha) | usuários não entenderem o disquete |
 | Ícone de salvar | `save` do pixelarticons (disquete), via `Save: "save"` no `ICON_MAP` do gerador (decisão minha: o projeto não tinha ícone de salvar; é a versão que combina com os demais) | n/a |
 | "Repetir" | continua texto (decisão minha) | n/a |
+| Foco inicial ao abrir o modal | o campo de texto, para que nenhum tooltip abra sozinho na abertura (decisão minha) | n/a |
+| Tooltip com botão desabilitado | durante o salvamento os três botões ficam desabilitados e sem tooltip, o que é aceito; o nome acessível não muda (decisão minha) | n/a |
+| X de fechar embutido no `DialogContent` | fica como está: é do componente compartilhado, que não é alterado; coexiste com o Cancelar. O anti-objetivo vale só para os três botões de ação (decisão minha) | usuário achar os dois X redundantes |
 
 ## Riscos
 
-- **Regerar `pixel-icons.tsx` pode alterar outros ícones.** O gerador busca os SVGs na CDN; se a versão não estiver fixada em 2.4.1, o arquivo pode mudar além do `Save`. Mitigação: conferir que o diff do arquivo gerado só acrescenta `Save` (AC-10) e que `no-lucide.test.ts` passa. O gerador precisa de rede.
+- **Regerar `pixel-icons.tsx` pode alterar outros ícones.** O gerador busca os SVGs na CDN; se a versão não estiver fixada em 2.4.1, o arquivo pode mudar além do `Save`. Mitigação: conferir que o diff do arquivo gerado só acrescenta `Save` (AC-10) e que `no-lucide.test.ts` passa. O gerador precisa de rede. Se ele não puder rodar, ou alterar outros ícones além do `Save`, a task para e reporta; não se escreve o `Save` à mão no arquivo gerado (decisão minha, pela restrição do repositório).
 - **Testes e documentos do redesign anterior citam a gaveta.** Mitigação: atualizar os testes que a exercitam (`training-note-drawer.test.tsx`, `training-notes-calendar.test.tsx`, `calendario/page.test.tsx`, `day-detail-panel.test.tsx`, `month-agenda.test.tsx`); os documentos antigos ficam como histórico.
 
 ## Testes
@@ -156,7 +161,7 @@ Os comportamentos abaixo já existem na gaveta e passam inalterados para o modal
 **Níveis:** unitário AC-01 a AC-06, AC-08, AC-09 e AC-10; AC-07 depende de layout real e é verificado em navegador pela QA a 1280, 1440 e 1920 px, e em largura de celular.
 
 - AC-01 · WHEN a nota do dia tem texto com mais de 3 linhas THEN o painel mostra o trecho cortado em 3 linhas, sem barra de rolagem na nota, e o texto completo continua acessível no DOM (origem: D2)
-- AC-02 · WHEN o usuário clica no trecho da nota THEN abre o modal (`role="dialog"`) em modo edição com o texto completo no campo, e o painel não tem botões Editar nem Excluir (origem: D2)
+- AC-02 · WHEN o usuário clica no trecho da nota THEN abre o modal (`role="dialog"`) em modo edição com o texto completo no campo e o foco inicial no campo, e o painel não tem botões Editar nem Excluir (origem: D2)
 - AC-03 · WHEN o dia não tem nota e o usuário aciona "Adicionar nota" THEN abre o mesmo modal vazio, sem o botão Excluir (origem: D1)
 - AC-04 · WHEN o usuário salva um texto válido THEN a nota é gravada, o modal fecha e o foco volta ao botão do dia; Cancelar e Esc fecham sem gravar e devolvem o foco ao mesmo botão (origem: D1)
 - AC-05 · WHEN o usuário aciona Excluir no modal THEN abre a confirmação "Excluir a nota?"; confirmar exclui, fecha confirmação e modal e devolve o foco ao botão do dia; cancelar a confirmação devolve o foco ao botão Excluir do modal (origem: D1)
