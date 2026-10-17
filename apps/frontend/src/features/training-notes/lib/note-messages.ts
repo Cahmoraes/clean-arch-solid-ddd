@@ -5,11 +5,6 @@ export const AVISO_CONFLITO = "Esse dia já tem nota — edite a atual"
 export const ERRO_REDE = "Sem conexão — tente de novo"
 export const ERRO_NAO_ENCONTRADA = "Nota não encontrada — recarregue o mês"
 
-export const DESCRICAO_POR_MODO: Record<"criar" | "editar", string> = {
-	criar: "Descreva o treino do dia em até 500 caracteres.",
-	editar: "Edite o texto da nota ou exclua o treino do dia.",
-}
-
 const MESES_LOWER = [
 	"janeiro",
 	"fevereiro",

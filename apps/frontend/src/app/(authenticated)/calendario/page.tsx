@@ -12,6 +12,7 @@ import {
 import { useFeriadosQuery } from "@/features/calendario-feriados/api/use-feriados-query"
 import { useCalendarNavigation } from "@/features/calendario-feriados/hooks/use-calendar-navigation"
 import { getFeriadosDoMes } from "@/features/calendario-feriados/lib/get-feriados-do-mes"
+import { isMonthShortcutBlocked } from "@/features/calendario-feriados/lib/month-shortcut"
 import { resolveSelectedDay } from "@/features/calendario-feriados/lib/resolve-selected-day"
 import type { Feriado } from "@/features/calendario-feriados/model/feriado"
 import {
@@ -339,15 +340,17 @@ export default function CalendarPage({
 		[handleNextMonth, handlePrevMonth],
 	)
 
+	const overlayOpen = drawerOpen || deleteDate !== null
 	useEffect(() => {
 		// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard handler
 		const handler = (e: KeyboardEvent) => {
+			if (isMonthShortcutBlocked(e, overlayOpen)) return
 			if (e.key === "ArrowLeft") handlePrevMonth()
 			if (e.key === "ArrowRight") handleNextMonth()
 		}
 		window.addEventListener("keydown", handler)
 		return () => window.removeEventListener("keydown", handler)
-	}, [handleNextMonth, handlePrevMonth])
+	}, [handleNextMonth, handlePrevMonth, overlayOpen])
 
 	return (
 		<PageContainer as="section" width="wide" className="gap-0">

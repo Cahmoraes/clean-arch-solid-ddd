@@ -659,6 +659,51 @@ describe("CalendarPage: seleção do dia", () => {
 	})
 })
 
+describe("CalendarPage: atalho de setas", () => {
+	async function abrirGaveta(user: ReturnType<typeof userEvent.setup>) {
+		await user.click(
+			await screen.findByRole("button", { name: /^16 de outubro/ }),
+		)
+		await user.click(
+			await screen.findByRole("button", { name: "Adicionar nota" }),
+		)
+	}
+	const dia16 = () => document.querySelector('button[data-date="2026-10-16"]')
+
+	test("AC-14 setas no textarea da gaveta não trocam o mês", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		await abrirGaveta(user)
+		await user.click(await screen.findByLabelText("Nota do treino"))
+		await user.keyboard("{ArrowLeft}{ArrowRight}{ArrowRight}")
+		expect(dia16()).toBeInTheDocument()
+	})
+
+	test("AC-14 setas com a gaveta aberta e o foco fora do campo não trocam o mês", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		await abrirGaveta(user)
+		await user.click(await screen.findByLabelText("Nota do treino"))
+		await user.tab()
+		expect(document.activeElement?.tagName).toBe("BUTTON")
+		await user.keyboard("{ArrowRight}")
+		expect(dia16()).toBeInTheDocument()
+	})
+
+	test("Review Focus: seta esquerda ou direita digitada no textarea da gaveta aberta move o cursor e não troca o mês", async () => {
+		instalarNotasMock()
+		const user = userEvent.setup()
+		renderWithProviders(<CalendarPage initialYear={2026} initialMonth={9} />)
+		await abrirGaveta(user)
+		const campo = await screen.findByLabelText("Nota do treino")
+		await user.type(campo, "abc{ArrowLeft}{ArrowLeft}X")
+		expect(campo).toHaveValue("aXbc")
+		expect(dia16()).toBeInTheDocument()
+	})
+})
+
 describe("CalendarPage: fontes independentes", () => {
 	test("AC-13 feriados falham sem esconder a grade nem as notas, e o retry é só dos feriados", async () => {
 		instalarNotasMock({
