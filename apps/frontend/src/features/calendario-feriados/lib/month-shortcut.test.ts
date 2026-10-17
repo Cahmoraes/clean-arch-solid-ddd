@@ -36,7 +36,7 @@ describe("isMonthShortcutBlocked", () => {
 		).toBe(false)
 	})
 
-	test("bloqueia quando há gaveta ou diálogo aberto", () => {
+	test("bloqueia quando há modal ou diálogo aberto", () => {
 		expect(
 			isMonthShortcutBlocked(disparar(document.createElement("button")), true),
 		).toBe(true)

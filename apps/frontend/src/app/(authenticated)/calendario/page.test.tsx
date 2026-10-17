@@ -788,7 +788,7 @@ describe("CalendarPage: fontes independentes", () => {
 		).not.toBeInTheDocument()
 		expect(
 			screen.queryByRole("button", {
-				name: /^(Ver nota completa|Adicionar nota)/,
+				name: /Ver nota completa|^Adicionar nota$/,
 			}),
 		).not.toBeInTheDocument()
 		server.use(
