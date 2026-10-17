@@ -105,6 +105,49 @@ function formatDayAriaLabel(
 	return `${base}, nota: ${notaTexto}`
 }
 
+function MarcadoresDoDia({
+	dateStr,
+	temFeriado,
+	temNota,
+}: {
+	dateStr: string
+	temFeriado: boolean
+	temNota: boolean
+}) {
+	if (!temFeriado && !temNota) return null
+	return (
+		<span aria-hidden="true" className="flex h-2.5 items-center gap-2">
+			{temFeriado ? (
+				<span
+					data-testid={`marcador-feriado-${dateStr}`}
+					className="size-2 bg-warning"
+				/>
+			) : null}
+			{temNota ? (
+				<span
+					data-testid={`marcador-nota-${dateStr}`}
+					className="size-2 rotate-45 bg-accent"
+				/>
+			) : null}
+		</span>
+	)
+}
+
+function ConteudoDoTooltip({
+	holiday,
+	notaTexto,
+}: {
+	holiday?: Feriado
+	notaTexto?: string
+}) {
+	return (
+		<div className="max-w-64 space-y-1 break-words leading-tight">
+			{holiday ? <p>{holiday.name}</p> : null}
+			{notaTexto ? <p>{notaTexto}</p> : null}
+		</div>
+	)
+}
+
 function DayCell({
 	day,
 	dateStr,
@@ -134,44 +177,32 @@ function DayCell({
 			aria-label={formatDayAriaLabel(day, monthNameLower, holiday, notaTexto)}
 			onClick={() => onSelectDay?.(dateStr)}
 			className={cn(
-				"relative flex min-h-14 w-full cursor-pointer flex-col items-center justify-center rounded-md border p-1 text-sm focus-ring-duplo",
+				"flex min-h-16 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-md border p-1 text-sm focus-ring-duplo",
 				getDayCellStateClass(Boolean(holiday), isToday),
 				getSelectedRingClass(isSelected),
 			)}
 		>
 			<span className="block font-display text-lg leading-none">{day}</span>
-			{holiday ? (
-				<span
-					className="mt-1 line-clamp-2 block font-sans text-center text-[10px] font-medium leading-tight"
-					data-name={holiday.name}
-				>
-					{holiday.name}
-				</span>
-			) : null}
-			{notaTexto ? (
-				<>
-					<span
-						aria-hidden="true"
-						data-testid={`nota-dot-${dateStr}`}
-						className="absolute right-1 top-1 size-2 rotate-45 bg-accent"
-					/>
-					<span
-						data-testid={`nota-bar-${dateStr}`}
-						className="mt-1 block w-full truncate rounded-md bg-accent px-1 text-center font-sans text-[10px] font-medium leading-tight text-accent-foreground"
-					>
-						{notaTexto}
-					</span>
-				</>
-			) : null}
+			<MarcadoresDoDia
+				dateStr={dateStr}
+				temFeriado={Boolean(holiday)}
+				temNota={Boolean(notaTexto)}
+			/>
 		</button>
 	)
 
-	if (!holiday) return cell
+	// Árvore estável: a nota/feriado chegam depois (queries independentes) e
+	// trocar a estrutura remontaria o botão, perdendo foco e clique em curso.
+	const temConteudo = Boolean(holiday || notaTexto)
 
 	return (
-		<Tooltip>
+		<Tooltip open={temConteudo ? undefined : false}>
 			<TooltipTrigger asChild>{cell}</TooltipTrigger>
-			<TooltipContent>{holiday.name}</TooltipContent>
+			{temConteudo ? (
+				<TooltipContent>
+					<ConteudoDoTooltip holiday={holiday} notaTexto={notaTexto} />
+				</TooltipContent>
+			) : null}
 		</Tooltip>
 	)
 }
