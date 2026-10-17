@@ -1,6 +1,6 @@
 # Task 5: Painel do dia selecionado [FR-004, FR-005, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-calendario-redesign-painel-gaveta.md`
 

@@ -1,6 +1,6 @@
 # Task 7: Atalho de setas seguro e remoção do código antigo [FR-015]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-calendario-redesign-painel-gaveta.md`
 

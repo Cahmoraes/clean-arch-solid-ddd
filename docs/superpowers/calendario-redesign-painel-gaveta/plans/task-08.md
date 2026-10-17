@@ -1,6 +1,6 @@
 # Task 8: Célula do dia compacta com marcadores e tooltip [FR-001, FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-calendario-redesign-painel-gaveta.md`
 

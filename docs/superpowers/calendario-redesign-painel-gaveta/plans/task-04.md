@@ -1,6 +1,6 @@
 # Task 4: Lista do mês com feriados e notas [FR-007, FR-008, FR-009, FR-016]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-calendario-redesign-painel-gaveta.md`
 

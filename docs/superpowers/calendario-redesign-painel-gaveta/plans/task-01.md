@@ -1,6 +1,6 @@
 # Task 1: Regra pura de dia selecionado [FR-006]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-calendario-redesign-painel-gaveta.md`
 

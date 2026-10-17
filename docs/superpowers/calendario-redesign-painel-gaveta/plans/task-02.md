@@ -1,6 +1,6 @@
 # Task 2: Diálogo de exclusão de nota e mensagens compartilhadas [FR-012, FR-013]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-calendario-redesign-painel-gaveta.md`
 
@@ -16,9 +16,10 @@ Extrai do modal atual as mensagens e formatadores que o painel, a gaveta e a exc
 
 - Create: `apps/frontend/src/features/training-notes/lib/note-messages.ts`
 - Create: `apps/frontend/src/features/training-notes/ui/delete-note-dialog.tsx`
-- Modify: `apps/frontend/src/features/training-notes/ui/training-note-modal.tsx` (só imports; sem mudar comportamento)
 - Test: `apps/frontend/src/features/training-notes/lib/note-messages.test.ts`
 - Test: `apps/frontend/src/features/training-notes/ui/delete-note-dialog.test.tsx`
+
+Nota: esta task também alterou `training-note-modal.tsx` (só imports, sem mudar comportamento); o arquivo foi removido na task-07 e por isso não consta mais na lista acima.
 
 ## Interfaces
 

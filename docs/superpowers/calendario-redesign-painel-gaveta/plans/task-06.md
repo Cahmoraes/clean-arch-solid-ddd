@@ -1,6 +1,6 @@
 # Task 6: Página: seleção, painel, gaveta e exclusão [FR-003, FR-006, FR-013, FR-014, FR-016, FR-017]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-calendario-redesign-painel-gaveta.md`
 

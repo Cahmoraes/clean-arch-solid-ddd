@@ -8,14 +8,14 @@
 
 ## Tarefas
 
-- [ ] 1. Regra pura de dia selecionado → `task-01.md`
-- [ ] 2. Diálogo de exclusão de nota e mensagens compartilhadas → `task-02.md`
-- [ ] 3. Gaveta de criação e edição de nota → `task-03.md`
-- [ ] 4. Lista do mês com feriados e notas → `task-04.md`
-- [ ] 5. Painel do dia selecionado → `task-05.md`
-- [ ] 6. Página: seleção, painel, gaveta e exclusão → `task-06.md`
-- [ ] 7. Atalho de setas seguro e remoção do código antigo → `task-07.md`
-- [ ] 8. Célula do dia compacta com marcadores e tooltip → `task-08.md`
+- [x] 1. Regra pura de dia selecionado → `task-01.md`
+- [x] 2. Diálogo de exclusão de nota e mensagens compartilhadas → `task-02.md`
+- [x] 3. Gaveta de criação e edição de nota → `task-03.md`
+- [x] 4. Lista do mês com feriados e notas → `task-04.md`
+- [x] 5. Painel do dia selecionado → `task-05.md`
+- [x] 6. Página: seleção, painel, gaveta e exclusão → `task-06.md`
+- [x] 7. Atalho de setas seguro e remoção do código antigo → `task-07.md`
+- [x] 8. Célula do dia compacta com marcadores e tooltip → `task-08.md`
 
 ## Restrições Globais
 
