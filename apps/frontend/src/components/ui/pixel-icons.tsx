@@ -370,6 +370,13 @@ export const RotateCcw: PixelIcon = (props) => (
 	/>
 )
 
+export const Save: PixelIcon = (props) => (
+	<PixelSvg
+		d="M20 22H4V20H6V14H8V20H16V14H18V20H20V22ZM4 20H2V4H4V20ZM22 20H20V6H22V20ZM16 14H8V12H16V14ZM12 10H6V6H12V10ZM20 6H18V4H20V6ZM18 4H4V2H18V4Z"
+		{...props}
+	/>
+)
+
 export const Search: PixelIcon = (props) => (
 	<PixelSvg
 		d="M22 22h-2v-2h2v2Zm-2-2h-2v-2h2v2Zm-6-2H6v-2h8v2Zm4 0h-2v-2h2v2ZM6 16H4v-2h2v2Zm10 0h-2v-2h2v2ZM4 14H2V6h2v8Zm14 0h-2V6h2v8ZM6 6H4V4h2v2Zm10 0h-2V4h2v2Zm-2-2H6V2h8v2Z"

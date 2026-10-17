@@ -57,6 +57,7 @@ const ICON_MAP = {
 	Power: "power",
 	RefreshCcw: "reload",
 	RotateCcw: "reload",
+	Save: "save",
 	Search: "search",
 	Shield: "shield",
 	ShieldAlert: "shield",

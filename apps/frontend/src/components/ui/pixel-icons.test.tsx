@@ -53,6 +53,7 @@ const EXPECTED_EXPORTS = [
 	"Power",
 	"RefreshCcw",
 	"RotateCcw",
+	"Save",
 	"Search",
 	"Shield",
 	"ShieldAlert",
@@ -194,6 +195,12 @@ describe("pixel-icons: contrato do módulo", () => {
 		expect(content).toContain("Gerrit Halfmann")
 		expect(content).not.toContain("lucide-react")
 	})
+})
+
+test("AC-10 Save é exportado como ícone decorativo", () => {
+	const { container } = render(<pixelIcons.Save />)
+	expect(pixelIcons.Save).toBeDefined()
+	expect(container.querySelector('svg[aria-hidden="true"]')).not.toBeNull()
 })
 
 describe("pixel-icons: ícone sem classe de tamanho", () => {
