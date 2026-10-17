@@ -66,12 +66,12 @@ O estado da tela continua em `CalendarPage` (`app/(authenticated)/calendario/pag
 
 Fluxo:
 
-1. A página carrega feriados do ano (`useFeriadosQuery`) e notas do mês (`useTrainingNotesQuery`). Cada fonte falha de forma independente.
-2. O dia selecionado é derivado, não sincronizado por efeito: a página guarda o último dia clicado (`string | null`) e a função pura `resolveSelectedDay` devolve esse dia se ele pertence ao mês exibido; senão devolve hoje (quando o mês exibido contém hoje) ou o dia 1. Navegar de mês, de ano ou usar "Hoje" reaplica a regra sozinho (D3).
+1. A página carrega feriados do ano (`useFeriadosQuery`) e notas do mês (`useTrainingNotesQuery`). Cada fonte carrega e falha de forma independente, e a grade renderiza sem esperar nenhuma delas: enquanto os feriados carregam, as células ainda não têm marcador de feriado e o painel e a lista mostram "Carregando feriados" (idem para notas). O esqueleto de página inteira e o `CalendarEmptyState` do ano saem; a mensagem de erro de feriados passa a viver no bloco de erro do painel e da lista (decisão minha). O status de cada fonte é derivado assim: carregando = pendente sem dados; erro = falha sem dados; com dados em cache, inclusive depois de falha de um refetch, o status é ok e as ações de nota continuam disponíveis (decisão minha; uma divergência cai no caminho de conflito 409).
+2. O dia selecionado é derivado, não sincronizado por efeito: a página guarda o último dia clicado (`clickedDate`, `string | null`) e os handlers de navegação (mês anterior e próximo, ano anterior e próximo, "Hoje") zeram `clickedDate`. A função pura `resolveSelectedDay` devolve `clickedDate` se ele pertence ao mês exibido; senão devolve hoje (quando o mês exibido contém hoje) ou o dia 1, e serve de rede de segurança para qualquer mudança de mês que não passe por esses handlers (D3).
 3. Clicar em uma célula, ou em uma linha da lista do mês, só atualiza o dia clicado. O painel mostra o dia resolvido.
 4. "Editar" ou "Adicionar nota" no painel abre `NoteDrawer` para o dia selecionado. Salvar chama as mutations existentes e fecha a gaveta; os dados voltam pelo cache do TanStack Query (as mutations já invalidam `["training-notes"]`), então marcador, painel e lista se atualizam sem estado novo.
-5. "Excluir", no painel ou na gaveta, abre `DeleteNoteDialog`. Ao confirmar, a mutation de exclusão roda e o painel volta ao estado "sem nota".
-6. Ao fechar a gaveta (Cancelar, X, Esc, salvar ou excluir), o foco volta ao botão do dia (`button[data-date="YYYY-MM-DD"]`), como o modal faz hoje.
+5. "Excluir", no painel ou na gaveta, abre `DeleteNoteDialog`. Na gaveta, ela continua aberta por baixo da confirmação. Ao confirmar, a mutation de exclusão roda, a página fecha a gaveta (se aberta) e o painel volta ao estado "sem nota".
+6. Ao fechar a gaveta (Cancelar, X, Esc, salvar ou excluir) e ao concluir uma exclusão feita pelo painel, a página devolve o foco ao botão do dia (`button[data-date="YYYY-MM-DD"]`), como o modal faz hoje. É a página, e não o Radix, quem devolve o foco (função `focusDay`, usada por `onCloseAutoFocus` e por `onDeleted`), porque o botão "Excluir" do painel deixa de existir quando a nota some.
 
 Layout: duas colunas a partir de 1280px (grade à esquerda, painel à direita); abaixo disso, uma coluna com o painel depois da grade. O painel iguala a altura da grade a partir de 1280px; empilhado, a lista tem altura máxima própria. A gaveta abre à direita e, abaixo de 768px, pela base (decisão minha, ver D2).
 
@@ -81,8 +81,8 @@ Teclado: cada dia continua sendo um botão com parada própria no Tab, sem rovin
 
 **`CalendarPage`** (alterado)
 - **Responsabilidade:** compor a tela e ser dona do estado de seleção, gaveta, navegação e foco.
-- **Interface:** sem props novas (`initialYear?`, `initialMonth?` como hoje). Internamente guarda `clickedDate`, `drawerOpen`, `deleteDate`; entrega `selectedDate` resolvido a `MonthlyCalendar`, `DayDetailPanel` e `MonthAgenda`.
-- **Oculta:** a regra de seleção derivada, a restauração de foco ao fechar a gaveta, a guarda do atalho de setas, o mapeamento mês 0-based da navegação para mês 1-based da API de notas.
+- **Interface:** sem props novas (`initialYear?`, `initialMonth?` como hoje). Internamente guarda `clickedDate`, `drawerOpen`, `deleteDate`; entrega `selectedDate` resolvido a `MonthlyCalendar`, `DayDetailPanel` e `MonthAgenda`, e `feriadoNome` do dia à `NoteDrawer`.
+- **Oculta:** a regra de seleção derivada (e o zerar de `clickedDate` na navegação), `focusDay` e a devolução do foco depois de fechar a gaveta ou excluir, a guarda do atalho de setas, o mapeamento mês 0-based da navegação para mês 1-based da API de notas.
 - **Local:** `app/(authenticated)/calendario/page.tsx`. Já tem `biome-ignore` de complexidade; a extração dos subcomponentes abaixo deve reduzir, não aumentar, essas supressões.
 - **Depende de:** `useCalendarNavigation`, `useFeriadosQuery`, `useTrainingNotesQuery`. **Usado por:** o roteador do Next.
 
@@ -116,7 +116,7 @@ Teclado: cada dia continua sendo um botão com parada própria no Tab, sem rovin
 
 **`NoteDrawer`** (novo, substitui `TrainingNoteModal`)
 - **Responsabilidade:** criar e editar a nota de um dia numa gaveta.
-- **Interface:** `{ open, date: string | null, initialTexto?, onOpenChange, onRequestDelete(date) }`. Usa `Sheet` (`side` à direita; pela base abaixo de 768px) e o foco volta ao botão do dia via `onCloseAutoFocus`.
+- **Interface:** `{ open, date: string | null, feriadoNome?: string, initialTexto?, onOpenChange, onRequestDelete(date) }`; o dia da semana vem de `date` e o nome do feriado, quando existe, aparece no subtítulo (decisão minha). Usa `Sheet` (`side` à direita; pela base abaixo de 768px) e o foco volta ao botão do dia via `onCloseAutoFocus`.
 - **Oculta:** o formulário (`texto` com trim, 1 a 500 caracteres, contador), os modos criar e editar, o tratamento de conflito 409 e de erro de rede com "Repetir" (idênticos ao modal atual, ver Falhas) e a escolha do lado da gaveta.
 - **Local:** `features/training-notes/ui/training-note-drawer.tsx`.
 - **Depende de:** `useCreateNote`, `useUpdateNote`, `Sheet`. **Usado por:** `CalendarPage`.
@@ -142,7 +142,7 @@ Teclado: cada dia continua sendo um botão com parada própria no Tab, sem rovin
 | mês de navegação | índice 0-based em `useCalendarNavigation`; a API de notas recebe o mês 1-based (conversão só em `CalendarPage`) |
 | dia selecionado | pertence ao mês exibido; é derivado de `clickedDate` por `resolveSelectedDay` e um dia clicado em outro mês deixa de valer |
 | `onSelectDay` | seleciona o dia; não abre a gaveta e não é alternância (clicar de novo no dia selecionado não muda nada) |
-| falha de uma fonte | afeta só os blocos daquela fonte; a outra continua visível |
+| falha de uma fonte | afeta só os blocos daquela fonte; a outra continua visível; só conta como falha quando não há dados em cache |
 
 ## Falhas e Erros
 
@@ -150,7 +150,8 @@ Teclado: cada dia continua sendo um botão com parada própria no Tab, sem rovin
 |---|---|---|---|---|
 | Consulta de notas falha | `isError` da query de notas | marcadores de nota somem; painel e lista tratam só a fonte de notas; Editar e Adicionar ficam ocultos (não dá para saber se o dia tem nota) | no bloco de nota e na lista: "Não foi possível carregar as notas" com "Tentar de novo"; feriados seguem normais | AC-13 |
 | Consulta de feriados falha | `isError` da query de feriados | marcadores e bloco de feriado somem; notas seguem editáveis | no bloco de feriado e na lista: erro de feriados com "Tentar de novo"; notas seguem normais | AC-13 |
-| Notas ainda carregando | `isPending` sem dados | mesmo tratamento de hoje (texto de carregamento), sem esconder feriados | "Carregando notas" no bloco de nota e na lista | AC-13 |
+| Notas ou feriados ainda carregando | `isPending` sem dados | a grade já aparece; os blocos da fonte pendente mostram texto de carregamento e a outra fonte segue visível; Editar e Adicionar ficam ocultos enquanto as notas carregam | "Carregando notas" ou "Carregando feriados" nos blocos e na lista | AC-13 |
+| Refetch falha com dados em cache | `isError` com dados | mantém os dados e as ações de nota | a tela segue como estava | AC-13 |
 | Salvar com conflito 409, erro de rede ou excluir nota inexistente (404) | respostas já tratadas pelo modal atual | a gaveta e `DeleteNoteDialog` herdam as regras e os textos do `TrainingNoteModal`, sem mudança (ver AC-04 e AC-09 de `notas-treino-calendario`) | as mesmas mensagens de hoje, agora na gaveta | AC-07, AC-08 |
 | Setas esquerda/direita digitadas no textarea da gaveta | `keydown` com alvo editável ou gaveta aberta | o atalho global ignora o evento; o mês não muda | o cursor anda no texto | AC-14 |
 
@@ -190,7 +191,7 @@ Teclado: cada dia continua sendo um botão com parada própria no Tab, sem rovin
 ### D3. Vamos selecionar o dia no primeiro clique e abrir a edição só no segundo
 
 - **Contexto:** hoje clicar no dia abre o modal direto. Alternativa: manter o clique abrindo a gaveta (rejeitada pelo usuário: "apenas selecionar, editar com segundo clique").
-- **Decisão:** clicar seleciona; "Editar" ou "Adicionar nota" abre a gaveta. O dia selecionado é derivado do último dia clicado por `resolveSelectedDay`, sem efeito de sincronização: hoje se o mês exibido o contém, senão o dia 1 (decisão minha); o clique em uma linha da lista também seleciona (decisão minha).
+- **Decisão:** clicar seleciona; "Editar" ou "Adicionar nota" abre a gaveta. O dia selecionado é derivado do último dia clicado por `resolveSelectedDay`, sem efeito de sincronização, e os handlers de navegação zeram o dia clicado: hoje se o mês exibido o contém, senão o dia 1 (decisão minha); o clique em uma linha da lista também seleciona (decisão minha).
 - **Justificativa:** técnica, derivar evita estado fora do mês e `useEffect`; de negócio, ler uma nota deixa de exigir abrir um formulário.
 - **Consequências:** ganha leitura rápida e ausência de reset manual ao trocar de mês; aceita um clique extra para editar.
 - **Conformidade:** AC-02 e AC-03; teste da função pura cobre os três casos da regra.
@@ -216,6 +217,7 @@ Teclado: cada dia continua sendo um botão com parada própria no Tab, sem rovin
 | Decisão | Padrão escolhido | Gatilho para rever |
 |---|---|---|
 | Onde ficam os componentes novos | `DayDetailPanel` e `MonthAgenda` em `features/calendario-feriados/ui/`; `NoteDrawer` e `DeleteNoteDialog` em `features/training-notes/ui/` (decisão minha) | se a navegação do calendário migrar para uma feature própria |
+| Foco depois de excluir | `focusDay` da página devolve o foco ao botão do dia, na gaveta e no painel (decisão minha) | se o Radix passar a devolver o foco sozinho em todos os casos |
 | Marcação do dia selecionado | `aria-pressed` no botão do dia (decisão minha) | se o teste de acessibilidade pedir `aria-selected` por papel de grade |
 | Tooltip da célula | feriado e nota no mesmo tooltip, feriado primeiro (decisão minha) | se o texto da nota longa ficar ilegível no tooltip |
 | Lista do mês sem agrupamento por semana | ordem cronológica plana (decisão minha) | se o usuário sentir falta das semanas |
@@ -241,12 +243,12 @@ Teclado: cada dia continua sendo um botão com parada própria no Tab, sem rovin
 - AC-05 · WHEN o dia selecionado não tem nota THEN o painel mostra "Nenhuma nota neste dia." e "Adicionar nota", sem Editar nem Excluir (origem: fato do usuário (mockup aprovado, estado 3))
 - AC-06 · WHEN o usuário aciona "Editar" ou "Adicionar nota" THEN a gaveta abre com o título da data e o texto atual da nota (vazio ao criar) (origem: D2)
 - AC-07 · WHEN o usuário salva na gaveta THEN a nota é criada ou atualizada pelas mutations existentes, a gaveta fecha e painel, marcador e lista mostram o novo texto (origem: D2)
-- AC-08 · WHEN o usuário aciona Excluir, no painel ou na gaveta, THEN aparece "Excluir a nota?" e a nota só é removida ao confirmar (origem: D4)
-- AC-09 · WHEN a gaveta fecha por Cancelar, X, Esc, salvar ou excluir THEN o foco volta ao botão do dia (`data-date`) (origem: D2)
+- AC-08 · WHEN o usuário aciona Excluir, no painel ou na gaveta, THEN aparece "Excluir a nota?" e a nota só é removida ao confirmar; ao confirmar, a gaveta (se aberta) fecha e o painel mostra "Nenhuma nota neste dia." (origem: D4)
+- AC-09 · WHEN a gaveta fecha por Cancelar, X, Esc, salvar ou excluir, ou uma exclusão termina pelo painel, THEN o foco volta ao botão do dia (`data-date`) (origem: D2)
 - AC-10 · WHEN o mês tem muitas notas THEN a lista do mês rola dentro do painel e a altura do painel não aumenta (origem: fato do usuário ("podem crescer muito e poluirão a tela"))
 - AC-11 · WHEN o usuário clica em uma linha da lista do mês THEN o dia daquela linha fica selecionado (origem: D3)
 - AC-12 · WHEN a lista do mês é exibida THEN feriados e notas aparecem juntos em ordem cronológica, com o feriado antes da nota no mesmo dia (origem: D1)
-- AC-13 · WHEN a consulta de notas está carregando ou falha THEN o painel e a lista mostram carregando ou erro com "Tentar de novo" só para as notas e os feriados continuam visíveis, e vice-versa (origem: Falhas: Consulta de notas falha)
+- AC-13 · WHEN a consulta de notas ou a de feriados está carregando ou falha sem dados THEN a grade continua visível, o painel e a lista mostram carregando ou erro com "Tentar de novo" só para aquela fonte e a outra segue visível; com dados em cache, uma falha de refetch não esconde nada (origem: Falhas: Consulta de notas falha)
 - AC-14 · WHEN o usuário aperta seta esquerda ou direita com o foco num campo editável ou com a gaveta aberta THEN o mês exibido não muda (origem: D5)
 - AC-15 · WHEN uma célula é renderizada THEN ela mantém `data-date`, `aria-current="date"` em hoje e o `aria-label` com dia, feriado e nota, os marcadores são `aria-hidden` e o tooltip mostra feriado e nota ao passar o mouse e ao focar (origem: D1)
 - AC-16 · WHEN a viewport tem 1280px ou mais THEN painel e grade ficam lado a lado com a mesma altura, e abaixo de 1280px o painel fica depois da grade; abaixo de 768px a gaveta abre pela base (origem: D2)
