@@ -1,5 +1,6 @@
 "use client"
 
+import { useId } from "react"
 import { Button } from "@/components/ui/button"
 import type { Feriado } from "@/features/calendario-feriados/model/feriado"
 import {
@@ -80,11 +81,17 @@ function formatarChipDeData(date: string): string {
 	return `${date.slice(8, 10)}/${date.slice(5, 7)}`
 }
 
-function ConteudoDaLinha({ entrada }: { entrada: Entrada }) {
+function ConteudoDaLinha({
+	entrada,
+	descricaoId,
+}: {
+	entrada: Entrada
+	descricaoId: string
+}) {
 	if (entrada.tipo === "feriado") {
 		return (
 			<span className="flex min-w-0 flex-col">
-				<strong className="truncate text-sm text-foreground">
+				<strong id={descricaoId} className="truncate text-sm text-foreground">
 					{entrada.feriado.name}
 				</strong>
 				<span className="truncate text-xs text-muted-foreground">
@@ -94,7 +101,7 @@ function ConteudoDaLinha({ entrada }: { entrada: Entrada }) {
 		)
 	}
 	return (
-		<span className="truncate text-sm text-foreground">
+		<span id={descricaoId} className="truncate text-sm text-foreground">
 			{entrada.nota.texto}
 		</span>
 	)
@@ -109,6 +116,7 @@ function LinhaDoMes({
 	selecionada: boolean
 	onSelectDay: (date: string) => void
 }) {
+	const descricaoId = useId()
 	const rotuloDoTipo = entrada.tipo === "feriado" ? "feriado" : "nota"
 	return (
 		<li>
@@ -116,6 +124,7 @@ function LinhaDoMes({
 				type="button"
 				onClick={() => onSelectDay(entrada.data)}
 				aria-label={`Selecionar ${formatarDataCurta(entrada.data)} (${rotuloDoTipo})`}
+				aria-describedby={descricaoId}
 				aria-current={selecionada ? "true" : undefined}
 				className={cn(
 					"flex w-full cursor-pointer items-center gap-3 rounded-md border-l-[3px] bg-muted p-2 text-left focus-ring-duplo",
@@ -126,7 +135,7 @@ function LinhaDoMes({
 				<span className="shrink-0 rounded-md bg-card px-2 py-1 font-display text-[15px]">
 					{formatarChipDeData(entrada.data)}
 				</span>
-				<ConteudoDaLinha entrada={entrada} />
+				<ConteudoDaLinha entrada={entrada} descricaoId={descricaoId} />
 			</button>
 		</li>
 	)

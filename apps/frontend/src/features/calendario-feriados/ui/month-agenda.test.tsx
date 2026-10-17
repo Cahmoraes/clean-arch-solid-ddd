@@ -69,6 +69,21 @@ describe("MonthAgenda", () => {
 		expect(onSelectDay).toHaveBeenCalledWith("2026-10-20")
 	})
 
+	test("a descrição acessível da linha traz o nome do feriado ou o texto da nota", () => {
+		renderAgenda({
+			feriados: [FERIADO_12],
+			notas: [criarNotaMock("2026-10-20", "Pernas")],
+		})
+		expect(
+			screen.getByRole("button", {
+				name: "Selecionar 12 de outubro (feriado)",
+			}),
+		).toHaveAccessibleDescription("Nossa Senhora Aparecida")
+		expect(
+			screen.getByRole("button", { name: "Selecionar 20 de outubro (nota)" }),
+		).toHaveAccessibleDescription("Pernas")
+	})
+
 	test("AC-10 com 30 notas a lista rola por dentro (contêiner com overflow-y-auto e min-h-0)", () => {
 		const notas = Array.from({ length: 30 }, (_, i) =>
 			criarNotaMock(
