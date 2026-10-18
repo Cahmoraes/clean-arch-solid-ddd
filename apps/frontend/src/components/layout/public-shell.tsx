@@ -28,13 +28,13 @@ export function PublicShell({ children, className }: PublicShellProps) {
 				Pular para o conteúdo principal
 			</a>
 			<header className="border-b border-border bg-background">
-				<div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+				<div className="mx-auto flex min-h-16 w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2 sm:px-6">
 					<Link href="/" aria-label="Página inicial VOLT">
 						<BrandMark className="text-foreground" />
 					</Link>
 					<nav
 						aria-label="Navegação principal"
-						className="flex items-center gap-2"
+						className="flex flex-wrap items-center justify-end gap-2"
 					>
 						<Link
 							href="/clima"

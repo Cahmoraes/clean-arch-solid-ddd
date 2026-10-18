@@ -44,7 +44,7 @@ function weatherResultAnnouncement(
 	return `Temperatura de ${data.city}: ${temperature} graus`
 }
 
-function WeatherResult({
+function WeatherCurrent({
 	data,
 	units,
 	onToggleUnits,
@@ -54,13 +54,24 @@ function WeatherResult({
 	onToggleUnits: () => void
 }) {
 	return (
-		<>
-			<CurrentWeatherDisplay
-				city={data.city}
-				weather={data}
-				units={units}
-				actions={<UnitToggleButton units={units} onToggle={onToggleUnits} />}
-			/>
+		<CurrentWeatherDisplay
+			city={data.city}
+			weather={data}
+			units={units}
+			actions={<UnitToggleButton units={units} onToggle={onToggleUnits} />}
+		/>
+	)
+}
+
+function WeatherForecasts({
+	data,
+	units,
+}: {
+	data: WeatherResponse
+	units: UnitSystem
+}) {
+	return (
+		<div className="flex min-w-0 flex-col gap-6 lg:col-span-12">
 			<HourlyForecast hourly={data.hourly} units={units} />
 			<DailyForecast daily={data.daily} units={units} />
 			<p className="text-center text-xs text-muted-foreground">
@@ -75,7 +86,7 @@ function WeatherResult({
 				</a>{" "}
 				(CC BY 4.0)
 			</p>
-		</>
+		</div>
 	)
 }
 
@@ -102,44 +113,56 @@ function WeatherPageContent() {
 	}
 
 	return (
-		<section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6">
+		<section className="mx-auto flex w-full min-w-0 max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:py-14">
 			<header className="flex flex-col gap-2">
-				<h1 className="font-display text-3xl tracking-tight text-foreground">
+				<h1 className="font-display text-3xl tracking-tight text-foreground md:text-4xl">
 					Consulta de clima
 				</h1>
 				<p className="text-sm text-muted-foreground">
-					Digite o nome de uma cidade para ver a temperatura atual.
+					Digite o nome de uma cidade para ver a temperatura atual, as próximas
+					horas e a previsão da semana.
 				</p>
 			</header>
 
-			<div
-				aria-hidden="true"
-				data-testid="weather-globe-slot"
-				className="mx-auto"
-				style={{ height: GLOBE_SIZE_PX, width: GLOBE_SIZE_PX }}
-			>
-				<WeatherGlobe latitude={data?.latitude} longitude={data?.longitude} />
+			<div className="grid min-w-0 gap-6 lg:grid-cols-12">
+				<div className="flex min-w-0 flex-col gap-6 lg:col-span-4">
+					<div
+						aria-hidden="true"
+						data-testid="weather-globe-slot"
+						className="mx-auto"
+						style={{ height: GLOBE_SIZE_PX, width: GLOBE_SIZE_PX }}
+					>
+						<WeatherGlobe
+							latitude={data?.latitude}
+							longitude={data?.longitude}
+						/>
+					</div>
+
+					<WeatherSearchForm
+						onSearch={handleSearch}
+						isPending={isPending}
+						defaultCity={city ?? undefined}
+					/>
+				</div>
+
+				<div className="flex min-w-0 flex-col gap-6 lg:col-span-8">
+					{!city && <EmptyState title="Digite uma cidade para começar" />}
+					{city && error && (
+						<p role="alert" className="text-sm text-destructive">
+							{weatherErrorMessage(error.code)}
+						</p>
+					)}
+					{city && data && (
+						<WeatherCurrent
+							data={data}
+							units={units}
+							onToggleUnits={handleToggleUnits}
+						/>
+					)}
+				</div>
+
+				{city && data && <WeatherForecasts data={data} units={units} />}
 			</div>
-
-			<WeatherSearchForm
-				onSearch={handleSearch}
-				isPending={isPending}
-				defaultCity={city ?? undefined}
-			/>
-
-			{!city && <EmptyState title="Digite uma cidade para começar" />}
-			{city && error && (
-				<p role="alert" className="text-sm text-destructive">
-					{weatherErrorMessage(error.code)}
-				</p>
-			)}
-			{city && data && (
-				<WeatherResult
-					data={data}
-					units={units}
-					onToggleUnits={handleToggleUnits}
-				/>
-			)}
 			<div role="status" aria-live="polite" className="sr-only">
 				{weatherResultAnnouncement(city, data, units)}
 			</div>

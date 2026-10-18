@@ -41,11 +41,14 @@ export function DailyForecast({ daily, units }: DailyForecastProps) {
 	return (
 		<Card className="gap-4 p-5">
 			<CardTitle as="h2">Próximos 7 dias</CardTitle>
-			<ul className="flex flex-col gap-3">
+			<ul className="flex flex-col gap-3 lg:grid lg:grid-cols-7 lg:gap-2">
 				{daily.map((day, index) => {
 					const { Icon, label } = resolveCondition(day.code, true)
 					return (
-						<li key={day.date} className="flex items-center gap-3">
+						<li
+							key={day.date}
+							className="flex items-center gap-3 lg:flex-col lg:gap-2 lg:rounded-md lg:border lg:border-border lg:p-3"
+						>
 							<span className="w-14 font-display text-base">
 								{weekdayLabel(day.date, index)}
 							</span>
@@ -53,7 +56,7 @@ export function DailyForecast({ daily, units }: DailyForecastProps) {
 							<span className="sr-only">{label}</span>
 							<div
 								aria-hidden="true"
-								className="relative h-1 flex-1 bg-muted"
+								className="relative h-1 flex-1 bg-muted lg:w-full lg:flex-none"
 							>
 								<div
 									data-testid="daily-range-fill"
@@ -61,7 +64,7 @@ export function DailyForecast({ daily, units }: DailyForecastProps) {
 									style={rangeStyle(day.min, day.max, low, high)}
 								/>
 							</div>
-							<span className="w-24 text-right font-display text-base">
+							<span className="w-24 text-right font-display text-base lg:w-auto lg:text-center">
 								{`${formatValue(convertTemperature(day.min, units))}° / ${formatValue(convertTemperature(day.max, units))}°`}
 							</span>
 						</li>

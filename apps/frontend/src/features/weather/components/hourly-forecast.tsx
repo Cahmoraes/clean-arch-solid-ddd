@@ -16,13 +16,8 @@ export function HourlyForecast({ hourly, units }: HourlyForecastProps) {
 	return (
 		<Card className="gap-4 p-5">
 			<CardTitle as="h2">Próximas horas</CardTitle>
-			<section
-				aria-label="Próximas 24 horas"
-				// biome-ignore lint/a11y/noNoninteractiveTabindex: região com rolagem horizontal precisa ser focável pelo teclado (WCAG 2.1.1)
-				tabIndex={0}
-				className="overflow-x-auto"
-			>
-				<ul className="flex gap-2">
+			<section aria-label="Próximas 24 horas">
+				<ul className="grid grid-cols-4 gap-2 min-[480px]:grid-cols-6 md:grid-cols-8 lg:grid-cols-12">
 					{hourly.map((item, index) => {
 						const { Icon, label } = resolveCondition(item.code, item.isDay)
 						const hour =
@@ -30,7 +25,7 @@ export function HourlyForecast({ hourly, units }: HourlyForecastProps) {
 						return (
 							<li
 								key={item.time}
-								className={`flex w-[58px] shrink-0 flex-col items-center gap-1 rounded-md border p-2 ${
+								className={`flex min-w-0 flex-col items-center gap-1 rounded-md border p-2 ${
 									index === 0 ? "border-primary" : "border-border"
 								}`}
 							>

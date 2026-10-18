@@ -38,12 +38,13 @@ describe("HourlyForecast", () => {
 		).toBeInTheDocument()
 	})
 
-	test("deve expor a faixa como região rolável focável com título", () => {
+	test("deve expor as horas como região nomeada em grade, sem rolagem horizontal", () => {
 		render(<HourlyForecast hourly={hourly} units="metric" />)
 
 		const region = screen.getByRole("region", { name: "Próximas 24 horas" })
-		expect(region).toHaveAttribute("tabindex", "0")
-		expect(region.className).toContain("overflow-x-auto")
+		expect(region).not.toHaveAttribute("tabindex")
+		expect(region.className).not.toContain("overflow-x")
+		expect(within(region).getByRole("list").className).toContain("grid")
 		expect(
 			screen.getByRole("heading", { level: 2, name: "Próximas horas" }),
 		).toBeInTheDocument()
