@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import { useRouter, useSearchParams } from "next/navigation"
 import { beforeEach, describe, expect, test, vi } from "vitest"
+import { makeWeatherStub } from "@/test/msw/handlers"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import WeatherPage from "./page"
@@ -73,10 +74,7 @@ describe("WeatherPage", () => {
 		)
 		server.use(
 			http.get(`${apiBaseUrl}/weather`, () =>
-				HttpResponse.json(
-					{ city: "São Paulo", temperature: { current: 24, min: 18, max: 27 } },
-					{ status: 200 },
-				),
+				HttpResponse.json(makeWeatherStub("São Paulo"), { status: 200 }),
 			),
 		)
 
@@ -156,13 +154,7 @@ describe("WeatherPage", () => {
 		server.use(
 			http.get(`${apiBaseUrl}/weather`, async () => {
 				await requestPending
-				return HttpResponse.json(
-					{
-						city: "São Paulo",
-						temperature: { current: 24, min: 18, max: 27 },
-					},
-					{ status: 200 },
-				)
+				return HttpResponse.json(makeWeatherStub("São Paulo"), { status: 200 })
 			}),
 		)
 
@@ -190,15 +182,7 @@ describe("WeatherPage", () => {
 		)
 		server.use(
 			http.get(`${apiBaseUrl}/weather`, () =>
-				HttpResponse.json(
-					{
-						city: "São Paulo",
-						temperature: { current: 24, min: 18, max: 27 },
-						latitude: -23.5505,
-						longitude: -46.6333,
-					},
-					{ status: 200 },
-				),
+				HttpResponse.json(makeWeatherStub("São Paulo"), { status: 200 }),
 			),
 		)
 

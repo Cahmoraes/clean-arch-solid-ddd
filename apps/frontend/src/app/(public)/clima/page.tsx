@@ -75,10 +75,7 @@ function WeatherPageContent() {
 				</p>
 			)}
 			{city && data && (
-				<CurrentWeatherDisplay
-					city={data.city}
-					temperature={data.temperature}
-				/>
+				<CurrentWeatherDisplay city={data.city} weather={data} units="metric" />
 			)}
 			<div role="status" aria-live="polite" className="sr-only">
 				{weatherResultAnnouncement(city, data)}
