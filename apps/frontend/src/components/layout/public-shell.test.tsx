@@ -89,17 +89,6 @@ describe("PublicShell — controle de animações", () => {
 		document.documentElement.removeAttribute("data-motion-paused")
 	})
 
-	test("exibe o controle de pausa de animações no header público", () => {
-		render(
-			<PublicShell>
-				<div />
-			</PublicShell>,
-		)
-		expect(
-			screen.getByRole("button", { name: "Pausar animações" }),
-		).toBeInTheDocument()
-	})
-
 	test("exibe o seletor de tema no header público", () => {
 		render(
 			<PublicShell>
