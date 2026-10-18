@@ -219,6 +219,55 @@ export const Clock: PixelIcon = (props) => (
 	/>
 )
 
+export const Cloud: PixelIcon = (props) => (
+	<PixelSvg
+		d="M22 10h-4v2h4v-2Zm2 2h-2v6h2v-6Zm-2 6H2v2h20v-2ZM2 12H0v6h2v-6Zm2-2H2v2h2v-2Zm4-2H4v2h4V8Zm8-4h-6v2h6V4Zm-6 2H8v2h2V6Zm0 4H8v2h2v-2Zm8-4h-2v2h2V6ZM20 8h-2v4h2V8Zm-2 4h-2v2h2v-2Z"
+		{...props}
+	/>
+)
+
+export const CloudDrizzle: PixelIcon = (props) => (
+	<PixelSvg
+		d="M9 4h6v2h-6zM6 6h12v2h-12zM4 8h16v4h-16zM6 12h12v2h-12zM7 16h2v2h-2zM11 19h2v2h-2zM15 16h2v2h-2z"
+		{...props}
+	/>
+)
+
+export const CloudFog: PixelIcon = (props) => (
+	<PixelSvg
+		d="M9 4h6v2h-6zM6 6h12v2h-12zM4 8h16v4h-16zM6 12h12v2h-12zM4 16h16v2h-16zM6 20h12v2h-12z"
+		{...props}
+	/>
+)
+
+export const CloudMoon: PixelIcon = (props) => (
+	<PixelSvg
+		d="M14 22H4v-2h10v2ZM4 20H2v-4h2v4Zm12 0h-2v-4h2v4Zm-6-2H8v-2h2v2Zm-2-2H4v-2h4v2Zm6 0h-2v-2h2v2Zm6 0h-2v-2h2v2Zm-8-2H8v-2h4v2Zm10 0h-2v-4h-2V8h2V6h2v8Zm-4-2h-4v-2h4v2ZM8 10H6V6h2v4Zm6 0h-2V6h2v4Zm-4-4H8V4h2v2Zm8-2h-2v2h-2V4h-4V2h8v2Z"
+		{...props}
+	/>
+)
+
+export const CloudRain: PixelIcon = (props) => (
+	<PixelSvg
+		d="M9 4h6v2h-6zM6 6h12v2h-12zM4 8h16v4h-16zM6 12h12v2h-12zM8 16h2v2h-2zM6 18h2v2h-2zM12 16h2v2h-2zM10 18h2v2h-2zM16 16h2v2h-2zM14 18h2v2h-2z"
+		{...props}
+	/>
+)
+
+export const CloudSun: PixelIcon = (props) => (
+	<PixelSvg
+		d="M14 22H4v-2h10v2ZM4 20H2v-4h2v4Zm12 0h-2v-4h2v4Zm-6-2H8v-2h2v2Zm-2-2H4v-2h4v2Zm6 0h-2v-2h2v2Zm-2-2H8v-2h4v2Zm12-1h-4v-2h4v2Zm-6-1h-2v-2h2v2ZM8 10H6V8h2v2Zm8 0h-2V8h2v2Zm-2-2H8V6h6v2ZM6 6H4V4h2v2Zm14 0h-2V4h2v2ZM4 4H2V2h2v2Zm9 0h-2V0h2v4Zm9 0h-2V2h2v2Z"
+		{...props}
+	/>
+)
+
+export const CloudUnknown: PixelIcon = (props) => (
+	<PixelSvg
+		d="M8 2h8v2h-8zM6 4h2v2h-2zM16 4h2v2h-2zM4 6h2v2h-2zM18 6h2v2h-2zM2 8h2v8h-2zM20 8h2v8h-2zM4 16h2v2h-2zM18 16h2v2h-2zM6 18h12v2h-12zM9 7h6v2h-6zM15 9h2v2h-2zM13 11h2v2h-2zM11 13h2v2h-2zM11 16h2v2h-2z"
+		{...props}
+	/>
+)
+
 export const CreditCard: PixelIcon = (props) => (
 	<PixelSvg
 		d="M4 4h16v2H4zm0 14h16v2H4zM2 6h2v12H2zm18 0h2v12h-2zM4 8h16v4H4zm2 6h6v2H6z"
@@ -405,6 +454,13 @@ export const ShieldCheck: PixelIcon = (props) => (
 	/>
 )
 
+export const Snowflake: PixelIcon = (props) => (
+	<PixelSvg
+		d="M13 24h-2v-2h2v2Zm-2-2H9v-2H7v2H2v-5h2v3h3v-2h2v-2h2v6Zm4-4h2v2h-2v2h-2v-6h2v2Zm7 4h-5v-2h3v-3h2v5ZM4 15H2v-2h6v2H6v2H4v-2Zm18 0h-2v2h-2v-2h-2v-2h6v2ZM2 13H0v-2h2v2Zm22 0h-2v-2h2v2ZM6 9h2v2H2V9h2V7h2v2Zm14 0h2v2h-6V9h2V7h2v2Zm-9-1H9V6H7V4h2V2h2v6Zm4-4h2V2h5v5h-2V4h-3v2h-2v2h-2V2h2v2ZM7 4H4v3H2V2h5v2Zm6-2h-2V0h2v2Z"
+		{...props}
+	/>
+)
+
 export const Sun: PixelIcon = (props) => (
 	<PixelSvg
 		d="M13 22h-2v-3h2v3Zm-6-3H5v-2h2v2Zm12 0h-2v-2h2v2Zm-4-2H9v-2h6v2Zm-6-2H7V9h2v6Zm8 0h-2V9h2v6ZM5 13H2v-2h3v2Zm17 0h-3v-2h3v2Zm-7-4H9V7h6v2ZM7 7H5V5h2v2Zm12 0h-2V5h2v2Zm-6-2h-2V2h2v3Z"
@@ -475,6 +531,13 @@ export const Wallet: PixelIcon = (props) => (
 	/>
 )
 
+export const Wind: PixelIcon = (props) => (
+	<PixelSvg
+		d="M2 7h10v2H2zm10-4h2v4h-2zM7 1h5v2H7zM2 11h18v2H2zm18-4h2v4h-2zm-4-2h4v2h-4zM2 17h12v-2H2zm12 2h2v-2h-2zm-5 2h5v-2H9z"
+		{...props}
+	/>
+)
+
 export const X: PixelIcon = (props) => (
 	<PixelSvg
 		d="M7 19H5V17H7V19ZM19 19H17V17H19V19ZM9 15V17H7V15H9ZM17 17H15V15H17V17ZM11 15H9V13H11V15ZM15 15H13V13H15V15ZM13 13H11V11H13V13ZM11 11H9V9H11V11ZM15 11H13V9H15V11ZM9 9H7V7H9V9ZM17 9H15V7H17V9ZM7 7H5V5H7V7ZM19 7H17V5H19V7Z"
@@ -492,6 +555,13 @@ export const XCircle: PixelIcon = (props) => (
 export const XIcon: PixelIcon = (props) => (
 	<PixelSvg
 		d="M7 19H5V17H7V19ZM19 19H17V17H19V19ZM9 15V17H7V15H9ZM17 17H15V15H17V17ZM11 15H9V13H11V15ZM15 15H13V13H15V15ZM13 13H11V11H13V13ZM11 11H9V9H11V11ZM15 11H13V9H15V11ZM9 9H7V7H9V9ZM17 9H15V7H17V9ZM7 7H5V5H7V7ZM19 7H17V5H19V7Z"
+		{...props}
+	/>
+)
+
+export const Zap: PixelIcon = (props) => (
+	<PixelSvg
+		d="M4 13h8v6h2v2h-2v2h-2v-8H2v-4h2v2Zm12 6h-2v-2h2v2Zm2-2h-2v-2h2v2Zm2-2h-2v-2h2v2Zm-6-6h8v4h-2v-2h-8V5h-2V3h2V1h2v8Zm-8 2H4V9h2v2Zm2-2H6V7h2v2Zm2-2H8V5h2v2Z"
 		{...props}
 	/>
 )

@@ -1,9 +1,38 @@
 import { HttpResponse, http } from "msw"
+import type { WeatherResponse } from "@/features/weather/api/use-weather-query"
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333"
 
 export function endpoint(path: string): string {
 	return `${apiBaseUrl}${path}`
+}
+
+export function makeWeatherStub(city = "São Paulo"): WeatherResponse {
+	return {
+		city,
+		latitude: -23.5505,
+		longitude: -46.6333,
+		temperature: { current: 24, apparent: 22, min: 18, max: 27 },
+		condition: { code: 1, isDay: true },
+		humidity: 64,
+		wind: { speed: 12, directionDegrees: 45 },
+		hourly: Array.from({ length: 24 }, (_, i) => {
+			const day = i < 9 ? "18" : "19"
+			const hour = String((15 + i) % 24).padStart(2, "0")
+			return {
+				time: `2026-10-${day}T${hour}:00`,
+				temperature: 19 + (i % 4),
+				code: 1,
+				isDay: true,
+			}
+		}),
+		daily: Array.from({ length: 7 }, (_, i) => ({
+			date: `2026-10-${18 + i}`,
+			min: 18,
+			max: 27,
+			code: 1,
+		})),
+	}
 }
 
 const STUB_ADMIN_PLAN = {
@@ -251,10 +280,7 @@ export const handlers = [
 	http.get(endpoint("/weather"), ({ request }) => {
 		const url = new URL(request.url)
 		const city = url.searchParams.get("city") ?? "São Paulo"
-		return HttpResponse.json(
-			{ city, temperature: { current: 24, min: 18, max: 27 } },
-			{ status: 200 },
-		)
+		return HttpResponse.json(makeWeatherStub(city), { status: 200 })
 	}),
 	http.post(endpoint("/api/v1/notifications/broadcast"), () =>
 		HttpResponse.json({ recipients: 3 }, { status: 201 }),

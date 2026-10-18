@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { HttpResponse, http } from "msw"
 import { useRouter, useSearchParams } from "next/navigation"
 import { beforeEach, describe, expect, test, vi } from "vitest"
+import { makeWeatherStub } from "@/test/msw/handlers"
 import { server } from "@/test/msw/server"
 import { renderWithProviders } from "@/test/render"
 import WeatherPage from "./page"
@@ -73,10 +74,7 @@ describe("WeatherPage", () => {
 		)
 		server.use(
 			http.get(`${apiBaseUrl}/weather`, () =>
-				HttpResponse.json(
-					{ city: "São Paulo", temperature: { current: 24, min: 18, max: 27 } },
-					{ status: 200 },
-				),
+				HttpResponse.json(makeWeatherStub("São Paulo"), { status: 200 }),
 			),
 		)
 
@@ -110,7 +108,7 @@ describe("WeatherPage", () => {
 		).toBeInTheDocument()
 	})
 
-	test("mostra mensagem de serviço indisponível quando a API retorna 503", async () => {
+	test("AC-07: mostra mensagem de serviço indisponível quando a API retorna 503", async () => {
 		vi.mocked(useSearchParams).mockReturnValue(
 			new URLSearchParams("city=São Paulo") as unknown as ReturnType<
 				typeof useSearchParams
@@ -135,6 +133,10 @@ describe("WeatherPage", () => {
 				"Serviço de meteorologia indisponível no momento. Tente novamente em instantes.",
 			),
 		).toBeInTheDocument()
+		expect(
+			screen.queryByRole("heading", { name: "Próximas horas" }),
+		).not.toBeInTheDocument()
+		expect(screen.queryByText("Sensação")).not.toBeInTheDocument()
 	})
 
 	test("bloqueia nova submissão enquanto uma consulta está em andamento", async () => {
@@ -156,13 +158,7 @@ describe("WeatherPage", () => {
 		server.use(
 			http.get(`${apiBaseUrl}/weather`, async () => {
 				await requestPending
-				return HttpResponse.json(
-					{
-						city: "São Paulo",
-						temperature: { current: 24, min: 18, max: 27 },
-					},
-					{ status: 200 },
-				)
+				return HttpResponse.json(makeWeatherStub("São Paulo"), { status: 200 })
 			}),
 		)
 
@@ -190,15 +186,7 @@ describe("WeatherPage", () => {
 		)
 		server.use(
 			http.get(`${apiBaseUrl}/weather`, () =>
-				HttpResponse.json(
-					{
-						city: "São Paulo",
-						temperature: { current: 24, min: 18, max: 27 },
-						latitude: -23.5505,
-						longitude: -46.6333,
-					},
-					{ status: 200 },
-				),
+				HttpResponse.json(makeWeatherStub("São Paulo"), { status: 200 }),
 			),
 		)
 
@@ -242,6 +230,156 @@ describe("WeatherPage", () => {
 		const globe = screen.getByTestId("weather-globe")
 		expect(globe).toHaveAttribute("data-latitude", "")
 		expect(globe).toHaveAttribute("data-longitude", "")
+	})
+
+	function setUrl(query: string) {
+		vi.mocked(useSearchParams).mockReturnValue(
+			new URLSearchParams(query) as unknown as ReturnType<
+				typeof useSearchParams
+			>,
+		)
+	}
+
+	function mockReplace() {
+		const replaceMock = vi.fn()
+		vi.mocked(useRouter).mockReturnValue({
+			replace: replaceMock,
+		} as unknown as ReturnType<typeof useRouter>)
+		return replaceMock
+	}
+
+	function countWeatherRequests() {
+		const counter = { requests: 0 }
+		server.use(
+			http.get(`${apiBaseUrl}/weather`, () => {
+				counter.requests += 1
+				return HttpResponse.json(makeWeatherStub("São Paulo"))
+			}),
+		)
+		return counter
+	}
+
+	test("AC-03: deve mostrar 24 °C como 75,2 °F e 12 km/h como 7 mph com ?units=imperial", async () => {
+		setUrl("city=São Paulo&units=imperial")
+		renderWithProviders(<WeatherPage />)
+
+		expect(await screen.findByText("75,2°F")).toBeInTheDocument()
+		expect(screen.getByText("7 mph NE")).toBeInTheDocument()
+	})
+
+	test("AC-09: deve mostrar °C e km/h quando units é inválido ou ausente", async () => {
+		for (const query of ["city=São Paulo&units=banana", "city=São Paulo"]) {
+			setUrl(query)
+			const { unmount } = renderWithProviders(<WeatherPage />)
+
+			expect(await screen.findByText("24°C")).toBeInTheDocument()
+			expect(screen.getByText("12 km/h NE")).toBeInTheDocument()
+			expect(
+				screen.getByRole("button", { name: "Mudar para °F e mph" }),
+			).toHaveAttribute("aria-pressed", "false")
+			unmount()
+		}
+	})
+
+	test("AC-06: deve adicionar units=imperial à URL ao alternar, sem nova requisição", async () => {
+		const user = userEvent.setup()
+		const replaceMock = mockReplace()
+		setUrl("city=São Paulo")
+		const counter = countWeatherRequests()
+		renderWithProviders(<WeatherPage />)
+
+		await user.click(
+			await screen.findByRole("button", { name: "Mudar para °F e mph" }),
+		)
+
+		expect(replaceMock).toHaveBeenCalledWith(
+			"?city=S%C3%A3o+Paulo&units=imperial",
+		)
+		expect(counter.requests).toBe(1)
+	})
+
+	test("AC-06: deve remover units da URL ao voltar para o métrico, sem nova requisição", async () => {
+		const user = userEvent.setup()
+		const replaceMock = mockReplace()
+		setUrl("city=São Paulo&units=imperial")
+		const counter = countWeatherRequests()
+		renderWithProviders(<WeatherPage />)
+
+		await user.click(
+			await screen.findByRole("button", { name: "Mudar para °C e km/h" }),
+		)
+
+		expect(replaceMock).toHaveBeenCalledWith("?city=S%C3%A3o+Paulo")
+		expect(counter.requests).toBe(1)
+	})
+
+	test("AC-10: deve exibir o crédito à Open-Meteo com link quando o resultado aparece", async () => {
+		setUrl("city=São Paulo")
+		renderWithProviders(<WeatherPage />)
+
+		const link = await screen.findByRole("link", { name: "Open-Meteo" })
+		expect(link).toHaveAttribute("href", "https://open-meteo.com/")
+		expect(link.parentElement?.textContent).toBe(
+			"Dados: Open-Meteo (CC BY 4.0)",
+		)
+	})
+
+	test("deve mostrar agora, próximas horas e próximos 7 dias juntos", async () => {
+		setUrl("city=São Paulo")
+		renderWithProviders(<WeatherPage />)
+
+		await screen.findByText("24°C")
+		expect(
+			screen.getByRole("heading", { name: "Próximas horas" }),
+		).toBeInTheDocument()
+		expect(
+			screen.getByRole("heading", { name: "Próximos 7 dias" }),
+		).toBeInTheDocument()
+		expect(screen.getAllByRole("listitem").length).toBeGreaterThanOrEqual(31)
+	})
+
+	test("deve anunciar a temperatura na unidade ativa", async () => {
+		setUrl("city=São Paulo&units=imperial")
+		renderWithProviders(<WeatherPage />)
+
+		expect(
+			await screen.findByText("Temperatura de São Paulo: 75,2 graus"),
+		).toBeInTheDocument()
+	})
+
+	test("Review Focus: alternar a unidade mantém city na URL", async () => {
+		const user = userEvent.setup()
+		const replaceMock = mockReplace()
+		setUrl("city=São Paulo")
+		renderWithProviders(<WeatherPage />)
+
+		await user.click(
+			await screen.findByRole("button", { name: "Mudar para °F e mph" }),
+		)
+
+		const params = new URLSearchParams(
+			String(replaceMock.mock.calls[0][0]).replace(/^\?/, ""),
+		)
+		expect(params.get("city")).toBe("São Paulo")
+		expect(params.get("units")).toBe("imperial")
+	})
+
+	test("Review Focus: consultar outra cidade mantém units na URL", async () => {
+		const user = userEvent.setup()
+		const replaceMock = mockReplace()
+		setUrl("city=São Paulo&units=imperial")
+		renderWithProviders(<WeatherPage />)
+		await screen.findByText("75,2°F")
+
+		await user.clear(screen.getByLabelText("Cidade (obrigatório)"))
+		await user.type(screen.getByLabelText("Cidade (obrigatório)"), "Curitiba")
+		await user.click(screen.getByRole("button", { name: "Consultar" }))
+
+		const params = new URLSearchParams(
+			String(replaceMock.mock.calls[0][0]).replace(/^\?/, ""),
+		)
+		expect(params.get("city")).toBe("Curitiba")
+		expect(params.get("units")).toBe("imperial")
 	})
 
 	test("renderiza o globo antes do formulário de busca na ordem do DOM", () => {

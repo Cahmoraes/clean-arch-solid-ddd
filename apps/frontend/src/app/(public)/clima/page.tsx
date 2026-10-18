@@ -4,14 +4,26 @@ import { useIsFetching } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense } from "react"
 import { EmptyState } from "@/components/ui/empty-state"
-import { useWeatherQuery } from "@/features/weather/api/use-weather-query"
+import {
+	useWeatherQuery,
+	type WeatherResponse,
+} from "@/features/weather/api/use-weather-query"
 import { CurrentWeatherDisplay } from "@/features/weather/components/current-weather-display"
+import { DailyForecast } from "@/features/weather/components/daily-forecast"
+import { HourlyForecast } from "@/features/weather/components/hourly-forecast"
+import { UnitToggleButton } from "@/features/weather/components/unit-toggle-button"
 import { GLOBE_SIZE_PX } from "@/features/weather/components/weather-globe-constants"
 // Import estático de propósito: o boundary não carrega `react-globe.gl`/`three`
 // (faz isso via `next/dynamic` interno), então ele também protege contra falha
 // no carregamento do chunk do globo.
 import { WeatherGlobe } from "@/features/weather/components/weather-globe-error-boundary"
 import { WeatherSearchForm } from "@/features/weather/components/weather-search-form"
+import {
+	convertTemperature,
+	formatValue,
+	parseUnits,
+	type UnitSystem,
+} from "@/features/weather/lib/units"
 
 function weatherErrorMessage(code: string): string {
 	if (code === "city_not_found") {
@@ -23,15 +35,55 @@ function weatherErrorMessage(code: string): string {
 function weatherResultAnnouncement(
 	city: string | null,
 	data: { city: string; temperature: { current: number } } | undefined,
+	units: UnitSystem,
 ): string {
 	if (!city || !data) return ""
-	return `Temperatura de ${data.city}: ${data.temperature.current} graus`
+	const temperature = formatValue(
+		convertTemperature(data.temperature.current, units),
+	)
+	return `Temperatura de ${data.city}: ${temperature} graus`
+}
+
+function WeatherResult({
+	data,
+	units,
+	onToggleUnits,
+}: {
+	data: WeatherResponse
+	units: UnitSystem
+	onToggleUnits: () => void
+}) {
+	return (
+		<>
+			<CurrentWeatherDisplay
+				city={data.city}
+				weather={data}
+				units={units}
+				actions={<UnitToggleButton units={units} onToggle={onToggleUnits} />}
+			/>
+			<HourlyForecast hourly={data.hourly} units={units} />
+			<DailyForecast daily={data.daily} units={units} />
+			<p className="text-center text-xs text-muted-foreground">
+				Dados:{" "}
+				<a
+					href="https://open-meteo.com/"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="underline"
+				>
+					Open-Meteo
+				</a>{" "}
+				(CC BY 4.0)
+			</p>
+		</>
+	)
 }
 
 function WeatherPageContent() {
 	const searchParams = useSearchParams()
 	const router = useRouter()
 	const city = searchParams.get("city")
+	const units = parseUnits(searchParams.get("units"))
 
 	const { data, error } = useWeatherQuery(city)
 	const isPending = useIsFetching({ queryKey: ["weather"] }) > 0
@@ -39,6 +91,13 @@ function WeatherPageContent() {
 	function handleSearch(nextCity: string) {
 		const params = new URLSearchParams(searchParams.toString())
 		params.set("city", nextCity)
+		router.replace(`?${params.toString()}`)
+	}
+
+	function handleToggleUnits() {
+		const params = new URLSearchParams(searchParams.toString())
+		if (units === "imperial") params.delete("units")
+		else params.set("units", "imperial")
 		router.replace(`?${params.toString()}`)
 	}
 
@@ -75,13 +134,14 @@ function WeatherPageContent() {
 				</p>
 			)}
 			{city && data && (
-				<CurrentWeatherDisplay
-					city={data.city}
-					temperature={data.temperature}
+				<WeatherResult
+					data={data}
+					units={units}
+					onToggleUnits={handleToggleUnits}
 				/>
 			)}
 			<div role="status" aria-live="polite" className="sr-only">
-				{weatherResultAnnouncement(city, data)}
+				{weatherResultAnnouncement(city, data, units)}
 			</div>
 		</section>
 	)

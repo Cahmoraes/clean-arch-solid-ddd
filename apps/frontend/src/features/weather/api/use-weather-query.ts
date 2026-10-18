@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { ApiError, mapStatusToMessage } from "@/lib/errors"
 
-type WeatherResponse =
+export type WeatherResponse =
 	paths["/weather"]["get"]["responses"][200]["content"]["application/json"]
 
 function toApiError(error: unknown, fallbackStatus = 500): ApiError {

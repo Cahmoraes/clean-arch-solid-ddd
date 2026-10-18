@@ -5897,13 +5897,59 @@ export interface paths {
                             city: string;
                             /** @description Temperature readings */
                             temperature: {
-                                /** @description Current temperature */
+                                /** @description Current temperature (°C) */
                                 current: number;
-                                /** @description Minimum temperature */
+                                /** @description Apparent (feels-like) temperature (°C) */
+                                apparent: number;
+                                /** @description Minimum temperature (°C) */
                                 min: number;
-                                /** @description Maximum temperature */
+                                /** @description Maximum temperature (°C) */
                                 max: number;
                             };
+                            /** @description Current weather condition */
+                            condition: {
+                                /** @description WMO weather code */
+                                code: number;
+                                /** @description Whether it is daytime */
+                                isDay: boolean;
+                            };
+                            /** @description Relative humidity (0-100%) */
+                            humidity: number;
+                            /** @description Current wind */
+                            wind: {
+                                /** @description Wind speed (km/h) */
+                                speed: number;
+                                /** @description Wind direction in degrees (0-360) */
+                                directionDegrees: number;
+                            };
+                            /** @description Next 24 hours, starting at the current local hour */
+                            hourly: {
+                                /**
+                                 * @description Local city time without offset
+                                 * @example 2026-10-18T15:00
+                                 */
+                                time: string;
+                                /** @description Temperature (°C) */
+                                temperature: number;
+                                /** @description WMO weather code */
+                                code: number;
+                                /** @description Whether it is daytime */
+                                isDay: boolean;
+                            }[];
+                            /** @description Next 7 days */
+                            daily: {
+                                /**
+                                 * @description Local calendar day
+                                 * @example 2026-10-18
+                                 */
+                                date: string;
+                                /** @description Minimum temperature (°C) */
+                                min: number;
+                                /** @description Maximum temperature (°C) */
+                                max: number;
+                                /** @description WMO weather code */
+                                code: number;
+                            }[];
                             /** @description Latitude of the resolved city */
                             latitude: number;
                             /** @description Longitude of the resolved city */

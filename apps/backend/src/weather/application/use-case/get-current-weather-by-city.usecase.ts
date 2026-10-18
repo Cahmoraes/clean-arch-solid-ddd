@@ -36,16 +36,16 @@ export class GetCurrentWeatherByCityUseCase {
 		if (coordinateOrError.isFailure()) {
 			return failure(coordinateOrError.value)
 		}
-		const temperatureOrError = await this.weatherGateway.getCurrentWeather(
+		const reportOrError = await this.weatherGateway.getCurrentWeather(
 			coordinateOrError.value,
 		)
-		if (temperatureOrError.isFailure()) {
-			return failure(temperatureOrError.value)
+		if (reportOrError.isFailure()) {
+			return failure(reportOrError.value)
 		}
 		return success({
 			city: input.city,
-			temperature: temperatureOrError.value,
 			coordinate: coordinateOrError.value,
+			...reportOrError.value,
 		})
 	}
 }
