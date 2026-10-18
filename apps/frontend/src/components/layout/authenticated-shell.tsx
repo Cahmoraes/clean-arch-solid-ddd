@@ -25,6 +25,7 @@ import {
 	Megaphone,
 	PanelLeftClose,
 	PanelLeftOpen,
+	Sun,
 	User,
 	Users,
 	Wallet,
@@ -54,6 +55,7 @@ const MAIN_NAV_ITEMS: ReadonlyArray<NavItem> = [
 	{ href: "/check-ins", label: "Check-ins", icon: CheckCircle },
 	{ href: "/academias", label: "Academias", icon: Building2 },
 	{ href: "/calendario", label: "Calendário", icon: CalendarDays },
+	{ href: "/clima", label: "Clima", icon: Sun },
 	{ href: "/perfil", label: "Perfil", icon: User },
 	{ href: "/assinatura", label: "Assinatura", icon: CreditCard },
 ]

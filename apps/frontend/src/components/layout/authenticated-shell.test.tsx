@@ -124,6 +124,19 @@ describe("AuthenticatedShell — VOLT", () => {
 		)
 	})
 
+	test("aponta Clima para a tela de clima", () => {
+		setRole("MEMBER")
+		renderWithProviders(
+			<AuthenticatedShell>
+				<p>conteúdo</p>
+			</AuthenticatedShell>,
+		)
+		expect(screen.getByRole("link", { name: "Clima" })).toHaveAttribute(
+			"href",
+			"/clima",
+		)
+	})
+
 	test("marca Calendário como ativo na rota de calendário", () => {
 		setRole("MEMBER")
 		setPathname("/calendario")
