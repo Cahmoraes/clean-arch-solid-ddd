@@ -23,9 +23,13 @@ describe("GetCurrentWeatherByCityUseCase", () => {
 		expect(currentWeather.city).toBe("São Paulo")
 		expect(currentWeather.temperature).toEqual({
 			current: 24,
+			apparent: 22,
 			min: 18,
 			max: 27,
 		})
+		expect(currentWeather.condition).toEqual({ code: 1, isDay: true })
+		expect(currentWeather.hourly).toHaveLength(24)
+		expect(currentWeather.daily).toHaveLength(7)
 		expect(currentWeather.coordinate.latitude).toBe(-23.5505)
 		expect(currentWeather.coordinate.longitude).toBe(-46.6333)
 	})

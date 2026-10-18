@@ -8,7 +8,7 @@ Bounded context responsável pela consulta de clima atual por nome de cidade: re
 weather/
 ├── domain/
 │   ├── value-object/
-│   │   └── current-weather.ts        # CurrentWeather, Temperature (tipos puros)
+│   │   └── current-weather.ts        # CurrentWeather, WeatherReport, Temperature, WeatherCondition, WindReading, HourlyForecast, DailyForecast (tipos puros)
 │   └── error/
 │       ├── city-not-found-error.ts
 │       └── weather-provider-unavailable-error.ts
@@ -41,11 +41,11 @@ export interface GeocodingGateway {
 }
 
 export interface WeatherGateway {
-  getCurrentWeather(coordinate: Coordinate): Promise<Either<WeatherProviderUnavailableError, Temperature>>
+  getCurrentWeather(coordinate: Coordinate): Promise<Either<WeatherProviderUnavailableError, WeatherReport>>
 }
 ```
 
-`WeatherGateway` retorna só `Temperature` — não conhece o nome da cidade, só coordenadas. É o use case quem combina `city` (input do usuário) com o `Temperature` retornado.
+`WeatherGateway` retorna um `WeatherReport` (`temperature` {current, apparent, min, max}, `condition` {code WMO, isDay}, `humidity`, `wind` {speed, directionDegrees}, `hourly` com 24 itens a partir da hora atual local, `daily` com 7 itens) — não conhece o nome da cidade, só coordenadas. Dado inválido do provedor (hora atual ausente, `null`, não finito) vira `WeatherProviderUnavailableError`. É o use case quem combina `city` e `coordinate` com o `WeatherReport` retornado.
 
 ### Implementações
 
@@ -62,7 +62,7 @@ Os dois adapters de produção envolvem a chamada HTTP com `CircuitBreaker` + `R
 |-----------------------------------|-----------------|-------------------------------------------------------------------------|
 | `GetCurrentWeatherByCityUseCase`  | `{ city }`      | `Either<CityNotFoundError \| WeatherProviderUnavailableError, CurrentWeather>` |
 
-Fluxo: `geocode(city)` → se falhar, propaga `CityNotFoundError` sem chamar o gateway de clima; se OK, `getCurrentWeather(coordinate)` → se falhar, propaga `WeatherProviderUnavailableError`; se OK, combina `city` + `temperature` em `CurrentWeather`.
+Fluxo: `geocode(city)` → se falhar, propaga `CityNotFoundError` sem chamar o gateway de clima; se OK, `getCurrentWeather(coordinate)` → se falhar, propaga `WeatherProviderUnavailableError`; se OK, combina `city` + `coordinate` + `WeatherReport` em `CurrentWeather`.
 
 ## Rotas HTTP
 
