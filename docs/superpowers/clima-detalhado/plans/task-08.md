@@ -1,6 +1,6 @@
 # Task 8: Lista dos próximos 7 dias [FR-002, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 

@@ -8,15 +8,15 @@
 
 ## Tarefas
 
-- [ ] 1. Gateway Open-Meteo e modelo de domínio com condição, vento, horas e dias → `task-01.md`
-- [ ] 2. Contrato HTTP de /weather e regeneração dos tipos → `task-02.md`
-- [ ] 3. Conversor de unidades, direção do vento e leitura de `units` → `task-03.md`
-- [ ] 4. Ícones pixel de condição do tempo → `task-04.md`
-- [ ] 5. Mapa de condição WMO para ícone e rótulo → `task-05.md`
-- [ ] 6. Card "agora" com condição, sensação, umidade, vento e número nítido → `task-06.md`
-- [ ] 7. Faixa das próximas 24 horas → `task-07.md`
-- [ ] 8. Lista dos próximos 7 dias → `task-08.md`
-- [ ] 9. Botão de unidade, integração na página e crédito à Open-Meteo → `task-09.md`
+- [x] 1. Gateway Open-Meteo e modelo de domínio com condição, vento, horas e dias → `task-01.md`
+- [x] 2. Contrato HTTP de /weather e regeneração dos tipos → `task-02.md`
+- [x] 3. Conversor de unidades, direção do vento e leitura de `units` → `task-03.md`
+- [x] 4. Ícones pixel de condição do tempo → `task-04.md`
+- [x] 5. Mapa de condição WMO para ícone e rótulo → `task-05.md`
+- [x] 6. Card "agora" com condição, sensação, umidade, vento e número nítido → `task-06.md`
+- [x] 7. Faixa das próximas 24 horas → `task-07.md`
+- [x] 8. Lista dos próximos 7 dias → `task-08.md`
+- [x] 9. Botão de unidade, integração na página e crédito à Open-Meteo → `task-09.md`
 
 ## Restrições Globais
 

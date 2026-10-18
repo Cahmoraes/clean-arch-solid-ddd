@@ -1,6 +1,6 @@
 # Task 5: Mapa de condição WMO para ícone e rótulo [FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 

@@ -1,6 +1,6 @@
 # Task 7: Faixa das próximas 24 horas [FR-002, FR-004]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 

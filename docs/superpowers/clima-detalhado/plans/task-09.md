@@ -1,6 +1,6 @@
 # Task 9: Botão de unidade, integração na página e crédito à Open-Meteo [FR-006, FR-007, FR-008, FR-010]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 

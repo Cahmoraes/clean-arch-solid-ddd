@@ -1,6 +1,6 @@
 # Task 4: Ícones pixel de condição do tempo [FR-002]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 

@@ -1,6 +1,6 @@
 # Task 3: Conversor de unidades, direção do vento e leitura de `units` [FR-006, FR-007]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 

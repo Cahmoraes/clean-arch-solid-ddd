@@ -1,6 +1,6 @@
 # Task 6: Card "agora" com condição, sensação, umidade, vento e número nítido [FR-002, FR-003, FR-009]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 

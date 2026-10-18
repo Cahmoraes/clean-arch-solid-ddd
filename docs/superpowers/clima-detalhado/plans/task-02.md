@@ -1,6 +1,6 @@
 # Task 2: Contrato HTTP de /weather e regeneração dos tipos [FR-001, FR-008]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 

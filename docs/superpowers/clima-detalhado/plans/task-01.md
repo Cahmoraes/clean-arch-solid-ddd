@@ -1,6 +1,6 @@
 # Task 1: Gateway Open-Meteo e modelo de domínio com condição, vento, horas e dias [FR-001, FR-004, FR-005]
 
-**Status:** PENDING
+**Status:** DONE
 
 **PRD:** `../prd/prd-clima-detalhado.md`
 
