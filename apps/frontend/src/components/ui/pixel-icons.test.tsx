@@ -31,6 +31,13 @@ const EXPECTED_EXPORTS = [
 	"CircleCheck",
 	"CircleSlash",
 	"Clock",
+	"Cloud",
+	"CloudDrizzle",
+	"CloudFog",
+	"CloudMoon",
+	"CloudRain",
+	"CloudSun",
+	"CloudUnknown",
 	"CreditCard",
 	"Filter",
 	"Flame",
@@ -58,6 +65,7 @@ const EXPECTED_EXPORTS = [
 	"Shield",
 	"ShieldAlert",
 	"ShieldCheck",
+	"Snowflake",
 	"Sun",
 	"Sunset",
 	"Tag",
@@ -68,9 +76,11 @@ const EXPECTED_EXPORTS = [
 	"UserRound",
 	"Users",
 	"Wallet",
+	"Wind",
 	"X",
 	"XCircle",
 	"XIcon",
+	"Zap",
 ]
 
 const SAME_GLYPH_GROUPS: ReadonlyArray<ReadonlyArray<string>> = [
@@ -90,6 +100,18 @@ const DISTINCT_GLYPHS = [
 	"XCircle",
 	"ShieldAlert",
 	"Tag",
+	"Sun",
+	"Moon",
+	"Cloud",
+	"CloudSun",
+	"CloudMoon",
+	"CloudRain",
+	"CloudDrizzle",
+	"CloudFog",
+	"CloudUnknown",
+	"Snowflake",
+	"Zap",
+	"Wind",
 ]
 
 const ICONS = new Map<string, PixelIcon>(Object.entries(pixelIcons))

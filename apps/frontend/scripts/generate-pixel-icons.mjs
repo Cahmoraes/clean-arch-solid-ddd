@@ -35,6 +35,9 @@ const ICON_MAP = {
 	CircleCheck: "checkbox-on",
 	CircleSlash: "cancel",
 	Clock: "clock",
+	Cloud: "cloud",
+	CloudMoon: "cloud-moon",
+	CloudSun: "cloud-sun",
 	CreditCard: "credit-card",
 	Filter: "filter",
 	Flame: "fire",
@@ -62,6 +65,7 @@ const ICON_MAP = {
 	Shield: "shield",
 	ShieldAlert: "shield",
 	ShieldCheck: "shield",
+	Snowflake: "snowflake",
 	Sun: "sun",
 	Tag: "label",
 	Trash2: "trash",
@@ -71,17 +75,67 @@ const ICON_MAP = {
 	UserRound: "user",
 	Users: "users",
 	Wallet: "wallet",
+	Wind: "wind",
 	X: "close",
 	XCircle: "close",
 	XIcon: "close",
+	Zap: "zap",
 }
 
 // Ícones pixel-art desenhados à mão para este projeto (sem equivalente em
 // pixelarticons). Seguir a mesma grade 24x24 e blocos de 2px dos ícones
 // vendorizados ao adicionar um novo.
+// Cada retângulo [x, y, largura, altura] vira "M x y h w v h h-w z".
+function pixelRects(rects) {
+	return rects.map(([x, y, w, h]) => `M${x} ${y}h${w}v${h}h-${w}z`).join("")
+}
+
+// Silhueta de nuvem compartilhada (y 4 a 14); os ícones de chuva, chuvisco e
+// névoa acrescentam o que cai abaixo dela.
+const CLOUD_BODY = [
+	[9, 4, 6, 2],
+	[6, 6, 12, 2],
+	[4, 8, 16, 4],
+	[6, 12, 12, 2],
+]
+
 const CUSTOM_ICONS = {
 	Sunset:
 		"M10 8h4v2h-4zM8 10h8v2H8zM6 12h12v2H6zM4 14h16v2H4zM2 16h20v2H2zM4 19h16v1H4zM4 21h16v1H4z",
+	CloudRain: pixelRects([
+		...CLOUD_BODY,
+		[8, 16, 2, 2],
+		[6, 18, 2, 2],
+		[12, 16, 2, 2],
+		[10, 18, 2, 2],
+		[16, 16, 2, 2],
+		[14, 18, 2, 2],
+	]),
+	CloudDrizzle: pixelRects([
+		...CLOUD_BODY,
+		[7, 16, 2, 2],
+		[11, 19, 2, 2],
+		[15, 16, 2, 2],
+	]),
+	CloudFog: pixelRects([...CLOUD_BODY, [4, 16, 16, 2], [6, 20, 12, 2]]),
+	// Contorno de nuvem vazado com "?" dentro: exclusivo para condição desconhecida.
+	CloudUnknown: pixelRects([
+		[8, 2, 8, 2],
+		[6, 4, 2, 2],
+		[16, 4, 2, 2],
+		[4, 6, 2, 2],
+		[18, 6, 2, 2],
+		[2, 8, 2, 8],
+		[20, 8, 2, 8],
+		[4, 16, 2, 2],
+		[18, 16, 2, 2],
+		[6, 18, 12, 2],
+		[9, 7, 6, 2],
+		[15, 9, 2, 2],
+		[13, 11, 2, 2],
+		[11, 13, 2, 2],
+		[11, 16, 2, 2],
+	]),
 }
 
 const MODULE_PREAMBLE = `import type { ComponentType, SVGProps } from "react"
