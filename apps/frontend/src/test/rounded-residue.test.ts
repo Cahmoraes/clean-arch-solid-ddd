@@ -50,4 +50,13 @@ describe("nenhum resíduo de arredondamento ou corner-shape fora dos tokens", ()
 			/@layer base\s*\{\s*\*,\s*::before,\s*::after\s*\{\s*corner-shape:\s*bevel/,
 		)
 	})
+
+	test("a classe corner-round existe em globals.css, senão a classe do globo é ignorada", () => {
+		const css = listSourceFiles([".css"]).find(
+			(file) => file.path === "app/globals.css",
+		)
+		expect(css?.content).toMatch(
+			/^\.corner-round\s*\{\s*corner-shape:\s*round/m,
+		)
+	})
 })

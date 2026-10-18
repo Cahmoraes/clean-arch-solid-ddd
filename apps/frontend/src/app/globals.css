@@ -106,6 +106,13 @@
 	}
 }
 
+/* Classe CSS comum (não `@utility`): o Turbopack do dev não emitia a utility, e o
+   globo do clima (`rounded-full`) virava losango por causa do bevel global. Sem
+   layer, esta regra vence o `@layer base` do bevel. */
+.corner-round {
+	corner-shape: round;
+}
+
 /* DARK (tema padrão) */
 .dark {
 	color-scheme: dark;
