@@ -27,11 +27,55 @@ const weatherResponseSchema = z.object({
 	city: z.string().meta({ description: "City name" }),
 	temperature: z
 		.object({
-			current: z.number().meta({ description: "Current temperature" }),
-			min: z.number().meta({ description: "Minimum temperature" }),
-			max: z.number().meta({ description: "Maximum temperature" }),
+			current: z.number().meta({ description: "Current temperature (°C)" }),
+			apparent: z
+				.number()
+				.meta({ description: "Apparent (feels-like) temperature (°C)" }),
+			min: z.number().meta({ description: "Minimum temperature (°C)" }),
+			max: z.number().meta({ description: "Maximum temperature (°C)" }),
 		})
 		.meta({ description: "Temperature readings" }),
+	condition: z
+		.object({
+			code: z.number().int().meta({ description: "WMO weather code" }),
+			isDay: z.boolean().meta({ description: "Whether it is daytime" }),
+		})
+		.meta({ description: "Current weather condition" }),
+	humidity: z.number().meta({ description: "Relative humidity (0-100%)" }),
+	wind: z
+		.object({
+			speed: z.number().meta({ description: "Wind speed (km/h)" }),
+			directionDegrees: z
+				.number()
+				.meta({ description: "Wind direction in degrees (0-360)" }),
+		})
+		.meta({ description: "Current wind" }),
+	hourly: z
+		.array(
+			z.object({
+				time: z.string().meta({
+					description: "Local city time without offset",
+					example: "2026-10-18T15:00",
+				}),
+				temperature: z.number().meta({ description: "Temperature (°C)" }),
+				code: z.number().int().meta({ description: "WMO weather code" }),
+				isDay: z.boolean().meta({ description: "Whether it is daytime" }),
+			}),
+		)
+		.meta({ description: "Next 24 hours, starting at the current local hour" }),
+	daily: z
+		.array(
+			z.object({
+				date: z.string().meta({
+					description: "Local calendar day",
+					example: "2026-10-18",
+				}),
+				min: z.number().meta({ description: "Minimum temperature (°C)" }),
+				max: z.number().meta({ description: "Maximum temperature (°C)" }),
+				code: z.number().int().meta({ description: "WMO weather code" }),
+			}),
+		)
+		.meta({ description: "Next 7 days" }),
 	latitude: z.number().meta({ description: "Latitude of the resolved city" }),
 	longitude: z.number().meta({ description: "Longitude of the resolved city" }),
 })
@@ -110,6 +154,11 @@ export class WeatherController extends BaseController {
 			body: {
 				city: currentWeather.city,
 				temperature: currentWeather.temperature,
+				condition: currentWeather.condition,
+				humidity: currentWeather.humidity,
+				wind: currentWeather.wind,
+				hourly: currentWeather.hourly,
+				daily: currentWeather.daily,
 				latitude: currentWeather.coordinate.latitude,
 				longitude: currentWeather.coordinate.longitude,
 			},

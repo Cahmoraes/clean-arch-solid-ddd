@@ -32,21 +32,40 @@ describe("Consultar clima atual por cidade", () => {
 		await fastifyServer.close()
 	})
 
-	test("Deve retornar o clima atual para uma cidade conhecida", async () => {
+	test("AC-01: Deve retornar o clima atual com condição, sensação, umidade, vento, 24 horas e 7 dias", async () => {
 		const response = await request(fastifyServer.server).get(
 			"/weather?city=S%C3%A3o%20Paulo",
 		)
 
 		expect(response.status).toBe(HTTP_STATUS.OK)
-		expect(response.body).toEqual({
+		expect(response.body).toMatchObject({
 			city: "São Paulo",
-			temperature: { current: 24, min: 18, max: 27 },
 			latitude: -23.5505,
 			longitude: -46.6333,
+			temperature: { current: 24, apparent: 22, min: 18, max: 27 },
+			condition: { code: 1, isDay: true },
+			humidity: 64,
+			wind: { speed: 12, directionDegrees: 45 },
 		})
+		expect(response.body.hourly).toHaveLength(24)
+		expect(response.body.hourly[0]).toEqual({
+			time: "2026-10-18T15:00",
+			temperature: 24,
+			code: 1,
+			isDay: true,
+		})
+		expect(response.body.hourly[23].time).toBe("2026-10-19T14:00")
+		expect(response.body.daily).toHaveLength(7)
+		expect(response.body.daily[0]).toEqual({
+			date: "2026-10-18",
+			min: 18,
+			max: 27,
+			code: 1,
+		})
+		expect(response.body.daily[6].date).toBe("2026-10-24")
 	})
 
-	test("Deve retornar 404 para uma cidade desconhecida", async () => {
+	test("AC-08: Deve retornar 404 para uma cidade desconhecida", async () => {
 		const response = await request(fastifyServer.server).get(
 			"/weather?city=Atlantis",
 		)
@@ -58,7 +77,7 @@ describe("Consultar clima atual por cidade", () => {
 		})
 	})
 
-	test("Deve retornar 503 quando o provider de clima está indisponível", async () => {
+	test("AC-07: Deve retornar 503 quando o provider de clima está indisponível", async () => {
 		weatherGateway.simulateProviderUnavailable()
 
 		const response = await request(fastifyServer.server).get(
