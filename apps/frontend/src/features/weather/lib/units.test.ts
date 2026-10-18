@@ -45,7 +45,8 @@ describe("units", () => {
 			[22, "N"],
 			[23, "NE"],
 		]
-		for (const [degrees, label] of cases) expect(windDirectionLabel(degrees)).toBe(label)
+		for (const [degrees, label] of cases)
+			expect(windDirectionLabel(degrees)).toBe(label)
 	})
 
 	test("Review Focus: direção do vento 0, 359 e 360 graus viram N", () => {
