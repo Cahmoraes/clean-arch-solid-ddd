@@ -41,7 +41,7 @@ export class UserCreator {
 			return failure(requiredFieldsCheck.value)
 		}
 		const passwordResult = await this.validatePassword()
-		if (passwordResult?.isFailure()) {
+		if (passwordResult?.isFailure()) {	
 			return failure([passwordResult.value])
 		}
 		const googleIdResult = this.validateGoogleId()
